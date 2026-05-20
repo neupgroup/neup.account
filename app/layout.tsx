@@ -11,6 +11,8 @@ import { PersistentBacksTo } from '@/components/persistent-backs-to';
 import { HeaderV1 } from '@/components/layout/header.v1';
 import { getSiteLogoUrl } from '@/services/manage/site/logo';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Neup.Account',
   description: 'Create an account to access NeupID Group Products and Services.',

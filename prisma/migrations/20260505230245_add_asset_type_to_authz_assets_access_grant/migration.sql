@@ -1,6 +1,7 @@
--- Add assetType field to authz_assets_access_grant table
-ALTER TABLE "authz_assets_access_grant"
-ADD COLUMN "asset_type" VARCHAR(255);
+-- Baseline creates `assets_access_grant` (not `authz_assets_access_grant`).
+-- Keep this migration resilient across environments.
+ALTER TABLE IF EXISTS "assets_access_grant"
+ADD COLUMN IF NOT EXISTS "asset_type" VARCHAR(255);
 
--- Create index on asset_type for query optimization
-CREATE INDEX "authz_assets_access_grant_asset_type_idx" ON "authz_assets_access_grant"("asset_type");
+CREATE INDEX IF NOT EXISTS "assets_access_grant_asset_type_idx"
+ON "assets_access_grant"("asset_type");

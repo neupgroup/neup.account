@@ -5,6 +5,93 @@ import prisma from '../core/helpers/prisma';
 // Root permissions are now managed via authz_role_capability in the database.
 // This legacy seed writes to the Permit table for backward compatibility.
 const ROOT_PERMISSIONS: string[] = [];
+const APP_ID = 'neup.account';
+const ROLE_DEFAULT_ID = 'individual-default-neup-account';
+const ROLE_ROOT_ID = 'account.root';
+
+const DEFAULT_CAPABILITIES = [
+  'profile.view',
+  'profile.modify',
+  'contact.view',
+  'contact.add',
+  'contact.modify',
+  'contact.remove',
+  'notification.read',
+  'notification.delete',
+  'security.pass.modify',
+  'security.totp.add',
+  'security.totp.remove',
+  'security.backup_codes.view',
+  'security.backup_codes.create',
+  'security.recovery_accounts.view',
+  'security.recovery_accounts.add',
+  'security.recovery_accounts.remove',
+  'security.recovery_phone.view',
+  'security.recovery_phone.add',
+  'security.recovery_phone.remove',
+  'security.recovery_email.view',
+  'security.recovery_email.add',
+  'security.recovery_email.remove',
+  'security.login_devices.view',
+  'linked_accounts.brand.create',
+  'linked_accounts.brand.view',
+  'linked_accounts.dependent.create',
+  'linked_accounts.dependent.view',
+  'data.agreed_terms.view',
+  'data.delete_account.start',
+  'data.deactivate_account.start',
+  'data.materialization.view',
+  'data.materialization.modify',
+  'security.third_party.view',
+  'security.recent_activities.view',
+  'security.third_party.add',
+  'security.third_party.remove',
+  'people.family.view',
+  'people.family.add',
+  'people.family.remove',
+  'people.family.partner.add',
+  'people.family.partner.remove',
+  'people.block_list.view',
+  'people.restrict_list.view',
+  'payment.method.show',
+  'payment.transactions.show',
+  'payment.subscriptions.show',
+  'payment.purchase_neup_pro.view',
+  'linked_accounts.brand.manager',
+] as const;
+
+const ROOT_CAPABILITIES = [
+  'root.account.view',
+  'root.account.modify',
+  'root.account.delete',
+  'root.account.search',
+  'root.account.create_individual',
+  'root.account.send_warning',
+  'root.account.give_block_account',
+  'root.account.remove_block_account',
+  'root.account.impersonate',
+  'root.account.edit_pro_status',
+  'root.account.edit_neupid',
+  'root.app.view',
+  'root.app.create',
+  'root.app.edit',
+  'root.permission.view',
+  'root.permission.edit',
+  'root.requests.view',
+  'root.requests.approve',
+  'root.requests.deny',
+  'root.dashboard.view',
+  'root.payment_config.view',
+  'root.errors.view',
+  'root.site.social_accounts.read',
+  'root.site.social_accounts.add',
+  'root.site.social_accounts.edit',
+  'root.site.social_accounts.delete',
+] as const;
+
+function slugifyCapability(name: string): string {
+  return name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase();
+}
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not set. Please configure your database connection.');
@@ -50,6 +137,7 @@ async function main() {
         neupIds: {
           create: {
             id: NEUP_ID,
+            neupId: NEUP_ID,
             isPrimary: true,
           },
         },
@@ -119,22 +207,186 @@ async function main() {
   }
 
   if (accountId) {
-    // Upsert the account.root role and grant it to the seed account.
-    // This replaces the legacy permit-based root grant.
-    await prisma.authzRole.upsert({
-      where: { id: 'account.root' },
-      update: { name: 'account.root', scope: 'root', appId: 'neup.account' },
-      create: { id: 'account.root', name: 'account.root', scope: 'root', appId: 'neup.account' },
+    const rootDenormalized = Array.from(
+      new Set([...DEFAULT_CAPABILITIES, ...ROOT_CAPABILITIES]),
+    );
+    const defaultDenormalized = Array.from(new Set(DEFAULT_CAPABILITIES));
+
+    await prisma.application.upsert({
+      where: { id: APP_ID },
+      update: { name: 'Neup Account' },
+      create: { id: APP_ID, name: 'Neup Account' },
     });
 
-    const existingGrant = await prisma.authzAccountAccessGrant.findFirst({
-      where: { ownerAccountId: accountId, targetAccountId: accountId, roleId: 'account.root', appId: 'neup.account' },
+    await prisma.authzRole.upsert({
+      where: { id: ROLE_DEFAULT_ID },
+      update: {
+        name: 'individual.default',
+        description: 'Default permission set for individual accounts.',
+        scope: 'default',
+        appId: APP_ID,
+      },
+      create: {
+        id: ROLE_DEFAULT_ID,
+        name: 'individual.default',
+        description: 'Default permission set for individual accounts.',
+        scope: 'default',
+        appId: APP_ID,
+      },
     });
-    if (!existingGrant) {
-      await prisma.authzAccountAccessGrant.create({
-        data: { ownerAccountId: accountId, targetAccountId: accountId, roleId: 'account.root', appId: 'neup.account' },
+
+    await prisma.authzRole.upsert({
+      where: { id: ROLE_ROOT_ID },
+      update: {
+        name: 'individual.root',
+        description: 'Root permission set for individual accounts.',
+        scope: 'root',
+        appId: APP_ID,
+      },
+      create: {
+        id: ROLE_ROOT_ID,
+        name: 'individual.root',
+        description: 'Root permission set for individual accounts.',
+        scope: 'root',
+        appId: APP_ID,
+      },
+    });
+
+    for (const capabilityName of DEFAULT_CAPABILITIES) {
+      const capabilityId = `cap-def-${slugifyCapability(capabilityName)}`;
+      await prisma.authzCapability.upsert({
+        where: { id: capabilityId },
+        update: { name: capabilityName, appId: APP_ID, scope: 'default' },
+        create: { id: capabilityId, name: capabilityName, appId: APP_ID, scope: 'default' },
+      });
+
+      await prisma.authzRoleCapability.upsert({
+        where: { id: `rcp-def-${capabilityId}` },
+        update: {
+          roleId: ROLE_DEFAULT_ID,
+          capabilityId,
+          scope: 'default',
+          appId: APP_ID,
+          roleName: 'individual.default',
+          denormalizedCapability: defaultDenormalized,
+        },
+        create: {
+          id: `rcp-def-${capabilityId}`,
+          roleId: ROLE_DEFAULT_ID,
+          capabilityId,
+          scope: 'default',
+          appId: APP_ID,
+          roleName: 'individual.default',
+          denormalizedCapability: defaultDenormalized,
+        },
       });
     }
+
+    for (const capabilityName of ROOT_CAPABILITIES) {
+      const capabilityId = `cap-root-${slugifyCapability(capabilityName)}`;
+      await prisma.authzCapability.upsert({
+        where: { id: capabilityId },
+        update: { name: capabilityName, appId: APP_ID, scope: 'root' },
+        create: { id: capabilityId, name: capabilityName, appId: APP_ID, scope: 'root' },
+      });
+
+      await prisma.authzRoleCapability.upsert({
+        where: { id: `rcp-root-${capabilityId}` },
+        update: {
+          roleId: ROLE_ROOT_ID,
+          capabilityId,
+          scope: 'root',
+          appId: APP_ID,
+          roleName: 'individual.root',
+          denormalizedCapability: rootDenormalized,
+        },
+        create: {
+          id: `rcp-root-${capabilityId}`,
+          roleId: ROLE_ROOT_ID,
+          capabilityId,
+          scope: 'root',
+          appId: APP_ID,
+          roleName: 'individual.root',
+          denormalizedCapability: rootDenormalized,
+        },
+      });
+    }
+
+    const defaultGrant = await prisma.authzAccountAccessGrant.findFirst({
+      where: {
+        ownerAccountId: accountId,
+        targetAccountId: accountId,
+        roleId: ROLE_DEFAULT_ID,
+        appId: APP_ID,
+      },
+    });
+    if (!defaultGrant) {
+      await prisma.authzAccountAccessGrant.create({
+        data: {
+          ownerAccountId: accountId,
+          targetAccountId: accountId,
+          roleId: ROLE_DEFAULT_ID,
+          appId: APP_ID,
+        },
+      });
+    }
+
+    const rootGrant = await prisma.authzAccountAccessGrant.findFirst({
+      where: {
+        ownerAccountId: accountId,
+        targetAccountId: accountId,
+        roleId: ROLE_ROOT_ID,
+        appId: APP_ID,
+      },
+    });
+    if (!rootGrant) {
+      await prisma.authzAccountAccessGrant.create({
+        data: {
+          ownerAccountId: accountId,
+          targetAccountId: accountId,
+          roleId: ROLE_ROOT_ID,
+          appId: APP_ID,
+        },
+      });
+    }
+
+    // Compatibility path for legacy permission checks.
+    // Some environments no longer have the `permit` table.
+    try {
+      const existingPermit = await prisma.permit.findFirst({
+        where: { accountId, targetAccountId: accountId },
+      });
+      if (!existingPermit) {
+        await prisma.permit.create({
+          data: {
+            accountId,
+            targetAccountId: accountId,
+            forSelf: true,
+            isRoot: true,
+            permissions: ROOT_PERMISSIONS,
+            restrictions: [],
+          },
+        });
+      } else {
+        await prisma.permit.update({
+          where: { id: existingPermit.id },
+          data: {
+            forSelf: true,
+            isRoot: true,
+            permissions: ROOT_PERMISSIONS,
+            restrictions: [],
+          },
+        });
+      }
+    } catch (error) {
+      const e = error as { code?: string };
+      if (e?.code !== 'P2021') throw error;
+    }
+
+    // eslint-disable-next-line no-console
+    console.log(
+      `Seeded accountId=${accountId} roles=${ROLE_DEFAULT_ID},${ROLE_ROOT_ID} accountType=individual root=true capabilities=${rootDenormalized.length}`,
+    );
   }
 }
 

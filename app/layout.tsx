@@ -9,7 +9,7 @@ import { Suspense } from 'react';
 import { UrlErrorBanner } from '@/components/ui/url-error-banner';
 import { PersistentBacksTo } from '@/components/persistent-backs-to';
 import { HeaderV1 } from '@/components/layout/header.v1';
-import { getSiteLogoUrl } from '@/services/manage/site/logo';
+import { DEFAULT_SITE_LOGO_URL } from '@/services/manage/site/logo';
 
 export const metadata: Metadata = {
   title: 'Neup.Account',
@@ -22,7 +22,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const logoUrl = await getSiteLogoUrl();
+  const logoUrl = DEFAULT_SITE_LOGO_URL;
 
   return (
     <html lang="en">

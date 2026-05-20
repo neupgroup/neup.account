@@ -1,7 +1,7 @@
 
 import { FlowLink } from '@/components/ui/flow-link';
 
-const DEFAULT_LOGO_URL = 'https://neupgroup.com/assets/branding/neup.group/logo.svg';
+const DEFAULT_LOGO_URL = 'https://neupcdn.com/neupaccount/assets/logo.svg';
 
 
 type NeupIdLogoProps = {

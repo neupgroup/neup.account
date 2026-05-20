@@ -6,7 +6,7 @@ import { checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import { SYSTEM_CONFIG_KEYS, readSystemConfigData, writeSystemConfigData } from '@/services/manage/site/system-config';
 
-const DEFAULT_SITE_LOGO_URL = 'https://neupcdn.com/neupid/assets/logo.svg';
+export const DEFAULT_SITE_LOGO_URL = 'https://neupcdn.com/neupaccount/assets/logo.svg';
 const CDN_BASE_URL = 'https://neupcdn.com';
 
 function resolveLogoUrl(value?: string): string {
@@ -34,23 +34,30 @@ const siteLogoSchema = z.object({
 });
 
 /**
- * Function getSiteLogoUrl.
+ * Returns the resolved configured site logo URL, if it exists.
+ * Does not apply default fallback.
  */
-export async function getSiteLogoUrl(): Promise<string> {
+export async function getConfiguredSiteLogoUrl(): Promise<string | undefined> {
   try {
     const data = await readSystemConfigData<{ siteLogoUrl?: string }>(
       SYSTEM_CONFIG_KEYS.siteLogo,
       {},
     );
-    if (!data || typeof data !== 'object') {
-      return DEFAULT_SITE_LOGO_URL;
-    }
-
+    if (!data || typeof data !== 'object') return undefined;
+    if (!data.siteLogoUrl) return undefined;
     return resolveLogoUrl(data.siteLogoUrl);
   } catch (error) {
-    await logError('database', error, 'getSiteLogoUrl');
-    return DEFAULT_SITE_LOGO_URL;
+    await logError('database', error, 'getConfiguredSiteLogoUrl');
+    return undefined;
   }
+}
+
+/**
+ * Returns site logo URL with default fallback.
+ */
+export async function getSiteLogoUrl(): Promise<string> {
+  const configured = await getConfiguredSiteLogoUrl();
+  return configured || DEFAULT_SITE_LOGO_URL;
 }
 
 

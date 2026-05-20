@@ -75,21 +75,16 @@ function NameStep() {
 
     useEffect(() => {
         const initFlow = async () => {
-            let id = sessionStorage.getItem('AuthSessionRequest');
-
-            if (!id) {
-                try {
-                    id = await initializeAuthFlow(null, 'signup');
-                    sessionStorage.setItem('AuthSessionRequest', id);
-                    setAuthRequestId(id);
-                } catch (error) {
-                    console.error("Failed to initialize signup flow", error);
-                    toast({ variant: 'destructive', title: 'Error', description: 'Failed to initialize session. Please refresh.' });
-                    return;
+            const currentId = sessionStorage.getItem('AuthSessionRequest');
+            try {
+                const nextId = await initializeAuthFlow(currentId, 'signup');
+                if (currentId && currentId !== nextId) {
+                    sessionStorage.removeItem('AuthSessionRequest');
                 }
-            } else {
-                setAuthRequestId(id);
-                const { data } = await getSignupStepData(id!);
+                sessionStorage.setItem('AuthSessionRequest', nextId);
+                setAuthRequestId(nextId);
+
+                const { data } = await getSignupStepData(nextId);
                 if (data) {
                     form.reset({
                         firstName: data.nameFirst || "",
@@ -100,6 +95,10 @@ function NameStep() {
                         setShowMiddleName(true);
                     }
                 }
+            } catch (error) {
+                console.error("Failed to initialize signup flow", error);
+                toast({ variant: 'destructive', title: 'Error', description: 'Failed to initialize session. Please refresh.' });
+                return;
             }
 
             const firstName = searchParams.get('firstName');

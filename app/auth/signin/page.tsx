@@ -43,27 +43,23 @@ function NeupIdStep() {
 
   useEffect(() => {
     const initFlow = async () => {
-      let id = sessionStorage.getItem('AuthSessionRequest');
+      const currentId = sessionStorage.getItem('AuthSessionRequest');
+      try {
+        const nextId = await initializeAuthFlow(currentId, 'signin');
+        if (currentId && currentId !== nextId) {
+          sessionStorage.removeItem('AuthSessionRequest');
+        }
+        sessionStorage.setItem('AuthSessionRequest', nextId);
+        setAuthRequestId(nextId);
 
-      if (!id) {
-        try {
-          id = await initializeAuthFlow(null, 'signin');
-          sessionStorage.setItem('AuthSessionRequest', id);
-          setAuthRequestId(id);
-        } catch (error) {
-          console.error("Failed to initialize auth flow", error);
-          toast({ variant: 'destructive', title: 'Error', description: 'Failed to initialize session. Please refresh.' });
-          return;
+        const { data } = await getSignupStepData(nextId);
+        if (data?.neupId) {
+          setNeupId(data.neupId);
         }
-      } else {
-        setAuthRequestId(id);
-        const fetchPreviousData = async () => {
-          const { data } = await getSignupStepData(id!);
-          if (data?.neupId) {
-            setNeupId(data.neupId);
-          }
-        }
-        fetchPreviousData();
+      } catch (error) {
+        console.error("Failed to initialize auth flow", error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Failed to initialize session. Please refresh.' });
+        return;
       }
       
       const neupIdParam = searchParams.get('neupId');
@@ -207,26 +203,31 @@ function PasswordStep() {
       // Account existence is only revealed at password submission time.
       if (neupIdFromUrl) {
         if (isMounted) setNeupId(neupIdFromUrl);
-        let currentRequestId = sessionStorage.getItem('AuthSessionRequest');
-        if (!currentRequestId) {
-          currentRequestId = await initializeAuthFlow(null, 'signin');
-          sessionStorage.setItem('AuthSessionRequest', currentRequestId);
+        const currentRequestId = sessionStorage.getItem('AuthSessionRequest');
+        const nextRequestId = await initializeAuthFlow(currentRequestId, 'signin');
+        if (currentRequestId && currentRequestId !== nextRequestId) {
+          sessionStorage.removeItem('AuthSessionRequest');
         }
-        if (isMounted) setAuthRequestId(currentRequestId);
+        sessionStorage.setItem('AuthSessionRequest', nextRequestId);
+        if (isMounted) setAuthRequestId(nextRequestId);
         return;
       }
 
-      let currentRequestId = sessionStorage.getItem('AuthSessionRequest');
+      const currentRequestId = sessionStorage.getItem('AuthSessionRequest');
+      const nextRequestId = await initializeAuthFlow(currentRequestId, 'signin');
+      if (currentRequestId && currentRequestId !== nextRequestId) {
+        sessionStorage.removeItem('AuthSessionRequest');
+      }
+      sessionStorage.setItem('AuthSessionRequest', nextRequestId);
 
-      if (!currentRequestId) {
+      if (!nextRequestId) {
         const params = new URLSearchParams(searchParams.toString());
         params.set('step', 'neupid');
         redirectInApp(`/auth/signin?${params.toString()}`, router);
         return;
       }
 
-      sessionStorage.setItem('AuthSessionRequest', currentRequestId);
-      if (isMounted) setAuthRequestId(currentRequestId);
+      if (isMounted) setAuthRequestId(nextRequestId);
 
       const savedUserInfo = sessionStorage.getItem('temp_user_info');
       if (savedUserInfo) {
@@ -236,7 +237,7 @@ function PasswordStep() {
         } catch { /* ignore */ }
       }
 
-      const { data } = await getSignupStepData(currentRequestId);
+      const { data } = await getSignupStepData(nextRequestId);
       if (data?.neupId && isMounted) {
         setNeupId(data.neupId);
       } else if (!savedUserInfo) {

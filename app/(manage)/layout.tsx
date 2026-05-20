@@ -6,8 +6,6 @@ import React from "react"
 import { DashboardNav } from "@/components/dashboard-nav"
 import { AuthProxy } from "@/components/auth/auth-proxy"
 
-export const dynamic = 'force-dynamic';
-
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     return (
         <AuthProxy>

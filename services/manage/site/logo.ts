@@ -6,36 +6,50 @@ import { checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import { SYSTEM_CONFIG_KEYS, readSystemConfigData, writeSystemConfigData } from '@/services/manage/site/system-config';
 
+const DEFAULT_SITE_LOGO_URL = 'https://neupcdn.com/neupid/assets/logo.svg';
+const CDN_BASE_URL = 'https://neupcdn.com';
+
+function resolveLogoUrl(value?: string): string {
+  const trimmed = value?.trim();
+  if (!trimmed) return DEFAULT_SITE_LOGO_URL;
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+
+  if (trimmed.startsWith('//')) {
+    return `https:${trimmed}`;
+  }
+
+  const normalizedPath = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
+  return `${CDN_BASE_URL}${normalizedPath}`;
+}
+
 const siteLogoSchema = z.object({
   siteLogoUrl: z
     .string()
     .trim()
     .optional()
-    .or(z.literal(''))
-    .transform((value) => (value ? value : undefined))
-    .refine((value) => !value || /^https?:\/\//.test(value), {
-      message: 'Site Logo URL must start with http:// or https://',
-    }),
+    .or(z.literal('')),
 });
 
 /**
  * Function getSiteLogoUrl.
  */
-export async function getSiteLogoUrl(): Promise<string | undefined> {
+export async function getSiteLogoUrl(): Promise<string> {
   try {
     const data = await readSystemConfigData<{ siteLogoUrl?: string }>(
       SYSTEM_CONFIG_KEYS.siteLogo,
       {},
     );
-    const parsed = siteLogoSchema.safeParse(data);
-    if (!parsed.success) {
-      return undefined;
+    if (!data || typeof data !== 'object') {
+      return DEFAULT_SITE_LOGO_URL;
     }
 
-    return parsed.data.siteLogoUrl;
+    return resolveLogoUrl(data.siteLogoUrl);
   } catch (error) {
     await logError('database', error, 'getSiteLogoUrl');
-    return undefined;
+    return DEFAULT_SITE_LOGO_URL;
   }
 }
 
@@ -57,9 +71,11 @@ export async function updateSiteLogoUrl(
     return { success: false, error: firstError };
   }
 
+  const resolvedSiteLogoUrl = resolveLogoUrl(validation.data.siteLogoUrl);
+
   try {
     const success = await writeSystemConfigData(SYSTEM_CONFIG_KEYS.siteLogo, {
-      siteLogoUrl: validation.data.siteLogoUrl,
+      siteLogoUrl: resolvedSiteLogoUrl,
     });
 
     if (!success) {
@@ -71,7 +87,7 @@ export async function updateSiteLogoUrl(
     revalidatePath('/config/app');
     revalidatePath('/');
 
-    return { success: true, siteLogoUrl: validation.data.siteLogoUrl };
+    return { success: true, siteLogoUrl: resolvedSiteLogoUrl };
   } catch (error) {
     await logError('database', error, 'updateSiteLogoUrl');
     return { success: false, error: 'Failed to save logo.' };

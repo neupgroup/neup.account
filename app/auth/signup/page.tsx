@@ -21,7 +21,7 @@ import {
     submitPasswordStep, 
     submitTermsStep 
 } from "@/services/auth/signup";
-import { initializeAuthFlow } from "@/services/auth/AuthenticationFlow";
+import { handleAuthRequest } from "@/app/auth/handleAuthRequest";
 import { parseDateString } from "@/services/profile";
 import { 
     nameSchema, 
@@ -75,16 +75,28 @@ function NameStep() {
 
     useEffect(() => {
         const initFlow = async () => {
-            const currentId = sessionStorage.getItem('AuthSessionRequest');
             try {
-                let requestId = currentId;
-                if (!requestId) {
-                    requestId = await initializeAuthFlow(null, 'signup');
-                    sessionStorage.setItem('AuthSessionRequest', requestId);
-                }
+                let requestId = (
+                    await handleAuthRequest({
+                        flowType: 'signup',
+                        clearSessionKeys: ['temp_user_info'],
+                    })
+                ).requestId;
                 setAuthRequestId(requestId);
 
-                const { data } = await getSignupStepData(requestId);
+                let stepData = await getSignupStepData(requestId);
+                if (!stepData.success) {
+                    requestId = (
+                        await handleAuthRequest({
+                            flowType: 'signup',
+                            clearSessionKeys: ['temp_user_info'],
+                            forceNew: true,
+                        })
+                    ).requestId;
+                    setAuthRequestId(requestId);
+                    stepData = await getSignupStepData(requestId);
+                }
+                const { data } = stepData;
                 if (data) {
                     form.reset({
                         firstName: data.nameFirst || "",
@@ -918,11 +930,10 @@ function SignupFlow() {
         params.delete('neupid');
         params.set('step', 'name');
 
-        let requestId = sessionStorage.getItem('AuthSessionRequest');
-        if (!requestId) {
-          requestId = await initializeAuthFlow(null, 'signup');
-          sessionStorage.setItem('AuthSessionRequest', requestId);
-        }
+        await handleAuthRequest({
+          flowType: 'signup',
+          clearSessionKeys: ['temp_user_info'],
+        });
 
         if (searchParams.get('step') !== 'name' || searchParams.get('neupId') || searchParams.get('neupid')) {
           redirectInApp(router, `/auth/signup?${params.toString()}`);

@@ -9,8 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from '@/components/icons';
 import { useToast } from '@/core/hooks/use-toast';
-import { initializeAuthFlow } from '@/services/auth/AuthenticationFlow';
 import { validateAuthSessionRequest } from '@/services/auth/auth-request';
+import { handleAuthRequest } from '@/app/auth/handleAuthRequest';
 
 const AUTH_SESSION_STORAGE_KEY = 'AuthSessionRequest';
 
@@ -24,14 +24,10 @@ export default function ForgetPage() {
 
     const initRequest = async () => {
       try {
-        const currentId = sessionStorage.getItem(AUTH_SESSION_STORAGE_KEY);
-        if (currentId) {
-          if (isMounted) setAuthRequestId(currentId);
-          return;
-        }
-
-        const requestId = await initializeAuthFlow(null, 'forgot_password');
-        sessionStorage.setItem(AUTH_SESSION_STORAGE_KEY, requestId);
+        const { requestId } = await handleAuthRequest({
+          flowType: 'forgot_password',
+          storageKey: AUTH_SESSION_STORAGE_KEY,
+        });
         if (isMounted) setAuthRequestId(requestId);
       } catch (error) {
         console.error('Failed to initialize forgot-password flow', error);

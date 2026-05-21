@@ -9,7 +9,7 @@ import { useToast } from '@/core/hooks/use-toast';
 import { submitNeupId, submitPassword, submitPasswordWithNeupId } from '@/services/auth/signin';
 import { getSignupStepData } from '@/services/auth/signup';
 import { cancelAccountDeletion } from '@/services/data/delete';
-import { initializeAuthFlow } from '@/services/auth/AuthenticationFlow';
+import { handleAuthRequest } from '@/app/auth/handleAuthRequest';
 import { verifyTotpFromPost } from '@/services/auth/totp';
 import { redirectInApp } from '@/core/helpers/link';
 import { appendAuthCallbackContext, appendRedirect, hasAuthCallbackContext, shouldReturnToAuthStartForExternalAuthentication, getFlowParams, appendFlowParams } from '@/core/auth/callback';
@@ -52,8 +52,11 @@ function NeupIdStep() {
             setNeupId(data.neupId);
           }
         } else {
-          const nextId = await initializeAuthFlow(null, 'signin');
-          sessionStorage.setItem('AuthSessionRequest', nextId);
+          const { requestId: nextId } = await handleAuthRequest({
+            flowType: 'signin',
+            clearSessionKeys: ['temp_user_info'],
+            forceNew: true,
+          });
           setAuthRequestId(nextId);
 
           const { data } = await getSignupStepData(nextId);
@@ -100,8 +103,11 @@ function NeupIdStep() {
       } else {
         if (isExpiredSessionError(result.error)) {
           try {
-            const newId = await initializeAuthFlow(null, 'signin');
-            sessionStorage.setItem('AuthSessionRequest', newId);
+            const { requestId: newId } = await handleAuthRequest({
+              flowType: 'signin',
+              clearSessionKeys: ['temp_user_info'],
+              forceNew: true,
+            });
             setAuthRequestId(newId);
           } catch (error) {
             console.error('Failed to refresh signin session:', error);
@@ -213,8 +219,11 @@ function PasswordStep() {
           if (isMounted) setAuthRequestId(currentRequestId);
           return;
         }
-        const nextRequestId = await initializeAuthFlow(null, 'signin');
-        sessionStorage.setItem('AuthSessionRequest', nextRequestId);
+        const { requestId: nextRequestId } = await handleAuthRequest({
+          flowType: 'signin',
+          clearSessionKeys: ['temp_user_info'],
+          forceNew: true,
+        });
         if (isMounted) setAuthRequestId(nextRequestId);
         return;
       }
@@ -235,8 +244,11 @@ function PasswordStep() {
         return;
       }
 
-      const nextRequestId = await initializeAuthFlow(null, 'signin');
-      sessionStorage.setItem('AuthSessionRequest', nextRequestId);
+      const { requestId: nextRequestId } = await handleAuthRequest({
+        flowType: 'signin',
+        clearSessionKeys: ['temp_user_info'],
+        forceNew: true,
+      });
 
       if (!nextRequestId) {
         const params = new URLSearchParams(searchParams.toString());
@@ -283,8 +295,11 @@ function PasswordStep() {
 
       if (!result.success && isExpiredSessionError(result.error)) {
         try {
-          const refreshedId = await initializeAuthFlow(null, 'signin');
-          sessionStorage.setItem('AuthSessionRequest', refreshedId);
+          const { requestId: refreshedId } = await handleAuthRequest({
+            flowType: 'signin',
+            clearSessionKeys: ['temp_user_info'],
+            forceNew: true,
+          });
           setAuthRequestId(refreshedId);
 
           if (neupIdFromUrl) {
@@ -588,11 +603,10 @@ function SigninFlow() {
   useEffect(() => {
     const startFlow = async () => {
       try {
-        let requestId = sessionStorage.getItem('AuthSessionRequest');
-        if (!requestId) {
-          requestId = await initializeAuthFlow(null, 'signin');
-          sessionStorage.setItem('AuthSessionRequest', requestId);
-        }
+        const { requestId } = await handleAuthRequest({
+          flowType: 'signin',
+          clearSessionKeys: ['temp_user_info'],
+        });
 
         const params = new URLSearchParams(searchParams.toString());
         params.delete('neupid');

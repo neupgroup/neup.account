@@ -77,14 +77,14 @@ function NameStep() {
         const initFlow = async () => {
             const currentId = sessionStorage.getItem('AuthSessionRequest');
             try {
-                const nextId = await initializeAuthFlow(currentId, 'signup');
-                if (currentId && currentId !== nextId) {
-                    sessionStorage.removeItem('AuthSessionRequest');
+                let requestId = currentId;
+                if (!requestId) {
+                    requestId = await initializeAuthFlow(null, 'signup');
+                    sessionStorage.setItem('AuthSessionRequest', requestId);
                 }
-                sessionStorage.setItem('AuthSessionRequest', nextId);
-                setAuthRequestId(nextId);
+                setAuthRequestId(requestId);
 
-                const { data } = await getSignupStepData(nextId);
+                const { data } = await getSignupStepData(requestId);
                 if (data) {
                     form.reset({
                         firstName: data.nameFirst || "",
@@ -909,8 +909,10 @@ function SignupFlow() {
       const startFlow = async () => {
         try {
           const currentId = sessionStorage.getItem('AuthSessionRequest');
-          const newId = await initializeAuthFlow(currentId, 'signup');
-          sessionStorage.setItem('AuthSessionRequest', newId);
+          if (!currentId) {
+            const newId = await initializeAuthFlow(null, 'signup');
+            sessionStorage.setItem('AuthSessionRequest', newId);
+          }
 
           const redirects = searchParams.get('redirects');
           

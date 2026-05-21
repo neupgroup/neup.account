@@ -25,10 +25,12 @@ export default function ForgetPage() {
     const initRequest = async () => {
       try {
         const currentId = sessionStorage.getItem(AUTH_SESSION_STORAGE_KEY);
-        const requestId = await initializeAuthFlow(currentId, 'forgot_password');
-        if (currentId && currentId !== requestId) {
-          sessionStorage.removeItem(AUTH_SESSION_STORAGE_KEY);
+        if (currentId) {
+          if (isMounted) setAuthRequestId(currentId);
+          return;
         }
+
+        const requestId = await initializeAuthFlow(null, 'forgot_password');
         sessionStorage.setItem(AUTH_SESSION_STORAGE_KEY, requestId);
         if (isMounted) setAuthRequestId(requestId);
       } catch (error) {

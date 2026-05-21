@@ -45,16 +45,21 @@ function NeupIdStep() {
     const initFlow = async () => {
       const currentId = sessionStorage.getItem('AuthSessionRequest');
       try {
-        const nextId = await initializeAuthFlow(currentId, 'signin');
-        if (currentId && currentId !== nextId) {
-          sessionStorage.removeItem('AuthSessionRequest');
-        }
-        sessionStorage.setItem('AuthSessionRequest', nextId);
-        setAuthRequestId(nextId);
+        if (currentId) {
+          setAuthRequestId(currentId);
+          const { data } = await getSignupStepData(currentId);
+          if (data?.neupId) {
+            setNeupId(data.neupId);
+          }
+        } else {
+          const nextId = await initializeAuthFlow(null, 'signin');
+          sessionStorage.setItem('AuthSessionRequest', nextId);
+          setAuthRequestId(nextId);
 
-        const { data } = await getSignupStepData(nextId);
-        if (data?.neupId) {
-          setNeupId(data.neupId);
+          const { data } = await getSignupStepData(nextId);
+          if (data?.neupId) {
+            setNeupId(data.neupId);
+          }
         }
       } catch (error) {
         console.error("Failed to initialize auth flow", error);
@@ -204,20 +209,33 @@ function PasswordStep() {
       if (neupIdFromUrl) {
         if (isMounted) setNeupId(neupIdFromUrl);
         const currentRequestId = sessionStorage.getItem('AuthSessionRequest');
-        const nextRequestId = await initializeAuthFlow(currentRequestId, 'signin');
-        if (currentRequestId && currentRequestId !== nextRequestId) {
-          sessionStorage.removeItem('AuthSessionRequest');
+        if (currentRequestId) {
+          if (isMounted) setAuthRequestId(currentRequestId);
+          return;
         }
+        const nextRequestId = await initializeAuthFlow(null, 'signin');
         sessionStorage.setItem('AuthSessionRequest', nextRequestId);
         if (isMounted) setAuthRequestId(nextRequestId);
         return;
       }
 
       const currentRequestId = sessionStorage.getItem('AuthSessionRequest');
-      const nextRequestId = await initializeAuthFlow(currentRequestId, 'signin');
-      if (currentRequestId && currentRequestId !== nextRequestId) {
-        sessionStorage.removeItem('AuthSessionRequest');
+      if (currentRequestId) {
+        if (isMounted) setAuthRequestId(currentRequestId);
+        const savedUserInfo = sessionStorage.getItem('temp_user_info');
+        if (savedUserInfo) {
+          try {
+            const parsed = JSON.parse(savedUserInfo);
+            if (parsed.neupId && isMounted) setNeupId(parsed.neupId);
+          } catch { /* ignore */ }
+        }
+
+        const { data } = await getSignupStepData(currentRequestId);
+        if (data?.neupId && isMounted) setNeupId(data.neupId);
+        return;
       }
+
+      const nextRequestId = await initializeAuthFlow(null, 'signin');
       sessionStorage.setItem('AuthSessionRequest', nextRequestId);
 
       if (!nextRequestId) {
@@ -571,8 +589,10 @@ function SigninFlow() {
       const startFlow = async () => {
         try {
           const currentId = sessionStorage.getItem('AuthSessionRequest');
-          const newId = await initializeAuthFlow(currentId, 'signin');
-          sessionStorage.setItem('AuthSessionRequest', newId);
+          if (!currentId) {
+            const newId = await initializeAuthFlow(null, 'signin');
+            sessionStorage.setItem('AuthSessionRequest', newId);
+          }
 
           const redirects = searchParams.get('redirects');
           const neupId = searchParams.get('neupId');

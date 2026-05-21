@@ -6,7 +6,7 @@ import { checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import { SYSTEM_CONFIG_KEYS, readSystemConfigData, writeSystemConfigData } from '@/services/manage/site/system-config';
 
-export const DEFAULT_SITE_LOGO_URL = 'https://neupcdn.com/neupaccount/assets/logo.svg';
+const DEFAULT_SITE_LOGO_URL = 'https://neupcdn.com/neupaccount/assets/logo.svg';
 const CDN_BASE_URL = 'https://neupcdn.com';
 
 function resolveLogoUrl(value?: string): string {

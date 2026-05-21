@@ -9,7 +9,8 @@ import { Suspense } from 'react';
 import { UrlErrorBanner } from '@/components/ui/url-error-banner';
 import { PersistentBacksTo } from '@/components/persistent-backs-to';
 import { HeaderV1 } from '@/components/layout/header.v1';
-import { DEFAULT_SITE_LOGO_URL } from '@/services/manage/site/logo';
+
+const STATIC_SITE_LOGO_URL = 'https://neupcdn.com/neupaccount/assets/logo.svg';
 
 export const metadata: Metadata = {
   title: 'Neup.Account',
@@ -22,7 +23,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const logoUrl = DEFAULT_SITE_LOGO_URL;
+  const logoUrl = STATIC_SITE_LOGO_URL;
 
   return (
     <html lang="en">

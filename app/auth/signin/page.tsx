@@ -583,45 +583,55 @@ function SigninFlow() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const step = searchParams.get('step');
+  const neupIdParam = (searchParams.get('neupId') || searchParams.get('neupid') || '').trim().toLowerCase();
 
   useEffect(() => {
-    if (!step) {
-      const startFlow = async () => {
-        try {
-          const currentId = sessionStorage.getItem('AuthSessionRequest');
-          if (!currentId) {
-            const newId = await initializeAuthFlow(null, 'signin');
-            sessionStorage.setItem('AuthSessionRequest', newId);
-          }
-
-          const redirects = searchParams.get('redirects');
-          const neupId = searchParams.get('neupId');
-          
-          const params = new URLSearchParams(searchParams.toString());
-          if (neupId) {
-             params.set('step', 'password');
-             // neupId is already in searchParams so it's preserved
-          } else {
-             params.set('step', 'neupid');
-          }
-          if (redirects) params.set('redirects', redirects);
-          const appId = searchParams.get('appId') || searchParams.get('appid');
-          const authenticatesTo = searchParams.get('authenticatesTo');
-          if (appId && authenticatesTo) {
-            const appIdKey = searchParams.get('appid') ? 'appid' : 'appId';
-            params.set(appIdKey, appId);
-            params.set('authenticatesTo', authenticatesTo);
-          }
-
-          redirectInApp(`/auth/signin?${params.toString()}`, router);
-
-        } catch (error) {
-          console.error('Failed to initialize signin flow:', error);
+    const startFlow = async () => {
+      try {
+        let requestId = sessionStorage.getItem('AuthSessionRequest');
+        if (!requestId) {
+          requestId = await initializeAuthFlow(null, 'signin');
+          sessionStorage.setItem('AuthSessionRequest', requestId);
         }
-      };
-      startFlow();
-    }
-  }, [step, router, searchParams]);
+
+        const params = new URLSearchParams(searchParams.toString());
+        params.delete('neupid');
+
+        // Deep-link support: /auth/signin?step=password&neupId=<id>
+        // Register the neupId into the request and then clean it from URL/session.
+        if (step === 'password' && neupIdParam) {
+          const result = await submitNeupId({ neupId: neupIdParam, authRequestId: requestId });
+          sessionStorage.removeItem('temp_user_info');
+
+          if (result.success) {
+            params.set('step', 'password');
+            params.delete('neupId');
+            redirectInApp(`/auth/signin?${params.toString()}`, router);
+            return;
+          }
+
+          params.delete('neupId');
+          params.set('step', 'neupid');
+          redirectInApp(`/auth/signin?${params.toString()}`, router);
+          return;
+        }
+
+        if (!step) {
+          if (neupIdParam) {
+            params.set('step', 'password');
+          } else {
+            params.set('step', 'neupid');
+          }
+          redirectInApp(`/auth/signin?${params.toString()}`, router);
+          return;
+        }
+      } catch (error) {
+        console.error('Failed to initialize signin flow:', error);
+      }
+    };
+
+    void startFlow();
+  }, [step, neupIdParam, router, searchParams]);
 
   if (!step) return null;
 

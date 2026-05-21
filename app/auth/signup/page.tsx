@@ -905,40 +905,34 @@ function SignupFlow() {
   const step = searchParams.get('step');
 
   useEffect(() => {
-    if (!step) {
-      const startFlow = async () => {
-        try {
-          const currentId = sessionStorage.getItem('AuthSessionRequest');
-          if (!currentId) {
-            const newId = await initializeAuthFlow(null, 'signup');
-            sessionStorage.setItem('AuthSessionRequest', newId);
-          }
+    const startFlow = async () => {
+      try {
+        const params = new URLSearchParams(searchParams.toString());
 
-          const redirects = searchParams.get('redirects');
-          
-          const params = new URLSearchParams(searchParams.toString());
-          params.set('step', 'name');
-          if (redirects) params.set('redirects', redirects);
-          
-          // Preserve pre-fill params
-          const firstName = searchParams.get('firstName');
-          const lastName = searchParams.get('lastName');
-          const birthdate = searchParams.get('birthdate');
-          const gender = searchParams.get('gender');
-          
-          if (firstName) params.set('firstName', firstName);
-          if (lastName) params.set('lastName', lastName);
-          if (birthdate) params.set('birthdate', birthdate);
-          if (gender) params.set('gender', gender);
-          
-          redirectInApp(router, `/auth/signup?${params.toString()}`);
-
-        } catch (error) {
-          console.error('Failed to initialize signup flow:', error);
+        // Always normalize signup to first step and remove signin-like carryover params.
+        if (step && step !== 'name') {
+          sessionStorage.removeItem('AuthSessionRequest');
+          sessionStorage.removeItem('temp_user_info');
         }
-      };
-      startFlow();
-    }
+        params.delete('neupId');
+        params.delete('neupid');
+        params.set('step', 'name');
+
+        let requestId = sessionStorage.getItem('AuthSessionRequest');
+        if (!requestId) {
+          requestId = await initializeAuthFlow(null, 'signup');
+          sessionStorage.setItem('AuthSessionRequest', requestId);
+        }
+
+        if (searchParams.get('step') !== 'name' || searchParams.get('neupId') || searchParams.get('neupid')) {
+          redirectInApp(router, `/auth/signup?${params.toString()}`);
+        }
+      } catch (error) {
+        console.error('Failed to initialize signup flow:', error);
+      }
+    };
+
+    void startFlow();
   }, [step, router, searchParams]);
 
   if (!step) return null; // Or a loading spinner

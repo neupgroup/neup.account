@@ -5,6 +5,7 @@ import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
 import { dispatchAuthzWebhook } from './authz-webhook';
+import { checkPermissions } from '@/services/user';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -29,12 +30,106 @@ export type AppRole = {
 // Auth guard
 // ---------------------------------------------------------------------------
 
-async function assertOwner(appId: string): Promise<{ accountId: string } | { error: string }> {
+const ROOT_ROLE_MANAGE_PERMISSIONS = ['root.app.edit'];
+const GLOBAL_AUTHZ_APP_ID = 'neup.account';
+
+async function ensureApplicationManagementRoles(): Promise<void> {
+  const capabilities = [
+    { id: 'cap-appmanage-application-view', name: 'application.view', description: 'View application details and settings.' },
+    { id: 'cap-appmanage-application-edit', name: 'application.edit', description: 'Edit application details, secrets, access fields, policies, and endpoints.' },
+    { id: 'cap-appmanage-application-delete', name: 'application.delete', description: 'Delete or deactivate an application.' },
+    { id: 'cap-appmanage-application-roles-view', name: 'application.roles.view', description: 'View application roles and capabilities.' },
+    { id: 'cap-appmanage-application-roles-manage', name: 'application.roles.manage', description: 'Create, update, and delete application roles and capabilities.' },
+  ] as const;
+
+  await prisma.$transaction(async (tx) => {
+    for (const cap of capabilities) {
+      await tx.authzCapability.upsert({
+        where: { id: cap.id },
+        update: {
+          name: cap.name,
+          description: cap.description,
+          appId: GLOBAL_AUTHZ_APP_ID,
+          scope: 'application',
+        },
+        create: {
+          id: cap.id,
+          name: cap.name,
+          description: cap.description,
+          appId: GLOBAL_AUTHZ_APP_ID,
+          scope: 'application',
+        },
+      });
+    }
+
+    for (const roleId of ['application.owner', 'application.manage']) {
+      await tx.authzRole.upsert({
+        where: { id: roleId },
+        update: {
+          name: roleId,
+          description:
+            roleId === 'application.owner'
+              ? 'Full ownership of an application.'
+              : 'Manage application settings, roles, and capabilities.',
+          appId: GLOBAL_AUTHZ_APP_ID,
+          scope: 'application',
+        },
+        create: {
+          id: roleId,
+          name: roleId,
+          description:
+            roleId === 'application.owner'
+              ? 'Full ownership of an application.'
+              : 'Manage application settings, roles, and capabilities.',
+          appId: GLOBAL_AUTHZ_APP_ID,
+          scope: 'application',
+        },
+      });
+    }
+
+    for (const roleId of ['application.owner', 'application.manage']) {
+      for (const cap of capabilities) {
+        const mapId = `${roleId}::${cap.id}`;
+        await tx.authzRoleCapability.upsert({
+          where: { id: mapId },
+          update: {
+            roleId,
+            capabilityId: cap.id,
+            appId: GLOBAL_AUTHZ_APP_ID,
+            roleName: roleId,
+            denormalizedCapability: [cap.name],
+          },
+          create: {
+            id: mapId,
+            roleId,
+            capabilityId: cap.id,
+            appId: GLOBAL_AUTHZ_APP_ID,
+            roleName: roleId,
+            denormalizedCapability: [cap.name],
+          },
+        });
+      }
+    }
+  });
+}
+
+async function assertCanManageAuthz(appId: string): Promise<{ accountId: string } | { error: string }> {
   const accountId = await getActiveAccountId();
   if (!accountId) return { error: 'Not signed in.' };
 
+  // Ensure management roles/capabilities are always present in authz tables.
+  await ensureApplicationManagementRoles();
+
+  // Root override: global root app editors can manage app roles/capabilities.
+  const isRootManager = await checkPermissions(ROOT_ROLE_MANAGE_PERMISSIONS, accountId);
+  if (isRootManager) return { accountId };
+
   const grant = await prisma.authzAccountAccessGrant.findFirst({
-    where: { targetAccountId: accountId, appId, roleId: 'application.owner' },
+    where: {
+      targetAccountId: accountId,
+      appId,
+      roleId: { in: ['application.owner', 'application.manage', 'application.edit', 'app.manage', 'app.edit'] },
+    },
     select: { id: true },
   });
 
@@ -66,7 +161,7 @@ export async function createAppCapability(input: {
   description?: string;
   scope?: string;
 }): Promise<{ success: boolean; capability?: AppCapability; error?: string }> {
-  const auth = await assertOwner(input.appId);
+  const auth = await assertCanManageAuthz(input.appId);
   if ('error' in auth) return { success: false, error: auth.error };
 
   const name = input.name.trim();
@@ -101,7 +196,7 @@ export async function updateAppCapability(input: {
   description?: string;
   scope?: string;
 }): Promise<{ success: boolean; capability?: AppCapability; error?: string }> {
-  const auth = await assertOwner(input.appId);
+  const auth = await assertCanManageAuthz(input.appId);
   if ('error' in auth) return { success: false, error: auth.error };
 
   const name = input.name.trim();
@@ -133,7 +228,7 @@ export async function deleteAppCapability(input: {
   appId: string;
   capabilityId: string;
 }): Promise<{ success: boolean; error?: string }> {
-  const auth = await assertOwner(input.appId);
+  const auth = await assertCanManageAuthz(input.appId);
   if ('error' in auth) return { success: false, error: auth.error };
 
   try {
@@ -190,7 +285,7 @@ export async function createAppRole(input: {
   scope?: string;
   capabilityIds: string[];
 }): Promise<{ success: boolean; role?: AppRole; error?: string }> {
-  const auth = await assertOwner(input.appId);
+  const auth = await assertCanManageAuthz(input.appId);
   if ('error' in auth) return { success: false, error: auth.error };
 
   const name = input.name.trim();
@@ -259,7 +354,7 @@ export async function updateAppRoleCapabilities(input: {
   roleId: string;
   capabilityIds: string[];
 }): Promise<{ success: boolean; error?: string }> {
-  const auth = await assertOwner(input.appId);
+  const auth = await assertCanManageAuthz(input.appId);
   if ('error' in auth) return { success: false, error: auth.error };
 
   try {
@@ -303,7 +398,7 @@ export async function deleteAppRole(input: {
   appId: string;
   roleId: string;
 }): Promise<{ success: boolean; error?: string }> {
-  const auth = await assertOwner(input.appId);
+  const auth = await assertCanManageAuthz(input.appId);
   if ('error' in auth) return { success: false, error: auth.error };
 
   try {
@@ -325,7 +420,7 @@ export async function pushAuthzToWebhook(appId: string): Promise<{
   pushed: number;
   error?: string;
 }> {
-  const auth = await assertOwner(appId);
+  const auth = await assertCanManageAuthz(appId);
   if ('error' in auth) return { success: false, pushed: 0, error: auth.error };
 
   try {
@@ -376,7 +471,7 @@ export async function clearAuthzPushStatus(appId: string): Promise<{
   cleared: { roles: number; access: number };
   error?: string;
 }> {
-  const auth = await assertOwner(appId);
+  const auth = await assertCanManageAuthz(appId);
   if ('error' in auth) return { success: false, cleared: { roles: 0, access: 0 }, error: auth.error };
 
   try {

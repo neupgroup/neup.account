@@ -1,7 +1,7 @@
 import AssetPage from '@/app/(manage)/access/asset/page';
 
 type Props = {
-  searchParams: Promise<{ portfolio?: string; asset?: string; application?: string; mode?: string }>;
+  searchParams: Promise<{ asset?: string; mode?: string }>;
 };
 
 export default async function AssetsPage({ searchParams }: Props) {
@@ -11,4 +11,3 @@ export default async function AssetsPage({ searchParams }: Props) {
     searchParams: Promise.resolve(rest),
   });
 }
-

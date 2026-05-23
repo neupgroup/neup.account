@@ -21,7 +21,7 @@ import { SecondaryHeader } from '@/components/ui/secondary-header';
 import { Prisma } from '../../../../prisma/generated/client/client';
 
 type PageProps = {
-  searchParams: Promise<{ portfolio?: string; asset?: string; application?: string; mode?: string }>;
+  searchParams: Promise<{ asset?: string; mode?: string }>;
 };
 
 // ── Asset detail view ─────────────────────────────────────────────────────────
@@ -85,12 +85,12 @@ async function AssetDetail({
   portfolioId,
   assetId,
   rootMode,
-  showRootInviteCard,
+  inviteCard,
 }: {
   portfolioId: string;
   assetId: string;
   rootMode?: boolean;
-  showRootInviteCard?: boolean;
+  inviteCard?: { href: string; title: string; description: string } | null;
 }) {
   const accountId = await getActiveAccountId();
   if (!accountId) notFound();
@@ -141,18 +141,18 @@ async function AssetDetail({
 
         <Card>
           <CardContent className="divide-y p-2">
-            {showRootInviteCard && (
+            {inviteCard && (
               <FlowLink
-                href={`/access/member?portfolio=${portfolioId}&mode=root`}
+                href={inviteCard.href}
                 className="flex items-center gap-4 py-4 px-4 hover:bg-muted/50 transition-colors"
               >
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted">
                   <UserCircle className="h-4 w-4 text-muted-foreground" />
                 </span>
                 <div className="min-w-0 flex-grow">
-                  <p className="font-medium">Invite someone to this asset</p>
+                  <p className="font-medium">{inviteCard.title}</p>
                   <p className="text-sm text-muted-foreground">
-                    Add a member and assign roles for this application asset.
+                    {inviteCard.description}
                   </p>
                 </div>
                 <span className="text-sm text-muted-foreground shrink-0">→</span>
@@ -328,91 +328,67 @@ async function AssetList({ portfolioId, mode }: { portfolioId: string; mode?: st
 
 // ── Application access view ───────────────────────────────────────────────────
 
-async function ApplicationAssetView({ applicationId, rootMode }: { applicationId: string; rootMode?: boolean }) {
+async function AssetAccessView({ assetRef: rawAssetRef, rootMode }: { assetRef: string; rootMode?: boolean }) {
   const accountId = await getActiveAccountId();
   if (!accountId) notFound();
 
-  // Find a portfolioAsset row where assetId = applicationId and the current
-  // user is a member of that portfolio.
-  // Some environments may not yet have portfolio_member.status (schema drift),
-  // so we retry without status on P2022.
-  let portfolioAsset: { id: string; portfolioId: string } | null = null;
-  try {
-    portfolioAsset = await prisma.asset.findFirst({
-      where: {
-        assetId: applicationId,
-        assetType: { in: ['application', 'app'] },
-        ...(rootMode ? {} : {
-          portfolio: {
-            members: { some: { accountId, status: 'active' } },
-          },
-        }),
-      },
-      select: { id: true, portfolioId: true },
+  // `asset` can be either portfolio-asset row id or logical assetId (app/account id).
+  const byRowId = await prisma.asset.findUnique({
+    where: { id: rawAssetRef },
+    select: { id: true, assetId: true, assetType: true, portfolioId: true },
+  });
+
+  let resolved = byRowId;
+  if (!resolved) {
+    resolved = await prisma.asset.findFirst({
+      where: { assetId: rawAssetRef },
+      select: { id: true, assetId: true, assetType: true, portfolioId: true },
+      orderBy: { id: 'asc' },
     });
-  } catch (error) {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === 'P2022'
-    ) {
-      portfolioAsset = await prisma.asset.findFirst({
-        where: {
-          assetId: applicationId,
-          assetType: { in: ['application', 'app'] },
-          ...(rootMode ? {} : {
-            portfolio: {
-              members: { some: { accountId } },
-            },
-          }),
-        },
-        select: { id: true, portfolioId: true },
-      });
-    } else {
-      throw error;
-    }
   }
 
-  if (!portfolioAsset) {
-    if (rootMode) {
-      // Root direct mode: create a backing asset row so direct grants can exist
-      // with portfolio_id = null while still referencing a valid asset_id.
+  if (!resolved && rootMode) {
+    // Root direct-mode bootstrap: if rawAssetRef is a known application id,
+    // register it as an asset in the actor's personal portfolio.
+    const app = await prisma.application.findUnique({
+      where: { id: rawAssetRef },
+      select: { id: true },
+    });
+    if (app) {
       const personalMembership = await prisma.portfolioMember.findFirst({
         where: { accountId },
         select: { portfolioId: true },
         orderBy: { id: 'asc' },
       });
-
       if (personalMembership?.portfolioId) {
-        const created = await prisma.asset.create({
+        resolved = await prisma.asset.create({
           data: {
             portfolioId: personalMembership.portfolioId,
-            assetId: applicationId,
+            assetId: rawAssetRef,
             assetType: 'application',
           },
-          select: { id: true, portfolioId: true },
+          select: { id: true, assetId: true, assetType: true, portfolioId: true },
         });
-        portfolioAsset = created;
       }
     }
   }
 
-  if (!portfolioAsset) {
-    // Application is not in any portfolio the user can access — show a helpful message
+  if (!resolved) {
     return (
       <div className="grid gap-8">
-        <BackButton href={`/application/${applicationId}`} />
+        <BackButton href="/access" />
         <PrimaryHeader
           title="Access"
-          description="This application has not been added to any portfolio you have access to."
+          description="This asset is not registered yet."
         />
         <Card>
           <CardContent className="flex flex-col items-center gap-2 px-4 py-12 text-center">
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
               <Database className="h-6 w-6 text-muted-foreground" />
             </span>
-            <p className="font-medium">No accounts have access to this application</p>
+            <p className="font-medium">No accounts have access to this asset</p>
             <p className="text-sm text-muted-foreground max-w-xs">
-              No access grants were found for this application in the portfolios you can view.
+              Register this asset first before assigning access.
             </p>
           </CardContent>
         </Card>
@@ -420,12 +396,58 @@ async function ApplicationAssetView({ applicationId, rootMode }: { applicationId
     );
   }
 
+  // Pull all rows for this logical asset to detect whether it's shared via a portfolio.
+  const allRows = await prisma.asset.findMany({
+    where: { assetId: resolved.assetId, assetType: resolved.assetType },
+    select: { id: true, portfolioId: true },
+  });
+  const rowIds = allRows.map((r) => r.id);
+  const portfolioIds = Array.from(new Set(allRows.map((r) => r.portfolioId)));
+
+  if (!rootMode) {
+    // Non-root users must be an active member in at least one related portfolio.
+    const canView = await prisma.portfolioMember.findFirst({
+      where: {
+        accountId,
+        portfolioId: { in: portfolioIds },
+        status: 'active',
+      },
+      select: { id: true },
+    });
+    if (!canView) notFound();
+  }
+
+  const sharedViaPortfolio = await prisma.portfolioMember.findFirst({
+    where: {
+      portfolioId: { in: portfolioIds },
+      accountId: { not: accountId },
+      status: 'active',
+    },
+    select: { portfolioId: true },
+  });
+
+  const modeSuffix = rootMode ? '&mode=root' : '';
+  const humanType = resolved.assetType === 'application' ? 'application' : 'asset';
+  const inviteCard = rootMode
+    ? sharedViaPortfolio
+      ? {
+          href: `/access/member?portfolio=${sharedViaPortfolio.portfolioId}${modeSuffix}`,
+          title: `Manage access for this ${humanType}`,
+          description: `This ${humanType} is added in a portfolio. You can't assign anyone outside that portfolio.`,
+        }
+      : {
+          href: `/access/member${modeSuffix}`,
+          title: `Add someone to access this ${humanType}`,
+          description: `This ${humanType} is not added to a shared portfolio. You can assign access directly.`,
+        }
+    : null;
+
   return (
     <AssetDetail
-      portfolioId={portfolioAsset.portfolioId}
-      assetId={portfolioAsset.id}
+      portfolioId={resolved.portfolioId}
+      assetId={resolved.id}
       rootMode={rootMode}
-      showRootInviteCard={rootMode}
+      inviteCard={inviteCard}
     />
   );
 }
@@ -433,16 +455,14 @@ async function ApplicationAssetView({ applicationId, rootMode }: { applicationId
 // ── Page entry point ──────────────────────────────────────────────────────────
 
 export default async function AssetPage({ searchParams }: PageProps) {
-  const { portfolio: portfolioId, asset: assetId, application: applicationId, mode } = await searchParams;
+  const { asset: assetId, mode } = await searchParams;
 
   if (mode === 'root') {
     const accountId = await getActiveAccountId();
     const isRoot = accountId ? await isRootUser(accountId) : false;
     if (!isRoot) {
       const next = new URLSearchParams();
-      if (portfolioId) next.set('portfolio', portfolioId);
       if (assetId) next.set('asset', assetId);
-      if (applicationId) next.set('application', applicationId);
       const qs = next.toString();
       redirect(qs ? `/access/asset?${qs}` : '/access/asset');
     }
@@ -450,18 +470,13 @@ export default async function AssetPage({ searchParams }: PageProps) {
 
   const rootMode = mode === 'root';
 
-  if (applicationId) {
-    return <ApplicationAssetView applicationId={applicationId} rootMode={rootMode} />;
-  }
-
-  if (!portfolioId) {
-    // Direct access context — no portfolio assets
+  if (!assetId) {
     return (
       <div className="grid gap-8">
         <BackButton href="/access" />
         <PrimaryHeader
           title="Assets"
-          description="Assets are managed through portfolios."
+          description="Open an asset-specific access view with ?asset=<assetId>."
         />
         <Card>
           <CardContent className="flex flex-col items-center gap-2 px-4 py-12 text-center">
@@ -478,9 +493,5 @@ export default async function AssetPage({ searchParams }: PageProps) {
     );
   }
 
-  if (assetId) {
-    return <AssetDetail portfolioId={portfolioId} assetId={assetId} rootMode={rootMode} />;
-  }
-
-  return <AssetList portfolioId={portfolioId} mode={mode} />;
+  return <AssetAccessView assetRef={assetId} rootMode={rootMode} />;
 }

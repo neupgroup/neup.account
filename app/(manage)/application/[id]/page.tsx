@@ -148,6 +148,17 @@ export default async function ApplicationDetailPage({ params }: Props) {
           </FlowLink>
 
           <FlowLink
+            href={`/application/${id}/permissions?mode=root`}
+            className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
+          >
+            <div className="min-w-0">
+              <p className="font-medium">Permissions</p>
+              <p className="text-sm text-muted-foreground">Create and manage permission definitions for this application.</p>
+            </div>
+            <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+          </FlowLink>
+
+          <FlowLink
             href={`/access/asset?application=${id}`}
             className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5"
           >

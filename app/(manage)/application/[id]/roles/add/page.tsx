@@ -1,34 +1,28 @@
 import { notFound } from 'next/navigation';
 import { getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
-import { getAppRoles } from '@/services/applications/authz-manage';
-import { getAuthzWebhookUrl } from '@/services/applications/authz-webhook';
 import { checkPermissions } from '@/services/user';
+import { getAppPermissions } from '@/services/applications/authz-manage';
 import { BackButton } from '@/components/ui/back-button';
 import { PrimaryHeader } from '@/components/ui/primary-header';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
-import { RolesPanel } from '@/app/(manage)/application/_components/roles-panel';
+import { RoleCreateForm } from '@/app/(manage)/application/_components/role-create-form';
 
 type Props = { params: Promise<{ id: string }> };
 
-export default async function ApplicationRolesPage({ params }: Props) {
+export default async function AddRolePage({ params }: Props) {
   const { id } = await params;
   const details = await getApplicationDetailsForViewerV2(id);
-
   if (!details) notFound();
 
   const canRootManage = await checkPermissions(['root.application.edit']);
   const canManageRoles = details.canDelete || canRootManage;
-
   if (!canManageRoles) {
     return (
       <div className="grid gap-8">
         <div className="space-y-4">
-          <BackButton href={`/application/${id}`} />
-          <PrimaryHeader
-            title="Roles & Permissions"
-            description={`Manage permissions and roles for ${details.name}.`}
-          />
+          <BackButton href={`/application/${id}/roles?mode=root`} />
+          <PrimaryHeader title="Add Role" description={`Create a role for ${details.name}.`} />
         </div>
         <Alert variant="destructive">
           <ShieldAlert className="h-4 w-4" />
@@ -39,26 +33,16 @@ export default async function ApplicationRolesPage({ params }: Props) {
     );
   }
 
-  const [roles, webhookUrl] = await Promise.all([
-    getAppRoles(id),
-    getAuthzWebhookUrl(id),
-  ]);
+  const permissions = await getAppPermissions(id);
 
   return (
     <div className="grid gap-8">
       <div className="space-y-4">
-        <BackButton href={`/application/${id}`} />
-        <PrimaryHeader
-          title="Roles & Permissions"
-          description={`Manage roles for ${details.name}. Open a role to assign permissions.`}
-        />
+        <BackButton href={`/application/${id}/roles?mode=root`} />
+        <PrimaryHeader title="Add Role" description={`Create a role for ${details.name} and assign permissions.`} />
       </div>
-
-      <RolesPanel
-        appId={id}
-        initialRoles={roles}
-        hasWebhook={Boolean(webhookUrl)}
-      />
+      <RoleCreateForm appId={id} permissions={permissions} />
     </div>
   );
 }
+

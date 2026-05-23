@@ -9,9 +9,15 @@ import { resolveNeupId } from "./actions";
 
 export function AddMemberForm({
   portfolioId,
+  assetId,
+  mode,
 }: {
   /** Present when on a portfolio page — appended to the redirect URL. */
   portfolioId?: string;
+  /** Present when on an asset page — appended to the redirect URL. */
+  assetId?: string;
+  /** Optional mode, e.g. root. */
+  mode?: string;
   /** Kept for backwards compat but no longer used — redirect handles submission. */
   action?: (formData: FormData) => Promise<void>;
 }) {
@@ -29,6 +35,8 @@ export function AddMemberForm({
       if (result.success) {
         const params = new URLSearchParams({ member: result.account.accountId });
         if (portfolioId) params.set("portfolio", portfolioId);
+        if (assetId) params.set("asset", assetId);
+        if (mode === "root") params.set("mode", "root");
         router.push(`/access/role?${params.toString()}`);
       } else {
         setLookupError(result.error);

@@ -6,13 +6,16 @@ import { Badge } from '@/components/ui/badge';
 import { Shield, ChevronRight, Clock } from '@/components/icons';
 import { getPortfolioMembers, getDirectMembers } from '@/services/manage/access';
 import { getActiveAccountId } from '@/core/auth/verify';
+import prisma from '@/core/helpers/prisma';
+import { getUserProfile, isRootUser } from '@/services/user';
+import { resolveAssetName } from '@/services/manage/access/asset-resolvers';
 import { AddMemberForm } from '../_components/add-member-form';
 import { AddUserForm } from '../add-user-form';
 import { FlowLink } from '@/components/ui/flow-link';
 import { PrimaryHeader } from '@/components/ui/primary-header';
 
 type PageProps = {
-  searchParams: Promise<{ portfolio?: string }>;
+  searchParams: Promise<{ portfolio?: string; asset?: string; mode?: string }>;
 };
 
 // ── Status badge ──────────────────────────────────────────────────────────────
@@ -210,10 +213,140 @@ async function DirectAccountPage() {
   );
 }
 
+// ── Asset members view ────────────────────────────────────────────────────────
+
+async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; rootMode: boolean }) {
+  const accountId = await getActiveAccountId();
+  if (!accountId) notFound();
+
+  const resolved = await prisma.asset.findFirst({
+    where: {
+      OR: [{ id: assetRef }, { assetId: assetRef }],
+    },
+    select: {
+      assetId: true,
+      assetType: true,
+    },
+  });
+
+  if (!resolved) notFound();
+
+  const allRows = await prisma.asset.findMany({
+    where: {
+      assetId: resolved.assetId,
+      assetType: resolved.assetType,
+    },
+    select: { id: true, portfolioId: true },
+  });
+
+  if (allRows.length === 0) notFound();
+
+  const rowIds = allRows.map((r) => r.id);
+  const portfolioIds = Array.from(new Set(allRows.map((r) => r.portfolioId)));
+
+  if (!rootMode) {
+    const canView = await prisma.portfolioMember.findFirst({
+      where: {
+        accountId,
+        portfolioId: { in: portfolioIds },
+      },
+      select: { id: true },
+    });
+    if (!canView) notFound();
+  }
+
+  let grants: Array<{ id: string; account_id: string }> = [];
+  try {
+    grants = await prisma.authzAssetsAccessGrant.findMany({
+      where: {
+        asset_id: { in: rowIds },
+        app_id: 'neup.account',
+        ...(rootMode
+          ? {
+              OR: [{ portfolio_id: { in: portfolioIds } }, { portfolio_id: null }],
+            }
+          : { portfolio_id: { in: portfolioIds } }),
+      },
+      select: {
+        id: true,
+        account_id: true,
+      },
+      orderBy: { account_id: 'asc' },
+    });
+  } catch (error) {
+    const e = error as { code?: string };
+    if (e?.code !== 'P2021' && e?.code !== 'P2022') throw error;
+  }
+
+  const grouped = new Map<string, number>();
+  for (const grant of grants) {
+    grouped.set(grant.account_id, (grouped.get(grant.account_id) ?? 0) + 1);
+  }
+
+  const members = await Promise.all(
+    Array.from(grouped.entries()).map(async ([memberAccountId, roleCount]) => {
+      const profile = await getUserProfile(memberAccountId);
+      const displayName =
+        profile?.nameDisplay ||
+        (profile?.nameFirst || profile?.nameLast
+          ? `${profile.nameFirst ?? ''} ${profile.nameLast ?? ''}`.trim()
+          : null) ||
+        memberAccountId;
+      return {
+        accountId: memberAccountId,
+        displayName,
+        accountPhoto: profile?.accountPhoto,
+        roleCount,
+        status: 'active' as const,
+      };
+    })
+  );
+
+  const resolvedAsset = await resolveAssetName(resolved.assetId, resolved.assetType);
+  const backHref = rootMode
+    ? `/access/asset?asset=${encodeURIComponent(resolved.assetId)}&mode=root`
+    : `/access/asset?asset=${encodeURIComponent(resolved.assetId)}`;
+
+  return (
+    <MembersLayout
+      backHref={backHref}
+      description={`Members with access to ${resolved.assetType === 'application' ? 'application' : 'asset'} "${resolvedAsset.name}"`}
+      addForm={
+        rootMode ? (
+          <AddMemberForm assetId={resolved.assetId} mode="root" />
+        ) : null
+      }
+    >
+      {members.length > 0 ? (
+        members.map((member) => (
+          <MemberRow
+            key={member.accountId}
+            href={`/access/role?member=${encodeURIComponent(member.accountId)}`}
+            displayName={member.displayName}
+            accountPhoto={member.accountPhoto}
+            roleCount={member.roleCount}
+            status={member.status}
+          />
+        ))
+      ) : (
+        <EmptyMembers message="No accounts currently have roles on this asset." />
+      )}
+    </MembersLayout>
+  );
+}
+
 // ── Page entry point ──────────────────────────────────────────────────────────
 
 export default async function MemberPage({ searchParams }: PageProps) {
-  const { portfolio: id } = await searchParams;
+  const { portfolio: id, asset, mode } = await searchParams;
+
+  if (asset) {
+    const activeAccountId = await getActiveAccountId();
+    if (!activeAccountId) notFound();
+    const rootModeRequested = mode === 'root';
+    const isRoot = rootModeRequested ? await isRootUser(activeAccountId) : false;
+    return <AssetMembersPage assetRef={asset} rootMode={rootModeRequested && isRoot} />;
+  }
 
   if (id) {
     return <PortfolioAccountPage id={id} />;

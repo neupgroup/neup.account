@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { recordCurrentInAppPath } from '@/core/helpers/back-navigation';
 
 const PARAM_KEY = 'backsTo';
 const STORAGE_KEY = `persistent-query-param:${PARAM_KEY}`;
@@ -56,6 +58,15 @@ function normalizeUrlWithBacksTo(target: string | URL | null | undefined) {
 }
 
 export function PersistentBacksTo() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const query = searchParams?.toString();
+    const currentPath = `${pathname || '/'}${query ? `?${query}` : ''}`;
+    recordCurrentInAppPath(currentPath);
+  }, [pathname, searchParams]);
+
   useEffect(() => {
     const originalPushState = window.history.pushState.bind(window.history);
     const originalReplaceState = window.history.replaceState.bind(window.history);

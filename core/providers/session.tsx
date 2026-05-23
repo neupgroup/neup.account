@@ -9,6 +9,7 @@ import { createContext, useState, useEffect, type ReactNode, useContext } from '
 import { type UserProfile, getUserProfile as fetchUserProfile } from '@/services/user';
 import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
 import { checkSession } from '@/core/auth/check';
+import { AUTH_STATE_CHANGED_EVENT } from '@/core/auth/events';
 import {
     getSessionData,
     setSessionData,
@@ -105,6 +106,16 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         fetchData();
+
+        const handleAuthStateChanged = () => {
+            clearCacheAndRefetch();
+        };
+
+        window.addEventListener(AUTH_STATE_CHANGED_EVENT, handleAuthStateChanged);
+
+        return () => {
+            window.removeEventListener(AUTH_STATE_CHANGED_EVENT, handleAuthStateChanged);
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

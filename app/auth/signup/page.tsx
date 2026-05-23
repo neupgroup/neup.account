@@ -44,6 +44,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { countries } from "./countries";
 import { redirectInApp } from "@/services/navigation";
 import { appendAuthCallbackContext, hasAuthCallbackContext, shouldReturnToAuthStartForExternalAuthentication, getFlowParams } from "@/core/auth/callback";
+import { announceAuthStateChanged } from "@/core/auth/events";
 
 const SIGNUP_TIMEOUT_DESCRIPTION = 'Exceeded the time for SignUp.';
 
@@ -848,6 +849,7 @@ function TermsStep() {
         const result = await submitTermsStep(authRequestId, data);
         if (result.success) {
             sessionStorage.clear();
+            announceAuthStateChanged();
             
             // Check if backsTo exists - if so, use that as the redirect
             const flowParams = getFlowParams(searchParams);

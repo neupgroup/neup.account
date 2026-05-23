@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import bcrypt from 'bcryptjs';
+import { randomUUID } from 'node:crypto';
 import prisma from '../core/helpers/prisma';
 
 // Root permissions are now managed via authz_role_capability in the database.
@@ -94,6 +95,54 @@ const ROOT_CAPABILITIES = [
 
 function slugifyPermission(name: string): string {
   return name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase();
+}
+
+async function ensureDefaultApplicationAsset(accountId: string): Promise<void> {
+  const portfolioMember = await prisma.portfolioMember.findFirst({
+    where: { accountId },
+    select: { portfolioId: true },
+  });
+
+  let portfolioId = portfolioMember?.portfolioId ?? null;
+
+  if (!portfolioId) {
+    const createdPortfolio = await prisma.portfolio.create({
+      data: {
+        name: 'Personal',
+        description: 'Personal asset portfolio.',
+      },
+      select: { id: true },
+    });
+    portfolioId = createdPortfolio.id;
+
+    await prisma.$executeRawUnsafe(
+      `INSERT INTO "portfolio_member" ("id", "portfolioId", "accountId", "isPermanent", "hasFullAccess")
+       VALUES ($1, $2, $3, true, true)
+       ON CONFLICT ("portfolioId", "accountId") DO NOTHING`,
+      randomUUID(),
+      portfolioId,
+      accountId,
+    );
+  }
+
+  const existingAsset = await prisma.asset.findFirst({
+    where: {
+      portfolioId,
+      assetType: 'application',
+      assetId: APP_ID,
+    },
+    select: { id: true },
+  });
+
+  if (!existingAsset) {
+    await prisma.asset.create({
+      data: {
+        portfolioId,
+        assetType: 'application',
+        assetId: APP_ID,
+      },
+    });
+  }
 }
 
 if (!process.env.DATABASE_URL) {
@@ -220,6 +269,8 @@ async function main() {
       update: { name: 'Neup Account' },
       create: { id: APP_ID, name: 'Neup Account' },
     });
+
+    await ensureDefaultApplicationAsset(accountId);
 
     await prisma.authzRole.upsert({
       where: { id: ROLE_DEFAULT_ID },

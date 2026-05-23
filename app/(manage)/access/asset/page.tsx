@@ -46,22 +46,34 @@ async function getAssetMembers(
   });
   if (!asset) return null;
 
-  const grants = await prisma.authzAssetsAccessGrant.findMany({
-    where: {
-      asset_id: portfolioAssetId,
-      ...(options?.rootMode
-        ? { OR: [{ portfolio_id: portfolioId }, { portfolio_id: null }] }
-        : { portfolio_id: portfolioId }),
-      app_id: 'neup.account',
-    },
-    select: {
-      id: true,
-      account_id: true,
-      role_id: true,
-      role: { select: { id: true, name: true, description: true } },
-    },
-    orderBy: { account_id: 'asc' },
-  });
+  let grants: Array<{
+    id: string;
+    account_id: string;
+    role_id: string;
+    role: { id: string; name: string; description: string | null };
+  }> = [];
+  try {
+    grants = await prisma.authzAssetsAccessGrant.findMany({
+      where: {
+        asset_id: portfolioAssetId,
+        ...(options?.rootMode
+          ? { OR: [{ portfolio_id: portfolioId }, { portfolio_id: null }] }
+          : { portfolio_id: portfolioId }),
+        app_id: 'neup.account',
+      },
+      select: {
+        id: true,
+        account_id: true,
+        role_id: true,
+        role: { select: { id: true, name: true, description: true } },
+      },
+      orderBy: { account_id: 'asc' },
+    });
+  } catch (error) {
+    // Older databases may not have authz_assets_access_grant yet.
+    const e = error as { code?: string };
+    if (e?.code !== 'P2021' && e?.code !== 'P2022') throw error;
+  }
 
   const accountMap = new Map<
     string,
@@ -410,7 +422,6 @@ async function AssetAccessView({ assetRef: rawAssetRef, rootMode }: { assetRef: 
       where: {
         accountId,
         portfolioId: { in: portfolioIds },
-        status: 'active',
       },
       select: { id: true },
     });
@@ -421,7 +432,6 @@ async function AssetAccessView({ assetRef: rawAssetRef, rootMode }: { assetRef: 
     where: {
       portfolioId: { in: portfolioIds },
       accountId: { not: accountId },
-      status: 'active',
     },
     select: { portfolioId: true },
   });

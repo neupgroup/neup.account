@@ -14,6 +14,7 @@
 import 'dotenv/config';
 import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
+import { randomUUID } from 'node:crypto';
 import { Pool } from 'pg';
 import bcrypt from 'bcryptjs';
 import { Prisma } from '@/prisma/generated/client';
@@ -457,6 +458,54 @@ async function assignRolesToAccount(accountId: string): Promise<void> {
   }
 }
 
+async function ensureDefaultApplicationAsset(accountId: string): Promise<void> {
+  const portfolioMember = await prisma.portfolioMember.findFirst({
+    where: { accountId },
+    select: { portfolioId: true },
+  });
+
+  let portfolioId = portfolioMember?.portfolioId ?? null;
+
+  if (!portfolioId) {
+    const createdPortfolio = await prisma.portfolio.create({
+      data: {
+        name: 'Personal',
+        description: 'Personal asset portfolio.',
+      },
+      select: { id: true },
+    });
+    portfolioId = createdPortfolio.id;
+
+    await prisma.$executeRawUnsafe(
+      `INSERT INTO "portfolio_member" ("id", "portfolioId", "accountId", "isPermanent", "hasFullAccess")
+       VALUES ($1, $2, $3, true, true)
+       ON CONFLICT ("portfolioId", "accountId") DO NOTHING`,
+      randomUUID(),
+      portfolioId,
+      accountId,
+    );
+  }
+
+  const existingAsset = await prisma.asset.findFirst({
+    where: {
+      portfolioId,
+      assetType: 'application',
+      assetId: APP_ID,
+    },
+    select: { id: true },
+  });
+
+  if (!existingAsset) {
+    await prisma.asset.create({
+      data: {
+        portfolioId,
+        assetType: 'application',
+        assetId: APP_ID,
+      },
+    });
+  }
+}
+
 // =============================================================================
 // MAIN
 // =============================================================================
@@ -520,6 +569,21 @@ async function main() {
       log(3, 'Roles assigned', `accountId=${resolvedAccountId} → individual.default + individual.root`);
     } catch (error) {
       logError(3, 'assignRolesToAccount', error);
+      throw error;
+    }
+  }
+
+  // Step 4 — Ensure default app is registered as an asset
+  if (!resolvedAccountId) {
+    // eslint-disable-next-line no-console
+    console.warn('[Step 4] SKIPPED — no accountId available.');
+  } else {
+    try {
+      log(4, 'Ensuring default application asset…');
+      await ensureDefaultApplicationAsset(resolvedAccountId);
+      log(4, 'Default application asset ensured', `assetType=application assetId=${APP_ID}`);
+    } catch (error) {
+      logError(4, 'ensureDefaultApplicationAsset', error);
       throw error;
     }
   }

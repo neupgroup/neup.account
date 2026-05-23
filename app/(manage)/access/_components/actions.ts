@@ -438,6 +438,7 @@ async function resolvePortfolioAssetRow(assetRef: string): Promise<{
 export async function assignOrInviteAssetMember(input: {
   assetRef: string;
   targetAccountId: string;
+  roleId?: string;
   rootMode?: boolean;
 }): Promise<{ success: boolean; error?: string; mode?: 'assigned' | 'invited' }> {
   const senderAccountId = await getActiveAccountId();
@@ -463,11 +464,18 @@ export async function assignOrInviteAssetMember(input: {
       if (roles.length === 0) {
         return { success: false, error: 'No roles are available for this asset type.' };
       }
+      if (!input.roleId) {
+        return { success: false, error: 'Please select a role before assigning access.' };
+      }
+      const selectedRole = roles.find((role) => role.id === input.roleId);
+      if (!selectedRole) {
+        return { success: false, error: 'Selected role is not valid for this asset.' };
+      }
 
       const result = await assignAssetMemberRole({
         assetMember: input.targetAccountId,
         asset: asset.rowId,
-        role: roles[0].id,
+        role: selectedRole.id,
       }, { rootMode: true });
 
       if (!result.success) {
@@ -521,5 +529,25 @@ export async function assignOrInviteAssetMember(input: {
   } catch (error) {
     await logError('database', error, `assignOrInviteAssetMember:${input.assetRef}:${input.targetAccountId}`);
     return { success: false, error: 'Failed to process asset member action.' };
+  }
+}
+
+export async function getAssignableRolesForAsset(assetRef: string): Promise<{
+  success: boolean;
+  roles?: Array<{ id: string; name: string; description?: string }>;
+  error?: string;
+}> {
+  const accountId = await getActiveAccountId();
+  if (!accountId) return { success: false, error: 'Not authenticated.' };
+
+  try {
+    const asset = await resolvePortfolioAssetRow(assetRef);
+    if (!asset) return { success: false, error: 'Asset not found.' };
+
+    const roles = await getRolesForAsset(asset.rowId);
+    return { success: true, roles };
+  } catch (error) {
+    await logError('database', error, `getAssignableRolesForAsset:${assetRef}`);
+    return { success: false, error: 'Failed to load asset roles.' };
   }
 }

@@ -441,7 +441,7 @@ async function AssetAccessView({ assetRef: rawAssetRef, rootMode }: { assetRef: 
   const inviteCard = rootMode
     ? sharedViaPortfolio
       ? {
-          href: `/access/member?portfolio=${sharedViaPortfolio.portfolioId}${modeSuffix}`,
+          href: `/access/member?portfolio=${sharedViaPortfolio.portfolioId}&asset=${encodeURIComponent(resolved.assetId)}${modeSuffix}`,
           title: `Manage access for this ${humanType}`,
           description: `This ${humanType} is added in a portfolio. You can't assign anyone outside that portfolio.`,
         }

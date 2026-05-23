@@ -1,14 +1,20 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, UserPlus, UserCircle } from "@/components/icons";
-import { assignOrInviteAssetMember, resolveNeupId } from "./actions";
+import { assignOrInviteAssetMember, getAssignableRolesForAsset, resolveNeupId } from "./actions";
 
 type ResolvedAccount = {
   accountId: string;
   displayName: string;
+};
+
+type AssetRole = {
+  id: string;
+  name: string;
+  description?: string;
 };
 
 export function AssetMemberLookupForm({
@@ -23,9 +29,41 @@ export function AssetMemberLookupForm({
   const [actionError, setActionError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [resolved, setResolved] = useState<ResolvedAccount | null>(null);
+  const [roles, setRoles] = useState<AssetRole[]>([]);
+  const [selectedRoleId, setSelectedRoleId] = useState("");
+  const [rolesError, setRolesError] = useState<string | null>(null);
+  const [rolesLoading, setRolesLoading] = useState(false);
   const [isLookupPending, startLookupTransition] = useTransition();
   const [isActionPending, startActionTransition] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!rootMode) return;
+
+    let cancelled = false;
+    const loadRoles = async () => {
+      setRolesLoading(true);
+      setRolesError(null);
+      const result = await getAssignableRolesForAsset(assetId);
+      if (cancelled) return;
+
+      if (!result.success) {
+        setRoles([]);
+        setSelectedRoleId("");
+        setRolesError(result.error || "Failed to load roles.");
+      } else {
+        const nextRoles = result.roles || [];
+        setRoles(nextRoles);
+        setSelectedRoleId(nextRoles[0]?.id || "");
+      }
+      setRolesLoading(false);
+    };
+
+    void loadRoles();
+    return () => {
+      cancelled = true;
+    };
+  }, [assetId, rootMode]);
 
   const handleLookup = () => {
     if (!neupIdInput.trim()) return;
@@ -46,12 +84,17 @@ export function AssetMemberLookupForm({
 
   const handleAction = () => {
     if (!resolved) return;
+    if (rootMode && !selectedRoleId) {
+      setActionError("Please select a role before assigning access.");
+      return;
+    }
     setActionError(null);
     setSuccessMessage(null);
     startActionTransition(async () => {
       const result = await assignOrInviteAssetMember({
         assetRef: assetId,
         targetAccountId: resolved.accountId,
+        roleId: rootMode ? selectedRoleId : undefined,
         rootMode,
       });
       if (!result.success) {
@@ -97,8 +140,36 @@ export function AssetMemberLookupForm({
       </div>
 
       {lookupError && <p className="text-xs text-destructive px-0.5">{lookupError}</p>}
+      {rolesError && <p className="text-xs text-destructive px-0.5">{rolesError}</p>}
       {actionError && <p className="text-xs text-destructive px-0.5">{actionError}</p>}
       {successMessage && <p className="text-xs text-emerald-600 px-0.5">{successMessage}</p>}
+
+      {rootMode && (
+        <div className="grid gap-1.5">
+          <label htmlFor="asset-role" className="text-xs text-muted-foreground px-0.5">
+            Access Role
+          </label>
+          <select
+            id="asset-role"
+            value={selectedRoleId}
+            onChange={(e) => setSelectedRoleId(e.target.value)}
+            disabled={rolesLoading || isLookupPending || isActionPending || roles.length === 0}
+            className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+          >
+            {rolesLoading ? (
+              <option value="">Loading roles…</option>
+            ) : roles.length === 0 ? (
+              <option value="">No roles available</option>
+            ) : (
+              roles.map((role) => (
+                <option key={role.id} value={role.id}>
+                  {role.name}
+                </option>
+              ))
+            )}
+          </select>
+        </div>
+      )}
 
       {resolved && (
         <div className="flex items-center justify-between gap-3 rounded-lg border bg-card px-3 py-2">
@@ -115,7 +186,11 @@ export function AssetMemberLookupForm({
             type="button"
             size="sm"
             onClick={handleAction}
-            disabled={isLookupPending || isActionPending}
+            disabled={
+              isLookupPending ||
+              isActionPending ||
+              (rootMode && (rolesLoading || roles.length === 0 || !selectedRoleId))
+            }
           >
             {isActionPending ? (
               <>

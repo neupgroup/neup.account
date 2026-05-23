@@ -8,6 +8,11 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { logActivity } from '@/services/log-actions';
 
+function isMissingAssetsGrantTableError(error: unknown): boolean {
+  const candidate = error as { code?: string };
+  return candidate?.code === 'P2021' || candidate?.code === 'P2022';
+}
+
 export type Permission = {
   id: string;
   name: string;
@@ -798,6 +803,7 @@ export async function getPortfolioMembers(
 
     if (!portfolio) return { portfolioName: '', members: [] };
 
+    let supportsAssetsGrantTable = true;
     const members = await Promise.all(
       portfolio.members.map(async ({ accountId: memberAccountId, status, details }) => {
         const profile = await getUserProfile(memberAccountId);
@@ -808,14 +814,23 @@ export async function getPortfolioMembers(
 
         // For active members, count their asset grants
         let roleCount = 0;
-        if (status === 'active') {
-          roleCount = await prisma.authzAssetsAccessGrant.count({
-            where: {
-              account_id: memberAccountId,
-              portfolio_id: portfolioId,
-              app_id: 'neup.account',
-            },
-          });
+        if (status === 'active' && supportsAssetsGrantTable) {
+          try {
+            roleCount = await prisma.authzAssetsAccessGrant.count({
+              where: {
+                account_id: memberAccountId,
+                portfolio_id: portfolioId,
+                app_id: 'neup.account',
+              },
+            });
+          } catch (error) {
+            if (isMissingAssetsGrantTableError(error)) {
+              supportsAssetsGrantTable = false;
+              roleCount = 0;
+            } else {
+              throw error;
+            }
+          }
         }
 
         // Resolve invitation expiry for invited members
@@ -914,24 +929,35 @@ export async function getPortfolioMemberDetail(
     }
 
     // Fetch all asset grants for active members
-    const grants = await prisma.authzAssetsAccessGrant.findMany({
-      where: {
-        account_id: memberAccountId,
-        portfolio_id: portfolioId,
-        app_id: 'neup.account',
-      },
-      select: {
-        role_id: true,
-        role: { select: { id: true, name: true, description: true } },
-        asset: {
-          select: {
-            id: true,
-            assetId: true,
-            assetType: true,
+    let grants: Array<{
+      role_id: string;
+      role: { id: string; name: string; description: string | null };
+      asset: { id: string; assetId: string; assetType: string };
+    }> = [];
+    try {
+      grants = await prisma.authzAssetsAccessGrant.findMany({
+        where: {
+          account_id: memberAccountId,
+          portfolio_id: portfolioId,
+          app_id: 'neup.account',
+        },
+        select: {
+          role_id: true,
+          role: { select: { id: true, name: true, description: true } },
+          asset: {
+            select: {
+              id: true,
+              assetId: true,
+              assetType: true,
+            },
           },
         },
-      },
-    });
+      });
+    } catch (error) {
+      if (!isMissingAssetsGrantTableError(error)) {
+        throw error;
+      }
+    }
 
     // Resolve asset names
     const { resolveAssetName } = await import('@/services/manage/access/asset-resolvers');

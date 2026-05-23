@@ -7,6 +7,7 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { appendFlowParamsObject, getFlowParams } from '@/core/auth/callback';
+import { appendApplicationRootMode } from '@/core/helpers/application-mode';
 import type { ComponentProps } from 'react';
 import { Suspense } from 'react';
 
@@ -15,9 +16,13 @@ type FlowLinkProps = ComponentProps<typeof Link>;
 function FlowLinkInner({ href, ...props }: FlowLinkProps) {
   const searchParams = useSearchParams();
   const flowParams = getFlowParams(searchParams);
+  const mode = searchParams.get('mode');
 
   const hrefString = typeof href === 'string' ? href : href.toString();
-  const finalHref = appendFlowParamsObject(hrefString, flowParams);
+  const finalHref = appendApplicationRootMode(
+    appendFlowParamsObject(hrefString, flowParams),
+    mode,
+  );
 
   return <Link href={finalHref} {...props} />;
 }

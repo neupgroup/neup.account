@@ -4,6 +4,7 @@
 
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { headers } from 'next/headers';
 import { z } from 'zod';
 import { checkPermissions } from '@/services/user';
 import { deleteManagedApplication, getManagedApplications, updateManagedApplicationStatus } from '@/services/applications/manage';
@@ -49,7 +50,22 @@ export async function getApplicationsPageData() {
 export async function deleteManagedApplicationFromDetailsPage(applicationId: string) {
   const result = await deleteManagedApplication(applicationId);
   if (result.success) {
-    redirect('/application');
+    const headerList = await headers();
+    const referer = headerList.get('referer');
+    let target = '/application';
+
+    if (referer) {
+      try {
+        const refererUrl = new URL(referer);
+        if (refererUrl.searchParams.get('mode') === 'root') {
+          target = '/application?mode=root';
+        }
+      } catch {
+        // Ignore malformed referer and fall back to default target.
+      }
+    }
+
+    redirect(target);
   }
 }
 

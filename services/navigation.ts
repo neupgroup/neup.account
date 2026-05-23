@@ -4,6 +4,7 @@
 // Use redirectHttps / redirectHttp for external URLs.
 
 import { getFlowParams, appendFlowParamsObject } from '@/core/auth/callback';
+import { appendApplicationRootMode } from '@/core/helpers/application-mode';
 
 type RouterNavigationOptions = {
   scroll?: boolean;
@@ -73,7 +74,10 @@ export function redirectInApp(router: AppRouterLike, href: string, options: AppR
   if (preserveFlowParams && typeof window !== 'undefined') {
     const currentParams = new URLSearchParams(window.location.search);
     const flowParams = getFlowParams(currentParams);
-    finalHref = appendFlowParamsObject(href, flowParams);
+    finalHref = appendApplicationRootMode(
+      appendFlowParamsObject(href, flowParams),
+      currentParams.get('mode'),
+    );
   }
 
   if (replace) {

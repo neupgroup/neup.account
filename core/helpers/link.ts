@@ -1,5 +1,6 @@
 import { APP_BASE_PATH } from '@/core/appconfig';
 import { getFlowParams, appendFlowParamsObject } from '@/core/auth/callback';
+import { appendApplicationRootMode } from '@/core/helpers/application-mode';
 
 type RouterLike = {
     push: (href: string, options?: { scroll?: boolean }) => void;
@@ -52,7 +53,10 @@ export function redirectInApp(
     if (preserveFlowParams && typeof window !== 'undefined') {
         const currentParams = new URLSearchParams(window.location.search);
         const flowParams = getFlowParams(currentParams);
-        finalPath = appendFlowParamsObject(path, flowParams);
+        finalPath = appendApplicationRootMode(
+            appendFlowParamsObject(path, flowParams),
+            currentParams.get('mode'),
+        );
     }
 
     if (router && !hard) {

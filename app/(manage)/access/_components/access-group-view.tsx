@@ -3,7 +3,7 @@ import { BackButton } from '@/components/ui/back-button';
 import { Card, CardContent } from '@/components/ui/card';
 import { PrimaryHeader } from '@/components/ui/primary-header';
 import { SecondaryHeader } from '@/components/ui/secondary-header';
-import { AppWindow, ChevronRight, Database, Users } from '@/components/icons';
+import { AppWindow, ChevronRight, Users } from '@/components/icons';
 
 export type AccessGroupMember = {
   id: string;
@@ -30,9 +30,8 @@ export type AccessGroupViewProps = {
   /** Sub-heading description */
   description?: string;
   membersHref: string;
-  assetsHref: string;
+  accountsHref: string;
   applicationsHref: string;
-  allAssetsHref: string;
   /** href for the back button — omit to hide (root /access page) */
   backHref?: string;
   /** Section 2 content — only rendered on the individual view */
@@ -45,7 +44,7 @@ export function AccessGroupView({
   name,
   description,
   membersHref,
-  assetsHref,
+  accountsHref,
   applicationsHref,
   backHref,
   children,
@@ -78,15 +77,15 @@ export function AccessGroupView({
               <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
             </FlowLink>
 
-            {/* Assets */}
+            {/* Accounts */}
             <FlowLink
-              href={assetsHref}
+              href={accountsHref}
               className="flex items-center gap-4 py-4 px-4 hover:bg-muted/50 transition-colors"
             >
-              <Database className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+              <Users className="h-5 w-5 text-muted-foreground flex-shrink-0" />
               <div className="flex-grow min-w-0">
-                <p className="font-medium text-foreground">Assets</p>
-                <p className="text-sm text-muted-foreground">See assets associated with this profile.</p>
+                <p className="font-medium text-foreground">Accounts</p>
+                <p className="text-sm text-muted-foreground">See accounts associated with this profile.</p>
               </div>
               <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
             </FlowLink>
@@ -98,8 +97,20 @@ export function AccessGroupView({
             >
               <AppWindow className="h-5 w-5 text-muted-foreground flex-shrink-0" />
               <div className="flex-grow min-w-0">
+                <p className="font-medium text-foreground">AppConnection</p>
+                <p className="text-sm text-muted-foreground">See all application this profile is connected to.</p>
+              </div>
+              <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+            </FlowLink>
+
+            <FlowLink
+              href={applicationsHref}
+              className="flex items-center gap-4 py-4 px-4 hover:bg-muted/50 transition-colors"
+            >
+              <AppWindow className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+              <div className="flex-grow min-w-0">
                 <p className="font-medium text-foreground">Applications</p>
-                <p className="text-sm text-muted-foreground">See applications connected with this profile.</p>
+                <p className="text-sm text-muted-foreground">See all applications you have access to.</p>
               </div>
               <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
             </FlowLink>

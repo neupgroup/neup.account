@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { BackButton } from '@/components/ui/back-button';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { AppWindow, Database, UserCircle, X } from '@/components/icons';
 import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId } from '@/core/auth/verify';
+import { checkPermissions } from '@/services/user';
 import {
   addAssetToGroupFromForm,
   removeAssetFromGroupFromForm,
@@ -20,7 +21,7 @@ import { SecondaryHeader } from '@/components/ui/secondary-header';
 import { Prisma } from '../../../../prisma/generated/client/client';
 
 type PageProps = {
-  searchParams: Promise<{ portfolio?: string; asset?: string; application?: string }>;
+  searchParams: Promise<{ portfolio?: string; asset?: string; application?: string; mode?: string }>;
 };
 
 // ── Asset detail view ─────────────────────────────────────────────────────────
@@ -348,7 +349,19 @@ async function ApplicationAssetView({ applicationId }: { applicationId: string }
 // ── Page entry point ──────────────────────────────────────────────────────────
 
 export default async function AssetPage({ searchParams }: PageProps) {
-  const { portfolio: portfolioId, asset: assetId, application: applicationId } = await searchParams;
+  const { portfolio: portfolioId, asset: assetId, application: applicationId, mode } = await searchParams;
+
+  if (mode === 'root') {
+    const isRoot = await checkPermissions(['root.application.view']);
+    if (!isRoot) {
+      const next = new URLSearchParams();
+      if (portfolioId) next.set('portfolio', portfolioId);
+      if (assetId) next.set('asset', assetId);
+      if (applicationId) next.set('application', applicationId);
+      const qs = next.toString();
+      redirect(qs ? `/access/assets?${qs}` : '/access/assets');
+    }
+  }
 
   if (applicationId) {
     return <ApplicationAssetView applicationId={applicationId} />;

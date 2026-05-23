@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { AppWindow, Database, UserCircle, X } from '@/components/icons';
 import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId } from '@/core/auth/verify';
-import { checkPermissions } from '@/services/user';
+import { isRootUser } from '@/services/user';
 import {
   addAssetToGroupFromForm,
   removeAssetFromGroupFromForm,
@@ -49,7 +49,9 @@ async function getAssetMembers(
   const grants = await prisma.authzAssetsAccessGrant.findMany({
     where: {
       asset_id: portfolioAssetId,
-      portfolio_id: portfolioId,
+      ...(options?.rootMode
+        ? { OR: [{ portfolio_id: portfolioId }, { portfolio_id: null }] }
+        : { portfolio_id: portfolioId }),
       app_id: 'neup.account',
     },
     select: {
@@ -371,6 +373,30 @@ async function ApplicationAssetView({ applicationId, rootMode }: { applicationId
   }
 
   if (!portfolioAsset) {
+    if (rootMode) {
+      // Root direct mode: create a backing asset row so direct grants can exist
+      // with portfolio_id = null while still referencing a valid asset_id.
+      const personalMembership = await prisma.portfolioMember.findFirst({
+        where: { accountId },
+        select: { portfolioId: true },
+        orderBy: { id: 'asc' },
+      });
+
+      if (personalMembership?.portfolioId) {
+        const created = await prisma.asset.create({
+          data: {
+            portfolioId: personalMembership.portfolioId,
+            assetId: applicationId,
+            assetType: 'application',
+          },
+          select: { id: true, portfolioId: true },
+        });
+        portfolioAsset = created;
+      }
+    }
+  }
+
+  if (!portfolioAsset) {
     // Application is not in any portfolio the user can access — show a helpful message
     return (
       <div className="grid gap-8">
@@ -410,7 +436,8 @@ export default async function AssetPage({ searchParams }: PageProps) {
   const { portfolio: portfolioId, asset: assetId, application: applicationId, mode } = await searchParams;
 
   if (mode === 'root') {
-    const isRoot = await checkPermissions(['root.application.view']);
+    const accountId = await getActiveAccountId();
+    const isRoot = accountId ? await isRootUser(accountId) : false;
     if (!isRoot) {
       const next = new URLSearchParams();
       if (portfolioId) next.set('portfolio', portfolioId);

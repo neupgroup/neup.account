@@ -7,7 +7,10 @@ import { getApplicationDetailsForViewerV2, getApplicationUserStats } from '@/ser
 import { deleteManagedApplicationFromDetailsPage } from '@/services/applications/form-actions';
 import { AppWindow, Building, BarChart, Share2, ExternalLink, ChevronRight, Users, UserPlus, ArrowLeft, type LucideIcon } from '@/components/icons';
 
-type Props = { params: Promise<{ id: string }> };
+type Props = {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ mode?: string }>;
+};
 
 function iconFor(appIcon?: string): LucideIcon {
   const appIconMap: Record<string, LucideIcon> = {
@@ -26,8 +29,10 @@ const statusVariant: Record<string, 'default' | 'secondary' | 'destructive' | 'o
   blocked: 'destructive',
 };
 
-export default async function ApplicationDetailPage({ params }: Props) {
+export default async function ApplicationDetailPage({ params, searchParams }: Props) {
   const { id } = await params;
+  const { mode } = await searchParams;
+  const modeSuffix = mode === 'root' ? '&mode=root' : '';
   const details = await getApplicationDetailsForViewerV2(id);
 
   if (!details) notFound();
@@ -159,7 +164,7 @@ export default async function ApplicationDetailPage({ params }: Props) {
           </FlowLink>
 
           <FlowLink
-            href={`/access/asset?application=${id}`}
+            href={`/access/asset?application=${id}${modeSuffix}`}
             className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5"
           >
             <div className="min-w-0">

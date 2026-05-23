@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -113,12 +113,14 @@ export function AssignPermissionsWizard({
   members,
   existingAssetIds,
   groupId,
+  initialMemberAccountId,
 }: {
   action: (formData: FormData) => Promise<void>;
   members: Member[];
   /** assetIds already in the portfolio (used to exclude from "add" picker) */
   existingAssetIds: string[];
   groupId: string;
+  initialMemberAccountId?: string;
 }) {
   const [step, setStep] = useState<Step>("member");
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
@@ -138,6 +140,14 @@ export function AssignPermissionsWizard({
 
   const [isPending, startTransition] = useTransition();
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!initialMemberAccountId) return;
+    const preset = members.find((m) => m.accountId === initialMemberAccountId);
+    if (!preset) return;
+    setSelectedMember(preset);
+    setStep("asset-type");
+  }, [initialMemberAccountId, members]);
 
   // ── helpers ──────────────────────────────────────────────────────────────
 

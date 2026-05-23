@@ -27,9 +27,9 @@ async function PortfolioDetail({ id }: { id: string }) {
       description={group.description ?? 'Portfolio access group.'}
       backHref="/access"
       membersHref={`/access/member?portfolio=${id}`}
-      assetsHref={`/access/asset`}
+      assetsHref={`/access/asset?portfolio=${id}`}
       applicationsHref="/access/appconnection"
-      allAssetsHref={`/access/asset`}
+      allAssetsHref={`/access/asset?portfolio=${id}`}
     />
   );
 }

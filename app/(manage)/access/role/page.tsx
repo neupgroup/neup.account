@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { BackButton } from '@/components/ui/back-button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { UserCircle, Clock } from '@/components/icons';
 import { getActiveAccountId } from '@/core/auth/verify';
 import { getUserProfile } from '@/services/user';
@@ -23,6 +24,7 @@ import {
   inviteToPortfolio,
   inviteDirectMember,
 } from '../_components/actions';
+import { FlowLink } from '@/components/ui/flow-link';
 
 type PageProps = {
   searchParams: Promise<{ member?: string; portfolio?: string }>;
@@ -596,6 +598,16 @@ async function MemberPortfolioRolesView({
         </Card>
       ) : (
         <EmptyRoles message="This member has no roles assigned on assets in this portfolio." />
+      )}
+
+      {detail.status === 'active' && (
+        <div className="flex justify-start">
+          <Button asChild>
+            <FlowLink href={`/access/assign?portfolio=${portfolioId}&member=${memberAccountId}`}>
+              Assign Asset Roles
+            </FlowLink>
+          </Button>
+        </div>
       )}
 
       {canRemove && (

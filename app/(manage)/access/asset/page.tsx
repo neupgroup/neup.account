@@ -21,7 +21,7 @@ import { SecondaryHeader } from '@/components/ui/secondary-header';
 import { Prisma } from '../../../../prisma/generated/client/client';
 
 type PageProps = {
-  searchParams: Promise<{ asset?: string; mode?: string }>;
+  searchParams: Promise<{ asset?: string; mode?: string; portfolio?: string }>;
 };
 
 // ── Asset detail view ─────────────────────────────────────────────────────────
@@ -150,6 +150,14 @@ async function AssetDetail({
           title="Members with access"
           description={`${memberProfiles.length} member${memberProfiles.length !== 1 ? 's' : ''} assigned roles on this asset.`}
         />
+
+        <div className="flex justify-start">
+          <Button asChild>
+            <FlowLink href={`/access/assign?portfolio=${portfolioId}`}>
+              Assign Roles In This Portfolio
+            </FlowLink>
+          </Button>
+        </div>
 
         <Card>
           <CardContent className="divide-y p-2">
@@ -462,10 +470,132 @@ async function AssetAccessView({ assetRef: rawAssetRef, rootMode }: { assetRef: 
   );
 }
 
+async function AccessibleAssetsList() {
+  const accountId = await getActiveAccountId();
+  if (!accountId) notFound();
+
+  let grants: Array<{
+    portfolio_id: string | null;
+    asset: {
+      id: string;
+      assetId: string;
+      assetType: string;
+      portfolioId: string;
+      portfolio: { id: string; name: string } | null;
+    };
+  }> = [];
+
+  try {
+    grants = await prisma.authzAssetsAccessGrant.findMany({
+      where: {
+        account_id: accountId,
+        app_id: 'neup.account',
+      },
+      select: {
+        portfolio_id: true,
+        asset: {
+          select: {
+            id: true,
+            assetId: true,
+            assetType: true,
+            portfolioId: true,
+            portfolio: { select: { id: true, name: true } },
+          },
+        },
+      },
+      orderBy: { asset_id: 'asc' },
+    });
+  } catch (error) {
+    const e = error as { code?: string };
+    if (e?.code !== 'P2021' && e?.code !== 'P2022') throw error;
+  }
+
+  const assetById = new Map<
+    string,
+    {
+      portfolioAssetId: string;
+      assetId: string;
+      assetType: string;
+      portfolioName: string | null;
+      isDirect: boolean;
+    }
+  >();
+  for (const grant of grants) {
+    const rowId = grant.asset.id;
+    if (!assetById.has(rowId)) {
+      assetById.set(rowId, {
+        portfolioAssetId: rowId,
+        assetId: grant.asset.assetId,
+        assetType: grant.asset.assetType,
+        portfolioName: grant.asset.portfolio?.name ?? null,
+        isDirect: grant.portfolio_id === null,
+      });
+    } else if (grant.portfolio_id === null) {
+      assetById.get(rowId)!.isDirect = true;
+    }
+  }
+
+  const rows = Array.from(assetById.values());
+  const resolvedRows = await Promise.all(
+    rows.map(async (row) => {
+      const resolved = await resolveAssetName(row.assetId, row.assetType);
+      return {
+        ...row,
+        title: resolved.name,
+        subtitle: resolved.subtitle ?? row.assetType,
+      };
+    })
+  );
+
+  return (
+    <div className="grid gap-8">
+      <BackButton href="/access" />
+      <PrimaryHeader
+        title="Assets"
+        description="Assets you currently have access to across portfolios and direct grants."
+      />
+      <Card>
+        <CardContent className="divide-y p-2">
+          {resolvedRows.length > 0 ? (
+            resolvedRows.map((asset) => (
+              <FlowLink
+                key={asset.portfolioAssetId}
+                href={`/access/asset?asset=${encodeURIComponent(asset.assetId)}`}
+                className="flex items-center gap-4 py-4 px-4 hover:bg-muted/50 transition-colors"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted">
+                  <Database className="h-4 w-4 text-muted-foreground" />
+                </span>
+                <div className="min-w-0 flex-grow">
+                  <p className="font-medium truncate text-foreground">{asset.title}</p>
+                  <p className="text-sm text-muted-foreground truncate">{asset.subtitle}</p>
+                </div>
+                <Badge variant="outline" className="shrink-0 text-xs">
+                  {asset.isDirect ? 'Direct' : asset.portfolioName ?? 'Portfolio'}
+                </Badge>
+              </FlowLink>
+            ))
+          ) : (
+            <div className="flex flex-col items-center gap-2 px-4 py-12 text-center">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+                <Database className="h-6 w-6 text-muted-foreground" />
+              </span>
+              <p className="font-medium">No assets available</p>
+              <p className="text-sm text-muted-foreground max-w-xs">
+                You do not have any direct or portfolio-based asset access yet.
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 // ── Page entry point ──────────────────────────────────────────────────────────
 
 export default async function AssetPage({ searchParams }: PageProps) {
-  const { asset: assetId, mode } = await searchParams;
+  const { asset: assetId, mode, portfolio: portfolioId } = await searchParams;
 
   if (mode === 'root') {
     const accountId = await getActiveAccountId();
@@ -480,27 +610,12 @@ export default async function AssetPage({ searchParams }: PageProps) {
 
   const rootMode = mode === 'root';
 
+  if (portfolioId && !assetId) {
+    return <AssetList portfolioId={portfolioId} mode={mode} />;
+  }
+
   if (!assetId) {
-    return (
-      <div className="grid gap-8">
-        <BackButton href="/access" />
-        <PrimaryHeader
-          title="Assets"
-          description="Open an asset-specific access view with ?asset=<assetId>."
-        />
-        <Card>
-          <CardContent className="flex flex-col items-center gap-2 px-4 py-12 text-center">
-            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-              <Database className="h-6 w-6 text-muted-foreground" />
-            </span>
-            <p className="font-medium">No accounts have access to this asset</p>
-            <p className="text-sm text-muted-foreground max-w-xs">
-              No asset access entries are available here. Create a portfolio and assign roles to grant access.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return <AccessibleAssetsList />;
   }
 
   return <AssetAccessView assetRef={assetId} rootMode={rootMode} />;

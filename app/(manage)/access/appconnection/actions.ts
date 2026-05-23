@@ -45,7 +45,8 @@ export async function getApplicationAccessPageData(): Promise<AppWithAccess[]> {
     // All apps the user is connected to
     const connections = await prisma.applicationConnection.findMany({
       where: { accountId: personalAccountId },
-      include: {
+      select: {
+        connectedAt: true,
         application: {
           select: { id: true, name: true, description: true, icon: true, status: true },
         },

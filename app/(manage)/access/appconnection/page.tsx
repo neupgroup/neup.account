@@ -202,12 +202,12 @@ export default async function ApplicationAccessPage() {
               <p className="text-sm font-medium">No applications connected</p>
               <p className="text-xs text-muted-foreground mt-1 max-w-xs">
                 Connect to an application from the{' '}
-                <a
+                <FlowLink
                   href="/data/appconnection"
                   className="underline underline-offset-2 hover:text-foreground transition-colors"
                 >
                   Applications
-                </a>{' '}
+                </FlowLink>{' '}
                 page first.
               </p>
             </div>

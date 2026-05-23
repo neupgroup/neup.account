@@ -141,8 +141,8 @@ export default async function ApplicationDetailPage({ params }: Props) {
             className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
           >
             <div className="min-w-0">
-              <p className="font-medium">Roles &amp; Capabilities</p>
-              <p className="text-sm text-muted-foreground">Define capabilities and group them into roles for access grants.</p>
+              <p className="font-medium">Roles &amp; Permissions</p>
+              <p className="text-sm text-muted-foreground">Define permissions and group them into roles for access grants.</p>
             </div>
             <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
           </FlowLink>

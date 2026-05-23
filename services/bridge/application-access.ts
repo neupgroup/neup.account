@@ -170,14 +170,14 @@ export async function getApplicationAccess(params: {
               scope: true,
               roleMaps: {
                 select: {
-                  capability: {
+                  permission: {
                     select: {
                       id: true,
                       name: true,
                       scope: true,
                     },
                   },
-                  denormalizedCapability: true,
+                  denormalizedPermission: true,
                 },
               },
             },
@@ -211,7 +211,7 @@ export async function getApplicationAccess(params: {
       'roleName',
       'roleDescription',
       'roleScope',
-      'capabilities',
+      'permissions',
       'portfolioId',
     ];
 
@@ -229,11 +229,11 @@ export async function getApplicationAccess(params: {
       roleName: g.role.name,
       roleDescription: g.role.description,
       roleScope: g.role.scope,
-      capabilities: g.role.roleMaps.map((m) => ({
-        capabilityId: m.capability.id,
-        capabilityName: m.capability.name,
-        capabilityScope: m.capability.scope,
-        denormalized: m.denormalizedCapability ?? null,
+      permissions: g.role.roleMaps.map((m) => ({
+        permissionId: m.permission.id,
+        permissionName: m.permission.name,
+        permissionScope: m.permission.scope,
+        denormalized: m.denormalizedPermission ?? null,
       })),
       portfolioId: g.portfolioId,
     }));

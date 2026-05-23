@@ -81,7 +81,7 @@ export async function searchAll(query: string): Promise<SearchResult[]> {
     const canSearchPermissions = await checkPermissions(['root.permission.view']);
     if (canSearchPermissions) {
         try {
-            const capabilities = await prisma.authzCapability.findMany({
+            const permissions = await prisma.authzPermission.findMany({
                 where: {
                     appId: 'neup.account',
                     name: { contains: lowercasedQuery, mode: 'insensitive' },
@@ -90,7 +90,7 @@ export async function searchAll(query: string): Promise<SearchResult[]> {
                 take: 50,
             });
 
-            for (const cap of capabilities) {
+            for (const cap of permissions) {
                 results.push({
                     id: `permission-${cap.name}`,
                     type: 'permission',

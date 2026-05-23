@@ -75,7 +75,7 @@ GET /account/bridge/api.v1/application/users
 
 ### 2) List roles for your application
 
-**Purpose:** returns roles defined for your application with capabilities denormalized on each role.
+**Purpose:** returns roles defined for your application with permissions denormalized on each role.
 
 ```http
 GET /account/bridge/api.v1/application/roles
@@ -123,7 +123,7 @@ GET /account/bridge/api.v1/application/roles
 
 ### 3) List access grants for your application
 
-**Purpose:** returns access grants within your application scope — who has been granted what role (and the role’s capabilities).
+**Purpose:** returns access grants within your application scope — who has been granted what role (and the role’s permissions).
 
 ```http
 GET /account/bridge/api.v1/application/access

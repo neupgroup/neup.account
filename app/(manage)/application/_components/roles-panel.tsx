@@ -9,21 +9,21 @@ import { Badge } from '@/components/ui/badge';
 import {
   createAppRole,
   deleteAppRole,
-  updateAppRoleCapabilities,
+  updateAppRolePermissions,
   pushAuthzToWebhook,
   clearAuthzPushStatus,
-  type AppCapability,
+  type AppPermission,
   type AppRole,
 } from '@/services/applications/authz-manage';
 
 type Props = {
   appId: string;
   initialRoles: AppRole[];
-  capabilities: AppCapability[];
+  permissions: AppPermission[];
   hasWebhook: boolean;
 };
 
-export function RolesPanel({ appId, initialRoles, capabilities, hasWebhook }: Props) {
+export function RolesPanel({ appId, initialRoles, permissions, hasWebhook }: Props) {
   const { toast } = useToast();
   const [roles, setRoles] = useState<AppRole[]>(initialRoles);
   const [newRoleName, setNewRoleName] = useState('');
@@ -46,7 +46,7 @@ export function RolesPanel({ appId, initialRoles, capabilities, hasWebhook }: Pr
       name,
       description: newRoleDesc || undefined,
       scope: newRoleScope || undefined,
-      capabilityIds: newRoleCapIds,
+      permissionIds: newRoleCapIds,
     });
     setRolePending(false);
     if (!result.success || !result.role) {
@@ -71,10 +71,10 @@ export function RolesPanel({ appId, initialRoles, capabilities, hasWebhook }: Pr
     toast({ title: 'Role deleted' });
   };
 
-  const handleSaveRoleCapabilities = async () => {
+  const handleSaveRolePermissions = async () => {
     if (!editingRoleId) return;
     setEditPending(true);
-    const result = await updateAppRoleCapabilities({ appId, roleId: editingRoleId, capabilityIds: editingCapIds });
+    const result = await updateAppRolePermissions({ appId, roleId: editingRoleId, permissionIds: editingCapIds });
     setEditPending(false);
     if (!result.success) {
       toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not update role.' });
@@ -83,7 +83,7 @@ export function RolesPanel({ appId, initialRoles, capabilities, hasWebhook }: Pr
     setRoles((prev) =>
       prev.map((r) =>
         r.id === editingRoleId
-          ? { ...r, capabilities: capabilities.filter((c) => editingCapIds.includes(c.id)) }
+          ? { ...r, permissions: permissions.filter((c) => editingCapIds.includes(c.id)) }
           : r
       )
     );
@@ -101,10 +101,10 @@ export function RolesPanel({ appId, initialRoles, capabilities, hasWebhook }: Pr
       return;
     }
     if (result.pushed === 0) {
-      toast({ title: 'Nothing to push', description: 'No role-capability mappings exist yet.' });
+      toast({ title: 'Nothing to push', description: 'No role-permission mappings exist yet.' });
       return;
     }
-    toast({ title: 'Pushed', description: `${result.pushed} role-capability mapping${result.pushed === 1 ? '' : 's'} sent to webhook.` });
+    toast({ title: 'Pushed', description: `${result.pushed} role-permission mapping${result.pushed === 1 ? '' : 's'} sent to webhook.` });
   };
 
   const handleClearPushStatus = async () => {
@@ -135,7 +135,7 @@ export function RolesPanel({ appId, initialRoles, capabilities, hasWebhook }: Pr
         <CardHeader>
           <CardTitle>Roles</CardTitle>
           <CardDescription>
-            Group capabilities into roles. Roles are assigned to accounts via access grants.
+            Group permissions into roles. Roles are assigned to accounts via access grants.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -158,9 +158,9 @@ export function RolesPanel({ appId, initialRoles, capabilities, hasWebhook }: Pr
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => { setEditingRoleId(role.id); setEditingCapIds(role.capabilities.map((c) => c.id)); }}
+                        onClick={() => { setEditingRoleId(role.id); setEditingCapIds(role.permissions.map((c) => c.id)); }}
                       >
-                        Edit capabilities
+                        Edit permissions
                       </Button>
                       <Button type="button" variant="ghost" size="sm" onClick={() => handleDeleteRole(role.id)}>
                         Remove
@@ -170,12 +170,12 @@ export function RolesPanel({ appId, initialRoles, capabilities, hasWebhook }: Pr
 
                   {editingRoleId === role.id ? (
                     <div className="space-y-3 pt-2 border-t">
-                      <p className="text-xs font-medium text-muted-foreground">Select capabilities</p>
-                      {capabilities.length === 0 ? (
-                        <p className="text-xs text-muted-foreground">No capabilities defined yet.</p>
+                      <p className="text-xs font-medium text-muted-foreground">Select permissions</p>
+                      {permissions.length === 0 ? (
+                        <p className="text-xs text-muted-foreground">No permissions defined yet.</p>
                       ) : (
                         <div className="grid gap-2 sm:grid-cols-2">
-                          {capabilities.map((cap) => (
+                          {permissions.map((cap) => (
                             <label key={cap.id} className="flex items-center gap-2 text-sm rounded-md border px-3 py-2 cursor-pointer">
                               <input
                                 type="checkbox"
@@ -195,20 +195,20 @@ export function RolesPanel({ appId, initialRoles, capabilities, hasWebhook }: Pr
                         <Button type="button" variant="ghost" size="sm" onClick={() => { setEditingRoleId(null); setEditingCapIds([]); }}>
                           Cancel
                         </Button>
-                        <Button type="button" size="sm" onClick={handleSaveRoleCapabilities} disabled={editPending}>
+                        <Button type="button" size="sm" onClick={handleSaveRolePermissions} disabled={editPending}>
                           {editPending ? 'Saving...' : 'Save'}
                         </Button>
                       </div>
                     </div>
                   ) : (
-                    role.capabilities.length > 0 ? (
+                    role.permissions.length > 0 ? (
                       <div className="flex flex-wrap gap-1">
-                        {role.capabilities.map((cap) => (
+                        {role.permissions.map((cap) => (
                           <Badge key={cap.id} variant="secondary" className="text-xs">{cap.name}</Badge>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs text-muted-foreground">No capabilities assigned.</p>
+                      <p className="text-xs text-muted-foreground">No permissions assigned.</p>
                     )
                   )}
                 </div>
@@ -224,11 +224,11 @@ export function RolesPanel({ appId, initialRoles, capabilities, hasWebhook }: Pr
             <Input value={newRoleName} onChange={(e) => setNewRoleName(e.target.value)} placeholder="Role name, e.g. viewer" />
             <Input value={newRoleDesc} onChange={(e) => setNewRoleDesc(e.target.value)} placeholder="Description (optional)" />
             <Input value={newRoleScope} onChange={(e) => setNewRoleScope(e.target.value)} placeholder="Scope (optional)" />
-            {capabilities.length > 0 && (
+            {permissions.length > 0 && (
               <div className="space-y-2">
-                <p className="text-xs font-medium text-muted-foreground">Assign capabilities</p>
+                <p className="text-xs font-medium text-muted-foreground">Assign permissions</p>
                 <div className="grid gap-2 sm:grid-cols-2">
-                  {capabilities.map((cap) => (
+                  {permissions.map((cap) => (
                     <label key={cap.id} className="flex items-center gap-2 text-sm rounded-md border px-3 py-2 cursor-pointer">
                       <input
                         type="checkbox"
@@ -259,7 +259,7 @@ export function RolesPanel({ appId, initialRoles, capabilities, hasWebhook }: Pr
         <CardHeader>
           <CardTitle>Push to Application</CardTitle>
           <CardDescription>
-            Send all current role-capability mappings to the registered webhook endpoint.
+            Send all current role-permission mappings to the registered webhook endpoint.
             {!hasWebhook && ' No webhook URL is configured — set one in the application settings first.'}
           </CardDescription>
         </CardHeader>

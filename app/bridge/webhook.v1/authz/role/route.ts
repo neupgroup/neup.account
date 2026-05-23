@@ -70,19 +70,19 @@ function ok(data: Record<string, unknown>, status = 200) {
 // Table handlers
 // ---------------------------------------------------------------------------
 
-async function handleRoleCapability(operation: Operation, body: WebhookBody): Promise<NextResponse> {
+async function handleRolePermission(operation: Operation, body: WebhookBody): Promise<NextResponse> {
   switch (operation) {
     case 'insert': {
       if (!body.data || Array.isArray(body.data)) return err('Missing required field: `data` (object).', 400);
       const d = body.data;
-      if (!d.roleId || !d.capabilityId) return err('Missing required fields: `roleId`, `capabilityId`.', 400);
-      const record = await prisma.authzRoleCapability.create({
+      if (!d.roleId || !d.permissionId) return err('Missing required fields: `roleId`, `permissionId`.', 400);
+      const record = await prisma.authzRolePermission.create({
         data: {
           roleId: d.roleId as string,
-          capabilityId: d.capabilityId as string,
+          permissionId: d.permissionId as string,
           scope: (d.scope as string) ?? null,
-          denormalizedCapability: d.denormalizedCapability !== undefined && d.denormalizedCapability !== null
-            ? d.denormalizedCapability as Prisma.InputJsonValue
+          denormalizedPermission: d.denormalizedPermission !== undefined && d.denormalizedPermission !== null
+            ? d.denormalizedPermission as Prisma.InputJsonValue
             : Prisma.JsonNull,
           roleName: (d.roleName as string) ?? null,
         },
@@ -95,19 +95,19 @@ async function handleRoleCapability(operation: Operation, body: WebhookBody): Pr
       if (typeof body.id !== 'string') return err('Missing required field: `id` (string).', 400);
       if (!body.data || Array.isArray(body.data)) return err('Missing required field: `data` (object).', 400);
       const d = body.data;
-      await prisma.authzRoleCapability.update({
+      await prisma.authzRolePermission.update({
         where: { id: body.id },
         data: {
           ...(d.roleId !== undefined && { roleId: d.roleId as string }),
-          ...(d.capabilityId !== undefined && { capabilityId: d.capabilityId as string }),
+          ...(d.permissionId !== undefined && { permissionId: d.permissionId as string }),
           ...(d.scope !== undefined && { scope: d.scope as string | null }),
-          ...(d.denormalizedCapability !== undefined && {
-            denormalizedCapability: d.denormalizedCapability !== null
-              ? d.denormalizedCapability as Prisma.InputJsonValue
+          ...(d.denormalizedPermission !== undefined && {
+            denormalizedPermission: d.denormalizedPermission !== null
+              ? d.denormalizedPermission as Prisma.InputJsonValue
               : Prisma.JsonNull,
           }),
           ...(d.roleName !== undefined && { roleName: d.roleName as string | null }),
-        } as Prisma.AuthzRoleCapabilityUncheckedUpdateInput,
+        } as Prisma.AuthzRolePermissionUncheckedUpdateInput,
       });
       return ok({ ok: true });
     }
@@ -118,7 +118,7 @@ async function handleRoleCapability(operation: Operation, body: WebhookBody): Pr
         body.data.map((item) => {
           const { id, ...rest } = item;
           if (!id) return Promise.resolve();
-          return prisma.authzRoleCapability.update({ where: { id: id as string }, data: rest });
+          return prisma.authzRolePermission.update({ where: { id: id as string }, data: rest });
         })
       );
       return ok({ ok: true, count: body.data.length });
@@ -126,18 +126,18 @@ async function handleRoleCapability(operation: Operation, body: WebhookBody): Pr
 
     case 'deleteOne': {
       if (typeof body.id !== 'string') return err('Missing required field: `id` (string).', 400);
-      await prisma.authzRoleCapability.delete({ where: { id: body.id } });
+      await prisma.authzRolePermission.delete({ where: { id: body.id } });
       return ok({ ok: true });
     }
 
     case 'delete': {
       if (!Array.isArray(body.id)) return err('Missing required field: `id` (array of strings).', 400);
-      const result = await prisma.authzRoleCapability.deleteMany({ where: { id: { in: body.id as string[] } } });
+      const result = await prisma.authzRolePermission.deleteMany({ where: { id: { in: body.id as string[] } } });
       return ok({ ok: true, count: result.count });
     }
 
     case 'deleteAll': {
-      const result = await prisma.authzRoleCapability.deleteMany();
+      const result = await prisma.authzRolePermission.deleteMany();
       return ok({ ok: true, count: result.count });
     }
   }
@@ -313,7 +313,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     switch (body.table) {
       case 'authz_role_capability':
-        return await handleRoleCapability(body.operation, body);
+        return await handleRolePermission(body.operation, body);
       case 'authz_account_access_grant':
         return await handleAccountAccessGrant(body.operation, body);
       case 'authz_assets_access_grant':

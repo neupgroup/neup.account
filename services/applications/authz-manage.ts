@@ -11,7 +11,7 @@ import { checkPermissions } from '@/services/user';
 // Types
 // ---------------------------------------------------------------------------
 
-export type AppCapability = {
+export type AppPermission = {
   id: string;
   name: string;
   description: string | null;
@@ -23,7 +23,7 @@ export type AppRole = {
   name: string;
   description: string | null;
   scope: string | null;
-  capabilities: AppCapability[];
+  permissions: AppPermission[];
 };
 
 // ---------------------------------------------------------------------------
@@ -34,17 +34,17 @@ const ROOT_ROLE_MANAGE_PERMISSIONS = ['root.application.edit'];
 const GLOBAL_AUTHZ_APP_ID = 'neup.account';
 
 async function ensureApplicationManagementRoles(): Promise<void> {
-  const capabilities = [
+  const permissions = [
     { id: 'cap-appmanage-application-view', name: 'application.view', description: 'View application details and settings.' },
     { id: 'cap-appmanage-application-edit', name: 'application.edit', description: 'Edit application details, secrets, access fields, policies, and endpoints.' },
     { id: 'cap-appmanage-application-delete', name: 'application.delete', description: 'Delete or deactivate an application.' },
-    { id: 'cap-appmanage-application-roles-view', name: 'application.roles.view', description: 'View application roles and capabilities.' },
-    { id: 'cap-appmanage-application-roles-manage', name: 'application.roles.manage', description: 'Create, update, and delete application roles and capabilities.' },
+    { id: 'cap-appmanage-application-roles-view', name: 'application.roles.view', description: 'View application roles and permissions.' },
+    { id: 'cap-appmanage-application-roles-manage', name: 'application.roles.manage', description: 'Create, update, and delete application roles and permissions.' },
   ] as const;
 
   await prisma.$transaction(async (tx) => {
-    for (const cap of capabilities) {
-      await tx.authzCapability.upsert({
+    for (const cap of permissions) {
+      await tx.authzPermission.upsert({
         where: { id: cap.id },
         update: {
           name: cap.name,
@@ -70,7 +70,7 @@ async function ensureApplicationManagementRoles(): Promise<void> {
           description:
             roleId === 'application.owner'
               ? 'Full ownership of an application.'
-              : 'Manage application settings, roles, and capabilities.',
+              : 'Manage application settings, roles, and permissions.',
           appId: GLOBAL_AUTHZ_APP_ID,
           scope: 'application',
         },
@@ -80,7 +80,7 @@ async function ensureApplicationManagementRoles(): Promise<void> {
           description:
             roleId === 'application.owner'
               ? 'Full ownership of an application.'
-              : 'Manage application settings, roles, and capabilities.',
+              : 'Manage application settings, roles, and permissions.',
           appId: GLOBAL_AUTHZ_APP_ID,
           scope: 'application',
         },
@@ -88,24 +88,24 @@ async function ensureApplicationManagementRoles(): Promise<void> {
     }
 
     for (const roleId of ['application.owner', 'application.manage']) {
-      for (const cap of capabilities) {
+      for (const cap of permissions) {
         const mapId = `${roleId}::${cap.id}`;
-        await tx.authzRoleCapability.upsert({
+        await tx.authzRolePermission.upsert({
           where: { id: mapId },
           update: {
             roleId,
-            capabilityId: cap.id,
+            permissionId: cap.id,
             appId: GLOBAL_AUTHZ_APP_ID,
             roleName: roleId,
-            denormalizedCapability: [cap.name],
+            denormalizedPermission: [cap.name],
           },
           create: {
             id: mapId,
             roleId,
-            capabilityId: cap.id,
+            permissionId: cap.id,
             appId: GLOBAL_AUTHZ_APP_ID,
             roleName: roleId,
-            denormalizedCapability: [cap.name],
+            denormalizedPermission: [cap.name],
           },
         });
       }
@@ -117,10 +117,10 @@ async function assertCanManageAuthz(appId: string): Promise<{ accountId: string 
   const accountId = await getActiveAccountId();
   if (!accountId) return { error: 'Not signed in.' };
 
-  // Ensure management roles/capabilities are always present in authz tables.
+  // Ensure management roles/permissions are always present in authz tables.
   await ensureApplicationManagementRoles();
 
-  // Root override: global root app editors can manage app roles/capabilities.
+  // Root override: global root app editors can manage app roles/permissions.
   const isRootManager = await checkPermissions(ROOT_ROLE_MANAGE_PERMISSIONS, accountId);
   if (isRootManager) return { accountId };
 
@@ -138,40 +138,40 @@ async function assertCanManageAuthz(appId: string): Promise<{ accountId: string 
 }
 
 // ---------------------------------------------------------------------------
-// Capabilities
+// Permissions
 // ---------------------------------------------------------------------------
 
-export async function getAppCapabilities(appId: string): Promise<AppCapability[]> {
+export async function getAppPermissions(appId: string): Promise<AppPermission[]> {
   try {
-    const records = await prisma.authzCapability.findMany({
+    const records = await prisma.authzPermission.findMany({
       where: { appId },
       orderBy: { name: 'asc' },
       select: { id: true, name: true, description: true, scope: true },
     });
     return records;
   } catch (error) {
-    await logError('database', error, `getAppCapabilities:${appId}`);
+    await logError('database', error, `getAppPermissions:${appId}`);
     return [];
   }
 }
 
-export async function createAppCapability(input: {
+export async function createAppPermission(input: {
   appId: string;
   name: string;
   description?: string;
   scope?: string;
-}): Promise<{ success: boolean; capability?: AppCapability; error?: string }> {
+}): Promise<{ success: boolean; permission?: AppPermission; error?: string }> {
   const auth = await assertCanManageAuthz(input.appId);
   if ('error' in auth) return { success: false, error: auth.error };
 
   const name = input.name.trim();
-  if (!name) return { success: false, error: 'Capability name is required.' };
+  if (!name) return { success: false, error: 'Permission name is required.' };
   if (!/^[a-z0-9._-]+$/.test(name)) {
-    return { success: false, error: 'Capability name may only contain lowercase letters, numbers, dots (.), underscores (_), and hyphens (-).' };
+    return { success: false, error: 'Permission name may only contain lowercase letters, numbers, dots (.), underscores (_), and hyphens (-).' };
   }
 
   try {
-    const record = await prisma.authzCapability.create({
+    const record = await prisma.authzPermission.create({
       data: {
         name,
         description: input.description?.trim() || null,
@@ -182,32 +182,32 @@ export async function createAppCapability(input: {
     });
 
     revalidatePath(`/data/appconnection/${input.appId}`);
-    return { success: true, capability: record };
+    return { success: true, permission: record };
   } catch (error) {
-    await logError('database', error, `createAppCapability:${input.appId}`);
-    return { success: false, error: 'Failed to create capability.' };
+    await logError('database', error, `createAppPermission:${input.appId}`);
+    return { success: false, error: 'Failed to create permission.' };
   }
 }
 
-export async function updateAppCapability(input: {
+export async function updateAppPermission(input: {
   appId: string;
-  capabilityId: string;
+  permissionId: string;
   name: string;
   description?: string;
   scope?: string;
-}): Promise<{ success: boolean; capability?: AppCapability; error?: string }> {
+}): Promise<{ success: boolean; permission?: AppPermission; error?: string }> {
   const auth = await assertCanManageAuthz(input.appId);
   if ('error' in auth) return { success: false, error: auth.error };
 
   const name = input.name.trim();
-  if (!name) return { success: false, error: 'Capability name is required.' };
+  if (!name) return { success: false, error: 'Permission name is required.' };
   if (!/^[a-z0-9._-]+$/.test(name)) {
-    return { success: false, error: 'Capability name may only contain lowercase letters, numbers, dots (.), underscores (_), and hyphens (-).' };
+    return { success: false, error: 'Permission name may only contain lowercase letters, numbers, dots (.), underscores (_), and hyphens (-).' };
   }
 
   try {
-    const record = await prisma.authzCapability.update({
-      where: { id: input.capabilityId },
+    const record = await prisma.authzPermission.update({
+      where: { id: input.permissionId },
       data: {
         name,
         description: input.description?.trim() || null,
@@ -217,27 +217,27 @@ export async function updateAppCapability(input: {
     });
 
     revalidatePath(`/data/appconnection/${input.appId}`);
-    return { success: true, capability: record };
+    return { success: true, permission: record };
   } catch (error) {
-    await logError('database', error, `updateAppCapability:${input.appId}`);
-    return { success: false, error: 'Failed to update capability.' };
+    await logError('database', error, `updateAppPermission:${input.appId}`);
+    return { success: false, error: 'Failed to update permission.' };
   }
 }
 
-export async function deleteAppCapability(input: {
+export async function deleteAppPermission(input: {
   appId: string;
-  capabilityId: string;
+  permissionId: string;
 }): Promise<{ success: boolean; error?: string }> {
   const auth = await assertCanManageAuthz(input.appId);
   if ('error' in auth) return { success: false, error: auth.error };
 
   try {
-    await prisma.authzCapability.delete({ where: { id: input.capabilityId } });
+    await prisma.authzPermission.delete({ where: { id: input.permissionId } });
     revalidatePath(`/data/appconnection/${input.appId}`);
     return { success: true };
   } catch (error) {
-    await logError('database', error, `deleteAppCapability:${input.appId}`);
-    return { success: false, error: 'Failed to delete capability.' };
+    await logError('database', error, `deleteAppPermission:${input.appId}`);
+    return { success: false, error: 'Failed to delete permission.' };
   }
 }
 
@@ -257,7 +257,7 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
         scope: true,
         roleMaps: {
           select: {
-            capability: {
+            permission: {
               select: { id: true, name: true, description: true, scope: true },
             },
           },
@@ -270,7 +270,7 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
       name: role.name,
       description: role.description,
       scope: role.scope,
-      capabilities: role.roleMaps.map((m) => m.capability),
+      permissions: role.roleMaps.map((m) => m.permission),
     }));
   } catch (error) {
     await logError('database', error, `getAppRoles:${appId}`);
@@ -283,7 +283,7 @@ export async function createAppRole(input: {
   name: string;
   description?: string;
   scope?: string;
-  capabilityIds: string[];
+  permissionIds: string[];
 }): Promise<{ success: boolean; role?: AppRole; error?: string }> {
   const auth = await assertCanManageAuthz(input.appId);
   if ('error' in auth) return { success: false, error: auth.error };
@@ -315,19 +315,19 @@ export async function createAppRole(input: {
         select: { id: true, name: true, description: true, scope: true },
       });
 
-      if (input.capabilityIds.length > 0) {
-        const caps = await tx.authzCapability.findMany({
-          where: { id: { in: input.capabilityIds }, appId: input.appId },
+      if (input.permissionIds.length > 0) {
+        const caps = await tx.authzPermission.findMany({
+          where: { id: { in: input.permissionIds }, appId: input.appId },
           select: { id: true, name: true },
         });
 
-        await tx.authzRoleCapability.createMany({
+        await tx.authzRolePermission.createMany({
           data: caps.map((cap) => ({
             roleId: created.id,
-            capabilityId: cap.id,
+            permissionId: cap.id,
             appId: input.appId,
             roleName: name,
-            denormalizedCapability: [cap.name],
+            denormalizedPermission: [cap.name],
           })),
           skipDuplicates: true,
         });
@@ -338,7 +338,7 @@ export async function createAppRole(input: {
 
     // Dispatch webhook
     const fullRole = await getAppRoles(input.appId).then((roles) =>
-      roles.find((r) => r.id === role.id) ?? { ...role, capabilities: [] }
+      roles.find((r) => r.id === role.id) ?? { ...role, permissions: [] }
     );
 
     revalidatePath(`/data/appconnection/${input.appId}`);
@@ -349,10 +349,10 @@ export async function createAppRole(input: {
   }
 }
 
-export async function updateAppRoleCapabilities(input: {
+export async function updateAppRolePermissions(input: {
   appId: string;
   roleId: string;
-  capabilityIds: string[];
+  permissionIds: string[];
 }): Promise<{ success: boolean; error?: string }> {
   const auth = await assertCanManageAuthz(input.appId);
   if ('error' in auth) return { success: false, error: auth.error };
@@ -365,21 +365,21 @@ export async function updateAppRoleCapabilities(input: {
       });
       if (!role) throw new Error('Role not found.');
 
-      await tx.authzRoleCapability.deleteMany({ where: { roleId: input.roleId } });
+      await tx.authzRolePermission.deleteMany({ where: { roleId: input.roleId } });
 
-      if (input.capabilityIds.length > 0) {
-        const caps = await tx.authzCapability.findMany({
-          where: { id: { in: input.capabilityIds }, appId: input.appId },
+      if (input.permissionIds.length > 0) {
+        const caps = await tx.authzPermission.findMany({
+          where: { id: { in: input.permissionIds }, appId: input.appId },
           select: { id: true, name: true },
         });
 
-        await tx.authzRoleCapability.createMany({
+        await tx.authzRolePermission.createMany({
           data: caps.map((cap) => ({
             roleId: input.roleId,
-            capabilityId: cap.id,
+            permissionId: cap.id,
             appId: input.appId,
             roleName: role.name,
-            denormalizedCapability: [cap.name],
+            denormalizedPermission: [cap.name],
           })),
           skipDuplicates: true,
         });
@@ -389,8 +389,8 @@ export async function updateAppRoleCapabilities(input: {
     revalidatePath(`/data/appconnection/${input.appId}`);
     return { success: true };
   } catch (error) {
-    await logError('database', error, `updateAppRoleCapabilities:${input.appId}`);
-    return { success: false, error: 'Failed to update role capabilities.' };
+    await logError('database', error, `updateAppRolePermissions:${input.appId}`);
+    return { success: false, error: 'Failed to update role permissions.' };
   }
 }
 
@@ -412,7 +412,7 @@ export async function deleteAppRole(input: {
 }
 
 // ---------------------------------------------------------------------------
-// Push all roles + capabilities to the registered webhook
+// Push all roles + permissions to the registered webhook
 // ---------------------------------------------------------------------------
 
 export async function pushAuthzToWebhook(appId: string): Promise<{
@@ -424,14 +424,14 @@ export async function pushAuthzToWebhook(appId: string): Promise<{
   if ('error' in auth) return { success: false, pushed: 0, error: auth.error };
 
   try {
-    const roleMaps = await prisma.authzRoleCapability.findMany({
+    const roleMaps = await prisma.authzRolePermission.findMany({
       where: { appId },
       select: {
         id: true,
         roleId: true,
-        capabilityId: true,
+        permissionId: true,
         scope: true,
-        denormalizedCapability: true,
+        denormalizedPermission: true,
         roleName: true,
       },
     });
@@ -440,16 +440,16 @@ export async function pushAuthzToWebhook(appId: string): Promise<{
       return { success: true, pushed: 0 };
     }
 
-    // Push each role-capability mapping as an insert
+    // Push each role-permission mapping as an insert
     for (const map of roleMaps) {
       await dispatchAuthzWebhook(appId, {
         table: 'authz_role_capability',
         operation: 'insert',
         data: {
           roleId: map.roleId,
-          capabilityId: map.capabilityId,
+          permissionId: map.permissionId,
           scope: map.scope,
-          denormalizedCapability: map.denormalizedCapability,
+          denormalizedPermission: map.denormalizedPermission,
           roleName: map.roleName,
         },
       });

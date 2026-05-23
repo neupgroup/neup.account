@@ -7,13 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
-  createAppCapability,
+  createAppPermission,
   createAppRole,
-  deleteAppCapability,
+  deleteAppPermission,
   deleteAppRole,
-  updateAppRoleCapabilities,
+  updateAppRolePermissions,
   pushAuthzToWebhook,
-  type AppCapability,
+  type AppPermission,
   type AppRole,
 } from '@/services/applications/authz-manage';
 
@@ -23,7 +23,7 @@ import {
 
 type Props = {
   appId: string;
-  initialCapabilities: AppCapability[];
+  initialPermissions: AppPermission[];
   initialRoles: AppRole[];
   hasWebhook: boolean;
 };
@@ -32,11 +32,11 @@ type Props = {
 // Component
 // ---------------------------------------------------------------------------
 
-export function AuthzManagementPanel({ appId, initialCapabilities, initialRoles, hasWebhook }: Props) {
+export function AuthzManagementPanel({ appId, initialPermissions, initialRoles, hasWebhook }: Props) {
   const { toast } = useToast();
 
-  // ---- Capabilities state ----
-  const [capabilities, setCapabilities] = useState<AppCapability[]>(initialCapabilities);
+  // ---- Permissions state ----
+  const [permissions, setPermissions] = useState<AppPermission[]>(initialPermissions);
   const [newCapName, setNewCapName] = useState('');
   const [newCapDesc, setNewCapDesc] = useState('');
   const [newCapScope, setNewCapScope] = useState('');
@@ -50,7 +50,7 @@ export function AuthzManagementPanel({ appId, initialCapabilities, initialRoles,
   const [newRoleCapIds, setNewRoleCapIds] = useState<string[]>([]);
   const [rolePending, setRolePending] = useState(false);
 
-  // ---- Editing role capabilities ----
+  // ---- Editing role permissions ----
   const [editingRoleId, setEditingRoleId] = useState<string | null>(null);
   const [editingCapIds, setEditingCapIds] = useState<string[]>([]);
   const [editPending, setEditPending] = useState(false);
@@ -59,15 +59,15 @@ export function AuthzManagementPanel({ appId, initialCapabilities, initialRoles,
   const [pushPending, setPushPending] = useState(false);
 
   // ---------------------------------------------------------------------------
-  // Capability handlers
+  // Permission handlers
   // ---------------------------------------------------------------------------
 
-  const handleAddCapability = async () => {
+  const handleAddPermission = async () => {
     const name = newCapName.trim();
     if (!name) return;
 
     setCapPending(true);
-    const result = await createAppCapability({
+    const result = await createAppPermission({
       appId,
       name,
       description: newCapDesc || undefined,
@@ -75,30 +75,30 @@ export function AuthzManagementPanel({ appId, initialCapabilities, initialRoles,
     });
     setCapPending(false);
 
-    if (!result.success || !result.capability) {
-      toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not create capability.' });
+    if (!result.success || !result.permission) {
+      toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not create permission.' });
       return;
     }
 
-    setCapabilities((prev) => [...prev, result.capability!]);
+    setPermissions((prev) => [...prev, result.permission!]);
     setNewCapName('');
     setNewCapDesc('');
     setNewCapScope('');
-    toast({ title: 'Capability created' });
+    toast({ title: 'Permission created' });
   };
 
-  const handleDeleteCapability = async (capabilityId: string) => {
-    const result = await deleteAppCapability({ appId, capabilityId });
+  const handleDeletePermission = async (permissionId: string) => {
+    const result = await deleteAppPermission({ appId, permissionId });
     if (!result.success) {
-      toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not delete capability.' });
+      toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not delete permission.' });
       return;
     }
-    setCapabilities((prev) => prev.filter((c) => c.id !== capabilityId));
+    setPermissions((prev) => prev.filter((c) => c.id !== permissionId));
     // Also remove from any role that had it
     setRoles((prev) =>
-      prev.map((r) => ({ ...r, capabilities: r.capabilities.filter((c) => c.id !== capabilityId) }))
+      prev.map((r) => ({ ...r, permissions: r.permissions.filter((c) => c.id !== permissionId) }))
     );
-    toast({ title: 'Capability deleted' });
+    toast({ title: 'Permission deleted' });
   };
 
   // ---------------------------------------------------------------------------
@@ -115,7 +115,7 @@ export function AuthzManagementPanel({ appId, initialCapabilities, initialRoles,
       name,
       description: newRoleDesc || undefined,
       scope: newRoleScope || undefined,
-      capabilityIds: newRoleCapIds,
+      permissionIds: newRoleCapIds,
     });
     setRolePending(false);
 
@@ -144,16 +144,16 @@ export function AuthzManagementPanel({ appId, initialCapabilities, initialRoles,
 
   const handleStartEditRole = (role: AppRole) => {
     setEditingRoleId(role.id);
-    setEditingCapIds(role.capabilities.map((c) => c.id));
+    setEditingCapIds(role.permissions.map((c) => c.id));
   };
 
-  const handleSaveRoleCapabilities = async () => {
+  const handleSaveRolePermissions = async () => {
     if (!editingRoleId) return;
     setEditPending(true);
-    const result = await updateAppRoleCapabilities({
+    const result = await updateAppRolePermissions({
       appId,
       roleId: editingRoleId,
-      capabilityIds: editingCapIds,
+      permissionIds: editingCapIds,
     });
     setEditPending(false);
 
@@ -165,7 +165,7 @@ export function AuthzManagementPanel({ appId, initialCapabilities, initialRoles,
     setRoles((prev) =>
       prev.map((r) =>
         r.id === editingRoleId
-          ? { ...r, capabilities: capabilities.filter((c) => editingCapIds.includes(c.id)) }
+          ? { ...r, permissions: permissions.filter((c) => editingCapIds.includes(c.id)) }
           : r
       )
     );
@@ -189,11 +189,11 @@ export function AuthzManagementPanel({ appId, initialCapabilities, initialRoles,
     }
 
     if (result.pushed === 0) {
-      toast({ title: 'Nothing to push', description: 'No role-capability mappings exist yet.' });
+      toast({ title: 'Nothing to push', description: 'No role-permission mappings exist yet.' });
       return;
     }
 
-    toast({ title: 'Pushed', description: `${result.pushed} role-capability mapping${result.pushed === 1 ? '' : 's'} sent to webhook.` });
+    toast({ title: 'Pushed', description: `${result.pushed} role-permission mapping${result.pushed === 1 ? '' : 's'} sent to webhook.` });
   };
 
   // ---------------------------------------------------------------------------
@@ -203,20 +203,20 @@ export function AuthzManagementPanel({ appId, initialCapabilities, initialRoles,
   return (
     <div className="grid gap-6">
 
-      {/* ---- Capabilities ---- */}
+      {/* ---- Permissions ---- */}
       <Card>
         <CardHeader>
-          <CardTitle>Capabilities</CardTitle>
+          <CardTitle>Permissions</CardTitle>
           <CardDescription>
-            Define the individual permissions this application can assign. Each capability represents one action or access right.
+            Define the individual permissions this application can assign. Each permission represents one action or access right.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
 
-          {/* Existing capabilities */}
-          {capabilities.length > 0 ? (
+          {/* Existing permissions */}
+          {permissions.length > 0 ? (
             <div className="space-y-2">
-              {capabilities.map((cap) => (
+              {permissions.map((cap) => (
                 <div key={cap.id} className="flex items-center justify-between gap-3 rounded-md border px-3 py-2">
                   <div className="min-w-0">
                     <p className="text-sm font-medium truncate">{cap.name}</p>
@@ -231,7 +231,7 @@ export function AuthzManagementPanel({ appId, initialCapabilities, initialRoles,
                     type="button"
                     variant="ghost"
                     size="sm"
-                    onClick={() => handleDeleteCapability(cap.id)}
+                    onClick={() => handleDeletePermission(cap.id)}
                   >
                     Remove
                   </Button>
@@ -239,12 +239,12 @@ export function AuthzManagementPanel({ appId, initialCapabilities, initialRoles,
               ))}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">No capabilities yet.</p>
+            <p className="text-sm text-muted-foreground">No permissions yet.</p>
           )}
 
-          {/* Add new capability */}
+          {/* Add new permission */}
           <div className="rounded-md border p-4 space-y-3">
-            <p className="text-sm font-medium">Add capability</p>
+            <p className="text-sm font-medium">Add permission</p>
             <Input
               value={newCapName}
               onChange={(e) => setNewCapName(e.target.value)}
@@ -263,10 +263,10 @@ export function AuthzManagementPanel({ appId, initialCapabilities, initialRoles,
             <div className="flex justify-end">
               <Button
                 type="button"
-                onClick={handleAddCapability}
+                onClick={handleAddPermission}
                 disabled={capPending || !newCapName.trim()}
               >
-                {capPending ? 'Adding...' : 'Add Capability'}
+                {capPending ? 'Adding...' : 'Add Permission'}
               </Button>
             </div>
           </div>
@@ -278,7 +278,7 @@ export function AuthzManagementPanel({ appId, initialCapabilities, initialRoles,
         <CardHeader>
           <CardTitle>Roles</CardTitle>
           <CardDescription>
-            Group capabilities into roles. Roles are assigned to accounts via access grants.
+            Group permissions into roles. Roles are assigned to accounts via access grants.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -318,15 +318,15 @@ export function AuthzManagementPanel({ appId, initialCapabilities, initialRoles,
                     </div>
                   </div>
 
-                  {/* Assigned capabilities */}
+                  {/* Assigned permissions */}
                   {editingRoleId === role.id ? (
                     <div className="space-y-3 pt-2 border-t">
-                      <p className="text-xs font-medium text-muted-foreground">Select capabilities</p>
-                      {capabilities.length === 0 ? (
-                        <p className="text-xs text-muted-foreground">No capabilities defined yet.</p>
+                      <p className="text-xs font-medium text-muted-foreground">Select permissions</p>
+                      {permissions.length === 0 ? (
+                        <p className="text-xs text-muted-foreground">No permissions defined yet.</p>
                       ) : (
                         <div className="grid gap-2 sm:grid-cols-2">
-                          {capabilities.map((cap) => (
+                          {permissions.map((cap) => (
                             <label key={cap.id} className="flex items-center gap-2 text-sm rounded-md border px-3 py-2 cursor-pointer">
                               <input
                                 type="checkbox"
@@ -356,7 +356,7 @@ export function AuthzManagementPanel({ appId, initialCapabilities, initialRoles,
                         <Button
                           type="button"
                           size="sm"
-                          onClick={handleSaveRoleCapabilities}
+                          onClick={handleSaveRolePermissions}
                           disabled={editPending}
                         >
                           {editPending ? 'Saving...' : 'Save'}
@@ -364,14 +364,14 @@ export function AuthzManagementPanel({ appId, initialCapabilities, initialRoles,
                       </div>
                     </div>
                   ) : (
-                    role.capabilities.length > 0 ? (
+                    role.permissions.length > 0 ? (
                       <div className="flex flex-wrap gap-1">
-                        {role.capabilities.map((cap) => (
+                        {role.permissions.map((cap) => (
                           <Badge key={cap.id} variant="secondary" className="text-xs">{cap.name}</Badge>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs text-muted-foreground">No capabilities assigned.</p>
+                      <p className="text-xs text-muted-foreground">No permissions assigned.</p>
                     )
                   )}
                 </div>
@@ -399,11 +399,11 @@ export function AuthzManagementPanel({ appId, initialCapabilities, initialRoles,
               onChange={(e) => setNewRoleScope(e.target.value)}
               placeholder="Scope (optional)"
             />
-            {capabilities.length > 0 && (
+            {permissions.length > 0 && (
               <div className="space-y-2">
-                <p className="text-xs font-medium text-muted-foreground">Assign capabilities</p>
+                <p className="text-xs font-medium text-muted-foreground">Assign permissions</p>
                 <div className="grid gap-2 sm:grid-cols-2">
-                  {capabilities.map((cap) => (
+                  {permissions.map((cap) => (
                     <label key={cap.id} className="flex items-center gap-2 text-sm rounded-md border px-3 py-2 cursor-pointer">
                       <input
                         type="checkbox"
@@ -440,7 +440,7 @@ export function AuthzManagementPanel({ appId, initialCapabilities, initialRoles,
         <CardHeader>
           <CardTitle>Push to Application</CardTitle>
           <CardDescription>
-            Send all current role-capability mappings to the registered webhook endpoint.
+            Send all current role-permission mappings to the registered webhook endpoint.
             {!hasWebhook && ' No webhook URL is configured — set one in the Webhook section first.'}
           </CardDescription>
         </CardHeader>

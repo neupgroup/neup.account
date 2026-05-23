@@ -268,11 +268,11 @@ export default async function ApplicationDetailPage({ params }: ApplicationDetai
               </FlowLink>
 
               <FlowLink
-                href={`/data/appconnection/${id}/capability`}
+                href={`/data/appconnection/${id}/permission`}
                 className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
               >
                 <div className="min-w-0">
-                  <p className="font-medium">Capabilities</p>
+                  <p className="font-medium">Permissions</p>
                   <p className="text-sm text-muted-foreground">Define individual permissions this application can assign.</p>
                 </div>
                 <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
@@ -284,7 +284,7 @@ export default async function ApplicationDetailPage({ params }: ApplicationDetai
               >
                 <div className="min-w-0">
                   <p className="font-medium">Roles</p>
-                  <p className="text-sm text-muted-foreground">Group capabilities into roles for access grants.</p>
+                  <p className="text-sm text-muted-foreground">Group permissions into roles for access grants.</p>
                 </div>
                 <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
               </FlowLink>

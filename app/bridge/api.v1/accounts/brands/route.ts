@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { getActiveSession } from '@/core/auth/verify';
-import { getAccessableBrandAccountsWithCapabilities } from '@/services/manage/accounts';
+import { getAccessableBrandAccountsWithPermissions } from '@/services/manage/accounts';
 import { resolveAppTokenAuth } from '@/services/auth/appTokenAuth';
 
 export const dynamic = 'force-dynamic';
@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
  *
  * Returns only the brand and branch accounts the authenticated user
  * has been granted access to (accountType: 'brand' | 'branch').
- * Each account includes the capabilities the caller holds on it.
+ * Each account includes the permissions the caller holds on it.
  *
  * Response shape:
  * {
@@ -22,7 +22,7 @@ export const dynamic = 'force-dynamic';
  *     status: string | null;
  *     isVerified: boolean;
  *     accountType: string;
- *     capabilities: string[];
+ *     permissions: string[];
  *   }>
  * }
  */
@@ -53,7 +53,7 @@ export async function GET(_request: NextRequest) {
         accountId = resolved.accountId;
     }
 
-    const accounts = await getAccessableBrandAccountsWithCapabilities(accountId);
+    const accounts = await getAccessableBrandAccountsWithPermissions(accountId);
 
     return NextResponse.json({
         success: true,

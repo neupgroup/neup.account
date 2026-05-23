@@ -26,20 +26,20 @@ import {
   AlertDialogAction,
 } from '@/components/ui/alert-dialog';
 import {
-  createAppCapability,
-  updateAppCapability,
-  deleteAppCapability,
-  type AppCapability,
+  createAppPermission,
+  updateAppPermission,
+  deleteAppPermission,
+  type AppPermission,
 } from '@/services/applications/authz-manage';
 
 type Props = {
   appId: string;
-  initialCapabilities: AppCapability[];
+  initialPermissions: AppPermission[];
 };
 
-export function CapabilityPanel({ appId, initialCapabilities }: Props) {
+export function PermissionPanel({ appId, initialPermissions }: Props) {
   const { toast } = useToast();
-  const [capabilities, setCapabilities] = useState<AppCapability[]>(initialCapabilities);
+  const [permissions, setPermissions] = useState<AppPermission[]>(initialPermissions);
 
   // Add dialog
   const [addOpen, setAddOpen] = useState(false);
@@ -49,19 +49,19 @@ export function CapabilityPanel({ appId, initialCapabilities }: Props) {
   const [addPending, setAddPending] = useState(false);
 
   // Edit dialog
-  const [editTarget, setEditTarget] = useState<AppCapability | null>(null);
+  const [editTarget, setEditTarget] = useState<AppPermission | null>(null);
   const [editName, setEditName] = useState('');
   const [editDesc, setEditDesc] = useState('');
   const [editScope, setEditScope] = useState('');
   const [editPending, setEditPending] = useState(false);
 
   // Remove dialog
-  const [removeTarget, setRemoveTarget] = useState<AppCapability | null>(null);
+  const [removeTarget, setRemoveTarget] = useState<AppPermission | null>(null);
   const [removePending, setRemovePending] = useState(false);
 
   const isValidName = (value: string) => /^[a-z0-9._-]+$/.test(value.trim());
 
-  const openEdit = (cap: AppCapability) => {
+  const openEdit = (cap: AppPermission) => {
     setEditTarget(cap);
     setEditName(cap.name);
     setEditDesc(cap.description ?? '');
@@ -82,28 +82,28 @@ export function CapabilityPanel({ appId, initialCapabilities }: Props) {
       toast({
         variant: 'destructive',
         title: 'Invalid name',
-        description: 'Capability name may only contain lowercase letters, numbers, dots (.), underscores (_), and hyphens (-).',
+        description: 'Permission name may only contain lowercase letters, numbers, dots (.), underscores (_), and hyphens (-).',
       });
       return;
     }
     setAddPending(true);
-    const result = await createAppCapability({
+    const result = await createAppPermission({
       appId,
       name: trimmed,
       description: addDesc || undefined,
       scope: addScope || undefined,
     });
     setAddPending(false);
-    if (!result.success || !result.capability) {
-      toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not create capability.' });
+    if (!result.success || !result.permission) {
+      toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not create permission.' });
       return;
     }
-    setCapabilities((prev) => [...prev, result.capability!]);
+    setPermissions((prev) => [...prev, result.permission!]);
     setAddName('');
     setAddDesc('');
     setAddScope('');
     setAddOpen(false);
-    toast({ title: 'Capability created' });
+    toast({ title: 'Permission created' });
   };
 
   const handleEdit = async () => {
@@ -114,40 +114,40 @@ export function CapabilityPanel({ appId, initialCapabilities }: Props) {
       toast({
         variant: 'destructive',
         title: 'Invalid name',
-        description: 'Capability name may only contain lowercase letters, numbers, dots (.), underscores (_), and hyphens (-).',
+        description: 'Permission name may only contain lowercase letters, numbers, dots (.), underscores (_), and hyphens (-).',
       });
       return;
     }
     setEditPending(true);
-    const result = await updateAppCapability({
+    const result = await updateAppPermission({
       appId,
-      capabilityId: editTarget.id,
+      permissionId: editTarget.id,
       name: trimmed,
       description: editDesc || undefined,
       scope: editScope || undefined,
     });
     setEditPending(false);
-    if (!result.success || !result.capability) {
-      toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not update capability.' });
+    if (!result.success || !result.permission) {
+      toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not update permission.' });
       return;
     }
-    setCapabilities((prev) => prev.map((c) => c.id === editTarget.id ? result.capability! : c));
+    setPermissions((prev) => prev.map((c) => c.id === editTarget.id ? result.permission! : c));
     closeEdit();
-    toast({ title: 'Capability updated' });
+    toast({ title: 'Permission updated' });
   };
 
   const handleRemoveConfirm = async () => {
     if (!removeTarget) return;
     setRemovePending(true);
-    const result = await deleteAppCapability({ appId, capabilityId: removeTarget.id });
+    const result = await deleteAppPermission({ appId, permissionId: removeTarget.id });
     setRemovePending(false);
     if (!result.success) {
-      toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not delete capability.' });
+      toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not delete permission.' });
       return;
     }
-    setCapabilities((prev) => prev.filter((c) => c.id !== removeTarget.id));
+    setPermissions((prev) => prev.filter((c) => c.id !== removeTarget.id));
     setRemoveTarget(null);
-    toast({ title: 'Capability removed' });
+    toast({ title: 'Permission removed' });
   };
 
   return (
@@ -171,9 +171,9 @@ export function CapabilityPanel({ appId, initialCapabilities }: Props) {
           <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
         </button>
 
-        {/* Capability rows */}
-        {capabilities.length > 0 ? (
-          capabilities.map((cap) => (
+        {/* Permission rows */}
+        {permissions.length > 0 ? (
+          permissions.map((cap) => (
             <div
               key={cap.id}
               className="group flex items-center justify-between gap-4 border-b px-4 py-4 last:border-b-0 transition-colors hover:bg-muted/40 sm:px-5"
@@ -264,7 +264,7 @@ export function CapabilityPanel({ appId, initialCapabilities }: Props) {
           <DialogHeader>
             <DialogTitle>Edit Permission</DialogTitle>
             <DialogDescription>
-              Update the name, description, or scope of this capability.
+              Update the name, description, or scope of this permission.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
@@ -309,7 +309,7 @@ export function CapabilityPanel({ appId, initialCapabilities }: Props) {
           <AlertDialogHeader>
             <AlertDialogTitle>Remove permission?</AlertDialogTitle>
             <AlertDialogDescription>
-              <strong>{removeTarget?.name}</strong> will be permanently removed. Any roles that include this capability will lose it.
+              <strong>{removeTarget?.name}</strong> will be permanently removed. Any roles that include this permission will lose it.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

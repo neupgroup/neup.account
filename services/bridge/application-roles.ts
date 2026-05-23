@@ -1,7 +1,7 @@
 /**
  * services/bridge/application-roles.ts
  *
- * Returns roles for the given app, with capabilities denormalized inline.
+ * Returns roles for the given app, with permissions denormalized inline.
  *
  * Pagination:
  *   Offset mode  — ?start=0&end=100
@@ -120,7 +120,7 @@ export async function getApplicationRoles(params: {
         status: 200,
         body: {
           success: true,
-          columns: ['roleId', 'roleName', 'roleDescription', 'roleScope', 'pushed', 'capabilities'],
+          columns: ['roleId', 'roleName', 'roleDescription', 'roleScope', 'pushed', 'permissions'],
           data: [],
           meta: { total: 0, returned: 0, startedAt: null, endedAt: null },
         },
@@ -137,7 +137,7 @@ export async function getApplicationRoles(params: {
       // 4. Count total (unpushed only)
       const total = await tx.authzRole.count({ where });
 
-      // 5. Fetch roles with their capability maps (unpushed only)
+      // 5. Fetch roles with their permission maps (unpushed only)
       const roles = await tx.authzRole.findMany({
         where,
         ...(cursorId
@@ -155,8 +155,8 @@ export async function getApplicationRoles(params: {
             select: {
               id: true,
               scope: true,
-              denormalizedCapability: true,
-              capability: {
+              denormalizedPermission: true,
+              permission: {
                 select: {
                   id: true,
                   name: true,
@@ -180,14 +180,14 @@ export async function getApplicationRoles(params: {
       return { total, roles };
     });
 
-    // 6. Shape rows — capabilities are denormalized inline
+    // 6. Shape rows — permissions are denormalized inline
     const columns = [
       'roleId',
       'roleName',
       'roleDescription',
       'roleScope',
       'pushed',
-      'capabilities',
+      'permissions',
     ];
 
     const data = roles.map((r) => ({
@@ -196,14 +196,14 @@ export async function getApplicationRoles(params: {
       roleDescription: r.description,
       roleScope: r.scope,
       pushed: true,
-      capabilities: r.roleMaps.map((m) => ({
-        roleCapabilityId: m.id,
-        capabilityId: m.capability.id,
-        capabilityName: m.capability.name,
-        capabilityDescription: m.capability.description,
-        capabilityScope: m.capability.scope ?? m.scope,
+      permissions: r.roleMaps.map((m) => ({
+        rolePermissionId: m.id,
+        permissionId: m.permission.id,
+        permissionName: m.permission.name,
+        permissionDescription: m.permission.description,
+        permissionScope: m.permission.scope ?? m.scope,
         // Include the stored denormalized snapshot if present
-        denormalized: m.denormalizedCapability ?? null,
+        denormalized: m.denormalizedPermission ?? null,
       })),
     }));
 

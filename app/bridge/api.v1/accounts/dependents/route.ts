@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { getActiveSession } from '@/core/auth/verify';
-import { getAccessableAccountsWithCapabilities } from '@/services/manage/accounts';
+import { getAccessableAccountsWithPermissions } from '@/services/manage/accounts';
 import { resolveAppTokenAuth } from '@/services/auth/appTokenAuth';
 
 export const dynamic = 'force-dynamic';
@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
  * GET /bridge/api.v1/accounts/dependents
  *
  * Returns only the dependent accounts the authenticated user has been granted
- * access to (accountType: 'dependent'). Each account includes the capabilities
+ * access to (accountType: 'dependent'). Each account includes the permissions
  * the caller holds on it.
  *
  * Supports two auth modes:
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     accountId = resolved.accountId;
   }
 
-  const accounts = await getAccessableAccountsWithCapabilities(accountId);
+  const accounts = await getAccessableAccountsWithPermissions(accountId);
   const dependents = accounts.filter((a) => a.accountType === 'dependent');
 
   return NextResponse.json({ success: true, accounts: dependents });

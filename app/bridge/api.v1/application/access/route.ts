@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
  * GET /bridge/api.v1/application/access
  *
  * Returns access grants (AuthzAppAccessGrant) for the given application —
- * who has been granted what role by whom, with capabilities denormalized
+ * who has been granted what role by whom, with permissions denormalized
  * inline on each role.
  *
  * Auth (required):
@@ -28,8 +28,8 @@ export const dynamic = 'force-dynamic';
  *       ownerAccountId, ownerDisplayName, ownerAccountType,
  *       targetAccountId, targetDisplayName, targetAccountType,
  *       roleId, roleName, roleDescription, roleScope,
- *       capabilities: [
- *         { capabilityId, capabilityName, capabilityScope, denormalized }
+ *       permissions: [
+ *         { permissionId, permissionName, permissionScope, denormalized }
  *       ],
  *       portfolioId
  *     },

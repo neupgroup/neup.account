@@ -92,7 +92,7 @@ const ROOT_CAPABILITIES = [
   'root.site.social_accounts.delete',
 ] as const;
 
-function slugifyCapability(name: string): string {
+function slugifyPermission(name: string): string {
   return name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase();
 }
 
@@ -255,62 +255,62 @@ async function main() {
       },
     });
 
-    for (const capabilityName of DEFAULT_CAPABILITIES) {
-      const capabilityId = `cap-def-${slugifyCapability(capabilityName)}`;
-      await prisma.authzCapability.upsert({
-        where: { id: capabilityId },
-        update: { name: capabilityName, appId: APP_ID, scope: 'default' },
-        create: { id: capabilityId, name: capabilityName, appId: APP_ID, scope: 'default' },
+    for (const permissionName of DEFAULT_CAPABILITIES) {
+      const permissionId = `cap-def-${slugifyPermission(permissionName)}`;
+      await prisma.authzPermission.upsert({
+        where: { id: permissionId },
+        update: { name: permissionName, appId: APP_ID, scope: 'default' },
+        create: { id: permissionId, name: permissionName, appId: APP_ID, scope: 'default' },
       });
 
-      await prisma.authzRoleCapability.upsert({
-        where: { id: `rcp-def-${capabilityId}` },
+      await prisma.authzRolePermission.upsert({
+        where: { id: `rcp-def-${permissionId}` },
         update: {
           roleId: ROLE_DEFAULT_ID,
-          capabilityId,
+          permissionId,
           scope: 'default',
           appId: APP_ID,
           roleName: 'individual.default',
-          denormalizedCapability: defaultDenormalized,
+          denormalizedPermission: defaultDenormalized,
         },
         create: {
-          id: `rcp-def-${capabilityId}`,
+          id: `rcp-def-${permissionId}`,
           roleId: ROLE_DEFAULT_ID,
-          capabilityId,
+          permissionId,
           scope: 'default',
           appId: APP_ID,
           roleName: 'individual.default',
-          denormalizedCapability: defaultDenormalized,
+          denormalizedPermission: defaultDenormalized,
         },
       });
     }
 
-    for (const capabilityName of ROOT_CAPABILITIES) {
-      const capabilityId = `cap-root-${slugifyCapability(capabilityName)}`;
-      await prisma.authzCapability.upsert({
-        where: { id: capabilityId },
-        update: { name: capabilityName, appId: APP_ID, scope: 'root' },
-        create: { id: capabilityId, name: capabilityName, appId: APP_ID, scope: 'root' },
+    for (const permissionName of ROOT_CAPABILITIES) {
+      const permissionId = `cap-root-${slugifyPermission(permissionName)}`;
+      await prisma.authzPermission.upsert({
+        where: { id: permissionId },
+        update: { name: permissionName, appId: APP_ID, scope: 'root' },
+        create: { id: permissionId, name: permissionName, appId: APP_ID, scope: 'root' },
       });
 
-      await prisma.authzRoleCapability.upsert({
-        where: { id: `rcp-root-${capabilityId}` },
+      await prisma.authzRolePermission.upsert({
+        where: { id: `rcp-root-${permissionId}` },
         update: {
           roleId: ROLE_ROOT_ID,
-          capabilityId,
+          permissionId,
           scope: 'root',
           appId: APP_ID,
           roleName: 'individual.root',
-          denormalizedCapability: rootDenormalized,
+          denormalizedPermission: rootDenormalized,
         },
         create: {
-          id: `rcp-root-${capabilityId}`,
+          id: `rcp-root-${permissionId}`,
           roleId: ROLE_ROOT_ID,
-          capabilityId,
+          permissionId,
           scope: 'root',
           appId: APP_ID,
           roleName: 'individual.root',
-          denormalizedCapability: rootDenormalized,
+          denormalizedPermission: rootDenormalized,
         },
       });
     }
@@ -388,7 +388,7 @@ async function main() {
 
     // eslint-disable-next-line no-console
     console.log(
-      `Seeded accountId=${accountId} roles=${ROLE_DEFAULT_ID},${ROLE_ROOT_ID} accountType=individual root=true capabilities=${rootDenormalized.length}`,
+      `Seeded accountId=${accountId} roles=${ROLE_DEFAULT_ID},${ROLE_ROOT_ID} accountType=individual root=true permissions=${rootDenormalized.length}`,
     );
   }
 }

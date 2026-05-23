@@ -359,7 +359,7 @@ export function ApplicationManagementPanel({ application }: { application: Manag
         <CardHeader>
           <CardTitle>Webhook — Roles &amp; Permissions</CardTitle>
           <CardDescription>
-            When roles, capabilities, or access grants change for this application, the change is
+            When roles, permissions, or access grants change for this application, the change is
             pushed to this URL via POST. Leave blank to disable.
           </CardDescription>
         </CardHeader>

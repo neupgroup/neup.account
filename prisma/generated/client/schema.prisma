@@ -274,7 +274,7 @@ model Application {
   connections              ApplicationConnection[]
   bridge                   ApplicationBridge[]
   policies                 ApplicationPolicy[]
-  authzCapabilities        AuthzCapability[]
+  authzPermissions         AuthzPermission[]
   authzRoles               AuthzRole[]
   authzAccountAccessGrants AuthzAccountAccessGrant[]
   authzAppAccessGrants     AuthzAppAccessGrant[]
@@ -390,14 +390,14 @@ enum AuthzGrantStatus {
   expired
 }
 
-model AuthzCapability {
+model AuthzPermission {
   id          String                @id @default(uuid())
   name        String
   description String?
   appId       String?               @map("app_id")
   scope       String?
   application Application?          @relation(fields: [appId], references: [id])
-  roleMaps    AuthzRoleCapability[]
+  roleMaps    AuthzRolePermission[]
 
   @@map("authz_capability")
 }
@@ -410,7 +410,7 @@ model AuthzRole {
   scope        String?
   pushed       Boolean                   @default(false)
   application  Application?              @relation(fields: [appId], references: [id])
-  roleMaps     AuthzRoleCapability[]
+  roleMaps     AuthzRolePermission[]
   grants       AuthzAccountAccessGrant[]
   assetsGrants AuthzAssetsAccessGrant[]
   appGrants    AuthzAppAccessGrant[]
@@ -419,16 +419,16 @@ model AuthzRole {
   @@map("authz_role")
 }
 
-model AuthzRoleCapability {
+model AuthzRolePermission {
   id                     String          @id @default(uuid())
   roleId                 String          @map("role_id")
-  capabilityId           String          @map("capability_id")
+  permissionId           String          @map("capability_id")
   scope                  String?
-  denormalizedCapability Json?           @map("denormalized_capability")
+  denormalizedPermission Json?           @map("denormalized_capability")
   appId                  String?         @map("app_id")
   roleName               String?         @map("role_name")
   role                   AuthzRole       @relation(fields: [roleId], references: [id])
-  capability             AuthzCapability @relation(fields: [capabilityId], references: [id])
+  permission             AuthzPermission @relation(fields: [permissionId], references: [id])
 
   @@map("authz_role_capability")
 }

@@ -67,13 +67,13 @@ export type AccessDetails = {
  * Function getMasterPermissions.
  */
 export async function getMasterPermissions(): Promise<Permission[]> {
-    const capabilities = await prisma.authzCapability.findMany({
+    const permissions = await prisma.authzPermission.findMany({
         where: { appId: 'neup.account' },
         select: { name: true },
         orderBy: { name: 'asc' },
     });
 
-    const unique = Array.from(new Set(capabilities.map(c => c.name)));
+    const unique = Array.from(new Set(permissions.map(c => c.name)));
     return unique.map(name => ({ id: name, name }));
 }
 

@@ -122,7 +122,7 @@ export async function getUserDashboardStats(accountId: string): Promise<UserDash
 }
 
 // Returns the resolved permission and restriction sets for an account.
-// Reads from authzAccountAccessGrant + authzRoleCapability — the same path as checkPermissions().
+// Reads from authzAccountAccessGrant + authzRolePermission — the same path as checkPermissions().
 export async function getPermissions(accountId: string): Promise<UserPermissions> {
     const { getAccountPermission } = await import('@/services/user');
     const allPermissions = await getAccountPermission(accountId);
@@ -223,7 +223,7 @@ export async function updateAccountRoles(accountId: string, roleIds: string[]): 
 
 // --- Write ---
 
-// Updates the permission set for an account by writing to authzAccountAccessGrant + authzRoleCapability.
+// Updates the permission set for an account by writing to authzAccountAccessGrant + authzRolePermission.
 // Uses a per-account custom role so the result is immediately visible to checkPermissions().
 export async function updateUserPermissions(accountId: string, newPermissionIds: string[], newRestrictionIds: string[]): Promise<{ success: boolean; error?: string }> {
     const canUpdate = await checkPermissions(['root.permission.edit']);
@@ -242,16 +242,16 @@ export async function updateUserPermissions(accountId: string, newPermissionIds:
         // Effective permissions = assigned minus restricted
         const effectivePermissions = newPermissionIds.filter(p => !newRestrictionIds.includes(p));
 
-        // Upsert the role-capability map with the denormalized capability array
-        const mapId = `${roleId}::capabilities`;
+        // Upsert the role-permission map with the denormalized permission array
+        const mapId = `${roleId}::permissions`;
         if (effectivePermissions.length > 0) {
-            await prisma.authzRoleCapability.upsert({
+            await prisma.authzRolePermission.upsert({
                 where: { id: mapId },
-                update: { roleId, appId: 'neup.account', roleName: roleId, denormalizedCapability: effectivePermissions },
-                create: { id: mapId, roleId, capabilityId: effectivePermissions[0], appId: 'neup.account', roleName: roleId, denormalizedCapability: effectivePermissions },
+                update: { roleId, appId: 'neup.account', roleName: roleId, denormalizedPermission: effectivePermissions },
+                create: { id: mapId, roleId, permissionId: effectivePermissions[0], appId: 'neup.account', roleName: roleId, denormalizedPermission: effectivePermissions },
             });
         } else {
-            await prisma.authzRoleCapability.deleteMany({ where: { roleId } });
+            await prisma.authzRolePermission.deleteMany({ where: { roleId } });
         }
 
         // Upsert the grant linking the account to its custom role

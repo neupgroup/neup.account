@@ -37,7 +37,7 @@ async function checkAppAccess(appId: string, targetAccountId: string) {
         include: {
           roleMaps: {
             include: {
-              capability: true,
+              permission: true,
             },
           },
         },

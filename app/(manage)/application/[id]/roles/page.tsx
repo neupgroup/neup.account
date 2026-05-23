@@ -1,13 +1,13 @@
 import { notFound } from 'next/navigation';
 import { getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
-import { getAppCapabilities, getAppRoles } from '@/services/applications/authz-manage';
+import { getAppPermissions, getAppRoles } from '@/services/applications/authz-manage';
 import { getAuthzWebhookUrl } from '@/services/applications/authz-webhook';
 import { checkPermissions } from '@/services/user';
 import { BackButton } from '@/components/ui/back-button';
 import { PrimaryHeader } from '@/components/ui/primary-header';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
-import { CapabilityPanel } from '@/app/(manage)/application/_components/capability-panel';
+import { PermissionPanel } from '@/app/(manage)/application/_components/permission-panel';
 import { RolesPanel } from '@/app/(manage)/application/_components/roles-panel';
 
 type Props = { params: Promise<{ id: string }> };
@@ -27,8 +27,8 @@ export default async function ApplicationRolesPage({ params }: Props) {
         <div className="space-y-4">
           <BackButton href={`/application/${id}`} />
           <PrimaryHeader
-            title="Roles & Capabilities"
-            description={`Manage capabilities and roles for ${details.name}.`}
+            title="Roles & Permissions"
+            description={`Manage permissions and roles for ${details.name}.`}
           />
         </div>
         <Alert variant="destructive">
@@ -40,8 +40,8 @@ export default async function ApplicationRolesPage({ params }: Props) {
     );
   }
 
-  const [capabilities, roles, webhookUrl] = await Promise.all([
-    getAppCapabilities(id),
+  const [permissions, roles, webhookUrl] = await Promise.all([
+    getAppPermissions(id),
     getAppRoles(id),
     getAuthzWebhookUrl(id),
   ]);
@@ -51,29 +51,29 @@ export default async function ApplicationRolesPage({ params }: Props) {
       <div className="space-y-4">
         <BackButton href={`/application/${id}`} />
         <PrimaryHeader
-          title="Roles & Capabilities"
-          description={`Define capabilities and group them into roles for ${details.name}.`}
+          title="Roles & Permissions"
+          description={`Define permissions and group them into roles for ${details.name}.`}
         />
       </div>
 
       <div className="grid gap-2">
-        <h2 className="text-base font-semibold">Capabilities</h2>
+        <h2 className="text-base font-semibold">Permissions</h2>
         <p className="text-sm text-muted-foreground">
           Define the individual permissions this application can assign.
         </p>
       </div>
-      <CapabilityPanel appId={id} initialCapabilities={capabilities} />
+      <PermissionPanel appId={id} initialPermissions={permissions} />
 
       <div className="grid gap-2">
         <h2 className="text-base font-semibold">Roles</h2>
         <p className="text-sm text-muted-foreground">
-          Group capabilities into roles. Roles are assigned to accounts via access grants.
+          Group permissions into roles. Roles are assigned to accounts via access grants.
         </p>
       </div>
       <RolesPanel
         appId={id}
         initialRoles={roles}
-        capabilities={capabilities}
+        permissions={permissions}
         hasWebhook={Boolean(webhookUrl)}
       />
     </div>

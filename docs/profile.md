@@ -6,7 +6,7 @@ This page describes the endpoints an **external application server** can call to
 - `accessibleBrandAccounts`
 - `accessibleDependentAccounts`
 
-These endpoints return the accounts the user has access to (including delegated contexts), plus the capabilities the user holds on each account.
+These endpoints return the accounts the user has access to (including delegated contexts), plus the permissions the user holds on each account.
 
 **Base URL:** `https://neupgroup.com/account`
 
@@ -61,7 +61,7 @@ x-app-secret: <appSecret>
       "status": "active",
       "isVerified": true,
       "accountType": "individual",
-      "capabilities": ["..."]
+      "permissions": ["..."]
     }
   ]
 }
@@ -100,5 +100,5 @@ x-app-secret: <appSecret>
 ## Notes
 
 - These endpoints are for **external apps**. Do not call them directly from browser JavaScript.
-- Capabilities are returned as denormalized strings for easy client-side checks.
+- Permissions are returned as denormalized strings for easy client-side checks.
 

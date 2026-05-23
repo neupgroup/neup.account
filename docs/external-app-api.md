@@ -193,7 +193,7 @@ GET /account/bridge/api.v1/application/users
 
 ### GET /bridge/api.v1/application/roles
 
-Returns roles defined for your application, with capabilities denormalized
+Returns roles defined for your application, with permissions denormalized
 inline on each role.
 
 **Example request:**
@@ -216,7 +216,7 @@ GET /account/bridge/api.v1/application/roles
     "roleName",
     "roleDescription",
     "roleScope",
-    "capabilities"
+    "permissions"
   ],
   "data": [
     {
@@ -224,13 +224,13 @@ GET /account/bridge/api.v1/application/roles
       "roleName":        "editor",
       "roleDescription": "Can edit content",
       "roleScope":       null,
-      "capabilities": [
+      "permissions": [
         {
-          "roleCapabilityId":     "rc-uuid",
-          "capabilityId":         "cap-uuid",
-          "capabilityName":       "content.edit",
-          "capabilityDescription":"Edit any content item",
-          "capabilityScope":      null,
+          "rolePermissionId":     "rc-uuid",
+          "permissionId":         "cap-uuid",
+          "permissionName":       "content.edit",
+          "permissionDescription":"Edit any content item",
+          "permissionScope":      null,
           "denormalized":         null
         }
       ]
@@ -253,17 +253,17 @@ GET /account/bridge/api.v1/application/roles
 | `roleName` | string | Role name (unique per app) |
 | `roleDescription` | string \| null | Human-readable description |
 | `roleScope` | string \| null | Optional scope qualifier |
-| `capabilities` | array | Capabilities assigned to this role |
+| `permissions` | array | Permissions assigned to this role |
 
-**Capability object:**
+**Permission object:**
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `roleCapabilityId` | string | `AuthzRoleCapability.id` — the join record |
-| `capabilityId` | string | `AuthzCapability.id` |
-| `capabilityName` | string | Capability name (e.g. `content.edit`) |
-| `capabilityDescription` | string \| null | Human-readable description |
-| `capabilityScope` | string \| null | Scope override on this role-capability link |
+| `rolePermissionId` | string | `AuthzRolePermission.id` — the join record |
+| `permissionId` | string | `AuthzPermission.id` |
+| `permissionName` | string | Permission name (e.g. `content.edit`) |
+| `permissionDescription` | string \| null | Human-readable description |
+| `permissionScope` | string \| null | Scope override on this role-permission link |
 | `denormalized` | object \| null | Stored denormalized snapshot, if present |
 
 ---
@@ -271,7 +271,7 @@ GET /account/bridge/api.v1/application/roles
 ### GET /bridge/api.v1/application/access
 
 Returns access grants for your application — who has been granted what role
-by whom — with the role's capabilities denormalized inline.
+by whom — with the role's permissions denormalized inline.
 
 **Example request:**
 
@@ -301,7 +301,7 @@ GET /account/bridge/api.v1/application/access
     "roleName",
     "roleDescription",
     "roleScope",
-    "capabilities",
+    "permissions",
     "portfolioId"
   ],
   "data": [
@@ -318,11 +318,11 @@ GET /account/bridge/api.v1/application/access
       "roleName":          "editor",
       "roleDescription":   "Can edit content",
       "roleScope":         null,
-      "capabilities": [
+      "permissions": [
         {
-          "capabilityId":    "cap-uuid",
-          "capabilityName":  "content.edit",
-          "capabilityScope": null,
+          "permissionId":    "cap-uuid",
+          "permissionName":  "content.edit",
+          "permissionScope": null,
           "denormalized":    null
         }
       ],
@@ -390,7 +390,7 @@ content-type: application/json
 | `roleName` | string | Role name |
 | `roleDescription` | string \| null | Role description |
 | `roleScope` | string \| null | Role scope |
-| `capabilities` | array | Capabilities on the granted role |
+| `permissions` | array | Permissions on the granted role |
 | `portfolioId` | string \| null | Portfolio this grant is scoped to, if any |
 
 **Grant status values:**

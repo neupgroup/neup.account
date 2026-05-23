@@ -361,7 +361,7 @@ exports.Prisma.ApplicationPolicyScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
-exports.Prisma.AuthzCapabilityScalarFieldEnum = {
+exports.Prisma.AuthzPermissionScalarFieldEnum = {
   id: 'id',
   name: 'name',
   description: 'description',
@@ -378,12 +378,12 @@ exports.Prisma.AuthzRoleScalarFieldEnum = {
   pushed: 'pushed'
 };
 
-exports.Prisma.AuthzRoleCapabilityScalarFieldEnum = {
+exports.Prisma.AuthzRolePermissionScalarFieldEnum = {
   id: 'id',
   roleId: 'roleId',
-  capabilityId: 'capabilityId',
+  permissionId: 'permissionId',
   scope: 'scope',
-  denormalizedCapability: 'denormalizedCapability',
+  denormalizedPermission: 'denormalizedPermission',
   appId: 'appId',
   roleName: 'roleName'
 };
@@ -503,9 +503,9 @@ exports.Prisma.ModelName = {
   ApplicationConnection: 'ApplicationConnection',
   ApplicationBridge: 'ApplicationBridge',
   ApplicationPolicy: 'ApplicationPolicy',
-  AuthzCapability: 'AuthzCapability',
+  AuthzPermission: 'AuthzPermission',
   AuthzRole: 'AuthzRole',
-  AuthzRoleCapability: 'AuthzRoleCapability',
+  AuthzRolePermission: 'AuthzRolePermission',
   AuthzAccountAccessGrant: 'AuthzAccountAccessGrant',
   AuthzAssetsAccessGrant: 'AuthzAssetsAccessGrant',
   Permit: 'Permit',

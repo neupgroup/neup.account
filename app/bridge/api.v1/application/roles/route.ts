@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 /**
  * GET /bridge/api.v1/application/roles
  *
- * Returns roles defined for the given application, with capabilities
+ * Returns roles defined for the given application, with permissions
  * denormalized inline on each role.
  *
  * Auth (required):
@@ -24,9 +24,9 @@ export const dynamic = 'force-dynamic';
  *   data: [
  *     {
  *       roleId, roleName, roleDescription, roleScope,
- *       capabilities: [
- *         { roleCapabilityId, capabilityId, capabilityName,
- *           capabilityDescription, capabilityScope, denormalized }
+ *       permissions: [
+ *         { rolePermissionId, permissionId, permissionName,
+ *           permissionDescription, permissionScope, denormalized }
  *       ]
  *     },
  *     ...

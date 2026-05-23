@@ -3,7 +3,7 @@
  *
  * Master seed runner — fully self-contained, no external files needed.
  *
- *   Step 1 — Insert application, roles, capabilities, and role-capability maps
+ *   Step 1 — Insert application, roles, permissions, and role-permission maps
  *   Step 2 — Create the master account (interactive prompt) or use ACCOUNT_ID
  *   Step 3 — Assign neup.account roles to the master account
  *
@@ -76,7 +76,7 @@ INSERT INTO "authz_role" ("id", "name", "description", "app_id", "scope") VALUES
   ('${ROLE_APP_OWNER}',     'application.owner',  'Full ownership role for applications.',            '${APP_ID}', 'application')
 ON CONFLICT ("id") DO NOTHING;
 
--- 3a. Capabilities — individual.default
+-- 3a. Permissions — individual.default
 INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-def-profile-view',                    'profile.view',                       '${APP_ID}', 'default'),
   ('cap-def-profile-modify',                  'profile.modify',                     '${APP_ID}', 'default'),
@@ -144,7 +144,7 @@ WHERE c."app_id" = '${APP_ID}'
   AND c."scope"  = 'default'
 ON CONFLICT ("id") DO NOTHING;
 
--- 3b. Capabilities — individual.root (admin-only)
+-- 3b. Permissions — individual.root (admin-only)
 INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-root-admin-accounts-view',         'root.account.view',            '${APP_ID}', 'root'),
   ('cap-root-admin-accounts-modify',       'root.account.modify',          '${APP_ID}', 'root'),
@@ -181,7 +181,7 @@ WHERE c."app_id" = '${APP_ID}'
   AND c."scope"  = 'root'
 ON CONFLICT ("id") DO NOTHING;
 
--- 3c. Capabilities — application.owner
+-- 3c. Permissions — application.owner
 INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-appowner-application-view',    'application.view',    '${APP_ID}', 'application'),
   ('cap-appowner-application-edit',    'application.edit',    '${APP_ID}', 'application'),
@@ -301,7 +301,7 @@ function logError(step: number, label: string, error: unknown) {
 }
 
 // =============================================================================
-// STEP 1 — Bootstrap SQL (application, roles, capabilities, maps)
+// STEP 1 — Bootstrap SQL (application, roles, permissions, maps)
 // Uses a raw pg pool — Prisma doesn't support multi-statement SQL.
 // =============================================================================
 
@@ -469,7 +469,7 @@ async function main() {
   try {
     log(1, 'Applying bootstrap SQL…');
     await runBootstrapSql();
-    log(1, 'Bootstrap SQL applied', 'application, roles, capabilities, maps ready');
+    log(1, 'Bootstrap SQL applied', 'application, roles, permissions, maps ready');
   } catch (error) {
     logError(1, 'runBootstrapSql', error);
     throw error;

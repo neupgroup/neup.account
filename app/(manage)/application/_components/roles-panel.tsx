@@ -60,11 +60,6 @@ export function RolesPanel({ appId, initialRoles, hasWebhook }: Props) {
 
   return (
     <div className="grid gap-6">
-      <div className="grid gap-1">
-        <h2 className="text-base font-semibold">Roles &amp; Permissions</h2>
-        <p className="text-sm text-muted-foreground">Manage roles first, then open a role to configure permissions.</p>
-      </div>
-
       <div className="overflow-hidden rounded-2xl border bg-card">
         <Link
           href={`/application/${appId}/roles/add?mode=root`}

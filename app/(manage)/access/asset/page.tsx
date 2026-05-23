@@ -446,7 +446,7 @@ async function AssetAccessView({ assetRef: rawAssetRef, rootMode }: { assetRef: 
           description: `This ${humanType} is added in a portfolio. You can't assign anyone outside that portfolio.`,
         }
       : {
-          href: `/access/member${modeSuffix}`,
+          href: `/access/member?asset=${encodeURIComponent(resolved.assetId)}${modeSuffix}`,
           title: `Add someone to access this ${humanType}`,
           description: `This ${humanType} is not added to a shared portfolio. You can assign access directly.`,
         }

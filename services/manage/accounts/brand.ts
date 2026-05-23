@@ -169,42 +169,6 @@ export async function createBrandAccount(data: z.infer<typeof brandCreationSchem
                 },
             });
 
-            // 6. Register the brand account as an asset in the creator's personal portfolio
-            let personalPortfolio = await tx.portfolio.findFirst({
-                where: {
-                    members: {
-                        every: { accountId: creatorAccountId },
-                        some: { accountId: creatorAccountId },
-                    },
-                },
-                select: { id: true },
-            });
-
-            if (!personalPortfolio) {
-                personalPortfolio = await tx.portfolio.create({
-                    data: {
-                        name: 'My Assets',
-                        description: 'Personal asset portfolio.',
-                        members: {
-                            create: {
-                                accountId: creatorAccountId,
-                                isPermanent: true,
-                                hasFullAccess: true,
-                                details: { isPermanent: true, hasFullAccess: true },
-                            },
-                        },
-                    },
-                    select: { id: true },
-                });
-            }
-
-            await tx.asset.create({
-                data: {
-                    portfolioId: personalPortfolio.id,
-                    assetId: account.id,
-                    assetType: 'account.brand',
-                },
-            });
         });
 
         await logActivity(creatorAccountId, `Created Brand Account: ${neupId}`, 'Success', ipAddress, undefined, geolocation);

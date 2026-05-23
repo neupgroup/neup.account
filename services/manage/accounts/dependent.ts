@@ -190,43 +190,6 @@ export async function createDependentAccount(data: z.infer<typeof dependentFormS
                 },
             });
 
-            // Register the dependent account as an asset in the guardian's personal portfolio
-            let personalPortfolio = await tx.portfolio.findFirst({
-                where: {
-                    members: {
-                        every: { accountId: guardianAccountId },
-                        some: { accountId: guardianAccountId },
-                    },
-                },
-                select: { id: true },
-            });
-
-            if (!personalPortfolio) {
-                personalPortfolio = await tx.portfolio.create({
-                    data: {
-                        name: 'My Assets',
-                        description: 'Personal asset portfolio.',
-                        members: {
-                            create: {
-                                accountId: guardianAccountId,
-                                isPermanent: true,
-                                hasFullAccess: true,
-                                details: { isPermanent: true, hasFullAccess: true },
-                            },
-                        },
-                    },
-                    select: { id: true },
-                });
-            }
-
-            await tx.asset.create({
-                data: {
-                    portfolioId: personalPortfolio.id,
-                    assetId: accountId,
-                    assetType: 'account.dependent',
-                },
-            });
-
             return accountId;
         });
 

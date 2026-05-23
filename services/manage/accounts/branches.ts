@@ -137,43 +137,6 @@ export async function createBranchAccount(data: z.infer<typeof formSchema>, geol
                 });
             }
 
-            // Register the branch account as an asset in the creator's personal portfolio
-            let personalPortfolio = await tx.portfolio.findFirst({
-                where: {
-                    members: {
-                        every: { accountId: personalAccountId },
-                        some: { accountId: personalAccountId },
-                    },
-                },
-                select: { id: true },
-            });
-
-            if (!personalPortfolio) {
-                personalPortfolio = await tx.portfolio.create({
-                    data: {
-                        name: 'My Assets',
-                        description: 'Personal asset portfolio.',
-                        members: {
-                            create: {
-                                accountId: personalAccountId,
-                                isPermanent: true,
-                                hasFullAccess: true,
-                                details: { isPermanent: true, hasFullAccess: true },
-                            },
-                        },
-                    },
-                    select: { id: true },
-                });
-            }
-
-            await tx.asset.create({
-                data: {
-                    portfolioId: personalPortfolio.id,
-                    assetId: branchAccountId,
-                    assetType: 'account.branch',
-                },
-            });
-
             return branchAccountId;
         });
 

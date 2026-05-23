@@ -410,44 +410,6 @@ export async function createManagedApplication(input: { name: string }) {
         });
       }
 
-      // Find or create the creator's personal portfolio, then register this
-      // application as an asset so it can be managed via the access system.
-      let personalPortfolio = await tx.portfolio.findFirst({
-        where: {
-          members: {
-            every: { accountId },
-            some: { accountId },
-          },
-        },
-        select: { id: true },
-      });
-
-      if (!personalPortfolio) {
-        personalPortfolio = await tx.portfolio.create({
-          data: {
-            name: 'My Assets',
-            description: 'Personal asset portfolio.',
-            members: {
-              create: {
-                accountId,
-                isPermanent: true,
-                hasFullAccess: true,
-                details: { isPermanent: true, hasFullAccess: true },
-              },
-            },
-          },
-          select: { id: true },
-        });
-      }
-
-      await tx.asset.create({
-        data: {
-          portfolioId: personalPortfolio.id,
-          assetId: createdApp.id,
-          assetType: 'application',
-        },
-      });
-
       return { id: createdApp.id };
     });
 

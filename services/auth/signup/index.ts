@@ -502,31 +502,6 @@ export async function submitTermsStep(authRequestId: string, data: z.infer<typeo
         },
       });
 
-      // Create a personal portfolio and register the individual account as an asset
-      const personalPortfolio = await tx.portfolio.create({
-        data: {
-          name: 'My Assets',
-          description: 'Personal asset portfolio.',
-          members: {
-            create: {
-              accountId: created.id,
-              isPermanent: true,
-              hasFullAccess: true,
-              details: { isPermanent: true, hasFullAccess: true },
-            },
-          },
-        },
-        select: { id: true },
-      });
-
-      await tx.asset.create({
-        data: {
-          portfolioId: personalPortfolio.id,
-          assetId: created.id,
-          assetType: 'account.individual',
-        },
-      });
-
       return created;
     });
 

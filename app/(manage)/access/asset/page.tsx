@@ -17,6 +17,7 @@ import { AddAssetForm } from '../_components/add-asset-form';
 import { FlowLink } from '@/components/ui/flow-link';
 import { PrimaryHeader } from '@/components/ui/primary-header';
 import { SecondaryHeader } from '@/components/ui/secondary-header';
+import { Prisma } from '../../../../prisma/generated/client/client';
 
 type PageProps = {
   searchParams: Promise<{ portfolio?: string; asset?: string; application?: string }>;
@@ -294,16 +295,39 @@ async function ApplicationAssetView({ applicationId }: { applicationId: string }
 
   // Find a portfolioAsset row where assetId = applicationId and the current
   // user is a member of that portfolio.
-  const portfolioAsset = await prisma.asset.findFirst({
-    where: {
-      assetId: applicationId,
-      assetType: { in: ['application', 'app'] },
-      portfolio: {
-        members: { some: { accountId, status: 'active' } },
+  // Some environments may not yet have portfolio_member.status (schema drift),
+  // so we retry without status on P2022.
+  let portfolioAsset: { id: string; portfolioId: string } | null = null;
+  try {
+    portfolioAsset = await prisma.asset.findFirst({
+      where: {
+        assetId: applicationId,
+        assetType: { in: ['application', 'app'] },
+        portfolio: {
+          members: { some: { accountId, status: 'active' } },
+        },
       },
-    },
-    select: { id: true, portfolioId: true },
-  });
+      select: { id: true, portfolioId: true },
+    });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2022'
+    ) {
+      portfolioAsset = await prisma.asset.findFirst({
+        where: {
+          assetId: applicationId,
+          assetType: { in: ['application', 'app'] },
+          portfolio: {
+            members: { some: { accountId } },
+          },
+        },
+        select: { id: true, portfolioId: true },
+      });
+    } else {
+      throw error;
+    }
+  }
 
   if (!portfolioAsset) {
     // Application is not in any portfolio the user can access — show a helpful message

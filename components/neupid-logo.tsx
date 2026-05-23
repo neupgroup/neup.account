@@ -18,9 +18,9 @@ export function NeupIdLogo({ iconHref, textHref, logoUrl }: NeupIdLogoProps) {
         <img
           src={logoUrl || DEFAULT_LOGO_URL}
           alt="Neup Group Logo"
-          width={24}
-          height={24}
-          className="h-6 w-6"
+          width={28}
+          height={28}
+          className="h-7 w-7"
           loading="eager"
         />
       </a>

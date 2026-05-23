@@ -915,36 +915,27 @@ function SignupFlow() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const step = searchParams.get('step');
+  const isValidStep = Boolean(
+    step &&
+    ['name', 'demographics', 'nationality', 'contact', 'otp', 'neupid', 'password', 'terms'].includes(step)
+  );
 
   useEffect(() => {
-    const startFlow = async () => {
-      try {
-        const params = new URLSearchParams(searchParams.toString());
+    const hasLegacyNeupIdParams = Boolean(searchParams.get('neupId') || searchParams.get('neupid'));
 
-        // Always normalize signup to first step and remove signin-like carryover params.
-        if (step && step !== 'name') {
-          sessionStorage.removeItem('AuthSessionRequest');
-          sessionStorage.removeItem('temp_user_info');
-        }
-        params.delete('neupId');
-        params.delete('neupid');
-        params.set('step', 'name');
+    if (isValidStep && !hasLegacyNeupIdParams) {
+      return;
+    }
 
-        await handleAuthRequest({
-          flowType: 'signup',
-          clearSessionKeys: ['temp_user_info'],
-        });
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('neupId');
+    params.delete('neupid');
+    if (!isValidStep) {
+      params.set('step', 'name');
+    }
 
-        if (searchParams.get('step') !== 'name' || searchParams.get('neupId') || searchParams.get('neupid')) {
-          redirectInApp(router, `/auth/signup?${params.toString()}`);
-        }
-      } catch (error) {
-        console.error('Failed to initialize signup flow:', error);
-      }
-    };
-
-    void startFlow();
-  }, [step, router, searchParams]);
+    redirectInApp(router, `/auth/signup?${params.toString()}`);
+  }, [step, router, searchParams, isValidStep]);
 
   if (!step) return null; // Or a loading spinner
 

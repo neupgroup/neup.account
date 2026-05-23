@@ -151,8 +151,12 @@ INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-root-admin-accounts-delete',       'root.account.delete',          '${APP_ID}', 'root'),
   ('cap-root-admin-accounts-search',       'root.account.search',          '${APP_ID}', 'root'),
   ('cap-root-admin-accounts-create',       'root.account.create_individual','${APP_ID}', 'root'),
-  ('cap-root-admin-applications-view',     'root.app.view',                '${APP_ID}', 'root'),
-  ('cap-root-admin-applications-create',   'root.app.create',              '${APP_ID}', 'root'),
+  ('cap-root-admin-applications-view',     'root.application.view',                '${APP_ID}', 'root'),
+  ('cap-root-admin-applications-create',   'root.application.create',              '${APP_ID}', 'root'),
+  ('cap-root-admin-applications-edit',     'root.application.edit',                '${APP_ID}', 'root'),
+  ('cap-root-admin-application-delete',    'root.application.delete',              '${APP_ID}', 'root'),
+  ('cap-root-admin-application-roles-view','root.application.roles.view',          '${APP_ID}', 'root'),
+  ('cap-root-admin-application-roles-manage','root.application.roles.manage',      '${APP_ID}', 'root'),
   ('cap-root-admin-permits-view',          'root.permission.view',         '${APP_ID}', 'root'),
   ('cap-root-admin-permits-edit',          'root.permission.edit',         '${APP_ID}', 'root'),
   ('cap-root-admin-requests-view',         'root.requests.view',           '${APP_ID}', 'root'),
@@ -171,7 +175,7 @@ SELECT
   'root',
   '${APP_ID}',
   'individual.root',
-  '["root.account.view","root.account.modify","root.account.delete","root.account.search","root.account.create_individual","root.app.view","root.app.create","root.permission.view","root.permission.edit","root.requests.view","root.dashboard.view","root.payment_config.view","root.errors.view"]'::jsonb
+  '["root.account.view","root.account.modify","root.account.delete","root.account.search","root.account.create_individual","root.application.view","root.application.create","root.application.edit","root.application.delete","root.application.roles.view","root.application.roles.manage","root.permission.view","root.permission.edit","root.requests.view","root.dashboard.view","root.payment_config.view","root.errors.view"]'::jsonb
 FROM "authz_capability" c
 WHERE c."app_id" = '${APP_ID}'
   AND c."scope"  = 'root'

@@ -20,7 +20,7 @@ export type { FlatAppItem } from '@/services/applications/types';
 export async function getApplicationsPageData() {
   const managedApplications = await getManagedApplications();
   const { internal, external } = await getSignedApplications();
-  const canCreateApplication = await checkPermissions(['root.app.create']);
+  const canCreateApplication = await checkPermissions(['root.application.create']);
   const connectedApplications = [...internal, ...external];
 
   const managedItems: FlatAppItem[] = managedApplications.map((app) => ({
@@ -113,12 +113,12 @@ export async function getApplicationsPageDataV2(): Promise<{
     Promise.allSettled([getManagedApplications()]),
     Promise.allSettled([
       (async () => {
-        const isRoot = await checkPermissions(['root.app.view']);
+        const isRoot = await checkPermissions(['root.application.view']);
         if (!isRoot) return null;
         return prisma.application.findMany({ orderBy: { createdAt: 'desc' } });
       })(),
     ]),
-    checkPermissions(['root.app.create']),
+    checkPermissions(['root.application.create']),
   ]);
 
   const sections: ApplicationSection[] = [];
@@ -160,7 +160,7 @@ export async function getApplicationsPageDataV2(): Promise<{
     sections.push({ label: 'Development', apps: [], error: true });
   }
 
-  // --- Root section (only shown when user has root.app.view) ---
+  // --- Root section (only shown when user has root.application.view) ---
   const rootSettled = rootResult[0];
   if (rootSettled.status === 'fulfilled') {
     const allApps = rootSettled.value;
@@ -219,12 +219,12 @@ const updateApplicationInfoSchema = z.object({
  * Function updateApplicationInfo.
  *
  * Root-only server action to update application metadata.
- * Requires root.app.edit permission.
+ * Requires root.application.edit permission.
  */
 export async function updateApplicationInfo(
   input: z.infer<typeof updateApplicationInfoSchema>,
 ): Promise<{ success: boolean; error?: string; fieldErrors?: Record<string, string> }> {
-  const canEdit = await checkPermissions(['root.app.edit']);
+  const canEdit = await checkPermissions(['root.application.edit']);
   if (!canEdit) return { success: false, error: 'Permission denied.' };
 
   const parsed = updateApplicationInfoSchema.safeParse(input);
@@ -307,7 +307,7 @@ export async function getConnectedApplicationsPageData(): Promise<{
  *
  * Returns Development and Root sections for the /applications page.
  * Development is shown when the user has managed apps.
- * Root is shown when the user has root.app.view permission.
+ * Root is shown when the user has root.application.view permission.
  */
 export async function getApplicationsManagePageData(): Promise<{
   sections: ApplicationSection[];
@@ -318,12 +318,12 @@ export async function getApplicationsManagePageData(): Promise<{
     Promise.allSettled([getManagedApplications()]),
     Promise.allSettled([
       (async () => {
-        const isRoot = await checkPermissions(['root.app.view']);
+        const isRoot = await checkPermissions(['root.application.view']);
         if (!isRoot) return null;
         return prisma.application.findMany({ orderBy: { createdAt: 'desc' } });
       })(),
     ]),
-    checkPermissions(['root.app.create']),
+    checkPermissions(['root.application.create']),
   ]);
 
   const sections: ApplicationSection[] = [];

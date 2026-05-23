@@ -6,7 +6,7 @@ import { ApplicationCreateForm } from '@/app/(manage)/application/_components/ap
 import { checkPermissions } from '@/services/user';
 
 export default async function AddApplicationPage() {
-  const canCreateApplication = await checkPermissions(['root.app.create']);
+  const canCreateApplication = await checkPermissions(['root.application.create']);
   if (!canCreateApplication) {
     notFound();
   }

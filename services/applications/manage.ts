@@ -338,7 +338,7 @@ export async function createManagedApplication(input: { name: string }) {
     return { success: false, error: 'Invalid application name.' };
   }
 
-  const canCreateApplication = await checkPermissions(['root.app.create']);
+  const canCreateApplication = await checkPermissions(['root.application.create']);
   if (!canCreateApplication) {
     return { success: false, error: 'Permission denied.' };
   }
@@ -812,7 +812,7 @@ export async function updateManagedApplicationStatus(input: { appId: string; sta
     return { success: false, error: 'Invalid application status.' };
   }
 
-  const isRootAppManager = await checkPermissions(['root.app.view']);
+  const isRootAppManager = await checkPermissions(['root.application.view']);
   const isBrandManager = await checkPermissions(['linked_accounts.brand.manager']);
   if (!isRootAppManager && !isBrandManager) {
     return { success: false, error: 'Permission denied.' };
@@ -996,7 +996,7 @@ export async function removeSilentSsoOrigin(input: {
 /**
  * Function getApplicationDetailsForViewerV2.
  *
- * Role-aware detail loader. Root users (root.app.view) can view any application.
+ * Role-aware detail loader. Root users (root.application.view) can view any application.
  * Regular users can view apps they have an authzAccountAccessGrant for OR an
  * ApplicationConnection to. appSecret is never returned.
  */
@@ -1007,7 +1007,7 @@ export async function getApplicationDetailsForViewerV2(appId: string): Promise<A
   const personalAccountId = await getPersonalAccountId();
 
   try {
-    const isRootViewer = await checkPermissions(['root.app.view']);
+    const isRootViewer = await checkPermissions(['root.application.view']);
 
     const application = await prisma.application.findUnique({
       where: { id: appId },
@@ -1180,7 +1180,7 @@ export async function getAppStatusLog(appId: string): Promise<AppStatusLogEntry[
   const accountId = await getActiveAccountId();
   if (!accountId) return [];
 
-  const isRootViewer = await checkPermissions(['root.app.view']);
+  const isRootViewer = await checkPermissions(['root.application.view']);
   const isOwner = await isApplicationOwnerForAccount(accountId, appId);
   if (!isRootViewer && !isOwner) return [];
 
@@ -1334,7 +1334,7 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
   const accountId = await getActiveAccountId();
   if (!accountId) return null;
 
-  const isRootViewer = await checkPermissions(['root.app.view']);
+  const isRootViewer = await checkPermissions(['root.application.view']);
   const isOwner = await isApplicationOwnerForAccount(accountId, appId);
   if (!isRootViewer && !isOwner) return null;
 
@@ -1546,7 +1546,7 @@ export async function getApplicationUsersPaginated(params: {
   const accountId = await getActiveAccountId();
   if (!accountId) return { users: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
 
-  const isRootViewer = await checkPermissions(['root.app.view']);
+  const isRootViewer = await checkPermissions(['root.application.view']);
   const isOwner = await isApplicationOwnerForAccount(accountId, params.appId);
   if (!isRootViewer && !isOwner) return { users: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
 

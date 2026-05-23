@@ -30,7 +30,7 @@ export type AppRole = {
 // Auth guard
 // ---------------------------------------------------------------------------
 
-const ROOT_ROLE_MANAGE_PERMISSIONS = ['root.app.edit'];
+const ROOT_ROLE_MANAGE_PERMISSIONS = ['root.application.edit'];
 const GLOBAL_AUTHZ_APP_ID = 'neup.account';
 
 async function ensureApplicationManagementRoles(): Promise<void> {

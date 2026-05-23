@@ -106,7 +106,17 @@ export async function getApplicationsPageDataV2(): Promise<{
     Promise.allSettled([
       prisma.applicationConnection.findMany({
         where: { accountId: personalAccountId },
-        include: { application: true },
+        select: {
+          connectedAt: true,
+          application: {
+            select: {
+              id: true,
+              name: true,
+              icon: true,
+              status: true,
+            },
+          },
+        },
         orderBy: { connectedAt: 'desc' },
       }),
     ]),
@@ -279,7 +289,16 @@ export async function getConnectedApplicationsPageData(): Promise<{
   try {
     const connections = await prisma.applicationConnection.findMany({
       where: { accountId: personalAccountId },
-      include: { application: true },
+      select: {
+        connectedAt: true,
+        application: {
+          select: {
+            id: true,
+            name: true,
+            icon: true,
+          },
+        },
+      },
       orderBy: { connectedAt: 'desc' },
     });
 

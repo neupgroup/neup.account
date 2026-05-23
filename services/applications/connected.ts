@@ -43,7 +43,19 @@ export async function getConnectedApplications(): Promise<ConnectedApplications>
     try {
         const connections = await prisma.applicationConnection.findMany({
             where: { accountId },
-            include: { application: true }
+            select: {
+              connectedAt: true,
+              application: {
+                select: {
+                  id: true,
+                  name: true,
+                  description: true,
+                  icon: true,
+                  website: true,
+                  isInternal: true,
+                },
+              },
+            },
         });
 
         const allApps: Application[] = connections.map((conn: any) => ({
@@ -97,7 +109,18 @@ export async function getSignedApplications(): Promise<SignedApplicationsResult>
   try {
     const connections = await prisma.applicationConnection.findMany({
       where: { accountId },
-      include: { application: true },
+      select: {
+        connectedAt: true,
+        application: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            icon: true,
+            website: true,
+          },
+        },
+      },
       orderBy: { connectedAt: 'desc' },
     });
 

@@ -4,15 +4,21 @@ import prisma from '@/core/helpers/prisma';
 import { getSessionCookies } from '@/core/helpers/cookies';
 
 export type SessionVerifyResult =
-    | { valid: true; accountId: string }
+    | { valid: true; accountId: string; isGuest: boolean }
     | { valid: false };
+
+type VerifyActiveSessionOptions = {
+    expectedGuest?: boolean;
+};
 
 /**
  * Verifies the active session against the database.
  * This is the authoritative check — it cannot be bypassed by client-side cache.
  * Called on every protected page mount to catch remote logouts and expired sessions.
  */
-export async function verifyActiveSession(): Promise<SessionVerifyResult> {
+export async function verifyActiveSession(
+    options: VerifyActiveSessionOptions = {},
+): Promise<SessionVerifyResult> {
     const { accountId, sessionId, sessionKey } = await getSessionCookies();
 
     if (!accountId || !sessionId || !sessionKey) {
@@ -26,8 +32,10 @@ export async function verifyActiveSession(): Promise<SessionVerifyResult> {
                 accountId: true,
                 key: true,
                 validTill: true,
+                loginType: true,
                 account: {
                     select: {
+                        accountType: true,
                         status: true,
                         details: true,
                     },
@@ -46,6 +54,16 @@ export async function verifyActiveSession(): Promise<SessionVerifyResult> {
             return { valid: false };
         }
 
+        const sessionSaysGuest =
+            session.loginType === 'guest' || session.account?.accountType === 'guest';
+
+        if (
+            typeof options.expectedGuest === 'boolean' &&
+            sessionSaysGuest !== options.expectedGuest
+        ) {
+            return { valid: false };
+        }
+
         // Check account is not blocked
         const details = session.account?.details as Record<string, any> | null;
         const block = details?.block;
@@ -57,7 +75,7 @@ export async function verifyActiveSession(): Promise<SessionVerifyResult> {
             }
         }
 
-        return { valid: true, accountId };
+        return { valid: true, accountId, isGuest: sessionSaysGuest };
     } catch {
         return { valid: false };
     }

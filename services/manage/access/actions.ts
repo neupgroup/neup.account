@@ -1,7 +1,15 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { addAssetGroupMember, addAssetToGroup, assignAssetMemberRole, removeAssetFromGroup, removeAssetGroupMember, bulkAssignAssetRoles, updatePortfolioMemberFlags } from '@/services/manage/access/assets';
+import {
+  addAssetGroupMember,
+  addAssetToGroupWithMode,
+  assignAssetMemberRole,
+  removeAssetFromGroupWithMode,
+  removeAssetGroupMember,
+  bulkAssignAssetRoles,
+  updatePortfolioMemberFlags,
+} from '@/services/manage/access/assets';
 
 /**
  * Function addMemberToAssetGroupFromForm.
@@ -37,14 +45,16 @@ export async function removeMemberFromAssetGroupFromForm(groupId: string, formDa
  * Function addAssetToGroupFromForm.
  */
 export async function addAssetToGroupFromForm(groupId: string, formData: FormData) {
-  await addAssetToGroup({
+  const mode = String(formData.get('mode') || '');
+  await addAssetToGroupWithMode({
     groupId,
     asset: String(formData.get('asset') || ''),
     type: String(formData.get('type') || ''),
     details: String(formData.get('details') || ''),
-  });
+  }, { rootMode: mode === 'root' });
 
-  redirect(`/access/asset?portfolio=${groupId}`);
+  const suffix = mode === 'root' ? '&mode=root' : '';
+  redirect(`/access/asset?portfolio=${groupId}${suffix}`);
 }
 
 
@@ -55,12 +65,14 @@ export async function addAssetToGroupFromForm(groupId: string, formData: FormDat
  * personal portfolio.
  */
 export async function removeAssetFromGroupFromForm(groupId: string, formData: FormData) {
-  await removeAssetFromGroup({
+  const mode = String(formData.get('mode') || '');
+  await removeAssetFromGroupWithMode({
     groupId,
     portfolioAssetId: String(formData.get('portfolioAssetId') || ''),
-  });
+  }, { rootMode: mode === 'root' });
 
-  redirect(`/access/asset?portfolio=${groupId}`);
+  const suffix = mode === 'root' ? '&mode=root' : '';
+  redirect(`/access/asset?portfolio=${groupId}${suffix}`);
 }
 
 
@@ -68,14 +80,16 @@ export async function removeAssetFromGroupFromForm(groupId: string, formData: Fo
  * Function assignRoleToAssetMemberFromForm.
  */
 export async function assignRoleToAssetMemberFromForm(groupId: string, formData: FormData) {
+  const mode = String(formData.get('mode') || '');
   await assignAssetMemberRole({
     groupId,
     assetMember: String(formData.get('assetMember') || ''),
     asset: String(formData.get('asset') || ''),
     role: String(formData.get('role') || ''),
-  });
+  }, { rootMode: mode === 'root' });
 
-  redirect(`/access/assign?portfolio=${groupId}`);
+  const suffix = mode === 'root' ? '&mode=root' : '';
+  redirect(`/access/assign?portfolio=${groupId}${suffix}`);
 }
 
 
@@ -88,6 +102,7 @@ export async function assignRoleToAssetMemberFromForm(groupId: string, formData:
 export async function bulkAssignPermissionsFromForm(groupId: string, formData: FormData) {
   const assetIdsRaw = String(formData.get('assetIds') || '');
   const roleIdsRaw = String(formData.get('roleIds') || '');
+  const mode = String(formData.get('mode') || '');
 
   await bulkAssignAssetRoles({
     groupId,
@@ -95,9 +110,10 @@ export async function bulkAssignPermissionsFromForm(groupId: string, formData: F
     assetIds: assetIdsRaw.split(',').filter(Boolean),
     assetType: String(formData.get('assetType') || ''),
     roleIds: roleIdsRaw.split(',').filter(Boolean),
-  });
+  }, { rootMode: mode === 'root' });
 
-  redirect(`/access/assign?portfolio=${groupId}`);
+  const suffix = mode === 'root' ? '&mode=root' : '';
+  redirect(`/access/assign?portfolio=${groupId}${suffix}`);
 }
 
 

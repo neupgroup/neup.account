@@ -26,12 +26,19 @@ type PageProps = {
 
 // ── Asset detail view ─────────────────────────────────────────────────────────
 
-async function getAssetMembers(portfolioId: string, portfolioAssetId: string, accountId: string) {
-  const member = await prisma.portfolioMember.findFirst({
-    where: { portfolioId, accountId },
-    select: { id: true },
-  });
-  if (!member) return null;
+async function getAssetMembers(
+  portfolioId: string,
+  portfolioAssetId: string,
+  accountId: string,
+  options?: { rootMode?: boolean },
+) {
+  if (!options?.rootMode) {
+    const member = await prisma.portfolioMember.findFirst({
+      where: { portfolioId, accountId },
+      select: { id: true },
+    });
+    if (!member) return null;
+  }
 
   const asset = await prisma.asset.findFirst({
     where: { id: portfolioAssetId, portfolioId },
@@ -72,11 +79,21 @@ async function getAssetMembers(portfolioId: string, portfolioAssetId: string, ac
   return { asset, members: Array.from(accountMap.values()) };
 }
 
-async function AssetDetail({ portfolioId, assetId }: { portfolioId: string; assetId: string }) {
+async function AssetDetail({
+  portfolioId,
+  assetId,
+  rootMode,
+  showRootInviteCard,
+}: {
+  portfolioId: string;
+  assetId: string;
+  rootMode?: boolean;
+  showRootInviteCard?: boolean;
+}) {
   const accountId = await getActiveAccountId();
   if (!accountId) notFound();
 
-  const data = await getAssetMembers(portfolioId, assetId, accountId);
+  const data = await getAssetMembers(portfolioId, assetId, accountId, { rootMode });
   if (!data) notFound();
 
   const { asset, members } = data;
@@ -122,6 +139,24 @@ async function AssetDetail({ portfolioId, assetId }: { portfolioId: string; asse
 
         <Card>
           <CardContent className="divide-y p-2">
+            {showRootInviteCard && (
+              <FlowLink
+                href={`/access/member?portfolio=${portfolioId}&mode=root`}
+                className="flex items-center gap-4 py-4 px-4 hover:bg-muted/50 transition-colors"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted">
+                  <UserCircle className="h-4 w-4 text-muted-foreground" />
+                </span>
+                <div className="min-w-0 flex-grow">
+                  <p className="font-medium">Invite someone to this asset</p>
+                  <p className="text-sm text-muted-foreground">
+                    Add a member and assign roles for this application asset.
+                  </p>
+                </div>
+                <span className="text-sm text-muted-foreground shrink-0">→</span>
+              </FlowLink>
+            )}
+
             {memberProfiles.length === 0 ? (
               <div className="flex flex-col items-center gap-2 px-4 py-12 text-center">
                 <span className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
@@ -165,7 +200,7 @@ async function AssetDetail({ portfolioId, assetId }: { portfolioId: string; asse
 
 // ── Asset list view ───────────────────────────────────────────────────────────
 
-async function AssetList({ portfolioId }: { portfolioId: string }) {
+async function AssetList({ portfolioId, mode }: { portfolioId: string; mode?: string }) {
   const group = await getAccessAssetGroup(portfolioId);
   if (!group) notFound();
 
@@ -193,7 +228,7 @@ async function AssetList({ portfolioId }: { portfolioId: string }) {
         />
         <Card>
           <CardContent className="p-0">
-            <AddAssetForm action={addAssetAction} existingAssetIds={existingAssetIds} />
+            <AddAssetForm action={addAssetAction} existingAssetIds={existingAssetIds} mode={mode} />
           </CardContent>
         </Card>
       </div>
@@ -257,6 +292,7 @@ async function AssetList({ portfolioId }: { portfolioId: string }) {
 
                     <form action={removeAssetAction}>
                       <input type="hidden" name="portfolioAssetId" value={asset.id} />
+                      {mode === 'root' && <input type="hidden" name="mode" value="root" />}
                       <Button
                         type="submit"
                         variant="ghost"
@@ -290,7 +326,7 @@ async function AssetList({ portfolioId }: { portfolioId: string }) {
 
 // ── Application access view ───────────────────────────────────────────────────
 
-async function ApplicationAssetView({ applicationId }: { applicationId: string }) {
+async function ApplicationAssetView({ applicationId, rootMode }: { applicationId: string; rootMode?: boolean }) {
   const accountId = await getActiveAccountId();
   if (!accountId) notFound();
 
@@ -304,9 +340,11 @@ async function ApplicationAssetView({ applicationId }: { applicationId: string }
       where: {
         assetId: applicationId,
         assetType: { in: ['application', 'app'] },
-        portfolio: {
-          members: { some: { accountId, status: 'active' } },
-        },
+        ...(rootMode ? {} : {
+          portfolio: {
+            members: { some: { accountId, status: 'active' } },
+          },
+        }),
       },
       select: { id: true, portfolioId: true },
     });
@@ -319,9 +357,11 @@ async function ApplicationAssetView({ applicationId }: { applicationId: string }
         where: {
           assetId: applicationId,
           assetType: { in: ['application', 'app'] },
-          portfolio: {
-            members: { some: { accountId } },
-          },
+          ...(rootMode ? {} : {
+            portfolio: {
+              members: { some: { accountId } },
+            },
+          }),
         },
         select: { id: true, portfolioId: true },
       });
@@ -339,11 +379,29 @@ async function ApplicationAssetView({ applicationId }: { applicationId: string }
           title="Access"
           description="This application has not been added to any portfolio you have access to."
         />
+        <Card>
+          <CardContent className="flex flex-col items-center gap-2 px-4 py-12 text-center">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+              <Database className="h-6 w-6 text-muted-foreground" />
+            </span>
+            <p className="font-medium">No accounts have access to this application</p>
+            <p className="text-sm text-muted-foreground max-w-xs">
+              No access grants were found for this application in the portfolios you can view.
+            </p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
-  return <AssetDetail portfolioId={portfolioAsset.portfolioId} assetId={portfolioAsset.id} />;
+  return (
+    <AssetDetail
+      portfolioId={portfolioAsset.portfolioId}
+      assetId={portfolioAsset.id}
+      rootMode={rootMode}
+      showRootInviteCard={rootMode}
+    />
+  );
 }
 
 // ── Page entry point ──────────────────────────────────────────────────────────
@@ -359,12 +417,14 @@ export default async function AssetPage({ searchParams }: PageProps) {
       if (assetId) next.set('asset', assetId);
       if (applicationId) next.set('application', applicationId);
       const qs = next.toString();
-      redirect(qs ? `/access/assets?${qs}` : '/access/assets');
+      redirect(qs ? `/access/asset?${qs}` : '/access/asset');
     }
   }
 
+  const rootMode = mode === 'root';
+
   if (applicationId) {
-    return <ApplicationAssetView applicationId={applicationId} />;
+    return <ApplicationAssetView applicationId={applicationId} rootMode={rootMode} />;
   }
 
   if (!portfolioId) {
@@ -381,9 +441,9 @@ export default async function AssetPage({ searchParams }: PageProps) {
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
               <Database className="h-6 w-6 text-muted-foreground" />
             </span>
-            <p className="font-medium">No assets in direct access</p>
+            <p className="font-medium">No accounts have access to this asset</p>
             <p className="text-sm text-muted-foreground max-w-xs">
-              Create a portfolio to manage assets and assign roles to members.
+              No asset access entries are available here. Create a portfolio and assign roles to grant access.
             </p>
           </CardContent>
         </Card>
@@ -392,8 +452,8 @@ export default async function AssetPage({ searchParams }: PageProps) {
   }
 
   if (assetId) {
-    return <AssetDetail portfolioId={portfolioId} assetId={assetId} />;
+    return <AssetDetail portfolioId={portfolioId} assetId={assetId} rootMode={rootMode} />;
   }
 
-  return <AssetList portfolioId={portfolioId} />;
+  return <AssetList portfolioId={portfolioId} mode={mode} />;
 }

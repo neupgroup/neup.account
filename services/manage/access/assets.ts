@@ -73,6 +73,11 @@ async function canAccessGroup(groupId: string, accountId: string): Promise<boole
   return Boolean(member);
 }
 
+async function canUseRootMode(rootMode?: boolean): Promise<boolean> {
+  if (!rootMode) return false;
+  return checkPermissions(['root.application.view']);
+}
+
 
 /**
  * Function getAccessAssetGroups.
@@ -439,6 +444,59 @@ export async function addAssetToGroup(input: { groupId: string; asset: string; t
   }
 }
 
+export async function addAssetToGroupWithMode(
+  input: { groupId: string; asset: string; type: string; details?: string },
+  options?: { rootMode?: boolean },
+) {
+  const accountId = await getActiveAccountId();
+  if (!accountId) {
+    return { success: false, error: 'Not authenticated.' };
+  }
+
+  const parsed = addAssetSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.flatten().fieldErrors.asset?.[0] || 'Invalid asset input.' };
+  }
+
+  try {
+    const rootOverride = await canUseRootMode(options?.rootMode);
+    const allowed = rootOverride || (await canAccessGroup(parsed.data.groupId, accountId));
+    if (!allowed) {
+      return { success: false, error: 'Permission denied.' };
+    }
+
+    const existing = await prisma.asset.findFirst({
+      where: {
+        portfolioId: parsed.data.groupId,
+        assetId: parsed.data.asset,
+      },
+      select: { id: true },
+    });
+
+    if (existing) {
+      return { success: false, error: 'This asset is already in the portfolio.' };
+    }
+
+    await prisma.asset.create({
+      data: {
+        portfolioId: parsed.data.groupId,
+        assetId: parsed.data.asset,
+        assetType: parsed.data.type,
+        details: {
+          note: normalizeDetails(parsed.data.details),
+        },
+      },
+    });
+
+    revalidatePath('/access');
+    revalidatePath(`/access/${parsed.data.groupId}`);
+    return { success: true };
+  } catch (error) {
+    await logError('database', error, `addAssetToGroup:${input.groupId}`);
+    return { success: false, error: 'Failed to add asset.' };
+  }
+}
+
 
 /**
  * Function removeAssetFromGroup.
@@ -524,6 +582,109 @@ export async function removeAssetFromGroup(input: { groupId: string; portfolioAs
       }
 
       // Only add if not already present in the personal portfolio
+      const alreadyInPersonal = await tx.asset.findFirst({
+        where: {
+          portfolioId: personalPortfolio.id,
+          assetId: assetRow.assetId,
+        },
+        select: { id: true },
+      });
+
+      if (!alreadyInPersonal) {
+        await tx.asset.create({
+          data: {
+            portfolioId: personalPortfolio.id,
+            assetId: assetRow.assetId,
+            assetType: assetRow.assetType,
+          },
+        });
+      }
+    });
+
+    revalidatePath('/access');
+    revalidatePath(`/access/portfolio/${input.groupId}`);
+    return { success: true };
+  } catch (error) {
+    await logError('database', error, `removeAssetFromGroup:${input.groupId}:${input.portfolioAssetId}`);
+    return { success: false, error: 'Failed to remove asset.' };
+  }
+}
+
+export async function removeAssetFromGroupWithMode(
+  input: { groupId: string; portfolioAssetId: string },
+  options?: { rootMode?: boolean },
+) {
+  const accountId = await getActiveAccountId();
+  if (!accountId) {
+    return { success: false, error: 'Not authenticated.' };
+  }
+
+  if (!input.groupId || !input.portfolioAssetId) {
+    return { success: false, error: 'Missing required fields.' };
+  }
+
+  try {
+    const rootOverride = await canUseRootMode(options?.rootMode);
+    const allowed = rootOverride || (await canAccessGroup(input.groupId, accountId));
+    if (!allowed) {
+      return { success: false, error: 'Permission denied.' };
+    }
+
+    const assetRow = await prisma.asset.findFirst({
+      where: {
+        id: input.portfolioAssetId,
+        portfolioId: input.groupId,
+      },
+      select: { id: true, assetId: true, assetType: true },
+    });
+
+    if (!assetRow) {
+      return { success: false, error: 'Asset not found in this portfolio.' };
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.authzAssetsAccessGrant.deleteMany({
+        where: {
+          asset_id: assetRow.id,
+          portfolio_id: input.groupId,
+        },
+      });
+
+      await tx.asset.delete({
+        where: { id: assetRow.id },
+      });
+
+      let personalPortfolio = await tx.portfolio.findFirst({
+        where: {
+          members: {
+            every: { accountId },
+            some: { accountId },
+          },
+        },
+        select: { id: true },
+      });
+
+      if (!personalPortfolio) {
+        personalPortfolio = await tx.portfolio.create({
+          data: {
+            name: 'My Assets',
+            description: 'Personal asset portfolio.',
+            members: {
+              create: {
+                accountId,
+                isPermanent: true,
+                hasFullAccess: true,
+                details: {
+                  isPermanent: true,
+                  hasFullAccess: true,
+                },
+              },
+            },
+          },
+          select: { id: true },
+        });
+      }
+
       const alreadyInPersonal = await tx.asset.findFirst({
         where: {
           portfolioId: personalPortfolio.id,
@@ -681,7 +842,7 @@ export async function assignAssetMemberRole(input: {
   assetMember: string;
   asset: string;
   role: string;
-}) {
+}, options?: { rootMode?: boolean }) {
   const accountId = await getActiveAccountId();
   if (!accountId) {
     return { success: false, error: 'Not authenticated.' };
@@ -693,7 +854,8 @@ export async function assignAssetMemberRole(input: {
   }
 
   try {
-    const allowed = await canAccessGroup(parsed.data.groupId, accountId);
+    const rootOverride = await canUseRootMode(options?.rootMode);
+    const allowed = rootOverride || (await canAccessGroup(parsed.data.groupId, accountId));
     if (!allowed) {
       return { success: false, error: 'Permission denied.' };
     }
@@ -858,7 +1020,7 @@ export async function bulkAssignAssetRoles(input: {
   assetIds: string[];
   assetType: string;
   roleIds: string[];
-}): Promise<{ success: boolean; error?: string; assigned?: number }> {
+}, options?: { rootMode?: boolean }): Promise<{ success: boolean; error?: string; assigned?: number }> {
   const accountId = await getActiveAccountId();
   if (!accountId) {
     return { success: false, error: 'Not authenticated.' };
@@ -869,7 +1031,8 @@ export async function bulkAssignAssetRoles(input: {
   }
 
   try {
-    const allowed = await canAccessGroup(input.groupId, accountId);
+    const rootOverride = await canUseRootMode(options?.rootMode);
+    const allowed = rootOverride || (await canAccessGroup(input.groupId, accountId));
     if (!allowed) {
       return { success: false, error: 'Permission denied.' };
     }

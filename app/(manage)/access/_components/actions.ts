@@ -5,6 +5,8 @@ import { Prisma } from '@/prisma/generated/client';
 import { getUserProfile } from '@/services/user';
 import { getPersonalAccountId, getActiveAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
+import { assignAssetMemberRole, getRolesForAsset } from '@/services/manage/access/assets';
+import { isRootUser } from '@/services/user';
 
 export type ResolvedAccount = {
   accountId: string;
@@ -407,5 +409,117 @@ export async function inviteDirectMember(
   } catch (error) {
     await logError('database', error, `inviteDirectMember:${recipientAccountId}`);
     return { success: false, error: 'Failed to send invitation.' };
+  }
+}
+
+/**
+ * Finds a portfolio-asset row from either row ID or logical assetId.
+ */
+async function resolvePortfolioAssetRow(assetRef: string): Promise<{
+  rowId: string;
+  assetId: string;
+  assetType: string;
+} | null> {
+  const byRow = await prisma.asset.findUnique({
+    where: { id: assetRef },
+    select: { id: true, assetId: true, assetType: true },
+  });
+  if (byRow) return { rowId: byRow.id, assetId: byRow.assetId, assetType: byRow.assetType };
+
+  const byLogical = await prisma.asset.findFirst({
+    where: { assetId: assetRef },
+    select: { id: true, assetId: true, assetType: true },
+    orderBy: { id: 'asc' },
+  });
+  if (!byLogical) return null;
+  return { rowId: byLogical.id, assetId: byLogical.assetId, assetType: byLogical.assetType };
+}
+
+export async function assignOrInviteAssetMember(input: {
+  assetRef: string;
+  targetAccountId: string;
+  rootMode?: boolean;
+}): Promise<{ success: boolean; error?: string; mode?: 'assigned' | 'invited' }> {
+  const senderAccountId = await getActiveAccountId();
+  if (!senderAccountId) return { success: false, error: 'Not authenticated.' };
+
+  if (!input.assetRef || !input.targetAccountId) {
+    return { success: false, error: 'Missing required fields.' };
+  }
+
+  if (input.targetAccountId === senderAccountId) {
+    return { success: false, error: 'You cannot assign/invite yourself.' };
+  }
+
+  try {
+    const asset = await resolvePortfolioAssetRow(input.assetRef);
+    if (!asset) return { success: false, error: 'Asset not found.' };
+
+    if (input.rootMode) {
+      const rootAllowed = await isRootUser(senderAccountId);
+      if (!rootAllowed) return { success: false, error: 'Root mode is not allowed.' };
+
+      const roles = await getRolesForAsset(asset.rowId);
+      if (roles.length === 0) {
+        return { success: false, error: 'No roles are available for this asset type.' };
+      }
+
+      const result = await assignAssetMemberRole({
+        assetMember: input.targetAccountId,
+        asset: asset.rowId,
+        role: roles[0].id,
+      }, { rootMode: true });
+
+      if (!result.success) {
+        return { success: false, error: result.error || 'Failed to assign asset access.' };
+      }
+
+      revalidatePath('/access');
+      revalidatePath(`/access/member?asset=${encodeURIComponent(asset.assetId)}&mode=root`);
+      revalidatePath(`/access/asset?asset=${encodeURIComponent(asset.assetId)}&mode=root`);
+      return { success: true, mode: 'assigned' };
+    }
+
+    const existingInvitation = await prisma.request.findFirst({
+      where: {
+        action: 'asset_access_invitation',
+        senderId: senderAccountId,
+        recipientId: input.targetAccountId,
+        status: 'pending',
+        data: {
+          path: ['assetId'],
+          equals: asset.assetId,
+        },
+      },
+      select: { id: true },
+    });
+    if (existingInvitation) {
+      return { success: false, error: 'An invitation has already been sent for this asset.' };
+    }
+
+    const expiresOn = new Date();
+    expiresOn.setDate(expiresOn.getDate() + 7);
+
+    await prisma.request.create({
+      data: {
+        action: 'asset_access_invitation',
+        senderId: senderAccountId,
+        recipientId: input.targetAccountId,
+        status: 'pending',
+        data: {
+          assetId: asset.assetId,
+          assetType: asset.assetType,
+          expiresOn: expiresOn.toISOString(),
+        },
+      },
+    });
+
+    revalidatePath('/access');
+    revalidatePath(`/access/member?asset=${encodeURIComponent(asset.assetId)}`);
+    revalidatePath(`/access/asset?asset=${encodeURIComponent(asset.assetId)}`);
+    return { success: true, mode: 'invited' };
+  } catch (error) {
+    await logError('database', error, `assignOrInviteAssetMember:${input.assetRef}:${input.targetAccountId}`);
+    return { success: false, error: 'Failed to process asset member action.' };
   }
 }

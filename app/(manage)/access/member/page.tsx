@@ -10,6 +10,7 @@ import prisma from '@/core/helpers/prisma';
 import { getUserProfile, isRootUser } from '@/services/user';
 import { resolveAssetName } from '@/services/manage/access/asset-resolvers';
 import { AddMemberForm } from '../_components/add-member-form';
+import { AssetMemberLookupForm } from '../_components/asset-member-lookup-form';
 import { AddUserForm } from '../add-user-form';
 import { FlowLink } from '@/components/ui/flow-link';
 import { PrimaryHeader } from '@/components/ui/primary-header';
@@ -311,11 +312,7 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
     <MembersLayout
       backHref={backHref}
       description={`Members with access to ${resolved.assetType === 'application' ? 'application' : 'asset'} "${resolvedAsset.name}"`}
-      addForm={
-        rootMode ? (
-          <AddMemberForm assetId={resolved.assetId} mode="root" />
-        ) : null
-      }
+      addForm={<AssetMemberLookupForm assetId={resolved.assetId} rootMode={rootMode} />}
     >
       {members.length > 0 ? (
         members.map((member) => (

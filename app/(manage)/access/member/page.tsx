@@ -1,9 +1,8 @@
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
 import { BackButton } from '@/components/ui/back-button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Shield, ChevronRight, Clock } from '@/components/icons';
+import { Shield, ChevronRight } from '@/components/icons';
 import { getPortfolioMembers, getDirectMembers } from '@/services/manage/access';
 import { getActiveAccountId } from '@/core/auth/verify';
 import prisma from '@/core/helpers/prisma';
@@ -14,14 +13,16 @@ import { AssetMemberLookupForm } from '../_components/asset-member-lookup-form';
 import { AddUserForm } from '../add-user-form';
 import { FlowLink } from '@/components/ui/flow-link';
 import { PrimaryHeader } from '@/components/ui/primary-header';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 type PageProps = {
   searchParams: Promise<{ portfolio?: string; asset?: string; mode?: string }>;
 };
 
-// ── Status badge ──────────────────────────────────────────────────────────────
+type MemberStatus = 'active' | 'invited' | 'on_hold' | 'expired';
 
-function StatusBadge({ status }: { status: 'active' | 'invited' | 'on_hold' | 'expired' }) {
+// ── Status badge ──────────────────────────────────────────────────────────────
+function StatusBadge({ status }: { status: MemberStatus }) {
   if (status === 'active') return null;
 
   const config: Record<string, { label: string; variant: 'outline'; className: string }> = {
@@ -40,66 +41,55 @@ function StatusBadge({ status }: { status: 'active' | 'invited' | 'on_hold' | 'e
   );
 }
 
-// ── Shared member row ─────────────────────────────────────────────────────────
+type MembersTableRow = {
+  id: string;
+  member_id: string;
+  role: string;
+  status: MemberStatus;
+  targetType: 'portfolio' | 'account';
+  targetId: string;
+  actionHref: string;
+};
 
-function MemberRow({
-  href,
-  displayName,
-  accountPhoto,
-  roleCount,
-  status,
-}: {
-  href: string;
-  displayName: string;
-  accountPhoto?: string;
-  roleCount: number;
-  status: 'active' | 'invited' | 'on_hold' | 'expired';
-}) {
-  const isInvited = status === 'invited';
-  const isExpired = status === 'expired';
-  const isPending = isInvited || isExpired;
-
+function MembersTable({ rows }: { rows: MembersTableRow[] }) {
   return (
-    <FlowLink
-      href={href}
-      className="flex items-center gap-4 py-4 px-4 hover:bg-muted/50 transition-colors"
-    >
-      <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full overflow-hidden ${isInvited ? 'bg-amber-100 dark:bg-amber-950/40' : 'bg-muted'}`}>
-        {accountPhoto && !isPending ? (
-          <Image
-            src={accountPhoto}
-            alt={displayName}
-            width={36}
-            height={36}
-            className="h-full w-full object-cover"
-          />
-        ) : isInvited ? (
-          <Clock className="h-4 w-4 text-amber-500" />
-        ) : isExpired ? (
-          <Clock className="h-4 w-4 text-muted-foreground" />
-        ) : (
-          <span className="text-sm font-medium text-muted-foreground">
-            {displayName.charAt(0).toUpperCase()}
-          </span>
-        )}
-      </span>
-      <div className="min-w-0 flex-grow">
-        <p className={`font-medium truncate ${isPending ? 'text-muted-foreground' : 'text-foreground'}`}>
-          {displayName}
-        </p>
-        <p className="text-sm text-muted-foreground">
-          {isInvited
-            ? 'Invitation pending'
-            : isExpired
-            ? 'Invitation expired'
-            : roleCount === 0
-            ? 'No roles assigned'
-            : `${roleCount} role${roleCount !== 1 ? 's' : ''} assigned`}
-        </p>
-      </div>
-      <StatusBadge status={status} />
-      <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-    </FlowLink>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>id</TableHead>
+          <TableHead>member_id</TableHead>
+          <TableHead>role</TableHead>
+          <TableHead>status</TableHead>
+          <TableHead>targetType</TableHead>
+          <TableHead>targetId</TableHead>
+          <TableHead className="text-right">action</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {rows.map((row) => (
+          <TableRow key={`${row.targetType}:${row.targetId}:${row.member_id}`}>
+            <TableCell className="font-mono text-xs">{row.id}</TableCell>
+            <TableCell className="font-mono text-xs">{row.member_id}</TableCell>
+            <TableCell>{row.role}</TableCell>
+            <TableCell>
+              {row.status === 'active' ? (
+                <span className="text-sm">active</span>
+              ) : (
+                <StatusBadge status={row.status} />
+              )}
+            </TableCell>
+            <TableCell>{row.targetType}</TableCell>
+            <TableCell className="font-mono text-xs">{row.targetId}</TableCell>
+            <TableCell className="text-right">
+              <FlowLink href={row.actionHref} className="inline-flex items-center gap-1 text-sm font-medium">
+                Open
+                <ChevronRight className="h-4 w-4" />
+              </FlowLink>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }
 
@@ -109,12 +99,12 @@ function MembersLayout({
   backHref,
   description,
   addForm,
-  children,
+  table,
 }: {
   backHref: string;
   description: string;
   addForm: React.ReactNode;
-  children: React.ReactNode;
+  table: React.ReactNode;
 }) {
   return (
     <div className="grid gap-8">
@@ -129,9 +119,7 @@ function MembersLayout({
         {addForm}
 
         <Card>
-          <CardContent className="divide-y p-2">
-            {children}
-          </CardContent>
+          <CardContent className="p-2">{table}</CardContent>
         </Card>
       </div>
     </div>
@@ -163,21 +151,24 @@ async function PortfolioAccountPage({ id }: { id: string }) {
       backHref={`/access?portfolio=${id}`}
       description={`Members with access to portfolio "${portfolioName}"`}
       addForm={<AddMemberForm portfolioId={id} />}
-    >
-      {members.length > 0 ? (
-        members.map((member) => (
-          <MemberRow
-            key={member.accountId}
-            href={`/access/role?portfolio=${id}&member=${member.accountId}`}
-            displayName={member.displayName}
-            accountPhoto={member.accountPhoto}
-            roleCount={member.roleCount}
-            status={member.status}
+      table={
+        members.length > 0 ? (
+          <MembersTable
+            rows={members.map((member) => ({
+              id: `portfolio:${id}:${member.accountId}`,
+              member_id: member.accountId,
+              role: member.roleCount === 0 ? 'No roles assigned' : `${member.roleCount} role${member.roleCount !== 1 ? 's' : ''}`,
+              status: member.status,
+              targetType: 'portfolio',
+              targetId: id,
+              actionHref: `/access/role?portfolio=${id}&member=${member.accountId}`,
+            }))}
           />
-        ))
-      ) : (
-        <EmptyMembers message="Add a member above using their NeupID." />
-      )}
+        ) : (
+          <EmptyMembers message="Add a member above using their NeupID." />
+        )
+      }
+    >
     </MembersLayout>
   );
 }
@@ -195,21 +186,24 @@ async function DirectAccountPage() {
       backHref="/access"
       description={`Members with access to profile "${accountName}"`}
       addForm={<AddUserForm />}
-    >
-      {members.length > 0 ? (
-        members.map((member) => (
-          <MemberRow
-            key={member.accountId}
-            href={`/access/role?member=${member.accountId}`}
-            displayName={member.displayName}
-            accountPhoto={member.accountPhoto}
-            roleCount={member.roleCount}
-            status={member.status}
+      table={
+        members.length > 0 ? (
+          <MembersTable
+            rows={members.map((member) => ({
+              id: `account:${accountId}:${member.accountId}`,
+              member_id: member.accountId,
+              role: member.roleCount === 0 ? 'No roles assigned' : `${member.roleCount} role${member.roleCount !== 1 ? 's' : ''}`,
+              status: member.status,
+              targetType: 'account',
+              targetId: accountId,
+              actionHref: `/access/role?member=${member.accountId}`,
+            }))}
           />
-        ))
-      ) : (
-        <EmptyMembers message="Use the form above to invite someone by NeupID." />
-      )}
+        ) : (
+          <EmptyMembers message="Use the form above to invite someone by NeupID." />
+        )
+      }
+    >
     </MembersLayout>
   );
 }
@@ -313,21 +307,24 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
       backHref={backHref}
       description={`Members with access to ${resolved.assetType === 'application' ? 'application' : 'asset'} "${resolvedAsset.name}"`}
       addForm={<AssetMemberLookupForm assetId={resolved.assetId} rootMode={rootMode} />}
-    >
-      {members.length > 0 ? (
-        members.map((member) => (
-          <MemberRow
-            key={member.accountId}
-            href={`/access/role?member=${encodeURIComponent(member.accountId)}`}
-            displayName={member.displayName}
-            accountPhoto={member.accountPhoto}
-            roleCount={member.roleCount}
-            status={member.status}
+      table={
+        members.length > 0 ? (
+          <MembersTable
+            rows={members.map((member) => ({
+              id: `asset:${resolved.assetId}:${member.accountId}`,
+              member_id: member.accountId,
+              role: member.roleCount === 0 ? 'No roles assigned' : `${member.roleCount} role${member.roleCount !== 1 ? 's' : ''}`,
+              status: member.status,
+              targetType: 'account',
+              targetId: accountId,
+              actionHref: `/access/role?member=${encodeURIComponent(member.accountId)}`,
+            }))}
           />
-        ))
-      ) : (
-        <EmptyMembers message="No accounts currently have roles on this asset." />
-      )}
+        ) : (
+          <EmptyMembers message="No accounts currently have roles on this asset." />
+        )
+      }
+    >
     </MembersLayout>
   );
 }

@@ -35,6 +35,8 @@ model Account {
   authzAppOwnedGrants     AuthzAppAccessGrant[]     @relation("AuthzAppGrantOwner")
   authzAppTargetGrants    AuthzAppAccessGrant[]     @relation("AuthzAppGrantTarget")
   memberAccesses          MemberAccess[]
+  ownedMembers            Member[]                  @relation("MemberOwner")
+  targetAccountMembers    Member[]                  @relation("MemberTargetAccount")
   permits                 Permit[]
   permitTargets           Permit[]                  @relation("PermitTarget")
   parentOwnerships        AccountOwnership[]        @relation("ChildAccount")
@@ -291,6 +293,7 @@ model Portfolio {
   dateCreated              DateTime                  @default(now())
   assets                   Asset[]
   members                  PortfolioMember[]
+  targetPortfolioMembers   Member[]                  @relation("MemberTargetPortfolio")
   authzAccountAccessGrants AuthzAccountAccessGrant[]
   authzAssetsAccessGrants  AuthzAssetsAccessGrant[]
   authzAppAccessGrants     AuthzAppAccessGrant[]
@@ -327,6 +330,29 @@ model PortfolioMember {
   @@index([accountId], map: "portfolio_members_accountId_idx")
   @@index([portfolioId], map: "portfolio_members_portfolioId_idx")
   @@map("portfolio_member")
+}
+
+model Member {
+  id                String           @id @default(uuid())
+  memberId          String           @map("member_id")
+  targetType        MemberTargetType @map("target_type")
+  targetAccountId   String?          @map("target_account_id")
+  targetPortfolioId String?          @map("target_portfolio_id")
+  status            String
+  isPermanent       Boolean          @default(false) @map("is_permanent")
+  hasFullAccess     Boolean          @default(false) @map("has_full_access")
+  details           Json?
+
+  member           Account    @relation("MemberOwner", fields: [memberId], references: [id], onDelete: Cascade, map: "member_member_id_fkey")
+  targetAccount     Account?   @relation("MemberTargetAccount", fields: [targetAccountId], references: [id], map: "member_target_account_id_fkey")
+  targetPortfolio   Portfolio? @relation("MemberTargetPortfolio", fields: [targetPortfolioId], references: [id], map: "member_target_portfolio_id_fkey")
+
+  @@index([memberId], map: "member_member_id_idx")
+  @@index([targetAccountId], map: "member_target_account_id_idx")
+  @@index([targetPortfolioId], map: "member_target_portfolio_id_idx")
+  @@index([targetType, targetAccountId], map: "member_target_type_target_account_id_idx")
+  @@index([targetType, targetPortfolioId], map: "member_target_type_target_portfolio_id_idx")
+  @@map("member")
 }
 
 model AccountOwnership {

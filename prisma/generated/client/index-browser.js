@@ -327,6 +327,18 @@ exports.Prisma.PortfolioMemberScalarFieldEnum = {
   details: 'details'
 };
 
+exports.Prisma.MemberScalarFieldEnum = {
+  id: 'id',
+  memberId: 'memberId',
+  targetType: 'targetType',
+  targetAccountId: 'targetAccountId',
+  targetPortfolioId: 'targetPortfolioId',
+  status: 'status',
+  isPermanent: 'isPermanent',
+  hasFullAccess: 'hasFullAccess',
+  details: 'details'
+};
+
 exports.Prisma.AccountOwnershipScalarFieldEnum = {
   id: 'id',
   parentId: 'parentId',
@@ -480,16 +492,16 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.MemberTargetType = exports.$Enums.MemberTargetType = {
+  portfolio: 'portfolio',
+  account: 'account'
+};
+
 exports.AuthzGrantStatus = exports.$Enums.AuthzGrantStatus = {
   active: 'active',
   invited: 'invited',
   on_hold: 'on_hold',
   expired: 'expired'
-};
-
-exports.MemberTargetType = exports.$Enums.MemberTargetType = {
-  portfolio: 'portfolio',
-  account: 'account'
 };
 
 exports.Prisma.ModelName = {
@@ -514,6 +526,7 @@ exports.Prisma.ModelName = {
   Portfolio: 'Portfolio',
   Asset: 'Asset',
   PortfolioMember: 'PortfolioMember',
+  Member: 'Member',
   AccountOwnership: 'AccountOwnership',
   ApplicationConnection: 'ApplicationConnection',
   ApplicationBridge: 'ApplicationBridge',

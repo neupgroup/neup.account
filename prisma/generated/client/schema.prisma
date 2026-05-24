@@ -34,6 +34,7 @@ model Account {
   authzAssetsAccessGrants AuthzAssetsAccessGrant[]
   authzAppOwnedGrants     AuthzAppAccessGrant[]     @relation("AuthzAppGrantOwner")
   authzAppTargetGrants    AuthzAppAccessGrant[]     @relation("AuthzAppGrantTarget")
+  memberAccesses          MemberAccess[]
   permits                 Permit[]
   permitTargets           Permit[]                  @relation("PermitTarget")
   parentOwnerships        AccountOwnership[]        @relation("ChildAccount")
@@ -390,6 +391,11 @@ enum AuthzGrantStatus {
   expired
 }
 
+enum MemberTargetType {
+  portfolio
+  account
+}
+
 model AuthzPermission {
   id          String                @id @default(uuid())
   name        String
@@ -496,6 +502,22 @@ model Permit {
   @@index([accountId], map: "permit_account_id_idx")
   @@index([targetAccountId], map: "permit_target_account_id_idx")
   @@map("permit")
+}
+
+model MemberAccess {
+  id         String           @id @default(uuid())
+  memberId   String           @map("member_id")
+  role       String
+  status     AuthzGrantStatus @default(active)
+  targetType MemberTargetType @map("target_type")
+  targetId   String           @map("target_id")
+  action     String
+
+  member Account @relation(fields: [memberId], references: [id], onDelete: Cascade, map: "member_access_member_id_fkey")
+
+  @@index([memberId], map: "member_access_member_id_idx")
+  @@index([targetType, targetId], map: "member_access_target_type_target_id_idx")
+  @@map("member_access")
 }
 
 model AuthzAppAccessGrant {

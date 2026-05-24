@@ -420,6 +420,16 @@ exports.Prisma.PermitScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.MemberAccessScalarFieldEnum = {
+  id: 'id',
+  memberId: 'memberId',
+  role: 'role',
+  status: 'status',
+  targetType: 'targetType',
+  targetId: 'targetId',
+  action: 'action'
+};
+
 exports.Prisma.AuthzAppAccessGrantScalarFieldEnum = {
   id: 'id',
   appId: 'appId',
@@ -477,6 +487,11 @@ exports.AuthzGrantStatus = exports.$Enums.AuthzGrantStatus = {
   expired: 'expired'
 };
 
+exports.MemberTargetType = exports.$Enums.MemberTargetType = {
+  portfolio: 'portfolio',
+  account: 'account'
+};
+
 exports.Prisma.ModelName = {
   Account: 'Account',
   AccountTypeIndividual: 'AccountTypeIndividual',
@@ -509,6 +524,7 @@ exports.Prisma.ModelName = {
   AuthzAccountAccessGrant: 'AuthzAccountAccessGrant',
   AuthzAssetsAccessGrant: 'AuthzAssetsAccessGrant',
   Permit: 'Permit',
+  MemberAccess: 'MemberAccess',
   AuthzAppAccessGrant: 'AuthzAppAccessGrant',
   Identity: 'Identity'
 };

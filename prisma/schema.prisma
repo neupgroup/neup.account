@@ -34,6 +34,7 @@ model Account {
   authzAssetsAccessGrants AuthzAssetsAccessGrant[]
   authzAppOwnedGrants     AuthzAppAccessGrant[]     @relation("AuthzAppGrantOwner")
   authzAppTargetGrants    AuthzAppAccessGrant[]     @relation("AuthzAppGrantTarget")
+  memberAccesses          MemberAccess[]
   permits                 Permit[]
   permitTargets           Permit[]                  @relation("PermitTarget")
   parentOwnerships        AccountOwnership[]        @relation("ChildAccount")

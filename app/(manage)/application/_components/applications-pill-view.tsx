@@ -79,6 +79,9 @@ function CreateAppRow() {
           <p className="truncate text-base font-medium leading-6 text-muted-foreground">
             Create Application
           </p>
+          <p className="truncate text-sm text-muted-foreground/80">
+            Register a new app and configure it later.
+          </p>
         </div>
       </div>
       <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />

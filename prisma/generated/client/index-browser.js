@@ -317,16 +317,6 @@ exports.Prisma.AssetScalarFieldEnum = {
   details: 'details'
 };
 
-exports.Prisma.PortfolioMemberScalarFieldEnum = {
-  id: 'id',
-  portfolioId: 'portfolioId',
-  accountId: 'accountId',
-  status: 'status',
-  isPermanent: 'isPermanent',
-  hasFullAccess: 'hasFullAccess',
-  details: 'details'
-};
-
 exports.Prisma.MemberScalarFieldEnum = {
   id: 'id',
   memberId: 'memberId',
@@ -335,6 +325,7 @@ exports.Prisma.MemberScalarFieldEnum = {
   parentAccountId: 'parentAccountId',
   parentApplicationId: 'parentApplicationId',
   parentConnectionId: 'parentConnectionId',
+  parentPortfolioId: 'parentPortfolioId',
   roleId: 'roleId',
   isPermanent: 'isPermanent',
   hasFullAccess: 'hasFullAccess',
@@ -402,16 +393,6 @@ exports.Prisma.AuthzRolePermissionScalarFieldEnum = {
   roleName: 'roleName'
 };
 
-exports.Prisma.AuthzAccountAccessGrantScalarFieldEnum = {
-  id: 'id',
-  ownerAccountId: 'ownerAccountId',
-  targetAccountId: 'targetAccountId',
-  roleId: 'roleId',
-  appId: 'appId',
-  portfolioId: 'portfolioId',
-  status: 'status'
-};
-
 exports.Prisma.AuthzAssetsAccessGrantScalarFieldEnum = {
   id: 'id',
   asset_id: 'asset_id',
@@ -432,27 +413,6 @@ exports.Prisma.PermitScalarFieldEnum = {
   restrictions: 'restrictions',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
-};
-
-exports.Prisma.MemberAccessScalarFieldEnum = {
-  id: 'id',
-  memberId: 'memberId',
-  role: 'role',
-  status: 'status',
-  targetType: 'targetType',
-  targetId: 'targetId',
-  action: 'action'
-};
-
-exports.Prisma.AuthzAppAccessGrantScalarFieldEnum = {
-  id: 'id',
-  appId: 'appId',
-  accountId: 'accountId',
-  targetAccountId: 'targetAccountId',
-  roleId: 'roleId',
-  portfolioId: 'portfolioId',
-  status: 'status',
-  pushed: 'pushed'
 };
 
 exports.Prisma.IdentityScalarFieldEnum = {
@@ -497,25 +457,14 @@ exports.Prisma.NullsOrder = {
 exports.MemberAccessFor = exports.$Enums.MemberAccessFor = {
   account: 'account',
   application: 'application',
-  connection: 'connection'
+  connection: 'connection',
+  portfolio: 'portfolio'
 };
 
 exports.MemberStatus = exports.$Enums.MemberStatus = {
   active: 'active',
   paused: 'paused',
   removed: 'removed'
-};
-
-exports.AuthzGrantStatus = exports.$Enums.AuthzGrantStatus = {
-  active: 'active',
-  invited: 'invited',
-  on_hold: 'on_hold',
-  expired: 'expired'
-};
-
-exports.MemberTargetType = exports.$Enums.MemberTargetType = {
-  portfolio: 'portfolio',
-  account: 'account'
 };
 
 exports.Prisma.ModelName = {
@@ -539,7 +488,6 @@ exports.Prisma.ModelName = {
   Application: 'Application',
   Portfolio: 'Portfolio',
   Asset: 'Asset',
-  PortfolioMember: 'PortfolioMember',
   Member: 'Member',
   AccountOwnership: 'AccountOwnership',
   Connection: 'Connection',
@@ -548,11 +496,8 @@ exports.Prisma.ModelName = {
   AuthzPermission: 'AuthzPermission',
   AuthzRole: 'AuthzRole',
   AuthzRolePermission: 'AuthzRolePermission',
-  AuthzAccountAccessGrant: 'AuthzAccountAccessGrant',
   AuthzAssetsAccessGrant: 'AuthzAssetsAccessGrant',
   Permit: 'Permit',
-  MemberAccess: 'MemberAccess',
-  AuthzAppAccessGrant: 'AuthzAppAccessGrant',
   Identity: 'Identity'
 };
 

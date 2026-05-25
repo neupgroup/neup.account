@@ -127,62 +127,40 @@ export async function GET(request: NextRequest): Promise<Response> {
   try {
     const originUrl = new URL(origin);
     targetOrigin = originUrl.origin;
+    const host = originUrl.hostname.toLowerCase();
 
-    if (!queryAppId) {
-      const host = originUrl.hostname;
-      const isFirstPartyHost = host === 'neupgroup.com' || host.endsWith('.neupgroup.com');
-      const isHttps = originUrl.protocol === 'https:';
+    appId = queryAppId || BASE_APP_ID;
 
-      if (!isHttps || !isFirstPartyHost) {
+    const app = await prisma.application.findUnique({
+      where: { id: appId },
+      select: { details: true },
+    });
+
+    const appDetails =
+      app?.details && typeof app.details === 'object'
+        ? (app.details as Record<string, unknown>)
+        : {};
+    allowDevModeForApp = Boolean(appDetails.allowDevMode);
+
+    // 1) First-party origin always passes origin checks.
+    if (host === 'neupgroup.com') {
+      // Skip all other origin checks.
+    } else if (allowDevModeForApp) {
+      // 2) Dev mode also bypasses origin checks.
+    } else {
+      // 3) Otherwise enforce registered origin checks.
+      const { valid, appId: originAppId } = await validateSilentSsoOrigin(origin);
+      if (!valid || !originAppId) {
         return buildHtmlResponse(
           { type: MESSAGE_TYPE, success: false, reason: 'origin_not_registered' },
           '*'
         );
       }
 
-      appId = BASE_APP_ID;
-      const baseApp = await prisma.application.findUnique({
-        where: { id: appId },
-        select: { details: true },
-      });
-      const baseDetails =
-        baseApp?.details && typeof baseApp.details === 'object'
-          ? (baseApp.details as Record<string, unknown>)
-          : {};
-      allowDevModeForApp = Boolean(baseDetails.allowDevMode);
-    } else {
-      appId = queryAppId;
-      const app = await prisma.application.findUnique({
-        where: { id: appId },
-        select: { details: true },
-      });
-      const appDetails =
-        app?.details && typeof app.details === 'object'
-          ? (app.details as Record<string, unknown>)
-          : {};
-      allowDevModeForApp = Boolean(appDetails.allowDevMode);
-
-      // Different-domain apps must be registered as silent SSO origins,
-      // unless dev mode is explicitly allowed for the app.
-      if (!allowDevModeForApp) {
-        const { valid, appId: originAppId } = await validateSilentSsoOrigin(origin);
-        if (!valid || !originAppId) {
-          return buildHtmlResponse(
-            { type: MESSAGE_TYPE, success: false, reason: 'origin_not_registered' },
-            '*'
-          );
-        }
-
-        if (queryAppId !== originAppId) {
-          return buildHtmlResponse(
-            { type: MESSAGE_TYPE, success: false, reason: 'app_mismatch' },
-            targetOrigin
-          );
-        }
-      } else if (!app) {
+      if (queryAppId && queryAppId !== originAppId) {
         return buildHtmlResponse(
-          { type: MESSAGE_TYPE, success: false, reason: 'app_not_found' },
-          '*'
+          { type: MESSAGE_TYPE, success: false, reason: 'app_mismatch' },
+          targetOrigin
         );
       }
     }

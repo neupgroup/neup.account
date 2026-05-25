@@ -49,6 +49,7 @@ export default async function ApplicationConfigPage({ params }: Props) {
         initialAccess={config.access}
         initialTokenFields={config.tokenFields}
         initialOrigins={config.silentSsoOrigins}
+        initialAllowDevMode={config.allowDevMode}
       />
     </div>
   );

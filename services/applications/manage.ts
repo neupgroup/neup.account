@@ -1686,6 +1686,7 @@ const saveAppConfigSchema = z.object({
   secretKey: z.string().min(16, 'Secret must be at least 16 characters.').optional().or(z.literal('')),
   access: z.array(z.enum(applicationAccessFields)).default([]),
   tokenFields: z.array(z.enum(applicationTokenFields)).default([]),
+  allowDevMode: z.boolean().optional().default(false),
 });
 
 /**
@@ -1709,7 +1710,7 @@ export async function saveAppConfig(
     return { success: false, fieldErrors };
   }
 
-  const { appId, secretKey, access, tokenFields } = parsed.data;
+  const { appId, secretKey, access, tokenFields, allowDevMode } = parsed.data;
   const sanitizedAccess = access.filter((field) => responseAccessSet.has(field));
   const sanitizedTokenFields = tokenFields.filter((field) => tokenFieldSet.has(field));
 
@@ -1731,7 +1732,7 @@ export async function saveAppConfig(
       responseFields: sanitizedAccess,
       tokenFields: sanitizedTokenFields,
       // Backward-compat: keep legacy JSON in sync until all callers are migrated.
-      details: { ...existingDetails, access: sanitizedAccess, token_fields: sanitizedTokenFields },
+      details: { ...existingDetails, access: sanitizedAccess, token_fields: sanitizedTokenFields, allowDevMode },
     };
     if (secretKey && secretKey.trim().length >= 16) {
       updateData.appSecret = secretKey.trim();
@@ -1762,6 +1763,7 @@ export async function getAppConfigData(appId: string): Promise<{
   access: ApplicationAccessField[];
   tokenFields: ApplicationAccessField[];
   silentSsoOrigins: Array<{ id: string; value: string }>;
+  allowDevMode: boolean;
   status: string;
 } | null> {
   const accountId = await getActiveAccountId();
@@ -1793,12 +1795,14 @@ export async function getAppConfigData(appId: string): Promise<{
       app.responseFields.length > 0 ? app.responseFields : (legacyDetails as any).access ?? [];
     const tokenFieldSource =
       app.tokenFields.length > 0 ? app.tokenFields : (legacyDetails as any).token_fields ?? [];
+    const allowDevMode = Boolean((legacyDetails as any).allowDevMode);
 
     return {
       hasSecretKey: Boolean(app.appSecret),
       access: normalizeAccess(responseFieldSource).filter((field) => responseAccessSet.has(field)),
       tokenFields: normalizeAccess(tokenFieldSource).filter((field) => tokenFieldSet.has(field)),
       silentSsoOrigins: origins,
+      allowDevMode,
       status: app.status ?? 'development',
     };
   } catch (error) {

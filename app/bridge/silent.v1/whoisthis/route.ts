@@ -110,6 +110,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     );
   }
   const queryAppId = searchParams.get('app');
+  let allowDevModeForApp = false;
 
   // If ?app is missing, treat this as the base account system / first-party usage.
   // Only allow first-party origins (*.neupgroup.com) in this mode.
@@ -140,24 +141,50 @@ export async function GET(request: NextRequest): Promise<Response> {
       }
 
       appId = BASE_APP_ID;
+      const baseApp = await prisma.application.findUnique({
+        where: { id: appId },
+        select: { details: true },
+      });
+      const baseDetails =
+        baseApp?.details && typeof baseApp.details === 'object'
+          ? (baseApp.details as Record<string, unknown>)
+          : {};
+      allowDevModeForApp = Boolean(baseDetails.allowDevMode);
     } else {
-      // Different-domain apps must be registered as silent SSO origins.
-      const { valid, appId: originAppId } = await validateSilentSsoOrigin(origin);
-      if (!valid || !originAppId) {
+      appId = queryAppId;
+      const app = await prisma.application.findUnique({
+        where: { id: appId },
+        select: { details: true },
+      });
+      const appDetails =
+        app?.details && typeof app.details === 'object'
+          ? (app.details as Record<string, unknown>)
+          : {};
+      allowDevModeForApp = Boolean(appDetails.allowDevMode);
+
+      // Different-domain apps must be registered as silent SSO origins,
+      // unless dev mode is explicitly allowed for the app.
+      if (!allowDevModeForApp) {
+        const { valid, appId: originAppId } = await validateSilentSsoOrigin(origin);
+        if (!valid || !originAppId) {
+          return buildHtmlResponse(
+            { type: MESSAGE_TYPE, success: false, reason: 'origin_not_registered' },
+            '*'
+          );
+        }
+
+        if (queryAppId !== originAppId) {
+          return buildHtmlResponse(
+            { type: MESSAGE_TYPE, success: false, reason: 'app_mismatch' },
+            targetOrigin
+          );
+        }
+      } else if (!app) {
         return buildHtmlResponse(
-          { type: MESSAGE_TYPE, success: false, reason: 'origin_not_registered' },
+          { type: MESSAGE_TYPE, success: false, reason: 'app_not_found' },
           '*'
         );
       }
-
-      if (queryAppId !== originAppId) {
-        return buildHtmlResponse(
-          { type: MESSAGE_TYPE, success: false, reason: 'app_mismatch' },
-          targetOrigin
-        );
-      }
-
-      appId = queryAppId;
     }
   } catch {
     return buildHtmlResponse(

@@ -56,6 +56,7 @@ const schema = z.object({
     .or(z.literal('')),
   access: z.array(z.enum(applicationResponseFields)).default([]),
   tokenFields: z.array(z.enum(applicationTokenFields)).default([]),
+  allowDevMode: z.boolean().default(false),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -76,13 +77,14 @@ type Props = {
   initialAccess: ApplicationAccessField[];
   initialTokenFields: ApplicationAccessField[];
   initialOrigins: Array<{ id: string; value: string }>;
+  initialAllowDevMode: boolean;
 };
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
-export function AppConfigForm({ appId, hasSecretKey, initialAccess, initialTokenFields, initialOrigins }: Props) {
+export function AppConfigForm({ appId, hasSecretKey, initialAccess, initialTokenFields, initialOrigins, initialAllowDevMode }: Props) {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
   const [isOriginPending, startOriginTransition] = useTransition();
@@ -96,6 +98,7 @@ export function AppConfigForm({ appId, hasSecretKey, initialAccess, initialToken
       secretKey: '',
       access: initialAccess.filter(isResponseField),
       tokenFields: initialTokenFields.filter(isTokenField),
+      allowDevMode: initialAllowDevMode,
     },
   });
 
@@ -106,6 +109,7 @@ export function AppConfigForm({ appId, hasSecretKey, initialAccess, initialToken
         secretKey: values.secretKey || undefined,
         access: values.access,
         tokenFields: values.tokenFields,
+        allowDevMode: values.allowDevMode,
       });
       if (result.success) {
         toast({ title: 'Saved', description: 'Configuration updated.' });
@@ -346,82 +350,105 @@ export function AppConfigForm({ appId, hasSecretKey, initialAccess, initialToken
             </CardFooter>
           </Card>
 
+          {/* Silent SSO Origins */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Globe className="h-4 w-4 text-muted-foreground" />
+                <CardTitle>Silent SSO Origins</CardTitle>
+              </div>
+              <CardDescription>
+                Trusted HTTPS origins allowed to silently authenticate users via the NeupID iframe bridge.
+                Only the scheme and host are stored — e.g. <code className="text-xs">https://example.com</code>.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {origins.length > 0 ? (
+                <ul className="space-y-2">
+                  {origins.map((entry) => (
+                    <li
+                      key={entry.id}
+                      className="flex items-center justify-between gap-4 rounded-md border px-4 py-3"
+                    >
+                      <code className="text-sm break-all">{entry.value}</code>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        disabled={isOriginPending}
+                        onClick={() => handleRemoveOrigin(entry.id)}
+                        aria-label={`Remove ${entry.value}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-muted-foreground">No origins registered yet.</p>
+              )}
+
+              <div className="flex flex-wrap items-end gap-3 pt-2">
+                <div className="flex-1 min-w-[240px] space-y-1.5">
+                  <label htmlFor="new-origin" className="text-sm font-medium">
+                    Add origin
+                  </label>
+                  <Input
+                    id="new-origin"
+                    type="url"
+                    placeholder="https://example.com"
+                    value={newOrigin}
+                    onChange={(e) => setNewOrigin(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddOrigin();
+                      }
+                    }}
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={isOriginPending || !newOrigin.trim()}
+                  onClick={handleAddOrigin}
+                >
+                  {isOriginPending ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Plus className="mr-2 h-4 w-4" />
+                  )}
+                  Add
+                </Button>
+              </div>
+
+              <FormField
+                control={form.control}
+                name="allowDevMode"
+                render={({ field }) => (
+                  <FormItem className="flex items-start gap-3 rounded-lg border p-3">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
+                    </FormControl>
+                    <div className="space-y-0.5 leading-none">
+                      <FormLabel className="font-medium cursor-pointer">Allow dev mode</FormLabel>
+                      <p className="text-xs text-muted-foreground">
+                        If enabled, silent SSO origin validation is skipped for this app.
+                      </p>
+                    </div>
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+            <CardFooter>
+              <Button type="submit" disabled={isPending}>
+                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Configuration
+              </Button>
+            </CardFooter>
+          </Card>
         </form>
       </Form>
-
-      {/* Silent SSO Origins */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Globe className="h-4 w-4 text-muted-foreground" />
-            <CardTitle>Silent SSO Origins</CardTitle>
-          </div>
-          <CardDescription>
-            Trusted HTTPS origins allowed to silently authenticate users via the NeupID iframe bridge.
-            Only the scheme and host are stored — e.g. <code className="text-xs">https://example.com</code>.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {origins.length > 0 ? (
-            <ul className="space-y-2">
-              {origins.map((entry) => (
-                <li
-                  key={entry.id}
-                  className="flex items-center justify-between gap-4 rounded-md border px-4 py-3"
-                >
-                  <code className="text-sm break-all">{entry.value}</code>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    disabled={isOriginPending}
-                    onClick={() => handleRemoveOrigin(entry.id)}
-                    aria-label={`Remove ${entry.value}`}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-sm text-muted-foreground">No origins registered yet.</p>
-          )}
-
-          <div className="flex flex-wrap items-end gap-3 pt-2">
-            <div className="flex-1 min-w-[240px] space-y-1.5">
-              <label htmlFor="new-origin" className="text-sm font-medium">
-                Add origin
-              </label>
-              <Input
-                id="new-origin"
-                type="url"
-                placeholder="https://example.com"
-                value={newOrigin}
-                onChange={(e) => setNewOrigin(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleAddOrigin();
-                  }
-                }}
-              />
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              disabled={isOriginPending || !newOrigin.trim()}
-              onClick={handleAddOrigin}
-            >
-              {isOriginPending ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Plus className="mr-2 h-4 w-4" />
-              )}
-              Add
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

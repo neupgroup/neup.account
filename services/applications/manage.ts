@@ -155,9 +155,9 @@ function normalizeEndpoints(value: unknown): ApplicationEndpointConfig {
  */
 async function resolveApplicationAccessForAccount(accountId: string, appId: string): Promise<{ canView: boolean; canEdit: boolean }> {
   try {
-    const roleRows = await prisma.authzAccountAccessGrant.findMany({
+    const roleRows = await prisma.member.findMany({
       where: {
-        targetAccountId: accountId,
+        memberId: accountId,
         appId,
       },
       select: {
@@ -204,9 +204,9 @@ export async function isApplicationOwnerForAccount(accountId: string, appId: str
 
   if (!app) return false;
 
-  const ownerRoleRows = await prisma.authzAccountAccessGrant.findMany({
+  const ownerRoleRows = await prisma.member.findMany({
     where: {
-      targetAccountId: accountId,
+      memberId: accountId,
       appId,
     },
     select: {
@@ -262,8 +262,8 @@ export async function getApplicationDetailsForViewer(appId: string): Promise<App
         },
       }),
       personalAccountId
-        ? prisma.authzAccountAccessGrant.findMany({
-            where: { targetAccountId: personalAccountId, appId },
+        ? prisma.member.findMany({
+            where: { memberId: personalAccountId, appId },
             select: { roleId: true },
           })
         : [],
@@ -390,20 +390,20 @@ export async function createManagedApplication(input: { name: string }) {
       });
 
       // Grant the creator ownership directly — no portfolio needed for applications.
-      const existingGrant = await tx.authzAccountAccessGrant.findFirst({
+      const existingGrant = await tx.member.findFirst({
         where: {
-          ownerAccountId: accountId,
-          targetAccountId: accountId,
+          accessTo: accountId,
+          memberId: accountId,
           roleId: 'application.owner',
           appId: createdApp.id,
         },
       });
 
       if (!existingGrant) {
-        await tx.authzAccountAccessGrant.create({
+        await tx.member.create({
           data: {
-            ownerAccountId: accountId,
-            targetAccountId: accountId,
+            accessTo: accountId,
+            memberId: accountId,
             roleId: 'application.owner',
             appId: createdApp.id,
           },
@@ -432,11 +432,11 @@ export async function getManagedApplications(): Promise<Array<{ id: string; name
   }
 
   try {
-    const ownedRows = await prisma.authzAccountAccessGrant.findMany({
-      where: { ownerAccountId: accountId, roleId: 'application.owner' },
+    const ownedRows = await prisma.member.findMany({
+      where: { accessTo: accountId, roleId: 'application.owner', accessFor: 'application' },
       orderBy: { id: 'desc' },
       select: {
-        application: {
+        parentApplication: {
           select: {
             id: true,
             name: true,
@@ -449,19 +449,21 @@ export async function getManagedApplications(): Promise<Array<{ id: string; name
       },
     });
 
-    const ownedApplications = ownedRows.map((r) => r.application);
+    const ownedApplications = ownedRows
+      .map((r) => r.parentApplication)
+      .filter((app): app is NonNullable<typeof app> => Boolean(app));
     const ownedIds = new Set(ownedApplications.map((app) => app.id));
 
-    const roleRows = await prisma.authzAccountAccessGrant.findMany({
-      where: { targetAccountId: accountId },
-      select: { roleId: true, appId: true },
+    const roleRows = await prisma.member.findMany({
+      where: { memberId: accountId, accessFor: 'application' },
+      select: { roleId: true, parentApplicationId: true },
     });
 
     const permittedViewAppIds = new Set<string>();
     for (const row of roleRows) {
       const normalizedRole = row.roleId.trim().toLowerCase();
-      if (viewRoleKeys.has(normalizedRole) && row.appId) {
-        permittedViewAppIds.add(row.appId);
+      if (viewRoleKeys.has(normalizedRole) && row.parentApplicationId) {
+        permittedViewAppIds.add(row.parentApplicationId);
       }
     }
 
@@ -959,7 +961,7 @@ export async function removeSilentSsoOrigin(input: {
  * Function getApplicationDetailsForViewerV2.
  *
  * Role-aware detail loader. Root users (root.application.view) can view any application.
- * Regular users can view apps they have an authzAccountAccessGrant for OR an
+ * Regular users can view apps they have an member for OR an
  * ApplicationConnection to. appSecret is never returned.
  */
 export async function getApplicationDetailsForViewerV2(appId: string): Promise<ApplicationDetailsV2 | null> {
@@ -1017,8 +1019,8 @@ export async function getApplicationDetailsForViewerV2(appId: string): Promise<A
 
     // Resolve accessed data from authz grants (same as original)
     const appSessions = personalAccountId
-      ? await prisma.authzAccountAccessGrant.findMany({
-          where: { targetAccountId: personalAccountId, appId },
+      ? await prisma.member.findMany({
+          where: { memberId: personalAccountId, appId },
           select: { roleId: true },
         })
       : [];
@@ -1149,7 +1151,7 @@ export async function getAppStatusLog(appId: string): Promise<AppStatusLogEntry[
   try {
     const rows = await prisma.activity.findMany({
       where: {
-        targetAccountId: appId,
+        memberId: appId,
       },
       orderBy: { timestamp: 'desc' },
       take: 50,
@@ -1215,7 +1217,7 @@ export async function requestAppPublication(
       // Log the event against the app ID as the target
       await tx.activity.create({
         data: {
-          targetAccountId: appId,
+          memberId: appId,
           actorAccountId: accountId,
           action: 'Publication requested by owner.',
           status: 'Pending',
@@ -1276,7 +1278,7 @@ export type AppAccessEntry = {
 };
 
 export type AppPortfolioEntry = {
-  portfolioId: string;
+  parentPortfolioId: string;
   portfolioName: string;
 };
 
@@ -1302,12 +1304,12 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
 
   try {
     // All access grants for this app
-    const grants = await prisma.authzAccountAccessGrant.findMany({
+    const grants = await prisma.member.findMany({
       where: { appId },
       select: {
-        targetAccountId: true,
+        memberId: true,
         roleId: true,
-        portfolioId: true,
+        parentPortfolioId: true,
         portfolio: { select: { id: true, name: true } },
         target: {
           select: {
@@ -1324,13 +1326,13 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
     });
 
     // Portfolios this app belongs to (via AuthzAppAccessGrant)
-    const appPortfolioGrants = await prisma.authzAppAccessGrant.findMany({
-      where: { appId, portfolioId: { not: null } },
+    const appPortfolioGrants = await prisma.member.findMany({
+      where: { appId, parentPortfolioId: { not: null } },
       select: {
-        portfolioId: true,
+        parentPortfolioId: true,
         portfolio: { select: { id: true, name: true } },
       },
-      distinct: ['portfolioId'],
+      distinct: ['parentPortfolioId'],
     });
 
     // Also check AuthzAccountAccessGrant portfolios
@@ -1338,20 +1340,20 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
     const portfolioMap = new Map<string, string>();
 
     for (const g of grants) {
-      if (g.portfolioId && g.portfolio) {
-        portfolioIds.add(g.portfolioId);
-        portfolioMap.set(g.portfolioId, g.portfolio.name);
+      if (g.parentPortfolioId && g.portfolio) {
+        portfolioIds.add(g.parentPortfolioId);
+        portfolioMap.set(g.parentPortfolioId, g.portfolio.name);
       }
     }
     for (const g of appPortfolioGrants) {
-      if (g.portfolioId && g.portfolio) {
-        portfolioIds.add(g.portfolioId);
-        portfolioMap.set(g.portfolioId, g.portfolio.name);
+      if (g.parentPortfolioId && g.portfolio) {
+        portfolioIds.add(g.parentPortfolioId);
+        portfolioMap.set(g.parentPortfolioId, g.portfolio.name);
       }
     }
 
     const portfolios: AppPortfolioEntry[] = Array.from(portfolioIds).map((id) => ({
-      portfolioId: id,
+      parentPortfolioId: id,
       portfolioName: portfolioMap.get(id) ?? id,
     }));
 
@@ -1398,7 +1400,7 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
             neupId,
             isVerified: t.isVerified,
             roles: [],
-            via: g.portfolioId && g.portfolio ? g.portfolio.name : null,
+            via: g.parentPortfolioId && g.portfolio ? g.portfolio.name : null,
           });
         }
         const entry = accessMap.get(t.id)!;
@@ -1406,7 +1408,7 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
           entry.roles.push(g.roleId);
         }
         // If any grant for this account came via a portfolio, mark it
-        if (g.portfolioId && g.portfolio && entry.via === null) {
+        if (g.parentPortfolioId && g.portfolio && entry.via === null) {
           entry.via = g.portfolio.name;
         }
       }

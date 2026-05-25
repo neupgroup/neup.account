@@ -11,7 +11,7 @@ const prisma = new PrismaClient();
 
 async function grantAppAccess() {
   // Example: Grant "property_poster" role to targetUser in real-estate app
-  const grant = await prisma.authzAppAccessGrant.create({
+  const grant = await prisma.member.create({
     data: {
       appId: 'real-estate-app-id',           // The application ID
       accountId: 'owner-account-xxx',        // The account granting access
@@ -27,7 +27,7 @@ async function grantAppAccess() {
 
 async function checkAppAccess(appId: string, targetAccountId: string) {
   // Query all grants for a user in a specific app
-  const grants = await prisma.authzAppAccessGrant.findMany({
+  const grants = await prisma.member.findMany({
     where: {
       appId,
       targetAccountId,
@@ -54,7 +54,7 @@ async function checkAppAccess(appId: string, targetAccountId: string) {
 
 async function revokeAppAccess(grantId: string) {
   // Revoke a specific grant
-  await prisma.authzAppAccessGrant.delete({
+  await prisma.member.delete({
     where: { id: grantId },
   });
 
@@ -63,7 +63,7 @@ async function revokeAppAccess(grantId: string) {
 
 async function listAllGrantsForApp(appId: string) {
   // List all authorization grants for an application
-  const grants = await prisma.authzAppAccessGrant.findMany({
+  const grants = await prisma.member.findMany({
     where: { appId },
     include: {
       account: {

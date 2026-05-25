@@ -7,18 +7,18 @@ import { revokeAppAccessFromAccount } from './actions';
 
 export function RevokeAppAccessButton({
   appId,
-  targetAccountId,
+  memberId,
   displayName,
 }: {
   appId: string;
-  targetAccountId: string;
+  memberId: string;
   displayName: string;
 }) {
   const [isPending, startTransition] = useTransition();
 
   const handleRevoke = () => {
     startTransition(async () => {
-      await revokeAppAccessFromAccount({ appId, targetAccountId });
+      await revokeAppAccessFromAccount({ appId, memberId });
     });
   };
 

@@ -411,23 +411,23 @@ export async function bridgeGetProfile(input: {
       return { status: 401, body: { error: 'unauthorized', error_description: 'Authentication failed' } };
     }
 
-    let targetAccountId: string | null = null;
+    let memberId: string | null = null;
 
     if (requestedAid) {
-      targetAccountId = requestedAid;
+      memberId = requestedAid;
     } else if (requestedNeupId) {
       const neupIdRecord = await prisma.neupId.findUnique({ where: { id: requestedNeupId } });
-      targetAccountId = neupIdRecord?.accountId || null;
+      memberId = neupIdRecord?.accountId || null;
     } else {
-      targetAccountId = authenticatedAccountId;
+      memberId = authenticatedAccountId;
     }
 
-    if (!targetAccountId) {
+    if (!memberId) {
       return { status: 404, body: { error: 'not_found', error_description: 'Requested user not found' } };
     }
 
     const account = await prisma.account.findUnique({
-      where: { id: targetAccountId },
+      where: { id: memberId },
       include: {
         contacts: true,
         neupIds: { where: { isPrimary: true }, take: 1 },
@@ -440,7 +440,7 @@ export async function bridgeGetProfile(input: {
       return { status: 404, body: { error: 'not_found', error_description: 'User profile not found' } };
     }
 
-    const isSelf = targetAccountId === authenticatedAccountId;
+    const isSelf = memberId === authenticatedAccountId;
 
     if (isSelf || isTempTokenAuth) {
       const emails = account.contacts.filter((c) => c.contactType === 'email').map((c) => c.value);

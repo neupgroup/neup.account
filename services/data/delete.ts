@@ -70,7 +70,7 @@ export async function requestAccountDeletion(data: z.infer<typeof formSchema>, g
         }),
         prisma.activity.create({
             data: {
-                targetAccountId: accountId,
+                memberId: accountId,
                 actorAccountId: accountId,
                 action: 'Account status changed to deletion_requested. User initiated deletion request.',
                 status: 'Pending',

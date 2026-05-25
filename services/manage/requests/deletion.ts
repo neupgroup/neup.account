@@ -47,7 +47,7 @@ export async function getDeletionRequests(): Promise<DeletionRequest[]> {
 
         const statusLog = await prisma.activity.findFirst({
             where: {
-                targetAccountId: accountId,
+                memberId: accountId,
                 action: {
                     contains: 'Account status changed to deletion_requested',
                 },
@@ -97,7 +97,7 @@ export async function getDeletionStatus(accountId: string): Promise<{status: 'no
         if (status === 'deletion_requested') {
             const statusLog = await prisma.activity.findFirst({
                 where: {
-                    targetAccountId: accountId,
+                    memberId: accountId,
                     action: {
                         contains: 'Account status changed to deletion_requested',
                     },
@@ -165,7 +165,7 @@ export async function cancelAccountDeletion(
 
             await tx.activity.create({
                 data: {
-                    targetAccountId: accountId,
+                    memberId: accountId,
                     actorAccountId: adminId,
                     action: 'Account status changed to active. Request cancelled by admin.',
                     status: 'Success',
@@ -218,7 +218,7 @@ export async function requestAccountDeletionByAdmin(accountId: string, data: z.i
 
             await tx.activity.create({
                 data: {
-                    targetAccountId: accountId,
+                    memberId: accountId,
                     actorAccountId: adminId,
                     action: `Account status changed to deletion_requested. Admin initiated deletion. Reason: ${validation.data.reason}`,
                     status: 'Pending',

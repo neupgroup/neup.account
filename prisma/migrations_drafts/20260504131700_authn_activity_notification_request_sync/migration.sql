@@ -1,7 +1,7 @@
 -- Fix divergences:
 -- - auth_request -> authn_request (and ensure id default)
 -- - auth_session -> authn_session (and ensure id default)
--- - activity: rename targetAccountId/actorAccountId -> target_account_id/actor_account_id, set id default
+-- - activity: rename memberId/actorAccountId -> target_account_id/actor_account_id, set id default
 -- - notification: add detail, rename columns to snake_case, drop requestId (store metadata in detail), set id default
 -- - request: rename columns to snake_case, set id default
 
@@ -29,8 +29,8 @@ ALTER TABLE IF EXISTS authn_session ALTER COLUMN id SET DEFAULT (gen_random_uuid
 ALTER TABLE IF EXISTS activity ALTER COLUMN id SET DEFAULT (gen_random_uuid()::text);
 DO $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='activity' AND column_name='targetAccountId') THEN
-    EXECUTE 'ALTER TABLE activity RENAME COLUMN \"targetAccountId\" TO target_account_id';
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='activity' AND column_name='memberId') THEN
+    EXECUTE 'ALTER TABLE activity RENAME COLUMN \"memberId\" TO target_account_id';
   END IF;
   IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='activity' AND column_name='actorAccountId') THEN
     EXECUTE 'ALTER TABLE activity RENAME COLUMN \"actorAccountId\" TO actor_account_id';

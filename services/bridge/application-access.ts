@@ -108,24 +108,24 @@ export async function getApplicationAccess(params: {
 
     // Filtering semantics (when accountId is provided):
     // - include BOTH directions:
-    //   A) grants that were granted TO the account (targetAccountId = accountId)
-    //   B) grants that the account granted to others (ownerAccountId = accountId)
-    // This intentionally does not filter by portfolioId (portfolio or non-portfolio grants are included).
+    //   A) grants that were granted TO the account (memberId = accountId)
+    //   B) grants that the account granted to others (accessTo = accountId)
+    // This intentionally does not filter by parentPortfolioId (portfolio or non-portfolio grants are included).
     const where: any = { appId };
 
     if (accountId && forAccount) {
       where.OR = [
-        { targetAccountId: accountId, ownerAccountId: forAccount },
-        { ownerAccountId: accountId, targetAccountId: forAccount },
+        { memberId: accountId, accessTo: forAccount },
+        { accessTo: accountId, memberId: forAccount },
       ];
     } else if (accountId) {
       where.OR = [
-        { targetAccountId: accountId },
-        { ownerAccountId: accountId },
+        { memberId: accountId },
+        { accessTo: accountId },
       ];
     } else if (forAccount) {
       // If only forAccount is provided, treat it as a strict owner filter.
-      where.ownerAccountId = forAccount;
+      where.accessTo = forAccount;
     }
 
     // Unpushed only
@@ -133,10 +133,10 @@ export async function getApplicationAccess(params: {
 
     const { total, grants } = await prisma.$transaction(async (tx) => {
       // 3. Count total (unpushed only)
-      const total = await tx.authzAppAccessGrant.count({ where });
+      const total = await tx.member.count({ where });
 
       // 4. Fetch grants with related data (unpushed only)
-      const grants = await tx.authzAppAccessGrant.findMany({
+      const grants = await tx.member.findMany({
         where,
         ...(cursorId
           ? { cursor: { id: cursorId }, skip: 1 }
@@ -147,7 +147,7 @@ export async function getApplicationAccess(params: {
           id: true,
           status: true,
           pushed: true,
-          portfolioId: true,
+          parentPortfolioId: true,
           account: {
             select: {
               id: true,
@@ -187,7 +187,7 @@ export async function getApplicationAccess(params: {
 
       // Mark returned grants as pushed
       if (grants.length > 0) {
-        await tx.authzAppAccessGrant.updateMany({
+        await tx.member.updateMany({
           where: { appId, id: { in: grants.map((g) => g.id) } },
           data: { pushed: true },
         });
@@ -201,10 +201,10 @@ export async function getApplicationAccess(params: {
       'grantId',
       'status',
       'pushed',
-      'ownerAccountId',
+      'accessTo',
       'ownerDisplayName',
       'ownerAccountType',
-      'targetAccountId',
+      'memberId',
       'targetDisplayName',
       'targetAccountType',
       'roleId',
@@ -212,17 +212,17 @@ export async function getApplicationAccess(params: {
       'roleDescription',
       'roleScope',
       'permissions',
-      'portfolioId',
+      'parentPortfolioId',
     ];
 
     const data = grants.map((g) => ({
       grantId: g.id,
       status: g.status,
       pushed: true,
-      ownerAccountId: g.account.id,
+      accessTo: g.account.id,
       ownerDisplayName: g.account.displayName,
       ownerAccountType: g.account.accountType,
-      targetAccountId: g.targetAccount.id,
+      memberId: g.targetAccount.id,
       targetDisplayName: g.targetAccount.displayName,
       targetAccountType: g.targetAccount.accountType,
       roleId: g.role.id,
@@ -235,7 +235,7 @@ export async function getApplicationAccess(params: {
         permissionScope: m.permission.scope,
         denormalized: m.denormalizedPermission ?? null,
       })),
-      portfolioId: g.portfolioId,
+      parentPortfolioId: g.parentPortfolioId,
     }));
 
     const startedAt = grants.length > 0 ? grants[0].id : null;

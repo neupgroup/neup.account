@@ -42,12 +42,12 @@ async function main() {
     create: { id: 'account.root', name: 'account.root', scope: 'root', appId: 'neup.account' },
   });
 
-  const existingGrant = await prisma.authzAccountAccessGrant.findFirst({
-    where: { ownerAccountId: accountId, targetAccountId: accountId, roleId: 'account.root', appId: 'neup.account' },
+  const existingGrant = await prisma.member.findFirst({
+    where: { accessTo: accountId, memberId: accountId, roleId: 'account.root', appId: 'neup.account' },
   });
   if (!existingGrant) {
-    await prisma.authzAccountAccessGrant.create({
-      data: { ownerAccountId: accountId, targetAccountId: accountId, roleId: 'account.root', appId: 'neup.account' },
+    await prisma.member.create({
+      data: { accessTo: accountId, memberId: accountId, roleId: 'account.root', appId: 'neup.account' },
     });
     console.log(`Root grant created for account "${account.displayName}" (${accountId}).`);
   } else {

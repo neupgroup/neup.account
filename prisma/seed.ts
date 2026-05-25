@@ -316,38 +316,38 @@ async function main() {
       });
     }
 
-    const defaultGrant = await prisma.authzAccountAccessGrant.findFirst({
+    const defaultGrant = await prisma.member.findFirst({
       where: {
-        ownerAccountId: accountId,
-        targetAccountId: accountId,
+        accessTo: accountId,
+        memberId: accountId,
         roleId: ROLE_DEFAULT_ID,
         appId: APP_ID,
       },
     });
     if (!defaultGrant) {
-      await prisma.authzAccountAccessGrant.create({
+      await prisma.member.create({
         data: {
-          ownerAccountId: accountId,
-          targetAccountId: accountId,
+          accessTo: accountId,
+          memberId: accountId,
           roleId: ROLE_DEFAULT_ID,
           appId: APP_ID,
         },
       });
     }
 
-    const rootGrant = await prisma.authzAccountAccessGrant.findFirst({
+    const rootGrant = await prisma.member.findFirst({
       where: {
-        ownerAccountId: accountId,
-        targetAccountId: accountId,
+        accessTo: accountId,
+        memberId: accountId,
         roleId: ROLE_ROOT_ID,
         appId: APP_ID,
       },
     });
     if (!rootGrant) {
-      await prisma.authzAccountAccessGrant.create({
+      await prisma.member.create({
         data: {
-          ownerAccountId: accountId,
-          targetAccountId: accountId,
+          accessTo: accountId,
+          memberId: accountId,
           roleId: ROLE_ROOT_ID,
           appId: APP_ID,
         },
@@ -358,13 +358,13 @@ async function main() {
     // Some environments no longer have the `permit` table.
     try {
       const existingPermit = await prisma.permit.findFirst({
-        where: { accountId, targetAccountId: accountId },
+        where: { accountId, memberId: accountId },
       });
       if (!existingPermit) {
         await prisma.permit.create({
           data: {
             accountId,
-            targetAccountId: accountId,
+            memberId: accountId,
             forSelf: true,
             isRoot: true,
             permissions: ROOT_PERMISSIONS,

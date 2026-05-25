@@ -10,7 +10,7 @@ export function useLogActivity() {
     const geo = useContext(Geolocation);
 
     return (
-        targetAccountId: string,
+        memberId: string,
         action: string,
         status: "Success" | "Failed" | "Pending" | "Alert",
         ipAddress?: string,
@@ -20,6 +20,6 @@ export function useLogActivity() {
             ? `${geo.latitude},${geo.longitude}`
             : undefined;
 
-        return logActivity(targetAccountId, action, status, ipAddress, actorAccountId, locationString);
+        return logActivity(memberId, action, status, ipAddress, actorAccountId, locationString);
     };
 }

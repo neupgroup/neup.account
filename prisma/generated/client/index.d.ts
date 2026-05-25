@@ -10090,7 +10090,7 @@ export namespace Prisma {
 
   export type ActivityMinAggregateOutputType = {
     id: string | null
-    targetAccountId: string | null
+    memberId: string | null
     actorAccountId: string | null
     action: string | null
     status: string | null
@@ -10101,7 +10101,7 @@ export namespace Prisma {
 
   export type ActivityMaxAggregateOutputType = {
     id: string | null
-    targetAccountId: string | null
+    memberId: string | null
     actorAccountId: string | null
     action: string | null
     status: string | null
@@ -10112,7 +10112,7 @@ export namespace Prisma {
 
   export type ActivityCountAggregateOutputType = {
     id: number
-    targetAccountId: number
+    memberId: number
     actorAccountId: number
     action: number
     status: number
@@ -10125,7 +10125,7 @@ export namespace Prisma {
 
   export type ActivityMinAggregateInputType = {
     id?: true
-    targetAccountId?: true
+    memberId?: true
     actorAccountId?: true
     action?: true
     status?: true
@@ -10136,7 +10136,7 @@ export namespace Prisma {
 
   export type ActivityMaxAggregateInputType = {
     id?: true
-    targetAccountId?: true
+    memberId?: true
     actorAccountId?: true
     action?: true
     status?: true
@@ -10147,7 +10147,7 @@ export namespace Prisma {
 
   export type ActivityCountAggregateInputType = {
     id?: true
-    targetAccountId?: true
+    memberId?: true
     actorAccountId?: true
     action?: true
     status?: true
@@ -10231,7 +10231,7 @@ export namespace Prisma {
 
   export type ActivityGroupByOutputType = {
     id: string
-    targetAccountId: string
+    memberId: string
     actorAccountId: string
     action: string
     status: string
@@ -10259,7 +10259,7 @@ export namespace Prisma {
 
   export type ActivitySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    targetAccountId?: boolean
+    memberId?: boolean
     actorAccountId?: boolean
     action?: boolean
     status?: boolean
@@ -10270,7 +10270,7 @@ export namespace Prisma {
 
   export type ActivitySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    targetAccountId?: boolean
+    memberId?: boolean
     actorAccountId?: boolean
     action?: boolean
     status?: boolean
@@ -10281,7 +10281,7 @@ export namespace Prisma {
 
   export type ActivitySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    targetAccountId?: boolean
+    memberId?: boolean
     actorAccountId?: boolean
     action?: boolean
     status?: boolean
@@ -10292,7 +10292,7 @@ export namespace Prisma {
 
   export type ActivitySelectScalar = {
     id?: boolean
-    targetAccountId?: boolean
+    memberId?: boolean
     actorAccountId?: boolean
     action?: boolean
     status?: boolean
@@ -10301,14 +10301,14 @@ export namespace Prisma {
     geolocation?: boolean
   }
 
-  export type ActivityOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "targetAccountId" | "actorAccountId" | "action" | "status" | "ip" | "timestamp" | "geolocation", ExtArgs["result"]["activity"]>
+  export type ActivityOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "memberId" | "actorAccountId" | "action" | "status" | "ip" | "timestamp" | "geolocation", ExtArgs["result"]["activity"]>
 
   export type $ActivityPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Activity"
     objects: {}
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      targetAccountId: string
+      memberId: string
       actorAccountId: string
       action: string
       status: string
@@ -10739,7 +10739,7 @@ export namespace Prisma {
    */
   interface ActivityFieldRefs {
     readonly id: FieldRef<"Activity", 'String'>
-    readonly targetAccountId: FieldRef<"Activity", 'String'>
+    readonly memberId: FieldRef<"Activity", 'String'>
     readonly actorAccountId: FieldRef<"Activity", 'String'>
     readonly action: FieldRef<"Activity", 'String'>
     readonly status: FieldRef<"Activity", 'String'>
@@ -25606,21 +25606,21 @@ export namespace Prisma {
 
   export type AssetMinAggregateOutputType = {
     id: string | null
-    portfolioId: string | null
+    parentPortfolioId: string | null
     assetType: string | null
     assetId: string | null
   }
 
   export type AssetMaxAggregateOutputType = {
     id: string | null
-    portfolioId: string | null
+    parentPortfolioId: string | null
     assetType: string | null
     assetId: string | null
   }
 
   export type AssetCountAggregateOutputType = {
     id: number
-    portfolioId: number
+    parentPortfolioId: number
     assetType: number
     assetId: number
     details: number
@@ -25630,21 +25630,21 @@ export namespace Prisma {
 
   export type AssetMinAggregateInputType = {
     id?: true
-    portfolioId?: true
+    parentPortfolioId?: true
     assetType?: true
     assetId?: true
   }
 
   export type AssetMaxAggregateInputType = {
     id?: true
-    portfolioId?: true
+    parentPortfolioId?: true
     assetType?: true
     assetId?: true
   }
 
   export type AssetCountAggregateInputType = {
     id?: true
-    portfolioId?: true
+    parentPortfolioId?: true
     assetType?: true
     assetId?: true
     details?: true
@@ -25725,7 +25725,7 @@ export namespace Prisma {
 
   export type AssetGroupByOutputType = {
     id: string
-    portfolioId: string
+    parentPortfolioId: string
     assetType: string
     assetId: string
     details: JsonValue | null
@@ -25750,7 +25750,7 @@ export namespace Prisma {
 
   export type AssetSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    portfolioId?: boolean
+    parentPortfolioId?: boolean
     assetType?: boolean
     assetId?: boolean
     details?: boolean
@@ -25761,7 +25761,7 @@ export namespace Prisma {
 
   export type AssetSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    portfolioId?: boolean
+    parentPortfolioId?: boolean
     assetType?: boolean
     assetId?: boolean
     details?: boolean
@@ -25770,7 +25770,7 @@ export namespace Prisma {
 
   export type AssetSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    portfolioId?: boolean
+    parentPortfolioId?: boolean
     assetType?: boolean
     assetId?: boolean
     details?: boolean
@@ -25779,13 +25779,13 @@ export namespace Prisma {
 
   export type AssetSelectScalar = {
     id?: boolean
-    portfolioId?: boolean
+    parentPortfolioId?: boolean
     assetType?: boolean
     assetId?: boolean
     details?: boolean
   }
 
-  export type AssetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "portfolioId" | "assetType" | "assetId" | "details", ExtArgs["result"]["asset"]>
+  export type AssetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "parentPortfolioId" | "assetType" | "assetId" | "details", ExtArgs["result"]["asset"]>
   export type AssetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
     authzAssetsAccessGrants?: boolean | Asset$authzAssetsAccessGrantsArgs<ExtArgs>
@@ -25806,7 +25806,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      portfolioId: string
+      parentPortfolioId: string
       assetType: string
       assetId: string
       details: Prisma.JsonValue | null
@@ -26236,7 +26236,7 @@ export namespace Prisma {
    */
   interface AssetFieldRefs {
     readonly id: FieldRef<"Asset", 'String'>
-    readonly portfolioId: FieldRef<"Asset", 'String'>
+    readonly parentPortfolioId: FieldRef<"Asset", 'String'>
     readonly assetType: FieldRef<"Asset", 'String'>
     readonly assetId: FieldRef<"Asset", 'String'>
     readonly details: FieldRef<"Asset", 'Json'>
@@ -36754,7 +36754,7 @@ export namespace Prisma {
   export type PermitMinAggregateOutputType = {
     id: string | null
     accountId: string | null
-    targetAccountId: string | null
+    memberId: string | null
     forSelf: boolean | null
     isRoot: boolean | null
     createdAt: Date | null
@@ -36764,7 +36764,7 @@ export namespace Prisma {
   export type PermitMaxAggregateOutputType = {
     id: string | null
     accountId: string | null
-    targetAccountId: string | null
+    memberId: string | null
     forSelf: boolean | null
     isRoot: boolean | null
     createdAt: Date | null
@@ -36774,7 +36774,7 @@ export namespace Prisma {
   export type PermitCountAggregateOutputType = {
     id: number
     accountId: number
-    targetAccountId: number
+    memberId: number
     forSelf: number
     isRoot: number
     permissions: number
@@ -36788,7 +36788,7 @@ export namespace Prisma {
   export type PermitMinAggregateInputType = {
     id?: true
     accountId?: true
-    targetAccountId?: true
+    memberId?: true
     forSelf?: true
     isRoot?: true
     createdAt?: true
@@ -36798,7 +36798,7 @@ export namespace Prisma {
   export type PermitMaxAggregateInputType = {
     id?: true
     accountId?: true
-    targetAccountId?: true
+    memberId?: true
     forSelf?: true
     isRoot?: true
     createdAt?: true
@@ -36808,7 +36808,7 @@ export namespace Prisma {
   export type PermitCountAggregateInputType = {
     id?: true
     accountId?: true
-    targetAccountId?: true
+    memberId?: true
     forSelf?: true
     isRoot?: true
     permissions?: true
@@ -36893,7 +36893,7 @@ export namespace Prisma {
   export type PermitGroupByOutputType = {
     id: string
     accountId: string
-    targetAccountId: string
+    memberId: string
     forSelf: boolean
     isRoot: boolean
     permissions: string[]
@@ -36922,7 +36922,7 @@ export namespace Prisma {
   export type PermitSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     accountId?: boolean
-    targetAccountId?: boolean
+    memberId?: boolean
     forSelf?: boolean
     isRoot?: boolean
     permissions?: boolean
@@ -36936,7 +36936,7 @@ export namespace Prisma {
   export type PermitSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     accountId?: boolean
-    targetAccountId?: boolean
+    memberId?: boolean
     forSelf?: boolean
     isRoot?: boolean
     permissions?: boolean
@@ -36950,7 +36950,7 @@ export namespace Prisma {
   export type PermitSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     accountId?: boolean
-    targetAccountId?: boolean
+    memberId?: boolean
     forSelf?: boolean
     isRoot?: boolean
     permissions?: boolean
@@ -36964,7 +36964,7 @@ export namespace Prisma {
   export type PermitSelectScalar = {
     id?: boolean
     accountId?: boolean
-    targetAccountId?: boolean
+    memberId?: boolean
     forSelf?: boolean
     isRoot?: boolean
     permissions?: boolean
@@ -36973,7 +36973,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type PermitOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "accountId" | "targetAccountId" | "forSelf" | "isRoot" | "permissions" | "restrictions" | "createdAt" | "updatedAt", ExtArgs["result"]["permit"]>
+  export type PermitOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "accountId" | "memberId" | "forSelf" | "isRoot" | "permissions" | "restrictions" | "createdAt" | "updatedAt", ExtArgs["result"]["permit"]>
   export type PermitInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     account?: boolean | AccountDefaultArgs<ExtArgs>
     targetAccount?: boolean | AccountDefaultArgs<ExtArgs>
@@ -36996,7 +36996,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       accountId: string
-      targetAccountId: string
+      memberId: string
       forSelf: boolean
       isRoot: boolean
       permissions: string[]
@@ -37430,7 +37430,7 @@ export namespace Prisma {
   interface PermitFieldRefs {
     readonly id: FieldRef<"Permit", 'String'>
     readonly accountId: FieldRef<"Permit", 'String'>
-    readonly targetAccountId: FieldRef<"Permit", 'String'>
+    readonly memberId: FieldRef<"Permit", 'String'>
     readonly forSelf: FieldRef<"Permit", 'Boolean'>
     readonly isRoot: FieldRef<"Permit", 'Boolean'>
     readonly permissions: FieldRef<"Permit", 'String[]'>
@@ -39009,7 +39009,7 @@ export namespace Prisma {
 
   export const ActivityScalarFieldEnum: {
     id: 'id',
-    targetAccountId: 'targetAccountId',
+    memberId: 'memberId',
     actorAccountId: 'actorAccountId',
     action: 'action',
     status: 'status',
@@ -39193,7 +39193,7 @@ export namespace Prisma {
 
   export const AssetScalarFieldEnum: {
     id: 'id',
-    portfolioId: 'portfolioId',
+    parentPortfolioId: 'parentPortfolioId',
     assetType: 'assetType',
     assetId: 'assetId',
     details: 'details'
@@ -39318,7 +39318,7 @@ export namespace Prisma {
   export const PermitScalarFieldEnum: {
     id: 'id',
     accountId: 'accountId',
-    targetAccountId: 'targetAccountId',
+    memberId: 'memberId',
     forSelf: 'forSelf',
     isRoot: 'isRoot',
     permissions: 'permissions',
@@ -39882,7 +39882,7 @@ export namespace Prisma {
     OR?: ActivityWhereInput[]
     NOT?: ActivityWhereInput | ActivityWhereInput[]
     id?: StringFilter<"Activity"> | string
-    targetAccountId?: StringFilter<"Activity"> | string
+    memberId?: StringFilter<"Activity"> | string
     actorAccountId?: StringFilter<"Activity"> | string
     action?: StringFilter<"Activity"> | string
     status?: StringFilter<"Activity"> | string
@@ -39893,7 +39893,7 @@ export namespace Prisma {
 
   export type ActivityOrderByWithRelationInput = {
     id?: SortOrder
-    targetAccountId?: SortOrder
+    memberId?: SortOrder
     actorAccountId?: SortOrder
     action?: SortOrder
     status?: SortOrder
@@ -39907,7 +39907,7 @@ export namespace Prisma {
     AND?: ActivityWhereInput | ActivityWhereInput[]
     OR?: ActivityWhereInput[]
     NOT?: ActivityWhereInput | ActivityWhereInput[]
-    targetAccountId?: StringFilter<"Activity"> | string
+    memberId?: StringFilter<"Activity"> | string
     actorAccountId?: StringFilter<"Activity"> | string
     action?: StringFilter<"Activity"> | string
     status?: StringFilter<"Activity"> | string
@@ -39918,7 +39918,7 @@ export namespace Prisma {
 
   export type ActivityOrderByWithAggregationInput = {
     id?: SortOrder
-    targetAccountId?: SortOrder
+    memberId?: SortOrder
     actorAccountId?: SortOrder
     action?: SortOrder
     status?: SortOrder
@@ -39935,7 +39935,7 @@ export namespace Prisma {
     OR?: ActivityScalarWhereWithAggregatesInput[]
     NOT?: ActivityScalarWhereWithAggregatesInput | ActivityScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Activity"> | string
-    targetAccountId?: StringWithAggregatesFilter<"Activity"> | string
+    memberId?: StringWithAggregatesFilter<"Activity"> | string
     actorAccountId?: StringWithAggregatesFilter<"Activity"> | string
     action?: StringWithAggregatesFilter<"Activity"> | string
     status?: StringWithAggregatesFilter<"Activity"> | string
@@ -40839,7 +40839,7 @@ export namespace Prisma {
     OR?: AssetWhereInput[]
     NOT?: AssetWhereInput | AssetWhereInput[]
     id?: StringFilter<"Asset"> | string
-    portfolioId?: StringFilter<"Asset"> | string
+    parentPortfolioId?: StringFilter<"Asset"> | string
     assetType?: StringFilter<"Asset"> | string
     assetId?: StringFilter<"Asset"> | string
     details?: JsonNullableFilter<"Asset">
@@ -40849,7 +40849,7 @@ export namespace Prisma {
 
   export type AssetOrderByWithRelationInput = {
     id?: SortOrder
-    portfolioId?: SortOrder
+    parentPortfolioId?: SortOrder
     assetType?: SortOrder
     assetId?: SortOrder
     details?: SortOrderInput | SortOrder
@@ -40862,7 +40862,7 @@ export namespace Prisma {
     AND?: AssetWhereInput | AssetWhereInput[]
     OR?: AssetWhereInput[]
     NOT?: AssetWhereInput | AssetWhereInput[]
-    portfolioId?: StringFilter<"Asset"> | string
+    parentPortfolioId?: StringFilter<"Asset"> | string
     assetType?: StringFilter<"Asset"> | string
     assetId?: StringFilter<"Asset"> | string
     details?: JsonNullableFilter<"Asset">
@@ -40872,7 +40872,7 @@ export namespace Prisma {
 
   export type AssetOrderByWithAggregationInput = {
     id?: SortOrder
-    portfolioId?: SortOrder
+    parentPortfolioId?: SortOrder
     assetType?: SortOrder
     assetId?: SortOrder
     details?: SortOrderInput | SortOrder
@@ -40886,7 +40886,7 @@ export namespace Prisma {
     OR?: AssetScalarWhereWithAggregatesInput[]
     NOT?: AssetScalarWhereWithAggregatesInput | AssetScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Asset"> | string
-    portfolioId?: StringWithAggregatesFilter<"Asset"> | string
+    parentPortfolioId?: StringWithAggregatesFilter<"Asset"> | string
     assetType?: StringWithAggregatesFilter<"Asset"> | string
     assetId?: StringWithAggregatesFilter<"Asset"> | string
     details?: JsonNullableWithAggregatesFilter<"Asset">
@@ -41516,7 +41516,7 @@ export namespace Prisma {
     NOT?: PermitWhereInput | PermitWhereInput[]
     id?: StringFilter<"Permit"> | string
     accountId?: StringFilter<"Permit"> | string
-    targetAccountId?: StringFilter<"Permit"> | string
+    memberId?: StringFilter<"Permit"> | string
     forSelf?: BoolFilter<"Permit"> | boolean
     isRoot?: BoolFilter<"Permit"> | boolean
     permissions?: StringNullableListFilter<"Permit">
@@ -41530,7 +41530,7 @@ export namespace Prisma {
   export type PermitOrderByWithRelationInput = {
     id?: SortOrder
     accountId?: SortOrder
-    targetAccountId?: SortOrder
+    memberId?: SortOrder
     forSelf?: SortOrder
     isRoot?: SortOrder
     permissions?: SortOrder
@@ -41547,7 +41547,7 @@ export namespace Prisma {
     OR?: PermitWhereInput[]
     NOT?: PermitWhereInput | PermitWhereInput[]
     accountId?: StringFilter<"Permit"> | string
-    targetAccountId?: StringFilter<"Permit"> | string
+    memberId?: StringFilter<"Permit"> | string
     forSelf?: BoolFilter<"Permit"> | boolean
     isRoot?: BoolFilter<"Permit"> | boolean
     permissions?: StringNullableListFilter<"Permit">
@@ -41561,7 +41561,7 @@ export namespace Prisma {
   export type PermitOrderByWithAggregationInput = {
     id?: SortOrder
     accountId?: SortOrder
-    targetAccountId?: SortOrder
+    memberId?: SortOrder
     forSelf?: SortOrder
     isRoot?: SortOrder
     permissions?: SortOrder
@@ -41579,7 +41579,7 @@ export namespace Prisma {
     NOT?: PermitScalarWhereWithAggregatesInput | PermitScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Permit"> | string
     accountId?: StringWithAggregatesFilter<"Permit"> | string
-    targetAccountId?: StringWithAggregatesFilter<"Permit"> | string
+    memberId?: StringWithAggregatesFilter<"Permit"> | string
     forSelf?: BoolWithAggregatesFilter<"Permit"> | boolean
     isRoot?: BoolWithAggregatesFilter<"Permit"> | boolean
     permissions?: StringNullableListFilter<"Permit">
@@ -42074,7 +42074,7 @@ export namespace Prisma {
 
   export type ActivityCreateInput = {
     id?: string
-    targetAccountId: string
+    memberId: string
     actorAccountId: string
     action: string
     status: string
@@ -42085,7 +42085,7 @@ export namespace Prisma {
 
   export type ActivityUncheckedCreateInput = {
     id?: string
-    targetAccountId: string
+    memberId: string
     actorAccountId: string
     action: string
     status: string
@@ -42096,7 +42096,7 @@ export namespace Prisma {
 
   export type ActivityUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    targetAccountId?: StringFieldUpdateOperationsInput | string
+    memberId?: StringFieldUpdateOperationsInput | string
     actorAccountId?: StringFieldUpdateOperationsInput | string
     action?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -42107,7 +42107,7 @@ export namespace Prisma {
 
   export type ActivityUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    targetAccountId?: StringFieldUpdateOperationsInput | string
+    memberId?: StringFieldUpdateOperationsInput | string
     actorAccountId?: StringFieldUpdateOperationsInput | string
     action?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -42118,7 +42118,7 @@ export namespace Prisma {
 
   export type ActivityCreateManyInput = {
     id?: string
-    targetAccountId: string
+    memberId: string
     actorAccountId: string
     action: string
     status: string
@@ -42129,7 +42129,7 @@ export namespace Prisma {
 
   export type ActivityUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    targetAccountId?: StringFieldUpdateOperationsInput | string
+    memberId?: StringFieldUpdateOperationsInput | string
     actorAccountId?: StringFieldUpdateOperationsInput | string
     action?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -42140,7 +42140,7 @@ export namespace Prisma {
 
   export type ActivityUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    targetAccountId?: StringFieldUpdateOperationsInput | string
+    memberId?: StringFieldUpdateOperationsInput | string
     actorAccountId?: StringFieldUpdateOperationsInput | string
     action?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
@@ -43112,7 +43112,7 @@ export namespace Prisma {
 
   export type AssetUncheckedCreateInput = {
     id?: string
-    portfolioId: string
+    parentPortfolioId: string
     assetType: string
     assetId: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -43130,7 +43130,7 @@ export namespace Prisma {
 
   export type AssetUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    portfolioId?: StringFieldUpdateOperationsInput | string
+    parentPortfolioId?: StringFieldUpdateOperationsInput | string
     assetType?: StringFieldUpdateOperationsInput | string
     assetId?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -43139,7 +43139,7 @@ export namespace Prisma {
 
   export type AssetCreateManyInput = {
     id?: string
-    portfolioId: string
+    parentPortfolioId: string
     assetType: string
     assetId: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -43154,7 +43154,7 @@ export namespace Prisma {
 
   export type AssetUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    portfolioId?: StringFieldUpdateOperationsInput | string
+    parentPortfolioId?: StringFieldUpdateOperationsInput | string
     assetType?: StringFieldUpdateOperationsInput | string
     assetId?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -43776,7 +43776,7 @@ export namespace Prisma {
   export type PermitUncheckedCreateInput = {
     id?: string
     accountId: string
-    targetAccountId: string
+    memberId: string
     forSelf?: boolean
     isRoot?: boolean
     permissions?: PermitCreatepermissionsInput | string[]
@@ -43800,7 +43800,7 @@ export namespace Prisma {
   export type PermitUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     accountId?: StringFieldUpdateOperationsInput | string
-    targetAccountId?: StringFieldUpdateOperationsInput | string
+    memberId?: StringFieldUpdateOperationsInput | string
     forSelf?: BoolFieldUpdateOperationsInput | boolean
     isRoot?: BoolFieldUpdateOperationsInput | boolean
     permissions?: PermitUpdatepermissionsInput | string[]
@@ -43812,7 +43812,7 @@ export namespace Prisma {
   export type PermitCreateManyInput = {
     id?: string
     accountId: string
-    targetAccountId: string
+    memberId: string
     forSelf?: boolean
     isRoot?: boolean
     permissions?: PermitCreatepermissionsInput | string[]
@@ -43834,7 +43834,7 @@ export namespace Prisma {
   export type PermitUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     accountId?: StringFieldUpdateOperationsInput | string
-    targetAccountId?: StringFieldUpdateOperationsInput | string
+    memberId?: StringFieldUpdateOperationsInput | string
     forSelf?: BoolFieldUpdateOperationsInput | boolean
     isRoot?: BoolFieldUpdateOperationsInput | boolean
     permissions?: PermitUpdatepermissionsInput | string[]
@@ -44447,7 +44447,7 @@ export namespace Prisma {
 
   export type ActivityCountOrderByAggregateInput = {
     id?: SortOrder
-    targetAccountId?: SortOrder
+    memberId?: SortOrder
     actorAccountId?: SortOrder
     action?: SortOrder
     status?: SortOrder
@@ -44458,7 +44458,7 @@ export namespace Prisma {
 
   export type ActivityMaxOrderByAggregateInput = {
     id?: SortOrder
-    targetAccountId?: SortOrder
+    memberId?: SortOrder
     actorAccountId?: SortOrder
     action?: SortOrder
     status?: SortOrder
@@ -44469,7 +44469,7 @@ export namespace Prisma {
 
   export type ActivityMinOrderByAggregateInput = {
     id?: SortOrder
-    targetAccountId?: SortOrder
+    memberId?: SortOrder
     actorAccountId?: SortOrder
     action?: SortOrder
     status?: SortOrder
@@ -44998,7 +44998,7 @@ export namespace Prisma {
 
   export type AssetCountOrderByAggregateInput = {
     id?: SortOrder
-    portfolioId?: SortOrder
+    parentPortfolioId?: SortOrder
     assetType?: SortOrder
     assetId?: SortOrder
     details?: SortOrder
@@ -45006,14 +45006,14 @@ export namespace Prisma {
 
   export type AssetMaxOrderByAggregateInput = {
     id?: SortOrder
-    portfolioId?: SortOrder
+    parentPortfolioId?: SortOrder
     assetType?: SortOrder
     assetId?: SortOrder
   }
 
   export type AssetMinOrderByAggregateInput = {
     id?: SortOrder
-    portfolioId?: SortOrder
+    parentPortfolioId?: SortOrder
     assetType?: SortOrder
     assetId?: SortOrder
   }
@@ -45360,7 +45360,7 @@ export namespace Prisma {
   export type PermitCountOrderByAggregateInput = {
     id?: SortOrder
     accountId?: SortOrder
-    targetAccountId?: SortOrder
+    memberId?: SortOrder
     forSelf?: SortOrder
     isRoot?: SortOrder
     permissions?: SortOrder
@@ -45372,7 +45372,7 @@ export namespace Prisma {
   export type PermitMaxOrderByAggregateInput = {
     id?: SortOrder
     accountId?: SortOrder
-    targetAccountId?: SortOrder
+    memberId?: SortOrder
     forSelf?: SortOrder
     isRoot?: SortOrder
     createdAt?: SortOrder
@@ -45382,7 +45382,7 @@ export namespace Prisma {
   export type PermitMinOrderByAggregateInput = {
     id?: SortOrder
     accountId?: SortOrder
-    targetAccountId?: SortOrder
+    memberId?: SortOrder
     forSelf?: SortOrder
     isRoot?: SortOrder
     createdAt?: SortOrder
@@ -48471,7 +48471,7 @@ export namespace Prisma {
 
   export type PermitUncheckedCreateWithoutAccountInput = {
     id?: string
-    targetAccountId: string
+    memberId: string
     forSelf?: boolean
     isRoot?: boolean
     permissions?: PermitCreatepermissionsInput | string[]
@@ -49250,7 +49250,7 @@ export namespace Prisma {
     NOT?: PermitScalarWhereInput | PermitScalarWhereInput[]
     id?: StringFilter<"Permit"> | string
     accountId?: StringFilter<"Permit"> | string
-    targetAccountId?: StringFilter<"Permit"> | string
+    memberId?: StringFilter<"Permit"> | string
     forSelf?: BoolFilter<"Permit"> | boolean
     isRoot?: BoolFilter<"Permit"> | boolean
     permissions?: StringNullableListFilter<"Permit">
@@ -52199,7 +52199,7 @@ export namespace Prisma {
     OR?: AssetScalarWhereInput[]
     NOT?: AssetScalarWhereInput | AssetScalarWhereInput[]
     id?: StringFilter<"Asset"> | string
-    portfolioId?: StringFilter<"Asset"> | string
+    parentPortfolioId?: StringFilter<"Asset"> | string
     assetType?: StringFilter<"Asset"> | string
     assetId?: StringFilter<"Asset"> | string
     details?: JsonNullableFilter<"Asset">
@@ -54452,7 +54452,7 @@ export namespace Prisma {
 
   export type AssetUncheckedCreateWithoutAuthzAssetsAccessGrantsInput = {
     id?: string
-    portfolioId: string
+    parentPortfolioId: string
     assetType: string
     assetId: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -54607,7 +54607,7 @@ export namespace Prisma {
 
   export type AssetUncheckedUpdateWithoutAuthzAssetsAccessGrantsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    portfolioId?: StringFieldUpdateOperationsInput | string
+    parentPortfolioId?: StringFieldUpdateOperationsInput | string
     assetType?: StringFieldUpdateOperationsInput | string
     assetId?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -55295,7 +55295,7 @@ export namespace Prisma {
 
   export type PermitCreateManyAccountInput = {
     id?: string
-    targetAccountId: string
+    memberId: string
     forSelf?: boolean
     isRoot?: boolean
     permissions?: PermitCreatepermissionsInput | string[]
@@ -55766,7 +55766,7 @@ export namespace Prisma {
 
   export type PermitUncheckedUpdateWithoutAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
-    targetAccountId?: StringFieldUpdateOperationsInput | string
+    memberId?: StringFieldUpdateOperationsInput | string
     forSelf?: BoolFieldUpdateOperationsInput | boolean
     isRoot?: BoolFieldUpdateOperationsInput | boolean
     permissions?: PermitUpdatepermissionsInput | string[]
@@ -55777,7 +55777,7 @@ export namespace Prisma {
 
   export type PermitUncheckedUpdateManyWithoutAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
-    targetAccountId?: StringFieldUpdateOperationsInput | string
+    memberId?: StringFieldUpdateOperationsInput | string
     forSelf?: BoolFieldUpdateOperationsInput | boolean
     isRoot?: BoolFieldUpdateOperationsInput | boolean
     permissions?: PermitUpdatepermissionsInput | string[]

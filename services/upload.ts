@@ -76,8 +76,8 @@ export async function uploadFile(
     return { success: false, error: 'User not authenticated.' };
   }
   
-  const targetAccountId = forAccountId || await getActiveAccountId();
-   if (!targetAccountId) {
+  const memberId = forAccountId || await getActiveAccountId();
+   if (!memberId) {
     return { success: false, error: 'Target account could not be determined.' };
   }
 
@@ -98,7 +98,7 @@ export async function uploadFile(
     const formData = new FormData();
     formData.append('file', fileToUpload);
     formData.append('platform', platform);
-    formData.append('userid', targetAccountId);
+    formData.append('userid', memberId);
     formData.append('contentid', contentId);
     if (name) {
       formData.append('name', name);
@@ -115,7 +115,7 @@ export async function uploadFile(
             status: response.status,
             statusText: response.statusText,
             responseText: errorText,
-            requestData: { platform, userid: targetAccountId, contentid: contentId, name },
+            requestData: { platform, userid: memberId, contentid: contentId, name },
             fileInfo: { name: file.name, size: file.size, type: file.type }
         };
         await logError('unknown', new Error(`Upload API failed: ${JSON.stringify(errorDetails)}`), 'file-upload');
@@ -132,7 +132,7 @@ export async function uploadFile(
         const errorDetails = {
             apiMessage: "API returned success but no URL.",
             apiResponse: result,
-            requestData: { platform, userid: targetAccountId, contentid: contentId, name },
+            requestData: { platform, userid: memberId, contentid: contentId, name },
             fileInfo: { name: file.name, size: file.size, type: file.type }
         };
         await logError('unknown', new Error(`Upload API success with missing URL: ${JSON.stringify(errorDetails)}`), 'file-upload');
@@ -140,7 +140,7 @@ export async function uploadFile(
     } else {
         const errorDetails = {
             apiMessage: result.message,
-            requestData: { platform, userid: targetAccountId, contentid: contentId, name },
+            requestData: { platform, userid: memberId, contentid: contentId, name },
             fileInfo: { name: file.name, size: file.size, type: file.type }
         };
       await logError('unknown', new Error(`Upload API returned an error: ${JSON.stringify(errorDetails)}`), 'file-upload');
@@ -150,7 +150,7 @@ export async function uploadFile(
   } catch (error: any) {
     const errorDetails = {
         exception: error.message,
-        requestData: { platform, userid: targetAccountId, contentid: contentId, name },
+        requestData: { platform, userid: memberId, contentid: contentId, name },
         fileInfo: { name: file.name, size: file.size, type: file.type }
     };
     await logError('unknown', new Error(`Upload action failed: ${JSON.stringify(errorDetails)}`), 'uploadFile-action');

@@ -59,7 +59,7 @@ SELECT
   pm."accountId",
   pm."accountId",
   'portfolio'::"MemberAccessFor",
-  pm."portfolioId",
+  pm."parentPortfolioId",
   'member.portfolio',
   COALESCE(pm."isPermanent", false),
   COALESCE(pm."hasFullAccess", false),

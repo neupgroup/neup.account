@@ -93,7 +93,7 @@ export function AssetMemberLookupForm({
     startActionTransition(async () => {
       const result = await assignOrInviteAssetMember({
         assetRef: assetId,
-        targetAccountId: resolved.accountId,
+        memberId: resolved.accountId,
         roleId: rootMode ? selectedRoleId : undefined,
         rootMode,
       });

@@ -127,10 +127,10 @@ export async function acceptRequest(requestId: string, notificationId: string): 
                     update: { name: 'account.delegate', scope: 'account', appId: 'neup.account' },
                     create: { id: 'account.delegate', name: 'account.delegate', scope: 'account', appId: 'neup.account' },
                 });
-                await tx.authzAccountAccessGrant.create({
+                await tx.member.create({
                     data: {
-                        ownerAccountId: request.senderId,
-                        targetAccountId: inviteeId,
+                        accessTo: request.senderId,
+                        memberId: inviteeId,
                         roleId: 'account.delegate',
                         appId: 'neup.account',
                     }

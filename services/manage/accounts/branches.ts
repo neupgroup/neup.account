@@ -95,7 +95,7 @@ export async function createBranchAccount(data: z.infer<typeof formSchema>, geol
             await tx.permit.create({
                 data: {
                     accountId: personalAccountId,
-                    targetAccountId: branchAccountId,
+                    memberId: branchAccountId,
                     forSelf: false,
                     isRoot: false,
                     permissions: ['individual.default'],
@@ -109,10 +109,10 @@ export async function createBranchAccount(data: z.infer<typeof formSchema>, geol
                 update: { name: 'brand.owner', scope: 'brand', appId: 'neup.account' },
                 create: { id: 'brand-owner-neup-account', name: 'brand.owner', scope: 'brand', appId: 'neup.account' },
             });
-            await tx.authzAccountAccessGrant.create({
+            await tx.member.create({
                 data: {
-                    ownerAccountId: branchAccountId,
-                    targetAccountId: personalAccountId,
+                    accessTo: branchAccountId,
+                    memberId: personalAccountId,
                     roleId: 'brand-owner-neup-account',
                     appId: 'neup.account',
                 },

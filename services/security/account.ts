@@ -39,13 +39,13 @@ const statusOrder: Record<RecoveryAccount['status'], number> = {
    const canView = await checkPermissions(['security.recovery_accounts.view']);
    if (!canView) return [];
  
-   const ownerAccountId = await getPersonalAccountId();
-   if (!ownerAccountId) return [];
+   const accessTo = await getPersonalAccountId();
+   if (!accessTo) return [];
  
    try {
     const rows = await prisma.contact.findMany({
       where: {
-        accountId: ownerAccountId,
+        accountId: accessTo,
         contactType: RECOVERY_CONTACT_TYPE,
       },
     });
@@ -92,8 +92,8 @@ const statusOrder: Record<RecoveryAccount['status'], number> = {
    const canAdd = await checkPermissions(['security.recovery_accounts.add']);
    if (!canAdd) return { success: false, error: 'Permission denied.' };
  
-   const ownerAccountId = await getPersonalAccountId();
-   if (!ownerAccountId) return { success: false, error: 'User not authenticated.' };
+   const accessTo = await getPersonalAccountId();
+   if (!accessTo) return { success: false, error: 'User not authenticated.' };
  
    const validation = addAccountSchema.safeParse({ neupId: formData.get('neupId') });
    if (!validation.success) {
@@ -105,7 +105,7 @@ const statusOrder: Record<RecoveryAccount['status'], number> = {
    try {
     const count = await prisma.contact.count({
       where: {
-        accountId: ownerAccountId,
+        accountId: accessTo,
         contactType: RECOVERY_CONTACT_TYPE,
       },
     });
@@ -120,13 +120,13 @@ const statusOrder: Record<RecoveryAccount['status'], number> = {
      }
     const recoveryAccountId = neup.accountId;
  
-     if (recoveryAccountId === ownerAccountId) {
+     if (recoveryAccountId === accessTo) {
        return { success: false, error: 'You cannot add yourself as a recovery account.' };
      }
  
     const exists = await prisma.contact.findFirst({
       where: {
-        accountId: ownerAccountId,
+        accountId: accessTo,
         contactType: RECOVERY_CONTACT_TYPE,
         value: recoveryAccountId,
       },
@@ -137,7 +137,7 @@ const statusOrder: Record<RecoveryAccount['status'], number> = {
  
     const created = await prisma.contact.create({
       data: {
-        accountId: ownerAccountId,
+        accountId: accessTo,
         contactType: RECOVERY_CONTACT_TYPE,
         value: recoveryAccountId,
       },
@@ -173,13 +173,13 @@ const statusOrder: Record<RecoveryAccount['status'], number> = {
    const canRemove = await checkPermissions(['security.recovery_accounts.remove']);
    if (!canRemove) return { success: false, error: 'Permission denied.' };
  
-   const ownerAccountId = await getPersonalAccountId();
-   if (!ownerAccountId) return { success: false, error: 'User not authenticated.' };
+   const accessTo = await getPersonalAccountId();
+   if (!accessTo) return { success: false, error: 'User not authenticated.' };
  
    try {
     const row = await prisma.contact.findUnique({ where: { id } });
  
-    if (!row || row.accountId !== ownerAccountId || row.contactType !== RECOVERY_CONTACT_TYPE) {
+    if (!row || row.accountId !== accessTo || row.contactType !== RECOVERY_CONTACT_TYPE) {
        return { success: false, error: 'Permission denied or account not found.' };
      }
  

@@ -148,15 +148,15 @@ async function handleAccountAccessGrant(operation: Operation, body: WebhookBody)
     case 'insert': {
       if (!body.data || Array.isArray(body.data)) return err('Missing required field: `data` (object).', 400);
       const d = body.data;
-      if (!d.ownerAccountId || !d.targetAccountId || !d.roleId || !d.appId)
-        return err('Missing required fields: `ownerAccountId`, `targetAccountId`, `roleId`, `appId`.', 400);
-      const record = await prisma.authzAccountAccessGrant.create({
+      if (!d.accessTo || !d.memberId || !d.roleId || !d.appId)
+        return err('Missing required fields: `accessTo`, `memberId`, `roleId`, `appId`.', 400);
+      const record = await prisma.member.create({
         data: {
-          ownerAccountId: d.ownerAccountId as string,
-          targetAccountId: d.targetAccountId as string,
+          accessTo: d.accessTo as string,
+          memberId: d.memberId as string,
           roleId: d.roleId as string,
           appId: d.appId as string,
-          portfolioId: (d.portfolioId as string) ?? null,
+          parentPortfolioId: (d.parentPortfolioId as string) ?? null,
         },
         select: { id: true },
       });
@@ -167,11 +167,11 @@ async function handleAccountAccessGrant(operation: Operation, body: WebhookBody)
       if (typeof body.id !== 'string') return err('Missing required field: `id` (string).', 400);
       if (!body.data || Array.isArray(body.data)) return err('Missing required field: `data` (object).', 400);
       const d = body.data;
-      await prisma.authzAccountAccessGrant.update({
+      await prisma.member.update({
         where: { id: body.id },
         data: {
           ...(d.roleId !== undefined && { roleId: d.roleId as string }),
-          ...(d.portfolioId !== undefined && { portfolioId: d.portfolioId as string | null }),
+          ...(d.parentPortfolioId !== undefined && { parentPortfolioId: d.parentPortfolioId as string | null }),
         },
       });
       return ok({ ok: true });
@@ -183,7 +183,7 @@ async function handleAccountAccessGrant(operation: Operation, body: WebhookBody)
         body.data.map((item) => {
           const { id, ...rest } = item;
           if (!id) return Promise.resolve();
-          return prisma.authzAccountAccessGrant.update({ where: { id: id as string }, data: rest });
+          return prisma.member.update({ where: { id: id as string }, data: rest });
         })
       );
       return ok({ ok: true, count: body.data.length });
@@ -191,18 +191,18 @@ async function handleAccountAccessGrant(operation: Operation, body: WebhookBody)
 
     case 'deleteOne': {
       if (typeof body.id !== 'string') return err('Missing required field: `id` (string).', 400);
-      await prisma.authzAccountAccessGrant.delete({ where: { id: body.id } });
+      await prisma.member.delete({ where: { id: body.id } });
       return ok({ ok: true });
     }
 
     case 'delete': {
       if (!Array.isArray(body.id)) return err('Missing required field: `id` (array of strings).', 400);
-      const result = await prisma.authzAccountAccessGrant.deleteMany({ where: { id: { in: body.id as string[] } } });
+      const result = await prisma.member.deleteMany({ where: { id: { in: body.id as string[] } } });
       return ok({ ok: true, count: result.count });
     }
 
     case 'deleteAll': {
-      const result = await prisma.authzAccountAccessGrant.deleteMany();
+      const result = await prisma.member.deleteMany();
       return ok({ ok: true, count: result.count });
     }
   }
@@ -221,7 +221,7 @@ async function handleAssetsAccessGrant(operation: Operation, body: WebhookBody):
           account_id: d.accountId as string,
           role_id: d.roleId as string,
           app_id: d.appId as string,
-          portfolio_id: (d.portfolioId as string) ?? null,
+          portfolio_id: (d.parentPortfolioId as string) ?? null,
           asset_type: (d.assetType as string) ?? null,
         },
         select: { id: true },
@@ -237,7 +237,7 @@ async function handleAssetsAccessGrant(operation: Operation, body: WebhookBody):
         where: { id: body.id },
         data: {
           ...(d.roleId !== undefined && { role_id: d.roleId as string }),
-          ...(d.portfolioId !== undefined && { portfolio_id: d.portfolioId as string | null }),
+          ...(d.parentPortfolioId !== undefined && { portfolio_id: d.parentPortfolioId as string | null }),
           ...(d.assetType !== undefined && { asset_type: d.assetType as string | null }),
         },
       });
@@ -248,13 +248,13 @@ async function handleAssetsAccessGrant(operation: Operation, body: WebhookBody):
       if (!Array.isArray(body.data)) return err('Missing required field: `data` (array).', 400);
       await Promise.all(
         body.data.map((item) => {
-          const { id, roleId, portfolioId, assetType, ...rest } = item;
+          const { id, roleId, parentPortfolioId, assetType, ...rest } = item;
           if (!id) return Promise.resolve();
           return prisma.authzAssetsAccessGrant.update({
             where: { id: id as string },
             data: {
               ...(roleId !== undefined && { role_id: roleId as string }),
-              ...(portfolioId !== undefined && { portfolio_id: portfolioId as string | null }),
+              ...(parentPortfolioId !== undefined && { portfolio_id: parentPortfolioId as string | null }),
               ...(assetType !== undefined && { asset_type: assetType as string | null }),
               ...rest,
             },

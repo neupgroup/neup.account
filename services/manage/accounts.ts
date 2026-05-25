@@ -72,22 +72,23 @@ export type AccessibleAccount = StoredAccount & {
  * Function getAccessibleAccounts.
  *
  * Returns accounts that the current personal account has been granted access to.
- * Deduplicates by ownerAccountId to prevent duplicate entries.
+ * Deduplicates by accessTo to prevent duplicate entries.
  */
 export async function getAccessibleAccounts(): Promise<AccessibleAccount[]> {
     const personalAccountId = await getPersonalAccountId();
     if (!personalAccountId) return [];
 
     try {
-        // Query authzAccountAccessGrant: ownerAccountId is the account being managed,
-        // targetAccountId is the account that has been granted access (the accessor).
-        const grants = await prisma.authzAccountAccessGrant.findMany({
+        // Query member: accessTo is the account being managed,
+        // memberId is the account that has been granted access (the accessor).
+        const grants = await prisma.member.findMany({
             where: {
-                targetAccountId: personalAccountId,
-                appId: 'neup.account',
+                memberId: personalAccountId,
+                accessFor: 'account',
+                parentApplicationId: 'neup.account',
             },
             include: {
-                owner: {
+                accessAccount: {
                     include: {
                         neupIds: {
                             where: { isPrimary: true },
@@ -99,7 +100,7 @@ export async function getAccessibleAccounts(): Promise<AccessibleAccount[]> {
 
         const seen = new Set<string>();
         const accounts = grants.map((grant) => {
-            const ownerAccount = grant.owner;
+            const ownerAccount = grant.accessAccount;
             if (!ownerAccount) return null;
             // Skip duplicate grants for the same owner account
             if (seen.has(ownerAccount.id)) return null;
@@ -168,20 +169,21 @@ export async function getUserStats(): Promise<UserStats> {
  *
  * Returns a deduplicated array of account IDs that the given accountId
  * has access to — i.e. all unique ownerAccountIds from authz_account_access_grant
- * where targetAccountId = accountId and app_id = 'neup.account'.
+ * where memberId = accountId and app_id = 'neup.account'.
  */
 export async function getAccessableAccountIds(accountId: string): Promise<string[]> {
     try {
-        const grants = await prisma.authzAccountAccessGrant.findMany({
+        const grants = await prisma.member.findMany({
             where: {
-                targetAccountId: accountId,
-                appId: 'neup.account',
+                memberId: accountId,
+                accessFor: 'account',
+                parentApplicationId: 'neup.account',
             },
-            select: { ownerAccountId: true },
-            distinct: ['ownerAccountId'],
+            select: { accessTo: true },
+            distinct: ['accessTo'],
         });
 
-        return grants.map((g) => g.ownerAccountId);
+        return grants.map((g) => g.accessTo);
     } catch (error) {
         await logError('database', error, `getAccessableAccountIds:${accountId}`);
         return [];
@@ -284,14 +286,14 @@ export async function getAllAccountsPaginated(params: {
         const accountIds = rows.map((r) => r.id);
         const latestActivities = accountIds.length > 0
             ? await prisma.activity.groupBy({
-                by: ['targetAccountId'],
-                where: { targetAccountId: { in: accountIds } },
+                by: ['targetAccount'],
+                where: { targetAccount: { in: accountIds } },
                 _max: { timestamp: true },
             })
             : [];
 
         const activityMap = new Map<string, Date | null>(
-            latestActivities.map((a) => [a.targetAccountId, a._max.timestamp]),
+            latestActivities.map((a) => [a.targetAccount, a._max?.timestamp ?? null]),
         );
 
         let accounts = rows.map((a) => ({
@@ -505,18 +507,19 @@ export async function getAccountBasics(accountId: string): Promise<AccountBasics
  * Function getPermissionsForAccountPair.
  *
  * Returns the deduplicated list of permissions that `accessorId` holds
- * on `ownerAccountId`, by joining authzAccountAccessGrant → authzRolePermission.
+ * on `accessTo`, by joining member → authzRolePermission.
  */
 async function getPermissionsForAccountPair(
     accessorId: string,
-    ownerAccountId: string,
+    accessTo: string,
 ): Promise<string[]> {
     try {
-        const grants = await prisma.authzAccountAccessGrant.findMany({
+        const grants = await prisma.member.findMany({
             where: {
-                targetAccountId: accessorId,
-                ownerAccountId,
-                appId: 'neup.account',
+                memberId: accessorId,
+                accessTo,
+                accessFor: 'account',
+                parentApplicationId: 'neup.account',
             },
             select: { roleId: true },
         });
@@ -542,7 +545,7 @@ async function getPermissionsForAccountPair(
 
         return Array.from(new Set(permissions));
     } catch (error) {
-        await logError('database', error, `getPermissionsForAccountPair:${accessorId}:${ownerAccountId}`);
+        await logError('database', error, `getPermissionsForAccountPair:${accessorId}:${accessTo}`);
         return [];
     }
 }
@@ -574,13 +577,14 @@ export async function getAccessableAccountsWithPermissions(
                 },
             }),
             // Fetch all grants for this accessor across all owner accounts in one query
-            prisma.authzAccountAccessGrant.findMany({
+            prisma.member.findMany({
                 where: {
-                    targetAccountId: accountId,
-                    ownerAccountId: { in: ids },
-                    appId: 'neup.account',
+                    memberId: accountId,
+                    accessTo: { in: ids },
+                    accessFor: 'account',
+                    parentApplicationId: 'neup.account',
                 },
-                select: { ownerAccountId: true, roleId: true },
+                select: { accessTo: true, roleId: true },
             }),
         ]);
 
@@ -607,15 +611,15 @@ export async function getAccessableAccountsWithPermissions(
             roleCapMap.set(row.roleId, caps);
         }
 
-        // Build ownerAccountId → permissions map
+        // Build accessTo → permissions map
         const ownerCapMap = new Map<string, Set<string>>();
         for (const grant of allGrants) {
-            if (!ownerCapMap.has(grant.ownerAccountId)) {
-                ownerCapMap.set(grant.ownerAccountId, new Set());
+            if (!ownerCapMap.has(grant.accessTo)) {
+                ownerCapMap.set(grant.accessTo, new Set());
             }
             const caps = roleCapMap.get(grant.roleId) ?? [];
             for (const cap of caps) {
-                ownerCapMap.get(grant.ownerAccountId)!.add(cap);
+                ownerCapMap.get(grant.accessTo)!.add(cap);
             }
         }
 
@@ -672,20 +676,21 @@ export async function getAccessableBrandAccountsWithPermissions(
                     accountType: true,
                 },
             }),
-            prisma.authzAccountAccessGrant.findMany({
+            prisma.member.findMany({
                 where: {
-                    targetAccountId: accountId,
-                    ownerAccountId: { in: ids },
-                    appId: 'neup.account',
+                    memberId: accountId,
+                    accessTo: { in: ids },
+                    accessFor: 'account',
+                    parentApplicationId: 'neup.account',
                 },
-                select: { ownerAccountId: true, roleId: true },
+                select: { accessTo: true, roleId: true },
             }),
         ]);
 
         const brandIds = new Set(brandRows.map((b) => b.id));
 
         // Only keep grants for brand/branch accounts
-        const relevantGrants = allGrants.filter((g) => brandIds.has(g.ownerAccountId));
+        const relevantGrants = allGrants.filter((g) => brandIds.has(g.accessTo));
 
         const allRoleIds = Array.from(new Set(relevantGrants.map((g) => g.roleId)));
 
@@ -710,12 +715,12 @@ export async function getAccessableBrandAccountsWithPermissions(
 
         const ownerCapMap = new Map<string, Set<string>>();
         for (const grant of relevantGrants) {
-            if (!ownerCapMap.has(grant.ownerAccountId)) {
-                ownerCapMap.set(grant.ownerAccountId, new Set());
+            if (!ownerCapMap.has(grant.accessTo)) {
+                ownerCapMap.set(grant.accessTo, new Set());
             }
             const caps = roleCapMap.get(grant.roleId) ?? [];
             for (const cap of caps) {
-                ownerCapMap.get(grant.ownerAccountId)!.add(cap);
+                ownerCapMap.get(grant.accessTo)!.add(cap);
             }
         }
 

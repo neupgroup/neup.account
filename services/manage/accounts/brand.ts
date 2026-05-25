@@ -32,18 +32,18 @@ export async function getBrandAccounts(): Promise<BrandAccount[]> {
     if (!personalAccountId) return [];
 
     try {
-        const grants = await prisma.authzAccountAccessGrant.findMany({
+        const grants = await prisma.member.findMany({
             where: {
-                targetAccountId: personalAccountId,
+                memberId: personalAccountId,
                 roleId: BRAND_OWNER_ROLE_ID,
                 appId: 'neup.account',
             },
-            select: { ownerAccountId: true },
+            select: { accessTo: true },
         });
 
         if (grants.length === 0) return [];
 
-        const brandAccountIds = grants.map((g) => g.ownerAccountId);
+        const brandAccountIds = grants.map((g) => g.accessTo);
 
         const brandAccountsData = await prisma.account.findMany({
             where: {
@@ -160,10 +160,10 @@ export async function createBrandAccount(data: z.infer<typeof brandCreationSchem
                 create: { id: BRAND_OWNER_ROLE_ID, name: 'brand.owner', scope: 'brand', appId: 'neup.account' },
             });
 
-            await tx.authzAccountAccessGrant.create({
+            await tx.member.create({
                 data: {
-                    ownerAccountId: account.id,
-                    targetAccountId: creatorAccountId,
+                    accessTo: account.id,
+                    memberId: creatorAccountId,
                     roleId: BRAND_OWNER_ROLE_ID,
                     appId: 'neup.account',
                 },

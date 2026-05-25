@@ -153,7 +153,7 @@ export default async function ApplicationAccessPage() {
                           </div>
                           <RevokeAppAccessButton
                             appId={app.id}
-                            targetAccountId={grantee.accountId}
+                            memberId={grantee.accountId}
                             displayName={grantee.displayName}
                           />
                         </div>

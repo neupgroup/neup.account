@@ -58,7 +58,7 @@ export type Application = {
   access?: ApplicationAccessField[];
   policies?: Array<{ name: string; policy: string }>;
   endpoints?: ApplicationEndpointConfig;
-  ownerAccountId?: string;
+  accessTo?: string;
 };
 
 export type ApplicationPolicyEntry = {

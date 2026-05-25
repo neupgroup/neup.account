@@ -78,14 +78,14 @@ SET
     || jsonb_strip_nulls(jsonb_build_object(
       'access', access,
       'policies', policies,
-      'ownerAccountId', "ownerAccountId",
+      'accessTo', "accessTo",
       'party', party
     )),
   "isInternal" = CASE WHEN party = 'first' THEN true ELSE false END
 WHERE
   (details IS NULL OR details = '{}'::jsonb)
   OR party IS NOT NULL
-  OR "ownerAccountId" IS NOT NULL
+  OR "accessTo" IS NOT NULL
   OR access IS NOT NULL
   OR policies IS NOT NULL;
 
@@ -93,7 +93,7 @@ ALTER TABLE IF EXISTS application DROP CONSTRAINT IF EXISTS applications_ownerAc
 
 ALTER TABLE IF EXISTS application
   DROP COLUMN IF EXISTS party,
-  DROP COLUMN IF EXISTS "ownerAccountId",
+  DROP COLUMN IF EXISTS "accessTo",
   DROP COLUMN IF EXISTS access,
   DROP COLUMN IF EXISTS policies;
 
@@ -214,7 +214,7 @@ BEGIN
     INSERT INTO authz_account_access_grant(owner_account_id, target_account_id, role_id, app_id, portfolio_id)
     SELECT
       p."accountId",
-      COALESCE(p."targetAccountId", p."accountId"),
+      COALESCE(p."memberId", p."accountId"),
       r.id,
       selected_app_id,
       NULL

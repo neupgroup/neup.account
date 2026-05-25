@@ -8,12 +8,12 @@ import { Loader2, UserPlus } from "@/components/icons";
 import { resolveNeupId } from "./actions";
 
 export function AddMemberForm({
-  portfolioId,
+  parentPortfolioId,
   assetId,
   mode,
 }: {
   /** Present when on a portfolio page — appended to the redirect URL. */
-  portfolioId?: string;
+  parentPortfolioId?: string;
   /** Present when on an asset page — appended to the redirect URL. */
   assetId?: string;
   /** Optional mode, e.g. root. */
@@ -34,7 +34,7 @@ export function AddMemberForm({
       const result = await resolveNeupId(neupIdInput);
       if (result.success) {
         const params = new URLSearchParams({ member: result.account.accountId });
-        if (portfolioId) params.set("portfolio", portfolioId);
+        if (parentPortfolioId) params.set("portfolio", parentPortfolioId);
         if (assetId) params.set("asset", assetId);
         if (mode === "root") params.set("mode", "root");
         router.push(`/access/role?${params.toString()}`);

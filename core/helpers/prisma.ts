@@ -26,12 +26,12 @@ function hasRequiredDelegates(client: ReturnType<typeof prismaClientSingleton> |
   return Boolean(
     candidate.portfolio &&
     candidate.portfolioAsset &&
-    candidate.portfolioMember &&
+    candidate.member &&
     // New/renamed delegates in the generated client
     (candidate.authnSession || candidate.authSession) &&
     (candidate.authnRequest || candidate.authRequest) &&
     (candidate.authnMethod || candidate.authMethod) &&
-    (candidate.authzAccountAccessGrant || candidate.portfolioRole) &&
+    (candidate.member || candidate.portfolioRole) &&
     candidate.systemConfig,
   )
 }

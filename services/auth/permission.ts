@@ -267,13 +267,13 @@ async function resolvePermissionSet(input: {
 					},
 				},
 				authzAccountAccessGrants: {
-					where: { targetAccountId: input.accountId },
+					where: { memberId: input.accountId },
 					select: { roleId: true },
 				},
 			},
 		}),
-		prisma.authzAccountAccessGrant.findMany({
-			where: { targetAccountId: input.accountId, appId: input.app },
+		prisma.member.findMany({
+			where: { memberId: input.accountId, appId: input.app },
 			select: { roleId: true },
 		}),
 	]);
@@ -323,8 +323,8 @@ async function resolvePermissionSet(input: {
 		}
 	}
 
-	for (const grant of await prisma.authzAccountAccessGrant.findMany({
-		where: { targetAccountId: input.accountId, appId: input.app },
+	for (const grant of await prisma.member.findMany({
+		where: { memberId: input.accountId, appId: input.app },
 		select: { roleId: true },
 	})) {
 		resolvedPermissions.add(normalizePermission(grant.roleId));
@@ -341,8 +341,8 @@ async function resolvePermissionSet(input: {
 /**
  * Ensures actor can manage permission records for target account.
  */
-async function canManagePermissions(actorAccountId: string, targetAccountId: string, app: string, api: string): Promise<boolean> {
-	if (actorAccountId === targetAccountId) {
+async function canManagePermissions(actorAccountId: string, memberId: string, app: string, api: string): Promise<boolean> {
+	if (actorAccountId === memberId) {
 		return true;
 	}
 
@@ -367,7 +367,7 @@ export async function checkPermission(input: CheckPermissionInput): Promise<Perm
 	const sid = input.sid?.trim();
 	const skey = input.skey?.trim();
 	const requiredPermissions = normalizePermissionList(input.checkFor);
-	const targetAccountId = input.for_account?.trim() || '';
+	const memberId = input.for_account?.trim() || '';
 
 	if (!app || !sid || !skey) {
 		return { status: 'invalid', reason: 'invalidSource' };
@@ -401,7 +401,7 @@ export async function checkPermission(input: CheckPermissionInput): Promise<Perm
 			return { status: 'invalid', reason: 'accountBlocked' };
 		}
 
-		const resolvedAccountId = targetAccountId || account.id;
+		const resolvedAccountId = memberId || account.id;
 		const permissionSet = await resolvePermissionSet({
 			app,
 			api: api || '',
@@ -444,14 +444,14 @@ export async function updatePermission(input: UpdatePermissionInput): Promise<Pe
 	const api = input.api?.trim() || null;
 	const sid = input.sid?.trim();
 	const skey = input.skey?.trim();
-	const targetAccountId = input.for_account?.trim();
+	const memberId = input.for_account?.trim();
 	const nextPermissions = normalizePermissionList(input.permissions || []);
 
 	if (!app || !sid || !skey) {
 		return { success: false, error: 'Missing auth source.' };
 	}
 
-	if (!targetAccountId) {
+	if (!memberId) {
 		return { success: false, error: 'Missing for_account.' };
 	}
 
@@ -461,7 +461,7 @@ export async function updatePermission(input: UpdatePermissionInput): Promise<Pe
 			return { success: false, error: 'Unauthorized.' };
 		}
 
-		const canManage = await canManagePermissions(auth.accountId, targetAccountId, app, api || '');
+		const canManage = await canManagePermissions(auth.accountId, memberId, app, api || '');
 		if (!canManage) {
 			return { success: false, error: 'Forbidden.' };
 		}
@@ -472,7 +472,7 @@ export async function updatePermission(input: UpdatePermissionInput): Promise<Pe
 			permissions: nextPermissions,
 		};
 	} catch (error) {
-		await logError('database', error, `updatePermission:${app}:${targetAccountId}`);
+		await logError('database', error, `updatePermission:${app}:${memberId}`);
 		return { success: false, error: 'Failed to update permission.' };
 	}
 }
@@ -486,14 +486,14 @@ export async function revokePermission(input: RevokePermissionInput): Promise<Pe
 	const api = input.api?.trim() || null;
 	const sid = input.sid?.trim();
 	const skey = input.skey?.trim();
-	const targetAccountId = input.for_account?.trim();
+	const memberId = input.for_account?.trim();
 	const toRevoke = normalizePermissionList(input.permissions || []);
 
 	if (!app || !sid || !skey) {
 		return { success: false, error: 'Missing auth source.' };
 	}
 
-	if (!targetAccountId) {
+	if (!memberId) {
 		return { success: false, error: 'Missing for_account.' };
 	}
 
@@ -507,7 +507,7 @@ export async function revokePermission(input: RevokePermissionInput): Promise<Pe
 			return { success: false, error: 'Unauthorized.' };
 		}
 
-		const canManage = await canManagePermissions(auth.accountId, targetAccountId, app, api || '');
+		const canManage = await canManagePermissions(auth.accountId, memberId, app, api || '');
 		if (!canManage) {
 			return { success: false, error: 'Forbidden.' };
 		}
@@ -518,7 +518,7 @@ export async function revokePermission(input: RevokePermissionInput): Promise<Pe
 			permissions: toRevoke,
 		};
 	} catch (error) {
-		await logError('database', error, `revokePermission:${app}:${targetAccountId}`);
+		await logError('database', error, `revokePermission:${app}:${memberId}`);
 		return { success: false, error: 'Failed to revoke permission.' };
 	}
 }

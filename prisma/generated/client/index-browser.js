@@ -169,7 +169,7 @@ exports.Prisma.AuthnRequestScalarFieldEnum = {
 
 exports.Prisma.ActivityScalarFieldEnum = {
   id: 'id',
-  targetAccountId: 'targetAccountId',
+  memberId: 'memberId',
   actorAccountId: 'actorAccountId',
   action: 'action',
   status: 'status',
@@ -311,7 +311,7 @@ exports.Prisma.PortfolioScalarFieldEnum = {
 
 exports.Prisma.AssetScalarFieldEnum = {
   id: 'id',
-  portfolioId: 'portfolioId',
+  parentPortfolioId: 'parentPortfolioId',
   assetType: 'assetType',
   assetId: 'assetId',
   details: 'details'
@@ -406,7 +406,7 @@ exports.Prisma.AuthzAssetsAccessGrantScalarFieldEnum = {
 exports.Prisma.PermitScalarFieldEnum = {
   id: 'id',
   accountId: 'accountId',
-  targetAccountId: 'targetAccountId',
+  memberId: 'memberId',
   forSelf: 'forSelf',
   isRoot: 'isRoot',
   permissions: 'permissions',

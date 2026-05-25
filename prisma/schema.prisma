@@ -94,7 +94,7 @@ model AuthnRequest {
 
 model Activity {
   id              String   @id(map: "activity_logs_pkey") @default(uuid())
-  targetAccountId String   @map("target_account_id")
+  memberId String   @map("target_account_id")
   actorAccountId  String   @map("actor_account_id")
   action          String
   status          String
@@ -294,15 +294,15 @@ model Portfolio {
 
 model Asset {
   id                      String                   @id(map: "portfolio_assets_pkey") @default(uuid())
-  portfolioId             String
+  parentPortfolioId             String
   assetType               String
   assetId                 String
   details                 Json?
-  portfolio               Portfolio                @relation(fields: [portfolioId], references: [id], onDelete: Cascade, map: "portfolio_assets_portfolioId_fkey")
+  portfolio               Portfolio                @relation(fields: [parentPortfolioId], references: [id], onDelete: Cascade, map: "portfolio_assets_portfolioId_fkey")
   authzAssetsAccessGrants AuthzAssetsAccessGrant[]
 
   @@index([assetType, assetId], map: "portfolio_assets_assetType_assetId_idx")
-  @@index([portfolioId], map: "portfolio_assets_portfolioId_idx")
+  @@index([parentPortfolioId], map: "portfolio_assets_portfolioId_idx")
   @@map("assets")
 }
 
@@ -483,7 +483,7 @@ model AuthzAssetsAccessGrant {
 model Permit {
   id              String   @id @default(uuid())
   accountId       String   @map("account_id")
-  targetAccountId String   @map("target_account_id")
+  memberId String   @map("target_account_id")
   forSelf         Boolean  @default(false) @map("for_self")
   isRoot          Boolean  @default(false) @map("is_root")
   permissions     String[] @default([])
@@ -492,10 +492,10 @@ model Permit {
   updatedAt       DateTime @updatedAt @map("updated_at")
 
   account       Account @relation(fields: [accountId], references: [id], onDelete: Cascade, map: "permit_account_id_fkey")
-  targetAccount Account @relation("PermitTarget", fields: [targetAccountId], references: [id], onDelete: Cascade, map: "permit_target_account_id_fkey")
+  targetAccount Account @relation("PermitTarget", fields: [memberId], references: [id], onDelete: Cascade, map: "permit_target_account_id_fkey")
 
   @@index([accountId], map: "permit_account_id_idx")
-  @@index([targetAccountId], map: "permit_target_account_id_idx")
+  @@index([memberId], map: "permit_target_account_id_idx")
   @@map("permit")
 }
 

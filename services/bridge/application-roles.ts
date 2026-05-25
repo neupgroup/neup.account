@@ -107,8 +107,8 @@ export async function getApplicationRoles(params: {
     // 3. If account filter is provided, restrict roles to those granted to that account in this app.
     let allowedRoleIds: string[] | null = null;
     if (account) {
-      const grantRoleRows = await prisma.authzAppAccessGrant.findMany({
-        where: { appId, targetAccountId: account },
+      const grantRoleRows = await prisma.member.findMany({
+        where: { appId, memberId: account },
         select: { roleId: true },
         distinct: ['roleId'],
       });

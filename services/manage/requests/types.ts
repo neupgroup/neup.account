@@ -31,7 +31,7 @@ export type UnifiedRequest = {
   /** Extra payload fields for the detail view */
   data: Record<string, unknown>;
   /** The account the request is about (may differ from submittedBy for admin-initiated) */
-  targetAccountId?: string;
+  memberId?: string;
 };
 
 export type GetRequestsOptions = {

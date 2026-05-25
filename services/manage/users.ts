@@ -92,7 +92,7 @@ export async function getAccountDetails(accountId: string) {
 // Returns the last 20 activity log entries for an account.
 export async function getActivity(accountId: string): Promise<UserActivityLog[]> {
     const rows = await prisma.activity.findMany({
-        where: { targetAccountId: accountId },
+        where: { memberId: accountId },
         orderBy: { timestamp: 'desc' },
         take: 20,
     });
@@ -110,7 +110,7 @@ export async function getActivity(accountId: string): Promise<UserActivityLog[]>
 // Returns the last activity stats (IP, location, active time) for an account.
 export async function getUserDashboardStats(accountId: string): Promise<UserDashboardStats> {
     const last = await prisma.activity.findFirst({
-        where: { targetAccountId: accountId },
+        where: { memberId: accountId },
         orderBy: { timestamp: 'desc' },
     });
     if (!last) return { lastIpAddress: 'N/A', lastLocation: 'N/A', lastActive: 'N/A' };
@@ -138,8 +138,8 @@ export async function getAccountRoles(accountId: string): Promise<{ id: string; 
     try {
         const grants = await prisma.authzAccountAccessGrant.findMany({
             where: {
-                ownerAccountId: accountId,
-                targetAccountId: accountId,
+                accessTo: accountId,
+                memberId: accountId,
                 appId: 'neup.account',
             },
             select: {
@@ -192,8 +192,8 @@ export async function updateAccountRoles(accountId: string, roleIds: string[]): 
             // Remove all existing self-grants for this account
             await tx.authzAccountAccessGrant.deleteMany({
                 where: {
-                    ownerAccountId: accountId,
-                    targetAccountId: accountId,
+                    accessTo: accountId,
+                    memberId: accountId,
                     appId: 'neup.account',
                 },
             });
@@ -202,8 +202,8 @@ export async function updateAccountRoles(accountId: string, roleIds: string[]): 
             if (roleIds.length > 0) {
                 await tx.authzAccountAccessGrant.createMany({
                     data: roleIds.map((roleId) => ({
-                        ownerAccountId: accountId,
-                        targetAccountId: accountId,
+                        accessTo: accountId,
+                        memberId: accountId,
                         roleId,
                         appId: 'neup.account',
                     })),
@@ -256,11 +256,11 @@ export async function updateUserPermissions(accountId: string, newPermissionIds:
 
         // Upsert the grant linking the account to its custom role
         const existingGrant = await prisma.authzAccountAccessGrant.findFirst({
-            where: { ownerAccountId: accountId, targetAccountId: accountId, roleId, appId: 'neup.account' },
+            where: { accessTo: accountId, memberId: accountId, roleId, appId: 'neup.account' },
         });
         if (!existingGrant) {
             await prisma.authzAccountAccessGrant.create({
-                data: { ownerAccountId: accountId, targetAccountId: accountId, roleId, appId: 'neup.account' },
+                data: { accessTo: accountId, memberId: accountId, roleId, appId: 'neup.account' },
             });
         }
 
@@ -386,7 +386,7 @@ export async function blockServiceAccess(userId: string, data: z.infer<typeof bl
             }),
             prisma.activity.create({
                 data: {
-                    targetAccountId: userId, actorAccountId: adminId,
+                    memberId: userId, actorAccountId: adminId,
                     action: `Account status changed to blocked. Reason: ${reason}. ${remarks}`,
                     status: 'Alert', ip: 'system', timestamp: new Date(),
                     geolocation: `Request by admin: ${adminId}.`,
@@ -424,7 +424,7 @@ export async function unblockServiceAccess(userId: string): Promise<{ success: b
             prisma.account.update({ where: { id: userId }, data: { details: nextDetails, status: 'active' } }),
             prisma.activity.create({
                 data: {
-                    targetAccountId: userId, actorAccountId: adminId,
+                    memberId: userId, actorAccountId: adminId,
                     action: 'Account status changed to active. Service access restored by admin.',
                     status: 'Success', ip: 'system', timestamp: new Date(),
                     geolocation: `Request by admin: ${adminId}.`,
@@ -489,9 +489,9 @@ export async function deleteUserAccount(userId: string): Promise<{ success: bool
         await prisma.$transaction([
             prisma.neupId.deleteMany({ where: { accountId: userId } }),
             prisma.contact.deleteMany({ where: { accountId: userId } }),
-            prisma.permit.deleteMany({ where: { OR: [{ accountId: userId }, { targetAccountId: userId }] } }),
+            prisma.permit.deleteMany({ where: { OR: [{ accountId: userId }, { memberId: userId }] } }),
             prisma.authnSession.deleteMany({ where: { accountId: userId } }),
-            prisma.activity.deleteMany({ where: { OR: [{ targetAccountId: userId }, { actorAccountId: userId }] } }),
+            prisma.activity.deleteMany({ where: { OR: [{ memberId: userId }, { actorAccountId: userId }] } }),
             prisma.notification.deleteMany({ where: { accountId: userId } }),
             prisma.verification.deleteMany({ where: { accountId: userId } }),
             prisma.authnMethod.deleteMany({ where: { accountId: userId } }),

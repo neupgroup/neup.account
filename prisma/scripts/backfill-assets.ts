@@ -83,25 +83,25 @@ async function backfillAccounts() {
     if (account.accountType === 'brand' || account.accountType === 'branch') {
       const ownerGrant = await prisma.authzAccountAccessGrant.findFirst({
         where: {
-          ownerAccountId: account.id,
+          accessTo: account.id,
           roleId: 'brand-owner-neup-account',
           appId: 'neup.account',
         },
-        select: { targetAccountId: true },
+        select: { memberId: true },
       });
-      if (ownerGrant) portfolioOwnerId = ownerGrant.targetAccountId;
+      if (ownerGrant) portfolioOwnerId = ownerGrant.memberId;
     }
 
     if (account.accountType === 'dependent') {
       const guardianGrant = await prisma.authzAccountAccessGrant.findFirst({
         where: {
-          ownerAccountId: account.id,
+          accessTo: account.id,
           roleId: 'account.guardian',
           appId: 'neup.account',
         },
-        select: { targetAccountId: true },
+        select: { memberId: true },
       });
-      if (guardianGrant) portfolioOwnerId = guardianGrant.targetAccountId;
+      if (guardianGrant) portfolioOwnerId = guardianGrant.memberId;
     }
 
     // Check if an asset entry already exists for this account
@@ -111,11 +111,11 @@ async function backfillAccounts() {
 
     if (existingAsset) { skipped++; continue; }
 
-    const portfolioId = await findOrCreatePersonalPortfolio(portfolioOwnerId);
+    const parentPortfolioId = await findOrCreatePersonalPortfolio(portfolioOwnerId);
 
     await prisma.asset.create({
       data: {
-        portfolioId,
+        parentPortfolioId,
         assetId: account.id,
         assetType,
       },
@@ -154,7 +154,7 @@ async function backfillApplications() {
         appId: app.id,
         roleId: 'application.owner',
       },
-      select: { ownerAccountId: true },
+      select: { accessTo: true },
     });
 
     // If no owner found, skip — can't determine which portfolio to use
@@ -164,11 +164,11 @@ async function backfillApplications() {
       continue;
     }
 
-    const portfolioId = await findOrCreatePersonalPortfolio(ownerGrant.ownerAccountId);
+    const parentPortfolioId = await findOrCreatePersonalPortfolio(ownerGrant.accessTo);
 
     await prisma.asset.create({
       data: {
-        portfolioId,
+        parentPortfolioId,
         assetId: app.id,
         assetType: 'application',
       },

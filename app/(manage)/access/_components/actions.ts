@@ -65,16 +65,16 @@ async function getBrandAssets(): Promise<SelectableAsset[]> {
     const personalAccountId = await getPersonalAccountId();
     if (!personalAccountId) return [];
 
-    const grants = await prisma.authzAccountAccessGrant.findMany({
+    const grants = await prisma.member.findMany({
       where: {
-        targetAccountId: personalAccountId,
+        memberId: personalAccountId,
         roleId: 'brand-owner-neup-account',
         appId: 'neup.account',
       },
-      select: { ownerAccountId: true },
+      select: { accessTo: true },
     });
 
-    const ids = grants.map((g) => g.ownerAccountId);
+    const ids = grants.map((g) => g.accessTo);
     if (ids.length === 0) return [];
 
     const accounts = await prisma.account.findMany({
@@ -133,8 +133,8 @@ async function getApplicationAssets(): Promise<SelectableAsset[]> {
     const accountId = await getActiveAccountId();
     if (!accountId) return [];
 
-    const grants = await prisma.authzAccountAccessGrant.findMany({
-      where: { ownerAccountId: accountId, roleId: 'application.owner' },
+    const grants = await prisma.member.findMany({
+      where: { accessTo: accountId, roleId: 'application.owner' },
       select: {
         application: { select: { id: true, name: true, status: true } },
       },
@@ -191,34 +191,34 @@ import { removeAssetGroupMember } from '@/services/manage/access/assets';
  *
  * Security rules:
  * - The account owner's own grants cannot be removed by a delegated actor.
- *   Only the owner themselves (personalAccountId === ownerAccountId) can
+ *   Only the owner themselves (personalAccountId === accessTo) can
  *   remove their own access. A member who was granted access later cannot
  *   remove the grants of the account that originally owns the resource.
  */
 export async function removeDirectMember(
   memberAccountId: string,
 ): Promise<{ success: boolean; error?: string }> {
-  const ownerAccountId = await getActiveAccountId();
-  if (!ownerAccountId) return { success: false, error: 'Not authenticated.' };
+  const accessTo = await getActiveAccountId();
+  if (!accessTo) return { success: false, error: 'Not authenticated.' };
 
   // Nobody can remove the account owner's own direct grants:
-  // - not a delegated actor (personalAccountId !== ownerAccountId)
+  // - not a delegated actor (personalAccountId !== accessTo)
   // - not the owner themselves
-  if (memberAccountId === ownerAccountId) {
+  if (memberAccountId === accessTo) {
     return { success: false, error: 'Direct account roles cannot be removed.' };
   }
 
   try {
-    await prisma.authzAccountAccessGrant.deleteMany({
+    await prisma.member.deleteMany({
       where: {
-        ownerAccountId,
-        targetAccountId: memberAccountId,
+        accessTo,
+        memberId: memberAccountId,
         appId: 'neup.account',
-        portfolioId: null,
+        parentPortfolioId: null,
       },
     });
 
-    await logActivity(ownerAccountId, `Removed all direct access for ${memberAccountId}`, 'Success');
+    await logActivity(accessTo, `Removed all direct access for ${memberAccountId}`, 'Success');
     revalidatePath('/access');
     revalidatePath('/access/member');
     return { success: true };
@@ -257,24 +257,24 @@ export async function cancelDirectInvitation(
 }
 
 /**
- * Removes a member from a portfolio by looking up their portfolioMember row
+ * Removes a member from a portfolio by looking up their member row
  * and delegating to removeAssetGroupMember.
  */
 export async function removePortfolioMember(
-  portfolioId: string,
+  parentPortfolioId: string,
   memberAccountId: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const member = await prisma.portfolioMember.findFirst({
-      where: { portfolioId, accountId: memberAccountId },
+    const member = await prisma.member.findFirst({
+      where: { parentPortfolioId, accountId: memberAccountId },
       select: { id: true },
     });
 
     if (!member) return { success: false, error: 'Member not found in this portfolio.' };
 
-    return await removeAssetGroupMember({ groupId: portfolioId, memberId: member.id });
+    return await removeAssetGroupMember({ groupId: parentPortfolioId, memberId: member.id });
   } catch (error) {
-    await logError('database', error, `removePortfolioMember:${portfolioId}:${memberAccountId}`);
+    await logError('database', error, `removePortfolioMember:${parentPortfolioId}:${memberAccountId}`);
     return { success: false, error: 'Failed to remove member.' };
   }
 }
@@ -284,16 +284,16 @@ export async function removePortfolioMember(
  * PortfolioMember row with status 'invited' or 'expired'.
  */
 export async function cancelPortfolioInvitation(
-  portfolioId: string,
+  parentPortfolioId: string,
   recipientAccountId: string,
 ): Promise<{ success: boolean; error?: string }> {
   const senderAccountId = await getActiveAccountId();
   if (!senderAccountId) return { success: false, error: 'Not authenticated.' };
 
   try {
-    const member = await prisma.portfolioMember.findFirst({
+    const member = await prisma.member.findFirst({
       where: {
-        portfolioId,
+        parentPortfolioId,
         accountId: recipientAccountId,
         status: { in: ['invited', 'expired'] },
       },
@@ -301,15 +301,15 @@ export async function cancelPortfolioInvitation(
     });
 
     if (member) {
-      await prisma.portfolioMember.delete({ where: { id: member.id } });
+      await prisma.member.delete({ where: { id: member.id } });
     }
 
     revalidatePath('/access');
-    revalidatePath(`/access/member?portfolio=${portfolioId}`);
-    revalidatePath(`/access/role?portfolio=${portfolioId}&member=${recipientAccountId}`);
+    revalidatePath(`/access/member?portfolio=${parentPortfolioId}`);
+    revalidatePath(`/access/role?portfolio=${parentPortfolioId}&member=${recipientAccountId}`);
     return { success: true };
   } catch (error) {
-    await logError('database', error, `cancelPortfolioInvitation:${portfolioId}:${recipientAccountId}`);
+    await logError('database', error, `cancelPortfolioInvitation:${parentPortfolioId}:${recipientAccountId}`);
     return { success: false, error: 'Failed to cancel invitation.' };
   }
 }
@@ -319,11 +319,11 @@ export async function cancelPortfolioInvitation(
  * Role is null at invite time — flags default to isPermanent: false, hasFullAccess: false.
  */
 export async function inviteToPortfolio(
-  portfolioId: string,
+  parentPortfolioId: string,
   recipientAccountId: string,
 ): Promise<{ success: boolean; error?: string }> {
   const { addAssetGroupMember } = await import('@/services/manage/access/assets');
-  return addAssetGroupMember({ groupId: portfolioId, member: recipientAccountId });
+  return addAssetGroupMember({ groupId: parentPortfolioId, member: recipientAccountId });
 }
 
 /**
@@ -343,12 +343,12 @@ export async function inviteDirectMember(
     }
 
     // Check for existing grants
-    const existingGrant = await prisma.authzAccountAccessGrant.findFirst({
+    const existingGrant = await prisma.member.findFirst({
       where: {
-        ownerAccountId: senderAccountId,
-        targetAccountId: recipientAccountId,
+        accessTo: senderAccountId,
+        memberId: recipientAccountId,
         appId: 'neup.account',
-        portfolioId: null,
+        parentPortfolioId: null,
       },
       select: { id: true },
     });
@@ -363,12 +363,12 @@ export async function inviteDirectMember(
         senderId: senderAccountId,
         recipientId: recipientAccountId,
         status: 'pending',
-        data: { path: ['portfolioId'], equals: Prisma.JsonNull },
+        data: { path: ['parentPortfolioId'], equals: Prisma.JsonNull },
       },
       select: { id: true, data: true },
     });
 
-    // Fallback: also check without portfolioId filter (direct invitations may not have data)
+    // Fallback: also check without parentPortfolioId filter (direct invitations may not have data)
     const existingInvitationFallback = existingInvitation ?? await prisma.request.findFirst({
       where: {
         action: 'access_invitation',
@@ -381,7 +381,7 @@ export async function inviteDirectMember(
 
     if (
       existingInvitationFallback &&
-      !(existingInvitationFallback.data as Record<string, unknown> | null)?.portfolioId
+      !(existingInvitationFallback.data as Record<string, unknown> | null)?.parentPortfolioId
     ) {
       return { success: false, error: 'An invitation has already been sent to this account.' };
     }
@@ -437,18 +437,18 @@ async function resolvePortfolioAssetRow(assetRef: string): Promise<{
 
 export async function assignOrInviteAssetMember(input: {
   assetRef: string;
-  targetAccountId: string;
+  memberId: string;
   roleId?: string;
   rootMode?: boolean;
 }): Promise<{ success: boolean; error?: string; mode?: 'assigned' | 'invited' }> {
   const senderAccountId = await getActiveAccountId();
   if (!senderAccountId) return { success: false, error: 'Not authenticated.' };
 
-  if (!input.assetRef || !input.targetAccountId) {
+  if (!input.assetRef || !input.memberId) {
     return { success: false, error: 'Missing required fields.' };
   }
 
-  if (input.targetAccountId === senderAccountId) {
+  if (input.memberId === senderAccountId) {
     return { success: false, error: 'You cannot assign/invite yourself.' };
   }
 
@@ -473,7 +473,7 @@ export async function assignOrInviteAssetMember(input: {
       }
 
       const result = await assignAssetMemberRole({
-        assetMember: input.targetAccountId,
+        assetMember: input.memberId,
         asset: asset.rowId,
         role: selectedRole.id,
       }, { rootMode: true });
@@ -492,7 +492,7 @@ export async function assignOrInviteAssetMember(input: {
       where: {
         action: 'asset_access_invitation',
         senderId: senderAccountId,
-        recipientId: input.targetAccountId,
+        recipientId: input.memberId,
         status: 'pending',
         data: {
           path: ['assetId'],
@@ -512,7 +512,7 @@ export async function assignOrInviteAssetMember(input: {
       data: {
         action: 'asset_access_invitation',
         senderId: senderAccountId,
-        recipientId: input.targetAccountId,
+        recipientId: input.memberId,
         status: 'pending',
         data: {
           assetId: asset.assetId,
@@ -527,7 +527,7 @@ export async function assignOrInviteAssetMember(input: {
     revalidatePath(`/access/asset?asset=${encodeURIComponent(asset.assetId)}`);
     return { success: true, mode: 'invited' };
   } catch (error) {
-    await logError('database', error, `assignOrInviteAssetMember:${input.assetRef}:${input.targetAccountId}`);
+    await logError('database', error, `assignOrInviteAssetMember:${input.assetRef}:${input.memberId}`);
     return { success: false, error: 'Failed to process asset member action.' };
   }
 }

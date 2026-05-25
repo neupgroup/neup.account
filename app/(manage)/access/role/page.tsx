@@ -48,16 +48,16 @@ async function hasPendingDirectInvitation(
     },
     select: { data: true },
   });
-  // A direct invitation has no portfolioId in data
+  // A direct invitation has no parentPortfolioId in data
   return reqs.some(
-    (r) => !(r.data as Record<string, unknown> | null)?.portfolioId,
+    (r) => !(r.data as Record<string, unknown> | null)?.parentPortfolioId,
   );
 }
 
 /** Returns the portfolio name, or null if not found. */
-async function getPortfolioName(portfolioId: string): Promise<string | null> {
+async function getPortfolioName(parentPortfolioId: string): Promise<string | null> {
   const portfolio = await prisma.portfolio.findUnique({
-    where: { id: portfolioId },
+    where: { id: parentPortfolioId },
     select: { name: true },
   });
   return portfolio?.name ?? null;
@@ -70,11 +70,11 @@ type PortfolioMemberFlags = {
 
 /** Returns the hasFullAccess and isPermanent flags for an active portfolio member, or null if not found. */
 async function getPortfolioMemberFlags(
-  portfolioId: string,
+  parentPortfolioId: string,
   memberAccountId: string,
 ): Promise<PortfolioMemberFlags | null> {
-  const member = await prisma.portfolioMember.findFirst({
-    where: { portfolioId, accountId: memberAccountId, status: 'active' },
+  const member = await prisma.member.findFirst({
+    where: { parentPortfolioId, accountId: memberAccountId, status: 'active' },
     select: { hasFullAccess: true, isPermanent: true },
   });
   return member ?? null;
@@ -85,12 +85,12 @@ async function getPortfolioMemberFlags(
  * portfolio other than the given account.
  */
 async function hasOtherPermanentOwner(
-  portfolioId: string,
+  parentPortfolioId: string,
   excludeAccountId: string,
 ): Promise<boolean> {
-  const count = await prisma.portfolioMember.count({
+  const count = await prisma.member.count({
     where: {
-      portfolioId,
+      parentPortfolioId,
       hasFullAccess: true,
       isPermanent: true,
       status: 'active',
@@ -268,12 +268,12 @@ async function MyDirectRolesView() {
 
 // ── /access/role?portfolio=[id] — my own roles on a portfolio ─────────────────
 
-async function MyPortfolioRolesView({ portfolioId }: { portfolioId: string }) {
+async function MyPortfolioRolesView({ parentPortfolioId }: { parentPortfolioId: string }) {
   const accountId = await getActiveAccountId();
   if (!accountId) notFound();
 
   const [data, profile] = await Promise.all([
-    getMyPortfolioRoles(portfolioId),
+    getMyPortfolioRoles(parentPortfolioId),
     getUserProfile(accountId),
   ]);
   if (!data) notFound();
@@ -283,7 +283,7 @@ async function MyPortfolioRolesView({ portfolioId }: { portfolioId: string }) {
 
   return (
     <div className="grid gap-6">
-      <BackButton href={`/access?portfolio=${portfolioId}`} />
+      <BackButton href={`/access?portfolio=${parentPortfolioId}`} />
       <PageHeader
         photo={userPhoto}
         displayName={displayName}
@@ -416,19 +416,19 @@ async function MemberDirectRolesView({ memberAccountId }: { memberAccountId: str
 
 async function MemberPortfolioRolesView({
   memberAccountId,
-  portfolioId,
+  parentPortfolioId,
 }: {
   memberAccountId: string;
-  portfolioId: string;
+  parentPortfolioId: string;
 }) {
   const accountId = await getActiveAccountId();
   if (!accountId) notFound();
 
   const [detail, memberProfile, callerFlags, portfolioName] = await Promise.all([
-    getPortfolioMemberDetail(portfolioId, memberAccountId),
+    getPortfolioMemberDetail(parentPortfolioId, memberAccountId),
     getUserProfile(memberAccountId),
-    getPortfolioMemberFlags(portfolioId, accountId),
-    getPortfolioName(portfolioId),
+    getPortfolioMemberFlags(parentPortfolioId, accountId),
+    getPortfolioName(parentPortfolioId),
   ]);
 
   // Profile and portfolio must exist
@@ -445,7 +445,7 @@ async function MemberPortfolioRolesView({
   if (!detail) {
     return (
       <div className="grid gap-6">
-        <BackButton href={`/access/member?portfolio=${portfolioId}`} />
+        <BackButton href={`/access/member?portfolio=${parentPortfolioId}`} />
 
         <PageHeader
           photo={userPhoto}
@@ -464,8 +464,8 @@ async function MemberPortfolioRolesView({
           <InviteButton
             displayName={displayName}
             confirmDescription={`This will invite ${displayName} to portfolio "${portfolioName}". They will join with no roles assigned initially.`}
-            action={inviteToPortfolio.bind(null, portfolioId, memberAccountId)}
-            redirectTo={`/access/role?member=${memberAccountId}&portfolio=${portfolioId}`}
+            action={inviteToPortfolio.bind(null, parentPortfolioId, memberAccountId)}
+            redirectTo={`/access/role?member=${memberAccountId}&portfolio=${parentPortfolioId}`}
           />
         </div>
       </div>
@@ -484,7 +484,7 @@ async function MemberPortfolioRolesView({
 
     return (
       <div className="grid gap-6">
-        <BackButton href={`/access/member?portfolio=${portfolioId}`} />
+        <BackButton href={`/access/member?portfolio=${parentPortfolioId}`} />
 
         <PageHeader
           photo={userPhoto}
@@ -520,8 +520,8 @@ async function MemberPortfolioRolesView({
                 ? `This will remove the expired invitation for ${displayName} from portfolio "${detail.portfolioName}".`
                 : `This will cancel the pending invitation for ${displayName} to join portfolio "${detail.portfolioName}".`
             }
-            action={cancelPortfolioInvitation.bind(null, portfolioId, memberAccountId)}
-            redirectTo={`/access/role?member=${memberAccountId}&portfolio=${portfolioId}`}
+            action={cancelPortfolioInvitation.bind(null, parentPortfolioId, memberAccountId)}
+            redirectTo={`/access/role?member=${memberAccountId}&portfolio=${parentPortfolioId}`}
             variant="outline"
           />
           {/* Re-invite if expired */}
@@ -529,8 +529,8 @@ async function MemberPortfolioRolesView({
             <InviteButton
               displayName={displayName}
               confirmDescription={`This will send a new invitation to ${displayName} to join portfolio "${detail.portfolioName}".`}
-              action={inviteToPortfolio.bind(null, portfolioId, memberAccountId)}
-              redirectTo={`/access/role?member=${memberAccountId}&portfolio=${portfolioId}`}
+              action={inviteToPortfolio.bind(null, parentPortfolioId, memberAccountId)}
+              redirectTo={`/access/role?member=${memberAccountId}&portfolio=${parentPortfolioId}`}
             />
           )}
         </div>
@@ -540,7 +540,7 @@ async function MemberPortfolioRolesView({
 
   // ── Active confirmed member ───────────────────────────────────────────────
   const isSelfView = memberAccountId === accountId;
-  const targetFlags = await getPortfolioMemberFlags(portfolioId, memberAccountId);
+  const targetFlags = await getPortfolioMemberFlags(parentPortfolioId, memberAccountId);
   const targetIsPermanentOwner =
     targetFlags?.hasFullAccess === true && targetFlags?.isPermanent === true;
   const callerIsPermanentOwner =
@@ -550,7 +550,7 @@ async function MemberPortfolioRolesView({
   let removeBlockedReason: string | null = null;
 
   if (isSelfView) {
-    const otherOwnerExists = await hasOtherPermanentOwner(portfolioId, accountId);
+    const otherOwnerExists = await hasOtherPermanentOwner(parentPortfolioId, accountId);
     if (otherOwnerExists) {
       canRemove = true;
     } else {
@@ -568,7 +568,7 @@ async function MemberPortfolioRolesView({
 
   return (
     <div className="grid gap-6">
-      <BackButton href={`/access/member?portfolio=${portfolioId}`} />
+      <BackButton href={`/access/member?portfolio=${parentPortfolioId}`} />
 
       <PageHeader
         photo={userPhoto}
@@ -603,7 +603,7 @@ async function MemberPortfolioRolesView({
       {detail.status === 'active' && (
         <div className="flex justify-start">
           <Button asChild>
-            <FlowLink href={`/access/assign?portfolio=${portfolioId}&member=${memberAccountId}`}>
+            <FlowLink href={`/access/assign?portfolio=${parentPortfolioId}&member=${memberAccountId}`}>
               Assign Asset Roles
             </FlowLink>
           </Button>
@@ -620,8 +620,8 @@ async function MemberPortfolioRolesView({
                 ? `You will be removed from portfolio "${detail.portfolioName}" and lose all your asset roles within it.`
                 : `This will remove ${displayName} from portfolio "${detail.portfolioName}" and revoke all their asset roles within it.`
             }
-            action={removePortfolioMember.bind(null, portfolioId, memberAccountId)}
-            redirectTo={isSelfView ? '/access' : `/access/member?portfolio=${portfolioId}`}
+            action={removePortfolioMember.bind(null, parentPortfolioId, memberAccountId)}
+            redirectTo={isSelfView ? '/access' : `/access/member?portfolio=${parentPortfolioId}`}
           />
         </div>
       )}
@@ -636,11 +636,11 @@ async function MemberPortfolioRolesView({
 // ── Page entry point ──────────────────────────────────────────────────────────
 
 export default async function RolePage({ searchParams }: PageProps) {
-  const { member: memberAccountId, portfolio: portfolioId } = await searchParams;
+  const { member: memberAccountId, portfolio: parentPortfolioId } = await searchParams;
 
   // /access/role?member=[id]&portfolio=[id]
-  if (memberAccountId && portfolioId) {
-    return <MemberPortfolioRolesView memberAccountId={memberAccountId} portfolioId={portfolioId} />;
+  if (memberAccountId && parentPortfolioId) {
+    return <MemberPortfolioRolesView memberAccountId={memberAccountId} parentPortfolioId={parentPortfolioId} />;
   }
 
   // /access/role?member=[id]
@@ -649,8 +649,8 @@ export default async function RolePage({ searchParams }: PageProps) {
   }
 
   // /access/role?portfolio=[id]
-  if (portfolioId) {
-    return <MyPortfolioRolesView portfolioId={portfolioId} />;
+  if (parentPortfolioId) {
+    return <MyPortfolioRolesView parentPortfolioId={parentPortfolioId} />;
   }
 
   // /access/role

@@ -59,27 +59,27 @@ export async function getApplicationAccessPageData(): Promise<AppWithAccess[]> {
         const app = conn.application;
 
         // Current user's own grants on this app
-        const myGrants = await prisma.authzAccountAccessGrant.findMany({
-          where: { targetAccountId: personalAccountId, appId: app.id },
+        const myGrants = await prisma.member.findMany({
+          where: { memberId: personalAccountId, appId: app.id },
           select: { roleId: true },
         });
 
         // Grants the current user has issued to others on this app
-        // (ownerAccountId = current user, targetAccountId != current user)
-        const outboundGrants = await prisma.authzAccountAccessGrant.findMany({
+        // (accessTo = current user, memberId != current user)
+        const outboundGrants = await prisma.member.findMany({
           where: {
-            ownerAccountId: personalAccountId,
+            accessTo: personalAccountId,
             appId: app.id,
-            NOT: { targetAccountId: personalAccountId },
+            NOT: { memberId: personalAccountId },
           },
-          select: { targetAccountId: true, roleId: true },
+          select: { memberId: true, roleId: true },
         });
 
         // Group outbound grants by target account
         const granteeMap = new Map<string, string[]>();
         for (const g of outboundGrants) {
-          if (!granteeMap.has(g.targetAccountId)) granteeMap.set(g.targetAccountId, []);
-          granteeMap.get(g.targetAccountId)!.push(g.roleId);
+          if (!granteeMap.has(g.memberId)) granteeMap.set(g.memberId, []);
+          granteeMap.get(g.memberId)!.push(g.roleId);
         }
 
         // Resolve display names for grantees
@@ -164,24 +164,24 @@ export async function resolveNeupIdForApp(
 
 const assignSchema = z.object({
   appId: z.string().min(1),
-  targetAccountId: z.string().min(1),
+  memberId: z.string().min(1),
   roleIds: z.array(z.string().min(1)).min(1, 'Select at least one role.'),
 });
 
 export async function assignAppAccessToAccount(input: {
   appId: string;
-  targetAccountId: string;
+  memberId: string;
   roleIds: string[];
 }): Promise<{ success: boolean; invited?: boolean; appName?: string; error?: string }> {
-  const ownerAccountId = await getActiveAccountId();
-  if (!ownerAccountId) return { success: false, error: 'Not authenticated.' };
+  const accessTo = await getActiveAccountId();
+  if (!accessTo) return { success: false, error: 'Not authenticated.' };
 
   const parsed = assignSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: parsed.error.flatten().formErrors[0] ?? 'Invalid input.' };
   }
 
-  const { appId, targetAccountId, roleIds } = parsed.data;
+  const { appId, memberId, roleIds } = parsed.data;
 
   try {
     // Verify the app exists
@@ -192,27 +192,27 @@ export async function assignAppAccessToAccount(input: {
     // If not, create one with status 'inactive_invited' — they've been granted
     // access but haven't connected to the app themselves yet.
     const existingConnection = await prisma.connection.findUnique({
-      where: { accountId_appId: { accountId: targetAccountId, appId } },
+      where: { accountId_appId: { accountId: memberId, appId } },
       select: { id: true, status: true },
     });
 
     if (!existingConnection) {
       await prisma.connection.create({
-        data: { accountId: targetAccountId, appId, status: 'inactive_invited' },
+        data: { accountId: memberId, appId, status: 'inactive_invited' },
       });
     }
     // If a connection already exists, leave its status untouched.
 
     // Remove existing grants from this owner to this target on this app, then re-create
     await prisma.$transaction(async (tx) => {
-      await tx.authzAccountAccessGrant.deleteMany({
-        where: { ownerAccountId, targetAccountId, appId },
+      await tx.member.deleteMany({
+        where: { accessTo, memberId, appId },
       });
 
-      await tx.authzAccountAccessGrant.createMany({
+      await tx.member.createMany({
         data: roleIds.map((roleId) => ({
-          ownerAccountId,
-          targetAccountId,
+          accessTo,
+          memberId,
           appId,
           roleId,
         })),
@@ -229,7 +229,7 @@ export async function assignAppAccessToAccount(input: {
       appName: app.name,
     };
   } catch (error) {
-    await logError('database', error, `assignAppAccessToAccount:${appId}:${targetAccountId}`);
+    await logError('database', error, `assignAppAccessToAccount:${appId}:${memberId}`);
     return { success: false, error: 'Failed to assign access.' };
   }
 }
@@ -238,16 +238,16 @@ export async function assignAppAccessToAccount(input: {
 
 export async function revokeAppAccessFromAccount(input: {
   appId: string;
-  targetAccountId: string;
+  memberId: string;
 }): Promise<{ success: boolean; error?: string }> {
-  const ownerAccountId = await getActiveAccountId();
-  if (!ownerAccountId) return { success: false, error: 'Not authenticated.' };
+  const accessTo = await getActiveAccountId();
+  if (!accessTo) return { success: false, error: 'Not authenticated.' };
 
   try {
-    await prisma.authzAccountAccessGrant.deleteMany({
+    await prisma.member.deleteMany({
       where: {
-        ownerAccountId,
-        targetAccountId: input.targetAccountId,
+        accessTo,
+        memberId: input.memberId,
         appId: input.appId,
       },
     });
@@ -255,7 +255,7 @@ export async function revokeAppAccessFromAccount(input: {
     revalidatePath('/access/appconnection');
     return { success: true };
   } catch (error) {
-    await logError('database', error, `revokeAppAccessFromAccount:${input.appId}:${input.targetAccountId}`);
+    await logError('database', error, `revokeAppAccessFromAccount:${input.appId}:${input.memberId}`);
     return { success: false, error: 'Failed to revoke access.' };
   }
 }

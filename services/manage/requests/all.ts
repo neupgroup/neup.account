@@ -126,7 +126,7 @@ export async function getAllRequests(options: GetRequestsOptions = {}): Promise<
           submittedAt: row.createdAt.toLocaleString(),
           status: row.status,
           data: payload,
-          targetAccountId: row.senderId,
+          memberId: row.senderId,
         });
       }
     }
@@ -171,7 +171,7 @@ export async function getAllRequests(options: GetRequestsOptions = {}): Promise<
             doneBy: v.doneBy,
             doneAt: v.doneAt?.toLocaleString(),
           },
-          targetAccountId: v.accountId,
+          memberId: v.accountId,
         });
       }
     }
@@ -206,7 +206,7 @@ export async function getAllRequests(options: GetRequestsOptions = {}): Promise<
           submittedAt: '',
           status: 'pending',
           data: { accountId: acc.id },
-          targetAccountId: acc.id,
+          memberId: acc.id,
         });
       }
     }
@@ -262,7 +262,7 @@ export async function getRequestDetail(id: string): Promise<UnifiedRequest | nul
         submittedAt: '',
         status: acc.status === 'deletion_requested' ? 'pending' : acc.status ?? 'unknown',
         data: { accountId: acc.id },
-        targetAccountId: acc.id,
+        memberId: acc.id,
       };
     }
 
@@ -297,7 +297,7 @@ export async function getRequestDetail(id: string): Promise<UnifiedRequest | nul
           doneBy: verification.doneBy,
           doneAt: verification.doneAt?.toLocaleString(),
         },
-        targetAccountId: verification.accountId,
+        memberId: verification.accountId,
       };
     }
 
@@ -377,7 +377,7 @@ export async function getRequestDetail(id: string): Promise<UnifiedRequest | nul
       submittedAt: row.createdAt.toLocaleString(),
       status: row.status,
       data: enrichedData,
-      targetAccountId: row.senderId,
+      memberId: row.senderId,
     };
   } catch (error) {
     await logError('database', error, `getRequestDetail:${id}`);

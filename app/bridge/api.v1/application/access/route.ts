@@ -25,13 +25,13 @@ export const dynamic = 'force-dynamic';
  *   data: [
  *     {
  *       grantId, status,
- *       ownerAccountId, ownerDisplayName, ownerAccountType,
- *       targetAccountId, targetDisplayName, targetAccountType,
+ *       accessTo, ownerDisplayName, ownerAccountType,
+ *       memberId, targetDisplayName, targetAccountType,
  *       roleId, roleName, roleDescription, roleScope,
  *       permissions: [
  *         { permissionId, permissionName, permissionScope, denormalized }
  *       ],
- *       portfolioId
+ *       parentPortfolioId
  *     },
  *     ...
  *   ],

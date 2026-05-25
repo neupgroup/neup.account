@@ -41,9 +41,9 @@ export async function getUserApplicationAccess(appId: string): Promise<UserAppli
         },
         select: { connectedAt: true },
       }),
-      prisma.authzAccountAccessGrant.findMany({
+      prisma.member.findMany({
         where: {
-          targetAccountId: accountId,
+          memberId: accountId,
           appId,
         },
         select: { roleId: true },
@@ -97,15 +97,15 @@ export async function addUserApplicationAccess(input: { appId: string; permissio
         create: { accountId, appId, status: 'active' },
       });
 
-      await tx.authzAccountAccessGrant.deleteMany({
-        where: { targetAccountId: accountId, appId },
+      await tx.member.deleteMany({
+        where: { memberId: accountId, appId },
       });
 
       if (permissions.length > 0) {
-        await tx.authzAccountAccessGrant.createMany({
+        await tx.member.createMany({
           data: permissions.map((roleId) => ({
-            ownerAccountId: accountId,
-            targetAccountId: accountId,
+            accessTo: accountId,
+            memberId: accountId,
             appId,
             roleId,
           })),
@@ -140,15 +140,15 @@ export async function updateUserApplicationPermissions(input: { appId: string; p
 
   try {
     await prisma.$transaction(async (tx) => {
-      await tx.authzAccountAccessGrant.deleteMany({
-        where: { targetAccountId: accountId, appId },
+      await tx.member.deleteMany({
+        where: { memberId: accountId, appId },
       });
 
       if (permissions.length > 0) {
-        await tx.authzAccountAccessGrant.createMany({
+        await tx.member.createMany({
           data: permissions.map((roleId) => ({
-            ownerAccountId: accountId,
-            targetAccountId: accountId,
+            accessTo: accountId,
+            memberId: accountId,
             appId,
             roleId,
           })),

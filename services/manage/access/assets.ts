@@ -61,9 +61,9 @@ function normalizeDetails(value?: string): string | null {
  * Only active members (status = 'active') can access the group.
  */
 async function canAccessGroup(groupId: string, accountId: string): Promise<boolean> {
-  const member = await prisma.portfolioMember.findFirst({
+  const member = await prisma.member.findFirst({
     where: {
-      portfolioId: groupId,
+      parentPortfolioId: groupId,
       accountId,
       status: 'active',
     },
@@ -186,9 +186,9 @@ export async function createAssetGroup(input: { name: string; details?: string }
         },
       });
 
-      await tx.portfolioMember.create({
+      await tx.member.create({
         data: {
-          portfolioId: group.id,
+          parentPortfolioId: group.id,
           accountId,
           isPermanent: true,
           hasFullAccess: true,
@@ -252,8 +252,8 @@ export async function addAssetGroupMember(input: {
     }
 
     // Prevent duplicate — any existing row (active, invited, or expired)
-    const existing = await prisma.portfolioMember.findFirst({
-      where: { portfolioId: input.groupId, accountId: normalizedMemberId },
+    const existing = await prisma.member.findFirst({
+      where: { parentPortfolioId: input.groupId, accountId: normalizedMemberId },
       select: { id: true, status: true },
     });
     if (existing) {
@@ -264,16 +264,16 @@ export async function addAssetGroupMember(input: {
         return { success: false, error: 'An invitation has already been sent to this account.' };
       }
       // expired — remove the stale row so a fresh invite can be created
-      await prisma.portfolioMember.delete({ where: { id: existing.id } });
+      await prisma.member.delete({ where: { id: existing.id } });
     }
 
     // Invitation expires 7 days from now
     const expiresOn = new Date();
     expiresOn.setDate(expiresOn.getDate() + 7);
 
-    await prisma.portfolioMember.create({
+    await prisma.member.create({
       data: {
-        portfolioId: input.groupId,
+        parentPortfolioId: input.groupId,
         accountId: normalizedMemberId,
         status: 'invited',
         isPermanent: false,
@@ -325,8 +325,8 @@ export async function updatePortfolioMemberFlags(input: {
 
   try {
     // Caller must be a permanent full-access member
-    const callerMember = await prisma.portfolioMember.findFirst({
-      where: { portfolioId: input.groupId, accountId },
+    const callerMember = await prisma.member.findFirst({
+      where: { parentPortfolioId: input.groupId, accountId },
       select: { hasFullAccess: true, isPermanent: true },
     });
 
@@ -338,8 +338,8 @@ export async function updatePortfolioMemberFlags(input: {
     }
 
     // Load the target member
-    const member = await prisma.portfolioMember.findFirst({
-      where: { id: input.memberId, portfolioId: input.groupId },
+    const member = await prisma.member.findFirst({
+      where: { id: input.memberId, parentPortfolioId: input.groupId },
       select: { id: true, accountId: true, status: true, details: true },
     });
 
@@ -369,7 +369,7 @@ export async function updatePortfolioMemberFlags(input: {
       }
     }
 
-    await prisma.portfolioMember.update({
+    await prisma.member.update({
       where: { id: member.id },
       data: {
         isPermanent: input.isPermanent,
@@ -416,7 +416,7 @@ export async function addAssetToGroup(input: { groupId: string; asset: string; t
     // Prevent duplicate assets in the same portfolio
     const existing = await prisma.asset.findFirst({
       where: {
-        portfolioId: parsed.data.groupId,
+        parentPortfolioId: parsed.data.groupId,
         assetId: parsed.data.asset,
       },
       select: { id: true },
@@ -428,7 +428,7 @@ export async function addAssetToGroup(input: { groupId: string; asset: string; t
 
     await prisma.asset.create({
       data: {
-        portfolioId: parsed.data.groupId,
+        parentPortfolioId: parsed.data.groupId,
         assetId: parsed.data.asset,
         assetType: parsed.data.type,
         details: {
@@ -469,7 +469,7 @@ export async function addAssetToGroupWithMode(
 
     const existing = await prisma.asset.findFirst({
       where: {
-        portfolioId: parsed.data.groupId,
+        parentPortfolioId: parsed.data.groupId,
         assetId: parsed.data.asset,
       },
       select: { id: true },
@@ -481,7 +481,7 @@ export async function addAssetToGroupWithMode(
 
     await prisma.asset.create({
       data: {
-        portfolioId: parsed.data.groupId,
+        parentPortfolioId: parsed.data.groupId,
         assetId: parsed.data.asset,
         assetType: parsed.data.type,
         details: {
@@ -527,7 +527,7 @@ export async function removeAssetFromGroup(input: { groupId: string; portfolioAs
     const assetRow = await prisma.asset.findFirst({
       where: {
         id: input.portfolioAssetId,
-        portfolioId: input.groupId,
+        parentPortfolioId: input.groupId,
       },
       select: { id: true, assetId: true, assetType: true },
     });
@@ -586,7 +586,7 @@ export async function removeAssetFromGroup(input: { groupId: string; portfolioAs
       // Only add if not already present in the personal portfolio
       const alreadyInPersonal = await tx.asset.findFirst({
         where: {
-          portfolioId: personalPortfolio.id,
+          parentPortfolioId: personalPortfolio.id,
           assetId: assetRow.assetId,
         },
         select: { id: true },
@@ -595,7 +595,7 @@ export async function removeAssetFromGroup(input: { groupId: string; portfolioAs
       if (!alreadyInPersonal) {
         await tx.asset.create({
           data: {
-            portfolioId: personalPortfolio.id,
+            parentPortfolioId: personalPortfolio.id,
             assetId: assetRow.assetId,
             assetType: assetRow.assetType,
           },
@@ -635,7 +635,7 @@ export async function removeAssetFromGroupWithMode(
     const assetRow = await prisma.asset.findFirst({
       where: {
         id: input.portfolioAssetId,
-        portfolioId: input.groupId,
+        parentPortfolioId: input.groupId,
       },
       select: { id: true, assetId: true, assetType: true },
     });
@@ -689,7 +689,7 @@ export async function removeAssetFromGroupWithMode(
 
       const alreadyInPersonal = await tx.asset.findFirst({
         where: {
-          portfolioId: personalPortfolio.id,
+          parentPortfolioId: personalPortfolio.id,
           assetId: assetRow.assetId,
         },
         select: { id: true },
@@ -698,7 +698,7 @@ export async function removeAssetFromGroupWithMode(
       if (!alreadyInPersonal) {
         await tx.asset.create({
           data: {
-            portfolioId: personalPortfolio.id,
+            parentPortfolioId: personalPortfolio.id,
             assetId: assetRow.assetId,
             assetType: assetRow.assetType,
           },
@@ -750,12 +750,12 @@ export async function removeAssetGroupMember(input: {
 
     // Load the target member and the caller's own membership in one query.
     const [member, callerMember] = await Promise.all([
-      prisma.portfolioMember.findFirst({
-        where: { id: input.memberId, portfolioId: input.groupId },
+      prisma.member.findFirst({
+        where: { id: input.memberId, parentPortfolioId: input.groupId },
         select: { id: true, accountId: true, hasFullAccess: true, isPermanent: true, status: true },
       }),
-      prisma.portfolioMember.findFirst({
-        where: { portfolioId: input.groupId, accountId, status: 'active' },
+      prisma.member.findFirst({
+        where: { parentPortfolioId: input.groupId, accountId, status: 'active' },
         select: { hasFullAccess: true, isPermanent: true },
       }),
     ]);
@@ -766,7 +766,7 @@ export async function removeAssetGroupMember(input: {
 
     // Invited members can be removed (invitation cancelled) without further checks.
     if (member.status === 'invited') {
-      await prisma.portfolioMember.delete({ where: { id: member.id } });
+      await prisma.member.delete({ where: { id: member.id } });
       revalidatePath('/access');
       revalidatePath(`/access/member?portfolio=${input.groupId}`);
       revalidatePath(`/access/role?portfolio=${input.groupId}&member=${member.accountId}`);
@@ -791,9 +791,9 @@ export async function removeAssetGroupMember(input: {
     // Rule 2: self-removal is only allowed when at least one other member
     // retains hasFullAccess AND isPermanent.
     if (isSelfRemoval) {
-      const otherPermanentOwnerCount = await prisma.portfolioMember.count({
+      const otherPermanentOwnerCount = await prisma.member.count({
         where: {
-          portfolioId: input.groupId,
+          parentPortfolioId: input.groupId,
           hasFullAccess: true,
           isPermanent: true,
           status: 'active',
@@ -821,7 +821,7 @@ export async function removeAssetGroupMember(input: {
       });
 
       // Remove the member from the portfolio
-      await tx.portfolioMember.delete({
+      await tx.member.delete({
         where: { id: member.id },
       });
     });
@@ -868,10 +868,10 @@ export async function assignAssetMemberRole(input: {
     }
 
     const member = groupId
-      ? await prisma.portfolioMember.findFirst({
+      ? await prisma.member.findFirst({
           where: {
             id: input.assetMember,
-            portfolioId: groupId,
+            parentPortfolioId: groupId,
           },
           select: { id: true, accountId: true },
         })
@@ -1093,10 +1093,10 @@ export async function bulkAssignAssetRoles(input: {
     }
 
     const member = groupId
-      ? await prisma.portfolioMember.findFirst({
+      ? await prisma.member.findFirst({
           where: {
             id: input.memberId,
-            portfolioId: groupId,
+            parentPortfolioId: groupId,
           },
           select: { id: true, accountId: true },
         })
@@ -1148,7 +1148,7 @@ export async function bulkAssignAssetRoles(input: {
     const existingAssets = groupId
       ? await prisma.asset.findMany({
           where: {
-            portfolioId: groupId,
+            parentPortfolioId: groupId,
             assetId: { in: input.assetIds },
           },
           select: { id: true, assetId: true },
@@ -1173,7 +1173,7 @@ export async function bulkAssignAssetRoles(input: {
         } else if (groupId) {
           const created = await tx.asset.create({
             data: {
-              portfolioId: groupId,
+              parentPortfolioId: groupId,
               assetId: rawAssetId,
               assetType: input.assetType,
             },
@@ -1254,10 +1254,10 @@ export async function getMemberAssetGrants(
     const allowed = await canAccessGroup(groupId, accountId);
     if (!allowed) return [];
 
-    const member = await prisma.portfolioMember.findFirst({
+    const member = await prisma.member.findFirst({
       where: {
         id: memberId,
-        portfolioId: groupId,
+        parentPortfolioId: groupId,
       },
       select: { id: true, accountId: true },
     });

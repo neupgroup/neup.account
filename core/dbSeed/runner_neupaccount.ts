@@ -444,14 +444,14 @@ async function createMasterAccount(): Promise<{ skipped: boolean; reason?: strin
 
 async function assignRolesToAccount(accountId: string): Promise<void> {
   for (const roleId of [ROLE_INDIV_DEFAULT, ROLE_INDIV_ROOT]) {
-    const existing = await prisma.authzAccountAccessGrant.findFirst({
-      where: { ownerAccountId: accountId, targetAccountId: accountId, appId: APP_ID, roleId },
+    const existing = await prisma.member.findFirst({
+      where: { accessTo: accountId, memberId: accountId, appId: APP_ID, roleId },
       select: { id: true },
     });
 
     if (!existing) {
-      await prisma.authzAccountAccessGrant.create({
-        data: { ownerAccountId: accountId, targetAccountId: accountId, appId: APP_ID, roleId },
+      await prisma.member.create({
+        data: { accessTo: accountId, memberId: accountId, appId: APP_ID, roleId },
       });
     }
   }

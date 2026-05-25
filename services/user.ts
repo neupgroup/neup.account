@@ -179,10 +179,11 @@ export async function getAccountPermission(
   if (!activeId) return [];
 
   try {
-    const grants = await prisma.authzAccountAccessGrant.findMany({
+    const grants = await prisma.member.findMany({
       where: {
-        targetAccountId: activeId,
-        appId: "neup.account",
+        memberId: activeId,
+        accessFor: 'account',
+        parentApplicationId: "neup.account",
       },
       select: { roleId: true },
     });
@@ -322,10 +323,11 @@ export async function checkNeupIdAvailability(
 export async function isRootUser(accountId: string): Promise<boolean> {
   if (!accountId) return false;
   try {
-    const count = await prisma.authzAccountAccessGrant.count({
+    const count = await prisma.member.count({
       where: {
-        targetAccountId: accountId,
-        appId: 'neup.account',
+        memberId: accountId,
+        accessFor: 'account',
+        parentApplicationId: 'neup.account',
         role: { scope: 'root' },
       },
     });

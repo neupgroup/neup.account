@@ -235,7 +235,7 @@ CREATE TABLE "portfolio" (
 -- CreateTable
 CREATE TABLE "portfolio_asset" (
     "id" TEXT NOT NULL,
-    "portfolioId" TEXT NOT NULL,
+    "parentPortfolioId" TEXT NOT NULL,
     "assetType" TEXT NOT NULL,
     "assetId" TEXT NOT NULL,
     "details" JSONB,
@@ -246,7 +246,7 @@ CREATE TABLE "portfolio_asset" (
 -- CreateTable
 CREATE TABLE "portfolio_member" (
     "id" TEXT NOT NULL,
-    "portfolioId" TEXT NOT NULL,
+    "parentPortfolioId" TEXT NOT NULL,
     "accountId" TEXT NOT NULL,
     "details" JSONB,
 
@@ -363,16 +363,16 @@ CREATE UNIQUE INDEX "authn_method_accountId_type_order_key" ON "authn_method"("a
 CREATE INDEX "portfolio_assets_assetType_assetId_idx" ON "portfolio_asset"("assetType", "assetId");
 
 -- CreateIndex
-CREATE INDEX "portfolio_assets_portfolioId_idx" ON "portfolio_asset"("portfolioId");
+CREATE INDEX "portfolio_assets_portfolioId_idx" ON "portfolio_asset"("parentPortfolioId");
 
 -- CreateIndex
 CREATE INDEX "portfolio_members_accountId_idx" ON "portfolio_member"("accountId");
 
 -- CreateIndex
-CREATE INDEX "portfolio_members_portfolioId_idx" ON "portfolio_member"("portfolioId");
+CREATE INDEX "portfolio_members_portfolioId_idx" ON "portfolio_member"("parentPortfolioId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "portfolio_members_portfolioId_accountId_key" ON "portfolio_member"("portfolioId", "accountId");
+CREATE UNIQUE INDEX "portfolio_members_portfolioId_accountId_key" ON "portfolio_member"("parentPortfolioId", "accountId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_app_connections_accountId_appId_key" ON "application_connection"("account_id", "app_id");
@@ -450,13 +450,13 @@ ALTER TABLE "authn_session" ADD CONSTRAINT "sessions_accountId_fkey" FOREIGN KEY
 ALTER TABLE "system_error" ADD CONSTRAINT "error_logs_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "account"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "portfolio_asset" ADD CONSTRAINT "portfolio_assets_portfolioId_fkey" FOREIGN KEY ("portfolioId") REFERENCES "portfolio"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "portfolio_asset" ADD CONSTRAINT "portfolio_assets_portfolioId_fkey" FOREIGN KEY ("parentPortfolioId") REFERENCES "portfolio"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "portfolio_member" ADD CONSTRAINT "portfolio_members_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "portfolio_member" ADD CONSTRAINT "portfolio_members_portfolioId_fkey" FOREIGN KEY ("portfolioId") REFERENCES "portfolio"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "portfolio_member" ADD CONSTRAINT "portfolio_members_portfolioId_fkey" FOREIGN KEY ("parentPortfolioId") REFERENCES "portfolio"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "application_connection" ADD CONSTRAINT "user_app_connections_accountId_fkey" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

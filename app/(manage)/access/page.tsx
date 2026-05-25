@@ -36,10 +36,10 @@ async function PortfolioDetail({ id }: { id: string }) {
 // ── Root view — direct access + portfolios list ───────────────────────────────
 
 export default async function AccessControlPage({ searchParams }: PageProps) {
-  const { portfolio: portfolioId } = await searchParams;
+  const { portfolio: parentPortfolioId } = await searchParams;
 
-  if (portfolioId) {
-    return <PortfolioDetail id={portfolioId} />;
+  if (parentPortfolioId) {
+    return <PortfolioDetail id={parentPortfolioId} />;
   }
 
   const accountId = await getActiveAccountId();

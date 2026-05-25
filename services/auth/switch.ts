@@ -9,25 +9,25 @@ import { revalidatePath } from 'next/cache';
 
 /**
  * Switch into any account the current user has been granted access to.
- * Sets auth_account_switch = targetAccountId.
+ * Sets auth_account_switch = memberId.
  */
-export async function switchToAccount(targetAccountId: string): Promise<{ success: boolean; error?: string }> {
+export async function switchToAccount(memberId: string): Promise<{ success: boolean; error?: string }> {
   const personalAccountId = await getPersonalAccountId();
   if (!personalAccountId) return { success: false, error: 'Not authenticated.' };
 
   try {
     // Verify a grant exists giving this user access to the target account
-    const grant = await prisma.authzAccountAccessGrant.findFirst({
-      where: { ownerAccountId: targetAccountId, targetAccountId: personalAccountId, appId: 'neup.account' },
+    const grant = await prisma.member.findFirst({
+      where: { accessTo: memberId, memberId: personalAccountId, appId: 'neup.account' },
       select: { id: true },
     });
     if (!grant) return { success: false, error: 'No access found for this account.' };
 
-    await setManagingCookie(targetAccountId);
+    await setManagingCookie(memberId);
     revalidatePath('/');
     return { success: true };
   } catch (error) {
-    await logError('auth', error, `switchToAccount:${targetAccountId}`);
+    await logError('auth', error, `switchToAccount:${memberId}`);
     return { success: false, error: 'Failed to switch account.' };
   }
 }
@@ -44,10 +44,10 @@ export async function switchToBrand(brandId: string): Promise<{ success: boolean
   if (!personalAccountId) return { success: false, error: 'Not authenticated.' };
 
   try {
-    const ownership = await prisma.authzAccountAccessGrant.findFirst({
+    const ownership = await prisma.member.findFirst({
       where: {
-        ownerAccountId: brandId,
-        targetAccountId: personalAccountId,
+        accessTo: brandId,
+        memberId: personalAccountId,
         roleId: 'brand-owner-neup-account',
         appId: 'neup.account',
       },
@@ -76,10 +76,10 @@ export async function switchToDependent(dependentId: string): Promise<{ success:
   if (!personalAccountId) return { success: false, error: 'Not authenticated.' };
 
   try {
-    const ownership = await prisma.authzAccountAccessGrant.findFirst({
+    const ownership = await prisma.member.findFirst({
       where: {
-        ownerAccountId: dependentId,
-        targetAccountId: personalAccountId,
+        accessTo: dependentId,
+        memberId: personalAccountId,
         roleId: 'account.guardian',
         appId: 'neup.account',
       },

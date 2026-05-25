@@ -150,7 +150,7 @@ async function PortfolioAccountPage({ id }: { id: string }) {
     <MembersLayout
       backHref={`/access?portfolio=${id}`}
       description={`Members with access to portfolio "${portfolioName}"`}
-      addForm={<AddMemberForm portfolioId={id} />}
+      addForm={<AddMemberForm parentPortfolioId={id} />}
       table={
         members.length > 0 ? (
           <MembersTable
@@ -231,19 +231,19 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
       assetId: resolved.assetId,
       assetType: resolved.assetType,
     },
-    select: { id: true, portfolioId: true },
+    select: { id: true, parentPortfolioId: true },
   });
 
   if (allRows.length === 0) notFound();
 
   const rowIds = allRows.map((r) => r.id);
-  const portfolioIds = Array.from(new Set(allRows.map((r) => r.portfolioId)));
+  const portfolioIds = Array.from(new Set(allRows.map((r) => r.parentPortfolioId)));
 
   if (!rootMode) {
-    const canView = await prisma.portfolioMember.findFirst({
+    const canView = await prisma.member.findFirst({
       where: {
         accountId,
-        portfolioId: { in: portfolioIds },
+        parentPortfolioId: { in: portfolioIds },
       },
       select: { id: true },
     });

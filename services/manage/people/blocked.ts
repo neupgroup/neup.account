@@ -97,25 +97,25 @@ async function addUserToList(neupId: string, type: 'blockList' | 'restrictList')
     return { success: false, error: validation.error.flatten().fieldErrors.neupId?.[0] || 'Invalid input' };
   }
 
-  const ownerAccountId = await getPersonalAccountId();
-  if (!ownerAccountId) return { success: false, error: 'User not authenticated.' };
+  const accessTo = await getPersonalAccountId();
+  if (!accessTo) return { success: false, error: 'User not authenticated.' };
 
-  const targetAccountId = await findAccountIdByNeupId(neupId);
-  if (!targetAccountId) return { success: false, error: 'User with that NeupID not found.' };
+  const memberId = await findAccountIdByNeupId(neupId);
+  if (!memberId) return { success: false, error: 'User with that NeupID not found.' };
 
-  if (targetAccountId === ownerAccountId) {
+  if (memberId === accessTo) {
     return { success: false, error: `You cannot ${type === 'blockList' ? 'block' : 'restrict'} yourself.` };
   }
 
   try {
-    const account = await prisma.account.findUnique({ where: { id: ownerAccountId } });
+    const account = await prisma.account.findUnique({ where: { id: accessTo } });
     const details = (account?.details as Record<string, unknown> | null) || {};
     const block = (details.block as BlockJson) || {};
     const list: string[] = Array.isArray(block?.[type]) ? (block?.[type] as string[]) : [];
-    if (!list.includes(targetAccountId)) list.push(targetAccountId);
+    if (!list.includes(memberId)) list.push(memberId);
     const newBlock: BlockJson = { ...(block || {}), [type]: list };
     await prisma.account.update({
-      where: { id: ownerAccountId },
+      where: { id: accessTo },
       data: { details: { ...(details || {}), block: newBlock } as any },
     });
     revalidatePath('/manage/people/blocked');
@@ -145,18 +145,18 @@ export async function restrictUser(neupId: string) {
 
 // Unified function to remove a user from a list
 async function removeUserFromList(accountId: string, type: 'blockList' | 'restrictList'): Promise<{ success: boolean; error?: string; }> {
-  const ownerAccountId = await getPersonalAccountId();
-  if (!ownerAccountId) return { success: false, error: 'User not authenticated.' };
+  const accessTo = await getPersonalAccountId();
+  if (!accessTo) return { success: false, error: 'User not authenticated.' };
 
   try {
-    const account = await prisma.account.findUnique({ where: { id: ownerAccountId } });
+    const account = await prisma.account.findUnique({ where: { id: accessTo } });
     const details = (account?.details as Record<string, unknown> | null) || {};
     const block = (details.block as BlockJson) || {};
     const list: string[] = Array.isArray(block?.[type]) ? (block?.[type] as string[]) : [];
     const newList = list.filter((id) => id !== accountId);
     const newBlock: BlockJson = { ...(block || {}), [type]: newList };
     await prisma.account.update({
-      where: { id: ownerAccountId },
+      where: { id: accessTo },
       data: { details: { ...(details || {}), block: newBlock } as any },
     });
     revalidatePath('/manage/people/blocked');

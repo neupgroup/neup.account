@@ -47,9 +47,9 @@ export async function bridgeGetAuthAccess(input: {
 
     const resolvedAppId = appId || 'neup.account';
 
-    const roleRows = await prisma.authzAccountAccessGrant.findMany({
+    const roleRows = await prisma.member.findMany({
       where: {
-        targetAccountId: aid,
+        memberId: aid,
         appId: resolvedAppId,
       },
       select: { roleId: true },
@@ -100,20 +100,20 @@ export async function bridgeCreateAuthAccess(input: Record<string, any>): Promis
     });
 
     // Grant access directly without a portfolio
-    const existing = await prisma.authzAccountAccessGrant.findFirst({
+    const existing = await prisma.member.findFirst({
       where: {
-        ownerAccountId: aid,
-        targetAccountId: recipientId,
+        accessTo: aid,
+        memberId: recipientId,
         appId,
         roleId: 'access.member',
       },
     });
 
     if (!existing) {
-      await prisma.authzAccountAccessGrant.create({
+      await prisma.member.create({
         data: {
-          ownerAccountId: aid,
-          targetAccountId: recipientId,
+          accessTo: aid,
+          memberId: recipientId,
           appId,
           roleId: 'access.member',
         },
@@ -142,9 +142,9 @@ export async function bridgeUpdateAuthAccess(input: Record<string, any>): Promis
 
     await prisma.$transaction(async (tx) => {
       if (removeRoles.length > 0) {
-        await tx.authzAccountAccessGrant.deleteMany({
+        await tx.member.deleteMany({
           where: {
-            targetAccountId: recipientId,
+            memberId: recipientId,
             appId,
             roleId: { in: removeRoles },
           },
@@ -152,14 +152,14 @@ export async function bridgeUpdateAuthAccess(input: Record<string, any>): Promis
       }
 
       for (const roleId of addRoles) {
-        const exists = await tx.authzAccountAccessGrant.findFirst({
-          where: { ownerAccountId: aid, targetAccountId: recipientId, appId, roleId },
+        const exists = await tx.member.findFirst({
+          where: { accessTo: aid, memberId: recipientId, appId, roleId },
         });
         if (!exists) {
-          await tx.authzAccountAccessGrant.create({
+          await tx.member.create({
             data: {
-              ownerAccountId: aid,
-              targetAccountId: recipientId,
+              accessTo: aid,
+              memberId: recipientId,
               appId,
               roleId,
             },

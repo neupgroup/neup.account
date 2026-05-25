@@ -55,7 +55,7 @@ export function AssignAppAccessForm({
     startTransition(async () => {
       const result = await assignAppAccessToAccount({
         appId,
-        targetAccountId: resolved.accountId,
+        memberId: resolved.accountId,
         roleIds: Array.from(selectedRoles),
       });
       if (result.success) {

@@ -62,9 +62,9 @@ DO $$
 BEGIN
   IF EXISTS (
     SELECT 1 FROM information_schema.columns
-    WHERE table_schema='public' AND table_name='activity' AND column_name='targetAccountId'
+    WHERE table_schema='public' AND table_name='activity' AND column_name='memberId'
   ) THEN
-    EXECUTE 'ALTER TABLE activity RENAME COLUMN \"targetAccountId\" TO target_account_id';
+    EXECUTE 'ALTER TABLE activity RENAME COLUMN \"memberId\" TO target_account_id';
   END IF;
   IF EXISTS (
     SELECT 1 FROM information_schema.columns
@@ -189,7 +189,7 @@ BEGIN
   END IF;
 END $$;
 
--- application: drop party/ownerAccountId/access/policies; add isInternal/details; rename createdAt
+-- application: drop party/accessTo/access/policies; add isInternal/details; rename createdAt
 ALTER TABLE IF EXISTS application DROP CONSTRAINT IF EXISTS applications_ownerAccountId_fkey;
 
 ALTER TABLE IF EXISTS application
@@ -202,7 +202,7 @@ WHERE details IS NULL OR details = '{}'::jsonb;
 
 ALTER TABLE IF EXISTS application
   DROP COLUMN IF EXISTS party,
-  DROP COLUMN IF EXISTS "ownerAccountId",
+  DROP COLUMN IF EXISTS "accessTo",
   DROP COLUMN IF EXISTS access,
   DROP COLUMN IF EXISTS policies;
 
@@ -322,7 +322,7 @@ BEGIN
       INSERT INTO authz_account_access_grant(owner_account_id, target_account_id, role_id, app_id, portfolio_id)
       SELECT
         p."accountId",
-        COALESCE(p."targetAccountId", p."accountId"),
+        COALESCE(p."memberId", p."accountId"),
         r.id,
         (SELECT id FROM application ORDER BY created_at NULLS LAST, id LIMIT 1),
         NULL

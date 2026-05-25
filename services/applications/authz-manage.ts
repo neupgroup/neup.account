@@ -124,9 +124,9 @@ async function assertCanManageAuthz(appId: string): Promise<{ accountId: string 
   const isRootManager = await checkPermissions(ROOT_ROLE_MANAGE_PERMISSIONS, accountId);
   if (isRootManager) return { accountId };
 
-  const grant = await prisma.authzAccountAccessGrant.findFirst({
+  const grant = await prisma.member.findFirst({
     where: {
-      targetAccountId: accountId,
+      memberId: accountId,
       appId,
       roleId: { in: ['application.owner', 'application.manage', 'application.edit', 'app.manage', 'app.edit'] },
     },
@@ -477,7 +477,7 @@ export async function clearAuthzPushStatus(appId: string): Promise<{
   try {
     const [rolesResult, accessResult] = await prisma.$transaction([
       prisma.authzRole.updateMany({ where: { appId }, data: { pushed: false } }),
-      prisma.authzAppAccessGrant.updateMany({ where: { appId }, data: { pushed: false } }),
+      prisma.member.updateMany({ where: { appId }, data: { pushed: false } }),
     ]);
 
     revalidatePath(`/application/${appId}/roles`);

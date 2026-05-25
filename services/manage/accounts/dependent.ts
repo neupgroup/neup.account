@@ -37,18 +37,18 @@ export async function getDependentAccounts(): Promise<DependentAccount[]> {
 
     try {
         // Find dependent accounts where the personal account holds account.guardian
-        const grants = await prisma.authzAccountAccessGrant.findMany({
+        const grants = await prisma.member.findMany({
             where: {
-                targetAccountId: personalAccountId,
+                memberId: personalAccountId,
                 roleId: 'account.guardian',
                 appId: 'neup.account',
             },
-            select: { ownerAccountId: true },
+            select: { accessTo: true },
         });
 
         if (grants.length === 0) return [];
 
-        const dependentAccountIds = grants.map((g) => g.ownerAccountId);
+        const dependentAccountIds = grants.map((g) => g.accessTo);
 
         const dependentAccountsData = await prisma.account.findMany({
             where: {
@@ -171,20 +171,20 @@ export async function createDependentAccount(data: z.infer<typeof dependentFormS
             });
 
             // Grant guardian access to manage the dependent account
-            await tx.authzAccountAccessGrant.create({
+            await tx.member.create({
                 data: {
-                    ownerAccountId: accountId,
-                    targetAccountId: guardianAccountId,
+                    accessTo: accountId,
+                    memberId: guardianAccountId,
                     roleId: 'account.guardian',
                     appId: 'neup.account',
                 },
             });
 
             // Grant the dependent account access to itself
-            await tx.authzAccountAccessGrant.create({
+            await tx.member.create({
                 data: {
-                    ownerAccountId: accountId,
-                    targetAccountId: accountId,
+                    accessTo: accountId,
+                    memberId: accountId,
                     roleId: 'account.dependent',
                     appId: 'neup.account',
                 },

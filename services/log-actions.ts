@@ -24,7 +24,7 @@ export type ActivityLog = {
 // If actorAccountId is not provided, the target account is assumed to be the actor.
 // IP is read from the request headers if not explicitly passed.
 export async function logActivity(
-    targetAccountId: string,
+    memberId: string,
     action: string,
     status: "Success" | "Failed" | "Pending" | "Alert",
     ipAddress?: string,
@@ -34,11 +34,11 @@ export async function logActivity(
     try {
         const ip = ipAddress || (await headers()).get('x-forwarded-for') || 'Unknown IP';
         
-        const finalActorAccountId = actorAccountId || targetAccountId;
+        const finalActorAccountId = actorAccountId || memberId;
 
         await prisma.activity.create({
             data: {
-                targetAccountId,
+                memberId,
                 actorAccountId: finalActorAccountId,
                 action,
                 status,
@@ -56,7 +56,7 @@ export async function logActivity(
 type GetActivitiesParams = {
   startAfter?: string;
   forCurrentUser?: boolean;
-  /** When set, only returns activity logs where targetAccountId equals this value (e.g. an appId). */
+  /** When set, only returns activity logs where memberId equals this value (e.g. an appId). */
   targetId?: string;
 };
 
@@ -67,7 +67,7 @@ type GetActivitiesResponse = {
 
 // Fetches a paginated list of activity logs, ordered by most recent first.
 // If forCurrentUser is true, only logs where the actor is the current account are returned.
-// If targetId is set, only logs where targetAccountId equals that value are returned (e.g. app-scoped logs).
+// If targetId is set, only logs where memberId equals that value are returned (e.g. app-scoped logs).
 // Uses cursor-based pagination via startAfter (the ID of the last seen log).
 export async function getActivities({ startAfter: startAfterDocId, forCurrentUser = false, targetId }: GetActivitiesParams): Promise<GetActivitiesResponse> {
     try {
@@ -75,7 +75,7 @@ export async function getActivities({ startAfter: startAfterDocId, forCurrentUse
         
         const where: any = {};
         if (targetId) {
-            where.targetAccountId = targetId;
+            where.memberId = targetId;
         } else if (forCurrentUser) {
             if (!currentAccountId) {
                  return { logs: [], hasNextPage: false };

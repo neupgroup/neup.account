@@ -5,19 +5,19 @@ import { logError } from '@/core/helpers/logger';
 export const dynamic = 'force-dynamic';
 
 /**
- * GET /account/bridge/api.v1/accounts/lookup
+ * POST /account/bridge/api.v1/accounts/lookup
  *
  * Looks up basic public profile information for an account.
  *
  * The caller must identify themselves as a registered application by passing
- * appId and appSecret as query parameters. Requests without valid credentials
+ * appId and appSecret in request body JSON. Requests without valid credentials
  * are rejected with 401.
  *
  * On a successful lookup, an ApplicationConnection is automatically created
  * (or confirmed) between the looked-up account and the calling application.
  * This records that the app has accessed this account's profile.
  *
- * Query params:
+ * Body JSON:
  *   appId     — (required) the application ID
  *   appSecret — (required) the application secret
  *   accountId — the account UUID  (one of accountId or neupId required)
@@ -37,13 +37,34 @@ export const dynamic = 'force-dynamic';
  *
  * Errors: 400 (missing params), 401 (invalid app credentials), 404 (account not found), 500
  */
-export async function GET(request: NextRequest) {
-    const { searchParams } = request.nextUrl;
+export async function GET() {
+    return NextResponse.json(
+        {
+            success: false,
+            error: 'Invalid method. Please make a POST request.',
+        },
+        { status: 405 }
+    );
+}
 
-    const appId     = searchParams.get('appId')?.trim()     || null;
-    const appSecret = searchParams.get('appSecret')?.trim() || null;
-    const accountId = searchParams.get('accountId')?.trim() || null;
-    const neupId    = searchParams.get('neupId')?.trim()    || null;
+export async function POST(request: NextRequest) {
+    let appId: string | null = null;
+    let appSecret: string | null = null;
+    let accountId: string | null = null;
+    let neupId: string | null = null;
+
+    try {
+        const body = await request.json();
+        appId = typeof body?.appId === 'string' ? body.appId.trim() : null;
+        appSecret = typeof body?.appSecret === 'string' ? body.appSecret.trim() : null;
+        accountId = typeof body?.accountId === 'string' ? body.accountId.trim() : null;
+        neupId = typeof body?.neupId === 'string' ? body.neupId.trim() : null;
+    } catch {
+        return NextResponse.json(
+            { success: false, error: 'Invalid JSON body.' },
+            { status: 400 }
+        );
+    }
 
     // 1. Require app credentials
     if (!appId || !appSecret) {

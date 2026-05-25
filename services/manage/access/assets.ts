@@ -64,7 +64,7 @@ async function canAccessGroup(groupId: string, accountId: string): Promise<boole
   const member = await prisma.member.findFirst({
     where: {
       parentPortfolioId: groupId,
-      accountId,
+      memberId: accountId,
       status: 'active',
     },
     select: { id: true },

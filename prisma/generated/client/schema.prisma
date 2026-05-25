@@ -29,7 +29,8 @@ model Account {
   familyMembers           FamilyMember[]
   verificationActions     Verification[]           @relation("VerificationDoneBy")
   authzAssetsAccessGrants AuthzAssetsAccessGrant[]
-  targetAssets            Asset[]                  @relation("AssetTargetAccount")
+  parentAssets            Asset[]                  @relation("AssetParentAccount")
+  childAssets             Asset[]                  @relation("AssetChildAccount")
   ownedMembers            Member[]                 @relation("MemberOwner")
   targetAccountMembers    Member[]                 @relation("MemberTargetAccount")
   parentAccountMembers    Member[]                 @relation("MemberParentAccount")
@@ -277,7 +278,7 @@ model Application {
   authzPermissions AuthzPermission[]
   authzRoles       AuthzRole[]
   identities       Identity[]
-  targetAssets     Asset[]              @relation("AssetTargetApplication")
+  childAssets      Asset[]              @relation("AssetChildApplication")
 
   @@map("application")
 }
@@ -296,22 +297,25 @@ model Portfolio {
 
 model Asset {
   id                      String                   @id(map: "portfolio_assets_pkey") @default(uuid())
-  parentPortfolioId       String                   @map("portfolio_id")
+  parentPortfolioId       String?                  @map("parent_portfolio")
   assetType               AssetType                @map("asset_type")
-  targetAccountId         String?                  @map("target_account")
-  targetApplicationId     String?                  @map("target_application")
-  targetConnectionId      String?                  @map("target_connection")
+  parentAccountId         String?                  @map("parent_account")
+  childAccountId          String?                  @map("child_account")
+  childApplicationId      String?                  @map("child_application")
+  childConnectionId       String?                  @map("child_connection")
   details                 Json?
-  portfolio               Portfolio                @relation(fields: [parentPortfolioId], references: [id], onDelete: Cascade, map: "portfolio_assets_portfolioId_fkey")
-  targetAccount           Account?                 @relation("AssetTargetAccount", fields: [targetAccountId], references: [id], map: "assets_target_account_fkey")
-  targetApplication       Application?             @relation("AssetTargetApplication", fields: [targetApplicationId], references: [id], map: "assets_target_application_fkey")
-  targetConnection        Connection?              @relation("AssetTargetConnection", fields: [targetConnectionId], references: [id], map: "assets_target_connection_fkey")
+  portfolio               Portfolio?               @relation(fields: [parentPortfolioId], references: [id], onDelete: SetNull, map: "assets_parent_portfolio_fkey")
+  parentAccount           Account?                 @relation("AssetParentAccount", fields: [parentAccountId], references: [id], map: "assets_parent_account_fkey")
+  childAccount            Account?                 @relation("AssetChildAccount", fields: [childAccountId], references: [id], map: "assets_child_account_fkey")
+  childApplication        Application?             @relation("AssetChildApplication", fields: [childApplicationId], references: [id], map: "assets_child_application_fkey")
+  childConnection         Connection?              @relation("AssetChildConnection", fields: [childConnectionId], references: [id], map: "assets_child_connection_fkey")
   authzAssetsAccessGrants AuthzAssetsAccessGrant[]
 
-  @@index([assetType, targetAccountId], map: "assets_asset_type_target_account_idx")
-  @@index([assetType, targetApplicationId], map: "assets_asset_type_target_application_idx")
-  @@index([assetType, targetConnectionId], map: "assets_asset_type_target_connection_idx")
-  @@index([parentPortfolioId], map: "portfolio_assets_portfolioId_idx")
+  @@index([assetType, childAccountId], map: "assets_asset_type_child_account_idx")
+  @@index([assetType, childApplicationId], map: "assets_asset_type_child_application_idx")
+  @@index([assetType, childConnectionId], map: "assets_asset_type_child_connection_idx")
+  @@index([parentPortfolioId], map: "assets_parent_portfolio_idx")
+  @@index([parentAccountId], map: "assets_parent_account_idx")
   @@map("assets")
 }
 
@@ -373,7 +377,7 @@ model Connection {
   account       Account     @relation(fields: [accountId], references: [id], onDelete: Cascade, map: "user_app_connections_accountId_fkey")
   application   Application @relation(fields: [appId], references: [id], map: "user_app_connections_appId_fkey")
   parentMembers Member[]    @relation("MemberParentConnection")
-  targetAssets  Asset[]     @relation("AssetTargetConnection")
+  childAssets   Asset[]     @relation("AssetChildConnection")
 
   @@unique([accountId, appId], map: "user_app_connections_accountId_appId_key")
   @@map("connection")

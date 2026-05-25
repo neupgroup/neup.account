@@ -313,9 +313,10 @@ exports.Prisma.AssetScalarFieldEnum = {
   id: 'id',
   parentPortfolioId: 'parentPortfolioId',
   assetType: 'assetType',
-  targetAccountId: 'targetAccountId',
-  targetApplicationId: 'targetApplicationId',
-  targetConnectionId: 'targetConnectionId',
+  parentAccountId: 'parentAccountId',
+  childAccountId: 'childAccountId',
+  childApplicationId: 'childApplicationId',
+  childConnectionId: 'childConnectionId',
   details: 'details'
 };
 

@@ -3571,7 +3571,8 @@ export namespace Prisma {
     familyMembers: number
     verificationActions: number
     authzAssetsAccessGrants: number
-    targetAssets: number
+    parentAssets: number
+    childAssets: number
     ownedMembers: number
     targetAccountMembers: number
     parentAccountMembers: number
@@ -3596,7 +3597,8 @@ export namespace Prisma {
     familyMembers?: boolean | AccountCountOutputTypeCountFamilyMembersArgs
     verificationActions?: boolean | AccountCountOutputTypeCountVerificationActionsArgs
     authzAssetsAccessGrants?: boolean | AccountCountOutputTypeCountAuthzAssetsAccessGrantsArgs
-    targetAssets?: boolean | AccountCountOutputTypeCountTargetAssetsArgs
+    parentAssets?: boolean | AccountCountOutputTypeCountParentAssetsArgs
+    childAssets?: boolean | AccountCountOutputTypeCountChildAssetsArgs
     ownedMembers?: boolean | AccountCountOutputTypeCountOwnedMembersArgs
     targetAccountMembers?: boolean | AccountCountOutputTypeCountTargetAccountMembersArgs
     parentAccountMembers?: boolean | AccountCountOutputTypeCountParentAccountMembersArgs
@@ -3688,7 +3690,14 @@ export namespace Prisma {
   /**
    * AccountCountOutputType without action
    */
-  export type AccountCountOutputTypeCountTargetAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type AccountCountOutputTypeCountParentAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AssetWhereInput
+  }
+
+  /**
+   * AccountCountOutputType without action
+   */
+  export type AccountCountOutputTypeCountChildAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AssetWhereInput
   }
 
@@ -3851,7 +3860,7 @@ export namespace Prisma {
     authzPermissions: number
     authzRoles: number
     identities: number
-    targetAssets: number
+    childAssets: number
   }
 
   export type ApplicationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3862,7 +3871,7 @@ export namespace Prisma {
     authzPermissions?: boolean | ApplicationCountOutputTypeCountAuthzPermissionsArgs
     authzRoles?: boolean | ApplicationCountOutputTypeCountAuthzRolesArgs
     identities?: boolean | ApplicationCountOutputTypeCountIdentitiesArgs
-    targetAssets?: boolean | ApplicationCountOutputTypeCountTargetAssetsArgs
+    childAssets?: boolean | ApplicationCountOutputTypeCountChildAssetsArgs
   }
 
   // Custom InputTypes
@@ -3928,7 +3937,7 @@ export namespace Prisma {
   /**
    * ApplicationCountOutputType without action
    */
-  export type ApplicationCountOutputTypeCountTargetAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ApplicationCountOutputTypeCountChildAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AssetWhereInput
   }
 
@@ -4019,12 +4028,12 @@ export namespace Prisma {
 
   export type ConnectionCountOutputType = {
     parentMembers: number
-    targetAssets: number
+    childAssets: number
   }
 
   export type ConnectionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     parentMembers?: boolean | ConnectionCountOutputTypeCountParentMembersArgs
-    targetAssets?: boolean | ConnectionCountOutputTypeCountTargetAssetsArgs
+    childAssets?: boolean | ConnectionCountOutputTypeCountChildAssetsArgs
   }
 
   // Custom InputTypes
@@ -4048,7 +4057,7 @@ export namespace Prisma {
   /**
    * ConnectionCountOutputType without action
    */
-  export type ConnectionCountOutputTypeCountTargetAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ConnectionCountOutputTypeCountChildAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AssetWhereInput
   }
 
@@ -4300,7 +4309,8 @@ export namespace Prisma {
     familyMembers?: boolean | Account$familyMembersArgs<ExtArgs>
     verificationActions?: boolean | Account$verificationActionsArgs<ExtArgs>
     authzAssetsAccessGrants?: boolean | Account$authzAssetsAccessGrantsArgs<ExtArgs>
-    targetAssets?: boolean | Account$targetAssetsArgs<ExtArgs>
+    parentAssets?: boolean | Account$parentAssetsArgs<ExtArgs>
+    childAssets?: boolean | Account$childAssetsArgs<ExtArgs>
     ownedMembers?: boolean | Account$ownedMembersArgs<ExtArgs>
     targetAccountMembers?: boolean | Account$targetAccountMembersArgs<ExtArgs>
     parentAccountMembers?: boolean | Account$parentAccountMembersArgs<ExtArgs>
@@ -4368,7 +4378,8 @@ export namespace Prisma {
     familyMembers?: boolean | Account$familyMembersArgs<ExtArgs>
     verificationActions?: boolean | Account$verificationActionsArgs<ExtArgs>
     authzAssetsAccessGrants?: boolean | Account$authzAssetsAccessGrantsArgs<ExtArgs>
-    targetAssets?: boolean | Account$targetAssetsArgs<ExtArgs>
+    parentAssets?: boolean | Account$parentAssetsArgs<ExtArgs>
+    childAssets?: boolean | Account$childAssetsArgs<ExtArgs>
     ownedMembers?: boolean | Account$ownedMembersArgs<ExtArgs>
     targetAccountMembers?: boolean | Account$targetAccountMembersArgs<ExtArgs>
     parentAccountMembers?: boolean | Account$parentAccountMembersArgs<ExtArgs>
@@ -4405,7 +4416,8 @@ export namespace Prisma {
       familyMembers: Prisma.$FamilyMemberPayload<ExtArgs>[]
       verificationActions: Prisma.$VerificationPayload<ExtArgs>[]
       authzAssetsAccessGrants: Prisma.$AuthzAssetsAccessGrantPayload<ExtArgs>[]
-      targetAssets: Prisma.$AssetPayload<ExtArgs>[]
+      parentAssets: Prisma.$AssetPayload<ExtArgs>[]
+      childAssets: Prisma.$AssetPayload<ExtArgs>[]
       ownedMembers: Prisma.$MemberPayload<ExtArgs>[]
       targetAccountMembers: Prisma.$MemberPayload<ExtArgs>[]
       parentAccountMembers: Prisma.$MemberPayload<ExtArgs>[]
@@ -4835,7 +4847,8 @@ export namespace Prisma {
     familyMembers<T extends Account$familyMembersArgs<ExtArgs> = {}>(args?: Subset<T, Account$familyMembersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FamilyMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     verificationActions<T extends Account$verificationActionsArgs<ExtArgs> = {}>(args?: Subset<T, Account$verificationActionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VerificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     authzAssetsAccessGrants<T extends Account$authzAssetsAccessGrantsArgs<ExtArgs> = {}>(args?: Subset<T, Account$authzAssetsAccessGrantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzAssetsAccessGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    targetAssets<T extends Account$targetAssetsArgs<ExtArgs> = {}>(args?: Subset<T, Account$targetAssetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    parentAssets<T extends Account$parentAssetsArgs<ExtArgs> = {}>(args?: Subset<T, Account$parentAssetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    childAssets<T extends Account$childAssetsArgs<ExtArgs> = {}>(args?: Subset<T, Account$childAssetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ownedMembers<T extends Account$ownedMembersArgs<ExtArgs> = {}>(args?: Subset<T, Account$ownedMembersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     targetAccountMembers<T extends Account$targetAccountMembersArgs<ExtArgs> = {}>(args?: Subset<T, Account$targetAccountMembersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     parentAccountMembers<T extends Account$parentAccountMembersArgs<ExtArgs> = {}>(args?: Subset<T, Account$parentAccountMembersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5537,9 +5550,33 @@ export namespace Prisma {
   }
 
   /**
-   * Account.targetAssets
+   * Account.parentAssets
    */
-  export type Account$targetAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Account$parentAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Asset
+     */
+    select?: AssetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Asset
+     */
+    omit?: AssetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssetInclude<ExtArgs> | null
+    where?: AssetWhereInput
+    orderBy?: AssetOrderByWithRelationInput | AssetOrderByWithRelationInput[]
+    cursor?: AssetWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AssetScalarFieldEnum | AssetScalarFieldEnum[]
+  }
+
+  /**
+   * Account.childAssets
+   */
+  export type Account$childAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Asset
      */
@@ -23265,7 +23302,7 @@ export namespace Prisma {
     authzPermissions?: boolean | Application$authzPermissionsArgs<ExtArgs>
     authzRoles?: boolean | Application$authzRolesArgs<ExtArgs>
     identities?: boolean | Application$identitiesArgs<ExtArgs>
-    targetAssets?: boolean | Application$targetAssetsArgs<ExtArgs>
+    childAssets?: boolean | Application$childAssetsArgs<ExtArgs>
     _count?: boolean | ApplicationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["application"]>
 
@@ -23335,7 +23372,7 @@ export namespace Prisma {
     authzPermissions?: boolean | Application$authzPermissionsArgs<ExtArgs>
     authzRoles?: boolean | Application$authzRolesArgs<ExtArgs>
     identities?: boolean | Application$identitiesArgs<ExtArgs>
-    targetAssets?: boolean | Application$targetAssetsArgs<ExtArgs>
+    childAssets?: boolean | Application$childAssetsArgs<ExtArgs>
     _count?: boolean | ApplicationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ApplicationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -23356,7 +23393,7 @@ export namespace Prisma {
       authzPermissions: Prisma.$AuthzPermissionPayload<ExtArgs>[]
       authzRoles: Prisma.$AuthzRolePayload<ExtArgs>[]
       identities: Prisma.$IdentityPayload<ExtArgs>[]
-      targetAssets: Prisma.$AssetPayload<ExtArgs>[]
+      childAssets: Prisma.$AssetPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -23776,7 +23813,7 @@ export namespace Prisma {
     authzPermissions<T extends Application$authzPermissionsArgs<ExtArgs> = {}>(args?: Subset<T, Application$authzPermissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     authzRoles<T extends Application$authzRolesArgs<ExtArgs> = {}>(args?: Subset<T, Application$authzRolesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     identities<T extends Application$identitiesArgs<ExtArgs> = {}>(args?: Subset<T, Application$identitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IdentityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    targetAssets<T extends Application$targetAssetsArgs<ExtArgs> = {}>(args?: Subset<T, Application$targetAssetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    childAssets<T extends Application$childAssetsArgs<ExtArgs> = {}>(args?: Subset<T, Application$childAssetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -24404,9 +24441,9 @@ export namespace Prisma {
   }
 
   /**
-   * Application.targetAssets
+   * Application.childAssets
    */
-  export type Application$targetAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Application$childAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Asset
      */
@@ -25573,27 +25610,30 @@ export namespace Prisma {
     id: string | null
     parentPortfolioId: string | null
     assetType: $Enums.AssetType | null
-    targetAccountId: string | null
-    targetApplicationId: string | null
-    targetConnectionId: string | null
+    parentAccountId: string | null
+    childAccountId: string | null
+    childApplicationId: string | null
+    childConnectionId: string | null
   }
 
   export type AssetMaxAggregateOutputType = {
     id: string | null
     parentPortfolioId: string | null
     assetType: $Enums.AssetType | null
-    targetAccountId: string | null
-    targetApplicationId: string | null
-    targetConnectionId: string | null
+    parentAccountId: string | null
+    childAccountId: string | null
+    childApplicationId: string | null
+    childConnectionId: string | null
   }
 
   export type AssetCountAggregateOutputType = {
     id: number
     parentPortfolioId: number
     assetType: number
-    targetAccountId: number
-    targetApplicationId: number
-    targetConnectionId: number
+    parentAccountId: number
+    childAccountId: number
+    childApplicationId: number
+    childConnectionId: number
     details: number
     _all: number
   }
@@ -25603,27 +25643,30 @@ export namespace Prisma {
     id?: true
     parentPortfolioId?: true
     assetType?: true
-    targetAccountId?: true
-    targetApplicationId?: true
-    targetConnectionId?: true
+    parentAccountId?: true
+    childAccountId?: true
+    childApplicationId?: true
+    childConnectionId?: true
   }
 
   export type AssetMaxAggregateInputType = {
     id?: true
     parentPortfolioId?: true
     assetType?: true
-    targetAccountId?: true
-    targetApplicationId?: true
-    targetConnectionId?: true
+    parentAccountId?: true
+    childAccountId?: true
+    childApplicationId?: true
+    childConnectionId?: true
   }
 
   export type AssetCountAggregateInputType = {
     id?: true
     parentPortfolioId?: true
     assetType?: true
-    targetAccountId?: true
-    targetApplicationId?: true
-    targetConnectionId?: true
+    parentAccountId?: true
+    childAccountId?: true
+    childApplicationId?: true
+    childConnectionId?: true
     details?: true
     _all?: true
   }
@@ -25702,11 +25745,12 @@ export namespace Prisma {
 
   export type AssetGroupByOutputType = {
     id: string
-    parentPortfolioId: string
+    parentPortfolioId: string | null
     assetType: $Enums.AssetType
-    targetAccountId: string | null
-    targetApplicationId: string | null
-    targetConnectionId: string | null
+    parentAccountId: string | null
+    childAccountId: string | null
+    childApplicationId: string | null
+    childConnectionId: string | null
     details: JsonValue | null
     _count: AssetCountAggregateOutputType | null
     _min: AssetMinAggregateOutputType | null
@@ -25731,14 +25775,16 @@ export namespace Prisma {
     id?: boolean
     parentPortfolioId?: boolean
     assetType?: boolean
-    targetAccountId?: boolean
-    targetApplicationId?: boolean
-    targetConnectionId?: boolean
+    parentAccountId?: boolean
+    childAccountId?: boolean
+    childApplicationId?: boolean
+    childConnectionId?: boolean
     details?: boolean
-    portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
-    targetAccount?: boolean | Asset$targetAccountArgs<ExtArgs>
-    targetApplication?: boolean | Asset$targetApplicationArgs<ExtArgs>
-    targetConnection?: boolean | Asset$targetConnectionArgs<ExtArgs>
+    portfolio?: boolean | Asset$portfolioArgs<ExtArgs>
+    parentAccount?: boolean | Asset$parentAccountArgs<ExtArgs>
+    childAccount?: boolean | Asset$childAccountArgs<ExtArgs>
+    childApplication?: boolean | Asset$childApplicationArgs<ExtArgs>
+    childConnection?: boolean | Asset$childConnectionArgs<ExtArgs>
     authzAssetsAccessGrants?: boolean | Asset$authzAssetsAccessGrantsArgs<ExtArgs>
     _count?: boolean | AssetCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["asset"]>
@@ -25747,78 +25793,88 @@ export namespace Prisma {
     id?: boolean
     parentPortfolioId?: boolean
     assetType?: boolean
-    targetAccountId?: boolean
-    targetApplicationId?: boolean
-    targetConnectionId?: boolean
+    parentAccountId?: boolean
+    childAccountId?: boolean
+    childApplicationId?: boolean
+    childConnectionId?: boolean
     details?: boolean
-    portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
-    targetAccount?: boolean | Asset$targetAccountArgs<ExtArgs>
-    targetApplication?: boolean | Asset$targetApplicationArgs<ExtArgs>
-    targetConnection?: boolean | Asset$targetConnectionArgs<ExtArgs>
+    portfolio?: boolean | Asset$portfolioArgs<ExtArgs>
+    parentAccount?: boolean | Asset$parentAccountArgs<ExtArgs>
+    childAccount?: boolean | Asset$childAccountArgs<ExtArgs>
+    childApplication?: boolean | Asset$childApplicationArgs<ExtArgs>
+    childConnection?: boolean | Asset$childConnectionArgs<ExtArgs>
   }, ExtArgs["result"]["asset"]>
 
   export type AssetSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     parentPortfolioId?: boolean
     assetType?: boolean
-    targetAccountId?: boolean
-    targetApplicationId?: boolean
-    targetConnectionId?: boolean
+    parentAccountId?: boolean
+    childAccountId?: boolean
+    childApplicationId?: boolean
+    childConnectionId?: boolean
     details?: boolean
-    portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
-    targetAccount?: boolean | Asset$targetAccountArgs<ExtArgs>
-    targetApplication?: boolean | Asset$targetApplicationArgs<ExtArgs>
-    targetConnection?: boolean | Asset$targetConnectionArgs<ExtArgs>
+    portfolio?: boolean | Asset$portfolioArgs<ExtArgs>
+    parentAccount?: boolean | Asset$parentAccountArgs<ExtArgs>
+    childAccount?: boolean | Asset$childAccountArgs<ExtArgs>
+    childApplication?: boolean | Asset$childApplicationArgs<ExtArgs>
+    childConnection?: boolean | Asset$childConnectionArgs<ExtArgs>
   }, ExtArgs["result"]["asset"]>
 
   export type AssetSelectScalar = {
     id?: boolean
     parentPortfolioId?: boolean
     assetType?: boolean
-    targetAccountId?: boolean
-    targetApplicationId?: boolean
-    targetConnectionId?: boolean
+    parentAccountId?: boolean
+    childAccountId?: boolean
+    childApplicationId?: boolean
+    childConnectionId?: boolean
     details?: boolean
   }
 
-  export type AssetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "parentPortfolioId" | "assetType" | "targetAccountId" | "targetApplicationId" | "targetConnectionId" | "details", ExtArgs["result"]["asset"]>
+  export type AssetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "parentPortfolioId" | "assetType" | "parentAccountId" | "childAccountId" | "childApplicationId" | "childConnectionId" | "details", ExtArgs["result"]["asset"]>
   export type AssetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
-    targetAccount?: boolean | Asset$targetAccountArgs<ExtArgs>
-    targetApplication?: boolean | Asset$targetApplicationArgs<ExtArgs>
-    targetConnection?: boolean | Asset$targetConnectionArgs<ExtArgs>
+    portfolio?: boolean | Asset$portfolioArgs<ExtArgs>
+    parentAccount?: boolean | Asset$parentAccountArgs<ExtArgs>
+    childAccount?: boolean | Asset$childAccountArgs<ExtArgs>
+    childApplication?: boolean | Asset$childApplicationArgs<ExtArgs>
+    childConnection?: boolean | Asset$childConnectionArgs<ExtArgs>
     authzAssetsAccessGrants?: boolean | Asset$authzAssetsAccessGrantsArgs<ExtArgs>
     _count?: boolean | AssetCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AssetIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
-    targetAccount?: boolean | Asset$targetAccountArgs<ExtArgs>
-    targetApplication?: boolean | Asset$targetApplicationArgs<ExtArgs>
-    targetConnection?: boolean | Asset$targetConnectionArgs<ExtArgs>
+    portfolio?: boolean | Asset$portfolioArgs<ExtArgs>
+    parentAccount?: boolean | Asset$parentAccountArgs<ExtArgs>
+    childAccount?: boolean | Asset$childAccountArgs<ExtArgs>
+    childApplication?: boolean | Asset$childApplicationArgs<ExtArgs>
+    childConnection?: boolean | Asset$childConnectionArgs<ExtArgs>
   }
   export type AssetIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
-    targetAccount?: boolean | Asset$targetAccountArgs<ExtArgs>
-    targetApplication?: boolean | Asset$targetApplicationArgs<ExtArgs>
-    targetConnection?: boolean | Asset$targetConnectionArgs<ExtArgs>
+    portfolio?: boolean | Asset$portfolioArgs<ExtArgs>
+    parentAccount?: boolean | Asset$parentAccountArgs<ExtArgs>
+    childAccount?: boolean | Asset$childAccountArgs<ExtArgs>
+    childApplication?: boolean | Asset$childApplicationArgs<ExtArgs>
+    childConnection?: boolean | Asset$childConnectionArgs<ExtArgs>
   }
 
   export type $AssetPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Asset"
     objects: {
-      portfolio: Prisma.$PortfolioPayload<ExtArgs>
-      targetAccount: Prisma.$AccountPayload<ExtArgs> | null
-      targetApplication: Prisma.$ApplicationPayload<ExtArgs> | null
-      targetConnection: Prisma.$ConnectionPayload<ExtArgs> | null
+      portfolio: Prisma.$PortfolioPayload<ExtArgs> | null
+      parentAccount: Prisma.$AccountPayload<ExtArgs> | null
+      childAccount: Prisma.$AccountPayload<ExtArgs> | null
+      childApplication: Prisma.$ApplicationPayload<ExtArgs> | null
+      childConnection: Prisma.$ConnectionPayload<ExtArgs> | null
       authzAssetsAccessGrants: Prisma.$AuthzAssetsAccessGrantPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      parentPortfolioId: string
+      parentPortfolioId: string | null
       assetType: $Enums.AssetType
-      targetAccountId: string | null
-      targetApplicationId: string | null
-      targetConnectionId: string | null
+      parentAccountId: string | null
+      childAccountId: string | null
+      childApplicationId: string | null
+      childConnectionId: string | null
       details: Prisma.JsonValue | null
     }, ExtArgs["result"]["asset"]>
     composites: {}
@@ -26214,10 +26270,11 @@ export namespace Prisma {
    */
   export interface Prisma__AssetClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    portfolio<T extends PortfolioDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PortfolioDefaultArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    targetAccount<T extends Asset$targetAccountArgs<ExtArgs> = {}>(args?: Subset<T, Asset$targetAccountArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    targetApplication<T extends Asset$targetApplicationArgs<ExtArgs> = {}>(args?: Subset<T, Asset$targetApplicationArgs<ExtArgs>>): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    targetConnection<T extends Asset$targetConnectionArgs<ExtArgs> = {}>(args?: Subset<T, Asset$targetConnectionArgs<ExtArgs>>): Prisma__ConnectionClient<$Result.GetResult<Prisma.$ConnectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    portfolio<T extends Asset$portfolioArgs<ExtArgs> = {}>(args?: Subset<T, Asset$portfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    parentAccount<T extends Asset$parentAccountArgs<ExtArgs> = {}>(args?: Subset<T, Asset$parentAccountArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    childAccount<T extends Asset$childAccountArgs<ExtArgs> = {}>(args?: Subset<T, Asset$childAccountArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    childApplication<T extends Asset$childApplicationArgs<ExtArgs> = {}>(args?: Subset<T, Asset$childApplicationArgs<ExtArgs>>): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    childConnection<T extends Asset$childConnectionArgs<ExtArgs> = {}>(args?: Subset<T, Asset$childConnectionArgs<ExtArgs>>): Prisma__ConnectionClient<$Result.GetResult<Prisma.$ConnectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     authzAssetsAccessGrants<T extends Asset$authzAssetsAccessGrantsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$authzAssetsAccessGrantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzAssetsAccessGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -26251,9 +26308,10 @@ export namespace Prisma {
     readonly id: FieldRef<"Asset", 'String'>
     readonly parentPortfolioId: FieldRef<"Asset", 'String'>
     readonly assetType: FieldRef<"Asset", 'AssetType'>
-    readonly targetAccountId: FieldRef<"Asset", 'String'>
-    readonly targetApplicationId: FieldRef<"Asset", 'String'>
-    readonly targetConnectionId: FieldRef<"Asset", 'String'>
+    readonly parentAccountId: FieldRef<"Asset", 'String'>
+    readonly childAccountId: FieldRef<"Asset", 'String'>
+    readonly childApplicationId: FieldRef<"Asset", 'String'>
+    readonly childConnectionId: FieldRef<"Asset", 'String'>
     readonly details: FieldRef<"Asset", 'Json'>
   }
     
@@ -26651,9 +26709,28 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.targetAccount
+   * Asset.portfolio
    */
-  export type Asset$targetAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Asset$portfolioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Portfolio
+     */
+    select?: PortfolioSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Portfolio
+     */
+    omit?: PortfolioOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PortfolioInclude<ExtArgs> | null
+    where?: PortfolioWhereInput
+  }
+
+  /**
+   * Asset.parentAccount
+   */
+  export type Asset$parentAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Account
      */
@@ -26670,9 +26747,28 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.targetApplication
+   * Asset.childAccount
    */
-  export type Asset$targetApplicationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Asset$childAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Account
+     */
+    select?: AccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Account
+     */
+    omit?: AccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AccountInclude<ExtArgs> | null
+    where?: AccountWhereInput
+  }
+
+  /**
+   * Asset.childApplication
+   */
+  export type Asset$childApplicationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Application
      */
@@ -26689,9 +26785,9 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.targetConnection
+   * Asset.childConnection
    */
-  export type Asset$targetConnectionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Asset$childConnectionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Connection
      */
@@ -29260,7 +29356,7 @@ export namespace Prisma {
     account?: boolean | AccountDefaultArgs<ExtArgs>
     application?: boolean | ApplicationDefaultArgs<ExtArgs>
     parentMembers?: boolean | Connection$parentMembersArgs<ExtArgs>
-    targetAssets?: boolean | Connection$targetAssetsArgs<ExtArgs>
+    childAssets?: boolean | Connection$childAssetsArgs<ExtArgs>
     _count?: boolean | ConnectionCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["connection"]>
 
@@ -29300,7 +29396,7 @@ export namespace Prisma {
     account?: boolean | AccountDefaultArgs<ExtArgs>
     application?: boolean | ApplicationDefaultArgs<ExtArgs>
     parentMembers?: boolean | Connection$parentMembersArgs<ExtArgs>
-    targetAssets?: boolean | Connection$targetAssetsArgs<ExtArgs>
+    childAssets?: boolean | Connection$childAssetsArgs<ExtArgs>
     _count?: boolean | ConnectionCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ConnectionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -29318,7 +29414,7 @@ export namespace Prisma {
       account: Prisma.$AccountPayload<ExtArgs>
       application: Prisma.$ApplicationPayload<ExtArgs>
       parentMembers: Prisma.$MemberPayload<ExtArgs>[]
-      targetAssets: Prisma.$AssetPayload<ExtArgs>[]
+      childAssets: Prisma.$AssetPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -29724,7 +29820,7 @@ export namespace Prisma {
     account<T extends AccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AccountDefaultArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     application<T extends ApplicationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ApplicationDefaultArgs<ExtArgs>>): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     parentMembers<T extends Connection$parentMembersArgs<ExtArgs> = {}>(args?: Subset<T, Connection$parentMembersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    targetAssets<T extends Connection$targetAssetsArgs<ExtArgs> = {}>(args?: Subset<T, Connection$targetAssetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    childAssets<T extends Connection$childAssetsArgs<ExtArgs> = {}>(args?: Subset<T, Connection$childAssetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -30180,9 +30276,9 @@ export namespace Prisma {
   }
 
   /**
-   * Connection.targetAssets
+   * Connection.childAssets
    */
-  export type Connection$targetAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Connection$childAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Asset
      */
@@ -38158,9 +38254,10 @@ export namespace Prisma {
     id: 'id',
     parentPortfolioId: 'parentPortfolioId',
     assetType: 'assetType',
-    targetAccountId: 'targetAccountId',
-    targetApplicationId: 'targetApplicationId',
-    targetConnectionId: 'targetConnectionId',
+    parentAccountId: 'parentAccountId',
+    childAccountId: 'childAccountId',
+    childApplicationId: 'childApplicationId',
+    childConnectionId: 'childConnectionId',
     details: 'details'
   };
 
@@ -38495,7 +38592,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberListRelationFilter
     verificationActions?: VerificationListRelationFilter
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantListRelationFilter
-    targetAssets?: AssetListRelationFilter
+    parentAssets?: AssetListRelationFilter
+    childAssets?: AssetListRelationFilter
     ownedMembers?: MemberListRelationFilter
     targetAccountMembers?: MemberListRelationFilter
     parentAccountMembers?: MemberListRelationFilter
@@ -38532,7 +38630,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberOrderByRelationAggregateInput
     verificationActions?: VerificationOrderByRelationAggregateInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantOrderByRelationAggregateInput
-    targetAssets?: AssetOrderByRelationAggregateInput
+    parentAssets?: AssetOrderByRelationAggregateInput
+    childAssets?: AssetOrderByRelationAggregateInput
     ownedMembers?: MemberOrderByRelationAggregateInput
     targetAccountMembers?: MemberOrderByRelationAggregateInput
     parentAccountMembers?: MemberOrderByRelationAggregateInput
@@ -38572,7 +38671,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberListRelationFilter
     verificationActions?: VerificationListRelationFilter
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantListRelationFilter
-    targetAssets?: AssetListRelationFilter
+    parentAssets?: AssetListRelationFilter
+    childAssets?: AssetListRelationFilter
     ownedMembers?: MemberListRelationFilter
     targetAccountMembers?: MemberListRelationFilter
     parentAccountMembers?: MemberListRelationFilter
@@ -39647,7 +39747,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionListRelationFilter
     authzRoles?: AuthzRoleListRelationFilter
     identities?: IdentityListRelationFilter
-    targetAssets?: AssetListRelationFilter
+    childAssets?: AssetListRelationFilter
   }
 
   export type ApplicationOrderByWithRelationInput = {
@@ -39674,7 +39774,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionOrderByRelationAggregateInput
     authzRoles?: AuthzRoleOrderByRelationAggregateInput
     identities?: IdentityOrderByRelationAggregateInput
-    targetAssets?: AssetOrderByRelationAggregateInput
+    childAssets?: AssetOrderByRelationAggregateInput
   }
 
   export type ApplicationWhereUniqueInput = Prisma.AtLeast<{
@@ -39704,7 +39804,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionListRelationFilter
     authzRoles?: AuthzRoleListRelationFilter
     identities?: IdentityListRelationFilter
-    targetAssets?: AssetListRelationFilter
+    childAssets?: AssetListRelationFilter
   }, "id">
 
   export type ApplicationOrderByWithAggregationInput = {
@@ -39812,31 +39912,35 @@ export namespace Prisma {
     OR?: AssetWhereInput[]
     NOT?: AssetWhereInput | AssetWhereInput[]
     id?: StringFilter<"Asset"> | string
-    parentPortfolioId?: StringFilter<"Asset"> | string
+    parentPortfolioId?: StringNullableFilter<"Asset"> | string | null
     assetType?: EnumAssetTypeFilter<"Asset"> | $Enums.AssetType
-    targetAccountId?: StringNullableFilter<"Asset"> | string | null
-    targetApplicationId?: StringNullableFilter<"Asset"> | string | null
-    targetConnectionId?: StringNullableFilter<"Asset"> | string | null
+    parentAccountId?: StringNullableFilter<"Asset"> | string | null
+    childAccountId?: StringNullableFilter<"Asset"> | string | null
+    childApplicationId?: StringNullableFilter<"Asset"> | string | null
+    childConnectionId?: StringNullableFilter<"Asset"> | string | null
     details?: JsonNullableFilter<"Asset">
-    portfolio?: XOR<PortfolioScalarRelationFilter, PortfolioWhereInput>
-    targetAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
-    targetApplication?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
-    targetConnection?: XOR<ConnectionNullableScalarRelationFilter, ConnectionWhereInput> | null
+    portfolio?: XOR<PortfolioNullableScalarRelationFilter, PortfolioWhereInput> | null
+    parentAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
+    childAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
+    childApplication?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
+    childConnection?: XOR<ConnectionNullableScalarRelationFilter, ConnectionWhereInput> | null
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantListRelationFilter
   }
 
   export type AssetOrderByWithRelationInput = {
     id?: SortOrder
-    parentPortfolioId?: SortOrder
+    parentPortfolioId?: SortOrderInput | SortOrder
     assetType?: SortOrder
-    targetAccountId?: SortOrderInput | SortOrder
-    targetApplicationId?: SortOrderInput | SortOrder
-    targetConnectionId?: SortOrderInput | SortOrder
+    parentAccountId?: SortOrderInput | SortOrder
+    childAccountId?: SortOrderInput | SortOrder
+    childApplicationId?: SortOrderInput | SortOrder
+    childConnectionId?: SortOrderInput | SortOrder
     details?: SortOrderInput | SortOrder
     portfolio?: PortfolioOrderByWithRelationInput
-    targetAccount?: AccountOrderByWithRelationInput
-    targetApplication?: ApplicationOrderByWithRelationInput
-    targetConnection?: ConnectionOrderByWithRelationInput
+    parentAccount?: AccountOrderByWithRelationInput
+    childAccount?: AccountOrderByWithRelationInput
+    childApplication?: ApplicationOrderByWithRelationInput
+    childConnection?: ConnectionOrderByWithRelationInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantOrderByRelationAggregateInput
   }
 
@@ -39845,26 +39949,29 @@ export namespace Prisma {
     AND?: AssetWhereInput | AssetWhereInput[]
     OR?: AssetWhereInput[]
     NOT?: AssetWhereInput | AssetWhereInput[]
-    parentPortfolioId?: StringFilter<"Asset"> | string
+    parentPortfolioId?: StringNullableFilter<"Asset"> | string | null
     assetType?: EnumAssetTypeFilter<"Asset"> | $Enums.AssetType
-    targetAccountId?: StringNullableFilter<"Asset"> | string | null
-    targetApplicationId?: StringNullableFilter<"Asset"> | string | null
-    targetConnectionId?: StringNullableFilter<"Asset"> | string | null
+    parentAccountId?: StringNullableFilter<"Asset"> | string | null
+    childAccountId?: StringNullableFilter<"Asset"> | string | null
+    childApplicationId?: StringNullableFilter<"Asset"> | string | null
+    childConnectionId?: StringNullableFilter<"Asset"> | string | null
     details?: JsonNullableFilter<"Asset">
-    portfolio?: XOR<PortfolioScalarRelationFilter, PortfolioWhereInput>
-    targetAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
-    targetApplication?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
-    targetConnection?: XOR<ConnectionNullableScalarRelationFilter, ConnectionWhereInput> | null
+    portfolio?: XOR<PortfolioNullableScalarRelationFilter, PortfolioWhereInput> | null
+    parentAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
+    childAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
+    childApplication?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
+    childConnection?: XOR<ConnectionNullableScalarRelationFilter, ConnectionWhereInput> | null
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantListRelationFilter
   }, "id">
 
   export type AssetOrderByWithAggregationInput = {
     id?: SortOrder
-    parentPortfolioId?: SortOrder
+    parentPortfolioId?: SortOrderInput | SortOrder
     assetType?: SortOrder
-    targetAccountId?: SortOrderInput | SortOrder
-    targetApplicationId?: SortOrderInput | SortOrder
-    targetConnectionId?: SortOrderInput | SortOrder
+    parentAccountId?: SortOrderInput | SortOrder
+    childAccountId?: SortOrderInput | SortOrder
+    childApplicationId?: SortOrderInput | SortOrder
+    childConnectionId?: SortOrderInput | SortOrder
     details?: SortOrderInput | SortOrder
     _count?: AssetCountOrderByAggregateInput
     _max?: AssetMaxOrderByAggregateInput
@@ -39876,11 +39983,12 @@ export namespace Prisma {
     OR?: AssetScalarWhereWithAggregatesInput[]
     NOT?: AssetScalarWhereWithAggregatesInput | AssetScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Asset"> | string
-    parentPortfolioId?: StringWithAggregatesFilter<"Asset"> | string
+    parentPortfolioId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     assetType?: EnumAssetTypeWithAggregatesFilter<"Asset"> | $Enums.AssetType
-    targetAccountId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
-    targetApplicationId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
-    targetConnectionId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    parentAccountId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    childAccountId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    childApplicationId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    childConnectionId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     details?: JsonNullableWithAggregatesFilter<"Asset">
   }
 
@@ -40063,7 +40171,7 @@ export namespace Prisma {
     account?: XOR<AccountScalarRelationFilter, AccountWhereInput>
     application?: XOR<ApplicationScalarRelationFilter, ApplicationWhereInput>
     parentMembers?: MemberListRelationFilter
-    targetAssets?: AssetListRelationFilter
+    childAssets?: AssetListRelationFilter
   }
 
   export type ConnectionOrderByWithRelationInput = {
@@ -40076,7 +40184,7 @@ export namespace Prisma {
     account?: AccountOrderByWithRelationInput
     application?: ApplicationOrderByWithRelationInput
     parentMembers?: MemberOrderByRelationAggregateInput
-    targetAssets?: AssetOrderByRelationAggregateInput
+    childAssets?: AssetOrderByRelationAggregateInput
   }
 
   export type ConnectionWhereUniqueInput = Prisma.AtLeast<{
@@ -40093,7 +40201,7 @@ export namespace Prisma {
     account?: XOR<AccountScalarRelationFilter, AccountWhereInput>
     application?: XOR<ApplicationScalarRelationFilter, ApplicationWhereInput>
     parentMembers?: MemberListRelationFilter
-    targetAssets?: AssetListRelationFilter
+    childAssets?: AssetListRelationFilter
   }, "id" | "accountId_appId">
 
   export type ConnectionOrderByWithAggregationInput = {
@@ -40600,7 +40708,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -40637,7 +40746,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -40672,7 +40782,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -40709,7 +40820,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -41840,7 +41952,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetApplicationInput
+    childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
   }
 
   export type ApplicationUncheckedCreateInput = {
@@ -41866,7 +41978,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetApplicationInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
   }
 
   export type ApplicationUpdateInput = {
@@ -41892,7 +42004,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetApplicationNestedInput
+    childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateInput = {
@@ -41918,7 +42030,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetApplicationNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
   }
 
   export type ApplicationCreateManyInput = {
@@ -42039,20 +42151,22 @@ export namespace Prisma {
     id?: string
     assetType: $Enums.AssetType
     details?: NullableJsonNullValueInput | InputJsonValue
-    portfolio: PortfolioCreateNestedOneWithoutAssetsInput
-    targetAccount?: AccountCreateNestedOneWithoutTargetAssetsInput
-    targetApplication?: ApplicationCreateNestedOneWithoutTargetAssetsInput
-    targetConnection?: ConnectionCreateNestedOneWithoutTargetAssetsInput
+    portfolio?: PortfolioCreateNestedOneWithoutAssetsInput
+    parentAccount?: AccountCreateNestedOneWithoutParentAssetsInput
+    childAccount?: AccountCreateNestedOneWithoutChildAssetsInput
+    childApplication?: ApplicationCreateNestedOneWithoutChildAssetsInput
+    childConnection?: ConnectionCreateNestedOneWithoutChildAssetsInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAssetInput
   }
 
   export type AssetUncheckedCreateInput = {
     id?: string
-    parentPortfolioId: string
+    parentPortfolioId?: string | null
     assetType: $Enums.AssetType
-    targetAccountId?: string | null
-    targetApplicationId?: string | null
-    targetConnectionId?: string | null
+    parentAccountId?: string | null
+    childAccountId?: string | null
+    childApplicationId?: string | null
+    childConnectionId?: string | null
     details?: NullableJsonNullValueInput | InputJsonValue
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAssetInput
   }
@@ -42061,31 +42175,34 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
     details?: NullableJsonNullValueInput | InputJsonValue
-    portfolio?: PortfolioUpdateOneRequiredWithoutAssetsNestedInput
-    targetAccount?: AccountUpdateOneWithoutTargetAssetsNestedInput
-    targetApplication?: ApplicationUpdateOneWithoutTargetAssetsNestedInput
-    targetConnection?: ConnectionUpdateOneWithoutTargetAssetsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
+    parentAccount?: AccountUpdateOneWithoutParentAssetsNestedInput
+    childAccount?: AccountUpdateOneWithoutChildAssetsNestedInput
+    childApplication?: ApplicationUpdateOneWithoutChildAssetsNestedInput
+    childConnection?: ConnectionUpdateOneWithoutChildAssetsNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAssetNestedInput
   }
 
   export type AssetUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    parentPortfolioId?: StringFieldUpdateOperationsInput | string
+    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    targetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    targetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    targetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    childConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAssetNestedInput
   }
 
   export type AssetCreateManyInput = {
     id?: string
-    parentPortfolioId: string
+    parentPortfolioId?: string | null
     assetType: $Enums.AssetType
-    targetAccountId?: string | null
-    targetApplicationId?: string | null
-    targetConnectionId?: string | null
+    parentAccountId?: string | null
+    childAccountId?: string | null
+    childApplicationId?: string | null
+    childConnectionId?: string | null
     details?: NullableJsonNullValueInput | InputJsonValue
   }
 
@@ -42097,11 +42214,12 @@ export namespace Prisma {
 
   export type AssetUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    parentPortfolioId?: StringFieldUpdateOperationsInput | string
+    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    targetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    targetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    targetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    childConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
   }
 
@@ -42265,7 +42383,7 @@ export namespace Prisma {
     account: AccountCreateNestedOneWithoutConnectionsInput
     application: ApplicationCreateNestedOneWithoutConnectionsInput
     parentMembers?: MemberCreateNestedManyWithoutParentConnectionInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetConnectionInput
+    childAssets?: AssetCreateNestedManyWithoutChildConnectionInput
   }
 
   export type ConnectionUncheckedCreateInput = {
@@ -42276,7 +42394,7 @@ export namespace Prisma {
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     parentMembers?: MemberUncheckedCreateNestedManyWithoutParentConnectionInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetConnectionInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildConnectionInput
   }
 
   export type ConnectionUpdateInput = {
@@ -42287,7 +42405,7 @@ export namespace Prisma {
     account?: AccountUpdateOneRequiredWithoutConnectionsNestedInput
     application?: ApplicationUpdateOneRequiredWithoutConnectionsNestedInput
     parentMembers?: MemberUpdateManyWithoutParentConnectionNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetConnectionNestedInput
+    childAssets?: AssetUpdateManyWithoutChildConnectionNestedInput
   }
 
   export type ConnectionUncheckedUpdateInput = {
@@ -42298,7 +42416,7 @@ export namespace Prisma {
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     parentMembers?: MemberUncheckedUpdateManyWithoutParentConnectionNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetConnectionNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildConnectionNestedInput
   }
 
   export type ConnectionCreateManyInput = {
@@ -43878,9 +43996,9 @@ export namespace Prisma {
     not?: NestedEnumAssetTypeFilter<$PrismaModel> | $Enums.AssetType
   }
 
-  export type PortfolioScalarRelationFilter = {
-    is?: PortfolioWhereInput
-    isNot?: PortfolioWhereInput
+  export type PortfolioNullableScalarRelationFilter = {
+    is?: PortfolioWhereInput | null
+    isNot?: PortfolioWhereInput | null
   }
 
   export type ApplicationNullableScalarRelationFilter = {
@@ -43897,9 +44015,10 @@ export namespace Prisma {
     id?: SortOrder
     parentPortfolioId?: SortOrder
     assetType?: SortOrder
-    targetAccountId?: SortOrder
-    targetApplicationId?: SortOrder
-    targetConnectionId?: SortOrder
+    parentAccountId?: SortOrder
+    childAccountId?: SortOrder
+    childApplicationId?: SortOrder
+    childConnectionId?: SortOrder
     details?: SortOrder
   }
 
@@ -43907,18 +44026,20 @@ export namespace Prisma {
     id?: SortOrder
     parentPortfolioId?: SortOrder
     assetType?: SortOrder
-    targetAccountId?: SortOrder
-    targetApplicationId?: SortOrder
-    targetConnectionId?: SortOrder
+    parentAccountId?: SortOrder
+    childAccountId?: SortOrder
+    childApplicationId?: SortOrder
+    childConnectionId?: SortOrder
   }
 
   export type AssetMinOrderByAggregateInput = {
     id?: SortOrder
     parentPortfolioId?: SortOrder
     assetType?: SortOrder
-    targetAccountId?: SortOrder
-    targetApplicationId?: SortOrder
-    targetConnectionId?: SortOrder
+    parentAccountId?: SortOrder
+    childAccountId?: SortOrder
+    childApplicationId?: SortOrder
+    childConnectionId?: SortOrder
   }
 
   export type EnumAssetTypeWithAggregatesFilter<$PrismaModel = never> = {
@@ -43943,11 +44064,6 @@ export namespace Prisma {
     in?: $Enums.MemberStatus[] | ListEnumMemberStatusFieldRefInput<$PrismaModel>
     notIn?: $Enums.MemberStatus[] | ListEnumMemberStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumMemberStatusFilter<$PrismaModel> | $Enums.MemberStatus
-  }
-
-  export type PortfolioNullableScalarRelationFilter = {
-    is?: PortfolioWhereInput | null
-    isNot?: PortfolioWhereInput | null
   }
 
   export type AuthzRoleScalarRelationFilter = {
@@ -44358,10 +44474,17 @@ export namespace Prisma {
     connect?: AuthzAssetsAccessGrantWhereUniqueInput | AuthzAssetsAccessGrantWhereUniqueInput[]
   }
 
-  export type AssetCreateNestedManyWithoutTargetAccountInput = {
-    create?: XOR<AssetCreateWithoutTargetAccountInput, AssetUncheckedCreateWithoutTargetAccountInput> | AssetCreateWithoutTargetAccountInput[] | AssetUncheckedCreateWithoutTargetAccountInput[]
-    connectOrCreate?: AssetCreateOrConnectWithoutTargetAccountInput | AssetCreateOrConnectWithoutTargetAccountInput[]
-    createMany?: AssetCreateManyTargetAccountInputEnvelope
+  export type AssetCreateNestedManyWithoutParentAccountInput = {
+    create?: XOR<AssetCreateWithoutParentAccountInput, AssetUncheckedCreateWithoutParentAccountInput> | AssetCreateWithoutParentAccountInput[] | AssetUncheckedCreateWithoutParentAccountInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutParentAccountInput | AssetCreateOrConnectWithoutParentAccountInput[]
+    createMany?: AssetCreateManyParentAccountInputEnvelope
+    connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+  }
+
+  export type AssetCreateNestedManyWithoutChildAccountInput = {
+    create?: XOR<AssetCreateWithoutChildAccountInput, AssetUncheckedCreateWithoutChildAccountInput> | AssetCreateWithoutChildAccountInput[] | AssetUncheckedCreateWithoutChildAccountInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutChildAccountInput | AssetCreateOrConnectWithoutChildAccountInput[]
+    createMany?: AssetCreateManyChildAccountInputEnvelope
     connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
   }
 
@@ -44530,10 +44653,17 @@ export namespace Prisma {
     connect?: AuthzAssetsAccessGrantWhereUniqueInput | AuthzAssetsAccessGrantWhereUniqueInput[]
   }
 
-  export type AssetUncheckedCreateNestedManyWithoutTargetAccountInput = {
-    create?: XOR<AssetCreateWithoutTargetAccountInput, AssetUncheckedCreateWithoutTargetAccountInput> | AssetCreateWithoutTargetAccountInput[] | AssetUncheckedCreateWithoutTargetAccountInput[]
-    connectOrCreate?: AssetCreateOrConnectWithoutTargetAccountInput | AssetCreateOrConnectWithoutTargetAccountInput[]
-    createMany?: AssetCreateManyTargetAccountInputEnvelope
+  export type AssetUncheckedCreateNestedManyWithoutParentAccountInput = {
+    create?: XOR<AssetCreateWithoutParentAccountInput, AssetUncheckedCreateWithoutParentAccountInput> | AssetCreateWithoutParentAccountInput[] | AssetUncheckedCreateWithoutParentAccountInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutParentAccountInput | AssetCreateOrConnectWithoutParentAccountInput[]
+    createMany?: AssetCreateManyParentAccountInputEnvelope
+    connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+  }
+
+  export type AssetUncheckedCreateNestedManyWithoutChildAccountInput = {
+    create?: XOR<AssetCreateWithoutChildAccountInput, AssetUncheckedCreateWithoutChildAccountInput> | AssetCreateWithoutChildAccountInput[] | AssetUncheckedCreateWithoutChildAccountInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutChildAccountInput | AssetCreateOrConnectWithoutChildAccountInput[]
+    createMany?: AssetCreateManyChildAccountInputEnvelope
     connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
   }
 
@@ -44783,17 +44913,31 @@ export namespace Prisma {
     deleteMany?: AuthzAssetsAccessGrantScalarWhereInput | AuthzAssetsAccessGrantScalarWhereInput[]
   }
 
-  export type AssetUpdateManyWithoutTargetAccountNestedInput = {
-    create?: XOR<AssetCreateWithoutTargetAccountInput, AssetUncheckedCreateWithoutTargetAccountInput> | AssetCreateWithoutTargetAccountInput[] | AssetUncheckedCreateWithoutTargetAccountInput[]
-    connectOrCreate?: AssetCreateOrConnectWithoutTargetAccountInput | AssetCreateOrConnectWithoutTargetAccountInput[]
-    upsert?: AssetUpsertWithWhereUniqueWithoutTargetAccountInput | AssetUpsertWithWhereUniqueWithoutTargetAccountInput[]
-    createMany?: AssetCreateManyTargetAccountInputEnvelope
+  export type AssetUpdateManyWithoutParentAccountNestedInput = {
+    create?: XOR<AssetCreateWithoutParentAccountInput, AssetUncheckedCreateWithoutParentAccountInput> | AssetCreateWithoutParentAccountInput[] | AssetUncheckedCreateWithoutParentAccountInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutParentAccountInput | AssetCreateOrConnectWithoutParentAccountInput[]
+    upsert?: AssetUpsertWithWhereUniqueWithoutParentAccountInput | AssetUpsertWithWhereUniqueWithoutParentAccountInput[]
+    createMany?: AssetCreateManyParentAccountInputEnvelope
     set?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
     disconnect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
     delete?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
     connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    update?: AssetUpdateWithWhereUniqueWithoutTargetAccountInput | AssetUpdateWithWhereUniqueWithoutTargetAccountInput[]
-    updateMany?: AssetUpdateManyWithWhereWithoutTargetAccountInput | AssetUpdateManyWithWhereWithoutTargetAccountInput[]
+    update?: AssetUpdateWithWhereUniqueWithoutParentAccountInput | AssetUpdateWithWhereUniqueWithoutParentAccountInput[]
+    updateMany?: AssetUpdateManyWithWhereWithoutParentAccountInput | AssetUpdateManyWithWhereWithoutParentAccountInput[]
+    deleteMany?: AssetScalarWhereInput | AssetScalarWhereInput[]
+  }
+
+  export type AssetUpdateManyWithoutChildAccountNestedInput = {
+    create?: XOR<AssetCreateWithoutChildAccountInput, AssetUncheckedCreateWithoutChildAccountInput> | AssetCreateWithoutChildAccountInput[] | AssetUncheckedCreateWithoutChildAccountInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutChildAccountInput | AssetCreateOrConnectWithoutChildAccountInput[]
+    upsert?: AssetUpsertWithWhereUniqueWithoutChildAccountInput | AssetUpsertWithWhereUniqueWithoutChildAccountInput[]
+    createMany?: AssetCreateManyChildAccountInputEnvelope
+    set?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    disconnect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    delete?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    update?: AssetUpdateWithWhereUniqueWithoutChildAccountInput | AssetUpdateWithWhereUniqueWithoutChildAccountInput[]
+    updateMany?: AssetUpdateManyWithWhereWithoutChildAccountInput | AssetUpdateManyWithWhereWithoutChildAccountInput[]
     deleteMany?: AssetScalarWhereInput | AssetScalarWhereInput[]
   }
 
@@ -45121,17 +45265,31 @@ export namespace Prisma {
     deleteMany?: AuthzAssetsAccessGrantScalarWhereInput | AuthzAssetsAccessGrantScalarWhereInput[]
   }
 
-  export type AssetUncheckedUpdateManyWithoutTargetAccountNestedInput = {
-    create?: XOR<AssetCreateWithoutTargetAccountInput, AssetUncheckedCreateWithoutTargetAccountInput> | AssetCreateWithoutTargetAccountInput[] | AssetUncheckedCreateWithoutTargetAccountInput[]
-    connectOrCreate?: AssetCreateOrConnectWithoutTargetAccountInput | AssetCreateOrConnectWithoutTargetAccountInput[]
-    upsert?: AssetUpsertWithWhereUniqueWithoutTargetAccountInput | AssetUpsertWithWhereUniqueWithoutTargetAccountInput[]
-    createMany?: AssetCreateManyTargetAccountInputEnvelope
+  export type AssetUncheckedUpdateManyWithoutParentAccountNestedInput = {
+    create?: XOR<AssetCreateWithoutParentAccountInput, AssetUncheckedCreateWithoutParentAccountInput> | AssetCreateWithoutParentAccountInput[] | AssetUncheckedCreateWithoutParentAccountInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutParentAccountInput | AssetCreateOrConnectWithoutParentAccountInput[]
+    upsert?: AssetUpsertWithWhereUniqueWithoutParentAccountInput | AssetUpsertWithWhereUniqueWithoutParentAccountInput[]
+    createMany?: AssetCreateManyParentAccountInputEnvelope
     set?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
     disconnect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
     delete?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
     connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    update?: AssetUpdateWithWhereUniqueWithoutTargetAccountInput | AssetUpdateWithWhereUniqueWithoutTargetAccountInput[]
-    updateMany?: AssetUpdateManyWithWhereWithoutTargetAccountInput | AssetUpdateManyWithWhereWithoutTargetAccountInput[]
+    update?: AssetUpdateWithWhereUniqueWithoutParentAccountInput | AssetUpdateWithWhereUniqueWithoutParentAccountInput[]
+    updateMany?: AssetUpdateManyWithWhereWithoutParentAccountInput | AssetUpdateManyWithWhereWithoutParentAccountInput[]
+    deleteMany?: AssetScalarWhereInput | AssetScalarWhereInput[]
+  }
+
+  export type AssetUncheckedUpdateManyWithoutChildAccountNestedInput = {
+    create?: XOR<AssetCreateWithoutChildAccountInput, AssetUncheckedCreateWithoutChildAccountInput> | AssetCreateWithoutChildAccountInput[] | AssetUncheckedCreateWithoutChildAccountInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutChildAccountInput | AssetCreateOrConnectWithoutChildAccountInput[]
+    upsert?: AssetUpsertWithWhereUniqueWithoutChildAccountInput | AssetUpsertWithWhereUniqueWithoutChildAccountInput[]
+    createMany?: AssetCreateManyChildAccountInputEnvelope
+    set?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    disconnect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    delete?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+    update?: AssetUpdateWithWhereUniqueWithoutChildAccountInput | AssetUpdateWithWhereUniqueWithoutChildAccountInput[]
+    updateMany?: AssetUpdateManyWithWhereWithoutChildAccountInput | AssetUpdateManyWithWhereWithoutChildAccountInput[]
     deleteMany?: AssetScalarWhereInput | AssetScalarWhereInput[]
   }
 
@@ -45654,10 +45812,10 @@ export namespace Prisma {
     connect?: IdentityWhereUniqueInput | IdentityWhereUniqueInput[]
   }
 
-  export type AssetCreateNestedManyWithoutTargetApplicationInput = {
-    create?: XOR<AssetCreateWithoutTargetApplicationInput, AssetUncheckedCreateWithoutTargetApplicationInput> | AssetCreateWithoutTargetApplicationInput[] | AssetUncheckedCreateWithoutTargetApplicationInput[]
-    connectOrCreate?: AssetCreateOrConnectWithoutTargetApplicationInput | AssetCreateOrConnectWithoutTargetApplicationInput[]
-    createMany?: AssetCreateManyTargetApplicationInputEnvelope
+  export type AssetCreateNestedManyWithoutChildApplicationInput = {
+    create?: XOR<AssetCreateWithoutChildApplicationInput, AssetUncheckedCreateWithoutChildApplicationInput> | AssetCreateWithoutChildApplicationInput[] | AssetUncheckedCreateWithoutChildApplicationInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutChildApplicationInput | AssetCreateOrConnectWithoutChildApplicationInput[]
+    createMany?: AssetCreateManyChildApplicationInputEnvelope
     connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
   }
 
@@ -45710,10 +45868,10 @@ export namespace Prisma {
     connect?: IdentityWhereUniqueInput | IdentityWhereUniqueInput[]
   }
 
-  export type AssetUncheckedCreateNestedManyWithoutTargetApplicationInput = {
-    create?: XOR<AssetCreateWithoutTargetApplicationInput, AssetUncheckedCreateWithoutTargetApplicationInput> | AssetCreateWithoutTargetApplicationInput[] | AssetUncheckedCreateWithoutTargetApplicationInput[]
-    connectOrCreate?: AssetCreateOrConnectWithoutTargetApplicationInput | AssetCreateOrConnectWithoutTargetApplicationInput[]
-    createMany?: AssetCreateManyTargetApplicationInputEnvelope
+  export type AssetUncheckedCreateNestedManyWithoutChildApplicationInput = {
+    create?: XOR<AssetCreateWithoutChildApplicationInput, AssetUncheckedCreateWithoutChildApplicationInput> | AssetCreateWithoutChildApplicationInput[] | AssetUncheckedCreateWithoutChildApplicationInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutChildApplicationInput | AssetCreateOrConnectWithoutChildApplicationInput[]
+    createMany?: AssetCreateManyChildApplicationInputEnvelope
     connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
   }
 
@@ -45843,17 +46001,17 @@ export namespace Prisma {
     deleteMany?: IdentityScalarWhereInput | IdentityScalarWhereInput[]
   }
 
-  export type AssetUpdateManyWithoutTargetApplicationNestedInput = {
-    create?: XOR<AssetCreateWithoutTargetApplicationInput, AssetUncheckedCreateWithoutTargetApplicationInput> | AssetCreateWithoutTargetApplicationInput[] | AssetUncheckedCreateWithoutTargetApplicationInput[]
-    connectOrCreate?: AssetCreateOrConnectWithoutTargetApplicationInput | AssetCreateOrConnectWithoutTargetApplicationInput[]
-    upsert?: AssetUpsertWithWhereUniqueWithoutTargetApplicationInput | AssetUpsertWithWhereUniqueWithoutTargetApplicationInput[]
-    createMany?: AssetCreateManyTargetApplicationInputEnvelope
+  export type AssetUpdateManyWithoutChildApplicationNestedInput = {
+    create?: XOR<AssetCreateWithoutChildApplicationInput, AssetUncheckedCreateWithoutChildApplicationInput> | AssetCreateWithoutChildApplicationInput[] | AssetUncheckedCreateWithoutChildApplicationInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutChildApplicationInput | AssetCreateOrConnectWithoutChildApplicationInput[]
+    upsert?: AssetUpsertWithWhereUniqueWithoutChildApplicationInput | AssetUpsertWithWhereUniqueWithoutChildApplicationInput[]
+    createMany?: AssetCreateManyChildApplicationInputEnvelope
     set?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
     disconnect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
     delete?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
     connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    update?: AssetUpdateWithWhereUniqueWithoutTargetApplicationInput | AssetUpdateWithWhereUniqueWithoutTargetApplicationInput[]
-    updateMany?: AssetUpdateManyWithWhereWithoutTargetApplicationInput | AssetUpdateManyWithWhereWithoutTargetApplicationInput[]
+    update?: AssetUpdateWithWhereUniqueWithoutChildApplicationInput | AssetUpdateWithWhereUniqueWithoutChildApplicationInput[]
+    updateMany?: AssetUpdateManyWithWhereWithoutChildApplicationInput | AssetUpdateManyWithWhereWithoutChildApplicationInput[]
     deleteMany?: AssetScalarWhereInput | AssetScalarWhereInput[]
   }
 
@@ -45955,17 +46113,17 @@ export namespace Prisma {
     deleteMany?: IdentityScalarWhereInput | IdentityScalarWhereInput[]
   }
 
-  export type AssetUncheckedUpdateManyWithoutTargetApplicationNestedInput = {
-    create?: XOR<AssetCreateWithoutTargetApplicationInput, AssetUncheckedCreateWithoutTargetApplicationInput> | AssetCreateWithoutTargetApplicationInput[] | AssetUncheckedCreateWithoutTargetApplicationInput[]
-    connectOrCreate?: AssetCreateOrConnectWithoutTargetApplicationInput | AssetCreateOrConnectWithoutTargetApplicationInput[]
-    upsert?: AssetUpsertWithWhereUniqueWithoutTargetApplicationInput | AssetUpsertWithWhereUniqueWithoutTargetApplicationInput[]
-    createMany?: AssetCreateManyTargetApplicationInputEnvelope
+  export type AssetUncheckedUpdateManyWithoutChildApplicationNestedInput = {
+    create?: XOR<AssetCreateWithoutChildApplicationInput, AssetUncheckedCreateWithoutChildApplicationInput> | AssetCreateWithoutChildApplicationInput[] | AssetUncheckedCreateWithoutChildApplicationInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutChildApplicationInput | AssetCreateOrConnectWithoutChildApplicationInput[]
+    upsert?: AssetUpsertWithWhereUniqueWithoutChildApplicationInput | AssetUpsertWithWhereUniqueWithoutChildApplicationInput[]
+    createMany?: AssetCreateManyChildApplicationInputEnvelope
     set?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
     disconnect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
     delete?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
     connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    update?: AssetUpdateWithWhereUniqueWithoutTargetApplicationInput | AssetUpdateWithWhereUniqueWithoutTargetApplicationInput[]
-    updateMany?: AssetUpdateManyWithWhereWithoutTargetApplicationInput | AssetUpdateManyWithWhereWithoutTargetApplicationInput[]
+    update?: AssetUpdateWithWhereUniqueWithoutChildApplicationInput | AssetUpdateWithWhereUniqueWithoutChildApplicationInput[]
+    updateMany?: AssetUpdateManyWithWhereWithoutChildApplicationInput | AssetUpdateManyWithWhereWithoutChildApplicationInput[]
     deleteMany?: AssetScalarWhereInput | AssetScalarWhereInput[]
   }
 
@@ -46101,21 +46259,27 @@ export namespace Prisma {
     connect?: PortfolioWhereUniqueInput
   }
 
-  export type AccountCreateNestedOneWithoutTargetAssetsInput = {
-    create?: XOR<AccountCreateWithoutTargetAssetsInput, AccountUncheckedCreateWithoutTargetAssetsInput>
-    connectOrCreate?: AccountCreateOrConnectWithoutTargetAssetsInput
+  export type AccountCreateNestedOneWithoutParentAssetsInput = {
+    create?: XOR<AccountCreateWithoutParentAssetsInput, AccountUncheckedCreateWithoutParentAssetsInput>
+    connectOrCreate?: AccountCreateOrConnectWithoutParentAssetsInput
     connect?: AccountWhereUniqueInput
   }
 
-  export type ApplicationCreateNestedOneWithoutTargetAssetsInput = {
-    create?: XOR<ApplicationCreateWithoutTargetAssetsInput, ApplicationUncheckedCreateWithoutTargetAssetsInput>
-    connectOrCreate?: ApplicationCreateOrConnectWithoutTargetAssetsInput
+  export type AccountCreateNestedOneWithoutChildAssetsInput = {
+    create?: XOR<AccountCreateWithoutChildAssetsInput, AccountUncheckedCreateWithoutChildAssetsInput>
+    connectOrCreate?: AccountCreateOrConnectWithoutChildAssetsInput
+    connect?: AccountWhereUniqueInput
+  }
+
+  export type ApplicationCreateNestedOneWithoutChildAssetsInput = {
+    create?: XOR<ApplicationCreateWithoutChildAssetsInput, ApplicationUncheckedCreateWithoutChildAssetsInput>
+    connectOrCreate?: ApplicationCreateOrConnectWithoutChildAssetsInput
     connect?: ApplicationWhereUniqueInput
   }
 
-  export type ConnectionCreateNestedOneWithoutTargetAssetsInput = {
-    create?: XOR<ConnectionCreateWithoutTargetAssetsInput, ConnectionUncheckedCreateWithoutTargetAssetsInput>
-    connectOrCreate?: ConnectionCreateOrConnectWithoutTargetAssetsInput
+  export type ConnectionCreateNestedOneWithoutChildAssetsInput = {
+    create?: XOR<ConnectionCreateWithoutChildAssetsInput, ConnectionUncheckedCreateWithoutChildAssetsInput>
+    connectOrCreate?: ConnectionCreateOrConnectWithoutChildAssetsInput
     connect?: ConnectionWhereUniqueInput
   }
 
@@ -46137,42 +46301,54 @@ export namespace Prisma {
     set?: $Enums.AssetType
   }
 
-  export type PortfolioUpdateOneRequiredWithoutAssetsNestedInput = {
+  export type PortfolioUpdateOneWithoutAssetsNestedInput = {
     create?: XOR<PortfolioCreateWithoutAssetsInput, PortfolioUncheckedCreateWithoutAssetsInput>
     connectOrCreate?: PortfolioCreateOrConnectWithoutAssetsInput
     upsert?: PortfolioUpsertWithoutAssetsInput
+    disconnect?: PortfolioWhereInput | boolean
+    delete?: PortfolioWhereInput | boolean
     connect?: PortfolioWhereUniqueInput
     update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutAssetsInput, PortfolioUpdateWithoutAssetsInput>, PortfolioUncheckedUpdateWithoutAssetsInput>
   }
 
-  export type AccountUpdateOneWithoutTargetAssetsNestedInput = {
-    create?: XOR<AccountCreateWithoutTargetAssetsInput, AccountUncheckedCreateWithoutTargetAssetsInput>
-    connectOrCreate?: AccountCreateOrConnectWithoutTargetAssetsInput
-    upsert?: AccountUpsertWithoutTargetAssetsInput
+  export type AccountUpdateOneWithoutParentAssetsNestedInput = {
+    create?: XOR<AccountCreateWithoutParentAssetsInput, AccountUncheckedCreateWithoutParentAssetsInput>
+    connectOrCreate?: AccountCreateOrConnectWithoutParentAssetsInput
+    upsert?: AccountUpsertWithoutParentAssetsInput
     disconnect?: AccountWhereInput | boolean
     delete?: AccountWhereInput | boolean
     connect?: AccountWhereUniqueInput
-    update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutTargetAssetsInput, AccountUpdateWithoutTargetAssetsInput>, AccountUncheckedUpdateWithoutTargetAssetsInput>
+    update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutParentAssetsInput, AccountUpdateWithoutParentAssetsInput>, AccountUncheckedUpdateWithoutParentAssetsInput>
   }
 
-  export type ApplicationUpdateOneWithoutTargetAssetsNestedInput = {
-    create?: XOR<ApplicationCreateWithoutTargetAssetsInput, ApplicationUncheckedCreateWithoutTargetAssetsInput>
-    connectOrCreate?: ApplicationCreateOrConnectWithoutTargetAssetsInput
-    upsert?: ApplicationUpsertWithoutTargetAssetsInput
+  export type AccountUpdateOneWithoutChildAssetsNestedInput = {
+    create?: XOR<AccountCreateWithoutChildAssetsInput, AccountUncheckedCreateWithoutChildAssetsInput>
+    connectOrCreate?: AccountCreateOrConnectWithoutChildAssetsInput
+    upsert?: AccountUpsertWithoutChildAssetsInput
+    disconnect?: AccountWhereInput | boolean
+    delete?: AccountWhereInput | boolean
+    connect?: AccountWhereUniqueInput
+    update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutChildAssetsInput, AccountUpdateWithoutChildAssetsInput>, AccountUncheckedUpdateWithoutChildAssetsInput>
+  }
+
+  export type ApplicationUpdateOneWithoutChildAssetsNestedInput = {
+    create?: XOR<ApplicationCreateWithoutChildAssetsInput, ApplicationUncheckedCreateWithoutChildAssetsInput>
+    connectOrCreate?: ApplicationCreateOrConnectWithoutChildAssetsInput
+    upsert?: ApplicationUpsertWithoutChildAssetsInput
     disconnect?: ApplicationWhereInput | boolean
     delete?: ApplicationWhereInput | boolean
     connect?: ApplicationWhereUniqueInput
-    update?: XOR<XOR<ApplicationUpdateToOneWithWhereWithoutTargetAssetsInput, ApplicationUpdateWithoutTargetAssetsInput>, ApplicationUncheckedUpdateWithoutTargetAssetsInput>
+    update?: XOR<XOR<ApplicationUpdateToOneWithWhereWithoutChildAssetsInput, ApplicationUpdateWithoutChildAssetsInput>, ApplicationUncheckedUpdateWithoutChildAssetsInput>
   }
 
-  export type ConnectionUpdateOneWithoutTargetAssetsNestedInput = {
-    create?: XOR<ConnectionCreateWithoutTargetAssetsInput, ConnectionUncheckedCreateWithoutTargetAssetsInput>
-    connectOrCreate?: ConnectionCreateOrConnectWithoutTargetAssetsInput
-    upsert?: ConnectionUpsertWithoutTargetAssetsInput
+  export type ConnectionUpdateOneWithoutChildAssetsNestedInput = {
+    create?: XOR<ConnectionCreateWithoutChildAssetsInput, ConnectionUncheckedCreateWithoutChildAssetsInput>
+    connectOrCreate?: ConnectionCreateOrConnectWithoutChildAssetsInput
+    upsert?: ConnectionUpsertWithoutChildAssetsInput
     disconnect?: ConnectionWhereInput | boolean
     delete?: ConnectionWhereInput | boolean
     connect?: ConnectionWhereUniqueInput
-    update?: XOR<XOR<ConnectionUpdateToOneWithWhereWithoutTargetAssetsInput, ConnectionUpdateWithoutTargetAssetsInput>, ConnectionUncheckedUpdateWithoutTargetAssetsInput>
+    update?: XOR<XOR<ConnectionUpdateToOneWithWhereWithoutChildAssetsInput, ConnectionUpdateWithoutChildAssetsInput>, ConnectionUncheckedUpdateWithoutChildAssetsInput>
   }
 
   export type AuthzAssetsAccessGrantUpdateManyWithoutAssetNestedInput = {
@@ -46364,10 +46540,10 @@ export namespace Prisma {
     connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
   }
 
-  export type AssetCreateNestedManyWithoutTargetConnectionInput = {
-    create?: XOR<AssetCreateWithoutTargetConnectionInput, AssetUncheckedCreateWithoutTargetConnectionInput> | AssetCreateWithoutTargetConnectionInput[] | AssetUncheckedCreateWithoutTargetConnectionInput[]
-    connectOrCreate?: AssetCreateOrConnectWithoutTargetConnectionInput | AssetCreateOrConnectWithoutTargetConnectionInput[]
-    createMany?: AssetCreateManyTargetConnectionInputEnvelope
+  export type AssetCreateNestedManyWithoutChildConnectionInput = {
+    create?: XOR<AssetCreateWithoutChildConnectionInput, AssetUncheckedCreateWithoutChildConnectionInput> | AssetCreateWithoutChildConnectionInput[] | AssetUncheckedCreateWithoutChildConnectionInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutChildConnectionInput | AssetCreateOrConnectWithoutChildConnectionInput[]
+    createMany?: AssetCreateManyChildConnectionInputEnvelope
     connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
   }
 
@@ -46378,10 +46554,10 @@ export namespace Prisma {
     connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
   }
 
-  export type AssetUncheckedCreateNestedManyWithoutTargetConnectionInput = {
-    create?: XOR<AssetCreateWithoutTargetConnectionInput, AssetUncheckedCreateWithoutTargetConnectionInput> | AssetCreateWithoutTargetConnectionInput[] | AssetUncheckedCreateWithoutTargetConnectionInput[]
-    connectOrCreate?: AssetCreateOrConnectWithoutTargetConnectionInput | AssetCreateOrConnectWithoutTargetConnectionInput[]
-    createMany?: AssetCreateManyTargetConnectionInputEnvelope
+  export type AssetUncheckedCreateNestedManyWithoutChildConnectionInput = {
+    create?: XOR<AssetCreateWithoutChildConnectionInput, AssetUncheckedCreateWithoutChildConnectionInput> | AssetCreateWithoutChildConnectionInput[] | AssetUncheckedCreateWithoutChildConnectionInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutChildConnectionInput | AssetCreateOrConnectWithoutChildConnectionInput[]
+    createMany?: AssetCreateManyChildConnectionInputEnvelope
     connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
   }
 
@@ -46415,17 +46591,17 @@ export namespace Prisma {
     deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
   }
 
-  export type AssetUpdateManyWithoutTargetConnectionNestedInput = {
-    create?: XOR<AssetCreateWithoutTargetConnectionInput, AssetUncheckedCreateWithoutTargetConnectionInput> | AssetCreateWithoutTargetConnectionInput[] | AssetUncheckedCreateWithoutTargetConnectionInput[]
-    connectOrCreate?: AssetCreateOrConnectWithoutTargetConnectionInput | AssetCreateOrConnectWithoutTargetConnectionInput[]
-    upsert?: AssetUpsertWithWhereUniqueWithoutTargetConnectionInput | AssetUpsertWithWhereUniqueWithoutTargetConnectionInput[]
-    createMany?: AssetCreateManyTargetConnectionInputEnvelope
+  export type AssetUpdateManyWithoutChildConnectionNestedInput = {
+    create?: XOR<AssetCreateWithoutChildConnectionInput, AssetUncheckedCreateWithoutChildConnectionInput> | AssetCreateWithoutChildConnectionInput[] | AssetUncheckedCreateWithoutChildConnectionInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutChildConnectionInput | AssetCreateOrConnectWithoutChildConnectionInput[]
+    upsert?: AssetUpsertWithWhereUniqueWithoutChildConnectionInput | AssetUpsertWithWhereUniqueWithoutChildConnectionInput[]
+    createMany?: AssetCreateManyChildConnectionInputEnvelope
     set?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
     disconnect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
     delete?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
     connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    update?: AssetUpdateWithWhereUniqueWithoutTargetConnectionInput | AssetUpdateWithWhereUniqueWithoutTargetConnectionInput[]
-    updateMany?: AssetUpdateManyWithWhereWithoutTargetConnectionInput | AssetUpdateManyWithWhereWithoutTargetConnectionInput[]
+    update?: AssetUpdateWithWhereUniqueWithoutChildConnectionInput | AssetUpdateWithWhereUniqueWithoutChildConnectionInput[]
+    updateMany?: AssetUpdateManyWithWhereWithoutChildConnectionInput | AssetUpdateManyWithWhereWithoutChildConnectionInput[]
     deleteMany?: AssetScalarWhereInput | AssetScalarWhereInput[]
   }
 
@@ -46443,17 +46619,17 @@ export namespace Prisma {
     deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
   }
 
-  export type AssetUncheckedUpdateManyWithoutTargetConnectionNestedInput = {
-    create?: XOR<AssetCreateWithoutTargetConnectionInput, AssetUncheckedCreateWithoutTargetConnectionInput> | AssetCreateWithoutTargetConnectionInput[] | AssetUncheckedCreateWithoutTargetConnectionInput[]
-    connectOrCreate?: AssetCreateOrConnectWithoutTargetConnectionInput | AssetCreateOrConnectWithoutTargetConnectionInput[]
-    upsert?: AssetUpsertWithWhereUniqueWithoutTargetConnectionInput | AssetUpsertWithWhereUniqueWithoutTargetConnectionInput[]
-    createMany?: AssetCreateManyTargetConnectionInputEnvelope
+  export type AssetUncheckedUpdateManyWithoutChildConnectionNestedInput = {
+    create?: XOR<AssetCreateWithoutChildConnectionInput, AssetUncheckedCreateWithoutChildConnectionInput> | AssetCreateWithoutChildConnectionInput[] | AssetUncheckedCreateWithoutChildConnectionInput[]
+    connectOrCreate?: AssetCreateOrConnectWithoutChildConnectionInput | AssetCreateOrConnectWithoutChildConnectionInput[]
+    upsert?: AssetUpsertWithWhereUniqueWithoutChildConnectionInput | AssetUpsertWithWhereUniqueWithoutChildConnectionInput[]
+    createMany?: AssetCreateManyChildConnectionInputEnvelope
     set?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
     disconnect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
     delete?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
     connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    update?: AssetUpdateWithWhereUniqueWithoutTargetConnectionInput | AssetUpdateWithWhereUniqueWithoutTargetConnectionInput[]
-    updateMany?: AssetUpdateManyWithWhereWithoutTargetConnectionInput | AssetUpdateManyWithWhereWithoutTargetConnectionInput[]
+    update?: AssetUpdateWithWhereUniqueWithoutChildConnectionInput | AssetUpdateWithWhereUniqueWithoutChildConnectionInput[]
+    updateMany?: AssetUpdateManyWithWhereWithoutChildConnectionInput | AssetUpdateManyWithWhereWithoutChildConnectionInput[]
     deleteMany?: AssetScalarWhereInput | AssetScalarWhereInput[]
   }
 
@@ -47041,7 +47217,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     application: ApplicationCreateNestedOneWithoutConnectionsInput
     parentMembers?: MemberCreateNestedManyWithoutParentConnectionInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetConnectionInput
+    childAssets?: AssetCreateNestedManyWithoutChildConnectionInput
   }
 
   export type ConnectionUncheckedCreateWithoutAccountInput = {
@@ -47051,7 +47227,7 @@ export namespace Prisma {
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     parentMembers?: MemberUncheckedCreateNestedManyWithoutParentConnectionInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetConnectionInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildConnectionInput
   }
 
   export type ConnectionCreateOrConnectWithoutAccountInput = {
@@ -47290,33 +47466,67 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type AssetCreateWithoutTargetAccountInput = {
+  export type AssetCreateWithoutParentAccountInput = {
     id?: string
     assetType: $Enums.AssetType
     details?: NullableJsonNullValueInput | InputJsonValue
-    portfolio: PortfolioCreateNestedOneWithoutAssetsInput
-    targetApplication?: ApplicationCreateNestedOneWithoutTargetAssetsInput
-    targetConnection?: ConnectionCreateNestedOneWithoutTargetAssetsInput
+    portfolio?: PortfolioCreateNestedOneWithoutAssetsInput
+    childAccount?: AccountCreateNestedOneWithoutChildAssetsInput
+    childApplication?: ApplicationCreateNestedOneWithoutChildAssetsInput
+    childConnection?: ConnectionCreateNestedOneWithoutChildAssetsInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutTargetAccountInput = {
+  export type AssetUncheckedCreateWithoutParentAccountInput = {
     id?: string
-    parentPortfolioId: string
+    parentPortfolioId?: string | null
     assetType: $Enums.AssetType
-    targetApplicationId?: string | null
-    targetConnectionId?: string | null
+    childAccountId?: string | null
+    childApplicationId?: string | null
+    childConnectionId?: string | null
     details?: NullableJsonNullValueInput | InputJsonValue
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutTargetAccountInput = {
+  export type AssetCreateOrConnectWithoutParentAccountInput = {
     where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutTargetAccountInput, AssetUncheckedCreateWithoutTargetAccountInput>
+    create: XOR<AssetCreateWithoutParentAccountInput, AssetUncheckedCreateWithoutParentAccountInput>
   }
 
-  export type AssetCreateManyTargetAccountInputEnvelope = {
-    data: AssetCreateManyTargetAccountInput | AssetCreateManyTargetAccountInput[]
+  export type AssetCreateManyParentAccountInputEnvelope = {
+    data: AssetCreateManyParentAccountInput | AssetCreateManyParentAccountInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AssetCreateWithoutChildAccountInput = {
+    id?: string
+    assetType: $Enums.AssetType
+    details?: NullableJsonNullValueInput | InputJsonValue
+    portfolio?: PortfolioCreateNestedOneWithoutAssetsInput
+    parentAccount?: AccountCreateNestedOneWithoutParentAssetsInput
+    childApplication?: ApplicationCreateNestedOneWithoutChildAssetsInput
+    childConnection?: ConnectionCreateNestedOneWithoutChildAssetsInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAssetInput
+  }
+
+  export type AssetUncheckedCreateWithoutChildAccountInput = {
+    id?: string
+    parentPortfolioId?: string | null
+    assetType: $Enums.AssetType
+    parentAccountId?: string | null
+    childApplicationId?: string | null
+    childConnectionId?: string | null
+    details?: NullableJsonNullValueInput | InputJsonValue
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAssetInput
+  }
+
+  export type AssetCreateOrConnectWithoutChildAccountInput = {
+    where: AssetWhereUniqueInput
+    create: XOR<AssetCreateWithoutChildAccountInput, AssetUncheckedCreateWithoutChildAccountInput>
+  }
+
+  export type AssetCreateManyChildAccountInputEnvelope = {
+    data: AssetCreateManyChildAccountInput | AssetCreateManyChildAccountInput[]
     skipDuplicates?: boolean
   }
 
@@ -47566,7 +47776,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -47602,7 +47813,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -47641,7 +47853,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -47676,7 +47889,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -48142,20 +48356,20 @@ export namespace Prisma {
     asset_type?: StringNullableFilter<"AuthzAssetsAccessGrant"> | string | null
   }
 
-  export type AssetUpsertWithWhereUniqueWithoutTargetAccountInput = {
+  export type AssetUpsertWithWhereUniqueWithoutParentAccountInput = {
     where: AssetWhereUniqueInput
-    update: XOR<AssetUpdateWithoutTargetAccountInput, AssetUncheckedUpdateWithoutTargetAccountInput>
-    create: XOR<AssetCreateWithoutTargetAccountInput, AssetUncheckedCreateWithoutTargetAccountInput>
+    update: XOR<AssetUpdateWithoutParentAccountInput, AssetUncheckedUpdateWithoutParentAccountInput>
+    create: XOR<AssetCreateWithoutParentAccountInput, AssetUncheckedCreateWithoutParentAccountInput>
   }
 
-  export type AssetUpdateWithWhereUniqueWithoutTargetAccountInput = {
+  export type AssetUpdateWithWhereUniqueWithoutParentAccountInput = {
     where: AssetWhereUniqueInput
-    data: XOR<AssetUpdateWithoutTargetAccountInput, AssetUncheckedUpdateWithoutTargetAccountInput>
+    data: XOR<AssetUpdateWithoutParentAccountInput, AssetUncheckedUpdateWithoutParentAccountInput>
   }
 
-  export type AssetUpdateManyWithWhereWithoutTargetAccountInput = {
+  export type AssetUpdateManyWithWhereWithoutParentAccountInput = {
     where: AssetScalarWhereInput
-    data: XOR<AssetUpdateManyMutationInput, AssetUncheckedUpdateManyWithoutTargetAccountInput>
+    data: XOR<AssetUpdateManyMutationInput, AssetUncheckedUpdateManyWithoutParentAccountInput>
   }
 
   export type AssetScalarWhereInput = {
@@ -48163,12 +48377,29 @@ export namespace Prisma {
     OR?: AssetScalarWhereInput[]
     NOT?: AssetScalarWhereInput | AssetScalarWhereInput[]
     id?: StringFilter<"Asset"> | string
-    parentPortfolioId?: StringFilter<"Asset"> | string
+    parentPortfolioId?: StringNullableFilter<"Asset"> | string | null
     assetType?: EnumAssetTypeFilter<"Asset"> | $Enums.AssetType
-    targetAccountId?: StringNullableFilter<"Asset"> | string | null
-    targetApplicationId?: StringNullableFilter<"Asset"> | string | null
-    targetConnectionId?: StringNullableFilter<"Asset"> | string | null
+    parentAccountId?: StringNullableFilter<"Asset"> | string | null
+    childAccountId?: StringNullableFilter<"Asset"> | string | null
+    childApplicationId?: StringNullableFilter<"Asset"> | string | null
+    childConnectionId?: StringNullableFilter<"Asset"> | string | null
     details?: JsonNullableFilter<"Asset">
+  }
+
+  export type AssetUpsertWithWhereUniqueWithoutChildAccountInput = {
+    where: AssetWhereUniqueInput
+    update: XOR<AssetUpdateWithoutChildAccountInput, AssetUncheckedUpdateWithoutChildAccountInput>
+    create: XOR<AssetCreateWithoutChildAccountInput, AssetUncheckedCreateWithoutChildAccountInput>
+  }
+
+  export type AssetUpdateWithWhereUniqueWithoutChildAccountInput = {
+    where: AssetWhereUniqueInput
+    data: XOR<AssetUpdateWithoutChildAccountInput, AssetUncheckedUpdateWithoutChildAccountInput>
+  }
+
+  export type AssetUpdateManyWithWhereWithoutChildAccountInput = {
+    where: AssetScalarWhereInput
+    data: XOR<AssetUpdateManyMutationInput, AssetUncheckedUpdateManyWithoutChildAccountInput>
   }
 
   export type MemberUpsertWithWhereUniqueWithoutMemberInput = {
@@ -48358,7 +48589,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -48394,7 +48626,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -48550,7 +48783,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -48586,7 +48820,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -48636,7 +48871,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -48672,7 +48908,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -48706,7 +48943,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -48742,7 +48980,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -48792,7 +49031,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -48828,7 +49068,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -48862,7 +49103,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -48898,7 +49140,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -48948,7 +49191,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -48984,7 +49228,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -49019,7 +49264,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -49055,7 +49301,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -49094,7 +49341,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -49130,7 +49378,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -49180,7 +49429,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -49216,7 +49466,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -49261,7 +49512,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -49297,7 +49549,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -49385,7 +49638,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutAccountInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -49421,7 +49675,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutAccountInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -49494,7 +49749,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutAccountNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -49530,7 +49786,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutAccountNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -49565,7 +49822,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -49601,7 +49859,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -49639,7 +49898,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutAccountInput
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -49675,7 +49935,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutAccountInput
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -49726,7 +49987,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -49762,7 +50024,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -49806,7 +50069,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutAccountNestedInput
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -49842,7 +50106,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutAccountNestedInput
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -49876,7 +50141,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -49912,7 +50178,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -49962,7 +50229,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -49998,7 +50266,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -50032,7 +50301,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -50068,7 +50338,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -50118,7 +50389,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -50154,7 +50426,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -50188,7 +50461,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -50224,7 +50498,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -50274,7 +50549,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -50310,7 +50586,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -50344,7 +50621,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -50380,7 +50658,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -50430,7 +50709,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -50466,7 +50746,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -50501,7 +50782,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -50537,7 +50819,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -50587,7 +50870,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -50623,7 +50907,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -50659,7 +50944,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetApplicationInput
+    childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutProviderInput = {
@@ -50684,7 +50969,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetApplicationInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutProviderInput = {
@@ -50760,7 +51045,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     account: AccountCreateNestedOneWithoutConnectionsInput
     parentMembers?: MemberCreateNestedManyWithoutParentConnectionInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetConnectionInput
+    childAssets?: AssetCreateNestedManyWithoutChildConnectionInput
   }
 
   export type ConnectionUncheckedCreateWithoutApplicationInput = {
@@ -50770,7 +51055,7 @@ export namespace Prisma {
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     parentMembers?: MemberUncheckedCreateNestedManyWithoutParentConnectionInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetConnectionInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildConnectionInput
   }
 
   export type ConnectionCreateOrConnectWithoutApplicationInput = {
@@ -50955,33 +51240,35 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type AssetCreateWithoutTargetApplicationInput = {
+  export type AssetCreateWithoutChildApplicationInput = {
     id?: string
     assetType: $Enums.AssetType
     details?: NullableJsonNullValueInput | InputJsonValue
-    portfolio: PortfolioCreateNestedOneWithoutAssetsInput
-    targetAccount?: AccountCreateNestedOneWithoutTargetAssetsInput
-    targetConnection?: ConnectionCreateNestedOneWithoutTargetAssetsInput
+    portfolio?: PortfolioCreateNestedOneWithoutAssetsInput
+    parentAccount?: AccountCreateNestedOneWithoutParentAssetsInput
+    childAccount?: AccountCreateNestedOneWithoutChildAssetsInput
+    childConnection?: ConnectionCreateNestedOneWithoutChildAssetsInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutTargetApplicationInput = {
+  export type AssetUncheckedCreateWithoutChildApplicationInput = {
     id?: string
-    parentPortfolioId: string
+    parentPortfolioId?: string | null
     assetType: $Enums.AssetType
-    targetAccountId?: string | null
-    targetConnectionId?: string | null
+    parentAccountId?: string | null
+    childAccountId?: string | null
+    childConnectionId?: string | null
     details?: NullableJsonNullValueInput | InputJsonValue
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutTargetApplicationInput = {
+  export type AssetCreateOrConnectWithoutChildApplicationInput = {
     where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutTargetApplicationInput, AssetUncheckedCreateWithoutTargetApplicationInput>
+    create: XOR<AssetCreateWithoutChildApplicationInput, AssetUncheckedCreateWithoutChildApplicationInput>
   }
 
-  export type AssetCreateManyTargetApplicationInputEnvelope = {
-    data: AssetCreateManyTargetApplicationInput | AssetCreateManyTargetApplicationInput[]
+  export type AssetCreateManyChildApplicationInputEnvelope = {
+    data: AssetCreateManyChildApplicationInput | AssetCreateManyChildApplicationInput[]
     skipDuplicates?: boolean
   }
 
@@ -51182,38 +51469,40 @@ export namespace Prisma {
     details?: JsonFilter<"Identity">
   }
 
-  export type AssetUpsertWithWhereUniqueWithoutTargetApplicationInput = {
+  export type AssetUpsertWithWhereUniqueWithoutChildApplicationInput = {
     where: AssetWhereUniqueInput
-    update: XOR<AssetUpdateWithoutTargetApplicationInput, AssetUncheckedUpdateWithoutTargetApplicationInput>
-    create: XOR<AssetCreateWithoutTargetApplicationInput, AssetUncheckedCreateWithoutTargetApplicationInput>
+    update: XOR<AssetUpdateWithoutChildApplicationInput, AssetUncheckedUpdateWithoutChildApplicationInput>
+    create: XOR<AssetCreateWithoutChildApplicationInput, AssetUncheckedCreateWithoutChildApplicationInput>
   }
 
-  export type AssetUpdateWithWhereUniqueWithoutTargetApplicationInput = {
+  export type AssetUpdateWithWhereUniqueWithoutChildApplicationInput = {
     where: AssetWhereUniqueInput
-    data: XOR<AssetUpdateWithoutTargetApplicationInput, AssetUncheckedUpdateWithoutTargetApplicationInput>
+    data: XOR<AssetUpdateWithoutChildApplicationInput, AssetUncheckedUpdateWithoutChildApplicationInput>
   }
 
-  export type AssetUpdateManyWithWhereWithoutTargetApplicationInput = {
+  export type AssetUpdateManyWithWhereWithoutChildApplicationInput = {
     where: AssetScalarWhereInput
-    data: XOR<AssetUpdateManyMutationInput, AssetUncheckedUpdateManyWithoutTargetApplicationInput>
+    data: XOR<AssetUpdateManyMutationInput, AssetUncheckedUpdateManyWithoutChildApplicationInput>
   }
 
   export type AssetCreateWithoutPortfolioInput = {
     id?: string
     assetType: $Enums.AssetType
     details?: NullableJsonNullValueInput | InputJsonValue
-    targetAccount?: AccountCreateNestedOneWithoutTargetAssetsInput
-    targetApplication?: ApplicationCreateNestedOneWithoutTargetAssetsInput
-    targetConnection?: ConnectionCreateNestedOneWithoutTargetAssetsInput
+    parentAccount?: AccountCreateNestedOneWithoutParentAssetsInput
+    childAccount?: AccountCreateNestedOneWithoutChildAssetsInput
+    childApplication?: ApplicationCreateNestedOneWithoutChildAssetsInput
+    childConnection?: ConnectionCreateNestedOneWithoutChildAssetsInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAssetInput
   }
 
   export type AssetUncheckedCreateWithoutPortfolioInput = {
     id?: string
     assetType: $Enums.AssetType
-    targetAccountId?: string | null
-    targetApplicationId?: string | null
-    targetConnectionId?: string | null
+    parentAccountId?: string | null
+    childAccountId?: string | null
+    childApplicationId?: string | null
+    childConnectionId?: string | null
     details?: NullableJsonNullValueInput | InputJsonValue
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAssetInput
   }
@@ -51365,7 +51654,7 @@ export namespace Prisma {
     create: XOR<PortfolioCreateWithoutAssetsInput, PortfolioUncheckedCreateWithoutAssetsInput>
   }
 
-  export type AccountCreateWithoutTargetAssetsInput = {
+  export type AccountCreateWithoutParentAssetsInput = {
     id?: string
     displayName?: string | null
     accountType?: string
@@ -51385,6 +51674,7 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -51400,7 +51690,7 @@ export namespace Prisma {
     verifications?: VerificationCreateNestedManyWithoutAccountInput
   }
 
-  export type AccountUncheckedCreateWithoutTargetAssetsInput = {
+  export type AccountUncheckedCreateWithoutParentAssetsInput = {
     id?: string
     displayName?: string | null
     accountType?: string
@@ -51421,6 +51711,7 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -51435,12 +51726,89 @@ export namespace Prisma {
     verifications?: VerificationUncheckedCreateNestedManyWithoutAccountInput
   }
 
-  export type AccountCreateOrConnectWithoutTargetAssetsInput = {
+  export type AccountCreateOrConnectWithoutParentAssetsInput = {
     where: AccountWhereUniqueInput
-    create: XOR<AccountCreateWithoutTargetAssetsInput, AccountUncheckedCreateWithoutTargetAssetsInput>
+    create: XOR<AccountCreateWithoutParentAssetsInput, AccountUncheckedCreateWithoutParentAssetsInput>
   }
 
-  export type ApplicationCreateWithoutTargetAssetsInput = {
+  export type AccountCreateWithoutChildAssetsInput = {
+    id?: string
+    displayName?: string | null
+    accountType?: string
+    displayImage?: string | null
+    status?: string | null
+    isVerified?: boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
+    individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
+    connections?: ConnectionCreateNestedManyWithoutAccountInput
+    authMethods?: AuthnMethodCreateNestedManyWithoutAccountInput
+    sessions?: AuthnSessionCreateNestedManyWithoutAccountInput
+    contacts?: ContactCreateNestedManyWithoutAccountInput
+    neupIds?: NeupIdCreateNestedManyWithoutAccountInput
+    notifications?: NotificationCreateNestedManyWithoutAccountInput
+    familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
+    verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    ownedMembers?: MemberCreateNestedManyWithoutMemberInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
+    permits?: PermitCreateNestedManyWithoutAccountInput
+    permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
+    parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
+    childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
+    linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
+    linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
+    sentRequests?: RequestCreateNestedManyWithoutSenderInput
+    errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
+    verifications?: VerificationCreateNestedManyWithoutAccountInput
+  }
+
+  export type AccountUncheckedCreateWithoutChildAssetsInput = {
+    id?: string
+    displayName?: string | null
+    accountType?: string
+    displayImage?: string | null
+    status?: string | null
+    isVerified?: boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    linkedAccountId?: string | null
+    brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
+    individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
+    authMethods?: AuthnMethodUncheckedCreateNestedManyWithoutAccountInput
+    sessions?: AuthnSessionUncheckedCreateNestedManyWithoutAccountInput
+    contacts?: ContactUncheckedCreateNestedManyWithoutAccountInput
+    neupIds?: NeupIdUncheckedCreateNestedManyWithoutAccountInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutAccountInput
+    familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
+    verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
+    permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
+    permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
+    childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
+    linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
+    sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
+    errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
+    verifications?: VerificationUncheckedCreateNestedManyWithoutAccountInput
+  }
+
+  export type AccountCreateOrConnectWithoutChildAssetsInput = {
+    where: AccountWhereUniqueInput
+    create: XOR<AccountCreateWithoutChildAssetsInput, AccountUncheckedCreateWithoutChildAssetsInput>
+  }
+
+  export type ApplicationCreateWithoutChildAssetsInput = {
     id: string
     name: string
     description?: string | null
@@ -51465,7 +51833,7 @@ export namespace Prisma {
     identities?: IdentityCreateNestedManyWithoutApplicationInput
   }
 
-  export type ApplicationUncheckedCreateWithoutTargetAssetsInput = {
+  export type ApplicationUncheckedCreateWithoutChildAssetsInput = {
     id: string
     name: string
     description?: string | null
@@ -51490,12 +51858,12 @@ export namespace Prisma {
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
   }
 
-  export type ApplicationCreateOrConnectWithoutTargetAssetsInput = {
+  export type ApplicationCreateOrConnectWithoutChildAssetsInput = {
     where: ApplicationWhereUniqueInput
-    create: XOR<ApplicationCreateWithoutTargetAssetsInput, ApplicationUncheckedCreateWithoutTargetAssetsInput>
+    create: XOR<ApplicationCreateWithoutChildAssetsInput, ApplicationUncheckedCreateWithoutChildAssetsInput>
   }
 
-  export type ConnectionCreateWithoutTargetAssetsInput = {
+  export type ConnectionCreateWithoutChildAssetsInput = {
     id?: string
     status?: string
     connectedAt?: Date | string
@@ -51505,7 +51873,7 @@ export namespace Prisma {
     parentMembers?: MemberCreateNestedManyWithoutParentConnectionInput
   }
 
-  export type ConnectionUncheckedCreateWithoutTargetAssetsInput = {
+  export type ConnectionUncheckedCreateWithoutChildAssetsInput = {
     id?: string
     accountId: string
     appId: string
@@ -51515,9 +51883,9 @@ export namespace Prisma {
     parentMembers?: MemberUncheckedCreateNestedManyWithoutParentConnectionInput
   }
 
-  export type ConnectionCreateOrConnectWithoutTargetAssetsInput = {
+  export type ConnectionCreateOrConnectWithoutChildAssetsInput = {
     where: ConnectionWhereUniqueInput
-    create: XOR<ConnectionCreateWithoutTargetAssetsInput, ConnectionUncheckedCreateWithoutTargetAssetsInput>
+    create: XOR<ConnectionCreateWithoutChildAssetsInput, ConnectionUncheckedCreateWithoutChildAssetsInput>
   }
 
   export type AuthzAssetsAccessGrantCreateWithoutAssetInput = {
@@ -51577,18 +51945,18 @@ export namespace Prisma {
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
-  export type AccountUpsertWithoutTargetAssetsInput = {
-    update: XOR<AccountUpdateWithoutTargetAssetsInput, AccountUncheckedUpdateWithoutTargetAssetsInput>
-    create: XOR<AccountCreateWithoutTargetAssetsInput, AccountUncheckedCreateWithoutTargetAssetsInput>
+  export type AccountUpsertWithoutParentAssetsInput = {
+    update: XOR<AccountUpdateWithoutParentAssetsInput, AccountUncheckedUpdateWithoutParentAssetsInput>
+    create: XOR<AccountCreateWithoutParentAssetsInput, AccountUncheckedCreateWithoutParentAssetsInput>
     where?: AccountWhereInput
   }
 
-  export type AccountUpdateToOneWithWhereWithoutTargetAssetsInput = {
+  export type AccountUpdateToOneWithWhereWithoutParentAssetsInput = {
     where?: AccountWhereInput
-    data: XOR<AccountUpdateWithoutTargetAssetsInput, AccountUncheckedUpdateWithoutTargetAssetsInput>
+    data: XOR<AccountUpdateWithoutParentAssetsInput, AccountUncheckedUpdateWithoutParentAssetsInput>
   }
 
-  export type AccountUpdateWithoutTargetAssetsInput = {
+  export type AccountUpdateWithoutParentAssetsInput = {
     id?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
     accountType?: StringFieldUpdateOperationsInput | string
@@ -51608,6 +51976,7 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -51623,7 +51992,7 @@ export namespace Prisma {
     verifications?: VerificationUpdateManyWithoutAccountNestedInput
   }
 
-  export type AccountUncheckedUpdateWithoutTargetAssetsInput = {
+  export type AccountUncheckedUpdateWithoutParentAssetsInput = {
     id?: StringFieldUpdateOperationsInput | string
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
     accountType?: StringFieldUpdateOperationsInput | string
@@ -51644,6 +52013,7 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -51658,18 +52028,101 @@ export namespace Prisma {
     verifications?: VerificationUncheckedUpdateManyWithoutAccountNestedInput
   }
 
-  export type ApplicationUpsertWithoutTargetAssetsInput = {
-    update: XOR<ApplicationUpdateWithoutTargetAssetsInput, ApplicationUncheckedUpdateWithoutTargetAssetsInput>
-    create: XOR<ApplicationCreateWithoutTargetAssetsInput, ApplicationUncheckedCreateWithoutTargetAssetsInput>
+  export type AccountUpsertWithoutChildAssetsInput = {
+    update: XOR<AccountUpdateWithoutChildAssetsInput, AccountUncheckedUpdateWithoutChildAssetsInput>
+    create: XOR<AccountCreateWithoutChildAssetsInput, AccountUncheckedCreateWithoutChildAssetsInput>
+    where?: AccountWhereInput
+  }
+
+  export type AccountUpdateToOneWithWhereWithoutChildAssetsInput = {
+    where?: AccountWhereInput
+    data: XOR<AccountUpdateWithoutChildAssetsInput, AccountUncheckedUpdateWithoutChildAssetsInput>
+  }
+
+  export type AccountUpdateWithoutChildAssetsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountType?: StringFieldUpdateOperationsInput | string
+    displayImage?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
+    individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
+    connections?: ConnectionUpdateManyWithoutAccountNestedInput
+    authMethods?: AuthnMethodUpdateManyWithoutAccountNestedInput
+    sessions?: AuthnSessionUpdateManyWithoutAccountNestedInput
+    contacts?: ContactUpdateManyWithoutAccountNestedInput
+    neupIds?: NeupIdUpdateManyWithoutAccountNestedInput
+    notifications?: NotificationUpdateManyWithoutAccountNestedInput
+    familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
+    verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
+    permits?: PermitUpdateManyWithoutAccountNestedInput
+    permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
+    parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
+    childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
+    linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
+    linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
+    sentRequests?: RequestUpdateManyWithoutSenderNestedInput
+    errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
+    verifications?: VerificationUpdateManyWithoutAccountNestedInput
+  }
+
+  export type AccountUncheckedUpdateWithoutChildAssetsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountType?: StringFieldUpdateOperationsInput | string
+    displayImage?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
+    individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
+    authMethods?: AuthnMethodUncheckedUpdateManyWithoutAccountNestedInput
+    sessions?: AuthnSessionUncheckedUpdateManyWithoutAccountNestedInput
+    contacts?: ContactUncheckedUpdateManyWithoutAccountNestedInput
+    neupIds?: NeupIdUncheckedUpdateManyWithoutAccountNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutAccountNestedInput
+    familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
+    verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
+    permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
+    permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
+    childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
+    linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
+    sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
+    errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
+    verifications?: VerificationUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
+  export type ApplicationUpsertWithoutChildAssetsInput = {
+    update: XOR<ApplicationUpdateWithoutChildAssetsInput, ApplicationUncheckedUpdateWithoutChildAssetsInput>
+    create: XOR<ApplicationCreateWithoutChildAssetsInput, ApplicationUncheckedCreateWithoutChildAssetsInput>
     where?: ApplicationWhereInput
   }
 
-  export type ApplicationUpdateToOneWithWhereWithoutTargetAssetsInput = {
+  export type ApplicationUpdateToOneWithWhereWithoutChildAssetsInput = {
     where?: ApplicationWhereInput
-    data: XOR<ApplicationUpdateWithoutTargetAssetsInput, ApplicationUncheckedUpdateWithoutTargetAssetsInput>
+    data: XOR<ApplicationUpdateWithoutChildAssetsInput, ApplicationUncheckedUpdateWithoutChildAssetsInput>
   }
 
-  export type ApplicationUpdateWithoutTargetAssetsInput = {
+  export type ApplicationUpdateWithoutChildAssetsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -51694,7 +52147,7 @@ export namespace Prisma {
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
   }
 
-  export type ApplicationUncheckedUpdateWithoutTargetAssetsInput = {
+  export type ApplicationUncheckedUpdateWithoutChildAssetsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -51719,18 +52172,18 @@ export namespace Prisma {
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
-  export type ConnectionUpsertWithoutTargetAssetsInput = {
-    update: XOR<ConnectionUpdateWithoutTargetAssetsInput, ConnectionUncheckedUpdateWithoutTargetAssetsInput>
-    create: XOR<ConnectionCreateWithoutTargetAssetsInput, ConnectionUncheckedCreateWithoutTargetAssetsInput>
+  export type ConnectionUpsertWithoutChildAssetsInput = {
+    update: XOR<ConnectionUpdateWithoutChildAssetsInput, ConnectionUncheckedUpdateWithoutChildAssetsInput>
+    create: XOR<ConnectionCreateWithoutChildAssetsInput, ConnectionUncheckedCreateWithoutChildAssetsInput>
     where?: ConnectionWhereInput
   }
 
-  export type ConnectionUpdateToOneWithWhereWithoutTargetAssetsInput = {
+  export type ConnectionUpdateToOneWithWhereWithoutChildAssetsInput = {
     where?: ConnectionWhereInput
-    data: XOR<ConnectionUpdateWithoutTargetAssetsInput, ConnectionUncheckedUpdateWithoutTargetAssetsInput>
+    data: XOR<ConnectionUpdateWithoutChildAssetsInput, ConnectionUncheckedUpdateWithoutChildAssetsInput>
   }
 
-  export type ConnectionUpdateWithoutTargetAssetsInput = {
+  export type ConnectionUpdateWithoutChildAssetsInput = {
     id?: StringFieldUpdateOperationsInput | string
     status?: StringFieldUpdateOperationsInput | string
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -51740,7 +52193,7 @@ export namespace Prisma {
     parentMembers?: MemberUpdateManyWithoutParentConnectionNestedInput
   }
 
-  export type ConnectionUncheckedUpdateWithoutTargetAssetsInput = {
+  export type ConnectionUncheckedUpdateWithoutChildAssetsInput = {
     id?: StringFieldUpdateOperationsInput | string
     accountId?: StringFieldUpdateOperationsInput | string
     appId?: StringFieldUpdateOperationsInput | string
@@ -51786,7 +52239,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
@@ -51822,7 +52276,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
@@ -51861,7 +52316,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
@@ -51897,7 +52353,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
@@ -51936,7 +52393,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
@@ -51972,7 +52430,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
@@ -52013,7 +52472,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetApplicationInput
+    childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutParentMembersInput = {
@@ -52038,7 +52497,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetApplicationInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutParentMembersInput = {
@@ -52053,7 +52512,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     account: AccountCreateNestedOneWithoutConnectionsInput
     application: ApplicationCreateNestedOneWithoutConnectionsInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetConnectionInput
+    childAssets?: AssetCreateNestedManyWithoutChildConnectionInput
   }
 
   export type ConnectionUncheckedCreateWithoutParentMembersInput = {
@@ -52063,7 +52522,7 @@ export namespace Prisma {
     status?: string
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetConnectionInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildConnectionInput
   }
 
   export type ConnectionCreateOrConnectWithoutParentMembersInput = {
@@ -52152,7 +52611,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
@@ -52188,7 +52648,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
@@ -52233,7 +52694,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
@@ -52269,7 +52731,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
@@ -52314,7 +52777,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
@@ -52350,7 +52814,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
@@ -52397,7 +52862,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetApplicationNestedInput
+    childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutParentMembersInput = {
@@ -52422,7 +52887,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetApplicationNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
   }
 
   export type ConnectionUpsertWithoutParentMembersInput = {
@@ -52443,7 +52908,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     account?: AccountUpdateOneRequiredWithoutConnectionsNestedInput
     application?: ApplicationUpdateOneRequiredWithoutConnectionsNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetConnectionNestedInput
+    childAssets?: AssetUpdateManyWithoutChildConnectionNestedInput
   }
 
   export type ConnectionUncheckedUpdateWithoutParentMembersInput = {
@@ -52453,7 +52918,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetConnectionNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildConnectionNestedInput
   }
 
   export type PortfolioUpsertWithoutMembersInput = {
@@ -52538,7 +53003,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -52574,7 +53040,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -52613,7 +53080,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -52649,7 +53117,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -52699,7 +53168,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -52735,7 +53205,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -52780,7 +53251,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -52816,7 +53288,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -52849,7 +53322,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -52885,7 +53359,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -52927,7 +53402,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetApplicationInput
+    childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutConnectionsInput = {
@@ -52952,7 +53427,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetApplicationInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutConnectionsInput = {
@@ -52998,33 +53473,35 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type AssetCreateWithoutTargetConnectionInput = {
+  export type AssetCreateWithoutChildConnectionInput = {
     id?: string
     assetType: $Enums.AssetType
     details?: NullableJsonNullValueInput | InputJsonValue
-    portfolio: PortfolioCreateNestedOneWithoutAssetsInput
-    targetAccount?: AccountCreateNestedOneWithoutTargetAssetsInput
-    targetApplication?: ApplicationCreateNestedOneWithoutTargetAssetsInput
+    portfolio?: PortfolioCreateNestedOneWithoutAssetsInput
+    parentAccount?: AccountCreateNestedOneWithoutParentAssetsInput
+    childAccount?: AccountCreateNestedOneWithoutChildAssetsInput
+    childApplication?: ApplicationCreateNestedOneWithoutChildAssetsInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAssetInput
   }
 
-  export type AssetUncheckedCreateWithoutTargetConnectionInput = {
+  export type AssetUncheckedCreateWithoutChildConnectionInput = {
     id?: string
-    parentPortfolioId: string
+    parentPortfolioId?: string | null
     assetType: $Enums.AssetType
-    targetAccountId?: string | null
-    targetApplicationId?: string | null
+    parentAccountId?: string | null
+    childAccountId?: string | null
+    childApplicationId?: string | null
     details?: NullableJsonNullValueInput | InputJsonValue
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAssetInput
   }
 
-  export type AssetCreateOrConnectWithoutTargetConnectionInput = {
+  export type AssetCreateOrConnectWithoutChildConnectionInput = {
     where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutTargetConnectionInput, AssetUncheckedCreateWithoutTargetConnectionInput>
+    create: XOR<AssetCreateWithoutChildConnectionInput, AssetUncheckedCreateWithoutChildConnectionInput>
   }
 
-  export type AssetCreateManyTargetConnectionInputEnvelope = {
-    data: AssetCreateManyTargetConnectionInput | AssetCreateManyTargetConnectionInput[]
+  export type AssetCreateManyChildConnectionInputEnvelope = {
+    data: AssetCreateManyChildConnectionInput | AssetCreateManyChildConnectionInput[]
     skipDuplicates?: boolean
   }
 
@@ -53058,7 +53535,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -53094,7 +53572,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -53142,7 +53621,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetApplicationNestedInput
+    childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutConnectionsInput = {
@@ -53167,7 +53646,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetApplicationNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
   }
 
   export type MemberUpsertWithWhereUniqueWithoutParentConnectionInput = {
@@ -53186,20 +53665,20 @@ export namespace Prisma {
     data: XOR<MemberUpdateManyMutationInput, MemberUncheckedUpdateManyWithoutParentConnectionInput>
   }
 
-  export type AssetUpsertWithWhereUniqueWithoutTargetConnectionInput = {
+  export type AssetUpsertWithWhereUniqueWithoutChildConnectionInput = {
     where: AssetWhereUniqueInput
-    update: XOR<AssetUpdateWithoutTargetConnectionInput, AssetUncheckedUpdateWithoutTargetConnectionInput>
-    create: XOR<AssetCreateWithoutTargetConnectionInput, AssetUncheckedCreateWithoutTargetConnectionInput>
+    update: XOR<AssetUpdateWithoutChildConnectionInput, AssetUncheckedUpdateWithoutChildConnectionInput>
+    create: XOR<AssetCreateWithoutChildConnectionInput, AssetUncheckedCreateWithoutChildConnectionInput>
   }
 
-  export type AssetUpdateWithWhereUniqueWithoutTargetConnectionInput = {
+  export type AssetUpdateWithWhereUniqueWithoutChildConnectionInput = {
     where: AssetWhereUniqueInput
-    data: XOR<AssetUpdateWithoutTargetConnectionInput, AssetUncheckedUpdateWithoutTargetConnectionInput>
+    data: XOR<AssetUpdateWithoutChildConnectionInput, AssetUncheckedUpdateWithoutChildConnectionInput>
   }
 
-  export type AssetUpdateManyWithWhereWithoutTargetConnectionInput = {
+  export type AssetUpdateManyWithWhereWithoutChildConnectionInput = {
     where: AssetScalarWhereInput
-    data: XOR<AssetUpdateManyMutationInput, AssetUncheckedUpdateManyWithoutTargetConnectionInput>
+    data: XOR<AssetUpdateManyMutationInput, AssetUncheckedUpdateManyWithoutChildConnectionInput>
   }
 
   export type ApplicationCreateWithoutBridgeInput = {
@@ -53224,7 +53703,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetApplicationInput
+    childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutBridgeInput = {
@@ -53249,7 +53728,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetApplicationInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutBridgeInput = {
@@ -53290,7 +53769,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetApplicationNestedInput
+    childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutBridgeInput = {
@@ -53315,7 +53794,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetApplicationNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
   }
 
   export type ApplicationCreateWithoutPoliciesInput = {
@@ -53340,7 +53819,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetApplicationInput
+    childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutPoliciesInput = {
@@ -53365,7 +53844,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetApplicationInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutPoliciesInput = {
@@ -53406,7 +53885,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetApplicationNestedInput
+    childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutPoliciesInput = {
@@ -53431,7 +53910,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetApplicationNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
   }
 
   export type ApplicationCreateWithoutAuthzPermissionsInput = {
@@ -53456,7 +53935,7 @@ export namespace Prisma {
     parentMembers?: MemberCreateNestedManyWithoutParentApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetApplicationInput
+    childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutAuthzPermissionsInput = {
@@ -53481,7 +53960,7 @@ export namespace Prisma {
     parentMembers?: MemberUncheckedCreateNestedManyWithoutParentApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetApplicationInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutAuthzPermissionsInput = {
@@ -53522,7 +54001,7 @@ export namespace Prisma {
     parentMembers?: MemberUpdateManyWithoutParentApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetApplicationNestedInput
+    childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutAuthzPermissionsInput = {
@@ -53547,7 +54026,7 @@ export namespace Prisma {
     parentMembers?: MemberUncheckedUpdateManyWithoutParentApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetApplicationNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
   }
 
   export type ApplicationCreateWithoutAuthzRolesInput = {
@@ -53572,7 +54051,7 @@ export namespace Prisma {
     parentMembers?: MemberCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetApplicationInput
+    childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutAuthzRolesInput = {
@@ -53597,7 +54076,7 @@ export namespace Prisma {
     parentMembers?: MemberUncheckedCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetApplicationInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutAuthzRolesInput = {
@@ -53704,7 +54183,7 @@ export namespace Prisma {
     parentMembers?: MemberUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetApplicationNestedInput
+    childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutAuthzRolesInput = {
@@ -53729,7 +54208,7 @@ export namespace Prisma {
     parentMembers?: MemberUncheckedUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetApplicationNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
   }
 
   export type AuthzAssetsAccessGrantUpsertWithWhereUniqueWithoutRoleInput = {
@@ -53768,19 +54247,21 @@ export namespace Prisma {
     id?: string
     assetType: $Enums.AssetType
     details?: NullableJsonNullValueInput | InputJsonValue
-    portfolio: PortfolioCreateNestedOneWithoutAssetsInput
-    targetAccount?: AccountCreateNestedOneWithoutTargetAssetsInput
-    targetApplication?: ApplicationCreateNestedOneWithoutTargetAssetsInput
-    targetConnection?: ConnectionCreateNestedOneWithoutTargetAssetsInput
+    portfolio?: PortfolioCreateNestedOneWithoutAssetsInput
+    parentAccount?: AccountCreateNestedOneWithoutParentAssetsInput
+    childAccount?: AccountCreateNestedOneWithoutChildAssetsInput
+    childApplication?: ApplicationCreateNestedOneWithoutChildAssetsInput
+    childConnection?: ConnectionCreateNestedOneWithoutChildAssetsInput
   }
 
   export type AssetUncheckedCreateWithoutAuthzAssetsAccessGrantsInput = {
     id?: string
-    parentPortfolioId: string
+    parentPortfolioId?: string | null
     assetType: $Enums.AssetType
-    targetAccountId?: string | null
-    targetApplicationId?: string | null
-    targetConnectionId?: string | null
+    parentAccountId?: string | null
+    childAccountId?: string | null
+    childApplicationId?: string | null
+    childConnectionId?: string | null
     details?: NullableJsonNullValueInput | InputJsonValue
   }
 
@@ -53808,7 +54289,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutAccountInput
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -53844,7 +54326,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutAccountInput
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -53929,19 +54412,21 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
     details?: NullableJsonNullValueInput | InputJsonValue
-    portfolio?: PortfolioUpdateOneRequiredWithoutAssetsNestedInput
-    targetAccount?: AccountUpdateOneWithoutTargetAssetsNestedInput
-    targetApplication?: ApplicationUpdateOneWithoutTargetAssetsNestedInput
-    targetConnection?: ConnectionUpdateOneWithoutTargetAssetsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
+    parentAccount?: AccountUpdateOneWithoutParentAssetsNestedInput
+    childAccount?: AccountUpdateOneWithoutChildAssetsNestedInput
+    childApplication?: ApplicationUpdateOneWithoutChildAssetsNestedInput
+    childConnection?: ConnectionUpdateOneWithoutChildAssetsNestedInput
   }
 
   export type AssetUncheckedUpdateWithoutAuthzAssetsAccessGrantsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    parentPortfolioId?: StringFieldUpdateOperationsInput | string
+    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    targetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    targetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    targetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    childConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
   }
 
@@ -53975,7 +54460,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutAccountNestedInput
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -54011,7 +54497,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutAccountNestedInput
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -54108,7 +54595,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -54144,7 +54632,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -54183,7 +54672,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
@@ -54219,7 +54709,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
     verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
     targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
     parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
@@ -54269,7 +54760,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -54305,7 +54797,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -54350,7 +54843,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -54386,7 +54880,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -54422,7 +54917,7 @@ export namespace Prisma {
     parentMembers?: MemberCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
-    targetAssets?: AssetCreateNestedManyWithoutTargetApplicationInput
+    childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutIdentitiesInput = {
@@ -54447,7 +54942,7 @@ export namespace Prisma {
     parentMembers?: MemberUncheckedCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
-    targetAssets?: AssetUncheckedCreateNestedManyWithoutTargetApplicationInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutIdentitiesInput = {
@@ -54488,7 +54983,7 @@ export namespace Prisma {
     parentMembers?: MemberUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetApplicationNestedInput
+    childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutIdentitiesInput = {
@@ -54513,7 +55008,7 @@ export namespace Prisma {
     parentMembers?: MemberUncheckedUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetApplicationNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
   }
 
   export type ConnectionCreateManyAccountInput = {
@@ -54597,12 +55092,23 @@ export namespace Prisma {
     asset_type?: string | null
   }
 
-  export type AssetCreateManyTargetAccountInput = {
+  export type AssetCreateManyParentAccountInput = {
     id?: string
-    parentPortfolioId: string
+    parentPortfolioId?: string | null
     assetType: $Enums.AssetType
-    targetApplicationId?: string | null
-    targetConnectionId?: string | null
+    childAccountId?: string | null
+    childApplicationId?: string | null
+    childConnectionId?: string | null
+    details?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type AssetCreateManyChildAccountInput = {
+    id?: string
+    parentPortfolioId?: string | null
+    assetType: $Enums.AssetType
+    parentAccountId?: string | null
+    childApplicationId?: string | null
+    childConnectionId?: string | null
     details?: NullableJsonNullValueInput | InputJsonValue
   }
 
@@ -54744,7 +55250,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationUpdateOneRequiredWithoutConnectionsNestedInput
     parentMembers?: MemberUpdateManyWithoutParentConnectionNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetConnectionNestedInput
+    childAssets?: AssetUpdateManyWithoutChildConnectionNestedInput
   }
 
   export type ConnectionUncheckedUpdateWithoutAccountInput = {
@@ -54754,7 +55260,7 @@ export namespace Prisma {
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     parentMembers?: MemberUncheckedUpdateManyWithoutParentConnectionNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetConnectionNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildConnectionNestedInput
   }
 
   export type ConnectionUncheckedUpdateManyWithoutAccountInput = {
@@ -54984,32 +55490,67 @@ export namespace Prisma {
     asset_type?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type AssetUpdateWithoutTargetAccountInput = {
+  export type AssetUpdateWithoutParentAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
     assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
     details?: NullableJsonNullValueInput | InputJsonValue
-    portfolio?: PortfolioUpdateOneRequiredWithoutAssetsNestedInput
-    targetApplication?: ApplicationUpdateOneWithoutTargetAssetsNestedInput
-    targetConnection?: ConnectionUpdateOneWithoutTargetAssetsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
+    childAccount?: AccountUpdateOneWithoutChildAssetsNestedInput
+    childApplication?: ApplicationUpdateOneWithoutChildAssetsNestedInput
+    childConnection?: ConnectionUpdateOneWithoutChildAssetsNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutTargetAccountInput = {
+  export type AssetUncheckedUpdateWithoutParentAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
-    parentPortfolioId?: StringFieldUpdateOperationsInput | string
+    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    targetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    targetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    childAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    childConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateManyWithoutTargetAccountInput = {
+  export type AssetUncheckedUpdateManyWithoutParentAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
-    parentPortfolioId?: StringFieldUpdateOperationsInput | string
+    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    targetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    targetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    childAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    childConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type AssetUpdateWithoutChildAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    details?: NullableJsonNullValueInput | InputJsonValue
+    portfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
+    parentAccount?: AccountUpdateOneWithoutParentAssetsNestedInput
+    childApplication?: ApplicationUpdateOneWithoutChildAssetsNestedInput
+    childConnection?: ConnectionUpdateOneWithoutChildAssetsNestedInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAssetNestedInput
+  }
+
+  export type AssetUncheckedUpdateWithoutChildAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    childConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: NullableJsonNullValueInput | InputJsonValue
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAssetNestedInput
+  }
+
+  export type AssetUncheckedUpdateManyWithoutChildAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    childConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
   }
 
@@ -55267,7 +55808,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
@@ -55302,7 +55844,8 @@ export namespace Prisma {
     familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
     verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
     targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
     parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
@@ -55517,7 +56060,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetApplicationNestedInput
+    childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutProviderInput = {
@@ -55542,7 +56085,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetApplicationNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateManyWithoutProviderInput = {
@@ -55624,12 +56167,13 @@ export namespace Prisma {
     details?: JsonNullValueInput | InputJsonValue
   }
 
-  export type AssetCreateManyTargetApplicationInput = {
+  export type AssetCreateManyChildApplicationInput = {
     id?: string
-    parentPortfolioId: string
+    parentPortfolioId?: string | null
     assetType: $Enums.AssetType
-    targetAccountId?: string | null
-    targetConnectionId?: string | null
+    parentAccountId?: string | null
+    childAccountId?: string | null
+    childConnectionId?: string | null
     details?: NullableJsonNullValueInput | InputJsonValue
   }
 
@@ -55640,7 +56184,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     account?: AccountUpdateOneRequiredWithoutConnectionsNestedInput
     parentMembers?: MemberUpdateManyWithoutParentConnectionNestedInput
-    targetAssets?: AssetUpdateManyWithoutTargetConnectionNestedInput
+    childAssets?: AssetUpdateManyWithoutChildConnectionNestedInput
   }
 
   export type ConnectionUncheckedUpdateWithoutApplicationInput = {
@@ -55650,7 +56194,7 @@ export namespace Prisma {
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     parentMembers?: MemberUncheckedUpdateManyWithoutParentConnectionNestedInput
-    targetAssets?: AssetUncheckedUpdateManyWithoutTargetConnectionNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildConnectionNestedInput
   }
 
   export type ConnectionUncheckedUpdateManyWithoutApplicationInput = {
@@ -55827,41 +56371,45 @@ export namespace Prisma {
     details?: JsonNullValueInput | InputJsonValue
   }
 
-  export type AssetUpdateWithoutTargetApplicationInput = {
+  export type AssetUpdateWithoutChildApplicationInput = {
     id?: StringFieldUpdateOperationsInput | string
     assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
     details?: NullableJsonNullValueInput | InputJsonValue
-    portfolio?: PortfolioUpdateOneRequiredWithoutAssetsNestedInput
-    targetAccount?: AccountUpdateOneWithoutTargetAssetsNestedInput
-    targetConnection?: ConnectionUpdateOneWithoutTargetAssetsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
+    parentAccount?: AccountUpdateOneWithoutParentAssetsNestedInput
+    childAccount?: AccountUpdateOneWithoutChildAssetsNestedInput
+    childConnection?: ConnectionUpdateOneWithoutChildAssetsNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutTargetApplicationInput = {
+  export type AssetUncheckedUpdateWithoutChildApplicationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    parentPortfolioId?: StringFieldUpdateOperationsInput | string
+    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    targetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    targetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateManyWithoutTargetApplicationInput = {
+  export type AssetUncheckedUpdateManyWithoutChildApplicationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    parentPortfolioId?: StringFieldUpdateOperationsInput | string
+    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    targetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    targetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type AssetCreateManyPortfolioInput = {
     id?: string
     assetType: $Enums.AssetType
-    targetAccountId?: string | null
-    targetApplicationId?: string | null
-    targetConnectionId?: string | null
+    parentAccountId?: string | null
+    childAccountId?: string | null
+    childApplicationId?: string | null
+    childConnectionId?: string | null
     details?: NullableJsonNullValueInput | InputJsonValue
   }
 
@@ -55892,18 +56440,20 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
     details?: NullableJsonNullValueInput | InputJsonValue
-    targetAccount?: AccountUpdateOneWithoutTargetAssetsNestedInput
-    targetApplication?: ApplicationUpdateOneWithoutTargetAssetsNestedInput
-    targetConnection?: ConnectionUpdateOneWithoutTargetAssetsNestedInput
+    parentAccount?: AccountUpdateOneWithoutParentAssetsNestedInput
+    childAccount?: AccountUpdateOneWithoutChildAssetsNestedInput
+    childApplication?: ApplicationUpdateOneWithoutChildAssetsNestedInput
+    childConnection?: ConnectionUpdateOneWithoutChildAssetsNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAssetNestedInput
   }
 
   export type AssetUncheckedUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    targetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    targetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    targetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    childConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAssetNestedInput
   }
@@ -55911,9 +56461,10 @@ export namespace Prisma {
   export type AssetUncheckedUpdateManyWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    targetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    targetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    targetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    childConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
   }
 
@@ -56036,12 +56587,13 @@ export namespace Prisma {
     status?: $Enums.MemberStatus
   }
 
-  export type AssetCreateManyTargetConnectionInput = {
+  export type AssetCreateManyChildConnectionInput = {
     id?: string
-    parentPortfolioId: string
+    parentPortfolioId?: string | null
     assetType: $Enums.AssetType
-    targetAccountId?: string | null
-    targetApplicationId?: string | null
+    parentAccountId?: string | null
+    childAccountId?: string | null
+    childApplicationId?: string | null
     details?: NullableJsonNullValueInput | InputJsonValue
   }
 
@@ -56087,32 +56639,35 @@ export namespace Prisma {
     status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
   }
 
-  export type AssetUpdateWithoutTargetConnectionInput = {
+  export type AssetUpdateWithoutChildConnectionInput = {
     id?: StringFieldUpdateOperationsInput | string
     assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
     details?: NullableJsonNullValueInput | InputJsonValue
-    portfolio?: PortfolioUpdateOneRequiredWithoutAssetsNestedInput
-    targetAccount?: AccountUpdateOneWithoutTargetAssetsNestedInput
-    targetApplication?: ApplicationUpdateOneWithoutTargetAssetsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
+    parentAccount?: AccountUpdateOneWithoutParentAssetsNestedInput
+    childAccount?: AccountUpdateOneWithoutChildAssetsNestedInput
+    childApplication?: ApplicationUpdateOneWithoutChildAssetsNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateWithoutTargetConnectionInput = {
+  export type AssetUncheckedUpdateWithoutChildConnectionInput = {
     id?: StringFieldUpdateOperationsInput | string
-    parentPortfolioId?: StringFieldUpdateOperationsInput | string
+    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    targetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    targetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAssetNestedInput
   }
 
-  export type AssetUncheckedUpdateManyWithoutTargetConnectionInput = {
+  export type AssetUncheckedUpdateManyWithoutChildConnectionInput = {
     id?: StringFieldUpdateOperationsInput | string
-    parentPortfolioId?: StringFieldUpdateOperationsInput | string
+    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    targetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    targetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    childApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
   }
 

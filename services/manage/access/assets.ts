@@ -96,7 +96,7 @@ export async function getAccessAssetGroups() {
       where: {
         members: {
           some: {
-            accountId,
+            memberId: accountId,
           },
         },
       },

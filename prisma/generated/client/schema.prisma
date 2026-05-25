@@ -93,14 +93,14 @@ model AuthnRequest {
 }
 
 model Activity {
-  id              String   @id(map: "activity_logs_pkey") @default(uuid())
-  memberId String   @map("target_account_id")
-  actorAccountId  String   @map("actor_account_id")
-  action          String
-  status          String
-  ip              String
-  timestamp       DateTime @default(now())
-  geolocation     String?
+  id             String   @id(map: "activity_logs_pkey") @default(uuid())
+  memberId       String   @map("target_account_id")
+  actorAccountId String   @map("actor_account_id")
+  action         String
+  status         String
+  ip             String
+  timestamp      DateTime @default(now())
+  geolocation    String?
 
   @@map("activity")
 }
@@ -294,7 +294,7 @@ model Portfolio {
 
 model Asset {
   id                      String                   @id(map: "portfolio_assets_pkey") @default(uuid())
-  parentPortfolioId             String
+  parentPortfolioId       String
   assetType               String
   assetId                 String
   details                 Json?
@@ -481,15 +481,15 @@ model AuthzAssetsAccessGrant {
 }
 
 model Permit {
-  id              String   @id @default(uuid())
-  accountId       String   @map("account_id")
-  memberId String   @map("target_account_id")
-  forSelf         Boolean  @default(false) @map("for_self")
-  isRoot          Boolean  @default(false) @map("is_root")
-  permissions     String[] @default([])
-  restrictions    String[] @default([])
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  id           String   @id @default(uuid())
+  accountId    String   @map("account_id")
+  memberId     String   @map("target_account_id")
+  forSelf      Boolean  @default(false) @map("for_self")
+  isRoot       Boolean  @default(false) @map("is_root")
+  permissions  String[] @default([])
+  restrictions String[] @default([])
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   account       Account @relation(fields: [accountId], references: [id], onDelete: Cascade, map: "permit_account_id_fkey")
   targetAccount Account @relation("PermitTarget", fields: [memberId], references: [id], onDelete: Cascade, map: "permit_target_account_id_fkey")

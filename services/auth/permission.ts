@@ -259,7 +259,7 @@ async function resolvePermissionSet(input: {
 					},
 				},
 				members: {
-					where: { accountId: input.accountId },
+					where: { memberId: input.accountId },
 					select: {
 						isPermanent: true,
 						hasFullAccess: true,

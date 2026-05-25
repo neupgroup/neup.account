@@ -69,7 +69,7 @@ async function getBrandAssets(): Promise<SelectableAsset[]> {
       where: {
         memberId: personalAccountId,
         roleId: 'brand-owner-neup-account',
-        appId: 'neup.account',
+        parentApplicationId: 'neup.account',
       },
       select: { accessTo: true },
     });
@@ -136,16 +136,23 @@ async function getApplicationAssets(): Promise<SelectableAsset[]> {
     const grants = await prisma.member.findMany({
       where: { accessTo: accountId, roleId: 'application.owner' },
       select: {
-        application: { select: { id: true, name: true, status: true } },
+        parentApplication: { select: { id: true, name: true, status: true } },
       },
     });
 
-    return grants.map((g) => ({
-      assetId: g.application.id,
-      name: g.application.name,
-      assetType: 'application',
-      subtitle: g.application.status ?? undefined,
-    }));
+    return grants
+      .filter(
+        (
+          g,
+        ): g is typeof g & { parentApplication: NonNullable<typeof g.parentApplication> } =>
+          Boolean(g.parentApplication),
+      )
+      .map((g) => ({
+        assetId: g.parentApplication.id,
+        name: g.parentApplication.name,
+        assetType: 'application',
+        subtitle: g.parentApplication.status ?? undefined,
+      }));
   } catch (error) {
     await logError('database', error, 'getApplicationAssets');
     return [];
@@ -213,7 +220,7 @@ export async function removeDirectMember(
       where: {
         accessTo,
         memberId: memberAccountId,
-        appId: 'neup.account',
+        parentApplicationId: 'neup.account',
         parentPortfolioId: null,
       },
     });
@@ -266,7 +273,7 @@ export async function removePortfolioMember(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const member = await prisma.member.findFirst({
-      where: { parentPortfolioId, accountId: memberAccountId },
+      where: { parentPortfolioId, memberId: memberAccountId },
       select: { id: true },
     });
 
@@ -294,8 +301,8 @@ export async function cancelPortfolioInvitation(
     const member = await prisma.member.findFirst({
       where: {
         parentPortfolioId,
-        accountId: recipientAccountId,
-        status: { in: ['invited', 'expired'] },
+        memberId: recipientAccountId,
+        status: { in: ['paused', 'removed'] },
       },
       select: { id: true },
     });
@@ -347,7 +354,7 @@ export async function inviteDirectMember(
       where: {
         accessTo: senderAccountId,
         memberId: recipientAccountId,
-        appId: 'neup.account',
+        parentApplicationId: 'neup.account',
         parentPortfolioId: null,
       },
       select: { id: true },

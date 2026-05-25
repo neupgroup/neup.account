@@ -100,7 +100,7 @@ export async function bridgeBuildGrantRedirect(input: {
       },
     });
 
-    const existingConnection = await prisma.applicationConnection.findUnique({
+    const existingConnection = await prisma.connection.findUnique({
       where: {
         accountId_appId: {
           accountId: session.accountId,

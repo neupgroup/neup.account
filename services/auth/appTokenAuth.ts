@@ -30,7 +30,7 @@ export async function resolveAppTokenAuth(input: {
     return { ok: false, status: 401, error: 'Invalid token payload.' };
   }
 
-  const connection = await prisma.applicationConnection.findUnique({
+  const connection = await prisma.connection.findUnique({
     where: { id: cid },
     select: { id: true, accountId: true, appId: true },
   });

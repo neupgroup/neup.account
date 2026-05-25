@@ -43,7 +43,7 @@ export async function getApplicationAccessPageData(): Promise<AppWithAccess[]> {
 
   try {
     // All apps the user is connected to
-    const connections = await prisma.applicationConnection.findMany({
+    const connections = await prisma.connection.findMany({
       where: { accountId: personalAccountId },
       select: {
         connectedAt: true,
@@ -191,13 +191,13 @@ export async function assignAppAccessToAccount(input: {
     // Check if the target already has an active connection to this app.
     // If not, create one with status 'inactive_invited' — they've been granted
     // access but haven't connected to the app themselves yet.
-    const existingConnection = await prisma.applicationConnection.findUnique({
+    const existingConnection = await prisma.connection.findUnique({
       where: { accountId_appId: { accountId: targetAccountId, appId } },
       select: { id: true, status: true },
     });
 
     if (!existingConnection) {
-      await prisma.applicationConnection.create({
+      await prisma.connection.create({
         data: { accountId: targetAccountId, appId, status: 'inactive_invited' },
       });
     }

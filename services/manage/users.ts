@@ -497,7 +497,7 @@ export async function deleteUserAccount(userId: string): Promise<{ success: bool
             prisma.authnMethod.deleteMany({ where: { accountId: userId } }),
             // Mark all app connections as deleted before the cascade removes them.
             // This allows any in-flight reads (e.g. webhooks) to observe the tombstone.
-            prisma.applicationConnection.updateMany({
+            prisma.connection.updateMany({
                 where: { accountId: userId },
                 data: { status: 'deleted' },
             }),

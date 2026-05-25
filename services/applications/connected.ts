@@ -41,7 +41,7 @@ export async function getConnectedApplications(): Promise<ConnectedApplications>
     if (!accountId) return { firstParty: [], thirdParty: [] };
 
     try {
-        const connections = await prisma.applicationConnection.findMany({
+        const connections = await prisma.connection.findMany({
             where: { accountId },
             select: {
               connectedAt: true,
@@ -107,7 +107,7 @@ export async function getSignedApplications(): Promise<SignedApplicationsResult>
   if (!accountId) return { internal: [], external: [] };
 
   try {
-    const connections = await prisma.applicationConnection.findMany({
+    const connections = await prisma.connection.findMany({
       where: { accountId },
       select: {
         connectedAt: true,

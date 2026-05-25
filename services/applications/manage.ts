@@ -994,7 +994,7 @@ export async function getApplicationDetailsForViewerV2(appId: string): Promise<A
       const access = await resolveApplicationAccessForAccount(activeAccountId, appId);
       // Also allow if they have an ApplicationConnection
       const connection = personalAccountId
-        ? await prisma.applicationConnection.findUnique({
+        ? await prisma.connection.findUnique({
             where: { accountId_appId: { accountId: personalAccountId, appId } },
             select: { accountId: true },
           })
@@ -1004,7 +1004,7 @@ export async function getApplicationDetailsForViewerV2(appId: string): Promise<A
 
     // Fetch connection info for the personal account
     const connectionRow = personalAccountId
-      ? await prisma.applicationConnection.findUnique({
+      ? await prisma.connection.findUnique({
           where: { accountId_appId: { accountId: personalAccountId, appId } },
           select: { connectedAt: true },
         })
@@ -1453,10 +1453,10 @@ export async function getApplicationUserStats(appId: string): Promise<Applicatio
     const minus30d = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
     const [total, last24h, lastWeek, lastMonth] = await Promise.all([
-      prisma.applicationConnection.count({ where: { appId } }),
-      prisma.applicationConnection.count({ where: { appId, connectedAt: { gte: minus24h } } }),
-      prisma.applicationConnection.count({ where: { appId, connectedAt: { gte: minus7d } } }),
-      prisma.applicationConnection.count({ where: { appId, connectedAt: { gte: minus30d } } }),
+      prisma.connection.count({ where: { appId } }),
+      prisma.connection.count({ where: { appId, connectedAt: { gte: minus24h } } }),
+      prisma.connection.count({ where: { appId, connectedAt: { gte: minus7d } } }),
+      prisma.connection.count({ where: { appId, connectedAt: { gte: minus30d } } }),
     ]);
 
     return { total, last24h, lastWeek, lastMonth };
@@ -1561,8 +1561,8 @@ export async function getApplicationUsersPaginated(params: {
     const whereArg = connectionWhere as any;
 
     const [total, rows] = await Promise.all([
-      prisma.applicationConnection.count({ where: whereArg }),
-      prisma.applicationConnection.findMany({
+      prisma.connection.count({ where: whereArg }),
+      prisma.connection.findMany({
         where: whereArg,
         orderBy: orderByMap[sort],
         skip: (page - 1) * pageSize,

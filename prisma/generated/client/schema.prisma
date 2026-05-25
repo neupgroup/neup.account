@@ -20,7 +20,7 @@ model Account {
 
   brandProfile            AccountTypeBrand?
   individualProfile       AccountTypeIndividual?
-  appConnections          ApplicationConnection[]
+  connections             Connection[]
   authMethods             AuthnMethod[]
   sessions                AuthnSession[]
   contacts                Contact[]
@@ -274,7 +274,7 @@ model Application {
   party                    Int                       @default(1)
   providerId               String?                   @map("provider_id")
   provider                 ApplicationProvider?      @relation(fields: [providerId], references: [id], map: "application_provider_id_fkey")
-  connections              ApplicationConnection[]
+  connections              Connection[]
   bridge                   ApplicationBridge[]
   policies                 ApplicationPolicy[]
   authzPermissions         AuthzPermission[]
@@ -370,7 +370,7 @@ model AccountOwnership {
   @@map("account_ownership")
 }
 
-model ApplicationConnection {
+model Connection {
   id          String      @id(map: "user_app_connections_pkey") @default(uuid())
   accountId   String      @map("account_id")
   appId       String      @map("app_id")
@@ -381,7 +381,7 @@ model ApplicationConnection {
   application Application @relation(fields: [appId], references: [id], map: "user_app_connections_appId_fkey")
 
   @@unique([accountId, appId], map: "user_app_connections_accountId_appId_key")
-  @@map("application_connection")
+  @@map("connection")
 }
 
 model ApplicationBridge {

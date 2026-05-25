@@ -242,7 +242,7 @@ export async function GET(request: NextRequest): Promise<Response> {
   if (isAuthenticated && accountId) {
     // Ensure ApplicationConnection exists and get its stable ID
     try {
-      const connection = await prisma.applicationConnection.upsert({
+      const connection = await prisma.connection.upsert({
         where: { accountId_appId: { accountId, appId } },
         update: {},
         create: { accountId, appId, status: 'active' },

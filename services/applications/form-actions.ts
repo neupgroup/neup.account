@@ -104,7 +104,7 @@ export async function getApplicationsPageDataV2(): Promise<{
 
   const [usingResult, devResult, rootResult, canCreateApplication] = await Promise.all([
     Promise.allSettled([
-      prisma.applicationConnection.findMany({
+      prisma.connection.findMany({
         where: { accountId: personalAccountId },
         select: {
           connectedAt: true,
@@ -287,7 +287,7 @@ export async function getConnectedApplicationsPageData(): Promise<{
   if (!personalAccountId) return { apps: [], error: false };
 
   try {
-    const connections = await prisma.applicationConnection.findMany({
+    const connections = await prisma.connection.findMany({
       where: { accountId: personalAccountId },
       select: {
         connectedAt: true,

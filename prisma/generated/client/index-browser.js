@@ -347,7 +347,7 @@ exports.Prisma.AccountOwnershipScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
-exports.Prisma.ApplicationConnectionScalarFieldEnum = {
+exports.Prisma.ConnectionScalarFieldEnum = {
   id: 'id',
   accountId: 'accountId',
   appId: 'appId',
@@ -528,7 +528,7 @@ exports.Prisma.ModelName = {
   PortfolioMember: 'PortfolioMember',
   Member: 'Member',
   AccountOwnership: 'AccountOwnership',
-  ApplicationConnection: 'ApplicationConnection',
+  Connection: 'Connection',
   ApplicationBridge: 'ApplicationBridge',
   ApplicationPolicy: 'ApplicationPolicy',
   AuthzPermission: 'AuthzPermission',

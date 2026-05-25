@@ -218,11 +218,11 @@ export async function buildIdentityDetails(accountId: string): Promise<IdentityD
 }
 
 // ---------------------------------------------------------------------------
-// ApplicationConnection auto-creation on silent auth
+// Connection auto-creation on silent auth
 // ---------------------------------------------------------------------------
 
 /**
- * Ensures an ApplicationConnection exists for the given account + app.
+ * Ensures a Connection exists for the given account + app.
  * Called during silent auth when the user is authenticated so the app
  * appears in the user's connected-apps list immediately.
  *
@@ -233,7 +233,7 @@ export async function ensureApplicationConnection(
   appId: string
 ): Promise<void> {
   try {
-    await prisma.applicationConnection.upsert({
+    await prisma.connection.upsert({
       where: { accountId_appId: { accountId, appId } },
       update: {},
       create: { accountId, appId, status: 'active' },

@@ -116,7 +116,7 @@ export async function GET(request: NextRequest) {
         }
 
         // 6. Auto-create ApplicationConnection (upsert — safe to call repeatedly)
-        await prisma.applicationConnection.upsert({
+        await prisma.connection.upsert({
             where: { accountId_appId: { accountId: account.id, appId } },
             update: {},
             create: { accountId: account.id, appId, status: 'active' },

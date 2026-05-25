@@ -4,7 +4,7 @@
  * Issues account-scoped JWTs for external API access.
  *
  * Token shape: { cid, iat, exp }
- *   cid — ApplicationConnection.id (stable link between an account and an app)
+ *   cid — Connection.id (stable link between an account and an app)
  *
  * After obtaining the token, callers use:
  *   GET /account/bridge/api.v1/accounts/lookup  — public profile lookup by accountId or neupId
@@ -22,7 +22,7 @@ import { logError } from '@/core/helpers/logger';
 
 /** What's inside the JWT — minimal by design. */
 export type AccountJwtPayload = {
-  cid: string;   // ApplicationConnection.id
+  cid: string;   // Connection.id
   iat?: number;
   exp?: number;
 };
@@ -70,7 +70,7 @@ async function validateSession(aid: string, sid: string, skey: string): Promise<
 
 /**
  * Validates the session triplet (aid, sid, skey) against the database,
- * ensures an ApplicationConnection exists, then issues a JWT containing
+ * ensures a Connection exists, then issues a JWT containing
  * only { cid, iat, exp }.
  *
  * The JWT is signed with Application.appSecret (HS256).
@@ -121,8 +121,8 @@ export async function issueAccountToken(input: {
       };
     }
 
-    // 3. Ensure ApplicationConnection exists — get its ID
-    const connection = await prisma.applicationConnection.upsert({
+    // 3. Ensure Connection exists — get its ID
+    const connection = await prisma.connection.upsert({
       where: { accountId_appId: { accountId: aid, appId } },
       update: {},
       create: { accountId: aid, appId, status: 'active' },

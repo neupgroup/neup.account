@@ -35,7 +35,7 @@ export async function getUserApplicationAccess(appId: string): Promise<UserAppli
   try {
     const [application, connection, roleRows] = await Promise.all([
       prisma.application.findUnique({ where: { id: appId } }),
-      prisma.applicationConnection.findUnique({
+      prisma.connection.findUnique({
         where: {
           accountId_appId: { accountId, appId },
         },
@@ -91,7 +91,7 @@ export async function addUserApplicationAccess(input: { appId: string; permissio
     if (!application) return { success: false, error: 'Application not found.' };
 
     await prisma.$transaction(async (tx) => {
-      await tx.applicationConnection.upsert({
+      await tx.connection.upsert({
         where: { accountId_appId: { accountId, appId } },
         update: {},
         create: { accountId, appId, status: 'active' },

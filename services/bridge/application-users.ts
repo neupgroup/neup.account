@@ -119,7 +119,7 @@ export async function getApplicationUsers(params: {
     }
 
     // 4. Count total (for meta)
-    const total = await prisma.applicationConnection.count({
+    const total = await prisma.connection.count({
       where: {
         appId,
         ...(connectedAtFilter ? { connectedAt: connectedAtFilter } : {}),
@@ -127,7 +127,7 @@ export async function getApplicationUsers(params: {
     });
 
     // 5. Fetch connections with account data
-    const connections = await prisma.applicationConnection.findMany({
+    const connections = await prisma.connection.findMany({
       where: {
         appId,
         ...(connectedAtFilter ? { connectedAt: connectedAtFilter } : {}),

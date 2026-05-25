@@ -120,7 +120,7 @@ export async function bridgeIssueGrant(input: {
       };
     }
 
-    await prisma.applicationConnection.upsert({
+    await prisma.connection.upsert({
       where: {
         accountId_appId: {
           accountId: request.accountId,

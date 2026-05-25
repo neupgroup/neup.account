@@ -294,7 +294,7 @@ model Portfolio {
 
 model Asset {
   id                      String                   @id(map: "portfolio_assets_pkey") @default(uuid())
-  parentPortfolioId       String
+  parentPortfolioId       String                   @map("portfolioId")
   assetType               String
   assetId                 String
   details                 Json?

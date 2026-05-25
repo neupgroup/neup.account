@@ -170,8 +170,8 @@ export async function getUserNeupIdDetails(
 // --- Permissions ---
 
 // Resolves account permissions by:
-// 1) finding role grants in authz_account_access_grant for targetAccountId + appId,
-// 2) loading denormalized permissions from authz_role_capability for those roleIds.
+// 1) finding role grants in member for active account + app scope,
+// 2) loading denormalized permissions from authz_role.permissions for those roleIds.
 export async function getAccountPermission(
   accountId?: string,
 ): Promise<string[]> {
@@ -194,22 +194,22 @@ export async function getAccountPermission(
 
     const roleIds = Array.from(new Set(grants.map((grant) => grant.roleId)));
 
-    const rolePermissions = await prisma.authzRolePermission.findMany({
+    const roles = await prisma.authzRole.findMany({
       where: {
-        roleId: { in: roleIds },
+        id: { in: roleIds },
         appId: "neup.account",
       },
       select: {
-        denormalizedPermission: true,
+        permissions: true,
       },
     });
 
     const permissions = [
       ...new Set(
-        rolePermissions.flatMap((row) => {
-          if (!Array.isArray(row.denormalizedPermission)) return [];
+        roles.flatMap((row) => {
+          if (!Array.isArray(row.permissions)) return [];
 
-          return row.denormalizedPermission.filter(
+          return row.permissions.filter(
             (item): item is string => typeof item === "string",
           );
         }),

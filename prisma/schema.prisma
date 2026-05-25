@@ -29,6 +29,7 @@ model Account {
   familyMembers           FamilyMember[]
   verificationActions     Verification[]           @relation("VerificationDoneBy")
   authzAssetsAccessGrants AuthzAssetsAccessGrant[]
+  targetAssets            Asset[]                  @relation("AssetTargetAccount")
   ownedMembers            Member[]                 @relation("MemberOwner")
   targetAccountMembers    Member[]                 @relation("MemberTargetAccount")
   parentAccountMembers    Member[]                 @relation("MemberParentAccount")
@@ -276,6 +277,7 @@ model Application {
   authzPermissions AuthzPermission[]
   authzRoles       AuthzRole[]
   identities       Identity[]
+  targetAssets     Asset[]               @relation("AssetTargetApplication")
 
   @@map("application")
 }
@@ -294,14 +296,21 @@ model Portfolio {
 
 model Asset {
   id                      String                   @id(map: "portfolio_assets_pkey") @default(uuid())
-  parentPortfolioId       String                   @map("portfolioId")
-  assetType               String
-  assetId                 String
+  parentPortfolioId       String                   @map("portfolio_id")
+  assetType               AssetType                @map("asset_type")
+  targetAccountId         String?                  @map("target_account")
+  targetApplicationId     String?                  @map("target_application")
+  targetConnectionId      String?                  @map("target_connection")
   details                 Json?
   portfolio               Portfolio                @relation(fields: [parentPortfolioId], references: [id], onDelete: Cascade, map: "portfolio_assets_portfolioId_fkey")
+  targetAccount           Account?                 @relation("AssetTargetAccount", fields: [targetAccountId], references: [id], map: "assets_target_account_fkey")
+  targetApplication       Application?             @relation("AssetTargetApplication", fields: [targetApplicationId], references: [id], map: "assets_target_application_fkey")
+  targetConnection        Connection?              @relation("AssetTargetConnection", fields: [targetConnectionId], references: [id], map: "assets_target_connection_fkey")
   authzAssetsAccessGrants AuthzAssetsAccessGrant[]
 
-  @@index([assetType, assetId], map: "portfolio_assets_assetType_assetId_idx")
+  @@index([assetType, targetAccountId], map: "assets_asset_type_target_account_idx")
+  @@index([assetType, targetApplicationId], map: "assets_asset_type_target_application_idx")
+  @@index([assetType, targetConnectionId], map: "assets_asset_type_target_connection_idx")
   @@index([parentPortfolioId], map: "portfolio_assets_portfolioId_idx")
   @@map("assets")
 }
@@ -364,6 +373,7 @@ model Connection {
   account       Account     @relation(fields: [accountId], references: [id], onDelete: Cascade, map: "user_app_connections_accountId_fkey")
   application   Application @relation(fields: [appId], references: [id], map: "user_app_connections_appId_fkey")
   parentMembers Member[]    @relation("MemberParentConnection")
+  targetAssets  Asset[]     @relation("AssetTargetConnection")
 
   @@unique([accountId, appId], map: "user_app_connections_accountId_appId_key")
   @@map("connection")
@@ -400,6 +410,12 @@ enum AuthzGrantStatus {
   invited
   on_hold
   expired
+}
+
+enum AssetType {
+  account
+  application
+  connection
 }
 
 enum MemberAccessFor {

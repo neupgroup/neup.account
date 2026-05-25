@@ -313,7 +313,9 @@ exports.Prisma.AssetScalarFieldEnum = {
   id: 'id',
   parentPortfolioId: 'parentPortfolioId',
   assetType: 'assetType',
-  assetId: 'assetId',
+  targetAccountId: 'targetAccountId',
+  targetApplicationId: 'targetApplicationId',
+  targetConnectionId: 'targetConnectionId',
   details: 'details'
 };
 
@@ -445,6 +447,12 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.AssetType = exports.$Enums.AssetType = {
+  account: 'account',
+  application: 'application',
+  connection: 'connection'
+};
+
 exports.MemberAccessFor = exports.$Enums.MemberAccessFor = {
   account: 'account',
   application: 'application',

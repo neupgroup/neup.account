@@ -214,21 +214,41 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
   const accountId = await getActiveAccountId();
   if (!accountId) notFound();
 
+  const toLogicalAssetId = (row: {
+    id: string;
+    childAccountId: string | null;
+    childApplicationId: string | null;
+    childConnectionId: string | null;
+  }) => row.childAccountId ?? row.childApplicationId ?? row.childConnectionId ?? row.id;
+
   const resolved = await prisma.asset.findFirst({
     where: {
-      OR: [{ id: assetRef }, { assetId: assetRef }],
+      OR: [
+        { id: assetRef },
+        { childAccountId: assetRef },
+        { childApplicationId: assetRef },
+        { childConnectionId: assetRef },
+      ],
     },
     select: {
-      assetId: true,
+      id: true,
+      childAccountId: true,
+      childApplicationId: true,
+      childConnectionId: true,
       assetType: true,
     },
   });
 
   if (!resolved) notFound();
+  const resolvedAssetId = toLogicalAssetId(resolved);
 
   const allRows = await prisma.asset.findMany({
     where: {
-      assetId: resolved.assetId,
+      OR: [
+        { childAccountId: resolvedAssetId },
+        { childApplicationId: resolvedAssetId },
+        { childConnectionId: resolvedAssetId },
+      ],
       assetType: resolved.assetType,
     },
     select: { id: true, parentPortfolioId: true },
@@ -237,12 +257,14 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
   if (allRows.length === 0) notFound();
 
   const rowIds = allRows.map((r) => r.id);
-  const portfolioIds = Array.from(new Set(allRows.map((r) => r.parentPortfolioId)));
+  const portfolioIds = Array.from(
+    new Set(allRows.map((r) => r.parentPortfolioId).filter((id): id is string => Boolean(id))),
+  );
 
   if (!rootMode) {
     const canView = await prisma.member.findFirst({
       where: {
-        accountId,
+        memberId: accountId,
         parentPortfolioId: { in: portfolioIds },
       },
       select: { id: true },
@@ -297,21 +319,21 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
     })
   );
 
-  const resolvedAsset = await resolveAssetName(resolved.assetId, resolved.assetType);
+  const resolvedAsset = await resolveAssetName(resolvedAssetId, resolved.assetType);
   const backHref = rootMode
-    ? `/access/asset?asset=${encodeURIComponent(resolved.assetId)}&mode=root`
-    : `/access/asset?asset=${encodeURIComponent(resolved.assetId)}`;
+    ? `/access/asset?asset=${encodeURIComponent(resolvedAssetId)}&mode=root`
+    : `/access/asset?asset=${encodeURIComponent(resolvedAssetId)}`;
 
   return (
     <MembersLayout
       backHref={backHref}
       description={`Members with access to ${resolved.assetType === 'application' ? 'application' : 'asset'} "${resolvedAsset.name}"`}
-      addForm={<AssetMemberLookupForm assetId={resolved.assetId} rootMode={rootMode} />}
+      addForm={<AssetMemberLookupForm assetId={resolvedAssetId} rootMode={rootMode} />}
       table={
         members.length > 0 ? (
           <MembersTable
             rows={members.map((member) => ({
-              id: `asset:${resolved.assetId}:${member.accountId}`,
+              id: `asset:${resolvedAssetId}:${member.accountId}`,
               member_id: member.accountId,
               role: member.roleCount === 0 ? 'No roles assigned' : `${member.roleCount} role${member.roleCount !== 1 ? 's' : ''}`,
               status: member.status,

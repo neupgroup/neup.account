@@ -44,7 +44,7 @@ export async function getUserApplicationAccess(appId: string): Promise<UserAppli
       prisma.member.findMany({
         where: {
           memberId: accountId,
-          appId,
+          parentApplicationId: appId,
         },
         select: { roleId: true },
       }),
@@ -98,7 +98,7 @@ export async function addUserApplicationAccess(input: { appId: string; permissio
       });
 
       await tx.member.deleteMany({
-        where: { memberId: accountId, appId },
+        where: { memberId: accountId, parentApplicationId: appId },
       });
 
       if (permissions.length > 0) {
@@ -106,7 +106,8 @@ export async function addUserApplicationAccess(input: { appId: string; permissio
           data: permissions.map((roleId) => ({
             accessTo: accountId,
             memberId: accountId,
-            appId,
+            accessFor: 'application',
+            parentApplicationId: appId,
             roleId,
           })),
           skipDuplicates: true,
@@ -141,7 +142,7 @@ export async function updateUserApplicationPermissions(input: { appId: string; p
   try {
     await prisma.$transaction(async (tx) => {
       await tx.member.deleteMany({
-        where: { memberId: accountId, appId },
+        where: { memberId: accountId, parentApplicationId: appId },
       });
 
       if (permissions.length > 0) {
@@ -149,7 +150,8 @@ export async function updateUserApplicationPermissions(input: { appId: string; p
           data: permissions.map((roleId) => ({
             accessTo: accountId,
             memberId: accountId,
-            appId,
+            accessFor: 'application',
+            parentApplicationId: appId,
             roleId,
           })),
           skipDuplicates: true,

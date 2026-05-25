@@ -11,6 +11,8 @@ import { ManageStatsCard } from '@/components/dashboard/manage-stats-card';
 import { FindUserCard } from '@/components/dashboard/find-user-card';
 import { SystemToolsCard } from '@/components/dashboard/system-tools-card';
 
+export const dynamic = 'force-dynamic';
+
 export default async function HomePage() {
     const accountId = await getActiveAccountId();
     if (!accountId) {

@@ -18,7 +18,12 @@ export async function switchToAccount(memberId: string): Promise<{ success: bool
   try {
     // Verify a grant exists giving this user access to the target account
     const grant = await prisma.member.findFirst({
-      where: { accessTo: memberId, memberId: personalAccountId, appId: 'neup.account' },
+      where: {
+        accessTo: memberId,
+        memberId: personalAccountId,
+        accessFor: 'application',
+        parentApplicationId: 'neup.account',
+      },
       select: { id: true },
     });
     if (!grant) return { success: false, error: 'No access found for this account.' };
@@ -49,7 +54,8 @@ export async function switchToBrand(brandId: string): Promise<{ success: boolean
         accessTo: brandId,
         memberId: personalAccountId,
         roleId: 'brand-owner-neup-account',
-        appId: 'neup.account',
+        accessFor: 'application',
+        parentApplicationId: 'neup.account',
       },
       select: { id: true },
     });
@@ -81,7 +87,8 @@ export async function switchToDependent(dependentId: string): Promise<{ success:
         accessTo: dependentId,
         memberId: personalAccountId,
         roleId: 'account.guardian',
-        appId: 'neup.account',
+        accessFor: 'application',
+        parentApplicationId: 'neup.account',
       },
       select: { id: true },
     });

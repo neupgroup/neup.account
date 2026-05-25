@@ -13,6 +13,7 @@ import { PrimaryHeader } from "@/components/ui/primary-header";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
 import { notFound } from "next/navigation";
 
+export const dynamic = 'force-dynamic';
 
 export default async function DevicesPage() {
     const hasPermission = await checkPermissions(['security.login_devices.view']);

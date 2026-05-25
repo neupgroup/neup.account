@@ -427,19 +427,54 @@ async function resolvePortfolioAssetRow(assetRef: string): Promise<{
   assetId: string;
   assetType: string;
 } | null> {
+  const toLogicalAssetId = (row: {
+    id: string;
+    childAccountId: string | null;
+    childApplicationId: string | null;
+    childConnectionId: string | null;
+  }): string => row.childAccountId ?? row.childApplicationId ?? row.childConnectionId ?? row.id;
+
   const byRow = await prisma.asset.findUnique({
     where: { id: assetRef },
-    select: { id: true, assetId: true, assetType: true },
+    select: {
+      id: true,
+      assetType: true,
+      childAccountId: true,
+      childApplicationId: true,
+      childConnectionId: true,
+    },
   });
-  if (byRow) return { rowId: byRow.id, assetId: byRow.assetId, assetType: byRow.assetType };
+  if (byRow) {
+    return {
+      rowId: byRow.id,
+      assetId: toLogicalAssetId(byRow),
+      assetType: byRow.assetType,
+    };
+  }
 
   const byLogical = await prisma.asset.findFirst({
-    where: { assetId: assetRef },
-    select: { id: true, assetId: true, assetType: true },
+    where: {
+      OR: [
+        { childAccountId: assetRef },
+        { childApplicationId: assetRef },
+        { childConnectionId: assetRef },
+      ],
+    },
+    select: {
+      id: true,
+      assetType: true,
+      childAccountId: true,
+      childApplicationId: true,
+      childConnectionId: true,
+    },
     orderBy: { id: 'asc' },
   });
   if (!byLogical) return null;
-  return { rowId: byLogical.id, assetId: byLogical.assetId, assetType: byLogical.assetType };
+  return {
+    rowId: byLogical.id,
+    assetId: toLogicalAssetId(byLogical),
+    assetType: byLogical.assetType,
+  };
 }
 
 export async function assignOrInviteAssetMember(input: {

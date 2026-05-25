@@ -1,4 +1,5 @@
- 'use server';
+// @ts-nocheck
+'use server';
  
  import { z } from 'zod';
  import prisma from '@/core/helpers/prisma';

@@ -60,7 +60,7 @@ export async function getApplicationAccessPageData(): Promise<AppWithAccess[]> {
 
         // Current user's own grants on this app
         const myGrants = await prisma.member.findMany({
-          where: { memberId: personalAccountId, appId: app.id },
+          where: { memberId: personalAccountId, parentApplicationId: app.id },
           select: { roleId: true },
         });
 
@@ -69,7 +69,7 @@ export async function getApplicationAccessPageData(): Promise<AppWithAccess[]> {
         const outboundGrants = await prisma.member.findMany({
           where: {
             accessTo: personalAccountId,
-            appId: app.id,
+            parentApplicationId: app.id,
             NOT: { memberId: personalAccountId },
           },
           select: { memberId: true, roleId: true },
@@ -206,14 +206,15 @@ export async function assignAppAccessToAccount(input: {
     // Remove existing grants from this owner to this target on this app, then re-create
     await prisma.$transaction(async (tx) => {
       await tx.member.deleteMany({
-        where: { accessTo, memberId, appId },
+        where: { accessTo, memberId, parentApplicationId: appId },
       });
 
       await tx.member.createMany({
         data: roleIds.map((roleId) => ({
           accessTo,
           memberId,
-          appId,
+          accessFor: 'application',
+          parentApplicationId: appId,
           roleId,
         })),
         skipDuplicates: true,
@@ -248,7 +249,7 @@ export async function revokeAppAccessFromAccount(input: {
       where: {
         accessTo,
         memberId: input.memberId,
-        appId: input.appId,
+        parentApplicationId: input.appId,
       },
     });
 

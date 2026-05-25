@@ -243,8 +243,8 @@ async function resolvePermissionSet(input: {
 					{
 						assets: {
 							some: {
-								assetId: input.app,
-								assetType: { in: ['application', 'app'] },
+								childApplicationId: input.app,
+								assetType: 'application',
 							},
 						},
 					},
@@ -254,7 +254,10 @@ async function resolvePermissionSet(input: {
 				id: true,
 				assets: {
 					select: {
-						assetId: true,
+						id: true,
+						childAccountId: true,
+						childApplicationId: true,
+						childConnectionId: true,
 						assetType: true,
 					},
 				},
@@ -263,17 +266,12 @@ async function resolvePermissionSet(input: {
 					select: {
 						isPermanent: true,
 						hasFullAccess: true,
-						details: true,
 					},
-				},
-				authzAccountAccessGrants: {
-					where: { memberId: input.accountId },
-					select: { roleId: true },
 				},
 			},
 		}),
 		prisma.member.findMany({
-			where: { memberId: input.accountId, appId: input.app },
+			where: { memberId: input.accountId, parentApplicationId: input.app },
 			select: { roleId: true },
 		}),
 	]);
@@ -283,20 +281,21 @@ async function resolvePermissionSet(input: {
 	}
 	const resolvedPermissions = new Set<string>();
 
-	if (portfolios.some((portfolio) => portfolio.authzAccountAccessGrants?.some((grant) => grant.roleId === 'application.owner'))) {
+	if (portfolios.some((portfolio) => portfolio.members.length > 0)) {
 		resolvedPermissions.add('application.owner');
 		resolvedPermissions.add('owner');
 	}
 
 	for (const portfolio of portfolios) {
-		if (portfolio.members.length === 0 && portfolio.authzAccountAccessGrants.length === 0) {
+		if (portfolio.members.length === 0) {
 			continue;
 		}
 
 		const apiMatches = !input.api
 			? true
 			: portfolio.assets.some((asset) =>
-				asset.assetId === input.api || asset.assetType === input.api
+				(asset.childAccountId ?? asset.childApplicationId ?? asset.childConnectionId ?? asset.id) === input.api ||
+				asset.assetType === input.api
 			);
 
 		if (!apiMatches) {
@@ -304,13 +303,7 @@ async function resolvePermissionSet(input: {
 		}
 
 		const hasFullAccess = portfolio.members.some((member) => {
-			const details = (member.details ?? null) as Record<string, unknown> | null;
-			const removesOnRaw = details?.removesOn;
-			const removesOn =
-				typeof removesOnRaw === 'string' || removesOnRaw instanceof Date
-					? new Date(removesOnRaw as string | Date)
-					: null;
-			const stillValid = member.isPermanent || (removesOn instanceof Date && !Number.isNaN(removesOn.getTime()) && removesOn > now);
+			const stillValid = member.isPermanent;
 			return stillValid && member.hasFullAccess;
 		});
 
@@ -318,13 +311,10 @@ async function resolvePermissionSet(input: {
 			resolvedPermissions.add('*');
 		}
 
-		for (const grant of portfolio.authzAccountAccessGrants) {
-			resolvedPermissions.add(normalizePermission(grant.roleId));
-		}
 	}
 
 	for (const grant of await prisma.member.findMany({
-		where: { memberId: input.accountId, appId: input.app },
+		where: { memberId: input.accountId, parentApplicationId: input.app },
 		select: { roleId: true },
 	})) {
 		resolvedPermissions.add(normalizePermission(grant.roleId));

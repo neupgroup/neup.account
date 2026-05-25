@@ -158,7 +158,7 @@ async function resolveApplicationAccessForAccount(accountId: string, appId: stri
     const roleRows = await prisma.member.findMany({
       where: {
         memberId: accountId,
-        appId,
+        parentApplicationId: appId,
       },
       select: {
         roleId: true,
@@ -207,7 +207,7 @@ export async function isApplicationOwnerForAccount(accountId: string, appId: str
   const ownerRoleRows = await prisma.member.findMany({
     where: {
       memberId: accountId,
-      appId,
+      parentApplicationId: appId,
     },
     select: {
       roleId: true,
@@ -263,7 +263,7 @@ export async function getApplicationDetailsForViewer(appId: string): Promise<App
       }),
       personalAccountId
         ? prisma.member.findMany({
-            where: { memberId: personalAccountId, appId },
+            where: { memberId: personalAccountId, parentApplicationId: appId },
             select: { roleId: true },
           })
         : [],
@@ -369,14 +369,12 @@ export async function createManagedApplication(input: { name: string }) {
         update: { name: 'application.owner', description: 'Full ownership of an application.', appId: 'neup.account', scope: 'application' },
         create: { id: 'application.owner', name: 'application.owner', description: 'Full ownership of an application.', appId: 'neup.account', scope: 'application' },
       });
-      for (const cap of permissions) {
-        const mapId = `application.owner::${cap.id}`;
-        await tx.authzRolePermission.upsert({
-          where: { id: mapId },
-          update: { roleId: 'application.owner', permissionId: cap.id, appId: 'neup.account', roleName: 'application.owner', denormalizedPermission: [cap.name] },
-          create: { id: mapId, roleId: 'application.owner', permissionId: cap.id, appId: 'neup.account', roleName: 'application.owner', denormalizedPermission: [cap.name] },
-        });
-      }
+      await tx.authzRole.update({
+        where: { id: 'application.owner' },
+        data: {
+          permissions: permissions.map((cap) => ({ id: cap.id, name: cap.name })),
+        },
+      });
       const createdApp = await tx.application.create({
         data: {
           id: randomUUID(),
@@ -395,7 +393,8 @@ export async function createManagedApplication(input: { name: string }) {
           accessTo: accountId,
           memberId: accountId,
           roleId: 'application.owner',
-          appId: createdApp.id,
+          accessFor: 'application',
+          parentApplicationId: createdApp.id,
         },
       });
 
@@ -404,8 +403,9 @@ export async function createManagedApplication(input: { name: string }) {
           data: {
             accessTo: accountId,
             memberId: accountId,
+            accessFor: 'application',
             roleId: 'application.owner',
-            appId: createdApp.id,
+            parentApplicationId: createdApp.id,
           },
         });
       }
@@ -1020,7 +1020,7 @@ export async function getApplicationDetailsForViewerV2(appId: string): Promise<A
     // Resolve accessed data from authz grants (same as original)
     const appSessions = personalAccountId
       ? await prisma.member.findMany({
-          where: { memberId: personalAccountId, appId },
+          where: { memberId: personalAccountId, parentApplicationId: appId },
           select: { roleId: true },
         })
       : [];
@@ -1305,13 +1305,13 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
   try {
     // All access grants for this app
     const grants = await prisma.member.findMany({
-      where: { appId },
+      where: { parentApplicationId: appId },
       select: {
         memberId: true,
         roleId: true,
         parentPortfolioId: true,
-        portfolio: { select: { id: true, name: true } },
-        target: {
+        parentPortfolio: { select: { id: true, name: true } },
+        accessAccount: {
           select: {
             id: true,
             displayName: true,
@@ -1327,10 +1327,10 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
 
     // Portfolios this app belongs to (via AuthzAppAccessGrant)
     const appPortfolioGrants = await prisma.member.findMany({
-      where: { appId, parentPortfolioId: { not: null } },
+      where: { parentApplicationId: appId, parentPortfolioId: { not: null } },
       select: {
         parentPortfolioId: true,
-        portfolio: { select: { id: true, name: true } },
+        parentPortfolio: { select: { id: true, name: true } },
       },
       distinct: ['parentPortfolioId'],
     });
@@ -1340,15 +1340,15 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
     const portfolioMap = new Map<string, string>();
 
     for (const g of grants) {
-      if (g.parentPortfolioId && g.portfolio) {
+      if (g.parentPortfolioId && g.parentPortfolio) {
         portfolioIds.add(g.parentPortfolioId);
-        portfolioMap.set(g.parentPortfolioId, g.portfolio.name);
+        portfolioMap.set(g.parentPortfolioId, g.parentPortfolio.name);
       }
     }
     for (const g of appPortfolioGrants) {
-      if (g.parentPortfolioId && g.portfolio) {
+      if (g.parentPortfolioId && g.parentPortfolio) {
         portfolioIds.add(g.parentPortfolioId);
-        portfolioMap.set(g.parentPortfolioId, g.portfolio.name);
+        portfolioMap.set(g.parentPortfolioId, g.parentPortfolio.name);
       }
     }
 
@@ -1376,7 +1376,8 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
     const accessMap = new Map<string, AppAccessEntry>();
 
     for (const g of grants) {
-      const t = g.target;
+      const t = g.accessAccount;
+      if (!t) continue;
       const displayName = resolveDisplayName(t);
       const neupId = t.neupIds[0]?.neupId;
       const isOwnerRole = ownerRoleKeys.has(g.roleId.trim().toLowerCase());
@@ -1400,7 +1401,7 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
             neupId,
             isVerified: t.isVerified,
             roles: [],
-            via: g.parentPortfolioId && g.portfolio ? g.portfolio.name : null,
+            via: g.parentPortfolioId && g.parentPortfolio ? g.parentPortfolio.name : null,
           });
         }
         const entry = accessMap.get(t.id)!;
@@ -1408,8 +1409,8 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
           entry.roles.push(g.roleId);
         }
         // If any grant for this account came via a portfolio, mark it
-        if (g.parentPortfolioId && g.portfolio && entry.via === null) {
-          entry.via = g.portfolio.name;
+        if (g.parentPortfolioId && g.parentPortfolio && entry.via === null) {
+          entry.via = g.parentPortfolio.name;
         }
       }
     }

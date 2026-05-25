@@ -35,8 +35,9 @@ export async function assignDefaultRole(accountId: string): Promise<void> {
             where: {
                 accessTo: accountId,
                 memberId: accountId,
+                accessFor: 'application',
                 roleId: role.id,
-                appId: APP_ID,
+                parentApplicationId: APP_ID,
             },
             select: { id: true },
         });
@@ -46,8 +47,9 @@ export async function assignDefaultRole(accountId: string): Promise<void> {
                 data: {
                     accessTo: accountId,
                     memberId: accountId,
+                    accessFor: 'application',
                     roleId: role.id,
-                    appId: APP_ID,
+                    parentApplicationId: APP_ID,
                 },
             });
         }

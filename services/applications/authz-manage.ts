@@ -87,28 +87,12 @@ async function ensureApplicationManagementRoles(): Promise<void> {
       });
     }
 
+    const basePermissions = permissions.map((cap) => ({ id: cap.id, name: cap.name }));
     for (const roleId of ['application.owner', 'application.manage']) {
-      for (const cap of permissions) {
-        const mapId = `${roleId}::${cap.id}`;
-        await tx.authzRolePermission.upsert({
-          where: { id: mapId },
-          update: {
-            roleId,
-            permissionId: cap.id,
-            appId: GLOBAL_AUTHZ_APP_ID,
-            roleName: roleId,
-            denormalizedPermission: [cap.name],
-          },
-          create: {
-            id: mapId,
-            roleId,
-            permissionId: cap.id,
-            appId: GLOBAL_AUTHZ_APP_ID,
-            roleName: roleId,
-            denormalizedPermission: [cap.name],
-          },
-        });
-      }
+      await tx.authzRole.update({
+        where: { id: roleId },
+        data: { permissions: basePermissions },
+      });
     }
   });
 }
@@ -127,7 +111,7 @@ async function assertCanManageAuthz(appId: string): Promise<{ accountId: string 
   const grant = await prisma.member.findFirst({
     where: {
       memberId: accountId,
-      appId,
+      parentApplicationId: appId,
       roleId: { in: ['application.owner', 'application.manage', 'application.edit', 'app.manage', 'app.edit'] },
     },
     select: { id: true },
@@ -255,13 +239,7 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
         name: true,
         description: true,
         scope: true,
-        roleMaps: {
-          select: {
-            permission: {
-              select: { id: true, name: true, description: true, scope: true },
-            },
-          },
-        },
+        permissions: true,
       },
     });
 
@@ -270,7 +248,17 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
       name: role.name,
       description: role.description,
       scope: role.scope,
-      permissions: role.roleMaps.map((m) => m.permission),
+      permissions: Array.isArray(role.permissions)
+        ? role.permissions
+            .filter((p): p is { id?: string; name?: string; description?: string | null; scope?: string | null } => Boolean(p) && typeof p === 'object')
+            .map((p) => ({
+              id: typeof p.id === 'string' ? p.id : '',
+              name: typeof p.name === 'string' ? p.name : '',
+              description: typeof p.description === 'string' ? p.description : null,
+              scope: typeof p.scope === 'string' ? p.scope : null,
+            }))
+            .filter((p) => p.id && p.name)
+        : [],
     }));
   } catch (error) {
     await logError('database', error, `getAppRoles:${appId}`);
@@ -321,15 +309,11 @@ export async function createAppRole(input: {
           select: { id: true, name: true },
         });
 
-        await tx.authzRolePermission.createMany({
-          data: caps.map((cap) => ({
-            roleId: created.id,
-            permissionId: cap.id,
-            appId: input.appId,
-            roleName: name,
-            denormalizedPermission: [cap.name],
-          })),
-          skipDuplicates: true,
+        await tx.authzRole.update({
+          where: { id: created.id },
+          data: {
+            permissions: caps.map((cap) => ({ id: cap.id, name: cap.name })),
+          },
         });
       }
 
@@ -365,23 +349,22 @@ export async function updateAppRolePermissions(input: {
       });
       if (!role) throw new Error('Role not found.');
 
-      await tx.authzRolePermission.deleteMany({ where: { roleId: input.roleId } });
-
       if (input.permissionIds.length > 0) {
         const caps = await tx.authzPermission.findMany({
           where: { id: { in: input.permissionIds }, appId: input.appId },
           select: { id: true, name: true },
         });
 
-        await tx.authzRolePermission.createMany({
-          data: caps.map((cap) => ({
-            roleId: input.roleId,
-            permissionId: cap.id,
-            appId: input.appId,
-            roleName: role.name,
-            denormalizedPermission: [cap.name],
-          })),
-          skipDuplicates: true,
+        await tx.authzRole.update({
+          where: { id: input.roleId },
+          data: {
+            permissions: caps.map((cap) => ({ id: cap.id, name: cap.name })),
+          },
+        });
+      } else {
+        await tx.authzRole.update({
+          where: { id: input.roleId },
+          data: { permissions: [] },
         });
       }
     });
@@ -424,16 +407,28 @@ export async function pushAuthzToWebhook(appId: string): Promise<{
   if ('error' in auth) return { success: false, pushed: 0, error: auth.error };
 
   try {
-    const roleMaps = await prisma.authzRolePermission.findMany({
+    const roles = await prisma.authzRole.findMany({
       where: { appId },
       select: {
         id: true,
-        roleId: true,
-        permissionId: true,
         scope: true,
-        denormalizedPermission: true,
-        roleName: true,
+        name: true,
+        permissions: true,
       },
+    });
+
+    const roleMaps = roles.flatMap((role) => {
+      if (!Array.isArray(role.permissions)) return [];
+      return role.permissions
+        .filter((p): p is { id?: string; name?: string } => Boolean(p) && typeof p === 'object')
+        .map((p) => ({
+          roleId: role.id,
+          permissionId: typeof p.id === 'string' ? p.id : '',
+          scope: role.scope,
+          denormalizedPermission: typeof p.name === 'string' ? [p.name] : [],
+          roleName: role.name,
+        }))
+        .filter((m) => m.permissionId);
     });
 
     if (roleMaps.length === 0) {
@@ -475,15 +470,14 @@ export async function clearAuthzPushStatus(appId: string): Promise<{
   if ('error' in auth) return { success: false, cleared: { roles: 0, access: 0 }, error: auth.error };
 
   try {
-    const [rolesResult, accessResult] = await prisma.$transaction([
+    const [rolesResult] = await prisma.$transaction([
       prisma.authzRole.updateMany({ where: { appId }, data: { pushed: false } }),
-      prisma.member.updateMany({ where: { appId }, data: { pushed: false } }),
     ]);
 
     revalidatePath(`/application/${appId}/roles`);
     revalidatePath(`/data/appconnection/${appId}`);
 
-    return { success: true, cleared: { roles: rolesResult.count, access: accessResult.count } };
+    return { success: true, cleared: { roles: rolesResult.count, access: 0 } };
   } catch (error) {
     await logError('database', error, `clearAuthzPushStatus:${appId}`);
     return { success: false, cleared: { roles: 0, access: 0 }, error: 'Failed to clear push status.' };

@@ -111,7 +111,7 @@ export async function getApplicationAccess(params: {
     //   A) grants that were granted TO the account (memberId = accountId)
     //   B) grants that the account granted to others (accessTo = accountId)
     // This intentionally does not filter by parentPortfolioId (portfolio or non-portfolio grants are included).
-    const where: any = { appId };
+    const where: any = { parentApplicationId: appId };
 
     if (accountId && forAccount) {
       where.OR = [
@@ -128,14 +128,11 @@ export async function getApplicationAccess(params: {
       where.accessTo = forAccount;
     }
 
-    // Unpushed only
-    where.pushed = false;
-
     const { total, grants } = await prisma.$transaction(async (tx) => {
-      // 3. Count total (unpushed only)
+      // 3. Count total
       const total = await tx.member.count({ where });
 
-      // 4. Fetch grants with related data (unpushed only)
+      // 4. Fetch grants with related data
       const grants = await tx.member.findMany({
         where,
         ...(cursorId
@@ -146,16 +143,15 @@ export async function getApplicationAccess(params: {
         select: {
           id: true,
           status: true,
-          pushed: true,
           parentPortfolioId: true,
-          account: {
+          accessAccount: {
             select: {
               id: true,
               displayName: true,
               accountType: true,
             },
           },
-          targetAccount: {
+          member: {
             select: {
               id: true,
               displayName: true,
@@ -168,30 +164,11 @@ export async function getApplicationAccess(params: {
               name: true,
               description: true,
               scope: true,
-              roleMaps: {
-                select: {
-                  permission: {
-                    select: {
-                      id: true,
-                      name: true,
-                      scope: true,
-                    },
-                  },
-                  denormalizedPermission: true,
-                },
-              },
+              permissions: true,
             },
           },
         },
       });
-
-      // Mark returned grants as pushed
-      if (grants.length > 0) {
-        await tx.member.updateMany({
-          where: { appId, id: { in: grants.map((g) => g.id) } },
-          data: { pushed: true },
-        });
-      }
 
       return { total, grants };
     });
@@ -218,23 +195,27 @@ export async function getApplicationAccess(params: {
     const data = grants.map((g) => ({
       grantId: g.id,
       status: g.status,
-      pushed: true,
-      accessTo: g.account.id,
-      ownerDisplayName: g.account.displayName,
-      ownerAccountType: g.account.accountType,
-      memberId: g.targetAccount.id,
-      targetDisplayName: g.targetAccount.displayName,
-      targetAccountType: g.targetAccount.accountType,
+      pushed: false,
+      accessTo: g.accessAccount.id,
+      ownerDisplayName: g.accessAccount.displayName,
+      ownerAccountType: g.accessAccount.accountType,
+      memberId: g.member.id,
+      targetDisplayName: g.member.displayName,
+      targetAccountType: g.member.accountType,
       roleId: g.role.id,
       roleName: g.role.name,
       roleDescription: g.role.description,
       roleScope: g.role.scope,
-      permissions: g.role.roleMaps.map((m) => ({
-        permissionId: m.permission.id,
-        permissionName: m.permission.name,
-        permissionScope: m.permission.scope,
-        denormalized: m.denormalizedPermission ?? null,
-      })),
+      permissions: Array.isArray(g.role.permissions)
+        ? g.role.permissions
+            .filter((p): p is { id?: string; name?: string; scope?: string | null } => Boolean(p) && typeof p === 'object')
+            .map((p) => ({
+              permissionId: typeof p.id === 'string' ? p.id : null,
+              permissionName: typeof p.name === 'string' ? p.name : null,
+              permissionScope: typeof p.scope === 'string' ? p.scope : null,
+              denormalized: typeof p.name === 'string' ? [p.name] : null,
+            }))
+        : [],
       parentPortfolioId: g.parentPortfolioId,
     }));
 

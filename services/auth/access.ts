@@ -50,7 +50,7 @@ export async function bridgeGetAuthAccess(input: {
     const roleRows = await prisma.member.findMany({
       where: {
         memberId: aid,
-        appId: resolvedAppId,
+        parentApplicationId: resolvedAppId,
       },
       select: { roleId: true },
     });
@@ -104,7 +104,8 @@ export async function bridgeCreateAuthAccess(input: Record<string, any>): Promis
       where: {
         accessTo: aid,
         memberId: recipientId,
-        appId,
+        accessFor: 'application',
+        parentApplicationId: appId,
         roleId: 'access.member',
       },
     });
@@ -114,7 +115,8 @@ export async function bridgeCreateAuthAccess(input: Record<string, any>): Promis
         data: {
           accessTo: aid,
           memberId: recipientId,
-          appId,
+          accessFor: 'application',
+          parentApplicationId: appId,
           roleId: 'access.member',
         },
       });
@@ -145,7 +147,7 @@ export async function bridgeUpdateAuthAccess(input: Record<string, any>): Promis
         await tx.member.deleteMany({
           where: {
             memberId: recipientId,
-            appId,
+            parentApplicationId: appId,
             roleId: { in: removeRoles },
           },
         });
@@ -153,14 +155,15 @@ export async function bridgeUpdateAuthAccess(input: Record<string, any>): Promis
 
       for (const roleId of addRoles) {
         const exists = await tx.member.findFirst({
-          where: { accessTo: aid, memberId: recipientId, appId, roleId },
+          where: { accessTo: aid, memberId: recipientId, parentApplicationId: appId, roleId },
         });
         if (!exists) {
           await tx.member.create({
             data: {
               accessTo: aid,
               memberId: recipientId,
-              appId,
+              accessFor: 'application',
+              parentApplicationId: appId,
               roleId,
             },
           });

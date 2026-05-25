@@ -66,6 +66,13 @@ function ok(data: Record<string, unknown>, status = 200) {
   return NextResponse.json(data, { status });
 }
 
+function parseRolePermissions(value: Prisma.JsonValue | null): Prisma.JsonObject[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter(
+    (item): item is Prisma.JsonObject => Boolean(item) && typeof item === 'object' && !Array.isArray(item),
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Table handlers
 // ---------------------------------------------------------------------------
@@ -76,69 +83,51 @@ async function handleRolePermission(operation: Operation, body: WebhookBody): Pr
       if (!body.data || Array.isArray(body.data)) return err('Missing required field: `data` (object).', 400);
       const d = body.data;
       if (!d.roleId || !d.permissionId) return err('Missing required fields: `roleId`, `permissionId`.', 400);
-      const record = await prisma.authzRolePermission.create({
-        data: {
-          roleId: d.roleId as string,
-          permissionId: d.permissionId as string,
-          scope: (d.scope as string) ?? null,
-          denormalizedPermission: d.denormalizedPermission !== undefined && d.denormalizedPermission !== null
-            ? d.denormalizedPermission as Prisma.InputJsonValue
-            : Prisma.JsonNull,
-          roleName: (d.roleName as string) ?? null,
-        },
-        select: { id: true },
+      const role = await prisma.authzRole.findUnique({
+        where: { id: d.roleId as string },
+        select: { permissions: true },
       });
-      return ok({ id: record.id }, 201);
+      if (!role) return err('Role not found.', 404);
+
+      const id = crypto.randomUUID();
+      const permissions = parseRolePermissions(role.permissions);
+      permissions.push({
+        id,
+        permissionId: d.permissionId as string,
+        scope: (d.scope as string) ?? null,
+        denormalizedPermission: d.denormalizedPermission ?? null,
+        roleName: (d.roleName as string) ?? null,
+      });
+
+      await prisma.authzRole.update({
+        where: { id: d.roleId as string },
+        data: { permissions: permissions as Prisma.InputJsonValue },
+      });
+      return ok({ id }, 201);
     }
 
     case 'updateOne': {
-      if (typeof body.id !== 'string') return err('Missing required field: `id` (string).', 400);
-      if (!body.data || Array.isArray(body.data)) return err('Missing required field: `data` (object).', 400);
-      const d = body.data;
-      await prisma.authzRolePermission.update({
-        where: { id: body.id },
-        data: {
-          ...(d.roleId !== undefined && { roleId: d.roleId as string }),
-          ...(d.permissionId !== undefined && { permissionId: d.permissionId as string }),
-          ...(d.scope !== undefined && { scope: d.scope as string | null }),
-          ...(d.denormalizedPermission !== undefined && {
-            denormalizedPermission: d.denormalizedPermission !== null
-              ? d.denormalizedPermission as Prisma.InputJsonValue
-              : Prisma.JsonNull,
-          }),
-          ...(d.roleName !== undefined && { roleName: d.roleName as string | null }),
-        } as Prisma.AuthzRolePermissionUncheckedUpdateInput,
-      });
-      return ok({ ok: true });
+      // Legacy row-level updates are no longer supported after permissions
+      // were consolidated into authz_role.permissions JSON.
+      return ok({ ok: true, skipped: true });
     }
 
     case 'update': {
-      if (!Array.isArray(body.data)) return err('Missing required field: `data` (array).', 400);
-      await Promise.all(
-        body.data.map((item) => {
-          const { id, ...rest } = item;
-          if (!id) return Promise.resolve();
-          return prisma.authzRolePermission.update({ where: { id: id as string }, data: rest });
-        })
-      );
-      return ok({ ok: true, count: body.data.length });
+      return ok({ ok: true, skipped: true });
     }
 
     case 'deleteOne': {
       if (typeof body.id !== 'string') return err('Missing required field: `id` (string).', 400);
-      await prisma.authzRolePermission.delete({ where: { id: body.id } });
-      return ok({ ok: true });
+      return ok({ ok: true, skipped: true });
     }
 
     case 'delete': {
       if (!Array.isArray(body.id)) return err('Missing required field: `id` (array of strings).', 400);
-      const result = await prisma.authzRolePermission.deleteMany({ where: { id: { in: body.id as string[] } } });
-      return ok({ ok: true, count: result.count });
+      return ok({ ok: true, skipped: true, count: body.id.length });
     }
 
     case 'deleteAll': {
-      const result = await prisma.authzRolePermission.deleteMany();
-      return ok({ ok: true, count: result.count });
+      return ok({ ok: true, skipped: true });
     }
   }
 }
@@ -154,8 +143,9 @@ async function handleAccountAccessGrant(operation: Operation, body: WebhookBody)
         data: {
           accessTo: d.accessTo as string,
           memberId: d.memberId as string,
+          accessFor: 'application',
           roleId: d.roleId as string,
-          appId: d.appId as string,
+          parentApplicationId: d.appId as string,
           parentPortfolioId: (d.parentPortfolioId as string) ?? null,
         },
         select: { id: true },

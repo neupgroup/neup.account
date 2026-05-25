@@ -108,7 +108,7 @@ export async function getApplicationRoles(params: {
     let allowedRoleIds: string[] | null = null;
     if (account) {
       const grantRoleRows = await prisma.member.findMany({
-        where: { appId, memberId: account },
+        where: { parentApplicationId: appId, memberId: account },
         select: { roleId: true },
         distinct: ['roleId'],
       });
@@ -151,21 +151,7 @@ export async function getApplicationRoles(params: {
           description: true,
           scope: true,
           pushed: true,
-          roleMaps: {
-            select: {
-              id: true,
-              scope: true,
-              denormalizedPermission: true,
-              permission: {
-                select: {
-                  id: true,
-                  name: true,
-                  description: true,
-                  scope: true,
-                },
-              },
-            },
-          },
+          permissions: true,
         },
       });
 
@@ -196,15 +182,18 @@ export async function getApplicationRoles(params: {
       roleDescription: r.description,
       roleScope: r.scope,
       pushed: true,
-      permissions: r.roleMaps.map((m) => ({
-        rolePermissionId: m.id,
-        permissionId: m.permission.id,
-        permissionName: m.permission.name,
-        permissionDescription: m.permission.description,
-        permissionScope: m.permission.scope ?? m.scope,
-        // Include the stored denormalized snapshot if present
-        denormalized: m.denormalizedPermission ?? null,
-      })),
+      permissions: Array.isArray(r.permissions)
+        ? r.permissions
+            .filter((p): p is { id?: string; name?: string; description?: string | null; scope?: string | null } => Boolean(p) && typeof p === 'object')
+            .map((p) => ({
+              rolePermissionId: typeof p.id === 'string' ? `${r.id}::${p.id}` : null,
+              permissionId: typeof p.id === 'string' ? p.id : null,
+              permissionName: typeof p.name === 'string' ? p.name : null,
+              permissionDescription: typeof p.description === 'string' ? p.description : null,
+              permissionScope: typeof p.scope === 'string' ? p.scope : r.scope,
+              denormalized: typeof p.name === 'string' ? [p.name] : null,
+            }))
+        : [],
     }));
 
     const startedAt = roles.length > 0 ? roles[0].id : null;

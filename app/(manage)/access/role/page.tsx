@@ -74,7 +74,7 @@ async function getPortfolioMemberFlags(
   memberAccountId: string,
 ): Promise<PortfolioMemberFlags | null> {
   const member = await prisma.member.findFirst({
-    where: { parentPortfolioId, accountId: memberAccountId, status: 'active' },
+    where: { parentPortfolioId, memberId: memberAccountId, status: 'active' },
     select: { hasFullAccess: true, isPermanent: true },
   });
   return member ?? null;
@@ -94,7 +94,7 @@ async function hasOtherPermanentOwner(
       hasFullAccess: true,
       isPermanent: true,
       status: 'active',
-      accountId: { not: excludeAccountId },
+      memberId: { not: excludeAccountId },
     },
   });
   return count > 0;

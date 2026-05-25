@@ -205,6 +205,15 @@ export namespace $Enums {
 export type AuthzGrantStatus = (typeof AuthzGrantStatus)[keyof typeof AuthzGrantStatus]
 
 
+export const MemberAccessFor: {
+  account: 'account',
+  application: 'application',
+  connection: 'connection'
+};
+
+export type MemberAccessFor = (typeof MemberAccessFor)[keyof typeof MemberAccessFor]
+
+
 export const MemberTargetType: {
   portfolio: 'portfolio',
   account: 'account'
@@ -212,15 +221,32 @@ export const MemberTargetType: {
 
 export type MemberTargetType = (typeof MemberTargetType)[keyof typeof MemberTargetType]
 
+
+export const MemberStatus: {
+  active: 'active',
+  paused: 'paused',
+  removed: 'removed'
+};
+
+export type MemberStatus = (typeof MemberStatus)[keyof typeof MemberStatus]
+
 }
 
 export type AuthzGrantStatus = $Enums.AuthzGrantStatus
 
 export const AuthzGrantStatus: typeof $Enums.AuthzGrantStatus
 
+export type MemberAccessFor = $Enums.MemberAccessFor
+
+export const MemberAccessFor: typeof $Enums.MemberAccessFor
+
 export type MemberTargetType = $Enums.MemberTargetType
 
 export const MemberTargetType: typeof $Enums.MemberTargetType
+
+export type MemberStatus = $Enums.MemberStatus
+
+export const MemberStatus: typeof $Enums.MemberStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -4006,6 +4032,7 @@ export namespace Prisma {
     memberAccesses: number
     ownedMembers: number
     targetAccountMembers: number
+    parentAccountMembers: number
     permits: number
     permitTargets: number
     parentOwnerships: number
@@ -4035,6 +4062,7 @@ export namespace Prisma {
     memberAccesses?: boolean | AccountCountOutputTypeCountMemberAccessesArgs
     ownedMembers?: boolean | AccountCountOutputTypeCountOwnedMembersArgs
     targetAccountMembers?: boolean | AccountCountOutputTypeCountTargetAccountMembersArgs
+    parentAccountMembers?: boolean | AccountCountOutputTypeCountParentAccountMembersArgs
     permits?: boolean | AccountCountOutputTypeCountPermitsArgs
     permitTargets?: boolean | AccountCountOutputTypeCountPermitTargetsArgs
     parentOwnerships?: boolean | AccountCountOutputTypeCountParentOwnershipsArgs
@@ -4179,6 +4207,13 @@ export namespace Prisma {
   /**
    * AccountCountOutputType without action
    */
+  export type AccountCountOutputTypeCountParentAccountMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MemberWhereInput
+  }
+
+  /**
+   * AccountCountOutputType without action
+   */
   export type AccountCountOutputTypeCountPermitsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PermitWhereInput
   }
@@ -4310,6 +4345,7 @@ export namespace Prisma {
     connections: number
     bridge: number
     policies: number
+    parentMembers: number
     authzPermissions: number
     authzRoles: number
     authzAccountAccessGrants: number
@@ -4321,6 +4357,7 @@ export namespace Prisma {
     connections?: boolean | ApplicationCountOutputTypeCountConnectionsArgs
     bridge?: boolean | ApplicationCountOutputTypeCountBridgeArgs
     policies?: boolean | ApplicationCountOutputTypeCountPoliciesArgs
+    parentMembers?: boolean | ApplicationCountOutputTypeCountParentMembersArgs
     authzPermissions?: boolean | ApplicationCountOutputTypeCountAuthzPermissionsArgs
     authzRoles?: boolean | ApplicationCountOutputTypeCountAuthzRolesArgs
     authzAccountAccessGrants?: boolean | ApplicationCountOutputTypeCountAuthzAccountAccessGrantsArgs
@@ -4358,6 +4395,13 @@ export namespace Prisma {
    */
   export type ApplicationCountOutputTypeCountPoliciesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ApplicationPolicyWhereInput
+  }
+
+  /**
+   * ApplicationCountOutputType without action
+   */
+  export type ApplicationCountOutputTypeCountParentMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MemberWhereInput
   }
 
   /**
@@ -4403,7 +4447,6 @@ export namespace Prisma {
   export type PortfolioCountOutputType = {
     assets: number
     members: number
-    targetPortfolioMembers: number
     authzAccountAccessGrants: number
     authzAssetsAccessGrants: number
     authzAppAccessGrants: number
@@ -4412,7 +4455,6 @@ export namespace Prisma {
   export type PortfolioCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     assets?: boolean | PortfolioCountOutputTypeCountAssetsArgs
     members?: boolean | PortfolioCountOutputTypeCountMembersArgs
-    targetPortfolioMembers?: boolean | PortfolioCountOutputTypeCountTargetPortfolioMembersArgs
     authzAccountAccessGrants?: boolean | PortfolioCountOutputTypeCountAuthzAccountAccessGrantsArgs
     authzAssetsAccessGrants?: boolean | PortfolioCountOutputTypeCountAuthzAssetsAccessGrantsArgs
     authzAppAccessGrants?: boolean | PortfolioCountOutputTypeCountAuthzAppAccessGrantsArgs
@@ -4441,13 +4483,6 @@ export namespace Prisma {
    */
   export type PortfolioCountOutputTypeCountMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PortfolioMemberWhereInput
-  }
-
-  /**
-   * PortfolioCountOutputType without action
-   */
-  export type PortfolioCountOutputTypeCountTargetPortfolioMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: MemberWhereInput
   }
 
   /**
@@ -4504,6 +4539,37 @@ export namespace Prisma {
 
 
   /**
+   * Count Type ConnectionCountOutputType
+   */
+
+  export type ConnectionCountOutputType = {
+    parentMembers: number
+  }
+
+  export type ConnectionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    parentMembers?: boolean | ConnectionCountOutputTypeCountParentMembersArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ConnectionCountOutputType without action
+   */
+  export type ConnectionCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConnectionCountOutputType
+     */
+    select?: ConnectionCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ConnectionCountOutputType without action
+   */
+  export type ConnectionCountOutputTypeCountParentMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MemberWhereInput
+  }
+
+
+  /**
    * Count Type AuthzPermissionCountOutputType
    */
 
@@ -4543,6 +4609,7 @@ export namespace Prisma {
     grants: number
     assetsGrants: number
     appGrants: number
+    members: number
   }
 
   export type AuthzRoleCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4550,6 +4617,7 @@ export namespace Prisma {
     grants?: boolean | AuthzRoleCountOutputTypeCountGrantsArgs
     assetsGrants?: boolean | AuthzRoleCountOutputTypeCountAssetsGrantsArgs
     appGrants?: boolean | AuthzRoleCountOutputTypeCountAppGrantsArgs
+    members?: boolean | AuthzRoleCountOutputTypeCountMembersArgs
   }
 
   // Custom InputTypes
@@ -4589,6 +4657,13 @@ export namespace Prisma {
    */
   export type AuthzRoleCountOutputTypeCountAppGrantsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AuthzAppAccessGrantWhereInput
+  }
+
+  /**
+   * AuthzRoleCountOutputType without action
+   */
+  export type AuthzRoleCountOutputTypeCountMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MemberWhereInput
   }
 
 
@@ -4807,6 +4882,7 @@ export namespace Prisma {
     memberAccesses?: boolean | Account$memberAccessesArgs<ExtArgs>
     ownedMembers?: boolean | Account$ownedMembersArgs<ExtArgs>
     targetAccountMembers?: boolean | Account$targetAccountMembersArgs<ExtArgs>
+    parentAccountMembers?: boolean | Account$parentAccountMembersArgs<ExtArgs>
     permits?: boolean | Account$permitsArgs<ExtArgs>
     permitTargets?: boolean | Account$permitTargetsArgs<ExtArgs>
     parentOwnerships?: boolean | Account$parentOwnershipsArgs<ExtArgs>
@@ -4879,6 +4955,7 @@ export namespace Prisma {
     memberAccesses?: boolean | Account$memberAccessesArgs<ExtArgs>
     ownedMembers?: boolean | Account$ownedMembersArgs<ExtArgs>
     targetAccountMembers?: boolean | Account$targetAccountMembersArgs<ExtArgs>
+    parentAccountMembers?: boolean | Account$parentAccountMembersArgs<ExtArgs>
     permits?: boolean | Account$permitsArgs<ExtArgs>
     permitTargets?: boolean | Account$permitTargetsArgs<ExtArgs>
     parentOwnerships?: boolean | Account$parentOwnershipsArgs<ExtArgs>
@@ -4920,6 +4997,7 @@ export namespace Prisma {
       memberAccesses: Prisma.$MemberAccessPayload<ExtArgs>[]
       ownedMembers: Prisma.$MemberPayload<ExtArgs>[]
       targetAccountMembers: Prisma.$MemberPayload<ExtArgs>[]
+      parentAccountMembers: Prisma.$MemberPayload<ExtArgs>[]
       permits: Prisma.$PermitPayload<ExtArgs>[]
       permitTargets: Prisma.$PermitPayload<ExtArgs>[]
       parentOwnerships: Prisma.$AccountOwnershipPayload<ExtArgs>[]
@@ -5354,6 +5432,7 @@ export namespace Prisma {
     memberAccesses<T extends Account$memberAccessesArgs<ExtArgs> = {}>(args?: Subset<T, Account$memberAccessesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberAccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ownedMembers<T extends Account$ownedMembersArgs<ExtArgs> = {}>(args?: Subset<T, Account$ownedMembersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     targetAccountMembers<T extends Account$targetAccountMembersArgs<ExtArgs> = {}>(args?: Subset<T, Account$targetAccountMembersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    parentAccountMembers<T extends Account$parentAccountMembersArgs<ExtArgs> = {}>(args?: Subset<T, Account$parentAccountMembersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     permits<T extends Account$permitsArgs<ExtArgs> = {}>(args?: Subset<T, Account$permitsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PermitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     permitTargets<T extends Account$permitTargetsArgs<ExtArgs> = {}>(args?: Subset<T, Account$permitTargetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PermitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     parentOwnerships<T extends Account$parentOwnershipsArgs<ExtArgs> = {}>(args?: Subset<T, Account$parentOwnershipsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountOwnershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -6223,6 +6302,30 @@ export namespace Prisma {
    * Account.targetAccountMembers
    */
   export type Account$targetAccountMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Member
+     */
+    select?: MemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Member
+     */
+    omit?: MemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberInclude<ExtArgs> | null
+    where?: MemberWhereInput
+    orderBy?: MemberOrderByWithRelationInput | MemberOrderByWithRelationInput[]
+    cursor?: MemberWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MemberScalarFieldEnum | MemberScalarFieldEnum[]
+  }
+
+  /**
+   * Account.parentAccountMembers
+   */
+  export type Account$parentAccountMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Member
      */
@@ -23872,6 +23975,7 @@ export namespace Prisma {
     connections?: boolean | Application$connectionsArgs<ExtArgs>
     bridge?: boolean | Application$bridgeArgs<ExtArgs>
     policies?: boolean | Application$policiesArgs<ExtArgs>
+    parentMembers?: boolean | Application$parentMembersArgs<ExtArgs>
     authzPermissions?: boolean | Application$authzPermissionsArgs<ExtArgs>
     authzRoles?: boolean | Application$authzRolesArgs<ExtArgs>
     authzAccountAccessGrants?: boolean | Application$authzAccountAccessGrantsArgs<ExtArgs>
@@ -23942,6 +24046,7 @@ export namespace Prisma {
     connections?: boolean | Application$connectionsArgs<ExtArgs>
     bridge?: boolean | Application$bridgeArgs<ExtArgs>
     policies?: boolean | Application$policiesArgs<ExtArgs>
+    parentMembers?: boolean | Application$parentMembersArgs<ExtArgs>
     authzPermissions?: boolean | Application$authzPermissionsArgs<ExtArgs>
     authzRoles?: boolean | Application$authzRolesArgs<ExtArgs>
     authzAccountAccessGrants?: boolean | Application$authzAccountAccessGrantsArgs<ExtArgs>
@@ -23963,6 +24068,7 @@ export namespace Prisma {
       connections: Prisma.$ConnectionPayload<ExtArgs>[]
       bridge: Prisma.$ApplicationBridgePayload<ExtArgs>[]
       policies: Prisma.$ApplicationPolicyPayload<ExtArgs>[]
+      parentMembers: Prisma.$MemberPayload<ExtArgs>[]
       authzPermissions: Prisma.$AuthzPermissionPayload<ExtArgs>[]
       authzRoles: Prisma.$AuthzRolePayload<ExtArgs>[]
       authzAccountAccessGrants: Prisma.$AuthzAccountAccessGrantPayload<ExtArgs>[]
@@ -24383,6 +24489,7 @@ export namespace Prisma {
     connections<T extends Application$connectionsArgs<ExtArgs> = {}>(args?: Subset<T, Application$connectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     bridge<T extends Application$bridgeArgs<ExtArgs> = {}>(args?: Subset<T, Application$bridgeArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicationBridgePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     policies<T extends Application$policiesArgs<ExtArgs> = {}>(args?: Subset<T, Application$policiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicationPolicyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    parentMembers<T extends Application$parentMembersArgs<ExtArgs> = {}>(args?: Subset<T, Application$parentMembersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     authzPermissions<T extends Application$authzPermissionsArgs<ExtArgs> = {}>(args?: Subset<T, Application$authzPermissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     authzRoles<T extends Application$authzRolesArgs<ExtArgs> = {}>(args?: Subset<T, Application$authzRolesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     authzAccountAccessGrants<T extends Application$authzAccountAccessGrantsArgs<ExtArgs> = {}>(args?: Subset<T, Application$authzAccountAccessGrantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzAccountAccessGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -24919,6 +25026,30 @@ export namespace Prisma {
   }
 
   /**
+   * Application.parentMembers
+   */
+  export type Application$parentMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Member
+     */
+    select?: MemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Member
+     */
+    omit?: MemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberInclude<ExtArgs> | null
+    where?: MemberWhereInput
+    orderBy?: MemberOrderByWithRelationInput | MemberOrderByWithRelationInput[]
+    cursor?: MemberWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MemberScalarFieldEnum | MemberScalarFieldEnum[]
+  }
+
+  /**
    * Application.authzPermissions
    */
   export type Application$authzPermissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -25215,7 +25346,6 @@ export namespace Prisma {
     dateCreated?: boolean
     assets?: boolean | Portfolio$assetsArgs<ExtArgs>
     members?: boolean | Portfolio$membersArgs<ExtArgs>
-    targetPortfolioMembers?: boolean | Portfolio$targetPortfolioMembersArgs<ExtArgs>
     authzAccountAccessGrants?: boolean | Portfolio$authzAccountAccessGrantsArgs<ExtArgs>
     authzAssetsAccessGrants?: boolean | Portfolio$authzAssetsAccessGrantsArgs<ExtArgs>
     authzAppAccessGrants?: boolean | Portfolio$authzAppAccessGrantsArgs<ExtArgs>
@@ -25247,7 +25377,6 @@ export namespace Prisma {
   export type PortfolioInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     assets?: boolean | Portfolio$assetsArgs<ExtArgs>
     members?: boolean | Portfolio$membersArgs<ExtArgs>
-    targetPortfolioMembers?: boolean | Portfolio$targetPortfolioMembersArgs<ExtArgs>
     authzAccountAccessGrants?: boolean | Portfolio$authzAccountAccessGrantsArgs<ExtArgs>
     authzAssetsAccessGrants?: boolean | Portfolio$authzAssetsAccessGrantsArgs<ExtArgs>
     authzAppAccessGrants?: boolean | Portfolio$authzAppAccessGrantsArgs<ExtArgs>
@@ -25261,7 +25390,6 @@ export namespace Prisma {
     objects: {
       assets: Prisma.$AssetPayload<ExtArgs>[]
       members: Prisma.$PortfolioMemberPayload<ExtArgs>[]
-      targetPortfolioMembers: Prisma.$MemberPayload<ExtArgs>[]
       authzAccountAccessGrants: Prisma.$AuthzAccountAccessGrantPayload<ExtArgs>[]
       authzAssetsAccessGrants: Prisma.$AuthzAssetsAccessGrantPayload<ExtArgs>[]
       authzAppAccessGrants: Prisma.$AuthzAppAccessGrantPayload<ExtArgs>[]
@@ -25667,7 +25795,6 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     assets<T extends Portfolio$assetsArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$assetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     members<T extends Portfolio$membersArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PortfolioMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    targetPortfolioMembers<T extends Portfolio$targetPortfolioMembersArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$targetPortfolioMembersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     authzAccountAccessGrants<T extends Portfolio$authzAccountAccessGrantsArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$authzAccountAccessGrantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzAccountAccessGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     authzAssetsAccessGrants<T extends Portfolio$authzAssetsAccessGrantsArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$authzAssetsAccessGrantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzAssetsAccessGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     authzAppAccessGrants<T extends Portfolio$authzAppAccessGrantsArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$authzAppAccessGrantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzAppAccessGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -26137,30 +26264,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: PortfolioMemberScalarFieldEnum | PortfolioMemberScalarFieldEnum[]
-  }
-
-  /**
-   * Portfolio.targetPortfolioMembers
-   */
-  export type Portfolio$targetPortfolioMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Member
-     */
-    select?: MemberSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Member
-     */
-    omit?: MemberOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: MemberInclude<ExtArgs> | null
-    where?: MemberWhereInput
-    orderBy?: MemberOrderByWithRelationInput | MemberOrderByWithRelationInput[]
-    cursor?: MemberWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: MemberScalarFieldEnum | MemberScalarFieldEnum[]
   }
 
   /**
@@ -28439,35 +28542,43 @@ export namespace Prisma {
   export type MemberMinAggregateOutputType = {
     id: string | null
     memberId: string | null
-    targetType: $Enums.MemberTargetType | null
-    targetAccountId: string | null
-    targetPortfolioId: string | null
-    status: string | null
+    accessTo: string | null
+    accessFor: $Enums.MemberAccessFor | null
+    parentAccountId: string | null
+    parentApplicationId: string | null
+    parentConnectionId: string | null
+    roleId: string | null
     isPermanent: boolean | null
     hasFullAccess: boolean | null
+    status: $Enums.MemberStatus | null
   }
 
   export type MemberMaxAggregateOutputType = {
     id: string | null
     memberId: string | null
-    targetType: $Enums.MemberTargetType | null
-    targetAccountId: string | null
-    targetPortfolioId: string | null
-    status: string | null
+    accessTo: string | null
+    accessFor: $Enums.MemberAccessFor | null
+    parentAccountId: string | null
+    parentApplicationId: string | null
+    parentConnectionId: string | null
+    roleId: string | null
     isPermanent: boolean | null
     hasFullAccess: boolean | null
+    status: $Enums.MemberStatus | null
   }
 
   export type MemberCountAggregateOutputType = {
     id: number
     memberId: number
-    targetType: number
-    targetAccountId: number
-    targetPortfolioId: number
-    status: number
+    accessTo: number
+    accessFor: number
+    parentAccountId: number
+    parentApplicationId: number
+    parentConnectionId: number
+    roleId: number
     isPermanent: number
     hasFullAccess: number
-    details: number
+    status: number
     _all: number
   }
 
@@ -28475,35 +28586,43 @@ export namespace Prisma {
   export type MemberMinAggregateInputType = {
     id?: true
     memberId?: true
-    targetType?: true
-    targetAccountId?: true
-    targetPortfolioId?: true
-    status?: true
+    accessTo?: true
+    accessFor?: true
+    parentAccountId?: true
+    parentApplicationId?: true
+    parentConnectionId?: true
+    roleId?: true
     isPermanent?: true
     hasFullAccess?: true
+    status?: true
   }
 
   export type MemberMaxAggregateInputType = {
     id?: true
     memberId?: true
-    targetType?: true
-    targetAccountId?: true
-    targetPortfolioId?: true
-    status?: true
+    accessTo?: true
+    accessFor?: true
+    parentAccountId?: true
+    parentApplicationId?: true
+    parentConnectionId?: true
+    roleId?: true
     isPermanent?: true
     hasFullAccess?: true
+    status?: true
   }
 
   export type MemberCountAggregateInputType = {
     id?: true
     memberId?: true
-    targetType?: true
-    targetAccountId?: true
-    targetPortfolioId?: true
-    status?: true
+    accessTo?: true
+    accessFor?: true
+    parentAccountId?: true
+    parentApplicationId?: true
+    parentConnectionId?: true
+    roleId?: true
     isPermanent?: true
     hasFullAccess?: true
-    details?: true
+    status?: true
     _all?: true
   }
 
@@ -28582,13 +28701,15 @@ export namespace Prisma {
   export type MemberGroupByOutputType = {
     id: string
     memberId: string
-    targetType: $Enums.MemberTargetType
-    targetAccountId: string | null
-    targetPortfolioId: string | null
-    status: string
+    accessTo: string
+    accessFor: $Enums.MemberAccessFor
+    parentAccountId: string | null
+    parentApplicationId: string | null
+    parentConnectionId: string | null
+    roleId: string
     isPermanent: boolean
     hasFullAccess: boolean
-    details: JsonValue | null
+    status: $Enums.MemberStatus
     _count: MemberCountAggregateOutputType | null
     _min: MemberMinAggregateOutputType | null
     _max: MemberMaxAggregateOutputType | null
@@ -28611,94 +28732,125 @@ export namespace Prisma {
   export type MemberSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     memberId?: boolean
-    targetType?: boolean
-    targetAccountId?: boolean
-    targetPortfolioId?: boolean
-    status?: boolean
+    accessTo?: boolean
+    accessFor?: boolean
+    parentAccountId?: boolean
+    parentApplicationId?: boolean
+    parentConnectionId?: boolean
+    roleId?: boolean
     isPermanent?: boolean
     hasFullAccess?: boolean
-    details?: boolean
+    status?: boolean
     member?: boolean | AccountDefaultArgs<ExtArgs>
-    targetAccount?: boolean | Member$targetAccountArgs<ExtArgs>
-    targetPortfolio?: boolean | Member$targetPortfolioArgs<ExtArgs>
+    accessAccount?: boolean | AccountDefaultArgs<ExtArgs>
+    parentAccount?: boolean | Member$parentAccountArgs<ExtArgs>
+    parentApplication?: boolean | Member$parentApplicationArgs<ExtArgs>
+    parentConnection?: boolean | Member$parentConnectionArgs<ExtArgs>
+    role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["member"]>
 
   export type MemberSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     memberId?: boolean
-    targetType?: boolean
-    targetAccountId?: boolean
-    targetPortfolioId?: boolean
-    status?: boolean
+    accessTo?: boolean
+    accessFor?: boolean
+    parentAccountId?: boolean
+    parentApplicationId?: boolean
+    parentConnectionId?: boolean
+    roleId?: boolean
     isPermanent?: boolean
     hasFullAccess?: boolean
-    details?: boolean
+    status?: boolean
     member?: boolean | AccountDefaultArgs<ExtArgs>
-    targetAccount?: boolean | Member$targetAccountArgs<ExtArgs>
-    targetPortfolio?: boolean | Member$targetPortfolioArgs<ExtArgs>
+    accessAccount?: boolean | AccountDefaultArgs<ExtArgs>
+    parentAccount?: boolean | Member$parentAccountArgs<ExtArgs>
+    parentApplication?: boolean | Member$parentApplicationArgs<ExtArgs>
+    parentConnection?: boolean | Member$parentConnectionArgs<ExtArgs>
+    role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["member"]>
 
   export type MemberSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     memberId?: boolean
-    targetType?: boolean
-    targetAccountId?: boolean
-    targetPortfolioId?: boolean
-    status?: boolean
+    accessTo?: boolean
+    accessFor?: boolean
+    parentAccountId?: boolean
+    parentApplicationId?: boolean
+    parentConnectionId?: boolean
+    roleId?: boolean
     isPermanent?: boolean
     hasFullAccess?: boolean
-    details?: boolean
+    status?: boolean
     member?: boolean | AccountDefaultArgs<ExtArgs>
-    targetAccount?: boolean | Member$targetAccountArgs<ExtArgs>
-    targetPortfolio?: boolean | Member$targetPortfolioArgs<ExtArgs>
+    accessAccount?: boolean | AccountDefaultArgs<ExtArgs>
+    parentAccount?: boolean | Member$parentAccountArgs<ExtArgs>
+    parentApplication?: boolean | Member$parentApplicationArgs<ExtArgs>
+    parentConnection?: boolean | Member$parentConnectionArgs<ExtArgs>
+    role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["member"]>
 
   export type MemberSelectScalar = {
     id?: boolean
     memberId?: boolean
-    targetType?: boolean
-    targetAccountId?: boolean
-    targetPortfolioId?: boolean
-    status?: boolean
+    accessTo?: boolean
+    accessFor?: boolean
+    parentAccountId?: boolean
+    parentApplicationId?: boolean
+    parentConnectionId?: boolean
+    roleId?: boolean
     isPermanent?: boolean
     hasFullAccess?: boolean
-    details?: boolean
+    status?: boolean
   }
 
-  export type MemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "memberId" | "targetType" | "targetAccountId" | "targetPortfolioId" | "status" | "isPermanent" | "hasFullAccess" | "details", ExtArgs["result"]["member"]>
+  export type MemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "memberId" | "accessTo" | "accessFor" | "parentAccountId" | "parentApplicationId" | "parentConnectionId" | "roleId" | "isPermanent" | "hasFullAccess" | "status", ExtArgs["result"]["member"]>
   export type MemberInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     member?: boolean | AccountDefaultArgs<ExtArgs>
-    targetAccount?: boolean | Member$targetAccountArgs<ExtArgs>
-    targetPortfolio?: boolean | Member$targetPortfolioArgs<ExtArgs>
+    accessAccount?: boolean | AccountDefaultArgs<ExtArgs>
+    parentAccount?: boolean | Member$parentAccountArgs<ExtArgs>
+    parentApplication?: boolean | Member$parentApplicationArgs<ExtArgs>
+    parentConnection?: boolean | Member$parentConnectionArgs<ExtArgs>
+    role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
   }
   export type MemberIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     member?: boolean | AccountDefaultArgs<ExtArgs>
-    targetAccount?: boolean | Member$targetAccountArgs<ExtArgs>
-    targetPortfolio?: boolean | Member$targetPortfolioArgs<ExtArgs>
+    accessAccount?: boolean | AccountDefaultArgs<ExtArgs>
+    parentAccount?: boolean | Member$parentAccountArgs<ExtArgs>
+    parentApplication?: boolean | Member$parentApplicationArgs<ExtArgs>
+    parentConnection?: boolean | Member$parentConnectionArgs<ExtArgs>
+    role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
   }
   export type MemberIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     member?: boolean | AccountDefaultArgs<ExtArgs>
-    targetAccount?: boolean | Member$targetAccountArgs<ExtArgs>
-    targetPortfolio?: boolean | Member$targetPortfolioArgs<ExtArgs>
+    accessAccount?: boolean | AccountDefaultArgs<ExtArgs>
+    parentAccount?: boolean | Member$parentAccountArgs<ExtArgs>
+    parentApplication?: boolean | Member$parentApplicationArgs<ExtArgs>
+    parentConnection?: boolean | Member$parentConnectionArgs<ExtArgs>
+    role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
   }
 
   export type $MemberPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Member"
     objects: {
       member: Prisma.$AccountPayload<ExtArgs>
-      targetAccount: Prisma.$AccountPayload<ExtArgs> | null
-      targetPortfolio: Prisma.$PortfolioPayload<ExtArgs> | null
+      accessAccount: Prisma.$AccountPayload<ExtArgs>
+      parentAccount: Prisma.$AccountPayload<ExtArgs> | null
+      parentApplication: Prisma.$ApplicationPayload<ExtArgs> | null
+      parentConnection: Prisma.$ConnectionPayload<ExtArgs> | null
+      role: Prisma.$AuthzRolePayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       memberId: string
-      targetType: $Enums.MemberTargetType
-      targetAccountId: string | null
-      targetPortfolioId: string | null
-      status: string
+      accessTo: string
+      accessFor: $Enums.MemberAccessFor
+      parentAccountId: string | null
+      parentApplicationId: string | null
+      parentConnectionId: string | null
+      roleId: string
       isPermanent: boolean
       hasFullAccess: boolean
-      details: Prisma.JsonValue | null
+      status: $Enums.MemberStatus
     }, ExtArgs["result"]["member"]>
     composites: {}
   }
@@ -29094,8 +29246,11 @@ export namespace Prisma {
   export interface Prisma__MemberClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     member<T extends AccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AccountDefaultArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    targetAccount<T extends Member$targetAccountArgs<ExtArgs> = {}>(args?: Subset<T, Member$targetAccountArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    targetPortfolio<T extends Member$targetPortfolioArgs<ExtArgs> = {}>(args?: Subset<T, Member$targetPortfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    accessAccount<T extends AccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AccountDefaultArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    parentAccount<T extends Member$parentAccountArgs<ExtArgs> = {}>(args?: Subset<T, Member$parentAccountArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    parentApplication<T extends Member$parentApplicationArgs<ExtArgs> = {}>(args?: Subset<T, Member$parentApplicationArgs<ExtArgs>>): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    parentConnection<T extends Member$parentConnectionArgs<ExtArgs> = {}>(args?: Subset<T, Member$parentConnectionArgs<ExtArgs>>): Prisma__ConnectionClient<$Result.GetResult<Prisma.$ConnectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    role<T extends AuthzRoleDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRoleDefaultArgs<ExtArgs>>): Prisma__AuthzRoleClient<$Result.GetResult<Prisma.$AuthzRolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -29127,13 +29282,15 @@ export namespace Prisma {
   interface MemberFieldRefs {
     readonly id: FieldRef<"Member", 'String'>
     readonly memberId: FieldRef<"Member", 'String'>
-    readonly targetType: FieldRef<"Member", 'MemberTargetType'>
-    readonly targetAccountId: FieldRef<"Member", 'String'>
-    readonly targetPortfolioId: FieldRef<"Member", 'String'>
-    readonly status: FieldRef<"Member", 'String'>
+    readonly accessTo: FieldRef<"Member", 'String'>
+    readonly accessFor: FieldRef<"Member", 'MemberAccessFor'>
+    readonly parentAccountId: FieldRef<"Member", 'String'>
+    readonly parentApplicationId: FieldRef<"Member", 'String'>
+    readonly parentConnectionId: FieldRef<"Member", 'String'>
+    readonly roleId: FieldRef<"Member", 'String'>
     readonly isPermanent: FieldRef<"Member", 'Boolean'>
     readonly hasFullAccess: FieldRef<"Member", 'Boolean'>
-    readonly details: FieldRef<"Member", 'Json'>
+    readonly status: FieldRef<"Member", 'MemberStatus'>
   }
     
 
@@ -29530,9 +29687,9 @@ export namespace Prisma {
   }
 
   /**
-   * Member.targetAccount
+   * Member.parentAccount
    */
-  export type Member$targetAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Member$parentAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Account
      */
@@ -29549,22 +29706,41 @@ export namespace Prisma {
   }
 
   /**
-   * Member.targetPortfolio
+   * Member.parentApplication
    */
-  export type Member$targetPortfolioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Member$parentApplicationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Portfolio
+     * Select specific fields to fetch from the Application
      */
-    select?: PortfolioSelect<ExtArgs> | null
+    select?: ApplicationSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Portfolio
+     * Omit specific fields from the Application
      */
-    omit?: PortfolioOmit<ExtArgs> | null
+    omit?: ApplicationOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: PortfolioInclude<ExtArgs> | null
-    where?: PortfolioWhereInput
+    include?: ApplicationInclude<ExtArgs> | null
+    where?: ApplicationWhereInput
+  }
+
+  /**
+   * Member.parentConnection
+   */
+  export type Member$parentConnectionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Connection
+     */
+    select?: ConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Connection
+     */
+    omit?: ConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConnectionInclude<ExtArgs> | null
+    where?: ConnectionWhereInput
   }
 
   /**
@@ -30822,6 +30998,8 @@ export namespace Prisma {
     details?: boolean
     account?: boolean | AccountDefaultArgs<ExtArgs>
     application?: boolean | ApplicationDefaultArgs<ExtArgs>
+    parentMembers?: boolean | Connection$parentMembersArgs<ExtArgs>
+    _count?: boolean | ConnectionCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["connection"]>
 
   export type ConnectionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -30859,6 +31037,8 @@ export namespace Prisma {
   export type ConnectionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     account?: boolean | AccountDefaultArgs<ExtArgs>
     application?: boolean | ApplicationDefaultArgs<ExtArgs>
+    parentMembers?: boolean | Connection$parentMembersArgs<ExtArgs>
+    _count?: boolean | ConnectionCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ConnectionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     account?: boolean | AccountDefaultArgs<ExtArgs>
@@ -30874,6 +31054,7 @@ export namespace Prisma {
     objects: {
       account: Prisma.$AccountPayload<ExtArgs>
       application: Prisma.$ApplicationPayload<ExtArgs>
+      parentMembers: Prisma.$MemberPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -31278,6 +31459,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     account<T extends AccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AccountDefaultArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     application<T extends ApplicationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ApplicationDefaultArgs<ExtArgs>>): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    parentMembers<T extends Connection$parentMembersArgs<ExtArgs> = {}>(args?: Subset<T, Connection$parentMembersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -31706,6 +31888,30 @@ export namespace Prisma {
      * Limit how many Connections to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Connection.parentMembers
+   */
+  export type Connection$parentMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Member
+     */
+    select?: MemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Member
+     */
+    omit?: MemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberInclude<ExtArgs> | null
+    where?: MemberWhereInput
+    orderBy?: MemberOrderByWithRelationInput | MemberOrderByWithRelationInput[]
+    cursor?: MemberWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MemberScalarFieldEnum | MemberScalarFieldEnum[]
   }
 
   /**
@@ -35132,6 +35338,7 @@ export namespace Prisma {
     grants?: boolean | AuthzRole$grantsArgs<ExtArgs>
     assetsGrants?: boolean | AuthzRole$assetsGrantsArgs<ExtArgs>
     appGrants?: boolean | AuthzRole$appGrantsArgs<ExtArgs>
+    members?: boolean | AuthzRole$membersArgs<ExtArgs>
     _count?: boolean | AuthzRoleCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["authzRole"]>
 
@@ -35171,6 +35378,7 @@ export namespace Prisma {
     grants?: boolean | AuthzRole$grantsArgs<ExtArgs>
     assetsGrants?: boolean | AuthzRole$assetsGrantsArgs<ExtArgs>
     appGrants?: boolean | AuthzRole$appGrantsArgs<ExtArgs>
+    members?: boolean | AuthzRole$membersArgs<ExtArgs>
     _count?: boolean | AuthzRoleCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AuthzRoleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -35188,6 +35396,7 @@ export namespace Prisma {
       grants: Prisma.$AuthzAccountAccessGrantPayload<ExtArgs>[]
       assetsGrants: Prisma.$AuthzAssetsAccessGrantPayload<ExtArgs>[]
       appGrants: Prisma.$AuthzAppAccessGrantPayload<ExtArgs>[]
+      members: Prisma.$MemberPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -35595,6 +35804,7 @@ export namespace Prisma {
     grants<T extends AuthzRole$grantsArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRole$grantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzAccountAccessGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     assetsGrants<T extends AuthzRole$assetsGrantsArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRole$assetsGrantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzAssetsAccessGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     appGrants<T extends AuthzRole$appGrantsArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRole$appGrantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzAppAccessGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    members<T extends AuthzRole$membersArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRole$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -36138,6 +36348,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: AuthzAppAccessGrantScalarFieldEnum | AuthzAppAccessGrantScalarFieldEnum[]
+  }
+
+  /**
+   * AuthzRole.members
+   */
+  export type AuthzRole$membersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Member
+     */
+    select?: MemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Member
+     */
+    omit?: MemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberInclude<ExtArgs> | null
+    where?: MemberWhereInput
+    orderBy?: MemberOrderByWithRelationInput | MemberOrderByWithRelationInput[]
+    cursor?: MemberWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MemberScalarFieldEnum | MemberScalarFieldEnum[]
   }
 
   /**
@@ -44218,13 +44452,15 @@ export namespace Prisma {
   export const MemberScalarFieldEnum: {
     id: 'id',
     memberId: 'memberId',
-    targetType: 'targetType',
-    targetAccountId: 'targetAccountId',
-    targetPortfolioId: 'targetPortfolioId',
-    status: 'status',
+    accessTo: 'accessTo',
+    accessFor: 'accessFor',
+    parentAccountId: 'parentAccountId',
+    parentApplicationId: 'parentApplicationId',
+    parentConnectionId: 'parentConnectionId',
+    roleId: 'roleId',
     isPermanent: 'isPermanent',
     hasFullAccess: 'hasFullAccess',
-    details: 'details'
+    status: 'status'
   };
 
   export type MemberScalarFieldEnum = (typeof MemberScalarFieldEnum)[keyof typeof MemberScalarFieldEnum]
@@ -44510,16 +44746,30 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'MemberTargetType'
+   * Reference to a field of type 'MemberAccessFor'
    */
-  export type EnumMemberTargetTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MemberTargetType'>
+  export type EnumMemberAccessForFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MemberAccessFor'>
     
 
 
   /**
-   * Reference to a field of type 'MemberTargetType[]'
+   * Reference to a field of type 'MemberAccessFor[]'
    */
-  export type ListEnumMemberTargetTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MemberTargetType[]'>
+  export type ListEnumMemberAccessForFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MemberAccessFor[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'MemberStatus'
+   */
+  export type EnumMemberStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MemberStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'MemberStatus[]'
+   */
+  export type ListEnumMemberStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MemberStatus[]'>
     
 
 
@@ -44534,6 +44784,20 @@ export namespace Prisma {
    * Reference to a field of type 'AuthzGrantStatus[]'
    */
   export type ListEnumAuthzGrantStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuthzGrantStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'MemberTargetType'
+   */
+  export type EnumMemberTargetTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MemberTargetType'>
+    
+
+
+  /**
+   * Reference to a field of type 'MemberTargetType[]'
+   */
+  export type ListEnumMemberTargetTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MemberTargetType[]'>
     
 
 
@@ -44586,6 +44850,7 @@ export namespace Prisma {
     memberAccesses?: MemberAccessListRelationFilter
     ownedMembers?: MemberListRelationFilter
     targetAccountMembers?: MemberListRelationFilter
+    parentAccountMembers?: MemberListRelationFilter
     permits?: PermitListRelationFilter
     permitTargets?: PermitListRelationFilter
     parentOwnerships?: AccountOwnershipListRelationFilter
@@ -44627,6 +44892,7 @@ export namespace Prisma {
     memberAccesses?: MemberAccessOrderByRelationAggregateInput
     ownedMembers?: MemberOrderByRelationAggregateInput
     targetAccountMembers?: MemberOrderByRelationAggregateInput
+    parentAccountMembers?: MemberOrderByRelationAggregateInput
     permits?: PermitOrderByRelationAggregateInput
     permitTargets?: PermitOrderByRelationAggregateInput
     parentOwnerships?: AccountOwnershipOrderByRelationAggregateInput
@@ -44671,6 +44937,7 @@ export namespace Prisma {
     memberAccesses?: MemberAccessListRelationFilter
     ownedMembers?: MemberListRelationFilter
     targetAccountMembers?: MemberListRelationFilter
+    parentAccountMembers?: MemberListRelationFilter
     permits?: PermitListRelationFilter
     permitTargets?: PermitListRelationFilter
     parentOwnerships?: AccountOwnershipListRelationFilter
@@ -45738,6 +46005,7 @@ export namespace Prisma {
     connections?: ConnectionListRelationFilter
     bridge?: ApplicationBridgeListRelationFilter
     policies?: ApplicationPolicyListRelationFilter
+    parentMembers?: MemberListRelationFilter
     authzPermissions?: AuthzPermissionListRelationFilter
     authzRoles?: AuthzRoleListRelationFilter
     authzAccountAccessGrants?: AuthzAccountAccessGrantListRelationFilter
@@ -45765,6 +46033,7 @@ export namespace Prisma {
     connections?: ConnectionOrderByRelationAggregateInput
     bridge?: ApplicationBridgeOrderByRelationAggregateInput
     policies?: ApplicationPolicyOrderByRelationAggregateInput
+    parentMembers?: MemberOrderByRelationAggregateInput
     authzPermissions?: AuthzPermissionOrderByRelationAggregateInput
     authzRoles?: AuthzRoleOrderByRelationAggregateInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantOrderByRelationAggregateInput
@@ -45795,6 +46064,7 @@ export namespace Prisma {
     connections?: ConnectionListRelationFilter
     bridge?: ApplicationBridgeListRelationFilter
     policies?: ApplicationPolicyListRelationFilter
+    parentMembers?: MemberListRelationFilter
     authzPermissions?: AuthzPermissionListRelationFilter
     authzRoles?: AuthzRoleListRelationFilter
     authzAccountAccessGrants?: AuthzAccountAccessGrantListRelationFilter
@@ -45856,7 +46126,6 @@ export namespace Prisma {
     dateCreated?: DateTimeFilter<"Portfolio"> | Date | string
     assets?: AssetListRelationFilter
     members?: PortfolioMemberListRelationFilter
-    targetPortfolioMembers?: MemberListRelationFilter
     authzAccountAccessGrants?: AuthzAccountAccessGrantListRelationFilter
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantListRelationFilter
     authzAppAccessGrants?: AuthzAppAccessGrantListRelationFilter
@@ -45869,7 +46138,6 @@ export namespace Prisma {
     dateCreated?: SortOrder
     assets?: AssetOrderByRelationAggregateInput
     members?: PortfolioMemberOrderByRelationAggregateInput
-    targetPortfolioMembers?: MemberOrderByRelationAggregateInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantOrderByRelationAggregateInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantOrderByRelationAggregateInput
     authzAppAccessGrants?: AuthzAppAccessGrantOrderByRelationAggregateInput
@@ -45885,7 +46153,6 @@ export namespace Prisma {
     dateCreated?: DateTimeFilter<"Portfolio"> | Date | string
     assets?: AssetListRelationFilter
     members?: PortfolioMemberListRelationFilter
-    targetPortfolioMembers?: MemberListRelationFilter
     authzAccountAccessGrants?: AuthzAccountAccessGrantListRelationFilter
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantListRelationFilter
     authzAppAccessGrants?: AuthzAppAccessGrantListRelationFilter
@@ -46044,31 +46311,41 @@ export namespace Prisma {
     NOT?: MemberWhereInput | MemberWhereInput[]
     id?: StringFilter<"Member"> | string
     memberId?: StringFilter<"Member"> | string
-    targetType?: EnumMemberTargetTypeFilter<"Member"> | $Enums.MemberTargetType
-    targetAccountId?: StringNullableFilter<"Member"> | string | null
-    targetPortfolioId?: StringNullableFilter<"Member"> | string | null
-    status?: StringFilter<"Member"> | string
+    accessTo?: StringFilter<"Member"> | string
+    accessFor?: EnumMemberAccessForFilter<"Member"> | $Enums.MemberAccessFor
+    parentAccountId?: StringNullableFilter<"Member"> | string | null
+    parentApplicationId?: StringNullableFilter<"Member"> | string | null
+    parentConnectionId?: StringNullableFilter<"Member"> | string | null
+    roleId?: StringFilter<"Member"> | string
     isPermanent?: BoolFilter<"Member"> | boolean
     hasFullAccess?: BoolFilter<"Member"> | boolean
-    details?: JsonNullableFilter<"Member">
+    status?: EnumMemberStatusFilter<"Member"> | $Enums.MemberStatus
     member?: XOR<AccountScalarRelationFilter, AccountWhereInput>
-    targetAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
-    targetPortfolio?: XOR<PortfolioNullableScalarRelationFilter, PortfolioWhereInput> | null
+    accessAccount?: XOR<AccountScalarRelationFilter, AccountWhereInput>
+    parentAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
+    parentApplication?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
+    parentConnection?: XOR<ConnectionNullableScalarRelationFilter, ConnectionWhereInput> | null
+    role?: XOR<AuthzRoleScalarRelationFilter, AuthzRoleWhereInput>
   }
 
   export type MemberOrderByWithRelationInput = {
     id?: SortOrder
     memberId?: SortOrder
-    targetType?: SortOrder
-    targetAccountId?: SortOrderInput | SortOrder
-    targetPortfolioId?: SortOrderInput | SortOrder
-    status?: SortOrder
+    accessTo?: SortOrder
+    accessFor?: SortOrder
+    parentAccountId?: SortOrderInput | SortOrder
+    parentApplicationId?: SortOrderInput | SortOrder
+    parentConnectionId?: SortOrderInput | SortOrder
+    roleId?: SortOrder
     isPermanent?: SortOrder
     hasFullAccess?: SortOrder
-    details?: SortOrderInput | SortOrder
+    status?: SortOrder
     member?: AccountOrderByWithRelationInput
-    targetAccount?: AccountOrderByWithRelationInput
-    targetPortfolio?: PortfolioOrderByWithRelationInput
+    accessAccount?: AccountOrderByWithRelationInput
+    parentAccount?: AccountOrderByWithRelationInput
+    parentApplication?: ApplicationOrderByWithRelationInput
+    parentConnection?: ConnectionOrderByWithRelationInput
+    role?: AuthzRoleOrderByWithRelationInput
   }
 
   export type MemberWhereUniqueInput = Prisma.AtLeast<{
@@ -46077,28 +46354,35 @@ export namespace Prisma {
     OR?: MemberWhereInput[]
     NOT?: MemberWhereInput | MemberWhereInput[]
     memberId?: StringFilter<"Member"> | string
-    targetType?: EnumMemberTargetTypeFilter<"Member"> | $Enums.MemberTargetType
-    targetAccountId?: StringNullableFilter<"Member"> | string | null
-    targetPortfolioId?: StringNullableFilter<"Member"> | string | null
-    status?: StringFilter<"Member"> | string
+    accessTo?: StringFilter<"Member"> | string
+    accessFor?: EnumMemberAccessForFilter<"Member"> | $Enums.MemberAccessFor
+    parentAccountId?: StringNullableFilter<"Member"> | string | null
+    parentApplicationId?: StringNullableFilter<"Member"> | string | null
+    parentConnectionId?: StringNullableFilter<"Member"> | string | null
+    roleId?: StringFilter<"Member"> | string
     isPermanent?: BoolFilter<"Member"> | boolean
     hasFullAccess?: BoolFilter<"Member"> | boolean
-    details?: JsonNullableFilter<"Member">
+    status?: EnumMemberStatusFilter<"Member"> | $Enums.MemberStatus
     member?: XOR<AccountScalarRelationFilter, AccountWhereInput>
-    targetAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
-    targetPortfolio?: XOR<PortfolioNullableScalarRelationFilter, PortfolioWhereInput> | null
+    accessAccount?: XOR<AccountScalarRelationFilter, AccountWhereInput>
+    parentAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
+    parentApplication?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
+    parentConnection?: XOR<ConnectionNullableScalarRelationFilter, ConnectionWhereInput> | null
+    role?: XOR<AuthzRoleScalarRelationFilter, AuthzRoleWhereInput>
   }, "id">
 
   export type MemberOrderByWithAggregationInput = {
     id?: SortOrder
     memberId?: SortOrder
-    targetType?: SortOrder
-    targetAccountId?: SortOrderInput | SortOrder
-    targetPortfolioId?: SortOrderInput | SortOrder
-    status?: SortOrder
+    accessTo?: SortOrder
+    accessFor?: SortOrder
+    parentAccountId?: SortOrderInput | SortOrder
+    parentApplicationId?: SortOrderInput | SortOrder
+    parentConnectionId?: SortOrderInput | SortOrder
+    roleId?: SortOrder
     isPermanent?: SortOrder
     hasFullAccess?: SortOrder
-    details?: SortOrderInput | SortOrder
+    status?: SortOrder
     _count?: MemberCountOrderByAggregateInput
     _max?: MemberMaxOrderByAggregateInput
     _min?: MemberMinOrderByAggregateInput
@@ -46110,13 +46394,15 @@ export namespace Prisma {
     NOT?: MemberScalarWhereWithAggregatesInput | MemberScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Member"> | string
     memberId?: StringWithAggregatesFilter<"Member"> | string
-    targetType?: EnumMemberTargetTypeWithAggregatesFilter<"Member"> | $Enums.MemberTargetType
-    targetAccountId?: StringNullableWithAggregatesFilter<"Member"> | string | null
-    targetPortfolioId?: StringNullableWithAggregatesFilter<"Member"> | string | null
-    status?: StringWithAggregatesFilter<"Member"> | string
+    accessTo?: StringWithAggregatesFilter<"Member"> | string
+    accessFor?: EnumMemberAccessForWithAggregatesFilter<"Member"> | $Enums.MemberAccessFor
+    parentAccountId?: StringNullableWithAggregatesFilter<"Member"> | string | null
+    parentApplicationId?: StringNullableWithAggregatesFilter<"Member"> | string | null
+    parentConnectionId?: StringNullableWithAggregatesFilter<"Member"> | string | null
+    roleId?: StringWithAggregatesFilter<"Member"> | string
     isPermanent?: BoolWithAggregatesFilter<"Member"> | boolean
     hasFullAccess?: BoolWithAggregatesFilter<"Member"> | boolean
-    details?: JsonNullableWithAggregatesFilter<"Member">
+    status?: EnumMemberStatusWithAggregatesFilter<"Member"> | $Enums.MemberStatus
   }
 
   export type AccountOwnershipWhereInput = {
@@ -46189,6 +46475,7 @@ export namespace Prisma {
     details?: JsonNullableFilter<"Connection">
     account?: XOR<AccountScalarRelationFilter, AccountWhereInput>
     application?: XOR<ApplicationScalarRelationFilter, ApplicationWhereInput>
+    parentMembers?: MemberListRelationFilter
   }
 
   export type ConnectionOrderByWithRelationInput = {
@@ -46200,6 +46487,7 @@ export namespace Prisma {
     details?: SortOrderInput | SortOrder
     account?: AccountOrderByWithRelationInput
     application?: ApplicationOrderByWithRelationInput
+    parentMembers?: MemberOrderByRelationAggregateInput
   }
 
   export type ConnectionWhereUniqueInput = Prisma.AtLeast<{
@@ -46215,6 +46503,7 @@ export namespace Prisma {
     details?: JsonNullableFilter<"Connection">
     account?: XOR<AccountScalarRelationFilter, AccountWhereInput>
     application?: XOR<ApplicationScalarRelationFilter, ApplicationWhereInput>
+    parentMembers?: MemberListRelationFilter
   }, "id" | "accountId_appId">
 
   export type ConnectionOrderByWithAggregationInput = {
@@ -46429,6 +46718,7 @@ export namespace Prisma {
     grants?: AuthzAccountAccessGrantListRelationFilter
     assetsGrants?: AuthzAssetsAccessGrantListRelationFilter
     appGrants?: AuthzAppAccessGrantListRelationFilter
+    members?: MemberListRelationFilter
   }
 
   export type AuthzRoleOrderByWithRelationInput = {
@@ -46443,6 +46733,7 @@ export namespace Prisma {
     grants?: AuthzAccountAccessGrantOrderByRelationAggregateInput
     assetsGrants?: AuthzAssetsAccessGrantOrderByRelationAggregateInput
     appGrants?: AuthzAppAccessGrantOrderByRelationAggregateInput
+    members?: MemberOrderByRelationAggregateInput
   }
 
   export type AuthzRoleWhereUniqueInput = Prisma.AtLeast<{
@@ -46461,6 +46752,7 @@ export namespace Prisma {
     grants?: AuthzAccountAccessGrantListRelationFilter
     assetsGrants?: AuthzAssetsAccessGrantListRelationFilter
     appGrants?: AuthzAppAccessGrantListRelationFilter
+    members?: MemberListRelationFilter
   }, "id" | "name_appId">
 
   export type AuthzRoleOrderByWithAggregationInput = {
@@ -47024,7 +47316,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -47065,7 +47358,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -47104,7 +47398,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -47145,7 +47440,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -48269,6 +48565,7 @@ export namespace Prisma {
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantCreateNestedManyWithoutApplicationInput
@@ -48295,6 +48592,7 @@ export namespace Prisma {
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberUncheckedCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutApplicationInput
@@ -48321,6 +48619,7 @@ export namespace Prisma {
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUpdateManyWithoutApplicationNestedInput
@@ -48347,6 +48646,7 @@ export namespace Prisma {
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUncheckedUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutApplicationNestedInput
@@ -48414,7 +48714,6 @@ export namespace Prisma {
     dateCreated?: Date | string
     assets?: AssetCreateNestedManyWithoutPortfolioInput
     members?: PortfolioMemberCreateNestedManyWithoutPortfolioInput
-    targetPortfolioMembers?: MemberCreateNestedManyWithoutTargetPortfolioInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantCreateNestedManyWithoutPortfolioInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutPortfolioInput
     authzAppAccessGrants?: AuthzAppAccessGrantCreateNestedManyWithoutPortfolioInput
@@ -48427,7 +48726,6 @@ export namespace Prisma {
     dateCreated?: Date | string
     assets?: AssetUncheckedCreateNestedManyWithoutPortfolioInput
     members?: PortfolioMemberUncheckedCreateNestedManyWithoutPortfolioInput
-    targetPortfolioMembers?: MemberUncheckedCreateNestedManyWithoutTargetPortfolioInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
     authzAppAccessGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
@@ -48440,7 +48738,6 @@ export namespace Prisma {
     dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
     assets?: AssetUpdateManyWithoutPortfolioNestedInput
     members?: PortfolioMemberUpdateManyWithoutPortfolioNestedInput
-    targetPortfolioMembers?: MemberUpdateManyWithoutTargetPortfolioNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUpdateManyWithoutPortfolioNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutPortfolioNestedInput
     authzAppAccessGrants?: AuthzAppAccessGrantUpdateManyWithoutPortfolioNestedInput
@@ -48453,7 +48750,6 @@ export namespace Prisma {
     dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
     assets?: AssetUncheckedUpdateManyWithoutPortfolioNestedInput
     members?: PortfolioMemberUncheckedUpdateManyWithoutPortfolioNestedInput
-    targetPortfolioMembers?: MemberUncheckedUpdateManyWithoutTargetPortfolioNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
     authzAppAccessGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
@@ -48609,83 +48905,94 @@ export namespace Prisma {
 
   export type MemberCreateInput = {
     id?: string
-    targetType: $Enums.MemberTargetType
-    status: string
+    accessFor: $Enums.MemberAccessFor
     isPermanent?: boolean
     hasFullAccess?: boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
+    status?: $Enums.MemberStatus
     member: AccountCreateNestedOneWithoutOwnedMembersInput
-    targetAccount?: AccountCreateNestedOneWithoutTargetAccountMembersInput
-    targetPortfolio?: PortfolioCreateNestedOneWithoutTargetPortfolioMembersInput
+    accessAccount: AccountCreateNestedOneWithoutTargetAccountMembersInput
+    parentAccount?: AccountCreateNestedOneWithoutParentAccountMembersInput
+    parentApplication?: ApplicationCreateNestedOneWithoutParentMembersInput
+    parentConnection?: ConnectionCreateNestedOneWithoutParentMembersInput
+    role: AuthzRoleCreateNestedOneWithoutMembersInput
   }
 
   export type MemberUncheckedCreateInput = {
     id?: string
     memberId: string
-    targetType: $Enums.MemberTargetType
-    targetAccountId?: string | null
-    targetPortfolioId?: string | null
-    status: string
+    accessTo: string
+    accessFor: $Enums.MemberAccessFor
+    parentAccountId?: string | null
+    parentApplicationId?: string | null
+    parentConnectionId?: string | null
+    roleId: string
     isPermanent?: boolean
     hasFullAccess?: boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
+    status?: $Enums.MemberStatus
   }
 
   export type MemberUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    targetType?: EnumMemberTargetTypeFieldUpdateOperationsInput | $Enums.MemberTargetType
-    status?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
     member?: AccountUpdateOneRequiredWithoutOwnedMembersNestedInput
-    targetAccount?: AccountUpdateOneWithoutTargetAccountMembersNestedInput
-    targetPortfolio?: PortfolioUpdateOneWithoutTargetPortfolioMembersNestedInput
+    accessAccount?: AccountUpdateOneRequiredWithoutTargetAccountMembersNestedInput
+    parentAccount?: AccountUpdateOneWithoutParentAccountMembersNestedInput
+    parentApplication?: ApplicationUpdateOneWithoutParentMembersNestedInput
+    parentConnection?: ConnectionUpdateOneWithoutParentMembersNestedInput
+    role?: AuthzRoleUpdateOneRequiredWithoutMembersNestedInput
   }
 
   export type MemberUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     memberId?: StringFieldUpdateOperationsInput | string
-    targetType?: EnumMemberTargetTypeFieldUpdateOperationsInput | $Enums.MemberTargetType
-    targetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    targetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    accessTo?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: StringFieldUpdateOperationsInput | string
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
   }
 
   export type MemberCreateManyInput = {
     id?: string
     memberId: string
-    targetType: $Enums.MemberTargetType
-    targetAccountId?: string | null
-    targetPortfolioId?: string | null
-    status: string
+    accessTo: string
+    accessFor: $Enums.MemberAccessFor
+    parentAccountId?: string | null
+    parentApplicationId?: string | null
+    parentConnectionId?: string | null
+    roleId: string
     isPermanent?: boolean
     hasFullAccess?: boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
+    status?: $Enums.MemberStatus
   }
 
   export type MemberUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    targetType?: EnumMemberTargetTypeFieldUpdateOperationsInput | $Enums.MemberTargetType
-    status?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
   }
 
   export type MemberUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     memberId?: StringFieldUpdateOperationsInput | string
-    targetType?: EnumMemberTargetTypeFieldUpdateOperationsInput | $Enums.MemberTargetType
-    targetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    targetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    accessTo?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: StringFieldUpdateOperationsInput | string
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
   }
 
   export type AccountOwnershipCreateInput = {
@@ -48749,6 +49056,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     account: AccountCreateNestedOneWithoutConnectionsInput
     application: ApplicationCreateNestedOneWithoutConnectionsInput
+    parentMembers?: MemberCreateNestedManyWithoutParentConnectionInput
   }
 
   export type ConnectionUncheckedCreateInput = {
@@ -48758,6 +49066,7 @@ export namespace Prisma {
     status?: string
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
+    parentMembers?: MemberUncheckedCreateNestedManyWithoutParentConnectionInput
   }
 
   export type ConnectionUpdateInput = {
@@ -48767,6 +49076,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     account?: AccountUpdateOneRequiredWithoutConnectionsNestedInput
     application?: ApplicationUpdateOneRequiredWithoutConnectionsNestedInput
+    parentMembers?: MemberUpdateManyWithoutParentConnectionNestedInput
   }
 
   export type ConnectionUncheckedUpdateInput = {
@@ -48776,6 +49086,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
+    parentMembers?: MemberUncheckedUpdateManyWithoutParentConnectionNestedInput
   }
 
   export type ConnectionCreateManyInput = {
@@ -48990,6 +49301,7 @@ export namespace Prisma {
     grants?: AuthzAccountAccessGrantCreateNestedManyWithoutRoleInput
     assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
     appGrants?: AuthzAppAccessGrantCreateNestedManyWithoutRoleInput
+    members?: MemberCreateNestedManyWithoutRoleInput
   }
 
   export type AuthzRoleUncheckedCreateInput = {
@@ -49003,6 +49315,7 @@ export namespace Prisma {
     grants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutRoleInput
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
     appGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutRoleInput
+    members?: MemberUncheckedCreateNestedManyWithoutRoleInput
   }
 
   export type AuthzRoleUpdateInput = {
@@ -49016,6 +49329,7 @@ export namespace Prisma {
     grants?: AuthzAccountAccessGrantUpdateManyWithoutRoleNestedInput
     assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
     appGrants?: AuthzAppAccessGrantUpdateManyWithoutRoleNestedInput
+    members?: MemberUpdateManyWithoutRoleNestedInput
   }
 
   export type AuthzRoleUncheckedUpdateInput = {
@@ -49029,6 +49343,7 @@ export namespace Prisma {
     grants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
     appGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
+    members?: MemberUncheckedUpdateManyWithoutRoleNestedInput
   }
 
   export type AuthzRoleCreateManyInput = {
@@ -50727,60 +51042,95 @@ export namespace Prisma {
     hasFullAccess?: SortOrder
   }
 
-  export type EnumMemberTargetTypeFilter<$PrismaModel = never> = {
-    equals?: $Enums.MemberTargetType | EnumMemberTargetTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.MemberTargetType[] | ListEnumMemberTargetTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.MemberTargetType[] | ListEnumMemberTargetTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumMemberTargetTypeFilter<$PrismaModel> | $Enums.MemberTargetType
+  export type EnumMemberAccessForFilter<$PrismaModel = never> = {
+    equals?: $Enums.MemberAccessFor | EnumMemberAccessForFieldRefInput<$PrismaModel>
+    in?: $Enums.MemberAccessFor[] | ListEnumMemberAccessForFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MemberAccessFor[] | ListEnumMemberAccessForFieldRefInput<$PrismaModel>
+    not?: NestedEnumMemberAccessForFilter<$PrismaModel> | $Enums.MemberAccessFor
   }
 
-  export type PortfolioNullableScalarRelationFilter = {
-    is?: PortfolioWhereInput | null
-    isNot?: PortfolioWhereInput | null
+  export type EnumMemberStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.MemberStatus | EnumMemberStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.MemberStatus[] | ListEnumMemberStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MemberStatus[] | ListEnumMemberStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumMemberStatusFilter<$PrismaModel> | $Enums.MemberStatus
+  }
+
+  export type ApplicationNullableScalarRelationFilter = {
+    is?: ApplicationWhereInput | null
+    isNot?: ApplicationWhereInput | null
+  }
+
+  export type ConnectionNullableScalarRelationFilter = {
+    is?: ConnectionWhereInput | null
+    isNot?: ConnectionWhereInput | null
+  }
+
+  export type AuthzRoleScalarRelationFilter = {
+    is?: AuthzRoleWhereInput
+    isNot?: AuthzRoleWhereInput
   }
 
   export type MemberCountOrderByAggregateInput = {
     id?: SortOrder
     memberId?: SortOrder
-    targetType?: SortOrder
-    targetAccountId?: SortOrder
-    targetPortfolioId?: SortOrder
-    status?: SortOrder
+    accessTo?: SortOrder
+    accessFor?: SortOrder
+    parentAccountId?: SortOrder
+    parentApplicationId?: SortOrder
+    parentConnectionId?: SortOrder
+    roleId?: SortOrder
     isPermanent?: SortOrder
     hasFullAccess?: SortOrder
-    details?: SortOrder
+    status?: SortOrder
   }
 
   export type MemberMaxOrderByAggregateInput = {
     id?: SortOrder
     memberId?: SortOrder
-    targetType?: SortOrder
-    targetAccountId?: SortOrder
-    targetPortfolioId?: SortOrder
-    status?: SortOrder
+    accessTo?: SortOrder
+    accessFor?: SortOrder
+    parentAccountId?: SortOrder
+    parentApplicationId?: SortOrder
+    parentConnectionId?: SortOrder
+    roleId?: SortOrder
     isPermanent?: SortOrder
     hasFullAccess?: SortOrder
+    status?: SortOrder
   }
 
   export type MemberMinOrderByAggregateInput = {
     id?: SortOrder
     memberId?: SortOrder
-    targetType?: SortOrder
-    targetAccountId?: SortOrder
-    targetPortfolioId?: SortOrder
-    status?: SortOrder
+    accessTo?: SortOrder
+    accessFor?: SortOrder
+    parentAccountId?: SortOrder
+    parentApplicationId?: SortOrder
+    parentConnectionId?: SortOrder
+    roleId?: SortOrder
     isPermanent?: SortOrder
     hasFullAccess?: SortOrder
+    status?: SortOrder
   }
 
-  export type EnumMemberTargetTypeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.MemberTargetType | EnumMemberTargetTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.MemberTargetType[] | ListEnumMemberTargetTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.MemberTargetType[] | ListEnumMemberTargetTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumMemberTargetTypeWithAggregatesFilter<$PrismaModel> | $Enums.MemberTargetType
+  export type EnumMemberAccessForWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.MemberAccessFor | EnumMemberAccessForFieldRefInput<$PrismaModel>
+    in?: $Enums.MemberAccessFor[] | ListEnumMemberAccessForFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MemberAccessFor[] | ListEnumMemberAccessForFieldRefInput<$PrismaModel>
+    not?: NestedEnumMemberAccessForWithAggregatesFilter<$PrismaModel> | $Enums.MemberAccessFor
     _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumMemberTargetTypeFilter<$PrismaModel>
-    _max?: NestedEnumMemberTargetTypeFilter<$PrismaModel>
+    _min?: NestedEnumMemberAccessForFilter<$PrismaModel>
+    _max?: NestedEnumMemberAccessForFilter<$PrismaModel>
+  }
+
+  export type EnumMemberStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.MemberStatus | EnumMemberStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.MemberStatus[] | ListEnumMemberStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MemberStatus[] | ListEnumMemberStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumMemberStatusWithAggregatesFilter<$PrismaModel> | $Enums.MemberStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumMemberStatusFilter<$PrismaModel>
+    _max?: NestedEnumMemberStatusFilter<$PrismaModel>
   }
 
   export type AccountOwnershipCountOrderByAggregateInput = {
@@ -50889,11 +51239,6 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
-  export type ApplicationNullableScalarRelationFilter = {
-    is?: ApplicationWhereInput | null
-    isNot?: ApplicationWhereInput | null
-  }
-
   export type AuthzRolePermissionListRelationFilter = {
     every?: AuthzRolePermissionWhereInput
     some?: AuthzRolePermissionWhereInput
@@ -50960,11 +51305,6 @@ export namespace Prisma {
     pushed?: SortOrder
   }
 
-  export type AuthzRoleScalarRelationFilter = {
-    is?: AuthzRoleWhereInput
-    isNot?: AuthzRoleWhereInput
-  }
-
   export type AuthzPermissionScalarRelationFilter = {
     is?: AuthzPermissionWhereInput
     isNot?: AuthzPermissionWhereInput
@@ -51003,6 +51343,11 @@ export namespace Prisma {
     in?: $Enums.AuthzGrantStatus[] | ListEnumAuthzGrantStatusFieldRefInput<$PrismaModel>
     notIn?: $Enums.AuthzGrantStatus[] | ListEnumAuthzGrantStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumAuthzGrantStatusFilter<$PrismaModel> | $Enums.AuthzGrantStatus
+  }
+
+  export type PortfolioNullableScalarRelationFilter = {
+    is?: PortfolioWhereInput | null
+    isNot?: PortfolioWhereInput | null
   }
 
   export type AuthzAccountAccessGrantCountOrderByAggregateInput = {
@@ -51112,6 +51457,13 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type EnumMemberTargetTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.MemberTargetType | EnumMemberTargetTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.MemberTargetType[] | ListEnumMemberTargetTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MemberTargetType[] | ListEnumMemberTargetTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumMemberTargetTypeFilter<$PrismaModel> | $Enums.MemberTargetType
+  }
+
   export type MemberAccessCountOrderByAggregateInput = {
     id?: SortOrder
     memberId?: SortOrder
@@ -51140,6 +51492,16 @@ export namespace Prisma {
     targetType?: SortOrder
     targetId?: SortOrder
     action?: SortOrder
+  }
+
+  export type EnumMemberTargetTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.MemberTargetType | EnumMemberTargetTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.MemberTargetType[] | ListEnumMemberTargetTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MemberTargetType[] | ListEnumMemberTargetTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumMemberTargetTypeWithAggregatesFilter<$PrismaModel> | $Enums.MemberTargetType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumMemberTargetTypeFilter<$PrismaModel>
+    _max?: NestedEnumMemberTargetTypeFilter<$PrismaModel>
   }
 
   export type AuthzAppAccessGrantCountOrderByAggregateInput = {
@@ -51332,10 +51694,17 @@ export namespace Prisma {
     connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
   }
 
-  export type MemberCreateNestedManyWithoutTargetAccountInput = {
-    create?: XOR<MemberCreateWithoutTargetAccountInput, MemberUncheckedCreateWithoutTargetAccountInput> | MemberCreateWithoutTargetAccountInput[] | MemberUncheckedCreateWithoutTargetAccountInput[]
-    connectOrCreate?: MemberCreateOrConnectWithoutTargetAccountInput | MemberCreateOrConnectWithoutTargetAccountInput[]
-    createMany?: MemberCreateManyTargetAccountInputEnvelope
+  export type MemberCreateNestedManyWithoutAccessAccountInput = {
+    create?: XOR<MemberCreateWithoutAccessAccountInput, MemberUncheckedCreateWithoutAccessAccountInput> | MemberCreateWithoutAccessAccountInput[] | MemberUncheckedCreateWithoutAccessAccountInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutAccessAccountInput | MemberCreateOrConnectWithoutAccessAccountInput[]
+    createMany?: MemberCreateManyAccessAccountInputEnvelope
+    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+  }
+
+  export type MemberCreateNestedManyWithoutParentAccountInput = {
+    create?: XOR<MemberCreateWithoutParentAccountInput, MemberUncheckedCreateWithoutParentAccountInput> | MemberCreateWithoutParentAccountInput[] | MemberUncheckedCreateWithoutParentAccountInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutParentAccountInput | MemberCreateOrConnectWithoutParentAccountInput[]
+    createMany?: MemberCreateManyParentAccountInputEnvelope
     connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
   }
 
@@ -51532,10 +51901,17 @@ export namespace Prisma {
     connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
   }
 
-  export type MemberUncheckedCreateNestedManyWithoutTargetAccountInput = {
-    create?: XOR<MemberCreateWithoutTargetAccountInput, MemberUncheckedCreateWithoutTargetAccountInput> | MemberCreateWithoutTargetAccountInput[] | MemberUncheckedCreateWithoutTargetAccountInput[]
-    connectOrCreate?: MemberCreateOrConnectWithoutTargetAccountInput | MemberCreateOrConnectWithoutTargetAccountInput[]
-    createMany?: MemberCreateManyTargetAccountInputEnvelope
+  export type MemberUncheckedCreateNestedManyWithoutAccessAccountInput = {
+    create?: XOR<MemberCreateWithoutAccessAccountInput, MemberUncheckedCreateWithoutAccessAccountInput> | MemberCreateWithoutAccessAccountInput[] | MemberUncheckedCreateWithoutAccessAccountInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutAccessAccountInput | MemberCreateOrConnectWithoutAccessAccountInput[]
+    createMany?: MemberCreateManyAccessAccountInputEnvelope
+    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+  }
+
+  export type MemberUncheckedCreateNestedManyWithoutParentAccountInput = {
+    create?: XOR<MemberCreateWithoutParentAccountInput, MemberUncheckedCreateWithoutParentAccountInput> | MemberCreateWithoutParentAccountInput[] | MemberUncheckedCreateWithoutParentAccountInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutParentAccountInput | MemberCreateOrConnectWithoutParentAccountInput[]
+    createMany?: MemberCreateManyParentAccountInputEnvelope
     connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
   }
 
@@ -51862,17 +52238,31 @@ export namespace Prisma {
     deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
   }
 
-  export type MemberUpdateManyWithoutTargetAccountNestedInput = {
-    create?: XOR<MemberCreateWithoutTargetAccountInput, MemberUncheckedCreateWithoutTargetAccountInput> | MemberCreateWithoutTargetAccountInput[] | MemberUncheckedCreateWithoutTargetAccountInput[]
-    connectOrCreate?: MemberCreateOrConnectWithoutTargetAccountInput | MemberCreateOrConnectWithoutTargetAccountInput[]
-    upsert?: MemberUpsertWithWhereUniqueWithoutTargetAccountInput | MemberUpsertWithWhereUniqueWithoutTargetAccountInput[]
-    createMany?: MemberCreateManyTargetAccountInputEnvelope
+  export type MemberUpdateManyWithoutAccessAccountNestedInput = {
+    create?: XOR<MemberCreateWithoutAccessAccountInput, MemberUncheckedCreateWithoutAccessAccountInput> | MemberCreateWithoutAccessAccountInput[] | MemberUncheckedCreateWithoutAccessAccountInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutAccessAccountInput | MemberCreateOrConnectWithoutAccessAccountInput[]
+    upsert?: MemberUpsertWithWhereUniqueWithoutAccessAccountInput | MemberUpsertWithWhereUniqueWithoutAccessAccountInput[]
+    createMany?: MemberCreateManyAccessAccountInputEnvelope
     set?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
     disconnect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
     delete?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
     connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-    update?: MemberUpdateWithWhereUniqueWithoutTargetAccountInput | MemberUpdateWithWhereUniqueWithoutTargetAccountInput[]
-    updateMany?: MemberUpdateManyWithWhereWithoutTargetAccountInput | MemberUpdateManyWithWhereWithoutTargetAccountInput[]
+    update?: MemberUpdateWithWhereUniqueWithoutAccessAccountInput | MemberUpdateWithWhereUniqueWithoutAccessAccountInput[]
+    updateMany?: MemberUpdateManyWithWhereWithoutAccessAccountInput | MemberUpdateManyWithWhereWithoutAccessAccountInput[]
+    deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
+  }
+
+  export type MemberUpdateManyWithoutParentAccountNestedInput = {
+    create?: XOR<MemberCreateWithoutParentAccountInput, MemberUncheckedCreateWithoutParentAccountInput> | MemberCreateWithoutParentAccountInput[] | MemberUncheckedCreateWithoutParentAccountInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutParentAccountInput | MemberCreateOrConnectWithoutParentAccountInput[]
+    upsert?: MemberUpsertWithWhereUniqueWithoutParentAccountInput | MemberUpsertWithWhereUniqueWithoutParentAccountInput[]
+    createMany?: MemberCreateManyParentAccountInputEnvelope
+    set?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    disconnect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    delete?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    update?: MemberUpdateWithWhereUniqueWithoutParentAccountInput | MemberUpdateWithWhereUniqueWithoutParentAccountInput[]
+    updateMany?: MemberUpdateManyWithWhereWithoutParentAccountInput | MemberUpdateManyWithWhereWithoutParentAccountInput[]
     deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
   }
 
@@ -52256,17 +52646,31 @@ export namespace Prisma {
     deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
   }
 
-  export type MemberUncheckedUpdateManyWithoutTargetAccountNestedInput = {
-    create?: XOR<MemberCreateWithoutTargetAccountInput, MemberUncheckedCreateWithoutTargetAccountInput> | MemberCreateWithoutTargetAccountInput[] | MemberUncheckedCreateWithoutTargetAccountInput[]
-    connectOrCreate?: MemberCreateOrConnectWithoutTargetAccountInput | MemberCreateOrConnectWithoutTargetAccountInput[]
-    upsert?: MemberUpsertWithWhereUniqueWithoutTargetAccountInput | MemberUpsertWithWhereUniqueWithoutTargetAccountInput[]
-    createMany?: MemberCreateManyTargetAccountInputEnvelope
+  export type MemberUncheckedUpdateManyWithoutAccessAccountNestedInput = {
+    create?: XOR<MemberCreateWithoutAccessAccountInput, MemberUncheckedCreateWithoutAccessAccountInput> | MemberCreateWithoutAccessAccountInput[] | MemberUncheckedCreateWithoutAccessAccountInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutAccessAccountInput | MemberCreateOrConnectWithoutAccessAccountInput[]
+    upsert?: MemberUpsertWithWhereUniqueWithoutAccessAccountInput | MemberUpsertWithWhereUniqueWithoutAccessAccountInput[]
+    createMany?: MemberCreateManyAccessAccountInputEnvelope
     set?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
     disconnect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
     delete?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
     connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-    update?: MemberUpdateWithWhereUniqueWithoutTargetAccountInput | MemberUpdateWithWhereUniqueWithoutTargetAccountInput[]
-    updateMany?: MemberUpdateManyWithWhereWithoutTargetAccountInput | MemberUpdateManyWithWhereWithoutTargetAccountInput[]
+    update?: MemberUpdateWithWhereUniqueWithoutAccessAccountInput | MemberUpdateWithWhereUniqueWithoutAccessAccountInput[]
+    updateMany?: MemberUpdateManyWithWhereWithoutAccessAccountInput | MemberUpdateManyWithWhereWithoutAccessAccountInput[]
+    deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
+  }
+
+  export type MemberUncheckedUpdateManyWithoutParentAccountNestedInput = {
+    create?: XOR<MemberCreateWithoutParentAccountInput, MemberUncheckedCreateWithoutParentAccountInput> | MemberCreateWithoutParentAccountInput[] | MemberUncheckedCreateWithoutParentAccountInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutParentAccountInput | MemberCreateOrConnectWithoutParentAccountInput[]
+    upsert?: MemberUpsertWithWhereUniqueWithoutParentAccountInput | MemberUpsertWithWhereUniqueWithoutParentAccountInput[]
+    createMany?: MemberCreateManyParentAccountInputEnvelope
+    set?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    disconnect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    delete?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    update?: MemberUpdateWithWhereUniqueWithoutParentAccountInput | MemberUpdateWithWhereUniqueWithoutParentAccountInput[]
+    updateMany?: MemberUpdateManyWithWhereWithoutParentAccountInput | MemberUpdateManyWithWhereWithoutParentAccountInput[]
     deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
   }
 
@@ -52719,6 +53123,13 @@ export namespace Prisma {
     connect?: ApplicationPolicyWhereUniqueInput | ApplicationPolicyWhereUniqueInput[]
   }
 
+  export type MemberCreateNestedManyWithoutParentApplicationInput = {
+    create?: XOR<MemberCreateWithoutParentApplicationInput, MemberUncheckedCreateWithoutParentApplicationInput> | MemberCreateWithoutParentApplicationInput[] | MemberUncheckedCreateWithoutParentApplicationInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutParentApplicationInput | MemberCreateOrConnectWithoutParentApplicationInput[]
+    createMany?: MemberCreateManyParentApplicationInputEnvelope
+    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+  }
+
   export type AuthzPermissionCreateNestedManyWithoutApplicationInput = {
     create?: XOR<AuthzPermissionCreateWithoutApplicationInput, AuthzPermissionUncheckedCreateWithoutApplicationInput> | AuthzPermissionCreateWithoutApplicationInput[] | AuthzPermissionUncheckedCreateWithoutApplicationInput[]
     connectOrCreate?: AuthzPermissionCreateOrConnectWithoutApplicationInput | AuthzPermissionCreateOrConnectWithoutApplicationInput[]
@@ -52773,6 +53184,13 @@ export namespace Prisma {
     connectOrCreate?: ApplicationPolicyCreateOrConnectWithoutApplicationInput | ApplicationPolicyCreateOrConnectWithoutApplicationInput[]
     createMany?: ApplicationPolicyCreateManyApplicationInputEnvelope
     connect?: ApplicationPolicyWhereUniqueInput | ApplicationPolicyWhereUniqueInput[]
+  }
+
+  export type MemberUncheckedCreateNestedManyWithoutParentApplicationInput = {
+    create?: XOR<MemberCreateWithoutParentApplicationInput, MemberUncheckedCreateWithoutParentApplicationInput> | MemberCreateWithoutParentApplicationInput[] | MemberUncheckedCreateWithoutParentApplicationInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutParentApplicationInput | MemberCreateOrConnectWithoutParentApplicationInput[]
+    createMany?: MemberCreateManyParentApplicationInputEnvelope
+    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
   }
 
   export type AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput = {
@@ -52878,6 +53296,20 @@ export namespace Prisma {
     update?: ApplicationPolicyUpdateWithWhereUniqueWithoutApplicationInput | ApplicationPolicyUpdateWithWhereUniqueWithoutApplicationInput[]
     updateMany?: ApplicationPolicyUpdateManyWithWhereWithoutApplicationInput | ApplicationPolicyUpdateManyWithWhereWithoutApplicationInput[]
     deleteMany?: ApplicationPolicyScalarWhereInput | ApplicationPolicyScalarWhereInput[]
+  }
+
+  export type MemberUpdateManyWithoutParentApplicationNestedInput = {
+    create?: XOR<MemberCreateWithoutParentApplicationInput, MemberUncheckedCreateWithoutParentApplicationInput> | MemberCreateWithoutParentApplicationInput[] | MemberUncheckedCreateWithoutParentApplicationInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutParentApplicationInput | MemberCreateOrConnectWithoutParentApplicationInput[]
+    upsert?: MemberUpsertWithWhereUniqueWithoutParentApplicationInput | MemberUpsertWithWhereUniqueWithoutParentApplicationInput[]
+    createMany?: MemberCreateManyParentApplicationInputEnvelope
+    set?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    disconnect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    delete?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    update?: MemberUpdateWithWhereUniqueWithoutParentApplicationInput | MemberUpdateWithWhereUniqueWithoutParentApplicationInput[]
+    updateMany?: MemberUpdateManyWithWhereWithoutParentApplicationInput | MemberUpdateManyWithWhereWithoutParentApplicationInput[]
+    deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
   }
 
   export type AuthzPermissionUpdateManyWithoutApplicationNestedInput = {
@@ -52992,6 +53424,20 @@ export namespace Prisma {
     deleteMany?: ApplicationPolicyScalarWhereInput | ApplicationPolicyScalarWhereInput[]
   }
 
+  export type MemberUncheckedUpdateManyWithoutParentApplicationNestedInput = {
+    create?: XOR<MemberCreateWithoutParentApplicationInput, MemberUncheckedCreateWithoutParentApplicationInput> | MemberCreateWithoutParentApplicationInput[] | MemberUncheckedCreateWithoutParentApplicationInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutParentApplicationInput | MemberCreateOrConnectWithoutParentApplicationInput[]
+    upsert?: MemberUpsertWithWhereUniqueWithoutParentApplicationInput | MemberUpsertWithWhereUniqueWithoutParentApplicationInput[]
+    createMany?: MemberCreateManyParentApplicationInputEnvelope
+    set?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    disconnect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    delete?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    update?: MemberUpdateWithWhereUniqueWithoutParentApplicationInput | MemberUpdateWithWhereUniqueWithoutParentApplicationInput[]
+    updateMany?: MemberUpdateManyWithWhereWithoutParentApplicationInput | MemberUpdateManyWithWhereWithoutParentApplicationInput[]
+    deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
+  }
+
   export type AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput = {
     create?: XOR<AuthzPermissionCreateWithoutApplicationInput, AuthzPermissionUncheckedCreateWithoutApplicationInput> | AuthzPermissionCreateWithoutApplicationInput[] | AuthzPermissionUncheckedCreateWithoutApplicationInput[]
     connectOrCreate?: AuthzPermissionCreateOrConnectWithoutApplicationInput | AuthzPermissionCreateOrConnectWithoutApplicationInput[]
@@ -53076,13 +53522,6 @@ export namespace Prisma {
     connect?: PortfolioMemberWhereUniqueInput | PortfolioMemberWhereUniqueInput[]
   }
 
-  export type MemberCreateNestedManyWithoutTargetPortfolioInput = {
-    create?: XOR<MemberCreateWithoutTargetPortfolioInput, MemberUncheckedCreateWithoutTargetPortfolioInput> | MemberCreateWithoutTargetPortfolioInput[] | MemberUncheckedCreateWithoutTargetPortfolioInput[]
-    connectOrCreate?: MemberCreateOrConnectWithoutTargetPortfolioInput | MemberCreateOrConnectWithoutTargetPortfolioInput[]
-    createMany?: MemberCreateManyTargetPortfolioInputEnvelope
-    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-  }
-
   export type AuthzAccountAccessGrantCreateNestedManyWithoutPortfolioInput = {
     create?: XOR<AuthzAccountAccessGrantCreateWithoutPortfolioInput, AuthzAccountAccessGrantUncheckedCreateWithoutPortfolioInput> | AuthzAccountAccessGrantCreateWithoutPortfolioInput[] | AuthzAccountAccessGrantUncheckedCreateWithoutPortfolioInput[]
     connectOrCreate?: AuthzAccountAccessGrantCreateOrConnectWithoutPortfolioInput | AuthzAccountAccessGrantCreateOrConnectWithoutPortfolioInput[]
@@ -53116,13 +53555,6 @@ export namespace Prisma {
     connectOrCreate?: PortfolioMemberCreateOrConnectWithoutPortfolioInput | PortfolioMemberCreateOrConnectWithoutPortfolioInput[]
     createMany?: PortfolioMemberCreateManyPortfolioInputEnvelope
     connect?: PortfolioMemberWhereUniqueInput | PortfolioMemberWhereUniqueInput[]
-  }
-
-  export type MemberUncheckedCreateNestedManyWithoutTargetPortfolioInput = {
-    create?: XOR<MemberCreateWithoutTargetPortfolioInput, MemberUncheckedCreateWithoutTargetPortfolioInput> | MemberCreateWithoutTargetPortfolioInput[] | MemberUncheckedCreateWithoutTargetPortfolioInput[]
-    connectOrCreate?: MemberCreateOrConnectWithoutTargetPortfolioInput | MemberCreateOrConnectWithoutTargetPortfolioInput[]
-    createMany?: MemberCreateManyTargetPortfolioInputEnvelope
-    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
   }
 
   export type AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput = {
@@ -53172,20 +53604,6 @@ export namespace Prisma {
     update?: PortfolioMemberUpdateWithWhereUniqueWithoutPortfolioInput | PortfolioMemberUpdateWithWhereUniqueWithoutPortfolioInput[]
     updateMany?: PortfolioMemberUpdateManyWithWhereWithoutPortfolioInput | PortfolioMemberUpdateManyWithWhereWithoutPortfolioInput[]
     deleteMany?: PortfolioMemberScalarWhereInput | PortfolioMemberScalarWhereInput[]
-  }
-
-  export type MemberUpdateManyWithoutTargetPortfolioNestedInput = {
-    create?: XOR<MemberCreateWithoutTargetPortfolioInput, MemberUncheckedCreateWithoutTargetPortfolioInput> | MemberCreateWithoutTargetPortfolioInput[] | MemberUncheckedCreateWithoutTargetPortfolioInput[]
-    connectOrCreate?: MemberCreateOrConnectWithoutTargetPortfolioInput | MemberCreateOrConnectWithoutTargetPortfolioInput[]
-    upsert?: MemberUpsertWithWhereUniqueWithoutTargetPortfolioInput | MemberUpsertWithWhereUniqueWithoutTargetPortfolioInput[]
-    createMany?: MemberCreateManyTargetPortfolioInputEnvelope
-    set?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-    disconnect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-    delete?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-    update?: MemberUpdateWithWhereUniqueWithoutTargetPortfolioInput | MemberUpdateWithWhereUniqueWithoutTargetPortfolioInput[]
-    updateMany?: MemberUpdateManyWithWhereWithoutTargetPortfolioInput | MemberUpdateManyWithWhereWithoutTargetPortfolioInput[]
-    deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
   }
 
   export type AuthzAccountAccessGrantUpdateManyWithoutPortfolioNestedInput = {
@@ -53256,20 +53674,6 @@ export namespace Prisma {
     update?: PortfolioMemberUpdateWithWhereUniqueWithoutPortfolioInput | PortfolioMemberUpdateWithWhereUniqueWithoutPortfolioInput[]
     updateMany?: PortfolioMemberUpdateManyWithWhereWithoutPortfolioInput | PortfolioMemberUpdateManyWithWhereWithoutPortfolioInput[]
     deleteMany?: PortfolioMemberScalarWhereInput | PortfolioMemberScalarWhereInput[]
-  }
-
-  export type MemberUncheckedUpdateManyWithoutTargetPortfolioNestedInput = {
-    create?: XOR<MemberCreateWithoutTargetPortfolioInput, MemberUncheckedCreateWithoutTargetPortfolioInput> | MemberCreateWithoutTargetPortfolioInput[] | MemberUncheckedCreateWithoutTargetPortfolioInput[]
-    connectOrCreate?: MemberCreateOrConnectWithoutTargetPortfolioInput | MemberCreateOrConnectWithoutTargetPortfolioInput[]
-    upsert?: MemberUpsertWithWhereUniqueWithoutTargetPortfolioInput | MemberUpsertWithWhereUniqueWithoutTargetPortfolioInput[]
-    createMany?: MemberCreateManyTargetPortfolioInputEnvelope
-    set?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-    disconnect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-    delete?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-    update?: MemberUpdateWithWhereUniqueWithoutTargetPortfolioInput | MemberUpdateWithWhereUniqueWithoutTargetPortfolioInput[]
-    updateMany?: MemberUpdateManyWithWhereWithoutTargetPortfolioInput | MemberUpdateManyWithWhereWithoutTargetPortfolioInput[]
-    deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
   }
 
   export type AuthzAccountAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput = {
@@ -53410,14 +53814,36 @@ export namespace Prisma {
     connect?: AccountWhereUniqueInput
   }
 
-  export type PortfolioCreateNestedOneWithoutTargetPortfolioMembersInput = {
-    create?: XOR<PortfolioCreateWithoutTargetPortfolioMembersInput, PortfolioUncheckedCreateWithoutTargetPortfolioMembersInput>
-    connectOrCreate?: PortfolioCreateOrConnectWithoutTargetPortfolioMembersInput
-    connect?: PortfolioWhereUniqueInput
+  export type AccountCreateNestedOneWithoutParentAccountMembersInput = {
+    create?: XOR<AccountCreateWithoutParentAccountMembersInput, AccountUncheckedCreateWithoutParentAccountMembersInput>
+    connectOrCreate?: AccountCreateOrConnectWithoutParentAccountMembersInput
+    connect?: AccountWhereUniqueInput
   }
 
-  export type EnumMemberTargetTypeFieldUpdateOperationsInput = {
-    set?: $Enums.MemberTargetType
+  export type ApplicationCreateNestedOneWithoutParentMembersInput = {
+    create?: XOR<ApplicationCreateWithoutParentMembersInput, ApplicationUncheckedCreateWithoutParentMembersInput>
+    connectOrCreate?: ApplicationCreateOrConnectWithoutParentMembersInput
+    connect?: ApplicationWhereUniqueInput
+  }
+
+  export type ConnectionCreateNestedOneWithoutParentMembersInput = {
+    create?: XOR<ConnectionCreateWithoutParentMembersInput, ConnectionUncheckedCreateWithoutParentMembersInput>
+    connectOrCreate?: ConnectionCreateOrConnectWithoutParentMembersInput
+    connect?: ConnectionWhereUniqueInput
+  }
+
+  export type AuthzRoleCreateNestedOneWithoutMembersInput = {
+    create?: XOR<AuthzRoleCreateWithoutMembersInput, AuthzRoleUncheckedCreateWithoutMembersInput>
+    connectOrCreate?: AuthzRoleCreateOrConnectWithoutMembersInput
+    connect?: AuthzRoleWhereUniqueInput
+  }
+
+  export type EnumMemberAccessForFieldUpdateOperationsInput = {
+    set?: $Enums.MemberAccessFor
+  }
+
+  export type EnumMemberStatusFieldUpdateOperationsInput = {
+    set?: $Enums.MemberStatus
   }
 
   export type AccountUpdateOneRequiredWithoutOwnedMembersNestedInput = {
@@ -53428,24 +53854,50 @@ export namespace Prisma {
     update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutOwnedMembersInput, AccountUpdateWithoutOwnedMembersInput>, AccountUncheckedUpdateWithoutOwnedMembersInput>
   }
 
-  export type AccountUpdateOneWithoutTargetAccountMembersNestedInput = {
+  export type AccountUpdateOneRequiredWithoutTargetAccountMembersNestedInput = {
     create?: XOR<AccountCreateWithoutTargetAccountMembersInput, AccountUncheckedCreateWithoutTargetAccountMembersInput>
     connectOrCreate?: AccountCreateOrConnectWithoutTargetAccountMembersInput
     upsert?: AccountUpsertWithoutTargetAccountMembersInput
-    disconnect?: AccountWhereInput | boolean
-    delete?: AccountWhereInput | boolean
     connect?: AccountWhereUniqueInput
     update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutTargetAccountMembersInput, AccountUpdateWithoutTargetAccountMembersInput>, AccountUncheckedUpdateWithoutTargetAccountMembersInput>
   }
 
-  export type PortfolioUpdateOneWithoutTargetPortfolioMembersNestedInput = {
-    create?: XOR<PortfolioCreateWithoutTargetPortfolioMembersInput, PortfolioUncheckedCreateWithoutTargetPortfolioMembersInput>
-    connectOrCreate?: PortfolioCreateOrConnectWithoutTargetPortfolioMembersInput
-    upsert?: PortfolioUpsertWithoutTargetPortfolioMembersInput
-    disconnect?: PortfolioWhereInput | boolean
-    delete?: PortfolioWhereInput | boolean
-    connect?: PortfolioWhereUniqueInput
-    update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutTargetPortfolioMembersInput, PortfolioUpdateWithoutTargetPortfolioMembersInput>, PortfolioUncheckedUpdateWithoutTargetPortfolioMembersInput>
+  export type AccountUpdateOneWithoutParentAccountMembersNestedInput = {
+    create?: XOR<AccountCreateWithoutParentAccountMembersInput, AccountUncheckedCreateWithoutParentAccountMembersInput>
+    connectOrCreate?: AccountCreateOrConnectWithoutParentAccountMembersInput
+    upsert?: AccountUpsertWithoutParentAccountMembersInput
+    disconnect?: AccountWhereInput | boolean
+    delete?: AccountWhereInput | boolean
+    connect?: AccountWhereUniqueInput
+    update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutParentAccountMembersInput, AccountUpdateWithoutParentAccountMembersInput>, AccountUncheckedUpdateWithoutParentAccountMembersInput>
+  }
+
+  export type ApplicationUpdateOneWithoutParentMembersNestedInput = {
+    create?: XOR<ApplicationCreateWithoutParentMembersInput, ApplicationUncheckedCreateWithoutParentMembersInput>
+    connectOrCreate?: ApplicationCreateOrConnectWithoutParentMembersInput
+    upsert?: ApplicationUpsertWithoutParentMembersInput
+    disconnect?: ApplicationWhereInput | boolean
+    delete?: ApplicationWhereInput | boolean
+    connect?: ApplicationWhereUniqueInput
+    update?: XOR<XOR<ApplicationUpdateToOneWithWhereWithoutParentMembersInput, ApplicationUpdateWithoutParentMembersInput>, ApplicationUncheckedUpdateWithoutParentMembersInput>
+  }
+
+  export type ConnectionUpdateOneWithoutParentMembersNestedInput = {
+    create?: XOR<ConnectionCreateWithoutParentMembersInput, ConnectionUncheckedCreateWithoutParentMembersInput>
+    connectOrCreate?: ConnectionCreateOrConnectWithoutParentMembersInput
+    upsert?: ConnectionUpsertWithoutParentMembersInput
+    disconnect?: ConnectionWhereInput | boolean
+    delete?: ConnectionWhereInput | boolean
+    connect?: ConnectionWhereUniqueInput
+    update?: XOR<XOR<ConnectionUpdateToOneWithWhereWithoutParentMembersInput, ConnectionUpdateWithoutParentMembersInput>, ConnectionUncheckedUpdateWithoutParentMembersInput>
+  }
+
+  export type AuthzRoleUpdateOneRequiredWithoutMembersNestedInput = {
+    create?: XOR<AuthzRoleCreateWithoutMembersInput, AuthzRoleUncheckedCreateWithoutMembersInput>
+    connectOrCreate?: AuthzRoleCreateOrConnectWithoutMembersInput
+    upsert?: AuthzRoleUpsertWithoutMembersInput
+    connect?: AuthzRoleWhereUniqueInput
+    update?: XOR<XOR<AuthzRoleUpdateToOneWithWhereWithoutMembersInput, AuthzRoleUpdateWithoutMembersInput>, AuthzRoleUncheckedUpdateWithoutMembersInput>
   }
 
   export type AccountCreateNestedOneWithoutChildOwnershipsInput = {
@@ -53488,6 +53940,20 @@ export namespace Prisma {
     connect?: ApplicationWhereUniqueInput
   }
 
+  export type MemberCreateNestedManyWithoutParentConnectionInput = {
+    create?: XOR<MemberCreateWithoutParentConnectionInput, MemberUncheckedCreateWithoutParentConnectionInput> | MemberCreateWithoutParentConnectionInput[] | MemberUncheckedCreateWithoutParentConnectionInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutParentConnectionInput | MemberCreateOrConnectWithoutParentConnectionInput[]
+    createMany?: MemberCreateManyParentConnectionInputEnvelope
+    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+  }
+
+  export type MemberUncheckedCreateNestedManyWithoutParentConnectionInput = {
+    create?: XOR<MemberCreateWithoutParentConnectionInput, MemberUncheckedCreateWithoutParentConnectionInput> | MemberCreateWithoutParentConnectionInput[] | MemberUncheckedCreateWithoutParentConnectionInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutParentConnectionInput | MemberCreateOrConnectWithoutParentConnectionInput[]
+    createMany?: MemberCreateManyParentConnectionInputEnvelope
+    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+  }
+
   export type AccountUpdateOneRequiredWithoutConnectionsNestedInput = {
     create?: XOR<AccountCreateWithoutConnectionsInput, AccountUncheckedCreateWithoutConnectionsInput>
     connectOrCreate?: AccountCreateOrConnectWithoutConnectionsInput
@@ -53502,6 +53968,34 @@ export namespace Prisma {
     upsert?: ApplicationUpsertWithoutConnectionsInput
     connect?: ApplicationWhereUniqueInput
     update?: XOR<XOR<ApplicationUpdateToOneWithWhereWithoutConnectionsInput, ApplicationUpdateWithoutConnectionsInput>, ApplicationUncheckedUpdateWithoutConnectionsInput>
+  }
+
+  export type MemberUpdateManyWithoutParentConnectionNestedInput = {
+    create?: XOR<MemberCreateWithoutParentConnectionInput, MemberUncheckedCreateWithoutParentConnectionInput> | MemberCreateWithoutParentConnectionInput[] | MemberUncheckedCreateWithoutParentConnectionInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutParentConnectionInput | MemberCreateOrConnectWithoutParentConnectionInput[]
+    upsert?: MemberUpsertWithWhereUniqueWithoutParentConnectionInput | MemberUpsertWithWhereUniqueWithoutParentConnectionInput[]
+    createMany?: MemberCreateManyParentConnectionInputEnvelope
+    set?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    disconnect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    delete?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    update?: MemberUpdateWithWhereUniqueWithoutParentConnectionInput | MemberUpdateWithWhereUniqueWithoutParentConnectionInput[]
+    updateMany?: MemberUpdateManyWithWhereWithoutParentConnectionInput | MemberUpdateManyWithWhereWithoutParentConnectionInput[]
+    deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
+  }
+
+  export type MemberUncheckedUpdateManyWithoutParentConnectionNestedInput = {
+    create?: XOR<MemberCreateWithoutParentConnectionInput, MemberUncheckedCreateWithoutParentConnectionInput> | MemberCreateWithoutParentConnectionInput[] | MemberUncheckedCreateWithoutParentConnectionInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutParentConnectionInput | MemberCreateOrConnectWithoutParentConnectionInput[]
+    upsert?: MemberUpsertWithWhereUniqueWithoutParentConnectionInput | MemberUpsertWithWhereUniqueWithoutParentConnectionInput[]
+    createMany?: MemberCreateManyParentConnectionInputEnvelope
+    set?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    disconnect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    delete?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    update?: MemberUpdateWithWhereUniqueWithoutParentConnectionInput | MemberUpdateWithWhereUniqueWithoutParentConnectionInput[]
+    updateMany?: MemberUpdateManyWithWhereWithoutParentConnectionInput | MemberUpdateManyWithWhereWithoutParentConnectionInput[]
+    deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
   }
 
   export type ApplicationCreateNestedOneWithoutBridgeInput = {
@@ -53624,6 +54118,13 @@ export namespace Prisma {
     connect?: AuthzAppAccessGrantWhereUniqueInput | AuthzAppAccessGrantWhereUniqueInput[]
   }
 
+  export type MemberCreateNestedManyWithoutRoleInput = {
+    create?: XOR<MemberCreateWithoutRoleInput, MemberUncheckedCreateWithoutRoleInput> | MemberCreateWithoutRoleInput[] | MemberUncheckedCreateWithoutRoleInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutRoleInput | MemberCreateOrConnectWithoutRoleInput[]
+    createMany?: MemberCreateManyRoleInputEnvelope
+    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+  }
+
   export type AuthzRolePermissionUncheckedCreateNestedManyWithoutRoleInput = {
     create?: XOR<AuthzRolePermissionCreateWithoutRoleInput, AuthzRolePermissionUncheckedCreateWithoutRoleInput> | AuthzRolePermissionCreateWithoutRoleInput[] | AuthzRolePermissionUncheckedCreateWithoutRoleInput[]
     connectOrCreate?: AuthzRolePermissionCreateOrConnectWithoutRoleInput | AuthzRolePermissionCreateOrConnectWithoutRoleInput[]
@@ -53650,6 +54151,13 @@ export namespace Prisma {
     connectOrCreate?: AuthzAppAccessGrantCreateOrConnectWithoutRoleInput | AuthzAppAccessGrantCreateOrConnectWithoutRoleInput[]
     createMany?: AuthzAppAccessGrantCreateManyRoleInputEnvelope
     connect?: AuthzAppAccessGrantWhereUniqueInput | AuthzAppAccessGrantWhereUniqueInput[]
+  }
+
+  export type MemberUncheckedCreateNestedManyWithoutRoleInput = {
+    create?: XOR<MemberCreateWithoutRoleInput, MemberUncheckedCreateWithoutRoleInput> | MemberCreateWithoutRoleInput[] | MemberUncheckedCreateWithoutRoleInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutRoleInput | MemberCreateOrConnectWithoutRoleInput[]
+    createMany?: MemberCreateManyRoleInputEnvelope
+    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
   }
 
   export type ApplicationUpdateOneWithoutAuthzRolesNestedInput = {
@@ -53718,6 +54226,20 @@ export namespace Prisma {
     deleteMany?: AuthzAppAccessGrantScalarWhereInput | AuthzAppAccessGrantScalarWhereInput[]
   }
 
+  export type MemberUpdateManyWithoutRoleNestedInput = {
+    create?: XOR<MemberCreateWithoutRoleInput, MemberUncheckedCreateWithoutRoleInput> | MemberCreateWithoutRoleInput[] | MemberUncheckedCreateWithoutRoleInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutRoleInput | MemberCreateOrConnectWithoutRoleInput[]
+    upsert?: MemberUpsertWithWhereUniqueWithoutRoleInput | MemberUpsertWithWhereUniqueWithoutRoleInput[]
+    createMany?: MemberCreateManyRoleInputEnvelope
+    set?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    disconnect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    delete?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    update?: MemberUpdateWithWhereUniqueWithoutRoleInput | MemberUpdateWithWhereUniqueWithoutRoleInput[]
+    updateMany?: MemberUpdateManyWithWhereWithoutRoleInput | MemberUpdateManyWithWhereWithoutRoleInput[]
+    deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
+  }
+
   export type AuthzRolePermissionUncheckedUpdateManyWithoutRoleNestedInput = {
     create?: XOR<AuthzRolePermissionCreateWithoutRoleInput, AuthzRolePermissionUncheckedCreateWithoutRoleInput> | AuthzRolePermissionCreateWithoutRoleInput[] | AuthzRolePermissionUncheckedCreateWithoutRoleInput[]
     connectOrCreate?: AuthzRolePermissionCreateOrConnectWithoutRoleInput | AuthzRolePermissionCreateOrConnectWithoutRoleInput[]
@@ -53772,6 +54294,20 @@ export namespace Prisma {
     update?: AuthzAppAccessGrantUpdateWithWhereUniqueWithoutRoleInput | AuthzAppAccessGrantUpdateWithWhereUniqueWithoutRoleInput[]
     updateMany?: AuthzAppAccessGrantUpdateManyWithWhereWithoutRoleInput | AuthzAppAccessGrantUpdateManyWithWhereWithoutRoleInput[]
     deleteMany?: AuthzAppAccessGrantScalarWhereInput | AuthzAppAccessGrantScalarWhereInput[]
+  }
+
+  export type MemberUncheckedUpdateManyWithoutRoleNestedInput = {
+    create?: XOR<MemberCreateWithoutRoleInput, MemberUncheckedCreateWithoutRoleInput> | MemberCreateWithoutRoleInput[] | MemberUncheckedCreateWithoutRoleInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutRoleInput | MemberCreateOrConnectWithoutRoleInput[]
+    upsert?: MemberUpsertWithWhereUniqueWithoutRoleInput | MemberUpsertWithWhereUniqueWithoutRoleInput[]
+    createMany?: MemberCreateManyRoleInputEnvelope
+    set?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    disconnect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    delete?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    update?: MemberUpdateWithWhereUniqueWithoutRoleInput | MemberUpdateWithWhereUniqueWithoutRoleInput[]
+    updateMany?: MemberUpdateManyWithWhereWithoutRoleInput | MemberUpdateManyWithWhereWithoutRoleInput[]
+    deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
   }
 
   export type AuthzRoleCreateNestedOneWithoutRoleMapsInput = {
@@ -53986,6 +54522,10 @@ export namespace Prisma {
     create?: XOR<AccountCreateWithoutMemberAccessesInput, AccountUncheckedCreateWithoutMemberAccessesInput>
     connectOrCreate?: AccountCreateOrConnectWithoutMemberAccessesInput
     connect?: AccountWhereUniqueInput
+  }
+
+  export type EnumMemberTargetTypeFieldUpdateOperationsInput = {
+    set?: $Enums.MemberTargetType
   }
 
   export type AccountUpdateOneRequiredWithoutMemberAccessesNestedInput = {
@@ -54302,21 +54842,38 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
-  export type NestedEnumMemberTargetTypeFilter<$PrismaModel = never> = {
-    equals?: $Enums.MemberTargetType | EnumMemberTargetTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.MemberTargetType[] | ListEnumMemberTargetTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.MemberTargetType[] | ListEnumMemberTargetTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumMemberTargetTypeFilter<$PrismaModel> | $Enums.MemberTargetType
+  export type NestedEnumMemberAccessForFilter<$PrismaModel = never> = {
+    equals?: $Enums.MemberAccessFor | EnumMemberAccessForFieldRefInput<$PrismaModel>
+    in?: $Enums.MemberAccessFor[] | ListEnumMemberAccessForFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MemberAccessFor[] | ListEnumMemberAccessForFieldRefInput<$PrismaModel>
+    not?: NestedEnumMemberAccessForFilter<$PrismaModel> | $Enums.MemberAccessFor
   }
 
-  export type NestedEnumMemberTargetTypeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.MemberTargetType | EnumMemberTargetTypeFieldRefInput<$PrismaModel>
-    in?: $Enums.MemberTargetType[] | ListEnumMemberTargetTypeFieldRefInput<$PrismaModel>
-    notIn?: $Enums.MemberTargetType[] | ListEnumMemberTargetTypeFieldRefInput<$PrismaModel>
-    not?: NestedEnumMemberTargetTypeWithAggregatesFilter<$PrismaModel> | $Enums.MemberTargetType
+  export type NestedEnumMemberStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.MemberStatus | EnumMemberStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.MemberStatus[] | ListEnumMemberStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MemberStatus[] | ListEnumMemberStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumMemberStatusFilter<$PrismaModel> | $Enums.MemberStatus
+  }
+
+  export type NestedEnumMemberAccessForWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.MemberAccessFor | EnumMemberAccessForFieldRefInput<$PrismaModel>
+    in?: $Enums.MemberAccessFor[] | ListEnumMemberAccessForFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MemberAccessFor[] | ListEnumMemberAccessForFieldRefInput<$PrismaModel>
+    not?: NestedEnumMemberAccessForWithAggregatesFilter<$PrismaModel> | $Enums.MemberAccessFor
     _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumMemberTargetTypeFilter<$PrismaModel>
-    _max?: NestedEnumMemberTargetTypeFilter<$PrismaModel>
+    _min?: NestedEnumMemberAccessForFilter<$PrismaModel>
+    _max?: NestedEnumMemberAccessForFilter<$PrismaModel>
+  }
+
+  export type NestedEnumMemberStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.MemberStatus | EnumMemberStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.MemberStatus[] | ListEnumMemberStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MemberStatus[] | ListEnumMemberStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumMemberStatusWithAggregatesFilter<$PrismaModel> | $Enums.MemberStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumMemberStatusFilter<$PrismaModel>
+    _max?: NestedEnumMemberStatusFilter<$PrismaModel>
   }
 
   export type NestedEnumAuthzGrantStatusFilter<$PrismaModel = never> = {
@@ -54334,6 +54891,23 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumAuthzGrantStatusFilter<$PrismaModel>
     _max?: NestedEnumAuthzGrantStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumMemberTargetTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.MemberTargetType | EnumMemberTargetTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.MemberTargetType[] | ListEnumMemberTargetTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MemberTargetType[] | ListEnumMemberTargetTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumMemberTargetTypeFilter<$PrismaModel> | $Enums.MemberTargetType
+  }
+
+  export type NestedEnumMemberTargetTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.MemberTargetType | EnumMemberTargetTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.MemberTargetType[] | ListEnumMemberTargetTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.MemberTargetType[] | ListEnumMemberTargetTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumMemberTargetTypeWithAggregatesFilter<$PrismaModel> | $Enums.MemberTargetType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumMemberTargetTypeFilter<$PrismaModel>
+    _max?: NestedEnumMemberTargetTypeFilter<$PrismaModel>
   }
 
   export type AccountTypeBrandCreateWithoutAccountInput = {
@@ -54386,6 +54960,7 @@ export namespace Prisma {
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     application: ApplicationCreateNestedOneWithoutConnectionsInput
+    parentMembers?: MemberCreateNestedManyWithoutParentConnectionInput
   }
 
   export type ConnectionUncheckedCreateWithoutAccountInput = {
@@ -54394,6 +54969,7 @@ export namespace Prisma {
     status?: string
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
+    parentMembers?: MemberUncheckedCreateNestedManyWithoutParentConnectionInput
   }
 
   export type ConnectionCreateOrConnectWithoutAccountInput = {
@@ -54806,24 +55382,28 @@ export namespace Prisma {
 
   export type MemberCreateWithoutMemberInput = {
     id?: string
-    targetType: $Enums.MemberTargetType
-    status: string
+    accessFor: $Enums.MemberAccessFor
     isPermanent?: boolean
     hasFullAccess?: boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
-    targetAccount?: AccountCreateNestedOneWithoutTargetAccountMembersInput
-    targetPortfolio?: PortfolioCreateNestedOneWithoutTargetPortfolioMembersInput
+    status?: $Enums.MemberStatus
+    accessAccount: AccountCreateNestedOneWithoutTargetAccountMembersInput
+    parentAccount?: AccountCreateNestedOneWithoutParentAccountMembersInput
+    parentApplication?: ApplicationCreateNestedOneWithoutParentMembersInput
+    parentConnection?: ConnectionCreateNestedOneWithoutParentMembersInput
+    role: AuthzRoleCreateNestedOneWithoutMembersInput
   }
 
   export type MemberUncheckedCreateWithoutMemberInput = {
     id?: string
-    targetType: $Enums.MemberTargetType
-    targetAccountId?: string | null
-    targetPortfolioId?: string | null
-    status: string
+    accessTo: string
+    accessFor: $Enums.MemberAccessFor
+    parentAccountId?: string | null
+    parentApplicationId?: string | null
+    parentConnectionId?: string | null
+    roleId: string
     isPermanent?: boolean
     hasFullAccess?: boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
+    status?: $Enums.MemberStatus
   }
 
   export type MemberCreateOrConnectWithoutMemberInput = {
@@ -54836,35 +55416,75 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type MemberCreateWithoutTargetAccountInput = {
+  export type MemberCreateWithoutAccessAccountInput = {
     id?: string
-    targetType: $Enums.MemberTargetType
-    status: string
+    accessFor: $Enums.MemberAccessFor
     isPermanent?: boolean
     hasFullAccess?: boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
+    status?: $Enums.MemberStatus
     member: AccountCreateNestedOneWithoutOwnedMembersInput
-    targetPortfolio?: PortfolioCreateNestedOneWithoutTargetPortfolioMembersInput
+    parentAccount?: AccountCreateNestedOneWithoutParentAccountMembersInput
+    parentApplication?: ApplicationCreateNestedOneWithoutParentMembersInput
+    parentConnection?: ConnectionCreateNestedOneWithoutParentMembersInput
+    role: AuthzRoleCreateNestedOneWithoutMembersInput
   }
 
-  export type MemberUncheckedCreateWithoutTargetAccountInput = {
+  export type MemberUncheckedCreateWithoutAccessAccountInput = {
     id?: string
     memberId: string
-    targetType: $Enums.MemberTargetType
-    targetPortfolioId?: string | null
-    status: string
+    accessFor: $Enums.MemberAccessFor
+    parentAccountId?: string | null
+    parentApplicationId?: string | null
+    parentConnectionId?: string | null
+    roleId: string
     isPermanent?: boolean
     hasFullAccess?: boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
+    status?: $Enums.MemberStatus
   }
 
-  export type MemberCreateOrConnectWithoutTargetAccountInput = {
+  export type MemberCreateOrConnectWithoutAccessAccountInput = {
     where: MemberWhereUniqueInput
-    create: XOR<MemberCreateWithoutTargetAccountInput, MemberUncheckedCreateWithoutTargetAccountInput>
+    create: XOR<MemberCreateWithoutAccessAccountInput, MemberUncheckedCreateWithoutAccessAccountInput>
   }
 
-  export type MemberCreateManyTargetAccountInputEnvelope = {
-    data: MemberCreateManyTargetAccountInput | MemberCreateManyTargetAccountInput[]
+  export type MemberCreateManyAccessAccountInputEnvelope = {
+    data: MemberCreateManyAccessAccountInput | MemberCreateManyAccessAccountInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type MemberCreateWithoutParentAccountInput = {
+    id?: string
+    accessFor: $Enums.MemberAccessFor
+    isPermanent?: boolean
+    hasFullAccess?: boolean
+    status?: $Enums.MemberStatus
+    member: AccountCreateNestedOneWithoutOwnedMembersInput
+    accessAccount: AccountCreateNestedOneWithoutTargetAccountMembersInput
+    parentApplication?: ApplicationCreateNestedOneWithoutParentMembersInput
+    parentConnection?: ConnectionCreateNestedOneWithoutParentMembersInput
+    role: AuthzRoleCreateNestedOneWithoutMembersInput
+  }
+
+  export type MemberUncheckedCreateWithoutParentAccountInput = {
+    id?: string
+    memberId: string
+    accessTo: string
+    accessFor: $Enums.MemberAccessFor
+    parentApplicationId?: string | null
+    parentConnectionId?: string | null
+    roleId: string
+    isPermanent?: boolean
+    hasFullAccess?: boolean
+    status?: $Enums.MemberStatus
+  }
+
+  export type MemberCreateOrConnectWithoutParentAccountInput = {
+    where: MemberWhereUniqueInput
+    create: XOR<MemberCreateWithoutParentAccountInput, MemberUncheckedCreateWithoutParentAccountInput>
+  }
+
+  export type MemberCreateManyParentAccountInputEnvelope = {
+    data: MemberCreateManyParentAccountInput | MemberCreateManyParentAccountInput[]
     skipDuplicates?: boolean
   }
 
@@ -55007,7 +55627,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -55047,7 +55668,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -55090,7 +55712,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -55129,7 +55752,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -55763,29 +56387,47 @@ export namespace Prisma {
     NOT?: MemberScalarWhereInput | MemberScalarWhereInput[]
     id?: StringFilter<"Member"> | string
     memberId?: StringFilter<"Member"> | string
-    targetType?: EnumMemberTargetTypeFilter<"Member"> | $Enums.MemberTargetType
-    targetAccountId?: StringNullableFilter<"Member"> | string | null
-    targetPortfolioId?: StringNullableFilter<"Member"> | string | null
-    status?: StringFilter<"Member"> | string
+    accessTo?: StringFilter<"Member"> | string
+    accessFor?: EnumMemberAccessForFilter<"Member"> | $Enums.MemberAccessFor
+    parentAccountId?: StringNullableFilter<"Member"> | string | null
+    parentApplicationId?: StringNullableFilter<"Member"> | string | null
+    parentConnectionId?: StringNullableFilter<"Member"> | string | null
+    roleId?: StringFilter<"Member"> | string
     isPermanent?: BoolFilter<"Member"> | boolean
     hasFullAccess?: BoolFilter<"Member"> | boolean
-    details?: JsonNullableFilter<"Member">
+    status?: EnumMemberStatusFilter<"Member"> | $Enums.MemberStatus
   }
 
-  export type MemberUpsertWithWhereUniqueWithoutTargetAccountInput = {
+  export type MemberUpsertWithWhereUniqueWithoutAccessAccountInput = {
     where: MemberWhereUniqueInput
-    update: XOR<MemberUpdateWithoutTargetAccountInput, MemberUncheckedUpdateWithoutTargetAccountInput>
-    create: XOR<MemberCreateWithoutTargetAccountInput, MemberUncheckedCreateWithoutTargetAccountInput>
+    update: XOR<MemberUpdateWithoutAccessAccountInput, MemberUncheckedUpdateWithoutAccessAccountInput>
+    create: XOR<MemberCreateWithoutAccessAccountInput, MemberUncheckedCreateWithoutAccessAccountInput>
   }
 
-  export type MemberUpdateWithWhereUniqueWithoutTargetAccountInput = {
+  export type MemberUpdateWithWhereUniqueWithoutAccessAccountInput = {
     where: MemberWhereUniqueInput
-    data: XOR<MemberUpdateWithoutTargetAccountInput, MemberUncheckedUpdateWithoutTargetAccountInput>
+    data: XOR<MemberUpdateWithoutAccessAccountInput, MemberUncheckedUpdateWithoutAccessAccountInput>
   }
 
-  export type MemberUpdateManyWithWhereWithoutTargetAccountInput = {
+  export type MemberUpdateManyWithWhereWithoutAccessAccountInput = {
     where: MemberScalarWhereInput
-    data: XOR<MemberUpdateManyMutationInput, MemberUncheckedUpdateManyWithoutTargetAccountInput>
+    data: XOR<MemberUpdateManyMutationInput, MemberUncheckedUpdateManyWithoutAccessAccountInput>
+  }
+
+  export type MemberUpsertWithWhereUniqueWithoutParentAccountInput = {
+    where: MemberWhereUniqueInput
+    update: XOR<MemberUpdateWithoutParentAccountInput, MemberUncheckedUpdateWithoutParentAccountInput>
+    create: XOR<MemberCreateWithoutParentAccountInput, MemberUncheckedCreateWithoutParentAccountInput>
+  }
+
+  export type MemberUpdateWithWhereUniqueWithoutParentAccountInput = {
+    where: MemberWhereUniqueInput
+    data: XOR<MemberUpdateWithoutParentAccountInput, MemberUncheckedUpdateWithoutParentAccountInput>
+  }
+
+  export type MemberUpdateManyWithWhereWithoutParentAccountInput = {
+    where: MemberScalarWhereInput
+    data: XOR<MemberUpdateManyMutationInput, MemberUncheckedUpdateManyWithoutParentAccountInput>
   }
 
   export type PermitUpsertWithWhereUniqueWithoutAccountInput = {
@@ -55916,7 +56558,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -55956,7 +56599,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -56116,7 +56760,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -56156,7 +56801,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -56210,7 +56856,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -56250,7 +56897,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -56288,7 +56936,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -56328,7 +56977,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -56382,7 +57032,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -56422,7 +57073,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -56460,7 +57112,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -56500,7 +57153,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -56554,7 +57208,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -56594,7 +57249,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -56633,7 +57289,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -56673,7 +57330,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -56716,7 +57374,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -56756,7 +57415,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -56810,7 +57470,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -56850,7 +57511,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -56899,7 +57561,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -56939,7 +57602,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -57031,7 +57695,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -57071,7 +57736,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -57148,7 +57814,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -57188,7 +57855,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -57227,7 +57895,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -57267,7 +57936,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -57309,7 +57979,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -57349,7 +58020,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -57404,7 +58076,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -57444,7 +58117,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -57492,7 +58166,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -57532,7 +58207,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -57570,7 +58246,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -57610,7 +58287,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -57664,7 +58342,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -57704,7 +58383,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -57742,7 +58422,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -57782,7 +58463,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -57836,7 +58518,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -57876,7 +58559,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -57914,7 +58598,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -57954,7 +58639,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -58008,7 +58694,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -58048,7 +58735,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -58086,7 +58774,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -58126,7 +58815,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -58180,7 +58870,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -58220,7 +58911,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -58259,7 +58951,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -58299,7 +58992,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -58353,7 +59047,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -58393,7 +59088,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -58422,6 +59118,7 @@ export namespace Prisma {
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantCreateNestedManyWithoutApplicationInput
@@ -58447,6 +59144,7 @@ export namespace Prisma {
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberUncheckedCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutApplicationInput
@@ -58526,6 +59224,7 @@ export namespace Prisma {
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     account: AccountCreateNestedOneWithoutConnectionsInput
+    parentMembers?: MemberCreateNestedManyWithoutParentConnectionInput
   }
 
   export type ConnectionUncheckedCreateWithoutApplicationInput = {
@@ -58534,6 +59233,7 @@ export namespace Prisma {
     status?: string
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
+    parentMembers?: MemberUncheckedCreateNestedManyWithoutParentConnectionInput
   }
 
   export type ConnectionCreateOrConnectWithoutApplicationInput = {
@@ -58596,6 +59296,42 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type MemberCreateWithoutParentApplicationInput = {
+    id?: string
+    accessFor: $Enums.MemberAccessFor
+    isPermanent?: boolean
+    hasFullAccess?: boolean
+    status?: $Enums.MemberStatus
+    member: AccountCreateNestedOneWithoutOwnedMembersInput
+    accessAccount: AccountCreateNestedOneWithoutTargetAccountMembersInput
+    parentAccount?: AccountCreateNestedOneWithoutParentAccountMembersInput
+    parentConnection?: ConnectionCreateNestedOneWithoutParentMembersInput
+    role: AuthzRoleCreateNestedOneWithoutMembersInput
+  }
+
+  export type MemberUncheckedCreateWithoutParentApplicationInput = {
+    id?: string
+    memberId: string
+    accessTo: string
+    accessFor: $Enums.MemberAccessFor
+    parentAccountId?: string | null
+    parentConnectionId?: string | null
+    roleId: string
+    isPermanent?: boolean
+    hasFullAccess?: boolean
+    status?: $Enums.MemberStatus
+  }
+
+  export type MemberCreateOrConnectWithoutParentApplicationInput = {
+    where: MemberWhereUniqueInput
+    create: XOR<MemberCreateWithoutParentApplicationInput, MemberUncheckedCreateWithoutParentApplicationInput>
+  }
+
+  export type MemberCreateManyParentApplicationInputEnvelope = {
+    data: MemberCreateManyParentApplicationInput | MemberCreateManyParentApplicationInput[]
+    skipDuplicates?: boolean
+  }
+
   export type AuthzPermissionCreateWithoutApplicationInput = {
     id?: string
     name: string
@@ -58632,6 +59368,7 @@ export namespace Prisma {
     grants?: AuthzAccountAccessGrantCreateNestedManyWithoutRoleInput
     assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
     appGrants?: AuthzAppAccessGrantCreateNestedManyWithoutRoleInput
+    members?: MemberCreateNestedManyWithoutRoleInput
   }
 
   export type AuthzRoleUncheckedCreateWithoutApplicationInput = {
@@ -58644,6 +59381,7 @@ export namespace Prisma {
     grants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutRoleInput
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
     appGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutRoleInput
+    members?: MemberUncheckedCreateNestedManyWithoutRoleInput
   }
 
   export type AuthzRoleCreateOrConnectWithoutApplicationInput = {
@@ -58838,6 +59576,22 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"ApplicationPolicy"> | Date | string
   }
 
+  export type MemberUpsertWithWhereUniqueWithoutParentApplicationInput = {
+    where: MemberWhereUniqueInput
+    update: XOR<MemberUpdateWithoutParentApplicationInput, MemberUncheckedUpdateWithoutParentApplicationInput>
+    create: XOR<MemberCreateWithoutParentApplicationInput, MemberUncheckedCreateWithoutParentApplicationInput>
+  }
+
+  export type MemberUpdateWithWhereUniqueWithoutParentApplicationInput = {
+    where: MemberWhereUniqueInput
+    data: XOR<MemberUpdateWithoutParentApplicationInput, MemberUncheckedUpdateWithoutParentApplicationInput>
+  }
+
+  export type MemberUpdateManyWithWhereWithoutParentApplicationInput = {
+    where: MemberScalarWhereInput
+    data: XOR<MemberUpdateManyMutationInput, MemberUncheckedUpdateManyWithoutParentApplicationInput>
+  }
+
   export type AuthzPermissionUpsertWithWhereUniqueWithoutApplicationInput = {
     where: AuthzPermissionWhereUniqueInput
     update: XOR<AuthzPermissionUpdateWithoutApplicationInput, AuthzPermissionUncheckedUpdateWithoutApplicationInput>
@@ -59008,38 +59762,6 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type MemberCreateWithoutTargetPortfolioInput = {
-    id?: string
-    targetType: $Enums.MemberTargetType
-    status: string
-    isPermanent?: boolean
-    hasFullAccess?: boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
-    member: AccountCreateNestedOneWithoutOwnedMembersInput
-    targetAccount?: AccountCreateNestedOneWithoutTargetAccountMembersInput
-  }
-
-  export type MemberUncheckedCreateWithoutTargetPortfolioInput = {
-    id?: string
-    memberId: string
-    targetType: $Enums.MemberTargetType
-    targetAccountId?: string | null
-    status: string
-    isPermanent?: boolean
-    hasFullAccess?: boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type MemberCreateOrConnectWithoutTargetPortfolioInput = {
-    where: MemberWhereUniqueInput
-    create: XOR<MemberCreateWithoutTargetPortfolioInput, MemberUncheckedCreateWithoutTargetPortfolioInput>
-  }
-
-  export type MemberCreateManyTargetPortfolioInputEnvelope = {
-    data: MemberCreateManyTargetPortfolioInput | MemberCreateManyTargetPortfolioInput[]
-    skipDuplicates?: boolean
-  }
-
   export type AuthzAccountAccessGrantCreateWithoutPortfolioInput = {
     id?: string
     status?: $Enums.AuthzGrantStatus
@@ -59169,22 +59891,6 @@ export namespace Prisma {
     data: XOR<PortfolioMemberUpdateManyMutationInput, PortfolioMemberUncheckedUpdateManyWithoutPortfolioInput>
   }
 
-  export type MemberUpsertWithWhereUniqueWithoutTargetPortfolioInput = {
-    where: MemberWhereUniqueInput
-    update: XOR<MemberUpdateWithoutTargetPortfolioInput, MemberUncheckedUpdateWithoutTargetPortfolioInput>
-    create: XOR<MemberCreateWithoutTargetPortfolioInput, MemberUncheckedCreateWithoutTargetPortfolioInput>
-  }
-
-  export type MemberUpdateWithWhereUniqueWithoutTargetPortfolioInput = {
-    where: MemberWhereUniqueInput
-    data: XOR<MemberUpdateWithoutTargetPortfolioInput, MemberUncheckedUpdateWithoutTargetPortfolioInput>
-  }
-
-  export type MemberUpdateManyWithWhereWithoutTargetPortfolioInput = {
-    where: MemberScalarWhereInput
-    data: XOR<MemberUpdateManyMutationInput, MemberUncheckedUpdateManyWithoutTargetPortfolioInput>
-  }
-
   export type AuthzAccountAccessGrantUpsertWithWhereUniqueWithoutPortfolioInput = {
     where: AuthzAccountAccessGrantWhereUniqueInput
     update: XOR<AuthzAccountAccessGrantUpdateWithoutPortfolioInput, AuthzAccountAccessGrantUncheckedUpdateWithoutPortfolioInput>
@@ -59239,7 +59945,6 @@ export namespace Prisma {
     description?: string | null
     dateCreated?: Date | string
     members?: PortfolioMemberCreateNestedManyWithoutPortfolioInput
-    targetPortfolioMembers?: MemberCreateNestedManyWithoutTargetPortfolioInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantCreateNestedManyWithoutPortfolioInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutPortfolioInput
     authzAppAccessGrants?: AuthzAppAccessGrantCreateNestedManyWithoutPortfolioInput
@@ -59251,7 +59956,6 @@ export namespace Prisma {
     description?: string | null
     dateCreated?: Date | string
     members?: PortfolioMemberUncheckedCreateNestedManyWithoutPortfolioInput
-    targetPortfolioMembers?: MemberUncheckedCreateNestedManyWithoutTargetPortfolioInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
     authzAppAccessGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
@@ -59307,7 +60011,6 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: PortfolioMemberUpdateManyWithoutPortfolioNestedInput
-    targetPortfolioMembers?: MemberUpdateManyWithoutTargetPortfolioNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUpdateManyWithoutPortfolioNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutPortfolioNestedInput
     authzAppAccessGrants?: AuthzAppAccessGrantUpdateManyWithoutPortfolioNestedInput
@@ -59319,7 +60022,6 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
     members?: PortfolioMemberUncheckedUpdateManyWithoutPortfolioNestedInput
-    targetPortfolioMembers?: MemberUncheckedUpdateManyWithoutTargetPortfolioNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
     authzAppAccessGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
@@ -59367,7 +60069,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -59407,7 +60110,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -59430,7 +60134,6 @@ export namespace Prisma {
     description?: string | null
     dateCreated?: Date | string
     assets?: AssetCreateNestedManyWithoutPortfolioInput
-    targetPortfolioMembers?: MemberCreateNestedManyWithoutTargetPortfolioInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantCreateNestedManyWithoutPortfolioInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutPortfolioInput
     authzAppAccessGrants?: AuthzAppAccessGrantCreateNestedManyWithoutPortfolioInput
@@ -59442,7 +60145,6 @@ export namespace Prisma {
     description?: string | null
     dateCreated?: Date | string
     assets?: AssetUncheckedCreateNestedManyWithoutPortfolioInput
-    targetPortfolioMembers?: MemberUncheckedCreateNestedManyWithoutTargetPortfolioInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
     authzAppAccessGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
@@ -59490,7 +60192,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -59530,7 +60233,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -59559,7 +60263,6 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
     assets?: AssetUpdateManyWithoutPortfolioNestedInput
-    targetPortfolioMembers?: MemberUpdateManyWithoutTargetPortfolioNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUpdateManyWithoutPortfolioNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutPortfolioNestedInput
     authzAppAccessGrants?: AuthzAppAccessGrantUpdateManyWithoutPortfolioNestedInput
@@ -59571,7 +60274,6 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
     assets?: AssetUncheckedUpdateManyWithoutPortfolioNestedInput
-    targetPortfolioMembers?: MemberUncheckedUpdateManyWithoutTargetPortfolioNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
     authzAppAccessGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
@@ -59603,7 +60305,8 @@ export namespace Prisma {
     authzAppOwnedGrants?: AuthzAppAccessGrantCreateNestedManyWithoutAccountInput
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -59643,7 +60346,8 @@ export namespace Prisma {
     authzAppOwnedGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutAccountInput
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -59687,6 +60391,7 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -59727,6 +60432,7 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -59743,33 +60449,200 @@ export namespace Prisma {
     create: XOR<AccountCreateWithoutTargetAccountMembersInput, AccountUncheckedCreateWithoutTargetAccountMembersInput>
   }
 
-  export type PortfolioCreateWithoutTargetPortfolioMembersInput = {
+  export type AccountCreateWithoutParentAccountMembersInput = {
+    id?: string
+    displayName?: string | null
+    accountType?: string
+    displayImage?: string | null
+    status?: string | null
+    isVerified?: boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
+    individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
+    connections?: ConnectionCreateNestedManyWithoutAccountInput
+    authMethods?: AuthnMethodCreateNestedManyWithoutAccountInput
+    sessions?: AuthnSessionCreateNestedManyWithoutAccountInput
+    contacts?: ContactCreateNestedManyWithoutAccountInput
+    neupIds?: NeupIdCreateNestedManyWithoutAccountInput
+    notifications?: NotificationCreateNestedManyWithoutAccountInput
+    portfolioMembers?: PortfolioMemberCreateNestedManyWithoutAccountInput
+    familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
+    verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
+    authzOwnedGrants?: AuthzAccountAccessGrantCreateNestedManyWithoutOwnerInput
+    authzTargetGrants?: AuthzAccountAccessGrantCreateNestedManyWithoutTargetInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
+    authzAppOwnedGrants?: AuthzAppAccessGrantCreateNestedManyWithoutAccountInput
+    authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
+    memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
+    ownedMembers?: MemberCreateNestedManyWithoutMemberInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    permits?: PermitCreateNestedManyWithoutAccountInput
+    permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
+    parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
+    childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
+    linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
+    linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
+    sentRequests?: RequestCreateNestedManyWithoutSenderInput
+    errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
+    verifications?: VerificationCreateNestedManyWithoutAccountInput
+  }
+
+  export type AccountUncheckedCreateWithoutParentAccountMembersInput = {
+    id?: string
+    displayName?: string | null
+    accountType?: string
+    displayImage?: string | null
+    status?: string | null
+    isVerified?: boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    linkedAccountId?: string | null
+    brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
+    individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
+    authMethods?: AuthnMethodUncheckedCreateNestedManyWithoutAccountInput
+    sessions?: AuthnSessionUncheckedCreateNestedManyWithoutAccountInput
+    contacts?: ContactUncheckedCreateNestedManyWithoutAccountInput
+    neupIds?: NeupIdUncheckedCreateNestedManyWithoutAccountInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutAccountInput
+    portfolioMembers?: PortfolioMemberUncheckedCreateNestedManyWithoutAccountInput
+    familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
+    verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
+    authzOwnedGrants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutOwnerInput
+    authzTargetGrants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutTargetInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
+    authzAppOwnedGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutAccountInput
+    authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
+    memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
+    ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
+    permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
+    childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
+    linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
+    sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
+    errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
+    verifications?: VerificationUncheckedCreateNestedManyWithoutAccountInput
+  }
+
+  export type AccountCreateOrConnectWithoutParentAccountMembersInput = {
+    where: AccountWhereUniqueInput
+    create: XOR<AccountCreateWithoutParentAccountMembersInput, AccountUncheckedCreateWithoutParentAccountMembersInput>
+  }
+
+  export type ApplicationCreateWithoutParentMembersInput = {
+    id: string
+    name: string
+    description?: string | null
+    icon?: string | null
+    website?: string | null
+    appSecret?: string | null
+    createdAt?: Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    isInternal?: boolean
+    responseFields?: ApplicationCreateresponseFieldsInput | string[]
+    tokenFields?: ApplicationCreatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: number
+    provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
+    connections?: ConnectionCreateNestedManyWithoutApplicationInput
+    bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
+    policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
+    authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
+    authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
+    authzAccountAccessGrants?: AuthzAccountAccessGrantCreateNestedManyWithoutApplicationInput
+    authzAppAccessGrants?: AuthzAppAccessGrantCreateNestedManyWithoutApplicationInput
+    identities?: IdentityCreateNestedManyWithoutApplicationInput
+  }
+
+  export type ApplicationUncheckedCreateWithoutParentMembersInput = {
+    id: string
+    name: string
+    description?: string | null
+    icon?: string | null
+    website?: string | null
+    appSecret?: string | null
+    createdAt?: Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    isInternal?: boolean
+    responseFields?: ApplicationCreateresponseFieldsInput | string[]
+    tokenFields?: ApplicationCreatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: number
+    providerId?: string | null
+    connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
+    bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
+    policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
+    authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
+    authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
+    authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutApplicationInput
+    authzAppAccessGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutApplicationInput
+    identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
+  }
+
+  export type ApplicationCreateOrConnectWithoutParentMembersInput = {
+    where: ApplicationWhereUniqueInput
+    create: XOR<ApplicationCreateWithoutParentMembersInput, ApplicationUncheckedCreateWithoutParentMembersInput>
+  }
+
+  export type ConnectionCreateWithoutParentMembersInput = {
+    id?: string
+    status?: string
+    connectedAt?: Date | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    account: AccountCreateNestedOneWithoutConnectionsInput
+    application: ApplicationCreateNestedOneWithoutConnectionsInput
+  }
+
+  export type ConnectionUncheckedCreateWithoutParentMembersInput = {
+    id?: string
+    accountId: string
+    appId: string
+    status?: string
+    connectedAt?: Date | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type ConnectionCreateOrConnectWithoutParentMembersInput = {
+    where: ConnectionWhereUniqueInput
+    create: XOR<ConnectionCreateWithoutParentMembersInput, ConnectionUncheckedCreateWithoutParentMembersInput>
+  }
+
+  export type AuthzRoleCreateWithoutMembersInput = {
     id?: string
     name: string
     description?: string | null
-    dateCreated?: Date | string
-    assets?: AssetCreateNestedManyWithoutPortfolioInput
-    members?: PortfolioMemberCreateNestedManyWithoutPortfolioInput
-    authzAccountAccessGrants?: AuthzAccountAccessGrantCreateNestedManyWithoutPortfolioInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutPortfolioInput
-    authzAppAccessGrants?: AuthzAppAccessGrantCreateNestedManyWithoutPortfolioInput
+    scope?: string | null
+    pushed?: boolean
+    application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
+    roleMaps?: AuthzRolePermissionCreateNestedManyWithoutRoleInput
+    grants?: AuthzAccountAccessGrantCreateNestedManyWithoutRoleInput
+    assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
+    appGrants?: AuthzAppAccessGrantCreateNestedManyWithoutRoleInput
   }
 
-  export type PortfolioUncheckedCreateWithoutTargetPortfolioMembersInput = {
+  export type AuthzRoleUncheckedCreateWithoutMembersInput = {
     id?: string
     name: string
     description?: string | null
-    dateCreated?: Date | string
-    assets?: AssetUncheckedCreateNestedManyWithoutPortfolioInput
-    members?: PortfolioMemberUncheckedCreateNestedManyWithoutPortfolioInput
-    authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
-    authzAppAccessGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
+    appId?: string | null
+    scope?: string | null
+    pushed?: boolean
+    roleMaps?: AuthzRolePermissionUncheckedCreateNestedManyWithoutRoleInput
+    grants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutRoleInput
+    assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
+    appGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutRoleInput
   }
 
-  export type PortfolioCreateOrConnectWithoutTargetPortfolioMembersInput = {
-    where: PortfolioWhereUniqueInput
-    create: XOR<PortfolioCreateWithoutTargetPortfolioMembersInput, PortfolioUncheckedCreateWithoutTargetPortfolioMembersInput>
+  export type AuthzRoleCreateOrConnectWithoutMembersInput = {
+    where: AuthzRoleWhereUniqueInput
+    create: XOR<AuthzRoleCreateWithoutMembersInput, AuthzRoleUncheckedCreateWithoutMembersInput>
   }
 
   export type AccountUpsertWithoutOwnedMembersInput = {
@@ -59809,7 +60682,8 @@ export namespace Prisma {
     authzAppOwnedGrants?: AuthzAppAccessGrantUpdateManyWithoutAccountNestedInput
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -59849,7 +60723,8 @@ export namespace Prisma {
     authzAppOwnedGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -59899,6 +60774,7 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -59939,6 +60815,7 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -59950,39 +60827,224 @@ export namespace Prisma {
     verifications?: VerificationUncheckedUpdateManyWithoutAccountNestedInput
   }
 
-  export type PortfolioUpsertWithoutTargetPortfolioMembersInput = {
-    update: XOR<PortfolioUpdateWithoutTargetPortfolioMembersInput, PortfolioUncheckedUpdateWithoutTargetPortfolioMembersInput>
-    create: XOR<PortfolioCreateWithoutTargetPortfolioMembersInput, PortfolioUncheckedCreateWithoutTargetPortfolioMembersInput>
-    where?: PortfolioWhereInput
+  export type AccountUpsertWithoutParentAccountMembersInput = {
+    update: XOR<AccountUpdateWithoutParentAccountMembersInput, AccountUncheckedUpdateWithoutParentAccountMembersInput>
+    create: XOR<AccountCreateWithoutParentAccountMembersInput, AccountUncheckedCreateWithoutParentAccountMembersInput>
+    where?: AccountWhereInput
   }
 
-  export type PortfolioUpdateToOneWithWhereWithoutTargetPortfolioMembersInput = {
-    where?: PortfolioWhereInput
-    data: XOR<PortfolioUpdateWithoutTargetPortfolioMembersInput, PortfolioUncheckedUpdateWithoutTargetPortfolioMembersInput>
+  export type AccountUpdateToOneWithWhereWithoutParentAccountMembersInput = {
+    where?: AccountWhereInput
+    data: XOR<AccountUpdateWithoutParentAccountMembersInput, AccountUncheckedUpdateWithoutParentAccountMembersInput>
   }
 
-  export type PortfolioUpdateWithoutTargetPortfolioMembersInput = {
+  export type AccountUpdateWithoutParentAccountMembersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountType?: StringFieldUpdateOperationsInput | string
+    displayImage?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
+    individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
+    connections?: ConnectionUpdateManyWithoutAccountNestedInput
+    authMethods?: AuthnMethodUpdateManyWithoutAccountNestedInput
+    sessions?: AuthnSessionUpdateManyWithoutAccountNestedInput
+    contacts?: ContactUpdateManyWithoutAccountNestedInput
+    neupIds?: NeupIdUpdateManyWithoutAccountNestedInput
+    notifications?: NotificationUpdateManyWithoutAccountNestedInput
+    portfolioMembers?: PortfolioMemberUpdateManyWithoutAccountNestedInput
+    familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
+    verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
+    authzOwnedGrants?: AuthzAccountAccessGrantUpdateManyWithoutOwnerNestedInput
+    authzTargetGrants?: AuthzAccountAccessGrantUpdateManyWithoutTargetNestedInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
+    authzAppOwnedGrants?: AuthzAppAccessGrantUpdateManyWithoutAccountNestedInput
+    authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
+    memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
+    ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    permits?: PermitUpdateManyWithoutAccountNestedInput
+    permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
+    parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
+    childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
+    linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
+    linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
+    sentRequests?: RequestUpdateManyWithoutSenderNestedInput
+    errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
+    verifications?: VerificationUpdateManyWithoutAccountNestedInput
+  }
+
+  export type AccountUncheckedUpdateWithoutParentAccountMembersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountType?: StringFieldUpdateOperationsInput | string
+    displayImage?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
+    individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
+    authMethods?: AuthnMethodUncheckedUpdateManyWithoutAccountNestedInput
+    sessions?: AuthnSessionUncheckedUpdateManyWithoutAccountNestedInput
+    contacts?: ContactUncheckedUpdateManyWithoutAccountNestedInput
+    neupIds?: NeupIdUncheckedUpdateManyWithoutAccountNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutAccountNestedInput
+    portfolioMembers?: PortfolioMemberUncheckedUpdateManyWithoutAccountNestedInput
+    familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
+    verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
+    authzOwnedGrants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutOwnerNestedInput
+    authzTargetGrants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutTargetNestedInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
+    authzAppOwnedGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
+    authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
+    memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
+    ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
+    permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
+    childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
+    linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
+    sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
+    errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
+    verifications?: VerificationUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
+  export type ApplicationUpsertWithoutParentMembersInput = {
+    update: XOR<ApplicationUpdateWithoutParentMembersInput, ApplicationUncheckedUpdateWithoutParentMembersInput>
+    create: XOR<ApplicationCreateWithoutParentMembersInput, ApplicationUncheckedCreateWithoutParentMembersInput>
+    where?: ApplicationWhereInput
+  }
+
+  export type ApplicationUpdateToOneWithWhereWithoutParentMembersInput = {
+    where?: ApplicationWhereInput
+    data: XOR<ApplicationUpdateWithoutParentMembersInput, ApplicationUncheckedUpdateWithoutParentMembersInput>
+  }
+
+  export type ApplicationUpdateWithoutParentMembersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
-    assets?: AssetUpdateManyWithoutPortfolioNestedInput
-    members?: PortfolioMemberUpdateManyWithoutPortfolioNestedInput
-    authzAccountAccessGrants?: AuthzAccountAccessGrantUpdateManyWithoutPortfolioNestedInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutPortfolioNestedInput
-    authzAppAccessGrants?: AuthzAppAccessGrantUpdateManyWithoutPortfolioNestedInput
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    appSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    responseFields?: ApplicationUpdateresponseFieldsInput | string[]
+    tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: IntFieldUpdateOperationsInput | number
+    provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
+    connections?: ConnectionUpdateManyWithoutApplicationNestedInput
+    bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
+    policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
+    authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
+    authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
+    authzAccountAccessGrants?: AuthzAccountAccessGrantUpdateManyWithoutApplicationNestedInput
+    authzAppAccessGrants?: AuthzAppAccessGrantUpdateManyWithoutApplicationNestedInput
+    identities?: IdentityUpdateManyWithoutApplicationNestedInput
   }
 
-  export type PortfolioUncheckedUpdateWithoutTargetPortfolioMembersInput = {
+  export type ApplicationUncheckedUpdateWithoutParentMembersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
-    assets?: AssetUncheckedUpdateManyWithoutPortfolioNestedInput
-    members?: PortfolioMemberUncheckedUpdateManyWithoutPortfolioNestedInput
-    authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
-    authzAppAccessGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    appSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    responseFields?: ApplicationUpdateresponseFieldsInput | string[]
+    tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: IntFieldUpdateOperationsInput | number
+    providerId?: NullableStringFieldUpdateOperationsInput | string | null
+    connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
+    bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
+    policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
+    authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
+    authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
+    authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutApplicationNestedInput
+    authzAppAccessGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutApplicationNestedInput
+    identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
+  }
+
+  export type ConnectionUpsertWithoutParentMembersInput = {
+    update: XOR<ConnectionUpdateWithoutParentMembersInput, ConnectionUncheckedUpdateWithoutParentMembersInput>
+    create: XOR<ConnectionCreateWithoutParentMembersInput, ConnectionUncheckedCreateWithoutParentMembersInput>
+    where?: ConnectionWhereInput
+  }
+
+  export type ConnectionUpdateToOneWithWhereWithoutParentMembersInput = {
+    where?: ConnectionWhereInput
+    data: XOR<ConnectionUpdateWithoutParentMembersInput, ConnectionUncheckedUpdateWithoutParentMembersInput>
+  }
+
+  export type ConnectionUpdateWithoutParentMembersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    account?: AccountUpdateOneRequiredWithoutConnectionsNestedInput
+    application?: ApplicationUpdateOneRequiredWithoutConnectionsNestedInput
+  }
+
+  export type ConnectionUncheckedUpdateWithoutParentMembersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    appId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type AuthzRoleUpsertWithoutMembersInput = {
+    update: XOR<AuthzRoleUpdateWithoutMembersInput, AuthzRoleUncheckedUpdateWithoutMembersInput>
+    create: XOR<AuthzRoleCreateWithoutMembersInput, AuthzRoleUncheckedCreateWithoutMembersInput>
+    where?: AuthzRoleWhereInput
+  }
+
+  export type AuthzRoleUpdateToOneWithWhereWithoutMembersInput = {
+    where?: AuthzRoleWhereInput
+    data: XOR<AuthzRoleUpdateWithoutMembersInput, AuthzRoleUncheckedUpdateWithoutMembersInput>
+  }
+
+  export type AuthzRoleUpdateWithoutMembersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    pushed?: BoolFieldUpdateOperationsInput | boolean
+    application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
+    roleMaps?: AuthzRolePermissionUpdateManyWithoutRoleNestedInput
+    grants?: AuthzAccountAccessGrantUpdateManyWithoutRoleNestedInput
+    assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
+    appGrants?: AuthzAppAccessGrantUpdateManyWithoutRoleNestedInput
+  }
+
+  export type AuthzRoleUncheckedUpdateWithoutMembersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    appId?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    pushed?: BoolFieldUpdateOperationsInput | boolean
+    roleMaps?: AuthzRolePermissionUncheckedUpdateManyWithoutRoleNestedInput
+    grants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
+    assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
+    appGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
   }
 
   export type AccountCreateWithoutChildOwnershipsInput = {
@@ -60012,7 +61074,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -60052,7 +61115,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -60095,7 +61159,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
@@ -60135,7 +61200,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
@@ -60189,7 +61255,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -60229,7 +61296,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -60278,7 +61346,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
@@ -60318,7 +61387,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
@@ -60355,7 +61425,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -60395,7 +61466,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -60430,6 +61502,7 @@ export namespace Prisma {
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantCreateNestedManyWithoutApplicationInput
@@ -60455,6 +61528,7 @@ export namespace Prisma {
     providerId?: string | null
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberUncheckedCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutApplicationInput
@@ -60465,6 +61539,42 @@ export namespace Prisma {
   export type ApplicationCreateOrConnectWithoutConnectionsInput = {
     where: ApplicationWhereUniqueInput
     create: XOR<ApplicationCreateWithoutConnectionsInput, ApplicationUncheckedCreateWithoutConnectionsInput>
+  }
+
+  export type MemberCreateWithoutParentConnectionInput = {
+    id?: string
+    accessFor: $Enums.MemberAccessFor
+    isPermanent?: boolean
+    hasFullAccess?: boolean
+    status?: $Enums.MemberStatus
+    member: AccountCreateNestedOneWithoutOwnedMembersInput
+    accessAccount: AccountCreateNestedOneWithoutTargetAccountMembersInput
+    parentAccount?: AccountCreateNestedOneWithoutParentAccountMembersInput
+    parentApplication?: ApplicationCreateNestedOneWithoutParentMembersInput
+    role: AuthzRoleCreateNestedOneWithoutMembersInput
+  }
+
+  export type MemberUncheckedCreateWithoutParentConnectionInput = {
+    id?: string
+    memberId: string
+    accessTo: string
+    accessFor: $Enums.MemberAccessFor
+    parentAccountId?: string | null
+    parentApplicationId?: string | null
+    roleId: string
+    isPermanent?: boolean
+    hasFullAccess?: boolean
+    status?: $Enums.MemberStatus
+  }
+
+  export type MemberCreateOrConnectWithoutParentConnectionInput = {
+    where: MemberWhereUniqueInput
+    create: XOR<MemberCreateWithoutParentConnectionInput, MemberUncheckedCreateWithoutParentConnectionInput>
+  }
+
+  export type MemberCreateManyParentConnectionInputEnvelope = {
+    data: MemberCreateManyParentConnectionInput | MemberCreateManyParentConnectionInput[]
+    skipDuplicates?: boolean
   }
 
   export type AccountUpsertWithoutConnectionsInput = {
@@ -60504,7 +61614,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -60544,7 +61655,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -60585,6 +61697,7 @@ export namespace Prisma {
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUpdateManyWithoutApplicationNestedInput
@@ -60610,11 +61723,28 @@ export namespace Prisma {
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUncheckedUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutApplicationNestedInput
     authzAppAccessGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
+  }
+
+  export type MemberUpsertWithWhereUniqueWithoutParentConnectionInput = {
+    where: MemberWhereUniqueInput
+    update: XOR<MemberUpdateWithoutParentConnectionInput, MemberUncheckedUpdateWithoutParentConnectionInput>
+    create: XOR<MemberCreateWithoutParentConnectionInput, MemberUncheckedCreateWithoutParentConnectionInput>
+  }
+
+  export type MemberUpdateWithWhereUniqueWithoutParentConnectionInput = {
+    where: MemberWhereUniqueInput
+    data: XOR<MemberUpdateWithoutParentConnectionInput, MemberUncheckedUpdateWithoutParentConnectionInput>
+  }
+
+  export type MemberUpdateManyWithWhereWithoutParentConnectionInput = {
+    where: MemberScalarWhereInput
+    data: XOR<MemberUpdateManyMutationInput, MemberUncheckedUpdateManyWithoutParentConnectionInput>
   }
 
   export type ApplicationCreateWithoutBridgeInput = {
@@ -60635,6 +61765,7 @@ export namespace Prisma {
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantCreateNestedManyWithoutApplicationInput
@@ -60660,6 +61791,7 @@ export namespace Prisma {
     providerId?: string | null
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberUncheckedCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutApplicationInput
@@ -60701,6 +61833,7 @@ export namespace Prisma {
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUpdateManyWithoutApplicationNestedInput
@@ -60726,6 +61859,7 @@ export namespace Prisma {
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUncheckedUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutApplicationNestedInput
@@ -60751,6 +61885,7 @@ export namespace Prisma {
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantCreateNestedManyWithoutApplicationInput
@@ -60776,6 +61911,7 @@ export namespace Prisma {
     providerId?: string | null
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberUncheckedCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutApplicationInput
@@ -60817,6 +61953,7 @@ export namespace Prisma {
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUpdateManyWithoutApplicationNestedInput
@@ -60842,6 +61979,7 @@ export namespace Prisma {
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUncheckedUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutApplicationNestedInput
@@ -60868,6 +62006,7 @@ export namespace Prisma {
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberCreateNestedManyWithoutParentApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantCreateNestedManyWithoutApplicationInput
     authzAppAccessGrants?: AuthzAppAccessGrantCreateNestedManyWithoutApplicationInput
@@ -60893,6 +62032,7 @@ export namespace Prisma {
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberUncheckedCreateNestedManyWithoutParentApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutApplicationInput
     authzAppAccessGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutApplicationInput
@@ -60962,6 +62102,7 @@ export namespace Prisma {
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUpdateManyWithoutParentApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUpdateManyWithoutApplicationNestedInput
     authzAppAccessGrants?: AuthzAppAccessGrantUpdateManyWithoutApplicationNestedInput
@@ -60987,6 +62128,7 @@ export namespace Prisma {
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUncheckedUpdateManyWithoutParentApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutApplicationNestedInput
     authzAppAccessGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutApplicationNestedInput
@@ -61041,6 +62183,7 @@ export namespace Prisma {
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantCreateNestedManyWithoutApplicationInput
     authzAppAccessGrants?: AuthzAppAccessGrantCreateNestedManyWithoutApplicationInput
@@ -61066,6 +62209,7 @@ export namespace Prisma {
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberUncheckedCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutApplicationInput
     authzAppAccessGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutApplicationInput
@@ -61191,6 +62335,42 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type MemberCreateWithoutRoleInput = {
+    id?: string
+    accessFor: $Enums.MemberAccessFor
+    isPermanent?: boolean
+    hasFullAccess?: boolean
+    status?: $Enums.MemberStatus
+    member: AccountCreateNestedOneWithoutOwnedMembersInput
+    accessAccount: AccountCreateNestedOneWithoutTargetAccountMembersInput
+    parentAccount?: AccountCreateNestedOneWithoutParentAccountMembersInput
+    parentApplication?: ApplicationCreateNestedOneWithoutParentMembersInput
+    parentConnection?: ConnectionCreateNestedOneWithoutParentMembersInput
+  }
+
+  export type MemberUncheckedCreateWithoutRoleInput = {
+    id?: string
+    memberId: string
+    accessTo: string
+    accessFor: $Enums.MemberAccessFor
+    parentAccountId?: string | null
+    parentApplicationId?: string | null
+    parentConnectionId?: string | null
+    isPermanent?: boolean
+    hasFullAccess?: boolean
+    status?: $Enums.MemberStatus
+  }
+
+  export type MemberCreateOrConnectWithoutRoleInput = {
+    where: MemberWhereUniqueInput
+    create: XOR<MemberCreateWithoutRoleInput, MemberUncheckedCreateWithoutRoleInput>
+  }
+
+  export type MemberCreateManyRoleInputEnvelope = {
+    data: MemberCreateManyRoleInput | MemberCreateManyRoleInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ApplicationUpsertWithoutAuthzRolesInput = {
     update: XOR<ApplicationUpdateWithoutAuthzRolesInput, ApplicationUncheckedUpdateWithoutAuthzRolesInput>
     create: XOR<ApplicationCreateWithoutAuthzRolesInput, ApplicationUncheckedCreateWithoutAuthzRolesInput>
@@ -61221,6 +62401,7 @@ export namespace Prisma {
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUpdateManyWithoutApplicationNestedInput
     authzAppAccessGrants?: AuthzAppAccessGrantUpdateManyWithoutApplicationNestedInput
@@ -61246,6 +62427,7 @@ export namespace Prisma {
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUncheckedUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutApplicationNestedInput
     authzAppAccessGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutApplicationNestedInput
@@ -61316,6 +62498,22 @@ export namespace Prisma {
     data: XOR<AuthzAppAccessGrantUpdateManyMutationInput, AuthzAppAccessGrantUncheckedUpdateManyWithoutRoleInput>
   }
 
+  export type MemberUpsertWithWhereUniqueWithoutRoleInput = {
+    where: MemberWhereUniqueInput
+    update: XOR<MemberUpdateWithoutRoleInput, MemberUncheckedUpdateWithoutRoleInput>
+    create: XOR<MemberCreateWithoutRoleInput, MemberUncheckedCreateWithoutRoleInput>
+  }
+
+  export type MemberUpdateWithWhereUniqueWithoutRoleInput = {
+    where: MemberWhereUniqueInput
+    data: XOR<MemberUpdateWithoutRoleInput, MemberUncheckedUpdateWithoutRoleInput>
+  }
+
+  export type MemberUpdateManyWithWhereWithoutRoleInput = {
+    where: MemberScalarWhereInput
+    data: XOR<MemberUpdateManyMutationInput, MemberUncheckedUpdateManyWithoutRoleInput>
+  }
+
   export type AuthzRoleCreateWithoutRoleMapsInput = {
     id?: string
     name: string
@@ -61326,6 +62524,7 @@ export namespace Prisma {
     grants?: AuthzAccountAccessGrantCreateNestedManyWithoutRoleInput
     assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
     appGrants?: AuthzAppAccessGrantCreateNestedManyWithoutRoleInput
+    members?: MemberCreateNestedManyWithoutRoleInput
   }
 
   export type AuthzRoleUncheckedCreateWithoutRoleMapsInput = {
@@ -61338,6 +62537,7 @@ export namespace Prisma {
     grants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutRoleInput
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
     appGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutRoleInput
+    members?: MemberUncheckedCreateNestedManyWithoutRoleInput
   }
 
   export type AuthzRoleCreateOrConnectWithoutRoleMapsInput = {
@@ -61387,6 +62587,7 @@ export namespace Prisma {
     grants?: AuthzAccountAccessGrantUpdateManyWithoutRoleNestedInput
     assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
     appGrants?: AuthzAppAccessGrantUpdateManyWithoutRoleNestedInput
+    members?: MemberUpdateManyWithoutRoleNestedInput
   }
 
   export type AuthzRoleUncheckedUpdateWithoutRoleMapsInput = {
@@ -61399,6 +62600,7 @@ export namespace Prisma {
     grants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
     appGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
+    members?: MemberUncheckedUpdateManyWithoutRoleNestedInput
   }
 
   export type AuthzPermissionUpsertWithoutRoleMapsInput = {
@@ -61454,7 +62656,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -61494,7 +62697,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -61537,7 +62741,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -61577,7 +62782,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -61604,6 +62810,7 @@ export namespace Prisma {
     roleMaps?: AuthzRolePermissionCreateNestedManyWithoutRoleInput
     assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
     appGrants?: AuthzAppAccessGrantCreateNestedManyWithoutRoleInput
+    members?: MemberCreateNestedManyWithoutRoleInput
   }
 
   export type AuthzRoleUncheckedCreateWithoutGrantsInput = {
@@ -61616,6 +62823,7 @@ export namespace Prisma {
     roleMaps?: AuthzRolePermissionUncheckedCreateNestedManyWithoutRoleInput
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
     appGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutRoleInput
+    members?: MemberUncheckedCreateNestedManyWithoutRoleInput
   }
 
   export type AuthzRoleCreateOrConnectWithoutGrantsInput = {
@@ -61642,6 +62850,7 @@ export namespace Prisma {
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     authzAppAccessGrants?: AuthzAppAccessGrantCreateNestedManyWithoutApplicationInput
@@ -61667,6 +62876,7 @@ export namespace Prisma {
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberUncheckedCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     authzAppAccessGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutApplicationInput
@@ -61685,7 +62895,6 @@ export namespace Prisma {
     dateCreated?: Date | string
     assets?: AssetCreateNestedManyWithoutPortfolioInput
     members?: PortfolioMemberCreateNestedManyWithoutPortfolioInput
-    targetPortfolioMembers?: MemberCreateNestedManyWithoutTargetPortfolioInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutPortfolioInput
     authzAppAccessGrants?: AuthzAppAccessGrantCreateNestedManyWithoutPortfolioInput
   }
@@ -61697,7 +62906,6 @@ export namespace Prisma {
     dateCreated?: Date | string
     assets?: AssetUncheckedCreateNestedManyWithoutPortfolioInput
     members?: PortfolioMemberUncheckedCreateNestedManyWithoutPortfolioInput
-    targetPortfolioMembers?: MemberUncheckedCreateNestedManyWithoutTargetPortfolioInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
     authzAppAccessGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
   }
@@ -61744,7 +62952,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -61784,7 +62993,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -61833,7 +63043,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -61873,7 +63084,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -61906,6 +63118,7 @@ export namespace Prisma {
     roleMaps?: AuthzRolePermissionUpdateManyWithoutRoleNestedInput
     assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
     appGrants?: AuthzAppAccessGrantUpdateManyWithoutRoleNestedInput
+    members?: MemberUpdateManyWithoutRoleNestedInput
   }
 
   export type AuthzRoleUncheckedUpdateWithoutGrantsInput = {
@@ -61918,6 +63131,7 @@ export namespace Prisma {
     roleMaps?: AuthzRolePermissionUncheckedUpdateManyWithoutRoleNestedInput
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
     appGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
+    members?: MemberUncheckedUpdateManyWithoutRoleNestedInput
   }
 
   export type ApplicationUpsertWithoutAuthzAccountAccessGrantsInput = {
@@ -61950,6 +63164,7 @@ export namespace Prisma {
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     authzAppAccessGrants?: AuthzAppAccessGrantUpdateManyWithoutApplicationNestedInput
@@ -61975,6 +63190,7 @@ export namespace Prisma {
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUncheckedUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     authzAppAccessGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutApplicationNestedInput
@@ -61999,7 +63215,6 @@ export namespace Prisma {
     dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
     assets?: AssetUpdateManyWithoutPortfolioNestedInput
     members?: PortfolioMemberUpdateManyWithoutPortfolioNestedInput
-    targetPortfolioMembers?: MemberUpdateManyWithoutTargetPortfolioNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutPortfolioNestedInput
     authzAppAccessGrants?: AuthzAppAccessGrantUpdateManyWithoutPortfolioNestedInput
   }
@@ -62011,7 +63226,6 @@ export namespace Prisma {
     dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
     assets?: AssetUncheckedUpdateManyWithoutPortfolioNestedInput
     members?: PortfolioMemberUncheckedUpdateManyWithoutPortfolioNestedInput
-    targetPortfolioMembers?: MemberUncheckedUpdateManyWithoutTargetPortfolioNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
     authzAppAccessGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
   }
@@ -62063,7 +63277,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -62103,7 +63318,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -62130,6 +63346,7 @@ export namespace Prisma {
     roleMaps?: AuthzRolePermissionCreateNestedManyWithoutRoleInput
     grants?: AuthzAccountAccessGrantCreateNestedManyWithoutRoleInput
     appGrants?: AuthzAppAccessGrantCreateNestedManyWithoutRoleInput
+    members?: MemberCreateNestedManyWithoutRoleInput
   }
 
   export type AuthzRoleUncheckedCreateWithoutAssetsGrantsInput = {
@@ -62142,6 +63359,7 @@ export namespace Prisma {
     roleMaps?: AuthzRolePermissionUncheckedCreateNestedManyWithoutRoleInput
     grants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutRoleInput
     appGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutRoleInput
+    members?: MemberUncheckedCreateNestedManyWithoutRoleInput
   }
 
   export type AuthzRoleCreateOrConnectWithoutAssetsGrantsInput = {
@@ -62156,7 +63374,6 @@ export namespace Prisma {
     dateCreated?: Date | string
     assets?: AssetCreateNestedManyWithoutPortfolioInput
     members?: PortfolioMemberCreateNestedManyWithoutPortfolioInput
-    targetPortfolioMembers?: MemberCreateNestedManyWithoutTargetPortfolioInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantCreateNestedManyWithoutPortfolioInput
     authzAppAccessGrants?: AuthzAppAccessGrantCreateNestedManyWithoutPortfolioInput
   }
@@ -62168,7 +63385,6 @@ export namespace Prisma {
     dateCreated?: Date | string
     assets?: AssetUncheckedCreateNestedManyWithoutPortfolioInput
     members?: PortfolioMemberUncheckedCreateNestedManyWithoutPortfolioInput
-    targetPortfolioMembers?: MemberUncheckedCreateNestedManyWithoutTargetPortfolioInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
     authzAppAccessGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
   }
@@ -62242,7 +63458,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -62282,7 +63499,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -62315,6 +63533,7 @@ export namespace Prisma {
     roleMaps?: AuthzRolePermissionUpdateManyWithoutRoleNestedInput
     grants?: AuthzAccountAccessGrantUpdateManyWithoutRoleNestedInput
     appGrants?: AuthzAppAccessGrantUpdateManyWithoutRoleNestedInput
+    members?: MemberUpdateManyWithoutRoleNestedInput
   }
 
   export type AuthzRoleUncheckedUpdateWithoutAssetsGrantsInput = {
@@ -62327,6 +63546,7 @@ export namespace Prisma {
     roleMaps?: AuthzRolePermissionUncheckedUpdateManyWithoutRoleNestedInput
     grants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
     appGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
+    members?: MemberUncheckedUpdateManyWithoutRoleNestedInput
   }
 
   export type PortfolioUpsertWithoutAuthzAssetsAccessGrantsInput = {
@@ -62347,7 +63567,6 @@ export namespace Prisma {
     dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
     assets?: AssetUpdateManyWithoutPortfolioNestedInput
     members?: PortfolioMemberUpdateManyWithoutPortfolioNestedInput
-    targetPortfolioMembers?: MemberUpdateManyWithoutTargetPortfolioNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUpdateManyWithoutPortfolioNestedInput
     authzAppAccessGrants?: AuthzAppAccessGrantUpdateManyWithoutPortfolioNestedInput
   }
@@ -62359,7 +63578,6 @@ export namespace Prisma {
     dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
     assets?: AssetUncheckedUpdateManyWithoutPortfolioNestedInput
     members?: PortfolioMemberUncheckedUpdateManyWithoutPortfolioNestedInput
-    targetPortfolioMembers?: MemberUncheckedUpdateManyWithoutTargetPortfolioNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
     authzAppAccessGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
   }
@@ -62391,7 +63609,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
@@ -62431,7 +63650,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
@@ -62474,7 +63694,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
@@ -62514,7 +63735,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
@@ -62568,7 +63790,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
@@ -62608,7 +63831,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
@@ -62657,7 +63881,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
@@ -62697,7 +63922,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
@@ -62734,7 +63960,8 @@ export namespace Prisma {
     authzAppOwnedGrants?: AuthzAppAccessGrantCreateNestedManyWithoutAccountInput
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -62774,7 +64001,8 @@ export namespace Prisma {
     authzAppOwnedGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutAccountInput
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -62828,7 +64056,8 @@ export namespace Prisma {
     authzAppOwnedGrants?: AuthzAppAccessGrantUpdateManyWithoutAccountNestedInput
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -62868,7 +64097,8 @@ export namespace Prisma {
     authzAppOwnedGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -62899,6 +64129,7 @@ export namespace Prisma {
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantCreateNestedManyWithoutApplicationInput
@@ -62924,6 +64155,7 @@ export namespace Prisma {
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberUncheckedCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutApplicationInput
@@ -62961,7 +64193,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -63001,7 +64234,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutTargetAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -63044,7 +64278,8 @@ export namespace Prisma {
     authzAppOwnedGrants?: AuthzAppAccessGrantCreateNestedManyWithoutAccountInput
     memberAccesses?: MemberAccessCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
     permits?: PermitCreateNestedManyWithoutAccountInput
     permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
@@ -63084,7 +64319,8 @@ export namespace Prisma {
     authzAppOwnedGrants?: AuthzAppAccessGrantUncheckedCreateNestedManyWithoutAccountInput
     memberAccesses?: MemberAccessUncheckedCreateNestedManyWithoutMemberInput
     ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
-    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutTargetAccountInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
     permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
@@ -63111,6 +64347,7 @@ export namespace Prisma {
     roleMaps?: AuthzRolePermissionCreateNestedManyWithoutRoleInput
     grants?: AuthzAccountAccessGrantCreateNestedManyWithoutRoleInput
     assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
+    members?: MemberCreateNestedManyWithoutRoleInput
   }
 
   export type AuthzRoleUncheckedCreateWithoutAppGrantsInput = {
@@ -63123,6 +64360,7 @@ export namespace Prisma {
     roleMaps?: AuthzRolePermissionUncheckedCreateNestedManyWithoutRoleInput
     grants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutRoleInput
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
+    members?: MemberUncheckedCreateNestedManyWithoutRoleInput
   }
 
   export type AuthzRoleCreateOrConnectWithoutAppGrantsInput = {
@@ -63137,7 +64375,6 @@ export namespace Prisma {
     dateCreated?: Date | string
     assets?: AssetCreateNestedManyWithoutPortfolioInput
     members?: PortfolioMemberCreateNestedManyWithoutPortfolioInput
-    targetPortfolioMembers?: MemberCreateNestedManyWithoutTargetPortfolioInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantCreateNestedManyWithoutPortfolioInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutPortfolioInput
   }
@@ -63149,7 +64386,6 @@ export namespace Prisma {
     dateCreated?: Date | string
     assets?: AssetUncheckedCreateNestedManyWithoutPortfolioInput
     members?: PortfolioMemberUncheckedCreateNestedManyWithoutPortfolioInput
-    targetPortfolioMembers?: MemberUncheckedCreateNestedManyWithoutTargetPortfolioInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
   }
@@ -63189,6 +64425,7 @@ export namespace Prisma {
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUpdateManyWithoutApplicationNestedInput
@@ -63214,6 +64451,7 @@ export namespace Prisma {
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUncheckedUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutApplicationNestedInput
@@ -63257,7 +64495,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -63297,7 +64536,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -63346,7 +64586,8 @@ export namespace Prisma {
     authzAppOwnedGrants?: AuthzAppAccessGrantUpdateManyWithoutAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -63386,7 +64627,8 @@ export namespace Prisma {
     authzAppOwnedGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -63419,6 +64661,7 @@ export namespace Prisma {
     roleMaps?: AuthzRolePermissionUpdateManyWithoutRoleNestedInput
     grants?: AuthzAccountAccessGrantUpdateManyWithoutRoleNestedInput
     assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
+    members?: MemberUpdateManyWithoutRoleNestedInput
   }
 
   export type AuthzRoleUncheckedUpdateWithoutAppGrantsInput = {
@@ -63431,6 +64674,7 @@ export namespace Prisma {
     roleMaps?: AuthzRolePermissionUncheckedUpdateManyWithoutRoleNestedInput
     grants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
+    members?: MemberUncheckedUpdateManyWithoutRoleNestedInput
   }
 
   export type PortfolioUpsertWithoutAuthzAppAccessGrantsInput = {
@@ -63451,7 +64695,6 @@ export namespace Prisma {
     dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
     assets?: AssetUpdateManyWithoutPortfolioNestedInput
     members?: PortfolioMemberUpdateManyWithoutPortfolioNestedInput
-    targetPortfolioMembers?: MemberUpdateManyWithoutTargetPortfolioNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUpdateManyWithoutPortfolioNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutPortfolioNestedInput
   }
@@ -63463,7 +64706,6 @@ export namespace Prisma {
     dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
     assets?: AssetUncheckedUpdateManyWithoutPortfolioNestedInput
     members?: PortfolioMemberUncheckedUpdateManyWithoutPortfolioNestedInput
-    targetPortfolioMembers?: MemberUncheckedUpdateManyWithoutTargetPortfolioNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
   }
@@ -63487,6 +64729,7 @@ export namespace Prisma {
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantCreateNestedManyWithoutApplicationInput
@@ -63512,6 +64755,7 @@ export namespace Prisma {
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberUncheckedCreateNestedManyWithoutParentApplicationInput
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedCreateNestedManyWithoutApplicationInput
@@ -63553,6 +64797,7 @@ export namespace Prisma {
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUpdateManyWithoutApplicationNestedInput
@@ -63578,6 +64823,7 @@ export namespace Prisma {
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUncheckedUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutApplicationNestedInput
@@ -63723,24 +64969,41 @@ export namespace Prisma {
 
   export type MemberCreateManyMemberInput = {
     id?: string
-    targetType: $Enums.MemberTargetType
-    targetAccountId?: string | null
-    targetPortfolioId?: string | null
-    status: string
+    accessTo: string
+    accessFor: $Enums.MemberAccessFor
+    parentAccountId?: string | null
+    parentApplicationId?: string | null
+    parentConnectionId?: string | null
+    roleId: string
     isPermanent?: boolean
     hasFullAccess?: boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
+    status?: $Enums.MemberStatus
   }
 
-  export type MemberCreateManyTargetAccountInput = {
+  export type MemberCreateManyAccessAccountInput = {
     id?: string
     memberId: string
-    targetType: $Enums.MemberTargetType
-    targetPortfolioId?: string | null
-    status: string
+    accessFor: $Enums.MemberAccessFor
+    parentAccountId?: string | null
+    parentApplicationId?: string | null
+    parentConnectionId?: string | null
+    roleId: string
     isPermanent?: boolean
     hasFullAccess?: boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
+    status?: $Enums.MemberStatus
+  }
+
+  export type MemberCreateManyParentAccountInput = {
+    id?: string
+    memberId: string
+    accessTo: string
+    accessFor: $Enums.MemberAccessFor
+    parentApplicationId?: string | null
+    parentConnectionId?: string | null
+    roleId: string
+    isPermanent?: boolean
+    hasFullAccess?: boolean
+    status?: $Enums.MemberStatus
   }
 
   export type PermitCreateManyAccountInput = {
@@ -63838,6 +65101,7 @@ export namespace Prisma {
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationUpdateOneRequiredWithoutConnectionsNestedInput
+    parentMembers?: MemberUpdateManyWithoutParentConnectionNestedInput
   }
 
   export type ConnectionUncheckedUpdateWithoutAccountInput = {
@@ -63846,6 +65110,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
+    parentMembers?: MemberUncheckedUpdateManyWithoutParentConnectionNestedInput
   }
 
   export type ConnectionUncheckedUpdateManyWithoutAccountInput = {
@@ -64245,68 +65510,119 @@ export namespace Prisma {
 
   export type MemberUpdateWithoutMemberInput = {
     id?: StringFieldUpdateOperationsInput | string
-    targetType?: EnumMemberTargetTypeFieldUpdateOperationsInput | $Enums.MemberTargetType
-    status?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
-    targetAccount?: AccountUpdateOneWithoutTargetAccountMembersNestedInput
-    targetPortfolio?: PortfolioUpdateOneWithoutTargetPortfolioMembersNestedInput
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
+    accessAccount?: AccountUpdateOneRequiredWithoutTargetAccountMembersNestedInput
+    parentAccount?: AccountUpdateOneWithoutParentAccountMembersNestedInput
+    parentApplication?: ApplicationUpdateOneWithoutParentMembersNestedInput
+    parentConnection?: ConnectionUpdateOneWithoutParentMembersNestedInput
+    role?: AuthzRoleUpdateOneRequiredWithoutMembersNestedInput
   }
 
   export type MemberUncheckedUpdateWithoutMemberInput = {
     id?: StringFieldUpdateOperationsInput | string
-    targetType?: EnumMemberTargetTypeFieldUpdateOperationsInput | $Enums.MemberTargetType
-    targetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    targetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    accessTo?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: StringFieldUpdateOperationsInput | string
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
   }
 
   export type MemberUncheckedUpdateManyWithoutMemberInput = {
     id?: StringFieldUpdateOperationsInput | string
-    targetType?: EnumMemberTargetTypeFieldUpdateOperationsInput | $Enums.MemberTargetType
-    targetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    targetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    accessTo?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: StringFieldUpdateOperationsInput | string
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
   }
 
-  export type MemberUpdateWithoutTargetAccountInput = {
+  export type MemberUpdateWithoutAccessAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
-    targetType?: EnumMemberTargetTypeFieldUpdateOperationsInput | $Enums.MemberTargetType
-    status?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
     member?: AccountUpdateOneRequiredWithoutOwnedMembersNestedInput
-    targetPortfolio?: PortfolioUpdateOneWithoutTargetPortfolioMembersNestedInput
+    parentAccount?: AccountUpdateOneWithoutParentAccountMembersNestedInput
+    parentApplication?: ApplicationUpdateOneWithoutParentMembersNestedInput
+    parentConnection?: ConnectionUpdateOneWithoutParentMembersNestedInput
+    role?: AuthzRoleUpdateOneRequiredWithoutMembersNestedInput
   }
 
-  export type MemberUncheckedUpdateWithoutTargetAccountInput = {
+  export type MemberUncheckedUpdateWithoutAccessAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
     memberId?: StringFieldUpdateOperationsInput | string
-    targetType?: EnumMemberTargetTypeFieldUpdateOperationsInput | $Enums.MemberTargetType
-    targetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: StringFieldUpdateOperationsInput | string
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
   }
 
-  export type MemberUncheckedUpdateManyWithoutTargetAccountInput = {
+  export type MemberUncheckedUpdateManyWithoutAccessAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
     memberId?: StringFieldUpdateOperationsInput | string
-    targetType?: EnumMemberTargetTypeFieldUpdateOperationsInput | $Enums.MemberTargetType
-    targetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: StringFieldUpdateOperationsInput | string
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
+  }
+
+  export type MemberUpdateWithoutParentAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
+    isPermanent?: BoolFieldUpdateOperationsInput | boolean
+    hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
+    member?: AccountUpdateOneRequiredWithoutOwnedMembersNestedInput
+    accessAccount?: AccountUpdateOneRequiredWithoutTargetAccountMembersNestedInput
+    parentApplication?: ApplicationUpdateOneWithoutParentMembersNestedInput
+    parentConnection?: ConnectionUpdateOneWithoutParentMembersNestedInput
+    role?: AuthzRoleUpdateOneRequiredWithoutMembersNestedInput
+  }
+
+  export type MemberUncheckedUpdateWithoutParentAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    memberId?: StringFieldUpdateOperationsInput | string
+    accessTo?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
+    parentApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: StringFieldUpdateOperationsInput | string
+    isPermanent?: BoolFieldUpdateOperationsInput | boolean
+    hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
+  }
+
+  export type MemberUncheckedUpdateManyWithoutParentAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    memberId?: StringFieldUpdateOperationsInput | string
+    accessTo?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
+    parentApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: StringFieldUpdateOperationsInput | string
+    isPermanent?: BoolFieldUpdateOperationsInput | boolean
+    hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
   }
 
   export type PermitUpdateWithoutAccountInput = {
@@ -64444,7 +65760,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
@@ -64483,7 +65800,8 @@ export namespace Prisma {
     authzAppTargetGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutTargetAccountNestedInput
     memberAccesses?: MemberAccessUncheckedUpdateManyWithoutMemberNestedInput
     ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
-    targetAccountMembers?: MemberUncheckedUpdateManyWithoutTargetAccountNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
     permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
@@ -64691,6 +66009,7 @@ export namespace Prisma {
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUpdateManyWithoutApplicationNestedInput
@@ -64716,6 +66035,7 @@ export namespace Prisma {
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUncheckedUpdateManyWithoutParentApplicationNestedInput
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     authzAccountAccessGrants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutApplicationNestedInput
@@ -64761,6 +66081,19 @@ export namespace Prisma {
     policyType: string
     policyValue: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+  }
+
+  export type MemberCreateManyParentApplicationInput = {
+    id?: string
+    memberId: string
+    accessTo: string
+    accessFor: $Enums.MemberAccessFor
+    parentAccountId?: string | null
+    parentConnectionId?: string | null
+    roleId: string
+    isPermanent?: boolean
+    hasFullAccess?: boolean
+    status?: $Enums.MemberStatus
   }
 
   export type AuthzPermissionCreateManyApplicationInput = {
@@ -64812,6 +66145,7 @@ export namespace Prisma {
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     account?: AccountUpdateOneRequiredWithoutConnectionsNestedInput
+    parentMembers?: MemberUpdateManyWithoutParentConnectionNestedInput
   }
 
   export type ConnectionUncheckedUpdateWithoutApplicationInput = {
@@ -64820,6 +66154,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
+    parentMembers?: MemberUncheckedUpdateManyWithoutParentConnectionNestedInput
   }
 
   export type ConnectionUncheckedUpdateManyWithoutApplicationInput = {
@@ -64875,6 +66210,45 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type MemberUpdateWithoutParentApplicationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
+    isPermanent?: BoolFieldUpdateOperationsInput | boolean
+    hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
+    member?: AccountUpdateOneRequiredWithoutOwnedMembersNestedInput
+    accessAccount?: AccountUpdateOneRequiredWithoutTargetAccountMembersNestedInput
+    parentAccount?: AccountUpdateOneWithoutParentAccountMembersNestedInput
+    parentConnection?: ConnectionUpdateOneWithoutParentMembersNestedInput
+    role?: AuthzRoleUpdateOneRequiredWithoutMembersNestedInput
+  }
+
+  export type MemberUncheckedUpdateWithoutParentApplicationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    memberId?: StringFieldUpdateOperationsInput | string
+    accessTo?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: StringFieldUpdateOperationsInput | string
+    isPermanent?: BoolFieldUpdateOperationsInput | boolean
+    hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
+  }
+
+  export type MemberUncheckedUpdateManyWithoutParentApplicationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    memberId?: StringFieldUpdateOperationsInput | string
+    accessTo?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: StringFieldUpdateOperationsInput | string
+    isPermanent?: BoolFieldUpdateOperationsInput | boolean
+    hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
+  }
+
   export type AuthzPermissionUpdateWithoutApplicationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -64908,6 +66282,7 @@ export namespace Prisma {
     grants?: AuthzAccountAccessGrantUpdateManyWithoutRoleNestedInput
     assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
     appGrants?: AuthzAppAccessGrantUpdateManyWithoutRoleNestedInput
+    members?: MemberUpdateManyWithoutRoleNestedInput
   }
 
   export type AuthzRoleUncheckedUpdateWithoutApplicationInput = {
@@ -64920,6 +66295,7 @@ export namespace Prisma {
     grants?: AuthzAccountAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
     appGrants?: AuthzAppAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
+    members?: MemberUncheckedUpdateManyWithoutRoleNestedInput
   }
 
   export type AuthzRoleUncheckedUpdateManyWithoutApplicationInput = {
@@ -65030,17 +66406,6 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
   }
 
-  export type MemberCreateManyTargetPortfolioInput = {
-    id?: string
-    memberId: string
-    targetType: $Enums.MemberTargetType
-    targetAccountId?: string | null
-    status: string
-    isPermanent?: boolean
-    hasFullAccess?: boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
-  }
-
   export type AuthzAccountAccessGrantCreateManyPortfolioInput = {
     id?: string
     ownerAccountId: string
@@ -65113,39 +66478,6 @@ export namespace Prisma {
   export type PortfolioMemberUncheckedUpdateManyWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     accountId?: StringFieldUpdateOperationsInput | string
-    status?: StringFieldUpdateOperationsInput | string
-    isPermanent?: BoolFieldUpdateOperationsInput | boolean
-    hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type MemberUpdateWithoutTargetPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    targetType?: EnumMemberTargetTypeFieldUpdateOperationsInput | $Enums.MemberTargetType
-    status?: StringFieldUpdateOperationsInput | string
-    isPermanent?: BoolFieldUpdateOperationsInput | boolean
-    hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
-    member?: AccountUpdateOneRequiredWithoutOwnedMembersNestedInput
-    targetAccount?: AccountUpdateOneWithoutTargetAccountMembersNestedInput
-  }
-
-  export type MemberUncheckedUpdateWithoutTargetPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    memberId?: StringFieldUpdateOperationsInput | string
-    targetType?: EnumMemberTargetTypeFieldUpdateOperationsInput | $Enums.MemberTargetType
-    targetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    isPermanent?: BoolFieldUpdateOperationsInput | boolean
-    hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
-    details?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type MemberUncheckedUpdateManyWithoutTargetPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    memberId?: StringFieldUpdateOperationsInput | string
-    targetType?: EnumMemberTargetTypeFieldUpdateOperationsInput | $Enums.MemberTargetType
-    targetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
@@ -65272,6 +66604,58 @@ export namespace Prisma {
     asset_type?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type MemberCreateManyParentConnectionInput = {
+    id?: string
+    memberId: string
+    accessTo: string
+    accessFor: $Enums.MemberAccessFor
+    parentAccountId?: string | null
+    parentApplicationId?: string | null
+    roleId: string
+    isPermanent?: boolean
+    hasFullAccess?: boolean
+    status?: $Enums.MemberStatus
+  }
+
+  export type MemberUpdateWithoutParentConnectionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
+    isPermanent?: BoolFieldUpdateOperationsInput | boolean
+    hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
+    member?: AccountUpdateOneRequiredWithoutOwnedMembersNestedInput
+    accessAccount?: AccountUpdateOneRequiredWithoutTargetAccountMembersNestedInput
+    parentAccount?: AccountUpdateOneWithoutParentAccountMembersNestedInput
+    parentApplication?: ApplicationUpdateOneWithoutParentMembersNestedInput
+    role?: AuthzRoleUpdateOneRequiredWithoutMembersNestedInput
+  }
+
+  export type MemberUncheckedUpdateWithoutParentConnectionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    memberId?: StringFieldUpdateOperationsInput | string
+    accessTo?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: StringFieldUpdateOperationsInput | string
+    isPermanent?: BoolFieldUpdateOperationsInput | boolean
+    hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
+  }
+
+  export type MemberUncheckedUpdateManyWithoutParentConnectionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    memberId?: StringFieldUpdateOperationsInput | string
+    accessTo?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: StringFieldUpdateOperationsInput | string
+    isPermanent?: BoolFieldUpdateOperationsInput | boolean
+    hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
+  }
+
   export type AuthzRolePermissionCreateManyPermissionInput = {
     id?: string
     roleId: string
@@ -65343,6 +66727,19 @@ export namespace Prisma {
     portfolioId?: string | null
     status?: $Enums.AuthzGrantStatus
     pushed?: boolean
+  }
+
+  export type MemberCreateManyRoleInput = {
+    id?: string
+    memberId: string
+    accessTo: string
+    accessFor: $Enums.MemberAccessFor
+    parentAccountId?: string | null
+    parentApplicationId?: string | null
+    parentConnectionId?: string | null
+    isPermanent?: boolean
+    hasFullAccess?: boolean
+    status?: $Enums.MemberStatus
   }
 
   export type AuthzRolePermissionUpdateWithoutRoleInput = {
@@ -65454,6 +66851,45 @@ export namespace Prisma {
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumAuthzGrantStatusFieldUpdateOperationsInput | $Enums.AuthzGrantStatus
     pushed?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type MemberUpdateWithoutRoleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
+    isPermanent?: BoolFieldUpdateOperationsInput | boolean
+    hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
+    member?: AccountUpdateOneRequiredWithoutOwnedMembersNestedInput
+    accessAccount?: AccountUpdateOneRequiredWithoutTargetAccountMembersNestedInput
+    parentAccount?: AccountUpdateOneWithoutParentAccountMembersNestedInput
+    parentApplication?: ApplicationUpdateOneWithoutParentMembersNestedInput
+    parentConnection?: ConnectionUpdateOneWithoutParentMembersNestedInput
+  }
+
+  export type MemberUncheckedUpdateWithoutRoleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    memberId?: StringFieldUpdateOperationsInput | string
+    accessTo?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    isPermanent?: BoolFieldUpdateOperationsInput | boolean
+    hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
+  }
+
+  export type MemberUncheckedUpdateManyWithoutRoleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    memberId?: StringFieldUpdateOperationsInput | string
+    accessTo?: StringFieldUpdateOperationsInput | string
+    accessFor?: EnumMemberAccessForFieldUpdateOperationsInput | $Enums.MemberAccessFor
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    isPermanent?: BoolFieldUpdateOperationsInput | boolean
+    hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
   }
 
 

@@ -37,6 +37,7 @@ model Account {
   memberAccesses          MemberAccess[]
   ownedMembers            Member[]                  @relation("MemberOwner")
   targetAccountMembers    Member[]                  @relation("MemberTargetAccount")
+  parentAccountMembers    Member[]                  @relation("MemberParentAccount")
   permits                 Permit[]
   permitTargets           Permit[]                  @relation("PermitTarget")
   parentOwnerships        AccountOwnership[]        @relation("ChildAccount")
@@ -277,7 +278,8 @@ model Application {
   connections              Connection[]
   bridge                   ApplicationBridge[]
   policies                 ApplicationPolicy[]
-  authzPermissions        AuthzPermission[]
+  parentMembers            Member[]                  @relation("MemberParentApplication")
+  authzPermissions         AuthzPermission[]
   authzRoles               AuthzRole[]
   authzAccountAccessGrants AuthzAccountAccessGrant[]
   authzAppAccessGrants     AuthzAppAccessGrant[]
@@ -293,7 +295,6 @@ model Portfolio {
   dateCreated              DateTime                  @default(now())
   assets                   Asset[]
   members                  PortfolioMember[]
-  targetPortfolioMembers   Member[]                  @relation("MemberTargetPortfolio")
   authzAccountAccessGrants AuthzAccountAccessGrant[]
   authzAssetsAccessGrants  AuthzAssetsAccessGrant[]
   authzAppAccessGrants     AuthzAppAccessGrant[]
@@ -333,25 +334,32 @@ model PortfolioMember {
 }
 
 model Member {
-  id                String           @id @default(uuid())
-  memberId          String           @map("member_id")
-  targetType        MemberTargetType @map("target_type")
-  targetAccountId   String?          @map("target_account_id")
-  targetPortfolioId String?          @map("target_portfolio_id")
-  status            String
-  isPermanent       Boolean          @default(false) @map("is_permanent")
-  hasFullAccess     Boolean          @default(false) @map("has_full_access")
-  details           Json?
+  id                  String          @id @default(uuid())
+  memberId            String          @map("member_id")
+  accessTo            String          @map("access_to")
+  accessFor           MemberAccessFor @map("access_for")
+  parentAccountId     String?         @map("parent_account_id")
+  parentApplicationId String?         @map("parent_application_id")
+  parentConnectionId  String?         @map("parent_connection_id")
+  roleId              String          @map("role_id")
+  isPermanent         Boolean         @default(false)
+  hasFullAccess       Boolean         @default(false)
+  status              MemberStatus    @default(active)
 
-  member           Account    @relation("MemberOwner", fields: [memberId], references: [id], onDelete: Cascade, map: "member_member_id_fkey")
-  targetAccount     Account?   @relation("MemberTargetAccount", fields: [targetAccountId], references: [id], map: "member_target_account_id_fkey")
-  targetPortfolio   Portfolio? @relation("MemberTargetPortfolio", fields: [targetPortfolioId], references: [id], map: "member_target_portfolio_id_fkey")
+  member            Account      @relation("MemberOwner", fields: [memberId], references: [id], onDelete: Cascade, map: "member_member_id_fkey")
+  accessAccount     Account      @relation("MemberTargetAccount", fields: [accessTo], references: [id], map: "member_access_to_fkey")
+  parentAccount     Account?     @relation("MemberParentAccount", fields: [parentAccountId], references: [id], map: "member_parent_account_id_fkey")
+  parentApplication Application? @relation("MemberParentApplication", fields: [parentApplicationId], references: [id], map: "member_parent_application_id_fkey")
+  parentConnection  Connection?  @relation("MemberParentConnection", fields: [parentConnectionId], references: [id], map: "member_parent_connection_id_fkey")
+  role              AuthzRole    @relation("MemberRole", fields: [roleId], references: [id], map: "member_role_id_fkey")
 
   @@index([memberId], map: "member_member_id_idx")
-  @@index([targetAccountId], map: "member_target_account_id_idx")
-  @@index([targetPortfolioId], map: "member_target_portfolio_id_idx")
-  @@index([targetType, targetAccountId], map: "member_target_type_target_account_id_idx")
-  @@index([targetType, targetPortfolioId], map: "member_target_type_target_portfolio_id_idx")
+  @@index([accessTo], map: "member_access_to_idx")
+  @@index([accessFor], map: "member_access_for_idx")
+  @@index([parentAccountId], map: "member_parent_account_id_idx")
+  @@index([parentApplicationId], map: "member_parent_application_id_idx")
+  @@index([parentConnectionId], map: "member_parent_connection_id_idx")
+  @@index([roleId], map: "member_role_id_idx")
   @@map("member")
 }
 
@@ -371,14 +379,15 @@ model AccountOwnership {
 }
 
 model Connection {
-  id          String      @id(map: "user_app_connections_pkey") @default(uuid())
-  accountId   String      @map("account_id")
-  appId       String      @map("app_id")
-  status      String      @default("active")
-  connectedAt DateTime    @default(now()) @map("connected_at")
-  details     Json?
-  account     Account     @relation(fields: [accountId], references: [id], onDelete: Cascade, map: "user_app_connections_accountId_fkey")
-  application Application @relation(fields: [appId], references: [id], map: "user_app_connections_appId_fkey")
+  id            String      @id(map: "user_app_connections_pkey") @default(uuid())
+  accountId     String      @map("account_id")
+  appId         String      @map("app_id")
+  status        String      @default("active")
+  connectedAt   DateTime    @default(now()) @map("connected_at")
+  details       Json?
+  account       Account     @relation(fields: [accountId], references: [id], onDelete: Cascade, map: "user_app_connections_accountId_fkey")
+  application   Application @relation(fields: [appId], references: [id], map: "user_app_connections_appId_fkey")
+  parentMembers Member[]    @relation("MemberParentConnection")
 
   @@unique([accountId, appId], map: "user_app_connections_accountId_appId_key")
   @@map("connection")
@@ -417,9 +426,21 @@ enum AuthzGrantStatus {
   expired
 }
 
+enum MemberAccessFor {
+  account
+  application
+  connection
+}
+
 enum MemberTargetType {
   portfolio
   account
+}
+
+enum MemberStatus {
+  active
+  paused
+  removed
 }
 
 model AuthzPermission {
@@ -446,6 +467,7 @@ model AuthzRole {
   grants       AuthzAccountAccessGrant[]
   assetsGrants AuthzAssetsAccessGrant[]
   appGrants    AuthzAppAccessGrant[]
+  members      Member[]                  @relation("MemberRole")
 
   @@unique([name, appId], map: "authz_role_name_app_id_key")
   @@map("authz_role")

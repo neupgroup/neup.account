@@ -422,7 +422,6 @@ model AuthzPermission {
   appId       String?               @map("app_id")
   scope       String?
   application Application?          @relation(fields: [appId], references: [id])
-  roleMaps    AuthzRolePermission[]
 
   @@map("authz_capability")
 }
@@ -434,27 +433,13 @@ model AuthzRole {
   appId        String?                  @map("app_id")
   scope        String?
   pushed       Boolean                  @default(false)
+  permissions  Json?
   application  Application?             @relation(fields: [appId], references: [id])
-  roleMaps     AuthzRolePermission[]
   assetsGrants AuthzAssetsAccessGrant[]
   members      Member[]                 @relation("MemberRole")
 
   @@unique([name, appId], map: "authz_role_name_app_id_key")
   @@map("authz_role")
-}
-
-model AuthzRolePermission {
-  id                     String          @id @default(uuid())
-  roleId                 String          @map("role_id")
-  permissionId           String          @map("capability_id")
-  scope                  String?
-  denormalizedPermission Json?           @map("denormalized_capability")
-  appId                  String?         @map("app_id")
-  roleName               String?         @map("role_name")
-  role                   AuthzRole       @relation(fields: [roleId], references: [id])
-  permission             AuthzPermission @relation(fields: [permissionId], references: [id])
-
-  @@map("authz_role_capability")
 }
 
 model AuthzAssetsAccessGrant {

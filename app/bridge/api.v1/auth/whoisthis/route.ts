@@ -28,26 +28,22 @@ function corsHeaders(origin: string) {
 function errorJson(
   status: number,
   error: string,
-  error_description: string,
+  _errorDescription: string,
   origin?: string | null
 ) {
   return NextResponse.json(
-    { success: false, error, error_description },
+    { success: false, error },
     { status, headers: origin ? corsHeaders(origin) : undefined }
   );
 }
 
 function normalizeErrorBody(body: any) {
   if (!body || typeof body !== 'object') {
-    return { success: false, error: 'unknown_error', error_description: 'Unknown error' };
+    return { success: false, error: 'unknown_error' };
   }
   return {
     success: false,
     error: typeof body.error === 'string' && body.error ? body.error : 'unknown_error',
-    error_description:
-      typeof body.error_description === 'string' && body.error_description
-        ? body.error_description
-        : 'Unknown error',
   };
 }
 

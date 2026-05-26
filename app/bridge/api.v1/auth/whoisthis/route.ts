@@ -25,6 +25,32 @@ function corsHeaders(origin: string) {
   };
 }
 
+function errorJson(
+  status: number,
+  error: string,
+  error_description: string,
+  origin?: string | null
+) {
+  return NextResponse.json(
+    { success: false, error, error_description },
+    { status, headers: origin ? corsHeaders(origin) : undefined }
+  );
+}
+
+function normalizeErrorBody(body: any) {
+  if (!body || typeof body !== 'object') {
+    return { success: false, error: 'unknown_error', error_description: 'Unknown error' };
+  }
+  return {
+    success: false,
+    error: typeof body.error === 'string' && body.error ? body.error : 'unknown_error',
+    error_description:
+      typeof body.error_description === 'string' && body.error_description
+        ? body.error_description
+        : 'Unknown error',
+  };
+}
+
 function getBearerToken(request: NextRequest): string | null {
   const header = request.headers.get('authorization') || '';
   const [scheme, token] = header.split(' ');
@@ -169,26 +195,32 @@ export async function OPTIONS(request: NextRequest) {
  */
 async function handleWhoIsThis(request: NextRequest) {
   if (request.headers.get('auth_account') !== null) {
-    return NextResponse.json(
-      { error: 'invalid_request', error_description: 'auth_account must be passed as a cookie only' },
-      { status: 400 }
-    );
+    return errorJson(400, 'invalid_request', 'auth_account must be passed as a cookie only');
   }
 
   const origin = request.headers.get('origin');
+  const { searchParams } = new URL(request.url);
+
+  const appIdParamPresent = searchParams.has('app_id');
+  const appIdFromQuery = (searchParams.get('app_id') || '').trim();
+  if (appIdParamPresent && !appIdFromQuery) {
+    return errorJson(400, 'no_app_id', 'app_id query parameter is required when provided', origin);
+  }
 
   const bearerToken = getBearerToken(request);
   const cookieToken = await getCookieToken();
   const tokenForAppScope = bearerToken || cookieToken;
-  const appId = await resolveAppIdFromToken(tokenForAppScope);
+  const tokenAppId = await resolveAppIdFromToken(tokenForAppScope);
+  const appId = appIdFromQuery || tokenAppId;
+
+  if (appIdFromQuery && tokenForAppScope && appIdFromQuery !== tokenAppId) {
+    return errorJson(400, 'app_id_mismatch', 'Provided app_id does not match token app scope', origin);
+  }
 
   if (origin) {
     const allowed = await isOriginAllowedForApp(origin, appId);
     if (!allowed) {
-      return NextResponse.json(
-        { error: 'forbidden', error_description: 'Origin not registered for this app' },
-        { status: 403 }
-      );
+      return errorJson(403, 'origin_not_registered', 'Origin not registered for this app', origin);
     }
   }
 
@@ -200,20 +232,14 @@ async function handleWhoIsThis(request: NextRequest) {
     });
 
     if (!application?.appSecret) {
-      return NextResponse.json(
-        { error: 'app_not_found', error_description: 'Application not found or has no secret configured' },
-        { status: 404, headers: origin ? corsHeaders(origin) : undefined }
-      );
+      return errorJson(404, 'app_not_found', 'Application not found or has no secret configured', origin);
     }
 
     let decoded: any;
     try {
       decoded = jwt.verify(bearerToken, application.appSecret);
     } catch {
-      return NextResponse.json(
-        { error: 'unauthorized', error_description: 'Invalid or expired token' },
-        { status: 401, headers: origin ? corsHeaders(origin) : undefined }
-      );
+      return errorJson(401, 'unauthorized', 'Invalid or expired token', origin);
     }
 
     const aid = typeof decoded?.aid === 'string' ? decoded.aid : null;
@@ -221,10 +247,7 @@ async function handleWhoIsThis(request: NextRequest) {
     const tokenAppId = typeof decoded?.appId === 'string' ? decoded.appId : null;
 
     if (!aid || !sid || (tokenAppId && tokenAppId !== appId)) {
-      return NextResponse.json(
-        { error: 'unauthorized', error_description: 'Invalid token payload' },
-        { status: 401, headers: origin ? corsHeaders(origin) : undefined }
-      );
+      return errorJson(401, 'unauthorized', 'Invalid token payload', origin);
     }
 
     const session = await prisma.authnSession.findFirst({
@@ -238,10 +261,7 @@ async function handleWhoIsThis(request: NextRequest) {
     });
 
     if (!session) {
-      return NextResponse.json(
-        { error: 'unauthorized', error_description: 'Invalid or expired session' },
-        { status: 401, headers: origin ? corsHeaders(origin) : undefined }
-      );
+      return errorJson(401, 'unauthorized', 'Invalid or expired session', origin);
     }
 
     // Fetch identity based on account only (session already validated above).
@@ -262,10 +282,7 @@ async function handleWhoIsThis(request: NextRequest) {
     });
 
     if (!result) {
-      return NextResponse.json(
-        { error: 'unauthorized', error_description: 'Account not found' },
-        { status: 401, headers: origin ? corsHeaders(origin) : undefined }
-      );
+      return errorJson(401, 'unauthorized', 'Account not found', origin);
     }
 
     const details = result.details as Record<string, any> | null;
@@ -274,10 +291,7 @@ async function handleWhoIsThis(request: NextRequest) {
       const isPermanent = block.is_permanent;
       const isTemporary = block.until && new Date(block.until) > new Date();
       if (isPermanent || isTemporary) {
-        return NextResponse.json(
-          { error: 'account_blocked', error_description: 'This account is currently blocked' },
-          { status: 403, headers: origin ? corsHeaders(origin) : undefined }
-        );
+        return errorJson(403, 'account_blocked', 'This account is currently blocked', origin);
       }
     }
 
@@ -292,10 +306,12 @@ async function handleWhoIsThis(request: NextRequest) {
 
     const connection = await ensureConnectionForApp(result.id, appId);
     if (!connection.ok) {
-      return NextResponse.json(connection.body, {
-        status: connection.status,
-        headers: origin ? corsHeaders(origin) : undefined,
-      });
+      return errorJson(
+        connection.status,
+        connection.body.error,
+        connection.body.error_description || 'Connection error',
+        origin
+      );
     }
 
     return NextResponse.json(
@@ -319,18 +335,17 @@ async function handleWhoIsThis(request: NextRequest) {
     const guest = await getSessionCookies();
 
     if (!guest.accountId || !guest.sessionId || !guest.sessionKey) {
-      return NextResponse.json(
-        { error: 'internal_server_error', error_description: 'Could not initialize guest account' },
-        { status: 500, headers: origin ? corsHeaders(origin) : undefined }
-      );
+      return errorJson(500, 'internal_server_error', 'Could not initialize guest account', origin);
     }
 
     const connection = await ensureConnectionForApp(guest.accountId, appId);
     if (!connection.ok) {
-      return NextResponse.json(connection.body, {
-        status: connection.status,
-        headers: origin ? corsHeaders(origin) : undefined,
-      });
+      return errorJson(
+        connection.status,
+        connection.body.error,
+        connection.body.error_description || 'Connection error',
+        origin
+      );
     }
 
     const who = await resolveWhoAmI({
@@ -347,21 +362,27 @@ async function handleWhoIsThis(request: NextRequest) {
 
   const payload = await verifyAccountToken(cookieToken);
   if (!payload?.aid || !payload?.sid || !payload?.skey) {
-    return NextResponse.json(
-      { error: 'unauthenticated', error_description: 'No active session' },
-      { status: 401, headers: origin ? corsHeaders(origin) : undefined }
-    );
+    return errorJson(401, 'unauthenticated', 'No active session', origin);
   }
 
   const who = await resolveWhoAmI({ accountId: payload.aid, sessionId: payload.sid, sessionKey: payload.skey });
   if (who.status === 200) {
     const connection = await ensureConnectionForApp(payload.aid, appId);
     if (!connection.ok) {
-      return NextResponse.json(connection.body, {
-        status: connection.status,
-        headers: origin ? corsHeaders(origin) : undefined,
-      });
+      return errorJson(
+        connection.status,
+        connection.body.error,
+        connection.body.error_description || 'Connection error',
+        origin
+      );
     }
+  }
+
+  if (who.status >= 400) {
+    return NextResponse.json(normalizeErrorBody(who.body), {
+      status: who.status,
+      headers: origin ? corsHeaders(origin) : undefined,
+    });
   }
 
   return NextResponse.json(who.body, {
@@ -375,8 +396,5 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  return NextResponse.json(
-    { error: 'method_not_allowed', error_description: 'Use GET for this endpoint' },
-    { status: 405 }
-  );
+  return errorJson(405, 'method_not_allowed', 'Use GET for this endpoint');
 }

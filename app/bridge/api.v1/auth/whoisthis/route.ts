@@ -4,6 +4,8 @@ import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { verifyAccountToken } from '@/core/auth/accountToken';
 import { resolveWhoAmI } from '@/services/auth/whoami';
+import { resolveGuestAccount } from '@/services/auth/guestAccount';
+import { getSessionCookies } from '@/core/helpers/cookies';
 
 export const dynamic = 'force-dynamic';
 
@@ -103,6 +105,40 @@ async function resolveAppIdFromToken(token: string | null): Promise<string> {
   return appId || DEFAULT_APP_ID;
 }
 
+async function ensureConnectionForApp(accountId: string, appId: string): Promise<{
+  ok: boolean;
+  status: number;
+  body: { error: string; error_description?: string };
+}> {
+  const connection = await prisma.connection.upsert({
+    where: { accountId_appId: { accountId, appId } },
+    update: {},
+    create: { accountId, appId, status: 'active' },
+    select: { status: true },
+  });
+
+  if (connection.status === 'active') {
+    return { ok: true, status: 200, body: { error: '' } };
+  }
+
+  if (connection.status === 'invited') {
+    return {
+      ok: false,
+      status: 403,
+      body: { error: 'connection_invited', error_description: 'Account is invited but not approved yet' },
+    };
+  }
+
+  return {
+    ok: false,
+    status: 403,
+    body: {
+      error: `connection_${connection.status}`,
+      error_description: `Connection status is ${connection.status}`,
+    },
+  };
+}
+
 export async function OPTIONS(request: NextRequest) {
   const origin = request.headers.get('origin');
   if (!origin) return new NextResponse(null, { status: 204 });
@@ -131,7 +167,14 @@ export async function OPTIONS(request: NextRequest) {
  *   resolved appId (from token.appId when present, otherwise DEFAULT_APP_ID).
  * - Scheme must be https, and matching is hostname-only (port + path ignored).
  */
-export async function GET(request: NextRequest) {
+async function handleWhoIsThis(request: NextRequest) {
+  if (request.headers.get('auth_account') !== null) {
+    return NextResponse.json(
+      { error: 'invalid_request', error_description: 'auth_account must be passed as a cookie only' },
+      { status: 400 }
+    );
+  }
+
   const origin = request.headers.get('origin');
 
   const bearerToken = getBearerToken(request);
@@ -149,7 +192,7 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // 1) If caller provided a bearer token, try to treat it as an external-app grant token.
+  // 1) If caller provided bearer token, treat it as external-app grant token.
   if (bearerToken) {
     const application = await prisma.application.findUnique({
       where: { id: appId },
@@ -247,6 +290,14 @@ export async function GET(request: NextRequest) {
         .join(' ') ||
       null;
 
+    const connection = await ensureConnectionForApp(result.id, appId);
+    if (!connection.ok) {
+      return NextResponse.json(connection.body, {
+        status: connection.status,
+        headers: origin ? corsHeaders(origin) : undefined,
+      });
+    }
+
     return NextResponse.json(
       {
         success: true,
@@ -263,10 +314,35 @@ export async function GET(request: NextRequest) {
 
   // 2) Cookie session fallback (first-party).
   if (!cookieToken) {
-    return NextResponse.json(
-      { error: 'unauthenticated', error_description: 'No active session' },
-      { status: 401, headers: origin ? corsHeaders(origin) : undefined }
-    );
+    // 4) No cookie and no token: create/resolve guest account and use it.
+    await resolveGuestAccount(null);
+    const guest = await getSessionCookies();
+
+    if (!guest.accountId || !guest.sessionId || !guest.sessionKey) {
+      return NextResponse.json(
+        { error: 'internal_server_error', error_description: 'Could not initialize guest account' },
+        { status: 500, headers: origin ? corsHeaders(origin) : undefined }
+      );
+    }
+
+    const connection = await ensureConnectionForApp(guest.accountId, appId);
+    if (!connection.ok) {
+      return NextResponse.json(connection.body, {
+        status: connection.status,
+        headers: origin ? corsHeaders(origin) : undefined,
+      });
+    }
+
+    const who = await resolveWhoAmI({
+      accountId: guest.accountId,
+      sessionId: guest.sessionId,
+      sessionKey: guest.sessionKey,
+    });
+
+    return NextResponse.json(who.body, {
+      status: who.status,
+      headers: origin ? corsHeaders(origin) : undefined,
+    });
   }
 
   const payload = await verifyAccountToken(cookieToken);
@@ -278,8 +354,29 @@ export async function GET(request: NextRequest) {
   }
 
   const who = await resolveWhoAmI({ accountId: payload.aid, sessionId: payload.sid, sessionKey: payload.skey });
+  if (who.status === 200) {
+    const connection = await ensureConnectionForApp(payload.aid, appId);
+    if (!connection.ok) {
+      return NextResponse.json(connection.body, {
+        status: connection.status,
+        headers: origin ? corsHeaders(origin) : undefined,
+      });
+    }
+  }
+
   return NextResponse.json(who.body, {
     status: who.status,
     headers: origin ? corsHeaders(origin) : undefined,
   });
+}
+
+export async function GET(request: NextRequest) {
+  return handleWhoIsThis(request);
+}
+
+export async function POST(request: NextRequest) {
+  return NextResponse.json(
+    { error: 'method_not_allowed', error_description: 'Use GET for this endpoint' },
+    { status: 405 }
+  );
 }

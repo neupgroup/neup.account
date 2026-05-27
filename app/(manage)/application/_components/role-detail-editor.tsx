@@ -58,8 +58,7 @@ export function RoleDetailEditor({ appId, role, permissions }: Props) {
 
   return (
     <div className="grid gap-4">
-      <div className="grid gap-2 rounded-2xl border bg-card p-5">
-        <p className="text-sm font-medium">Permissions</p>
+      <div className="grid gap-2 rounded-2xl bg-card">
         <Input
           placeholder="Search permissions..."
           value={search}
@@ -72,39 +71,33 @@ export function RoleDetailEditor({ appId, role, permissions }: Props) {
           <p className="text-sm text-muted-foreground">No permissions defined yet.</p>
         ) : (
           <div className="overflow-hidden rounded-2xl border bg-card">
-            {visiblePermissions.length === 0 ? (
-              <div className="px-4 py-8 text-center text-sm text-muted-foreground sm:px-5">
-                No permissions match your search.
-              </div>
-            ) : (
-              visiblePermissions.map((permission) => {
-                const isChecked = selectedSet.has(permission.id);
-                return (
-                  <label
-                    key={permission.id}
-                    className="group flex cursor-pointer items-start gap-3 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
-                  >
-                    <Checkbox
-                      checked={isChecked}
-                      onCheckedChange={() =>
-                        setPermissionIds((prev) =>
-                          prev.includes(permission.id)
-                            ? prev.filter((id) => id !== permission.id)
-                            : [...prev, permission.id]
-                        )
-                      }
-                      className="mt-0.5"
-                    />
-                    <div className="min-w-0">
-                      <p className="truncate text-base font-medium leading-6">{permission.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {permission.description || 'No description'}
-                      </p>
-                    </div>
-                  </label>
-                );
-              })
-            )}
+            {visiblePermissions.map((permission) => {
+              const isChecked = selectedSet.has(permission.id);
+              return (
+                <label
+                  key={permission.id}
+                  className="group flex cursor-pointer items-start gap-3 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
+                >
+                  <Checkbox
+                    checked={isChecked}
+                    onCheckedChange={() =>
+                      setPermissionIds((prev) =>
+                        prev.includes(permission.id)
+                          ? prev.filter((id) => id !== permission.id)
+                          : [...prev, permission.id]
+                      )
+                    }
+                    className="mt-0.5"
+                  />
+                  <div className="min-w-0">
+                    <p className="truncate text-base font-medium leading-6">{permission.name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {permission.description || 'No description'}
+                    </p>
+                  </div>
+                </label>
+              );
+            })}
           </div>
         )}
       </div>

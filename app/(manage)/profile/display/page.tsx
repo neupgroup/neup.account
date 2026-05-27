@@ -270,7 +270,7 @@ export default function DisplayInfoPage() {
                                             </div>
                                         ) : photoView === 'carousel' ? (
                                              <div className="relative min-h-48 h-full flex flex-col justify-between border-2 border-dashed rounded-lg p-4">
-                                                <div className="flex items-center gap-3 overflow-x-auto pb-4">
+                                                <div className="flex flex-wrap items-start gap-3 pb-4">
                                                     {pastPhotos.map((photo, index) => (
                                                         <button
                                                             type="button"
@@ -303,7 +303,7 @@ export default function DisplayInfoPage() {
                                                             <button
                                                                 type="button"
                                                                 key={photo.id}
-                                                                className="relative p-1 aspect-square w-24 h-24 flex-shrink-0 rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                                                                className="relative p-1 h-24 w-24 rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                                                                 onClick={() => photoForm.setValue('accountPhoto', photo.value, { shouldDirty: true })}
                                                                 title={photo.title || undefined}
                                                             >

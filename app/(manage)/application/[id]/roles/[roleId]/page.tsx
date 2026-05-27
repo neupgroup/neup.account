@@ -41,10 +41,12 @@ export default async function RoleDetailsPage({ params }: Props) {
     <div className="grid gap-8">
       <div className="space-y-4">
         <BackButton href={`/application/${id}/roles?mode=root`} />
-        <PrimaryHeader title={`Role: ${role.name}`} description={`Manage permissions for ${details.name}.`} />
+        <PrimaryHeader
+          title={`Role: ${role.name}`}
+          description={role.description || 'No description'}
+        />
       </div>
       <RoleDetailEditor appId={id} role={role} permissions={permissions} />
     </div>
   );
 }
-

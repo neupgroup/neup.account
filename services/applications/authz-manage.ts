@@ -250,14 +250,36 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
       scope: role.scope,
       permissions: Array.isArray(role.permissions)
         ? role.permissions
-            .filter((p): p is { id?: string; name?: string; description?: string | null; scope?: string | null } => Boolean(p) && typeof p === 'object')
-            .map((p) => ({
-              id: typeof p.id === 'string' ? p.id : '',
-              name: typeof p.name === 'string' ? p.name : '',
-              description: typeof p.description === 'string' ? p.description : null,
-              scope: typeof p.scope === 'string' ? p.scope : null,
-            }))
-            .filter((p) => p.id && p.name)
+            .flatMap((p): AppPermission[] => {
+              if (typeof p === 'string') {
+                return [{
+                  id: '',
+                  name: p,
+                  description: null,
+                  scope: null,
+                }];
+              }
+
+              if (!p || typeof p !== 'object') return [];
+
+              const obj = p as {
+                id?: string;
+                name?: string;
+                description?: string | null;
+                scope?: string | null;
+              };
+
+              const name = typeof obj.name === 'string' ? obj.name : '';
+              const id = typeof obj.id === 'string' ? obj.id : '';
+              if (!name) return [];
+
+              return [{
+                id,
+                name,
+                description: typeof obj.description === 'string' ? obj.description : null,
+                scope: typeof obj.scope === 'string' ? obj.scope : null,
+              }];
+            })
         : [],
     }));
   } catch (error) {

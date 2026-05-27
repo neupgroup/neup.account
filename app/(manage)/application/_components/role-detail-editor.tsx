@@ -21,7 +21,23 @@ type Props = {
 export function RoleDetailEditor({ appId, role, permissions }: Props) {
   const router = useRouter();
   const { toast } = useToast();
-  const [permissionIds, setPermissionIds] = useState<string[]>(role.permissions.map((p) => p.id));
+  const [permissionIds, setPermissionIds] = useState<string[]>(() => {
+    const idsFromRole = role.permissions
+      .map((p) => p.id)
+      .filter((id): id is string => typeof id === 'string' && id.length > 0);
+
+    const namesFromRole = new Set(
+      role.permissions
+        .map((p) => p.name)
+        .filter((name): name is string => typeof name === 'string' && name.length > 0)
+    );
+
+    const idsFromNames = permissions
+      .filter((permission) => namesFromRole.has(permission.name))
+      .map((permission) => permission.id);
+
+    return Array.from(new Set([...idsFromRole, ...idsFromNames]));
+  });
   const [search, setSearch] = useState('');
   const [savePending, setSavePending] = useState(false);
   const selectedSet = useMemo(() => new Set(permissionIds), [permissionIds]);

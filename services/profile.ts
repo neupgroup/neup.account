@@ -72,6 +72,53 @@ export async function getPastProfilePhotos(accountId: string): Promise<string[]>
     }
 }
 
+export type PublicDisplayImage = {
+    id: string;
+    type: 'displayImage_publicMale' | 'displayImage_publicFemale';
+    value: string;
+    title: string | null;
+};
+
+export async function getPublicDisplayImages(): Promise<PublicDisplayImage[]> {
+    try {
+        const rows = await prisma.resource.findMany({
+            where: {
+                accountId: null,
+                type: {
+                    in: ['displayImage_publicMale', 'displayImage_publicFemale'],
+                },
+            },
+            orderBy: { uploadedOn: 'desc' },
+            select: {
+                id: true,
+                type: true,
+                value: true,
+                details: true,
+            },
+            take: 200,
+        });
+
+        return rows
+            .map((row) => {
+                const details = row.details && typeof row.details === 'object'
+                    ? (row.details as Record<string, unknown>)
+                    : {};
+                const titleRaw = typeof details.title === 'string' ? details.title.trim() : '';
+
+                return {
+                    id: row.id,
+                    type: row.type as 'displayImage_publicMale' | 'displayImage_publicFemale',
+                    value: row.value,
+                    title: titleRaw || null,
+                };
+            })
+            .filter((row) => !!row.value?.trim());
+    } catch (error) {
+        await logError('database', error, 'getPublicDisplayImages');
+        return [];
+    }
+}
+
 
 /**
  * Function updateOrCreateContact.

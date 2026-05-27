@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import Image from 'next/image'
 
-import { updateUserProfile, getDisplayNameSuggestions, getPastProfilePhotos } from "@/services/profile"
+import { updateUserProfile, getDisplayNameSuggestions, getPastProfilePhotos, getPublicDisplayImages, type PublicDisplayImage } from "@/services/profile"
 import { useToast } from "@/core/hooks/use-toast"
 import { uploadFile } from '@/services/upload'
 
@@ -54,7 +54,8 @@ export default function DisplayInfoPage() {
     const [isPhotoPending, startPhotoTransition] = useTransition();
     const [isNamePending, startNameTransition] = useTransition();
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [photoView, setPhotoView] = useState<'uploader' | 'carousel'>('uploader');
+    const [photoView, setPhotoView] = useState<'uploader' | 'carousel' | 'public'>('uploader');
+    const [publicPhotos, setPublicPhotos] = useState<PublicDisplayImage[]>([]);
 
     const photoForm = useForm<PhotoFormValues>({
         resolver: zodResolver(photoFormSchema),
@@ -74,10 +75,12 @@ export default function DisplayInfoPage() {
                 if (accountId) {
                     const [suggestions, photos] = await Promise.all([
                         getDisplayNameSuggestions(accountId),
-                        getPastProfilePhotos(accountId)
+                        getPastProfilePhotos(accountId),
                     ]);
                     setNameSuggestions(suggestions);
                     setPastPhotos(photos);
+                    const publicResources = await getPublicDisplayImages();
+                    setPublicPhotos(publicResources);
 
                     const currentName = profile.nameDisplay || '';
                      if (suggestions.map(s => s.toLowerCase()).includes(currentName.toLowerCase())) {
@@ -201,6 +204,13 @@ export default function DisplayInfoPage() {
     
     const selectedDisplayName = nameForm.watch('selectedDisplayName');
     const currentDisplayPhoto = photoForm.watch('accountPhoto');
+    const profileGender = (profile?.gender || '').toLowerCase();
+    const filteredPublicPhotos = publicPhotos.filter((photo) => {
+        if (profileGender === 'male') return photo.type === 'displayImage_publicMale';
+        if (profileGender === 'female') return photo.type === 'displayImage_publicFemale';
+        if (profileGender === 'custom') return true;
+        return true;
+    });
 
     if (loading) {
         return <Skeleton className="h-96 w-full" />
@@ -244,6 +254,9 @@ export default function DisplayInfoPage() {
                                                         select a file
                                                     </button>
                                                 </p>
+                                                <p className="text-xs text-muted-foreground">
+                                                    or <button type="button" className="text-primary underline" onClick={() => setPhotoView('public')}>choose from default public images</button>
+                                                </p>
                                                 {pastPhotos.length > 0 && (
                                                     <p className="text-xs text-muted-foreground">or <button type="button" className="text-primary underline" onClick={() => setPhotoView('carousel')}>select from previous images</button></p>
                                                 )}
@@ -255,7 +268,7 @@ export default function DisplayInfoPage() {
                                                     onChange={handleFileChange}
                                                 />
                                             </div>
-                                        ) : (
+                                        ) : photoView === 'carousel' ? (
                                              <div className="relative min-h-48 h-full flex flex-col justify-between border-2 border-dashed rounded-lg p-4">
                                                 <div className="flex items-center gap-3 overflow-x-auto pb-4">
                                                     {pastPhotos.map((photo, index) => (
@@ -275,6 +288,36 @@ export default function DisplayInfoPage() {
                                                     ))}
                                                 </div>
                                                  <button type="button" className="text-primary underline text-sm p-0 h-auto" onClick={() => setPhotoView('uploader')}>
+                                                    Upload new photo
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="relative min-h-48 h-full flex flex-col justify-between border-2 border-dashed rounded-lg p-4">
+                                                <div className="flex items-center gap-3 overflow-x-auto pb-4">
+                                                    {filteredPublicPhotos.length === 0 ? (
+                                                        <p className="text-sm text-muted-foreground">
+                                                            No default public images available for your gender yet.
+                                                        </p>
+                                                    ) : (
+                                                        filteredPublicPhotos.map((photo) => (
+                                                            <button
+                                                                type="button"
+                                                                key={photo.id}
+                                                                className="relative p-1 aspect-square w-24 h-24 flex-shrink-0 rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                                                                onClick={() => photoForm.setValue('accountPhoto', photo.value, { shouldDirty: true })}
+                                                                title={photo.title || undefined}
+                                                            >
+                                                                <Image src={photo.value} alt={photo.title || 'Public display image'} fill objectFit="cover" className="rounded-md" />
+                                                                {currentDisplayPhoto === photo.value && (
+                                                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-md">
+                                                                        <Check className="h-8 w-8 text-white" />
+                                                                    </div>
+                                                                )}
+                                                            </button>
+                                                        ))
+                                                    )}
+                                                </div>
+                                                <button type="button" className="text-primary underline text-sm p-0 h-auto" onClick={() => setPhotoView('uploader')}>
                                                     Upload new photo
                                                 </button>
                                             </div>

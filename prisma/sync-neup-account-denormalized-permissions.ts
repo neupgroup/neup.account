@@ -12,6 +12,10 @@ async function main() {
 
   try {
     await pool.query('BEGIN');
+    const roleId = 'individual-default-and-application-neup-account';
+    const roleName = 'individual.defaultAndApplication';
+    const roleDescription = 'Default individual permissions with application view/edit access.';
+    const applicationPermissions = ['application.view', 'application.edit'];
 
     // 1) Rebuild authz_role.permissions from legacy role-capability mapping if it still exists.
     await pool.query(
@@ -50,6 +54,49 @@ async function main() {
       [APP_ID],
     );
 
+    // 2b) Ensure individual.defaultAndApplication role exists with application-only permissions.
+    await pool.query(
+      `
+      INSERT INTO authz_role (id, app_id, name, description, permissions)
+      VALUES ($1, $2, $3, $4, $5::jsonb)
+      ON CONFLICT (id) DO UPDATE
+      SET name = EXCLUDED.name,
+          description = EXCLUDED.description,
+          permissions = EXCLUDED.permissions;
+      `,
+      [roleId, APP_ID, roleName, roleDescription, JSON.stringify(applicationPermissions)],
+    );
+
+    // 2c) Ensure individual.root includes all application/config/display-image permissions.
+    await pool.query(
+      `
+      UPDATE authz_role r
+      SET permissions = (
+        WITH current_permissions AS (
+          SELECT DISTINCT elem AS permission_name
+          FROM jsonb_array_elements_text(COALESCE(r.permissions, '[]'::jsonb)) AS elem
+        ),
+        merged AS (
+          SELECT permission_name FROM current_permissions
+          UNION
+          SELECT DISTINCT c.name AS permission_name
+          FROM authz_capability c
+          WHERE c.app_id = $1
+            AND (
+              c.name LIKE 'application.%'
+              OR c.name LIKE 'config.%'
+              OR c.name LIKE 'root.display_images.%'
+            )
+        )
+        SELECT COALESCE(jsonb_agg(permission_name ORDER BY permission_name), '[]'::jsonb)
+        FROM merged
+      )
+      WHERE r.app_id = $1
+        AND r.name = 'individual.root';
+      `,
+      [APP_ID],
+    );
+
     // 3) Normalize existing permissions arrays (string-only, distinct, sorted).
     await pool.query(
       `
@@ -58,9 +105,16 @@ async function main() {
         (
           SELECT jsonb_agg(value ORDER BY value)
           FROM (
-            SELECT DISTINCT elem AS value
-            FROM jsonb_array_elements_text(COALESCE(r.permissions, '[]'::jsonb)) AS elem
+            SELECT DISTINCT
+              CASE
+                WHEN jsonb_typeof(elem) = 'object' AND elem ? 'name' THEN elem->>'name'
+                WHEN jsonb_typeof(elem) = 'string' AND (elem #>> '{}') LIKE '{%' THEN COALESCE(((elem #>> '{}')::jsonb)->>'name', elem #>> '{}')
+                WHEN jsonb_typeof(elem) = 'string' THEN elem #>> '{}'
+                ELSE NULL
+              END AS value
+            FROM jsonb_array_elements(COALESCE(r.permissions, '[]'::jsonb)) AS elem
           ) dedup
+          WHERE value IS NOT NULL
         ),
         '[]'::jsonb
       )

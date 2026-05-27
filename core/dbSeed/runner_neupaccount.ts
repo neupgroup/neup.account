@@ -162,7 +162,11 @@ INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-root-admin-requests-view',         'root.requests.view',           '${APP_ID}', 'root'),
   ('cap-root-admin-dashboard-view',        'root.dashboard.view',          '${APP_ID}', 'root'),
   ('cap-root-admin-payment-config-view',   'root.payment_config.view',     '${APP_ID}', 'root'),
-  ('cap-root-admin-errors-view',           'root.errors.view',             '${APP_ID}', 'root')
+  ('cap-root-admin-errors-view',           'root.errors.view',             '${APP_ID}', 'root'),
+  ('cap-root-display-images-view',         'root.display_images.view',      '${APP_ID}', 'root'),
+  ('cap-root-display-images-add',          'root.display_images.add',       '${APP_ID}', 'root'),
+  ('cap-root-display-images-update',       'root.display_images.update',    '${APP_ID}', 'root'),
+  ('cap-root-display-images-delete',       'root.display_images.delete',    '${APP_ID}', 'root')
 ON CONFLICT ("id") DO NOTHING;
 
 INSERT INTO "authz_role_capability" (
@@ -175,7 +179,7 @@ SELECT
   'root',
   '${APP_ID}',
   'individual.root',
-  '["root.account.view","root.account.modify","root.account.delete","root.account.search","root.account.create_individual","root.application.view","root.application.create","root.application.edit","root.application.delete","root.application.roles.view","root.application.roles.manage","root.permission.view","root.permission.edit","root.requests.view","root.dashboard.view","root.payment_config.view","root.errors.view"]'::jsonb
+  '["root.account.view","root.account.modify","root.account.delete","root.account.search","root.account.create_individual","root.application.view","root.application.create","root.application.edit","root.application.delete","root.application.roles.view","root.application.roles.manage","root.permission.view","root.permission.edit","root.requests.view","root.dashboard.view","root.payment_config.view","root.errors.view","root.display_images.view","root.display_images.add","root.display_images.update","root.display_images.delete"]'::jsonb
 FROM "authz_capability" c
 WHERE c."app_id" = '${APP_ID}'
   AND c."scope"  = 'root'

@@ -132,6 +132,16 @@ exports.Prisma.AccountScalarFieldEnum = {
   linkedAccountId: 'linkedAccountId'
 };
 
+exports.Prisma.ResourceScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  accountId: 'accountId',
+  uploadedBy: 'uploadedBy',
+  value: 'value',
+  details: 'details',
+  uploadedOn: 'uploadedOn'
+};
+
 exports.Prisma.AccountTypeIndividualScalarFieldEnum = {
   accountId: 'accountId',
   firstName: 'firstName',
@@ -469,6 +479,7 @@ exports.MemberStatus = exports.$Enums.MemberStatus = {
 
 exports.Prisma.ModelName = {
   Account: 'Account',
+  Resource: 'Resource',
   AccountTypeIndividual: 'AccountTypeIndividual',
   AccountTypeBrand: 'AccountTypeBrand',
   SystemConfig: 'SystemConfig',

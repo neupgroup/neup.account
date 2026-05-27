@@ -1,6 +1,6 @@
 import { FlowLink } from '@/components/ui/flow-link';
 import { notFound } from 'next/navigation';
-import { CreditCard, Globe, ArrowRight, AppWindow } from '@/components/icons';
+import { CreditCard, Globe, ArrowRight, AppWindow, Camera } from '@/components/icons';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BackButton } from '@/components/ui/back-button';
 import { checkPermissions } from '@/services/user';
@@ -25,13 +25,28 @@ const configItems = [
     description: 'Update the site logo used across the application.',
     icon: AppWindow,
   },
+  {
+    href: '/config/displayImages',
+    title: 'Display Images',
+    description: 'Manage display-image resources and metadata.',
+    icon: Camera,
+  },
 ];
 
 export default async function ConfigPage() {
-  const canView = await checkPermissions(['root.payment_config.view']);
-  if (!canView) {
+  const [canViewPaymentConfig, canViewDisplayImages] = await Promise.all([
+    checkPermissions(['root.payment_config.view']),
+    checkPermissions(['root.display_images.view']),
+  ]);
+
+  if (!canViewPaymentConfig && !canViewDisplayImages) {
     notFound();
   }
+
+  const visibleItems = configItems.filter((item) => {
+    if (item.href === '/config/displayImages') return canViewDisplayImages;
+    return canViewPaymentConfig;
+  });
 
   return (
     <div className="grid gap-8">
@@ -43,7 +58,7 @@ export default async function ConfigPage() {
       />
 
       <div className="grid gap-6 md:grid-cols-3">
-        {configItems.map((item) => (
+        {visibleItems.map((item) => (
           <FlowLink key={item.href} href={item.href}>
             <Card className="h-full cursor-pointer transition-all hover:border-primary/50 hover:bg-accent/40">
               <CardHeader>

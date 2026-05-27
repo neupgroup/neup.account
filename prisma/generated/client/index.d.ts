@@ -19,6 +19,11 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type Account = $Result.DefaultSelection<Prisma.$AccountPayload>
 /**
+ * Model Resource
+ * 
+ */
+export type Resource = $Result.DefaultSelection<Prisma.$ResourcePayload>
+/**
  * Model AccountTypeIndividual
  * 
  */
@@ -351,6 +356,16 @@ export class PrismaClient<
     * ```
     */
   get account(): Prisma.AccountDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.resource`: Exposes CRUD operations for the **Resource** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Resources
+    * const resources = await prisma.resource.findMany()
+    * ```
+    */
+  get resource(): Prisma.ResourceDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.accountTypeIndividual`: Exposes CRUD operations for the **AccountTypeIndividual** model.
@@ -1076,6 +1091,7 @@ export namespace Prisma {
 
   export const ModelName: {
     Account: 'Account',
+    Resource: 'Resource',
     AccountTypeIndividual: 'AccountTypeIndividual',
     AccountTypeBrand: 'AccountTypeBrand',
     SystemConfig: 'SystemConfig',
@@ -1120,7 +1136,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "accountTypeIndividual" | "accountTypeBrand" | "systemConfig" | "authnRequest" | "activity" | "notification" | "request" | "family" | "familyMember" | "verification" | "contact" | "neupId" | "authnMethod" | "authnSession" | "systemError" | "applicationProvider" | "application" | "portfolio" | "asset" | "member" | "accountOwnership" | "connection" | "applicationBridge" | "applicationPolicy" | "authzPermission" | "authzRole" | "authzAssetsAccessGrant" | "permit" | "identity"
+      modelProps: "account" | "resource" | "accountTypeIndividual" | "accountTypeBrand" | "systemConfig" | "authnRequest" | "activity" | "notification" | "request" | "family" | "familyMember" | "verification" | "contact" | "neupId" | "authnMethod" | "authnSession" | "systemError" | "applicationProvider" | "application" | "portfolio" | "asset" | "member" | "accountOwnership" | "connection" | "applicationBridge" | "applicationPolicy" | "authzPermission" | "authzRole" | "authzAssetsAccessGrant" | "permit" | "identity"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1195,6 +1211,80 @@ export namespace Prisma {
           count: {
             args: Prisma.AccountCountArgs<ExtArgs>
             result: $Utils.Optional<AccountCountAggregateOutputType> | number
+          }
+        }
+      }
+      Resource: {
+        payload: Prisma.$ResourcePayload<ExtArgs>
+        fields: Prisma.ResourceFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ResourceFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ResourcePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ResourceFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ResourcePayload>
+          }
+          findFirst: {
+            args: Prisma.ResourceFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ResourcePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ResourceFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ResourcePayload>
+          }
+          findMany: {
+            args: Prisma.ResourceFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ResourcePayload>[]
+          }
+          create: {
+            args: Prisma.ResourceCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ResourcePayload>
+          }
+          createMany: {
+            args: Prisma.ResourceCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ResourceCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ResourcePayload>[]
+          }
+          delete: {
+            args: Prisma.ResourceDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ResourcePayload>
+          }
+          update: {
+            args: Prisma.ResourceUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ResourcePayload>
+          }
+          deleteMany: {
+            args: Prisma.ResourceDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ResourceUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ResourceUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ResourcePayload>[]
+          }
+          upsert: {
+            args: Prisma.ResourceUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ResourcePayload>
+          }
+          aggregate: {
+            args: Prisma.ResourceAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateResource>
+          }
+          groupBy: {
+            args: Prisma.ResourceGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ResourceGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ResourceCountArgs<ExtArgs>
+            result: $Utils.Optional<ResourceCountAggregateOutputType> | number
           }
         }
       }
@@ -3453,6 +3543,7 @@ export namespace Prisma {
   }
   export type GlobalOmitConfig = {
     account?: AccountOmit
+    resource?: ResourceOmit
     accountTypeIndividual?: AccountTypeIndividualOmit
     accountTypeBrand?: AccountTypeBrandOmit
     systemConfig?: SystemConfigOmit
@@ -3581,6 +3672,8 @@ export namespace Prisma {
     parentOwnerships: number
     childOwnerships: number
     linkedFrom: number
+    resources: number
+    uploadedResources: number
     receivedRequests: number
     sentRequests: number
     errorLogs: number
@@ -3607,6 +3700,8 @@ export namespace Prisma {
     parentOwnerships?: boolean | AccountCountOutputTypeCountParentOwnershipsArgs
     childOwnerships?: boolean | AccountCountOutputTypeCountChildOwnershipsArgs
     linkedFrom?: boolean | AccountCountOutputTypeCountLinkedFromArgs
+    resources?: boolean | AccountCountOutputTypeCountResourcesArgs
+    uploadedResources?: boolean | AccountCountOutputTypeCountUploadedResourcesArgs
     receivedRequests?: boolean | AccountCountOutputTypeCountReceivedRequestsArgs
     sentRequests?: boolean | AccountCountOutputTypeCountSentRequestsArgs
     errorLogs?: boolean | AccountCountOutputTypeCountErrorLogsArgs
@@ -3755,6 +3850,20 @@ export namespace Prisma {
    */
   export type AccountCountOutputTypeCountLinkedFromArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AccountWhereInput
+  }
+
+  /**
+   * AccountCountOutputType without action
+   */
+  export type AccountCountOutputTypeCountResourcesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ResourceWhereInput
+  }
+
+  /**
+   * AccountCountOutputType without action
+   */
+  export type AccountCountOutputTypeCountUploadedResourcesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ResourceWhereInput
   }
 
   /**
@@ -4320,6 +4429,8 @@ export namespace Prisma {
     childOwnerships?: boolean | Account$childOwnershipsArgs<ExtArgs>
     linkedAccount?: boolean | Account$linkedAccountArgs<ExtArgs>
     linkedFrom?: boolean | Account$linkedFromArgs<ExtArgs>
+    resources?: boolean | Account$resourcesArgs<ExtArgs>
+    uploadedResources?: boolean | Account$uploadedResourcesArgs<ExtArgs>
     receivedRequests?: boolean | Account$receivedRequestsArgs<ExtArgs>
     sentRequests?: boolean | Account$sentRequestsArgs<ExtArgs>
     errorLogs?: boolean | Account$errorLogsArgs<ExtArgs>
@@ -4389,6 +4500,8 @@ export namespace Prisma {
     childOwnerships?: boolean | Account$childOwnershipsArgs<ExtArgs>
     linkedAccount?: boolean | Account$linkedAccountArgs<ExtArgs>
     linkedFrom?: boolean | Account$linkedFromArgs<ExtArgs>
+    resources?: boolean | Account$resourcesArgs<ExtArgs>
+    uploadedResources?: boolean | Account$uploadedResourcesArgs<ExtArgs>
     receivedRequests?: boolean | Account$receivedRequestsArgs<ExtArgs>
     sentRequests?: boolean | Account$sentRequestsArgs<ExtArgs>
     errorLogs?: boolean | Account$errorLogsArgs<ExtArgs>
@@ -4427,6 +4540,8 @@ export namespace Prisma {
       childOwnerships: Prisma.$AccountOwnershipPayload<ExtArgs>[]
       linkedAccount: Prisma.$AccountPayload<ExtArgs> | null
       linkedFrom: Prisma.$AccountPayload<ExtArgs>[]
+      resources: Prisma.$ResourcePayload<ExtArgs>[]
+      uploadedResources: Prisma.$ResourcePayload<ExtArgs>[]
       receivedRequests: Prisma.$RequestPayload<ExtArgs>[]
       sentRequests: Prisma.$RequestPayload<ExtArgs>[]
       errorLogs: Prisma.$SystemErrorPayload<ExtArgs>[]
@@ -4858,6 +4973,8 @@ export namespace Prisma {
     childOwnerships<T extends Account$childOwnershipsArgs<ExtArgs> = {}>(args?: Subset<T, Account$childOwnershipsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountOwnershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     linkedAccount<T extends Account$linkedAccountArgs<ExtArgs> = {}>(args?: Subset<T, Account$linkedAccountArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     linkedFrom<T extends Account$linkedFromArgs<ExtArgs> = {}>(args?: Subset<T, Account$linkedFromArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    resources<T extends Account$resourcesArgs<ExtArgs> = {}>(args?: Subset<T, Account$resourcesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ResourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    uploadedResources<T extends Account$uploadedResourcesArgs<ExtArgs> = {}>(args?: Subset<T, Account$uploadedResourcesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ResourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     receivedRequests<T extends Account$receivedRequestsArgs<ExtArgs> = {}>(args?: Subset<T, Account$receivedRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sentRequests<T extends Account$sentRequestsArgs<ExtArgs> = {}>(args?: Subset<T, Account$sentRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     errorLogs<T extends Account$errorLogsArgs<ExtArgs> = {}>(args?: Subset<T, Account$errorLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SystemErrorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5809,6 +5926,54 @@ export namespace Prisma {
   }
 
   /**
+   * Account.resources
+   */
+  export type Account$resourcesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Resource
+     */
+    select?: ResourceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Resource
+     */
+    omit?: ResourceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ResourceInclude<ExtArgs> | null
+    where?: ResourceWhereInput
+    orderBy?: ResourceOrderByWithRelationInput | ResourceOrderByWithRelationInput[]
+    cursor?: ResourceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ResourceScalarFieldEnum | ResourceScalarFieldEnum[]
+  }
+
+  /**
+   * Account.uploadedResources
+   */
+  export type Account$uploadedResourcesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Resource
+     */
+    select?: ResourceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Resource
+     */
+    omit?: ResourceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ResourceInclude<ExtArgs> | null
+    where?: ResourceWhereInput
+    orderBy?: ResourceOrderByWithRelationInput | ResourceOrderByWithRelationInput[]
+    cursor?: ResourceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ResourceScalarFieldEnum | ResourceScalarFieldEnum[]
+  }
+
+  /**
    * Account.receivedRequests
    */
   export type Account$receivedRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5920,6 +6085,1113 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: AccountInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Resource
+   */
+
+  export type AggregateResource = {
+    _count: ResourceCountAggregateOutputType | null
+    _min: ResourceMinAggregateOutputType | null
+    _max: ResourceMaxAggregateOutputType | null
+  }
+
+  export type ResourceMinAggregateOutputType = {
+    id: string | null
+    type: string | null
+    accountId: string | null
+    uploadedBy: string | null
+    value: string | null
+    uploadedOn: Date | null
+  }
+
+  export type ResourceMaxAggregateOutputType = {
+    id: string | null
+    type: string | null
+    accountId: string | null
+    uploadedBy: string | null
+    value: string | null
+    uploadedOn: Date | null
+  }
+
+  export type ResourceCountAggregateOutputType = {
+    id: number
+    type: number
+    accountId: number
+    uploadedBy: number
+    value: number
+    details: number
+    uploadedOn: number
+    _all: number
+  }
+
+
+  export type ResourceMinAggregateInputType = {
+    id?: true
+    type?: true
+    accountId?: true
+    uploadedBy?: true
+    value?: true
+    uploadedOn?: true
+  }
+
+  export type ResourceMaxAggregateInputType = {
+    id?: true
+    type?: true
+    accountId?: true
+    uploadedBy?: true
+    value?: true
+    uploadedOn?: true
+  }
+
+  export type ResourceCountAggregateInputType = {
+    id?: true
+    type?: true
+    accountId?: true
+    uploadedBy?: true
+    value?: true
+    details?: true
+    uploadedOn?: true
+    _all?: true
+  }
+
+  export type ResourceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Resource to aggregate.
+     */
+    where?: ResourceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Resources to fetch.
+     */
+    orderBy?: ResourceOrderByWithRelationInput | ResourceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ResourceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Resources from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Resources.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Resources
+    **/
+    _count?: true | ResourceCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ResourceMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ResourceMaxAggregateInputType
+  }
+
+  export type GetResourceAggregateType<T extends ResourceAggregateArgs> = {
+        [P in keyof T & keyof AggregateResource]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateResource[P]>
+      : GetScalarType<T[P], AggregateResource[P]>
+  }
+
+
+
+
+  export type ResourceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ResourceWhereInput
+    orderBy?: ResourceOrderByWithAggregationInput | ResourceOrderByWithAggregationInput[]
+    by: ResourceScalarFieldEnum[] | ResourceScalarFieldEnum
+    having?: ResourceScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ResourceCountAggregateInputType | true
+    _min?: ResourceMinAggregateInputType
+    _max?: ResourceMaxAggregateInputType
+  }
+
+  export type ResourceGroupByOutputType = {
+    id: string
+    type: string
+    accountId: string | null
+    uploadedBy: string
+    value: string
+    details: JsonValue | null
+    uploadedOn: Date
+    _count: ResourceCountAggregateOutputType | null
+    _min: ResourceMinAggregateOutputType | null
+    _max: ResourceMaxAggregateOutputType | null
+  }
+
+  type GetResourceGroupByPayload<T extends ResourceGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ResourceGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ResourceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ResourceGroupByOutputType[P]>
+            : GetScalarType<T[P], ResourceGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ResourceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    type?: boolean
+    accountId?: boolean
+    uploadedBy?: boolean
+    value?: boolean
+    details?: boolean
+    uploadedOn?: boolean
+    account?: boolean | Resource$accountArgs<ExtArgs>
+    uploader?: boolean | AccountDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["resource"]>
+
+  export type ResourceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    type?: boolean
+    accountId?: boolean
+    uploadedBy?: boolean
+    value?: boolean
+    details?: boolean
+    uploadedOn?: boolean
+    account?: boolean | Resource$accountArgs<ExtArgs>
+    uploader?: boolean | AccountDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["resource"]>
+
+  export type ResourceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    type?: boolean
+    accountId?: boolean
+    uploadedBy?: boolean
+    value?: boolean
+    details?: boolean
+    uploadedOn?: boolean
+    account?: boolean | Resource$accountArgs<ExtArgs>
+    uploader?: boolean | AccountDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["resource"]>
+
+  export type ResourceSelectScalar = {
+    id?: boolean
+    type?: boolean
+    accountId?: boolean
+    uploadedBy?: boolean
+    value?: boolean
+    details?: boolean
+    uploadedOn?: boolean
+  }
+
+  export type ResourceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "type" | "accountId" | "uploadedBy" | "value" | "details" | "uploadedOn", ExtArgs["result"]["resource"]>
+  export type ResourceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | Resource$accountArgs<ExtArgs>
+    uploader?: boolean | AccountDefaultArgs<ExtArgs>
+  }
+  export type ResourceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | Resource$accountArgs<ExtArgs>
+    uploader?: boolean | AccountDefaultArgs<ExtArgs>
+  }
+  export type ResourceIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    account?: boolean | Resource$accountArgs<ExtArgs>
+    uploader?: boolean | AccountDefaultArgs<ExtArgs>
+  }
+
+  export type $ResourcePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Resource"
+    objects: {
+      account: Prisma.$AccountPayload<ExtArgs> | null
+      uploader: Prisma.$AccountPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      type: string
+      accountId: string | null
+      uploadedBy: string
+      value: string
+      details: Prisma.JsonValue | null
+      uploadedOn: Date
+    }, ExtArgs["result"]["resource"]>
+    composites: {}
+  }
+
+  type ResourceGetPayload<S extends boolean | null | undefined | ResourceDefaultArgs> = $Result.GetResult<Prisma.$ResourcePayload, S>
+
+  type ResourceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ResourceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ResourceCountAggregateInputType | true
+    }
+
+  export interface ResourceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Resource'], meta: { name: 'Resource' } }
+    /**
+     * Find zero or one Resource that matches the filter.
+     * @param {ResourceFindUniqueArgs} args - Arguments to find a Resource
+     * @example
+     * // Get one Resource
+     * const resource = await prisma.resource.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ResourceFindUniqueArgs>(args: SelectSubset<T, ResourceFindUniqueArgs<ExtArgs>>): Prisma__ResourceClient<$Result.GetResult<Prisma.$ResourcePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Resource that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ResourceFindUniqueOrThrowArgs} args - Arguments to find a Resource
+     * @example
+     * // Get one Resource
+     * const resource = await prisma.resource.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ResourceFindUniqueOrThrowArgs>(args: SelectSubset<T, ResourceFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ResourceClient<$Result.GetResult<Prisma.$ResourcePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Resource that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ResourceFindFirstArgs} args - Arguments to find a Resource
+     * @example
+     * // Get one Resource
+     * const resource = await prisma.resource.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ResourceFindFirstArgs>(args?: SelectSubset<T, ResourceFindFirstArgs<ExtArgs>>): Prisma__ResourceClient<$Result.GetResult<Prisma.$ResourcePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Resource that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ResourceFindFirstOrThrowArgs} args - Arguments to find a Resource
+     * @example
+     * // Get one Resource
+     * const resource = await prisma.resource.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ResourceFindFirstOrThrowArgs>(args?: SelectSubset<T, ResourceFindFirstOrThrowArgs<ExtArgs>>): Prisma__ResourceClient<$Result.GetResult<Prisma.$ResourcePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Resources that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ResourceFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Resources
+     * const resources = await prisma.resource.findMany()
+     * 
+     * // Get first 10 Resources
+     * const resources = await prisma.resource.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const resourceWithIdOnly = await prisma.resource.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ResourceFindManyArgs>(args?: SelectSubset<T, ResourceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ResourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Resource.
+     * @param {ResourceCreateArgs} args - Arguments to create a Resource.
+     * @example
+     * // Create one Resource
+     * const Resource = await prisma.resource.create({
+     *   data: {
+     *     // ... data to create a Resource
+     *   }
+     * })
+     * 
+     */
+    create<T extends ResourceCreateArgs>(args: SelectSubset<T, ResourceCreateArgs<ExtArgs>>): Prisma__ResourceClient<$Result.GetResult<Prisma.$ResourcePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Resources.
+     * @param {ResourceCreateManyArgs} args - Arguments to create many Resources.
+     * @example
+     * // Create many Resources
+     * const resource = await prisma.resource.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ResourceCreateManyArgs>(args?: SelectSubset<T, ResourceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Resources and returns the data saved in the database.
+     * @param {ResourceCreateManyAndReturnArgs} args - Arguments to create many Resources.
+     * @example
+     * // Create many Resources
+     * const resource = await prisma.resource.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Resources and only return the `id`
+     * const resourceWithIdOnly = await prisma.resource.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ResourceCreateManyAndReturnArgs>(args?: SelectSubset<T, ResourceCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ResourcePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Resource.
+     * @param {ResourceDeleteArgs} args - Arguments to delete one Resource.
+     * @example
+     * // Delete one Resource
+     * const Resource = await prisma.resource.delete({
+     *   where: {
+     *     // ... filter to delete one Resource
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ResourceDeleteArgs>(args: SelectSubset<T, ResourceDeleteArgs<ExtArgs>>): Prisma__ResourceClient<$Result.GetResult<Prisma.$ResourcePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Resource.
+     * @param {ResourceUpdateArgs} args - Arguments to update one Resource.
+     * @example
+     * // Update one Resource
+     * const resource = await prisma.resource.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ResourceUpdateArgs>(args: SelectSubset<T, ResourceUpdateArgs<ExtArgs>>): Prisma__ResourceClient<$Result.GetResult<Prisma.$ResourcePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Resources.
+     * @param {ResourceDeleteManyArgs} args - Arguments to filter Resources to delete.
+     * @example
+     * // Delete a few Resources
+     * const { count } = await prisma.resource.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ResourceDeleteManyArgs>(args?: SelectSubset<T, ResourceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Resources.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ResourceUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Resources
+     * const resource = await prisma.resource.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ResourceUpdateManyArgs>(args: SelectSubset<T, ResourceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Resources and returns the data updated in the database.
+     * @param {ResourceUpdateManyAndReturnArgs} args - Arguments to update many Resources.
+     * @example
+     * // Update many Resources
+     * const resource = await prisma.resource.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Resources and only return the `id`
+     * const resourceWithIdOnly = await prisma.resource.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ResourceUpdateManyAndReturnArgs>(args: SelectSubset<T, ResourceUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ResourcePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Resource.
+     * @param {ResourceUpsertArgs} args - Arguments to update or create a Resource.
+     * @example
+     * // Update or create a Resource
+     * const resource = await prisma.resource.upsert({
+     *   create: {
+     *     // ... data to create a Resource
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Resource we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ResourceUpsertArgs>(args: SelectSubset<T, ResourceUpsertArgs<ExtArgs>>): Prisma__ResourceClient<$Result.GetResult<Prisma.$ResourcePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Resources.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ResourceCountArgs} args - Arguments to filter Resources to count.
+     * @example
+     * // Count the number of Resources
+     * const count = await prisma.resource.count({
+     *   where: {
+     *     // ... the filter for the Resources we want to count
+     *   }
+     * })
+    **/
+    count<T extends ResourceCountArgs>(
+      args?: Subset<T, ResourceCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ResourceCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Resource.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ResourceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ResourceAggregateArgs>(args: Subset<T, ResourceAggregateArgs>): Prisma.PrismaPromise<GetResourceAggregateType<T>>
+
+    /**
+     * Group by Resource.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ResourceGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ResourceGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ResourceGroupByArgs['orderBy'] }
+        : { orderBy?: ResourceGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ResourceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetResourceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Resource model
+   */
+  readonly fields: ResourceFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Resource.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ResourceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    account<T extends Resource$accountArgs<ExtArgs> = {}>(args?: Subset<T, Resource$accountArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    uploader<T extends AccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AccountDefaultArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Resource model
+   */
+  interface ResourceFieldRefs {
+    readonly id: FieldRef<"Resource", 'String'>
+    readonly type: FieldRef<"Resource", 'String'>
+    readonly accountId: FieldRef<"Resource", 'String'>
+    readonly uploadedBy: FieldRef<"Resource", 'String'>
+    readonly value: FieldRef<"Resource", 'String'>
+    readonly details: FieldRef<"Resource", 'Json'>
+    readonly uploadedOn: FieldRef<"Resource", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Resource findUnique
+   */
+  export type ResourceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Resource
+     */
+    select?: ResourceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Resource
+     */
+    omit?: ResourceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ResourceInclude<ExtArgs> | null
+    /**
+     * Filter, which Resource to fetch.
+     */
+    where: ResourceWhereUniqueInput
+  }
+
+  /**
+   * Resource findUniqueOrThrow
+   */
+  export type ResourceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Resource
+     */
+    select?: ResourceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Resource
+     */
+    omit?: ResourceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ResourceInclude<ExtArgs> | null
+    /**
+     * Filter, which Resource to fetch.
+     */
+    where: ResourceWhereUniqueInput
+  }
+
+  /**
+   * Resource findFirst
+   */
+  export type ResourceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Resource
+     */
+    select?: ResourceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Resource
+     */
+    omit?: ResourceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ResourceInclude<ExtArgs> | null
+    /**
+     * Filter, which Resource to fetch.
+     */
+    where?: ResourceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Resources to fetch.
+     */
+    orderBy?: ResourceOrderByWithRelationInput | ResourceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Resources.
+     */
+    cursor?: ResourceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Resources from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Resources.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Resources.
+     */
+    distinct?: ResourceScalarFieldEnum | ResourceScalarFieldEnum[]
+  }
+
+  /**
+   * Resource findFirstOrThrow
+   */
+  export type ResourceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Resource
+     */
+    select?: ResourceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Resource
+     */
+    omit?: ResourceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ResourceInclude<ExtArgs> | null
+    /**
+     * Filter, which Resource to fetch.
+     */
+    where?: ResourceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Resources to fetch.
+     */
+    orderBy?: ResourceOrderByWithRelationInput | ResourceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Resources.
+     */
+    cursor?: ResourceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Resources from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Resources.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Resources.
+     */
+    distinct?: ResourceScalarFieldEnum | ResourceScalarFieldEnum[]
+  }
+
+  /**
+   * Resource findMany
+   */
+  export type ResourceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Resource
+     */
+    select?: ResourceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Resource
+     */
+    omit?: ResourceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ResourceInclude<ExtArgs> | null
+    /**
+     * Filter, which Resources to fetch.
+     */
+    where?: ResourceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Resources to fetch.
+     */
+    orderBy?: ResourceOrderByWithRelationInput | ResourceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Resources.
+     */
+    cursor?: ResourceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Resources from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Resources.
+     */
+    skip?: number
+    distinct?: ResourceScalarFieldEnum | ResourceScalarFieldEnum[]
+  }
+
+  /**
+   * Resource create
+   */
+  export type ResourceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Resource
+     */
+    select?: ResourceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Resource
+     */
+    omit?: ResourceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ResourceInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Resource.
+     */
+    data: XOR<ResourceCreateInput, ResourceUncheckedCreateInput>
+  }
+
+  /**
+   * Resource createMany
+   */
+  export type ResourceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Resources.
+     */
+    data: ResourceCreateManyInput | ResourceCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Resource createManyAndReturn
+   */
+  export type ResourceCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Resource
+     */
+    select?: ResourceSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Resource
+     */
+    omit?: ResourceOmit<ExtArgs> | null
+    /**
+     * The data used to create many Resources.
+     */
+    data: ResourceCreateManyInput | ResourceCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ResourceIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Resource update
+   */
+  export type ResourceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Resource
+     */
+    select?: ResourceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Resource
+     */
+    omit?: ResourceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ResourceInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Resource.
+     */
+    data: XOR<ResourceUpdateInput, ResourceUncheckedUpdateInput>
+    /**
+     * Choose, which Resource to update.
+     */
+    where: ResourceWhereUniqueInput
+  }
+
+  /**
+   * Resource updateMany
+   */
+  export type ResourceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Resources.
+     */
+    data: XOR<ResourceUpdateManyMutationInput, ResourceUncheckedUpdateManyInput>
+    /**
+     * Filter which Resources to update
+     */
+    where?: ResourceWhereInput
+    /**
+     * Limit how many Resources to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Resource updateManyAndReturn
+   */
+  export type ResourceUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Resource
+     */
+    select?: ResourceSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Resource
+     */
+    omit?: ResourceOmit<ExtArgs> | null
+    /**
+     * The data used to update Resources.
+     */
+    data: XOR<ResourceUpdateManyMutationInput, ResourceUncheckedUpdateManyInput>
+    /**
+     * Filter which Resources to update
+     */
+    where?: ResourceWhereInput
+    /**
+     * Limit how many Resources to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ResourceIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Resource upsert
+   */
+  export type ResourceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Resource
+     */
+    select?: ResourceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Resource
+     */
+    omit?: ResourceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ResourceInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Resource to update in case it exists.
+     */
+    where: ResourceWhereUniqueInput
+    /**
+     * In case the Resource found by the `where` argument doesn't exist, create a new Resource with this data.
+     */
+    create: XOR<ResourceCreateInput, ResourceUncheckedCreateInput>
+    /**
+     * In case the Resource was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ResourceUpdateInput, ResourceUncheckedUpdateInput>
+  }
+
+  /**
+   * Resource delete
+   */
+  export type ResourceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Resource
+     */
+    select?: ResourceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Resource
+     */
+    omit?: ResourceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ResourceInclude<ExtArgs> | null
+    /**
+     * Filter which Resource to delete.
+     */
+    where: ResourceWhereUniqueInput
+  }
+
+  /**
+   * Resource deleteMany
+   */
+  export type ResourceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Resources to delete
+     */
+    where?: ResourceWhereInput
+    /**
+     * Limit how many Resources to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Resource.account
+   */
+  export type Resource$accountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Account
+     */
+    select?: AccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Account
+     */
+    omit?: AccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AccountInclude<ExtArgs> | null
+    where?: AccountWhereInput
+  }
+
+  /**
+   * Resource without action
+   */
+  export type ResourceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Resource
+     */
+    select?: ResourceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Resource
+     */
+    omit?: ResourceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ResourceInclude<ExtArgs> | null
   }
 
 
@@ -38019,6 +39291,19 @@ export namespace Prisma {
   export type AccountScalarFieldEnum = (typeof AccountScalarFieldEnum)[keyof typeof AccountScalarFieldEnum]
 
 
+  export const ResourceScalarFieldEnum: {
+    id: 'id',
+    type: 'type',
+    accountId: 'accountId',
+    uploadedBy: 'uploadedBy',
+    value: 'value',
+    details: 'details',
+    uploadedOn: 'uploadedOn'
+  };
+
+  export type ResourceScalarFieldEnum = (typeof ResourceScalarFieldEnum)[keyof typeof ResourceScalarFieldEnum]
+
+
   export const AccountTypeIndividualScalarFieldEnum: {
     accountId: 'accountId',
     firstName: 'firstName',
@@ -38603,6 +39888,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipListRelationFilter
     linkedAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
     linkedFrom?: AccountListRelationFilter
+    resources?: ResourceListRelationFilter
+    uploadedResources?: ResourceListRelationFilter
     receivedRequests?: RequestListRelationFilter
     sentRequests?: RequestListRelationFilter
     errorLogs?: SystemErrorListRelationFilter
@@ -38641,6 +39928,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipOrderByRelationAggregateInput
     linkedAccount?: AccountOrderByWithRelationInput
     linkedFrom?: AccountOrderByRelationAggregateInput
+    resources?: ResourceOrderByRelationAggregateInput
+    uploadedResources?: ResourceOrderByRelationAggregateInput
     receivedRequests?: RequestOrderByRelationAggregateInput
     sentRequests?: RequestOrderByRelationAggregateInput
     errorLogs?: SystemErrorOrderByRelationAggregateInput
@@ -38682,6 +39971,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipListRelationFilter
     linkedAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
     linkedFrom?: AccountListRelationFilter
+    resources?: ResourceListRelationFilter
+    uploadedResources?: ResourceListRelationFilter
     receivedRequests?: RequestListRelationFilter
     sentRequests?: RequestListRelationFilter
     errorLogs?: SystemErrorListRelationFilter
@@ -38716,6 +40007,74 @@ export namespace Prisma {
     details?: JsonNullableWithAggregatesFilter<"Account">
     createdAt?: DateTimeWithAggregatesFilter<"Account"> | Date | string
     linkedAccountId?: StringNullableWithAggregatesFilter<"Account"> | string | null
+  }
+
+  export type ResourceWhereInput = {
+    AND?: ResourceWhereInput | ResourceWhereInput[]
+    OR?: ResourceWhereInput[]
+    NOT?: ResourceWhereInput | ResourceWhereInput[]
+    id?: StringFilter<"Resource"> | string
+    type?: StringFilter<"Resource"> | string
+    accountId?: StringNullableFilter<"Resource"> | string | null
+    uploadedBy?: StringFilter<"Resource"> | string
+    value?: StringFilter<"Resource"> | string
+    details?: JsonNullableFilter<"Resource">
+    uploadedOn?: DateTimeFilter<"Resource"> | Date | string
+    account?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
+    uploader?: XOR<AccountScalarRelationFilter, AccountWhereInput>
+  }
+
+  export type ResourceOrderByWithRelationInput = {
+    id?: SortOrder
+    type?: SortOrder
+    accountId?: SortOrderInput | SortOrder
+    uploadedBy?: SortOrder
+    value?: SortOrder
+    details?: SortOrderInput | SortOrder
+    uploadedOn?: SortOrder
+    account?: AccountOrderByWithRelationInput
+    uploader?: AccountOrderByWithRelationInput
+  }
+
+  export type ResourceWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ResourceWhereInput | ResourceWhereInput[]
+    OR?: ResourceWhereInput[]
+    NOT?: ResourceWhereInput | ResourceWhereInput[]
+    type?: StringFilter<"Resource"> | string
+    accountId?: StringNullableFilter<"Resource"> | string | null
+    uploadedBy?: StringFilter<"Resource"> | string
+    value?: StringFilter<"Resource"> | string
+    details?: JsonNullableFilter<"Resource">
+    uploadedOn?: DateTimeFilter<"Resource"> | Date | string
+    account?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
+    uploader?: XOR<AccountScalarRelationFilter, AccountWhereInput>
+  }, "id">
+
+  export type ResourceOrderByWithAggregationInput = {
+    id?: SortOrder
+    type?: SortOrder
+    accountId?: SortOrderInput | SortOrder
+    uploadedBy?: SortOrder
+    value?: SortOrder
+    details?: SortOrderInput | SortOrder
+    uploadedOn?: SortOrder
+    _count?: ResourceCountOrderByAggregateInput
+    _max?: ResourceMaxOrderByAggregateInput
+    _min?: ResourceMinOrderByAggregateInput
+  }
+
+  export type ResourceScalarWhereWithAggregatesInput = {
+    AND?: ResourceScalarWhereWithAggregatesInput | ResourceScalarWhereWithAggregatesInput[]
+    OR?: ResourceScalarWhereWithAggregatesInput[]
+    NOT?: ResourceScalarWhereWithAggregatesInput | ResourceScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Resource"> | string
+    type?: StringWithAggregatesFilter<"Resource"> | string
+    accountId?: StringNullableWithAggregatesFilter<"Resource"> | string | null
+    uploadedBy?: StringWithAggregatesFilter<"Resource"> | string
+    value?: StringWithAggregatesFilter<"Resource"> | string
+    details?: JsonNullableWithAggregatesFilter<"Resource">
+    uploadedOn?: DateTimeWithAggregatesFilter<"Resource"> | Date | string
   }
 
   export type AccountTypeIndividualWhereInput = {
@@ -40719,6 +42078,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -40756,6 +42117,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -40793,6 +42156,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -40830,6 +42195,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -40869,6 +42236,74 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ResourceCreateInput = {
+    id?: string
+    type: string
+    value: string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    uploadedOn?: Date | string
+    account?: AccountCreateNestedOneWithoutResourcesInput
+    uploader: AccountCreateNestedOneWithoutUploadedResourcesInput
+  }
+
+  export type ResourceUncheckedCreateInput = {
+    id?: string
+    type: string
+    accountId?: string | null
+    uploadedBy: string
+    value: string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    uploadedOn?: Date | string
+  }
+
+  export type ResourceUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    value?: StringFieldUpdateOperationsInput | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    uploadedOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    account?: AccountUpdateOneWithoutResourcesNestedInput
+    uploader?: AccountUpdateOneRequiredWithoutUploadedResourcesNestedInput
+  }
+
+  export type ResourceUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    accountId?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedBy?: StringFieldUpdateOperationsInput | string
+    value?: StringFieldUpdateOperationsInput | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    uploadedOn?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ResourceCreateManyInput = {
+    id?: string
+    type: string
+    accountId?: string | null
+    uploadedBy: string
+    value: string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    uploadedOn?: Date | string
+  }
+
+  export type ResourceUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    value?: StringFieldUpdateOperationsInput | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    uploadedOn?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ResourceUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    accountId?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedBy?: StringFieldUpdateOperationsInput | string
+    value?: StringFieldUpdateOperationsInput | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    uploadedOn?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AccountTypeIndividualCreateInput = {
@@ -43078,6 +44513,12 @@ export namespace Prisma {
     none?: AccountWhereInput
   }
 
+  export type ResourceListRelationFilter = {
+    every?: ResourceWhereInput
+    some?: ResourceWhereInput
+    none?: ResourceWhereInput
+  }
+
   export type RequestListRelationFilter = {
     every?: RequestWhereInput
     some?: RequestWhereInput
@@ -43148,6 +44589,10 @@ export namespace Prisma {
   }
 
   export type AccountOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ResourceOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -43277,6 +44722,39 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type AccountScalarRelationFilter = {
+    is?: AccountWhereInput
+    isNot?: AccountWhereInput
+  }
+
+  export type ResourceCountOrderByAggregateInput = {
+    id?: SortOrder
+    type?: SortOrder
+    accountId?: SortOrder
+    uploadedBy?: SortOrder
+    value?: SortOrder
+    details?: SortOrder
+    uploadedOn?: SortOrder
+  }
+
+  export type ResourceMaxOrderByAggregateInput = {
+    id?: SortOrder
+    type?: SortOrder
+    accountId?: SortOrder
+    uploadedBy?: SortOrder
+    value?: SortOrder
+    uploadedOn?: SortOrder
+  }
+
+  export type ResourceMinOrderByAggregateInput = {
+    id?: SortOrder
+    type?: SortOrder
+    accountId?: SortOrder
+    uploadedBy?: SortOrder
+    value?: SortOrder
+    uploadedOn?: SortOrder
+  }
+
   export type DateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -43286,11 +44764,6 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type AccountScalarRelationFilter = {
-    is?: AccountWhereInput
-    isNot?: AccountWhereInput
   }
 
   export type AccountTypeIndividualCountOrderByAggregateInput = {
@@ -44550,6 +46023,20 @@ export namespace Prisma {
     connect?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
   }
 
+  export type ResourceCreateNestedManyWithoutAccountInput = {
+    create?: XOR<ResourceCreateWithoutAccountInput, ResourceUncheckedCreateWithoutAccountInput> | ResourceCreateWithoutAccountInput[] | ResourceUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: ResourceCreateOrConnectWithoutAccountInput | ResourceCreateOrConnectWithoutAccountInput[]
+    createMany?: ResourceCreateManyAccountInputEnvelope
+    connect?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
+  }
+
+  export type ResourceCreateNestedManyWithoutUploaderInput = {
+    create?: XOR<ResourceCreateWithoutUploaderInput, ResourceUncheckedCreateWithoutUploaderInput> | ResourceCreateWithoutUploaderInput[] | ResourceUncheckedCreateWithoutUploaderInput[]
+    connectOrCreate?: ResourceCreateOrConnectWithoutUploaderInput | ResourceCreateOrConnectWithoutUploaderInput[]
+    createMany?: ResourceCreateManyUploaderInputEnvelope
+    connect?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
+  }
+
   export type RequestCreateNestedManyWithoutRecipientInput = {
     create?: XOR<RequestCreateWithoutRecipientInput, RequestUncheckedCreateWithoutRecipientInput> | RequestCreateWithoutRecipientInput[] | RequestUncheckedCreateWithoutRecipientInput[]
     connectOrCreate?: RequestCreateOrConnectWithoutRecipientInput | RequestCreateOrConnectWithoutRecipientInput[]
@@ -44721,6 +46208,20 @@ export namespace Prisma {
     connectOrCreate?: AccountCreateOrConnectWithoutLinkedAccountInput | AccountCreateOrConnectWithoutLinkedAccountInput[]
     createMany?: AccountCreateManyLinkedAccountInputEnvelope
     connect?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
+  }
+
+  export type ResourceUncheckedCreateNestedManyWithoutAccountInput = {
+    create?: XOR<ResourceCreateWithoutAccountInput, ResourceUncheckedCreateWithoutAccountInput> | ResourceCreateWithoutAccountInput[] | ResourceUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: ResourceCreateOrConnectWithoutAccountInput | ResourceCreateOrConnectWithoutAccountInput[]
+    createMany?: ResourceCreateManyAccountInputEnvelope
+    connect?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
+  }
+
+  export type ResourceUncheckedCreateNestedManyWithoutUploaderInput = {
+    create?: XOR<ResourceCreateWithoutUploaderInput, ResourceUncheckedCreateWithoutUploaderInput> | ResourceCreateWithoutUploaderInput[] | ResourceUncheckedCreateWithoutUploaderInput[]
+    connectOrCreate?: ResourceCreateOrConnectWithoutUploaderInput | ResourceCreateOrConnectWithoutUploaderInput[]
+    createMany?: ResourceCreateManyUploaderInputEnvelope
+    connect?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
   }
 
   export type RequestUncheckedCreateNestedManyWithoutRecipientInput = {
@@ -45061,6 +46562,34 @@ export namespace Prisma {
     update?: AccountUpdateWithWhereUniqueWithoutLinkedAccountInput | AccountUpdateWithWhereUniqueWithoutLinkedAccountInput[]
     updateMany?: AccountUpdateManyWithWhereWithoutLinkedAccountInput | AccountUpdateManyWithWhereWithoutLinkedAccountInput[]
     deleteMany?: AccountScalarWhereInput | AccountScalarWhereInput[]
+  }
+
+  export type ResourceUpdateManyWithoutAccountNestedInput = {
+    create?: XOR<ResourceCreateWithoutAccountInput, ResourceUncheckedCreateWithoutAccountInput> | ResourceCreateWithoutAccountInput[] | ResourceUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: ResourceCreateOrConnectWithoutAccountInput | ResourceCreateOrConnectWithoutAccountInput[]
+    upsert?: ResourceUpsertWithWhereUniqueWithoutAccountInput | ResourceUpsertWithWhereUniqueWithoutAccountInput[]
+    createMany?: ResourceCreateManyAccountInputEnvelope
+    set?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
+    disconnect?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
+    delete?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
+    connect?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
+    update?: ResourceUpdateWithWhereUniqueWithoutAccountInput | ResourceUpdateWithWhereUniqueWithoutAccountInput[]
+    updateMany?: ResourceUpdateManyWithWhereWithoutAccountInput | ResourceUpdateManyWithWhereWithoutAccountInput[]
+    deleteMany?: ResourceScalarWhereInput | ResourceScalarWhereInput[]
+  }
+
+  export type ResourceUpdateManyWithoutUploaderNestedInput = {
+    create?: XOR<ResourceCreateWithoutUploaderInput, ResourceUncheckedCreateWithoutUploaderInput> | ResourceCreateWithoutUploaderInput[] | ResourceUncheckedCreateWithoutUploaderInput[]
+    connectOrCreate?: ResourceCreateOrConnectWithoutUploaderInput | ResourceCreateOrConnectWithoutUploaderInput[]
+    upsert?: ResourceUpsertWithWhereUniqueWithoutUploaderInput | ResourceUpsertWithWhereUniqueWithoutUploaderInput[]
+    createMany?: ResourceCreateManyUploaderInputEnvelope
+    set?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
+    disconnect?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
+    delete?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
+    connect?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
+    update?: ResourceUpdateWithWhereUniqueWithoutUploaderInput | ResourceUpdateWithWhereUniqueWithoutUploaderInput[]
+    updateMany?: ResourceUpdateManyWithWhereWithoutUploaderInput | ResourceUpdateManyWithWhereWithoutUploaderInput[]
+    deleteMany?: ResourceScalarWhereInput | ResourceScalarWhereInput[]
   }
 
   export type RequestUpdateManyWithoutRecipientNestedInput = {
@@ -45405,6 +46934,34 @@ export namespace Prisma {
     deleteMany?: AccountScalarWhereInput | AccountScalarWhereInput[]
   }
 
+  export type ResourceUncheckedUpdateManyWithoutAccountNestedInput = {
+    create?: XOR<ResourceCreateWithoutAccountInput, ResourceUncheckedCreateWithoutAccountInput> | ResourceCreateWithoutAccountInput[] | ResourceUncheckedCreateWithoutAccountInput[]
+    connectOrCreate?: ResourceCreateOrConnectWithoutAccountInput | ResourceCreateOrConnectWithoutAccountInput[]
+    upsert?: ResourceUpsertWithWhereUniqueWithoutAccountInput | ResourceUpsertWithWhereUniqueWithoutAccountInput[]
+    createMany?: ResourceCreateManyAccountInputEnvelope
+    set?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
+    disconnect?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
+    delete?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
+    connect?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
+    update?: ResourceUpdateWithWhereUniqueWithoutAccountInput | ResourceUpdateWithWhereUniqueWithoutAccountInput[]
+    updateMany?: ResourceUpdateManyWithWhereWithoutAccountInput | ResourceUpdateManyWithWhereWithoutAccountInput[]
+    deleteMany?: ResourceScalarWhereInput | ResourceScalarWhereInput[]
+  }
+
+  export type ResourceUncheckedUpdateManyWithoutUploaderNestedInput = {
+    create?: XOR<ResourceCreateWithoutUploaderInput, ResourceUncheckedCreateWithoutUploaderInput> | ResourceCreateWithoutUploaderInput[] | ResourceUncheckedCreateWithoutUploaderInput[]
+    connectOrCreate?: ResourceCreateOrConnectWithoutUploaderInput | ResourceCreateOrConnectWithoutUploaderInput[]
+    upsert?: ResourceUpsertWithWhereUniqueWithoutUploaderInput | ResourceUpsertWithWhereUniqueWithoutUploaderInput[]
+    createMany?: ResourceCreateManyUploaderInputEnvelope
+    set?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
+    disconnect?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
+    delete?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
+    connect?: ResourceWhereUniqueInput | ResourceWhereUniqueInput[]
+    update?: ResourceUpdateWithWhereUniqueWithoutUploaderInput | ResourceUpdateWithWhereUniqueWithoutUploaderInput[]
+    updateMany?: ResourceUpdateManyWithWhereWithoutUploaderInput | ResourceUpdateManyWithWhereWithoutUploaderInput[]
+    deleteMany?: ResourceScalarWhereInput | ResourceScalarWhereInput[]
+  }
+
   export type RequestUncheckedUpdateManyWithoutRecipientNestedInput = {
     create?: XOR<RequestCreateWithoutRecipientInput, RequestUncheckedCreateWithoutRecipientInput> | RequestCreateWithoutRecipientInput[] | RequestUncheckedCreateWithoutRecipientInput[]
     connectOrCreate?: RequestCreateOrConnectWithoutRecipientInput | RequestCreateOrConnectWithoutRecipientInput[]
@@ -45459,6 +47016,36 @@ export namespace Prisma {
     update?: VerificationUpdateWithWhereUniqueWithoutAccountInput | VerificationUpdateWithWhereUniqueWithoutAccountInput[]
     updateMany?: VerificationUpdateManyWithWhereWithoutAccountInput | VerificationUpdateManyWithWhereWithoutAccountInput[]
     deleteMany?: VerificationScalarWhereInput | VerificationScalarWhereInput[]
+  }
+
+  export type AccountCreateNestedOneWithoutResourcesInput = {
+    create?: XOR<AccountCreateWithoutResourcesInput, AccountUncheckedCreateWithoutResourcesInput>
+    connectOrCreate?: AccountCreateOrConnectWithoutResourcesInput
+    connect?: AccountWhereUniqueInput
+  }
+
+  export type AccountCreateNestedOneWithoutUploadedResourcesInput = {
+    create?: XOR<AccountCreateWithoutUploadedResourcesInput, AccountUncheckedCreateWithoutUploadedResourcesInput>
+    connectOrCreate?: AccountCreateOrConnectWithoutUploadedResourcesInput
+    connect?: AccountWhereUniqueInput
+  }
+
+  export type AccountUpdateOneWithoutResourcesNestedInput = {
+    create?: XOR<AccountCreateWithoutResourcesInput, AccountUncheckedCreateWithoutResourcesInput>
+    connectOrCreate?: AccountCreateOrConnectWithoutResourcesInput
+    upsert?: AccountUpsertWithoutResourcesInput
+    disconnect?: AccountWhereInput | boolean
+    delete?: AccountWhereInput | boolean
+    connect?: AccountWhereUniqueInput
+    update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutResourcesInput, AccountUpdateWithoutResourcesInput>, AccountUncheckedUpdateWithoutResourcesInput>
+  }
+
+  export type AccountUpdateOneRequiredWithoutUploadedResourcesNestedInput = {
+    create?: XOR<AccountCreateWithoutUploadedResourcesInput, AccountUncheckedCreateWithoutUploadedResourcesInput>
+    connectOrCreate?: AccountCreateOrConnectWithoutUploadedResourcesInput
+    upsert?: AccountUpsertWithoutUploadedResourcesInput
+    connect?: AccountWhereUniqueInput
+    update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutUploadedResourcesInput, AccountUpdateWithoutUploadedResourcesInput>, AccountUncheckedUpdateWithoutUploadedResourcesInput>
   }
 
   export type AccountCreateNestedOneWithoutIndividualProfileInput = {
@@ -47786,6 +49373,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -47822,6 +49411,8 @@ export namespace Prisma {
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -47863,6 +49454,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -47899,6 +49492,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -47912,6 +49507,62 @@ export namespace Prisma {
 
   export type AccountCreateManyLinkedAccountInputEnvelope = {
     data: AccountCreateManyLinkedAccountInput | AccountCreateManyLinkedAccountInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ResourceCreateWithoutAccountInput = {
+    id?: string
+    type: string
+    value: string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    uploadedOn?: Date | string
+    uploader: AccountCreateNestedOneWithoutUploadedResourcesInput
+  }
+
+  export type ResourceUncheckedCreateWithoutAccountInput = {
+    id?: string
+    type: string
+    uploadedBy: string
+    value: string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    uploadedOn?: Date | string
+  }
+
+  export type ResourceCreateOrConnectWithoutAccountInput = {
+    where: ResourceWhereUniqueInput
+    create: XOR<ResourceCreateWithoutAccountInput, ResourceUncheckedCreateWithoutAccountInput>
+  }
+
+  export type ResourceCreateManyAccountInputEnvelope = {
+    data: ResourceCreateManyAccountInput | ResourceCreateManyAccountInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ResourceCreateWithoutUploaderInput = {
+    id?: string
+    type: string
+    value: string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    uploadedOn?: Date | string
+    account?: AccountCreateNestedOneWithoutResourcesInput
+  }
+
+  export type ResourceUncheckedCreateWithoutUploaderInput = {
+    id?: string
+    type: string
+    accountId?: string | null
+    value: string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    uploadedOn?: Date | string
+  }
+
+  export type ResourceCreateOrConnectWithoutUploaderInput = {
+    where: ResourceWhereUniqueInput
+    create: XOR<ResourceCreateWithoutUploaderInput, ResourceUncheckedCreateWithoutUploaderInput>
+  }
+
+  export type ResourceCreateManyUploaderInputEnvelope = {
+    data: ResourceCreateManyUploaderInput | ResourceCreateManyUploaderInput[]
     skipDuplicates?: boolean
   }
 
@@ -48599,6 +50250,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -48635,6 +50288,8 @@ export namespace Prisma {
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -48670,6 +50325,51 @@ export namespace Prisma {
     details?: JsonNullableFilter<"Account">
     createdAt?: DateTimeFilter<"Account"> | Date | string
     linkedAccountId?: StringNullableFilter<"Account"> | string | null
+  }
+
+  export type ResourceUpsertWithWhereUniqueWithoutAccountInput = {
+    where: ResourceWhereUniqueInput
+    update: XOR<ResourceUpdateWithoutAccountInput, ResourceUncheckedUpdateWithoutAccountInput>
+    create: XOR<ResourceCreateWithoutAccountInput, ResourceUncheckedCreateWithoutAccountInput>
+  }
+
+  export type ResourceUpdateWithWhereUniqueWithoutAccountInput = {
+    where: ResourceWhereUniqueInput
+    data: XOR<ResourceUpdateWithoutAccountInput, ResourceUncheckedUpdateWithoutAccountInput>
+  }
+
+  export type ResourceUpdateManyWithWhereWithoutAccountInput = {
+    where: ResourceScalarWhereInput
+    data: XOR<ResourceUpdateManyMutationInput, ResourceUncheckedUpdateManyWithoutAccountInput>
+  }
+
+  export type ResourceScalarWhereInput = {
+    AND?: ResourceScalarWhereInput | ResourceScalarWhereInput[]
+    OR?: ResourceScalarWhereInput[]
+    NOT?: ResourceScalarWhereInput | ResourceScalarWhereInput[]
+    id?: StringFilter<"Resource"> | string
+    type?: StringFilter<"Resource"> | string
+    accountId?: StringNullableFilter<"Resource"> | string | null
+    uploadedBy?: StringFilter<"Resource"> | string
+    value?: StringFilter<"Resource"> | string
+    details?: JsonNullableFilter<"Resource">
+    uploadedOn?: DateTimeFilter<"Resource"> | Date | string
+  }
+
+  export type ResourceUpsertWithWhereUniqueWithoutUploaderInput = {
+    where: ResourceWhereUniqueInput
+    update: XOR<ResourceUpdateWithoutUploaderInput, ResourceUncheckedUpdateWithoutUploaderInput>
+    create: XOR<ResourceCreateWithoutUploaderInput, ResourceUncheckedCreateWithoutUploaderInput>
+  }
+
+  export type ResourceUpdateWithWhereUniqueWithoutUploaderInput = {
+    where: ResourceWhereUniqueInput
+    data: XOR<ResourceUpdateWithoutUploaderInput, ResourceUncheckedUpdateWithoutUploaderInput>
+  }
+
+  export type ResourceUpdateManyWithWhereWithoutUploaderInput = {
+    where: ResourceScalarWhereInput
+    data: XOR<ResourceUpdateManyMutationInput, ResourceUncheckedUpdateManyWithoutUploaderInput>
   }
 
   export type RequestUpsertWithWhereUniqueWithoutRecipientInput = {
@@ -48764,6 +50464,342 @@ export namespace Prisma {
     data: XOR<VerificationUpdateManyMutationInput, VerificationUncheckedUpdateManyWithoutAccountInput>
   }
 
+  export type AccountCreateWithoutResourcesInput = {
+    id?: string
+    displayName?: string | null
+    accountType?: string
+    displayImage?: string | null
+    status?: string | null
+    isVerified?: boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
+    individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
+    connections?: ConnectionCreateNestedManyWithoutAccountInput
+    authMethods?: AuthnMethodCreateNestedManyWithoutAccountInput
+    sessions?: AuthnSessionCreateNestedManyWithoutAccountInput
+    contacts?: ContactCreateNestedManyWithoutAccountInput
+    neupIds?: NeupIdCreateNestedManyWithoutAccountInput
+    notifications?: NotificationCreateNestedManyWithoutAccountInput
+    familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
+    verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
+    ownedMembers?: MemberCreateNestedManyWithoutMemberInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
+    permits?: PermitCreateNestedManyWithoutAccountInput
+    permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
+    parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
+    childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
+    linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
+    linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
+    receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
+    sentRequests?: RequestCreateNestedManyWithoutSenderInput
+    errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
+    verifications?: VerificationCreateNestedManyWithoutAccountInput
+  }
+
+  export type AccountUncheckedCreateWithoutResourcesInput = {
+    id?: string
+    displayName?: string | null
+    accountType?: string
+    displayImage?: string | null
+    status?: string | null
+    isVerified?: boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    linkedAccountId?: string | null
+    brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
+    individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
+    authMethods?: AuthnMethodUncheckedCreateNestedManyWithoutAccountInput
+    sessions?: AuthnSessionUncheckedCreateNestedManyWithoutAccountInput
+    contacts?: ContactUncheckedCreateNestedManyWithoutAccountInput
+    neupIds?: NeupIdUncheckedCreateNestedManyWithoutAccountInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutAccountInput
+    familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
+    verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
+    ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
+    permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
+    permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
+    childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
+    linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
+    receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
+    sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
+    errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
+    verifications?: VerificationUncheckedCreateNestedManyWithoutAccountInput
+  }
+
+  export type AccountCreateOrConnectWithoutResourcesInput = {
+    where: AccountWhereUniqueInput
+    create: XOR<AccountCreateWithoutResourcesInput, AccountUncheckedCreateWithoutResourcesInput>
+  }
+
+  export type AccountCreateWithoutUploadedResourcesInput = {
+    id?: string
+    displayName?: string | null
+    accountType?: string
+    displayImage?: string | null
+    status?: string | null
+    isVerified?: boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
+    individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
+    connections?: ConnectionCreateNestedManyWithoutAccountInput
+    authMethods?: AuthnMethodCreateNestedManyWithoutAccountInput
+    sessions?: AuthnSessionCreateNestedManyWithoutAccountInput
+    contacts?: ContactCreateNestedManyWithoutAccountInput
+    neupIds?: NeupIdCreateNestedManyWithoutAccountInput
+    notifications?: NotificationCreateNestedManyWithoutAccountInput
+    familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
+    verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
+    ownedMembers?: MemberCreateNestedManyWithoutMemberInput
+    targetAccountMembers?: MemberCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
+    permits?: PermitCreateNestedManyWithoutAccountInput
+    permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
+    parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
+    childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
+    linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
+    linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
+    sentRequests?: RequestCreateNestedManyWithoutSenderInput
+    errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
+    verifications?: VerificationCreateNestedManyWithoutAccountInput
+  }
+
+  export type AccountUncheckedCreateWithoutUploadedResourcesInput = {
+    id?: string
+    displayName?: string | null
+    accountType?: string
+    displayImage?: string | null
+    status?: string | null
+    isVerified?: boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    linkedAccountId?: string | null
+    brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
+    individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
+    authMethods?: AuthnMethodUncheckedCreateNestedManyWithoutAccountInput
+    sessions?: AuthnSessionUncheckedCreateNestedManyWithoutAccountInput
+    contacts?: ContactUncheckedCreateNestedManyWithoutAccountInput
+    neupIds?: NeupIdUncheckedCreateNestedManyWithoutAccountInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutAccountInput
+    familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
+    verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
+    ownedMembers?: MemberUncheckedCreateNestedManyWithoutMemberInput
+    targetAccountMembers?: MemberUncheckedCreateNestedManyWithoutAccessAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
+    permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
+    permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
+    childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
+    linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
+    sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
+    errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
+    verifications?: VerificationUncheckedCreateNestedManyWithoutAccountInput
+  }
+
+  export type AccountCreateOrConnectWithoutUploadedResourcesInput = {
+    where: AccountWhereUniqueInput
+    create: XOR<AccountCreateWithoutUploadedResourcesInput, AccountUncheckedCreateWithoutUploadedResourcesInput>
+  }
+
+  export type AccountUpsertWithoutResourcesInput = {
+    update: XOR<AccountUpdateWithoutResourcesInput, AccountUncheckedUpdateWithoutResourcesInput>
+    create: XOR<AccountCreateWithoutResourcesInput, AccountUncheckedCreateWithoutResourcesInput>
+    where?: AccountWhereInput
+  }
+
+  export type AccountUpdateToOneWithWhereWithoutResourcesInput = {
+    where?: AccountWhereInput
+    data: XOR<AccountUpdateWithoutResourcesInput, AccountUncheckedUpdateWithoutResourcesInput>
+  }
+
+  export type AccountUpdateWithoutResourcesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountType?: StringFieldUpdateOperationsInput | string
+    displayImage?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
+    individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
+    connections?: ConnectionUpdateManyWithoutAccountNestedInput
+    authMethods?: AuthnMethodUpdateManyWithoutAccountNestedInput
+    sessions?: AuthnSessionUpdateManyWithoutAccountNestedInput
+    contacts?: ContactUpdateManyWithoutAccountNestedInput
+    neupIds?: NeupIdUpdateManyWithoutAccountNestedInput
+    notifications?: NotificationUpdateManyWithoutAccountNestedInput
+    familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
+    verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
+    ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
+    permits?: PermitUpdateManyWithoutAccountNestedInput
+    permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
+    parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
+    childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
+    linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
+    linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
+    receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
+    sentRequests?: RequestUpdateManyWithoutSenderNestedInput
+    errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
+    verifications?: VerificationUpdateManyWithoutAccountNestedInput
+  }
+
+  export type AccountUncheckedUpdateWithoutResourcesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountType?: StringFieldUpdateOperationsInput | string
+    displayImage?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
+    individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
+    authMethods?: AuthnMethodUncheckedUpdateManyWithoutAccountNestedInput
+    sessions?: AuthnSessionUncheckedUpdateManyWithoutAccountNestedInput
+    contacts?: ContactUncheckedUpdateManyWithoutAccountNestedInput
+    neupIds?: NeupIdUncheckedUpdateManyWithoutAccountNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutAccountNestedInput
+    familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
+    verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
+    ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
+    permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
+    permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
+    childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
+    linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
+    receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
+    sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
+    errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
+    verifications?: VerificationUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
+  export type AccountUpsertWithoutUploadedResourcesInput = {
+    update: XOR<AccountUpdateWithoutUploadedResourcesInput, AccountUncheckedUpdateWithoutUploadedResourcesInput>
+    create: XOR<AccountCreateWithoutUploadedResourcesInput, AccountUncheckedCreateWithoutUploadedResourcesInput>
+    where?: AccountWhereInput
+  }
+
+  export type AccountUpdateToOneWithWhereWithoutUploadedResourcesInput = {
+    where?: AccountWhereInput
+    data: XOR<AccountUpdateWithoutUploadedResourcesInput, AccountUncheckedUpdateWithoutUploadedResourcesInput>
+  }
+
+  export type AccountUpdateWithoutUploadedResourcesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountType?: StringFieldUpdateOperationsInput | string
+    displayImage?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
+    individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
+    connections?: ConnectionUpdateManyWithoutAccountNestedInput
+    authMethods?: AuthnMethodUpdateManyWithoutAccountNestedInput
+    sessions?: AuthnSessionUpdateManyWithoutAccountNestedInput
+    contacts?: ContactUpdateManyWithoutAccountNestedInput
+    neupIds?: NeupIdUpdateManyWithoutAccountNestedInput
+    notifications?: NotificationUpdateManyWithoutAccountNestedInput
+    familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
+    verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
+    ownedMembers?: MemberUpdateManyWithoutMemberNestedInput
+    targetAccountMembers?: MemberUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
+    permits?: PermitUpdateManyWithoutAccountNestedInput
+    permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
+    parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
+    childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
+    linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
+    linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
+    sentRequests?: RequestUpdateManyWithoutSenderNestedInput
+    errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
+    verifications?: VerificationUpdateManyWithoutAccountNestedInput
+  }
+
+  export type AccountUncheckedUpdateWithoutUploadedResourcesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountType?: StringFieldUpdateOperationsInput | string
+    displayImage?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
+    individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
+    authMethods?: AuthnMethodUncheckedUpdateManyWithoutAccountNestedInput
+    sessions?: AuthnSessionUncheckedUpdateManyWithoutAccountNestedInput
+    contacts?: ContactUncheckedUpdateManyWithoutAccountNestedInput
+    neupIds?: NeupIdUncheckedUpdateManyWithoutAccountNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutAccountNestedInput
+    familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
+    verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
+    ownedMembers?: MemberUncheckedUpdateManyWithoutMemberNestedInput
+    targetAccountMembers?: MemberUncheckedUpdateManyWithoutAccessAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
+    permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
+    permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
+    childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
+    linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
+    sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
+    errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
+    verifications?: VerificationUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
   export type AccountCreateWithoutIndividualProfileInput = {
     id?: string
     displayName?: string | null
@@ -48794,6 +50830,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -48830,6 +50868,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -48882,6 +50922,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -48918,6 +50960,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -48954,6 +50998,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -48990,6 +51036,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -49042,6 +51090,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -49078,6 +51128,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -49114,6 +51166,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -49150,6 +51204,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -49202,6 +51258,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -49238,6 +51296,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -49275,6 +51335,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
     verifications?: VerificationCreateNestedManyWithoutAccountInput
@@ -49311,6 +51373,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
     verifications?: VerificationUncheckedCreateNestedManyWithoutAccountInput
@@ -49352,6 +51416,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
     verifications?: VerificationCreateNestedManyWithoutAccountInput
@@ -49388,6 +51454,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
     verifications?: VerificationUncheckedCreateNestedManyWithoutAccountInput
@@ -49440,6 +51508,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
     verifications?: VerificationUpdateManyWithoutAccountNestedInput
@@ -49476,6 +51546,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
     verifications?: VerificationUncheckedUpdateManyWithoutAccountNestedInput
@@ -49523,6 +51595,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
     verifications?: VerificationUpdateManyWithoutAccountNestedInput
@@ -49559,6 +51633,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
     verifications?: VerificationUncheckedUpdateManyWithoutAccountNestedInput
@@ -49649,6 +51725,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -49685,6 +51763,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -49760,6 +51840,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -49796,6 +51878,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -49833,6 +51917,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -49869,6 +51955,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -49909,6 +51997,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -49945,6 +52035,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -49998,6 +52090,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -50034,6 +52128,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -50080,6 +52176,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -50116,6 +52214,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -50152,6 +52252,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -50188,6 +52290,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -50240,6 +52344,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -50276,6 +52382,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -50312,6 +52420,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -50348,6 +52458,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -50400,6 +52512,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -50436,6 +52550,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -50472,6 +52588,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -50508,6 +52626,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -50560,6 +52680,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -50596,6 +52718,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -50632,6 +52756,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -50668,6 +52794,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -50720,6 +52848,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -50756,6 +52886,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -50793,6 +52925,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     verifications?: VerificationCreateNestedManyWithoutAccountInput
@@ -50829,6 +52963,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     verifications?: VerificationUncheckedCreateNestedManyWithoutAccountInput
@@ -50881,6 +53017,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     verifications?: VerificationUpdateManyWithoutAccountNestedInput
@@ -50917,6 +53055,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     verifications?: VerificationUncheckedUpdateManyWithoutAccountNestedInput
@@ -51684,6 +53824,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -51720,6 +53862,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -51761,6 +53905,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -51797,6 +53943,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -51986,6 +54134,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -52022,6 +54172,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -52069,6 +54221,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -52105,6 +54259,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -52249,6 +54405,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -52285,6 +54443,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -52326,6 +54486,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -52362,6 +54524,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -52403,6 +54567,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -52439,6 +54605,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -52621,6 +54789,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -52657,6 +54827,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -52704,6 +54876,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -52740,6 +54914,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -52787,6 +54963,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -52823,6 +55001,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -53013,6 +55193,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -53049,6 +55231,8 @@ export namespace Prisma {
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -53090,6 +55274,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -53126,6 +55312,8 @@ export namespace Prisma {
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -53178,6 +55366,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -53214,6 +55404,8 @@ export namespace Prisma {
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -53261,6 +55453,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -53297,6 +55491,8 @@ export namespace Prisma {
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -53333,6 +55529,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -53369,6 +55567,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -53546,6 +55746,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -53582,6 +55784,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -54300,6 +56504,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -54336,6 +56542,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -54471,6 +56679,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -54507,6 +56717,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -54605,6 +56817,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -54641,6 +56855,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -54682,6 +56898,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
@@ -54718,6 +56936,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
     errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
@@ -54770,6 +56990,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -54806,6 +57028,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -54853,6 +57077,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -54889,6 +57115,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -55199,6 +57427,24 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+  }
+
+  export type ResourceCreateManyAccountInput = {
+    id?: string
+    type: string
+    uploadedBy: string
+    value: string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    uploadedOn?: Date | string
+  }
+
+  export type ResourceCreateManyUploaderInput = {
+    id?: string
+    type: string
+    accountId?: string | null
+    value: string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    uploadedOn?: Date | string
   }
 
   export type RequestCreateManyRecipientInput = {
@@ -55818,6 +58064,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
@@ -55854,6 +58102,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
@@ -55869,6 +58119,60 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ResourceUpdateWithoutAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    value?: StringFieldUpdateOperationsInput | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    uploadedOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    uploader?: AccountUpdateOneRequiredWithoutUploadedResourcesNestedInput
+  }
+
+  export type ResourceUncheckedUpdateWithoutAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    uploadedBy?: StringFieldUpdateOperationsInput | string
+    value?: StringFieldUpdateOperationsInput | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    uploadedOn?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ResourceUncheckedUpdateManyWithoutAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    uploadedBy?: StringFieldUpdateOperationsInput | string
+    value?: StringFieldUpdateOperationsInput | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    uploadedOn?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ResourceUpdateWithoutUploaderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    value?: StringFieldUpdateOperationsInput | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    uploadedOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    account?: AccountUpdateOneWithoutResourcesNestedInput
+  }
+
+  export type ResourceUncheckedUpdateWithoutUploaderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    accountId?: NullableStringFieldUpdateOperationsInput | string | null
+    value?: StringFieldUpdateOperationsInput | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    uploadedOn?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ResourceUncheckedUpdateManyWithoutUploaderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    accountId?: NullableStringFieldUpdateOperationsInput | string | null
+    value?: StringFieldUpdateOperationsInput | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    uploadedOn?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type RequestUpdateWithoutRecipientInput = {

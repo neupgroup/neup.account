@@ -7,6 +7,8 @@ import prisma from "@/core/helpers/prisma";
 import { logError } from "@/core/helpers/logger";
 import { getActiveAccountId, getPersonalAccountId } from "@/core/auth/verify";
 
+const DEFAULT_ACCOUNT_AVATAR = "https://neupgroup.com/assets/user.png";
+
 // --- Types ---
 
 export type UserProfile = {
@@ -88,7 +90,7 @@ export async function getUserProfile(
 
       // Fall back to the default avatar if no photo is set
       if (!serializedData.accountPhoto) {
-        serializedData.accountPhoto = "https://neupgroup.com/assets/user.png";
+        serializedData.accountPhoto = DEFAULT_ACCOUNT_AVATAR;
       }
 
       serializedData.accountType = account.accountType || "individual";

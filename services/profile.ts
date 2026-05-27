@@ -10,6 +10,9 @@ import { brandProfileFormSchema } from '@/services/profile/schema';
 import { getUserProfile, checkPermissions, checkNeupIdAvailability, getUserNeupIds } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
 import { getAITextResponse } from '@/services/shared/ai';
+import { logDisplayImageResourceForAccount } from '@/services/manage/site/resources';
+
+const DEFAULT_ACCOUNT_AVATAR = 'https://neupgroup.com/assets/user.png';
 
 
 /**
@@ -46,8 +49,23 @@ export async function getDisplayNameSuggestions(accountId: string): Promise<stri
  */
 export async function getPastProfilePhotos(accountId: string): Promise<string[]> {
     try {
-        void accountId;
-        return [];
+        const rows = await prisma.resource.findMany({
+            where: {
+                accountId,
+                type: 'display_image',
+            },
+            orderBy: { uploadedOn: 'desc' },
+            select: { value: true },
+            take: 20,
+        });
+
+        return Array.from(
+            new Set(
+                rows
+                    .map((row) => row.value?.trim())
+                    .filter((value): value is string => !!value)
+            )
+        );
     } catch (error) {
         await logError('database', error, `getPastProfilePhotos for ${accountId}`);
         return [];
@@ -90,6 +108,7 @@ async function updateOrCreateContact(tx: any, accountId: string, type: string, v
  * Function updateUserProfile.
  */
 export async function updateUserProfile(accountId: string, data: Record<string, any>, geolocation?: string) {
+    const actorAccountId = await getPersonalAccountId();
     const [canModifyProfile, canModifyContact, canModifyNeupId] = await Promise.all([
         checkPermissions(['profile.modify']),
         checkPermissions(['contact.modify', 'contact.add', 'contact.remove']),
@@ -156,10 +175,24 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
                 }
 
                 if(Object.keys(accountData).length > 0) {
+                    if (typeof accountData.accountPhoto === 'string') {
+                        accountData.displayImage = accountData.accountPhoto.trim() || null;
+                        delete accountData.accountPhoto;
+                    }
+
                     await tx.account.update({
                         where: { id: accountId },
                         data: accountData
                     });
+
+                    if (typeof accountData.displayImage === 'string' && accountData.displayImage.trim().length > 0 && actorAccountId) {
+                        await logDisplayImageResourceForAccount({
+                            accountId,
+                            uploadedBy: actorAccountId,
+                            value: accountData.displayImage,
+                            type: 'display_image',
+                        });
+                    }
                 }
             }
             
@@ -454,7 +487,7 @@ export async function bridgeGetProfile(input: {
             aid: account.id,
             neupId: account.neupIds[0]?.id,
             displayName: account.brandProfile?.brandName || account.displayName,
-            displayImage: account.displayImage || 'https://neupgroup.com/assets/user.png',
+            displayImage: account.displayImage || DEFAULT_ACCOUNT_AVATAR,
             firstName: account.individualProfile?.firstName,
             middleName: account.individualProfile?.middleName,
             lastName: account.individualProfile?.lastName,
@@ -481,7 +514,7 @@ export async function bridgeGetProfile(input: {
           aid: account.id,
           neupId: account.neupIds[0]?.id,
           displayName: account.brandProfile?.brandName || account.displayName,
-          displayImage: account.displayImage || 'https://neupgroup.com/assets/user.png',
+          displayImage: account.displayImage || DEFAULT_ACCOUNT_AVATAR,
           verified: account.isVerified,
           accountType: account.accountType,
         },

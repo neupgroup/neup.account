@@ -7,6 +7,7 @@
     "build": "npx prisma generate && npx next build",
     "start": "next start --port 2226",
     "seed": "tsx prisma/seed.ts",
+    "sync:permissions:neup-account": "tsx prisma/sync-neup-account-denormalized-permissions.ts",
     "grant-root": "tsx prisma/grant-root.ts",
     "test": "vitest run",
     "test:watch": "vitest",

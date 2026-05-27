@@ -98,10 +98,21 @@ export const allPermissionsMap: Record<string, string[]> = {
     "Payment & Subscription": ['payment.method.show', 'payment.transactions.show', 'payment.subscriptions.show', 'payment.purchase_neup_pro.view'],
     "Account": ["root.account.view", "root.account.search", "root.account.create_individual"],
     "Requests": ["root.requests.view"],
-    "Configurations": ["root.payment_config.view", "root.errors.view"],
+    "Configurations": [
+        "root.payment_config.view",
+        "root.errors.view",
+        "root.display_images.view",
+        "root.display_images.add",
+        "root.display_images.update",
+        "root.display_images.delete"
+    ],
     "Permissions": ["root.permission.view", "root.permission.edit"],
     "Applications": ["root.app.view", "root.app.create"],
-    "Site Config": ["root.payment_config.view", "root.errors.view"],
+    "Site Config": [
+        "root.payment_config.view",
+        "root.errors.view",
+        "root.display_images.view"
+    ],
     "Branches": ['linked_accounts.brand.manage'],
     "Blocked Users": ['people.block_list.view', 'people.restrict_list.view'],
     // Management nav — "Dashboard" is the admin home, distinct from user "Home"

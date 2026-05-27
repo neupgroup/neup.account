@@ -90,6 +90,10 @@ const ROOT_CAPABILITIES = [
   'root.site.social_accounts.add',
   'root.site.social_accounts.edit',
   'root.site.social_accounts.delete',
+  'root.display_images.view',
+  'root.display_images.add',
+  'root.display_images.update',
+  'root.display_images.delete',
 ] as const;
 
 function slugifyPermission(name: string): string {

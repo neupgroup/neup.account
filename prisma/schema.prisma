@@ -40,6 +40,8 @@ model Account {
   childOwnerships         AccountOwnership[]       @relation("ParentAccount")
   linkedAccount           Account?                 @relation("LinkedAccount", fields: [linkedAccountId], references: [id])
   linkedFrom              Account[]                @relation("LinkedAccount")
+  resources               Resource[]               @relation("ResourceAccount")
+  uploadedResources       Resource[]               @relation("ResourceUploader")
 
   receivedRequests Request[]      @relation("ReceivedRequests")
   sentRequests     Request[]      @relation("SentRequests")
@@ -47,6 +49,25 @@ model Account {
   verifications    Verification[]
 
   @@map("account")
+}
+
+model Resource {
+  id         String   @id @default(uuid())
+  type       String
+  accountId  String?  @map("account_id")
+  uploadedBy String   @map("uploaded_by")
+  value      String
+  details    Json?
+  uploadedOn DateTime @default(now()) @map("uploaded_on")
+
+  account  Account? @relation("ResourceAccount", fields: [accountId], references: [id], onDelete: SetNull)
+  uploader Account  @relation("ResourceUploader", fields: [uploadedBy], references: [id], onDelete: Cascade)
+
+  @@index([type], map: "resources_type_idx")
+  @@index([accountId], map: "resources_account_id_idx")
+  @@index([uploadedBy], map: "resources_uploaded_by_idx")
+  @@index([uploadedOn], map: "resources_uploaded_on_idx")
+  @@map("resources")
 }
 
 model AccountTypeIndividual {

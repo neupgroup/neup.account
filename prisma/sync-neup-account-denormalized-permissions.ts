@@ -33,7 +33,7 @@ async function main() {
               arc.role_id,
               jsonb_agg(DISTINCT cap.name ORDER BY cap.name) AS permissions
             FROM authz_role_capability arc
-            JOIN authz_capability cap ON cap.id = arc.capability_id
+            JOIN authz_permission cap ON cap.id = arc.capability_id
             WHERE COALESCE(arc.app_id, cap.app_id) = 'neup.account'
             GROUP BY arc.role_id
           )
@@ -85,7 +85,7 @@ async function main() {
           SELECT permission_name FROM current_permissions
           UNION
           SELECT DISTINCT c.name AS permission_name
-          FROM authz_capability c
+          FROM authz_permission c
           WHERE c.app_id = $1
             AND (
               c.name LIKE 'application.%'

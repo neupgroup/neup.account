@@ -492,7 +492,7 @@ model AuthzPermission {
   scope       String?
   application Application?          @relation(fields: [appId], references: [id])
 
-  @@map("authz_capability")
+  @@map("authz_permission")
 }
 
 model AuthzRole {

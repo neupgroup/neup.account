@@ -375,6 +375,7 @@ exports.Prisma.ConnectionScalarFieldEnum = {
   id: 'id',
   accountId: 'accountId',
   appId: 'appId',
+  roleId: 'roleId',
   status: 'status',
   connectedAt: 'connectedAt',
   details: 'details'

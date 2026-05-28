@@ -30,6 +30,7 @@ const fieldLabels: Record<ApplicationAccessField, { label: string; description: 
   displayName:   { label: 'Display Name',    description: 'The user\'s public display name.' },
   displayImage:  { label: 'Display Image',   description: 'URL of the user\'s profile picture.' },
   accountType:   { label: 'Account Type',    description: 'Whether the account is individual or brand.' },
+  role:          { label: 'Role',            description: 'Role assigned to this account for this application.' },
   lastActive:    { label: 'Last Active',     description: 'Timestamp of the user\'s last activity.' },
   neupid:        { label: 'NeupID',          description: 'The user\'s primary NeupID handle.' },
   firstName:     { label: 'First Name',      description: 'User\'s first name (individuals only).' },

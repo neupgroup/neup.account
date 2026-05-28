@@ -39,6 +39,7 @@ const accessLabels: Record<ApplicationAccessField, string> = {
   displayName: 'Display name',
   displayImage: 'Display image',
   accountType: 'Account type',
+  role: 'Role',
   lastActive: 'Last active',
   neupid: 'NeupID',
   firstName: 'First name',

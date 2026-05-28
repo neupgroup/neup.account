@@ -173,7 +173,18 @@ export async function POST(request: NextRequest) {
 
     const connection = await prisma.connection.findUnique({
       where: { accountId_appId: { accountId: account.id, appId } },
-      select: { id: true, status: true },
+      select: {
+        id: true,
+        status: true,
+        roleId: true,
+        role: {
+          select: {
+            id: true,
+            name: true,
+            permissions: true,
+          },
+        },
+      },
     });
 
     if (!connection) {
@@ -289,6 +300,17 @@ export async function POST(request: NextRequest) {
           ? nestedProfile.displayImage.trim()
           : null) ?? account.displayImage ?? null,
       accountType: account.accountType ?? null,
+      role: connection.role
+        ? [
+            {
+              id: connection.role.id,
+              name: connection.role.name,
+              permissions: Array.isArray(connection.role.permissions)
+                ? connection.role.permissions
+                : [],
+            },
+          ]
+        : [],
       lastActive: lastActiveIso,
       neupid: primaryNeupId,
       firstName: account.individualProfile?.firstName ?? null,

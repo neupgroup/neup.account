@@ -6,6 +6,7 @@ export const applicationAccessFields = [
   'displayName',
   'displayImage',
   'accountType',
+  'role',
   'lastActive',
   'neupid',
   'firstName',
@@ -27,6 +28,7 @@ export type ApplicationAccessField = (typeof applicationAccessFields)[number];
 export const applicationResponseFields = [
   'displayName',
   'displayImage',
+  'role',
   'lastActive',
   'dateBirth',
   'age',

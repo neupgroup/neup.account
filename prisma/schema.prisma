@@ -416,11 +416,13 @@ model Connection {
   id            String      @id(map: "user_app_connections_pkey") @default(uuid())
   accountId     String      @map("account_id")
   appId         String      @map("app_id")
+  roleId        String?     @map("role_id")
   status        String      @default("active")
   connectedAt   DateTime    @default(now()) @map("connected_at")
   details       Json?
   account       Account     @relation(fields: [accountId], references: [id], onDelete: Cascade, map: "user_app_connections_accountId_fkey")
   application   Application @relation(fields: [appId], references: [id], map: "user_app_connections_appId_fkey")
+  role          AuthzRole?  @relation("ConnectionRole", fields: [roleId], references: [id], map: "connection_role_id_fkey")
   parentMembers Member[]    @relation("MemberParentConnection")
   childAssets   Asset[]     @relation("AssetChildConnection")
 
@@ -502,6 +504,7 @@ model AuthzRole {
   application  Application?             @relation(fields: [appId], references: [id])
   assetsGrants AuthzAssetsAccessGrant[]
   members      Member[]                 @relation("MemberRole")
+  connections  Connection[]             @relation("ConnectionRole")
 
   @@unique([name, appId], map: "authz_role_name_app_id_key")
   @@map("authz_role")

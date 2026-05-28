@@ -4278,11 +4278,13 @@ export namespace Prisma {
   export type AuthzRoleCountOutputType = {
     assetsGrants: number
     members: number
+    connections: number
   }
 
   export type AuthzRoleCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     assetsGrants?: boolean | AuthzRoleCountOutputTypeCountAssetsGrantsArgs
     members?: boolean | AuthzRoleCountOutputTypeCountMembersArgs
+    connections?: boolean | AuthzRoleCountOutputTypeCountConnectionsArgs
   }
 
   // Custom InputTypes
@@ -4308,6 +4310,13 @@ export namespace Prisma {
    */
   export type AuthzRoleCountOutputTypeCountMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MemberWhereInput
+  }
+
+  /**
+   * AuthzRoleCountOutputType without action
+   */
+  export type AuthzRoleCountOutputTypeCountConnectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ConnectionWhereInput
   }
 
 
@@ -31805,6 +31814,7 @@ export namespace Prisma {
     id: string | null
     accountId: string | null
     appId: string | null
+    roleId: string | null
     status: string | null
     connectedAt: Date | null
   }
@@ -31813,6 +31823,7 @@ export namespace Prisma {
     id: string | null
     accountId: string | null
     appId: string | null
+    roleId: string | null
     status: string | null
     connectedAt: Date | null
   }
@@ -31821,6 +31832,7 @@ export namespace Prisma {
     id: number
     accountId: number
     appId: number
+    roleId: number
     status: number
     connectedAt: number
     details: number
@@ -31832,6 +31844,7 @@ export namespace Prisma {
     id?: true
     accountId?: true
     appId?: true
+    roleId?: true
     status?: true
     connectedAt?: true
   }
@@ -31840,6 +31853,7 @@ export namespace Prisma {
     id?: true
     accountId?: true
     appId?: true
+    roleId?: true
     status?: true
     connectedAt?: true
   }
@@ -31848,6 +31862,7 @@ export namespace Prisma {
     id?: true
     accountId?: true
     appId?: true
+    roleId?: true
     status?: true
     connectedAt?: true
     details?: true
@@ -31930,6 +31945,7 @@ export namespace Prisma {
     id: string
     accountId: string
     appId: string
+    roleId: string | null
     status: string
     connectedAt: Date
     details: JsonValue | null
@@ -31956,11 +31972,13 @@ export namespace Prisma {
     id?: boolean
     accountId?: boolean
     appId?: boolean
+    roleId?: boolean
     status?: boolean
     connectedAt?: boolean
     details?: boolean
     account?: boolean | AccountDefaultArgs<ExtArgs>
     application?: boolean | ApplicationDefaultArgs<ExtArgs>
+    role?: boolean | Connection$roleArgs<ExtArgs>
     parentMembers?: boolean | Connection$parentMembersArgs<ExtArgs>
     childAssets?: boolean | Connection$childAssetsArgs<ExtArgs>
     _count?: boolean | ConnectionCountOutputTypeDefaultArgs<ExtArgs>
@@ -31970,37 +31988,43 @@ export namespace Prisma {
     id?: boolean
     accountId?: boolean
     appId?: boolean
+    roleId?: boolean
     status?: boolean
     connectedAt?: boolean
     details?: boolean
     account?: boolean | AccountDefaultArgs<ExtArgs>
     application?: boolean | ApplicationDefaultArgs<ExtArgs>
+    role?: boolean | Connection$roleArgs<ExtArgs>
   }, ExtArgs["result"]["connection"]>
 
   export type ConnectionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     accountId?: boolean
     appId?: boolean
+    roleId?: boolean
     status?: boolean
     connectedAt?: boolean
     details?: boolean
     account?: boolean | AccountDefaultArgs<ExtArgs>
     application?: boolean | ApplicationDefaultArgs<ExtArgs>
+    role?: boolean | Connection$roleArgs<ExtArgs>
   }, ExtArgs["result"]["connection"]>
 
   export type ConnectionSelectScalar = {
     id?: boolean
     accountId?: boolean
     appId?: boolean
+    roleId?: boolean
     status?: boolean
     connectedAt?: boolean
     details?: boolean
   }
 
-  export type ConnectionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "accountId" | "appId" | "status" | "connectedAt" | "details", ExtArgs["result"]["connection"]>
+  export type ConnectionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "accountId" | "appId" | "roleId" | "status" | "connectedAt" | "details", ExtArgs["result"]["connection"]>
   export type ConnectionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     account?: boolean | AccountDefaultArgs<ExtArgs>
     application?: boolean | ApplicationDefaultArgs<ExtArgs>
+    role?: boolean | Connection$roleArgs<ExtArgs>
     parentMembers?: boolean | Connection$parentMembersArgs<ExtArgs>
     childAssets?: boolean | Connection$childAssetsArgs<ExtArgs>
     _count?: boolean | ConnectionCountOutputTypeDefaultArgs<ExtArgs>
@@ -32008,10 +32032,12 @@ export namespace Prisma {
   export type ConnectionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     account?: boolean | AccountDefaultArgs<ExtArgs>
     application?: boolean | ApplicationDefaultArgs<ExtArgs>
+    role?: boolean | Connection$roleArgs<ExtArgs>
   }
   export type ConnectionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     account?: boolean | AccountDefaultArgs<ExtArgs>
     application?: boolean | ApplicationDefaultArgs<ExtArgs>
+    role?: boolean | Connection$roleArgs<ExtArgs>
   }
 
   export type $ConnectionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -32019,6 +32045,7 @@ export namespace Prisma {
     objects: {
       account: Prisma.$AccountPayload<ExtArgs>
       application: Prisma.$ApplicationPayload<ExtArgs>
+      role: Prisma.$AuthzRolePayload<ExtArgs> | null
       parentMembers: Prisma.$MemberPayload<ExtArgs>[]
       childAssets: Prisma.$AssetPayload<ExtArgs>[]
     }
@@ -32026,6 +32053,7 @@ export namespace Prisma {
       id: string
       accountId: string
       appId: string
+      roleId: string | null
       status: string
       connectedAt: Date
       details: Prisma.JsonValue | null
@@ -32425,6 +32453,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     account<T extends AccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AccountDefaultArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     application<T extends ApplicationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ApplicationDefaultArgs<ExtArgs>>): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    role<T extends Connection$roleArgs<ExtArgs> = {}>(args?: Subset<T, Connection$roleArgs<ExtArgs>>): Prisma__AuthzRoleClient<$Result.GetResult<Prisma.$AuthzRolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     parentMembers<T extends Connection$parentMembersArgs<ExtArgs> = {}>(args?: Subset<T, Connection$parentMembersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     childAssets<T extends Connection$childAssetsArgs<ExtArgs> = {}>(args?: Subset<T, Connection$childAssetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -32459,6 +32488,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Connection", 'String'>
     readonly accountId: FieldRef<"Connection", 'String'>
     readonly appId: FieldRef<"Connection", 'String'>
+    readonly roleId: FieldRef<"Connection", 'String'>
     readonly status: FieldRef<"Connection", 'String'>
     readonly connectedAt: FieldRef<"Connection", 'DateTime'>
     readonly details: FieldRef<"Connection", 'Json'>
@@ -32855,6 +32885,25 @@ export namespace Prisma {
      * Limit how many Connections to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Connection.role
+   */
+  export type Connection$roleArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthzRole
+     */
+    select?: AuthzRoleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthzRole
+     */
+    omit?: AuthzRoleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthzRoleInclude<ExtArgs> | null
+    where?: AuthzRoleWhereInput
   }
 
   /**
@@ -36301,6 +36350,7 @@ export namespace Prisma {
     application?: boolean | AuthzRole$applicationArgs<ExtArgs>
     assetsGrants?: boolean | AuthzRole$assetsGrantsArgs<ExtArgs>
     members?: boolean | AuthzRole$membersArgs<ExtArgs>
+    connections?: boolean | AuthzRole$connectionsArgs<ExtArgs>
     _count?: boolean | AuthzRoleCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["authzRole"]>
 
@@ -36341,6 +36391,7 @@ export namespace Prisma {
     application?: boolean | AuthzRole$applicationArgs<ExtArgs>
     assetsGrants?: boolean | AuthzRole$assetsGrantsArgs<ExtArgs>
     members?: boolean | AuthzRole$membersArgs<ExtArgs>
+    connections?: boolean | AuthzRole$connectionsArgs<ExtArgs>
     _count?: boolean | AuthzRoleCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AuthzRoleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -36356,6 +36407,7 @@ export namespace Prisma {
       application: Prisma.$ApplicationPayload<ExtArgs> | null
       assetsGrants: Prisma.$AuthzAssetsAccessGrantPayload<ExtArgs>[]
       members: Prisma.$MemberPayload<ExtArgs>[]
+      connections: Prisma.$ConnectionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -36762,6 +36814,7 @@ export namespace Prisma {
     application<T extends AuthzRole$applicationArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRole$applicationArgs<ExtArgs>>): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     assetsGrants<T extends AuthzRole$assetsGrantsArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRole$assetsGrantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzAssetsAccessGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     members<T extends AuthzRole$membersArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRole$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    connections<T extends AuthzRole$connectionsArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRole$connectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -37258,6 +37311,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: MemberScalarFieldEnum | MemberScalarFieldEnum[]
+  }
+
+  /**
+   * AuthzRole.connections
+   */
+  export type AuthzRole$connectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Connection
+     */
+    select?: ConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Connection
+     */
+    omit?: ConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConnectionInclude<ExtArgs> | null
+    where?: ConnectionWhereInput
+    orderBy?: ConnectionOrderByWithRelationInput | ConnectionOrderByWithRelationInput[]
+    cursor?: ConnectionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ConnectionScalarFieldEnum | ConnectionScalarFieldEnum[]
   }
 
   /**
@@ -40937,6 +41014,7 @@ export namespace Prisma {
     id: 'id',
     accountId: 'accountId',
     appId: 'appId',
+    roleId: 'roleId',
     status: 'status',
     connectedAt: 'connectedAt',
     details: 'details'
@@ -42989,11 +43067,13 @@ export namespace Prisma {
     id?: StringFilter<"Connection"> | string
     accountId?: StringFilter<"Connection"> | string
     appId?: StringFilter<"Connection"> | string
+    roleId?: StringNullableFilter<"Connection"> | string | null
     status?: StringFilter<"Connection"> | string
     connectedAt?: DateTimeFilter<"Connection"> | Date | string
     details?: JsonNullableFilter<"Connection">
     account?: XOR<AccountScalarRelationFilter, AccountWhereInput>
     application?: XOR<ApplicationScalarRelationFilter, ApplicationWhereInput>
+    role?: XOR<AuthzRoleNullableScalarRelationFilter, AuthzRoleWhereInput> | null
     parentMembers?: MemberListRelationFilter
     childAssets?: AssetListRelationFilter
   }
@@ -43002,11 +43082,13 @@ export namespace Prisma {
     id?: SortOrder
     accountId?: SortOrder
     appId?: SortOrder
+    roleId?: SortOrderInput | SortOrder
     status?: SortOrder
     connectedAt?: SortOrder
     details?: SortOrderInput | SortOrder
     account?: AccountOrderByWithRelationInput
     application?: ApplicationOrderByWithRelationInput
+    role?: AuthzRoleOrderByWithRelationInput
     parentMembers?: MemberOrderByRelationAggregateInput
     childAssets?: AssetOrderByRelationAggregateInput
   }
@@ -43019,11 +43101,13 @@ export namespace Prisma {
     NOT?: ConnectionWhereInput | ConnectionWhereInput[]
     accountId?: StringFilter<"Connection"> | string
     appId?: StringFilter<"Connection"> | string
+    roleId?: StringNullableFilter<"Connection"> | string | null
     status?: StringFilter<"Connection"> | string
     connectedAt?: DateTimeFilter<"Connection"> | Date | string
     details?: JsonNullableFilter<"Connection">
     account?: XOR<AccountScalarRelationFilter, AccountWhereInput>
     application?: XOR<ApplicationScalarRelationFilter, ApplicationWhereInput>
+    role?: XOR<AuthzRoleNullableScalarRelationFilter, AuthzRoleWhereInput> | null
     parentMembers?: MemberListRelationFilter
     childAssets?: AssetListRelationFilter
   }, "id" | "accountId_appId">
@@ -43032,6 +43116,7 @@ export namespace Prisma {
     id?: SortOrder
     accountId?: SortOrder
     appId?: SortOrder
+    roleId?: SortOrderInput | SortOrder
     status?: SortOrder
     connectedAt?: SortOrder
     details?: SortOrderInput | SortOrder
@@ -43047,6 +43132,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Connection"> | string
     accountId?: StringWithAggregatesFilter<"Connection"> | string
     appId?: StringWithAggregatesFilter<"Connection"> | string
+    roleId?: StringNullableWithAggregatesFilter<"Connection"> | string | null
     status?: StringWithAggregatesFilter<"Connection"> | string
     connectedAt?: DateTimeWithAggregatesFilter<"Connection"> | Date | string
     details?: JsonNullableWithAggregatesFilter<"Connection">
@@ -43236,6 +43322,7 @@ export namespace Prisma {
     application?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
     assetsGrants?: AuthzAssetsAccessGrantListRelationFilter
     members?: MemberListRelationFilter
+    connections?: ConnectionListRelationFilter
   }
 
   export type AuthzRoleOrderByWithRelationInput = {
@@ -43249,6 +43336,7 @@ export namespace Prisma {
     application?: ApplicationOrderByWithRelationInput
     assetsGrants?: AuthzAssetsAccessGrantOrderByRelationAggregateInput
     members?: MemberOrderByRelationAggregateInput
+    connections?: ConnectionOrderByRelationAggregateInput
   }
 
   export type AuthzRoleWhereUniqueInput = Prisma.AtLeast<{
@@ -43266,6 +43354,7 @@ export namespace Prisma {
     application?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
     assetsGrants?: AuthzAssetsAccessGrantListRelationFilter
     members?: MemberListRelationFilter
+    connections?: ConnectionListRelationFilter
   }, "id" | "name_appId">
 
   export type AuthzRoleOrderByWithAggregationInput = {
@@ -45411,6 +45500,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     account: AccountCreateNestedOneWithoutConnectionsInput
     application: ApplicationCreateNestedOneWithoutConnectionsInput
+    role?: AuthzRoleCreateNestedOneWithoutConnectionsInput
     parentMembers?: MemberCreateNestedManyWithoutParentConnectionInput
     childAssets?: AssetCreateNestedManyWithoutChildConnectionInput
   }
@@ -45419,6 +45509,7 @@ export namespace Prisma {
     id?: string
     accountId: string
     appId: string
+    roleId?: string | null
     status?: string
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -45433,6 +45524,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     account?: AccountUpdateOneRequiredWithoutConnectionsNestedInput
     application?: ApplicationUpdateOneRequiredWithoutConnectionsNestedInput
+    role?: AuthzRoleUpdateOneWithoutConnectionsNestedInput
     parentMembers?: MemberUpdateManyWithoutParentConnectionNestedInput
     childAssets?: AssetUpdateManyWithoutChildConnectionNestedInput
   }
@@ -45441,6 +45533,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     accountId?: StringFieldUpdateOperationsInput | string
     appId?: StringFieldUpdateOperationsInput | string
+    roleId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -45452,6 +45545,7 @@ export namespace Prisma {
     id?: string
     accountId: string
     appId: string
+    roleId?: string | null
     status?: string
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -45468,6 +45562,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     accountId?: StringFieldUpdateOperationsInput | string
     appId?: StringFieldUpdateOperationsInput | string
+    roleId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -45655,6 +45750,7 @@ export namespace Prisma {
     application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
     assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
     members?: MemberCreateNestedManyWithoutRoleInput
+    connections?: ConnectionCreateNestedManyWithoutRoleInput
   }
 
   export type AuthzRoleUncheckedCreateInput = {
@@ -45667,6 +45763,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
     members?: MemberUncheckedCreateNestedManyWithoutRoleInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutRoleInput
   }
 
   export type AuthzRoleUpdateInput = {
@@ -45679,6 +45776,7 @@ export namespace Prisma {
     application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
     assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
     members?: MemberUpdateManyWithoutRoleNestedInput
+    connections?: ConnectionUpdateManyWithoutRoleNestedInput
   }
 
   export type AuthzRoleUncheckedUpdateInput = {
@@ -45691,6 +45789,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
     members?: MemberUncheckedUpdateManyWithoutRoleNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutRoleNestedInput
   }
 
   export type AuthzRoleCreateManyInput = {
@@ -47296,6 +47395,11 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type AuthzRoleNullableScalarRelationFilter = {
+    is?: AuthzRoleWhereInput | null
+    isNot?: AuthzRoleWhereInput | null
+  }
+
   export type ConnectionAccountIdAppIdCompoundUniqueInput = {
     accountId: string
     appId: string
@@ -47305,6 +47409,7 @@ export namespace Prisma {
     id?: SortOrder
     accountId?: SortOrder
     appId?: SortOrder
+    roleId?: SortOrder
     status?: SortOrder
     connectedAt?: SortOrder
     details?: SortOrder
@@ -47314,6 +47419,7 @@ export namespace Prisma {
     id?: SortOrder
     accountId?: SortOrder
     appId?: SortOrder
+    roleId?: SortOrder
     status?: SortOrder
     connectedAt?: SortOrder
   }
@@ -47322,6 +47428,7 @@ export namespace Prisma {
     id?: SortOrder
     accountId?: SortOrder
     appId?: SortOrder
+    roleId?: SortOrder
     status?: SortOrder
     connectedAt?: SortOrder
   }
@@ -49834,6 +49941,12 @@ export namespace Prisma {
     connect?: ApplicationWhereUniqueInput
   }
 
+  export type AuthzRoleCreateNestedOneWithoutConnectionsInput = {
+    create?: XOR<AuthzRoleCreateWithoutConnectionsInput, AuthzRoleUncheckedCreateWithoutConnectionsInput>
+    connectOrCreate?: AuthzRoleCreateOrConnectWithoutConnectionsInput
+    connect?: AuthzRoleWhereUniqueInput
+  }
+
   export type MemberCreateNestedManyWithoutParentConnectionInput = {
     create?: XOR<MemberCreateWithoutParentConnectionInput, MemberUncheckedCreateWithoutParentConnectionInput> | MemberCreateWithoutParentConnectionInput[] | MemberUncheckedCreateWithoutParentConnectionInput[]
     connectOrCreate?: MemberCreateOrConnectWithoutParentConnectionInput | MemberCreateOrConnectWithoutParentConnectionInput[]
@@ -49876,6 +49989,16 @@ export namespace Prisma {
     upsert?: ApplicationUpsertWithoutConnectionsInput
     connect?: ApplicationWhereUniqueInput
     update?: XOR<XOR<ApplicationUpdateToOneWithWhereWithoutConnectionsInput, ApplicationUpdateWithoutConnectionsInput>, ApplicationUncheckedUpdateWithoutConnectionsInput>
+  }
+
+  export type AuthzRoleUpdateOneWithoutConnectionsNestedInput = {
+    create?: XOR<AuthzRoleCreateWithoutConnectionsInput, AuthzRoleUncheckedCreateWithoutConnectionsInput>
+    connectOrCreate?: AuthzRoleCreateOrConnectWithoutConnectionsInput
+    upsert?: AuthzRoleUpsertWithoutConnectionsInput
+    disconnect?: AuthzRoleWhereInput | boolean
+    delete?: AuthzRoleWhereInput | boolean
+    connect?: AuthzRoleWhereUniqueInput
+    update?: XOR<XOR<AuthzRoleUpdateToOneWithWhereWithoutConnectionsInput, AuthzRoleUpdateWithoutConnectionsInput>, AuthzRoleUncheckedUpdateWithoutConnectionsInput>
   }
 
   export type MemberUpdateManyWithoutParentConnectionNestedInput = {
@@ -49998,6 +50121,13 @@ export namespace Prisma {
     connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
   }
 
+  export type ConnectionCreateNestedManyWithoutRoleInput = {
+    create?: XOR<ConnectionCreateWithoutRoleInput, ConnectionUncheckedCreateWithoutRoleInput> | ConnectionCreateWithoutRoleInput[] | ConnectionUncheckedCreateWithoutRoleInput[]
+    connectOrCreate?: ConnectionCreateOrConnectWithoutRoleInput | ConnectionCreateOrConnectWithoutRoleInput[]
+    createMany?: ConnectionCreateManyRoleInputEnvelope
+    connect?: ConnectionWhereUniqueInput | ConnectionWhereUniqueInput[]
+  }
+
   export type AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput = {
     create?: XOR<AuthzAssetsAccessGrantCreateWithoutRoleInput, AuthzAssetsAccessGrantUncheckedCreateWithoutRoleInput> | AuthzAssetsAccessGrantCreateWithoutRoleInput[] | AuthzAssetsAccessGrantUncheckedCreateWithoutRoleInput[]
     connectOrCreate?: AuthzAssetsAccessGrantCreateOrConnectWithoutRoleInput | AuthzAssetsAccessGrantCreateOrConnectWithoutRoleInput[]
@@ -50010,6 +50140,13 @@ export namespace Prisma {
     connectOrCreate?: MemberCreateOrConnectWithoutRoleInput | MemberCreateOrConnectWithoutRoleInput[]
     createMany?: MemberCreateManyRoleInputEnvelope
     connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+  }
+
+  export type ConnectionUncheckedCreateNestedManyWithoutRoleInput = {
+    create?: XOR<ConnectionCreateWithoutRoleInput, ConnectionUncheckedCreateWithoutRoleInput> | ConnectionCreateWithoutRoleInput[] | ConnectionUncheckedCreateWithoutRoleInput[]
+    connectOrCreate?: ConnectionCreateOrConnectWithoutRoleInput | ConnectionCreateOrConnectWithoutRoleInput[]
+    createMany?: ConnectionCreateManyRoleInputEnvelope
+    connect?: ConnectionWhereUniqueInput | ConnectionWhereUniqueInput[]
   }
 
   export type ApplicationUpdateOneWithoutAuthzRolesNestedInput = {
@@ -50050,6 +50187,20 @@ export namespace Prisma {
     deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
   }
 
+  export type ConnectionUpdateManyWithoutRoleNestedInput = {
+    create?: XOR<ConnectionCreateWithoutRoleInput, ConnectionUncheckedCreateWithoutRoleInput> | ConnectionCreateWithoutRoleInput[] | ConnectionUncheckedCreateWithoutRoleInput[]
+    connectOrCreate?: ConnectionCreateOrConnectWithoutRoleInput | ConnectionCreateOrConnectWithoutRoleInput[]
+    upsert?: ConnectionUpsertWithWhereUniqueWithoutRoleInput | ConnectionUpsertWithWhereUniqueWithoutRoleInput[]
+    createMany?: ConnectionCreateManyRoleInputEnvelope
+    set?: ConnectionWhereUniqueInput | ConnectionWhereUniqueInput[]
+    disconnect?: ConnectionWhereUniqueInput | ConnectionWhereUniqueInput[]
+    delete?: ConnectionWhereUniqueInput | ConnectionWhereUniqueInput[]
+    connect?: ConnectionWhereUniqueInput | ConnectionWhereUniqueInput[]
+    update?: ConnectionUpdateWithWhereUniqueWithoutRoleInput | ConnectionUpdateWithWhereUniqueWithoutRoleInput[]
+    updateMany?: ConnectionUpdateManyWithWhereWithoutRoleInput | ConnectionUpdateManyWithWhereWithoutRoleInput[]
+    deleteMany?: ConnectionScalarWhereInput | ConnectionScalarWhereInput[]
+  }
+
   export type AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput = {
     create?: XOR<AuthzAssetsAccessGrantCreateWithoutRoleInput, AuthzAssetsAccessGrantUncheckedCreateWithoutRoleInput> | AuthzAssetsAccessGrantCreateWithoutRoleInput[] | AuthzAssetsAccessGrantUncheckedCreateWithoutRoleInput[]
     connectOrCreate?: AuthzAssetsAccessGrantCreateOrConnectWithoutRoleInput | AuthzAssetsAccessGrantCreateOrConnectWithoutRoleInput[]
@@ -50076,6 +50227,20 @@ export namespace Prisma {
     update?: MemberUpdateWithWhereUniqueWithoutRoleInput | MemberUpdateWithWhereUniqueWithoutRoleInput[]
     updateMany?: MemberUpdateManyWithWhereWithoutRoleInput | MemberUpdateManyWithWhereWithoutRoleInput[]
     deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
+  }
+
+  export type ConnectionUncheckedUpdateManyWithoutRoleNestedInput = {
+    create?: XOR<ConnectionCreateWithoutRoleInput, ConnectionUncheckedCreateWithoutRoleInput> | ConnectionCreateWithoutRoleInput[] | ConnectionUncheckedCreateWithoutRoleInput[]
+    connectOrCreate?: ConnectionCreateOrConnectWithoutRoleInput | ConnectionCreateOrConnectWithoutRoleInput[]
+    upsert?: ConnectionUpsertWithWhereUniqueWithoutRoleInput | ConnectionUpsertWithWhereUniqueWithoutRoleInput[]
+    createMany?: ConnectionCreateManyRoleInputEnvelope
+    set?: ConnectionWhereUniqueInput | ConnectionWhereUniqueInput[]
+    disconnect?: ConnectionWhereUniqueInput | ConnectionWhereUniqueInput[]
+    delete?: ConnectionWhereUniqueInput | ConnectionWhereUniqueInput[]
+    connect?: ConnectionWhereUniqueInput | ConnectionWhereUniqueInput[]
+    update?: ConnectionUpdateWithWhereUniqueWithoutRoleInput | ConnectionUpdateWithWhereUniqueWithoutRoleInput[]
+    updateMany?: ConnectionUpdateManyWithWhereWithoutRoleInput | ConnectionUpdateManyWithWhereWithoutRoleInput[]
+    deleteMany?: ConnectionScalarWhereInput | ConnectionScalarWhereInput[]
   }
 
   export type AssetCreateNestedOneWithoutAuthzAssetsAccessGrantsInput = {
@@ -50517,6 +50682,7 @@ export namespace Prisma {
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     application: ApplicationCreateNestedOneWithoutConnectionsInput
+    role?: AuthzRoleCreateNestedOneWithoutConnectionsInput
     parentMembers?: MemberCreateNestedManyWithoutParentConnectionInput
     childAssets?: AssetCreateNestedManyWithoutChildConnectionInput
   }
@@ -50524,6 +50690,7 @@ export namespace Prisma {
   export type ConnectionUncheckedCreateWithoutAccountInput = {
     id?: string
     appId: string
+    roleId?: string | null
     status?: string
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -51483,6 +51650,7 @@ export namespace Prisma {
     id?: StringFilter<"Connection"> | string
     accountId?: StringFilter<"Connection"> | string
     appId?: StringFilter<"Connection"> | string
+    roleId?: StringNullableFilter<"Connection"> | string | null
     status?: StringFilter<"Connection"> | string
     connectedAt?: DateTimeFilter<"Connection"> | Date | string
     details?: JsonNullableFilter<"Connection">
@@ -54900,6 +55068,7 @@ export namespace Prisma {
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     account: AccountCreateNestedOneWithoutConnectionsInput
+    role?: AuthzRoleCreateNestedOneWithoutConnectionsInput
     parentMembers?: MemberCreateNestedManyWithoutParentConnectionInput
     childAssets?: AssetCreateNestedManyWithoutChildConnectionInput
   }
@@ -54907,6 +55076,7 @@ export namespace Prisma {
   export type ConnectionUncheckedCreateWithoutApplicationInput = {
     id?: string
     accountId: string
+    roleId?: string | null
     status?: string
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -55045,6 +55215,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
     members?: MemberCreateNestedManyWithoutRoleInput
+    connections?: ConnectionCreateNestedManyWithoutRoleInput
   }
 
   export type AuthzRoleUncheckedCreateWithoutApplicationInput = {
@@ -55056,6 +55227,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
     members?: MemberUncheckedCreateNestedManyWithoutRoleInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutRoleInput
   }
 
   export type AuthzRoleCreateOrConnectWithoutApplicationInput = {
@@ -55937,6 +56109,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     account: AccountCreateNestedOneWithoutConnectionsInput
     application: ApplicationCreateNestedOneWithoutConnectionsInput
+    role?: AuthzRoleCreateNestedOneWithoutConnectionsInput
     parentMembers?: MemberCreateNestedManyWithoutParentConnectionInput
   }
 
@@ -55944,6 +56117,7 @@ export namespace Prisma {
     id?: string
     accountId: string
     appId: string
+    roleId?: string | null
     status?: string
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -56267,6 +56441,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     account?: AccountUpdateOneRequiredWithoutConnectionsNestedInput
     application?: ApplicationUpdateOneRequiredWithoutConnectionsNestedInput
+    role?: AuthzRoleUpdateOneWithoutConnectionsNestedInput
     parentMembers?: MemberUpdateManyWithoutParentConnectionNestedInput
   }
 
@@ -56274,6 +56449,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     accountId?: StringFieldUpdateOperationsInput | string
     appId?: StringFieldUpdateOperationsInput | string
+    roleId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -56603,6 +56779,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     account: AccountCreateNestedOneWithoutConnectionsInput
     application: ApplicationCreateNestedOneWithoutConnectionsInput
+    role?: AuthzRoleCreateNestedOneWithoutConnectionsInput
     childAssets?: AssetCreateNestedManyWithoutChildConnectionInput
   }
 
@@ -56610,6 +56787,7 @@ export namespace Prisma {
     id?: string
     accountId: string
     appId: string
+    roleId?: string | null
     status?: string
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -56653,6 +56831,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
     assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
+    connections?: ConnectionCreateNestedManyWithoutRoleInput
   }
 
   export type AuthzRoleUncheckedCreateWithoutMembersInput = {
@@ -56664,6 +56843,7 @@ export namespace Prisma {
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutRoleInput
   }
 
   export type AuthzRoleCreateOrConnectWithoutMembersInput = {
@@ -57013,6 +57193,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     account?: AccountUpdateOneRequiredWithoutConnectionsNestedInput
     application?: ApplicationUpdateOneRequiredWithoutConnectionsNestedInput
+    role?: AuthzRoleUpdateOneWithoutConnectionsNestedInput
     childAssets?: AssetUpdateManyWithoutChildConnectionNestedInput
   }
 
@@ -57020,6 +57201,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     accountId?: StringFieldUpdateOperationsInput | string
     appId?: StringFieldUpdateOperationsInput | string
+    roleId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -57075,6 +57257,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
     assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
+    connections?: ConnectionUpdateManyWithoutRoleNestedInput
   }
 
   export type AuthzRoleUncheckedUpdateWithoutMembersInput = {
@@ -57086,6 +57269,7 @@ export namespace Prisma {
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutRoleNestedInput
   }
 
   export type AccountCreateWithoutChildOwnershipsInput = {
@@ -57562,6 +57746,35 @@ export namespace Prisma {
     create: XOR<ApplicationCreateWithoutConnectionsInput, ApplicationUncheckedCreateWithoutConnectionsInput>
   }
 
+  export type AuthzRoleCreateWithoutConnectionsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    scope?: string | null
+    pushed?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
+    assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
+    members?: MemberCreateNestedManyWithoutRoleInput
+  }
+
+  export type AuthzRoleUncheckedCreateWithoutConnectionsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    appId?: string | null
+    scope?: string | null
+    pushed?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
+    members?: MemberUncheckedCreateNestedManyWithoutRoleInput
+  }
+
+  export type AuthzRoleCreateOrConnectWithoutConnectionsInput = {
+    where: AuthzRoleWhereUniqueInput
+    create: XOR<AuthzRoleCreateWithoutConnectionsInput, AuthzRoleUncheckedCreateWithoutConnectionsInput>
+  }
+
   export type MemberCreateWithoutParentConnectionInput = {
     id?: string
     accessFor: $Enums.MemberAccessFor
@@ -57780,6 +57993,41 @@ export namespace Prisma {
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
     devLogs?: ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput
+  }
+
+  export type AuthzRoleUpsertWithoutConnectionsInput = {
+    update: XOR<AuthzRoleUpdateWithoutConnectionsInput, AuthzRoleUncheckedUpdateWithoutConnectionsInput>
+    create: XOR<AuthzRoleCreateWithoutConnectionsInput, AuthzRoleUncheckedCreateWithoutConnectionsInput>
+    where?: AuthzRoleWhereInput
+  }
+
+  export type AuthzRoleUpdateToOneWithWhereWithoutConnectionsInput = {
+    where?: AuthzRoleWhereInput
+    data: XOR<AuthzRoleUpdateWithoutConnectionsInput, AuthzRoleUncheckedUpdateWithoutConnectionsInput>
+  }
+
+  export type AuthzRoleUpdateWithoutConnectionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    pushed?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
+    assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
+    members?: MemberUpdateManyWithoutRoleNestedInput
+  }
+
+  export type AuthzRoleUncheckedUpdateWithoutConnectionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    appId?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    pushed?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
+    members?: MemberUncheckedUpdateManyWithoutRoleNestedInput
   }
 
   export type MemberUpsertWithWhereUniqueWithoutParentConnectionInput = {
@@ -58297,6 +58545,38 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ConnectionCreateWithoutRoleInput = {
+    id?: string
+    status?: string
+    connectedAt?: Date | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    account: AccountCreateNestedOneWithoutConnectionsInput
+    application: ApplicationCreateNestedOneWithoutConnectionsInput
+    parentMembers?: MemberCreateNestedManyWithoutParentConnectionInput
+    childAssets?: AssetCreateNestedManyWithoutChildConnectionInput
+  }
+
+  export type ConnectionUncheckedCreateWithoutRoleInput = {
+    id?: string
+    accountId: string
+    appId: string
+    status?: string
+    connectedAt?: Date | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    parentMembers?: MemberUncheckedCreateNestedManyWithoutParentConnectionInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildConnectionInput
+  }
+
+  export type ConnectionCreateOrConnectWithoutRoleInput = {
+    where: ConnectionWhereUniqueInput
+    create: XOR<ConnectionCreateWithoutRoleInput, ConnectionUncheckedCreateWithoutRoleInput>
+  }
+
+  export type ConnectionCreateManyRoleInputEnvelope = {
+    data: ConnectionCreateManyRoleInput | ConnectionCreateManyRoleInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ApplicationUpsertWithoutAuthzRolesInput = {
     update: XOR<ApplicationUpdateWithoutAuthzRolesInput, ApplicationUncheckedUpdateWithoutAuthzRolesInput>
     create: XOR<ApplicationCreateWithoutAuthzRolesInput, ApplicationUncheckedCreateWithoutAuthzRolesInput>
@@ -58390,6 +58670,22 @@ export namespace Prisma {
   export type MemberUpdateManyWithWhereWithoutRoleInput = {
     where: MemberScalarWhereInput
     data: XOR<MemberUpdateManyMutationInput, MemberUncheckedUpdateManyWithoutRoleInput>
+  }
+
+  export type ConnectionUpsertWithWhereUniqueWithoutRoleInput = {
+    where: ConnectionWhereUniqueInput
+    update: XOR<ConnectionUpdateWithoutRoleInput, ConnectionUncheckedUpdateWithoutRoleInput>
+    create: XOR<ConnectionCreateWithoutRoleInput, ConnectionUncheckedCreateWithoutRoleInput>
+  }
+
+  export type ConnectionUpdateWithWhereUniqueWithoutRoleInput = {
+    where: ConnectionWhereUniqueInput
+    data: XOR<ConnectionUpdateWithoutRoleInput, ConnectionUncheckedUpdateWithoutRoleInput>
+  }
+
+  export type ConnectionUpdateManyWithWhereWithoutRoleInput = {
+    where: ConnectionScalarWhereInput
+    data: XOR<ConnectionUpdateManyMutationInput, ConnectionUncheckedUpdateManyWithoutRoleInput>
   }
 
   export type AssetCreateWithoutAuthzAssetsAccessGrantsInput = {
@@ -58509,6 +58805,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
     members?: MemberCreateNestedManyWithoutRoleInput
+    connections?: ConnectionCreateNestedManyWithoutRoleInput
   }
 
   export type AuthzRoleUncheckedCreateWithoutAssetsGrantsInput = {
@@ -58520,6 +58817,7 @@ export namespace Prisma {
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     members?: MemberUncheckedCreateNestedManyWithoutRoleInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutRoleInput
   }
 
   export type AuthzRoleCreateOrConnectWithoutAssetsGrantsInput = {
@@ -58690,6 +58988,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
     members?: MemberUpdateManyWithoutRoleNestedInput
+    connections?: ConnectionUpdateManyWithoutRoleNestedInput
   }
 
   export type AuthzRoleUncheckedUpdateWithoutAssetsGrantsInput = {
@@ -58701,6 +59000,7 @@ export namespace Prisma {
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     members?: MemberUncheckedUpdateManyWithoutRoleNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutRoleNestedInput
   }
 
   export type PortfolioUpsertWithoutAuthzAssetsAccessGrantsInput = {
@@ -59191,6 +59491,7 @@ export namespace Prisma {
   export type ConnectionCreateManyAccountInput = {
     id?: string
     appId: string
+    roleId?: string | null
     status?: string
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -59444,6 +59745,7 @@ export namespace Prisma {
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationUpdateOneRequiredWithoutConnectionsNestedInput
+    role?: AuthzRoleUpdateOneWithoutConnectionsNestedInput
     parentMembers?: MemberUpdateManyWithoutParentConnectionNestedInput
     childAssets?: AssetUpdateManyWithoutChildConnectionNestedInput
   }
@@ -59451,6 +59753,7 @@ export namespace Prisma {
   export type ConnectionUncheckedUpdateWithoutAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
     appId?: StringFieldUpdateOperationsInput | string
+    roleId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -59461,6 +59764,7 @@ export namespace Prisma {
   export type ConnectionUncheckedUpdateManyWithoutAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
     appId?: StringFieldUpdateOperationsInput | string
+    roleId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -60363,6 +60667,7 @@ export namespace Prisma {
   export type ConnectionCreateManyApplicationInput = {
     id?: string
     accountId: string
+    roleId?: string | null
     status?: string
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -60455,6 +60760,7 @@ export namespace Prisma {
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     account?: AccountUpdateOneRequiredWithoutConnectionsNestedInput
+    role?: AuthzRoleUpdateOneWithoutConnectionsNestedInput
     parentMembers?: MemberUpdateManyWithoutParentConnectionNestedInput
     childAssets?: AssetUpdateManyWithoutChildConnectionNestedInput
   }
@@ -60462,6 +60768,7 @@ export namespace Prisma {
   export type ConnectionUncheckedUpdateWithoutApplicationInput = {
     id?: StringFieldUpdateOperationsInput | string
     accountId?: StringFieldUpdateOperationsInput | string
+    roleId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -60472,6 +60779,7 @@ export namespace Prisma {
   export type ConnectionUncheckedUpdateManyWithoutApplicationInput = {
     id?: StringFieldUpdateOperationsInput | string
     accountId?: StringFieldUpdateOperationsInput | string
+    roleId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -60594,6 +60902,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
     members?: MemberUpdateManyWithoutRoleNestedInput
+    connections?: ConnectionUpdateManyWithoutRoleNestedInput
   }
 
   export type AuthzRoleUncheckedUpdateWithoutApplicationInput = {
@@ -60605,6 +60914,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
     members?: MemberUncheckedUpdateManyWithoutRoleNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutRoleNestedInput
   }
 
   export type AuthzRoleUncheckedUpdateManyWithoutApplicationInput = {
@@ -61017,6 +61327,15 @@ export namespace Prisma {
     status?: $Enums.MemberStatus
   }
 
+  export type ConnectionCreateManyRoleInput = {
+    id?: string
+    accountId: string
+    appId: string
+    status?: string
+    connectedAt?: Date | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+  }
+
   export type AuthzAssetsAccessGrantUpdateWithoutRoleInput = {
     id?: StringFieldUpdateOperationsInput | string
     app_id?: StringFieldUpdateOperationsInput | string
@@ -61084,6 +61403,37 @@ export namespace Prisma {
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     hasFullAccess?: BoolFieldUpdateOperationsInput | boolean
     status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
+  }
+
+  export type ConnectionUpdateWithoutRoleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    account?: AccountUpdateOneRequiredWithoutConnectionsNestedInput
+    application?: ApplicationUpdateOneRequiredWithoutConnectionsNestedInput
+    parentMembers?: MemberUpdateManyWithoutParentConnectionNestedInput
+    childAssets?: AssetUpdateManyWithoutChildConnectionNestedInput
+  }
+
+  export type ConnectionUncheckedUpdateWithoutRoleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    appId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    parentMembers?: MemberUncheckedUpdateManyWithoutParentConnectionNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildConnectionNestedInput
+  }
+
+  export type ConnectionUncheckedUpdateManyWithoutRoleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    appId?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    details?: NullableJsonNullValueInput | InputJsonValue
   }
 
 

@@ -15,7 +15,12 @@ async function main() {
     const roleId = 'individual-default-and-application-neup-account';
     const roleName = 'individual.defaultAndApplication';
     const roleDescription = 'Default individual permissions with application view/edit access.';
-    const applicationPermissions = ['application.view', 'application.edit'];
+    const applicationPermissions = [
+      'application.view',
+      'application.edit',
+      'application.logs.view',
+      'application.devlogs.view',
+    ];
 
     // 1) Rebuild authz_role.permissions from legacy role-capability mapping if it still exists.
     await pool.query(

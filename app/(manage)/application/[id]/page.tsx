@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { getApplicationDetailsForViewerV2, getApplicationUserStats } from '@/services/applications/manage';
+import { getApplicationDetailsForViewerV2, getApplicationLogPermissions, getApplicationUserStats } from '@/services/applications/manage';
 import { deleteManagedApplicationFromDetailsPage } from '@/services/applications/form-actions';
 import { AppWindow, Building, BarChart, Share2, ExternalLink, ChevronRight, Users, UserPlus, ArrowLeft, type LucideIcon } from '@/components/icons';
 
@@ -40,8 +40,9 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
   const Icon = iconFor(details.icon);
   const deleteAction = deleteManagedApplicationFromDetailsPage.bind(null, id);
 
-  const [userStats] = await Promise.all([
+  const [userStats, logPermissions] = await Promise.all([
     getApplicationUserStats(id),
+    getApplicationLogPermissions(id),
   ]);
 
   return (
@@ -174,27 +175,31 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
             <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
           </FlowLink>
 
-          <FlowLink
-            href={`/data/activity?application=${id}`}
-            className="group flex items-center justify-between gap-4 px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
-          >
-            <div className="min-w-0">
-              <p className="font-medium">Application Logs</p>
-              <p className="text-sm text-muted-foreground">View activity and change history for this application.</p>
-            </div>
-            <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-          </FlowLink>
+          {logPermissions.canViewLogs ? (
+            <FlowLink
+              href={`/data/activity?application=${id}`}
+              className="group flex items-center justify-between gap-4 px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
+            >
+              <div className="min-w-0">
+                <p className="font-medium">Application Logs</p>
+                <p className="text-sm text-muted-foreground">View activity and change history for this application.</p>
+              </div>
+              <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+            </FlowLink>
+          ) : null}
 
-          <FlowLink
-            href={`/application/${id}/logs`}
-            className="group flex items-center justify-between gap-4 border-t px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
-          >
-            <div className="min-w-0">
-              <p className="font-medium">Development API Logs</p>
-              <p className="text-sm text-muted-foreground">Inspect request and response logs captured while app status is development.</p>
-            </div>
-            <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-          </FlowLink>
+          {logPermissions.canViewDevLogs ? (
+            <FlowLink
+              href={`/application/${id}/logs`}
+              className="group flex items-center justify-between gap-4 border-t px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
+            >
+              <div className="min-w-0">
+                <p className="font-medium">Development API Logs</p>
+                <p className="text-sm text-muted-foreground">Inspect request and response logs captured while app status is development.</p>
+              </div>
+              <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+            </FlowLink>
+          ) : null}
         </div>
       </div>
 

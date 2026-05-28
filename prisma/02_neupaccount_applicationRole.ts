@@ -4,7 +4,7 @@
  * Seeds the application.owner role for the neupaccount application.
  *
  * Order of operations (must be followed to satisfy FK constraints):
- *   1. Upsert permissions  (application.view, application.edit, application.delete)
+ *   1. Upsert permissions  (application.view, application.edit, application.delete, application.logs.view, application.devlogs.view)
  *   2. Upsert role          (application.owner)
  *   3. Upsert permission-to-role maps (AuthzRolePermission)
  *
@@ -43,6 +43,18 @@ const CAPABILITIES = [
     id: 'cap-appowner-application-delete',
     name: 'application.delete',
     description: 'Delete or deactivate an application.',
+    scope: 'application',
+  },
+  {
+    id: 'cap-appowner-application-logs-view',
+    name: 'application.logs.view',
+    description: 'View application activity logs.',
+    scope: 'application',
+  },
+  {
+    id: 'cap-appowner-application-devlogs-view',
+    name: 'application.devlogs.view',
+    description: 'View development API request/response logs for the application.',
     scope: 'application',
   },
 ] as const;

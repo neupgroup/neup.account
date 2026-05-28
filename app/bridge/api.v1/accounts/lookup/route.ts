@@ -253,6 +253,10 @@ export async function POST(request: NextRequest) {
     const accountDetails = account.details && typeof account.details === 'object'
       ? (account.details as Record<string, unknown>)
       : {};
+    const nestedProfile =
+      accountDetails.profile && typeof accountDetails.profile === 'object'
+        ? (accountDetails.profile as Record<string, unknown>)
+        : {};
     const individualDetails = account.individualProfile?.details && typeof account.individualProfile.details === 'object'
       ? (account.individualProfile.details as Record<string, unknown>)
       : {};
@@ -280,7 +284,10 @@ export async function POST(request: NextRequest) {
       connectionId: connection.id,
       accountId: account.id,
       displayName: account.displayName ?? null,
-      displayImage: account.displayImage ?? null,
+      displayImage:
+        (typeof nestedProfile.displayImage === 'string' && nestedProfile.displayImage.trim().length > 0
+          ? nestedProfile.displayImage.trim()
+          : null) ?? account.displayImage ?? null,
       accountType: account.accountType ?? null,
       lastActive: lastActiveIso,
       neupid: primaryNeupId,

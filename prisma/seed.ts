@@ -76,6 +76,8 @@ const ROOT_CAPABILITIES = [
   'root.application.create',
   'root.application.edit',
   'root.application.delete',
+  'root.application.logs.view',
+  'root.application.devlogs.view',
   'root.application.roles.view',
   'root.application.roles.manage',
   'root.permission.view',

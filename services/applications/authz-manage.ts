@@ -38,6 +38,8 @@ async function ensureApplicationManagementRoles(): Promise<void> {
     { id: 'cap-appmanage-application-view', name: 'application.view', description: 'View application details and settings.' },
     { id: 'cap-appmanage-application-edit', name: 'application.edit', description: 'Edit application details, secrets, access fields, policies, and endpoints.' },
     { id: 'cap-appmanage-application-delete', name: 'application.delete', description: 'Delete or deactivate an application.' },
+    { id: 'cap-appmanage-application-logs-view', name: 'application.logs.view', description: 'View application activity logs.' },
+    { id: 'cap-appmanage-application-devlogs-view', name: 'application.devlogs.view', description: 'View development API request/response logs for the application.' },
     { id: 'cap-appmanage-application-roles-view', name: 'application.roles.view', description: 'View application roles and permissions.' },
     { id: 'cap-appmanage-application-roles-manage', name: 'application.roles.manage', description: 'Create, update, and delete application roles and permissions.' },
   ] as const;

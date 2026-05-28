@@ -66,6 +66,24 @@ const viewRoleKeys = new Set(['application.owner', 'application.view', 'app.view
 const editRoleKeys = new Set(['application.owner', 'application.edit', 'app.edit', 'application.manage', 'app.manage', 'manage', '*']);
 const ownerRoleKeys = new Set(['application.owner', 'app.owner', 'owner', '*']);
 
+function extractPermissionNames(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  const out: string[] = [];
+
+  for (const item of raw) {
+    if (typeof item === 'string') {
+      out.push(item);
+      continue;
+    }
+    if (item && typeof item === 'object') {
+      const record = item as Record<string, unknown>;
+      if (typeof record.name === 'string') out.push(record.name);
+    }
+  }
+
+  return out;
+}
+
 /**
  * Function normalizeText.
  */
@@ -179,6 +197,32 @@ async function resolveApplicationAccessForAccount(accountId: string, appId: stri
     await logError('database', error, `resolveApplicationAccessForAccount:${accountId}:${appId}`);
     return { canView: false, canEdit: false };
   }
+}
+
+async function hasApplicationPermission(
+  accountId: string,
+  appId: string,
+  permissionNames: string[],
+): Promise<boolean> {
+  if (permissionNames.length === 0) return false;
+
+  const grants = await prisma.member.findMany({
+    where: {
+      memberId: accountId,
+      parentApplicationId: appId,
+    },
+    select: {
+      role: {
+        select: { permissions: true },
+      },
+    },
+  });
+
+  const granted = new Set(
+    grants.flatMap((g) => extractPermissionNames(g.role.permissions))
+  );
+
+  return permissionNames.some((permission) => granted.has(permission));
 }
 
 
@@ -357,6 +401,8 @@ export async function createManagedApplication(input: { name: string }) {
         { id: 'cap-appowner-application-view',   name: 'application.view',   description: 'View application details and settings.' },
         { id: 'cap-appowner-application-edit',   name: 'application.edit',   description: 'Edit application details, secrets, access fields, policies, and endpoints.' },
         { id: 'cap-appowner-application-delete', name: 'application.delete', description: 'Delete or deactivate an application.' },
+        { id: 'cap-appowner-application-logs-view', name: 'application.logs.view', description: 'View application activity logs.' },
+        { id: 'cap-appowner-application-devlogs-view', name: 'application.devlogs.view', description: 'View development API request/response logs for the application.' },
       ];
       for (const cap of permissions) {
         await tx.authzPermission.upsert({
@@ -1931,12 +1977,12 @@ export async function getApplicationDevLogs(
   const accountId = await getActiveAccountId();
   if (!accountId) return null;
 
-  const [isRootViewer, access] = await Promise.all([
-    checkPermissions(['root.application.view']),
-    resolveApplicationAccessForAccount(accountId, appId),
+  const [isRootViewer, canViewDevLogs] = await Promise.all([
+    checkPermissions(['root.application.devlogs.view']),
+    hasApplicationPermission(accountId, appId, ['application.devlogs.view']),
   ]);
 
-  if (!isRootViewer && !access.canEdit) return null;
+  if (!isRootViewer && !canViewDevLogs) return null;
 
   try {
     const rows = await prisma.applicationDevLog.findMany({
@@ -1965,4 +2011,27 @@ export async function getApplicationDevLogs(
     await logError('database', error, `getApplicationDevLogs:${appId}`);
     return [];
   }
+}
+
+export async function getApplicationLogPermissions(appId: string): Promise<{
+  canViewLogs: boolean;
+  canViewDevLogs: boolean;
+}> {
+  const accountId = await getActiveAccountId();
+  if (!accountId) return { canViewLogs: false, canViewDevLogs: false };
+
+  const [isRootLogsViewer, isRootDevLogsViewer] = await Promise.all([
+    checkPermissions(['root.application.logs.view']),
+    checkPermissions(['root.application.devlogs.view']),
+  ]);
+
+  const [canViewLogs, canViewDevLogs] = await Promise.all([
+    hasApplicationPermission(accountId, appId, ['application.logs.view']),
+    hasApplicationPermission(accountId, appId, ['application.devlogs.view']),
+  ]);
+
+  return {
+    canViewLogs: isRootLogsViewer || canViewLogs,
+    canViewDevLogs: isRootDevLogsViewer || canViewDevLogs,
+  };
 }

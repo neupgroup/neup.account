@@ -8,6 +8,7 @@ import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
 import { checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
+import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';
 import {
   applicationAccessFields,
   applicationResponseFields,
@@ -1871,7 +1872,7 @@ export async function assignApplicationConnectionRole(input: {
     const [connection, role] = await Promise.all([
       prisma.connection.findFirst({
         where: { id: input.connectionId, appId: input.appId },
-        select: { id: true },
+        select: { id: true, accountId: true },
       }),
       prisma.authzRole.findFirst({
         where: { id: input.roleId, appId: input.appId },
@@ -1885,6 +1886,11 @@ export async function assignApplicationConnectionRole(input: {
     await prisma.connection.update({
       where: { id: input.connectionId },
       data: { roleId: input.roleId },
+    });
+
+    await dispatchAccountUpdatedEvent({
+      accountId: connection.accountId,
+      changedFields: ['role'],
     });
 
     revalidatePath(`/application/${input.appId}/users`);
@@ -2272,6 +2278,32 @@ export async function getApplicationDevLogsPaginated(input: {
   } catch (error) {
     await logError('database', error, `getApplicationDevLogsPaginated:${input.appId}`);
     return { logs: [], total: 0, page: 1, pageSize: input.pageSize, totalPages: 1 };
+  }
+}
+
+export async function clearApplicationDevLogs(appId: string): Promise<{ success: boolean; error?: string }> {
+  const accountId = await getActiveAccountId();
+  if (!accountId) return { success: false, error: 'Not signed in.' };
+
+  const [isRootEditor, isOwner] = await Promise.all([
+    checkPermissions(['root.application.edit']),
+    isApplicationOwnerForAccount(accountId, appId),
+  ]);
+
+  if (!isRootEditor && !isOwner) {
+    return { success: false, error: 'Permission denied.' };
+  }
+
+  try {
+    await prisma.applicationDevLog.deleteMany({
+      where: { appId },
+    });
+
+    revalidatePath(`/application/${appId}/logs`);
+    return { success: true };
+  } catch (error) {
+    await logError('database', error, `clearApplicationDevLogs:${appId}`);
+    return { success: false, error: 'Failed to clear application logs.' };
   }
 }
 

@@ -32,6 +32,27 @@ type DispatchResult = {
   error?: string;
 };
 
+function extractPermissionNames(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  const names: string[] = [];
+
+  for (const item of raw) {
+    if (typeof item === 'string') {
+      names.push(item);
+      continue;
+    }
+
+    if (item && typeof item === 'object') {
+      const maybeName = (item as Record<string, unknown>).name;
+      if (typeof maybeName === 'string' && maybeName.trim().length > 0) {
+        names.push(maybeName);
+      }
+    }
+  }
+
+  return Array.from(new Set(names));
+}
+
 async function logAccountUpdateWebhookDispatch(input: {
   appId: string;
   webhookUrl: string;
@@ -98,6 +119,10 @@ export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise
 }> {
   const changedFields = Array.from(new Set(input.changedFields));
   if (changedFields.length === 0) return { sent: 0, delivered: 0, succeeded: 0, results: [] };
+  console.log('[account.updated] checking if it requires event dispatch', {
+    accountId: input.accountId,
+    changedFields,
+  });
 
   try {
     const account = await prisma.account.findUnique({
@@ -109,7 +134,7 @@ export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise
         displayImage: true,
         details: true,
         individualProfile: {
-          select: { dateOfBirth: true, roleId: true },
+          select: { dateOfBirth: true },
         },
         neupIds: {
           where: { isPrimary: true },
@@ -120,6 +145,13 @@ export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise
           select: {
             id: true,
             appId: true,
+            role: {
+              select: {
+                id: true,
+                name: true,
+                permissions: true,
+              },
+            },
             application: {
               select: {
                 appSecret: true,
@@ -143,17 +175,47 @@ export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise
         ? (account.details as Record<string, unknown>)
         : {};
 
-    const targets = account.connections
-      .map((connection) => ({
+    const scannedTargets = account.connections.map((connection) => ({
         connectionId: connection.id,
         appId: connection.appId,
+        role: connection.role
+          ? {
+              id: connection.role.id,
+              name: connection.role.name,
+              permissions: extractPermissionNames(connection.role.permissions),
+            }
+          : null,
         appSecret: connection.application.appSecret?.trim() ?? '',
         appStatus: connection.application.status,
         webhookUrl: connection.application.bridge[0]?.value?.trim() ?? '',
-      }))
+      }));
+
+    console.log('[account.updated] scanned target connections', {
+      accountId: input.accountId,
+      totalConnections: scannedTargets.length,
+      targets: scannedTargets.map((t) => ({
+        appId: t.appId,
+        connectionId: t.connectionId,
+        webhookUrl: t.webhookUrl || null,
+        hasSecret: t.appSecret.length > 0,
+      })),
+    });
+
+    const targets = scannedTargets
       .filter((target) => target.webhookUrl.length > 0 && target.appSecret.length > 0);
 
-    if (targets.length === 0) return { sent: 0, delivered: 0, succeeded: 0, results: [] };
+    if (targets.length === 0) {
+      console.log('[account.updated] found "does not requires dispatch"', {
+        reason: 'No target with both webhookUrl and appSecret.',
+        accountId: input.accountId,
+      });
+      return { sent: 0, delivered: 0, succeeded: 0, results: [] };
+    }
+
+    console.log('[account.updated] found "requires dispatch"', {
+      accountId: input.accountId,
+      dispatchTargetCount: targets.length,
+    });
 
     const occurredAt = new Date().toISOString();
     const eventId = randomUUID();
@@ -168,7 +230,6 @@ export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise
         displayImage: account.displayImage,
         gender: typeof detailsRecord.gender === 'string' ? detailsRecord.gender : null,
         dateOfBirth: toIsoDateOnly(account.individualProfile?.dateOfBirth),
-        role: account.individualProfile?.roleId ?? null,
         isMinor: typeof detailsRecord.isMinor === 'boolean' ? detailsRecord.isMinor : null,
         accountType: account.accountType ?? null,
       },
@@ -177,7 +238,12 @@ export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise
 
     const settled = await Promise.allSettled(
       targets.map(async (target) => {
-        const payload = { ...basePayload, appId: target.appId, connectionId: target.connectionId };
+        const payload = {
+          ...basePayload,
+          appId: target.appId,
+          connectionId: target.connectionId,
+          role: target.role,
+        };
         const encrypted = encryptForApp(JSON.stringify(payload), target.appSecret);
         const signature = signEnvelope(encrypted, target.appSecret);
         const requestBody = {
@@ -187,6 +253,23 @@ export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise
           tag: encrypted.tag,
           data: encrypted.data,
         } as const;
+
+        console.log(`[account.updated] sending events to webhook at "${target.webhookUrl}"`, {
+          appId: target.appId,
+          connectionId: target.connectionId,
+          changedFields,
+          occurredAt,
+          encrypted: true,
+          iv: requestBody.iv,
+          tag: requestBody.tag,
+          dataLength: requestBody.data.length,
+        });
+        console.log('[account.updated] awaiting for response', {
+          appId: target.appId,
+          connectionId: target.connectionId,
+          webhookUrl: target.webhookUrl,
+        });
+
         const response = await fetch(target.webhookUrl, {
           method: 'POST',
           headers: {
@@ -215,20 +298,30 @@ export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise
           responseBody = null;
         }
 
-        if (target.appStatus === 'development') {
-          await logAccountUpdateWebhookDispatch({
-            appId: target.appId,
-            webhookUrl: target.webhookUrl,
-            statusCode: response.status,
-            requestBody: requestBody as unknown as Record<string, unknown>,
-            responseBody,
-            error: success
-              ? undefined
-              : responseBody && typeof responseBody === 'object' && 'error' in responseBody
-                ? String((responseBody as { error?: unknown }).error)
-                : `Webhook did not return success:true (HTTP ${response.status}).`,
-          });
-        }
+        console.log('[account.updated] got response', {
+          appId: target.appId,
+          connectionId: target.connectionId,
+          webhookUrl: target.webhookUrl,
+          status: response.status,
+          ok: response.ok,
+          responseBody,
+          successAck: success,
+        });
+
+        // Always persist a dispatch trace for observability of outbound events.
+        // This gives us a verifiable audit trail for both success and failure.
+        await logAccountUpdateWebhookDispatch({
+          appId: target.appId,
+          webhookUrl: target.webhookUrl,
+          statusCode: response.status,
+          requestBody: requestBody as unknown as Record<string, unknown>,
+          responseBody,
+          error: success
+            ? undefined
+            : responseBody && typeof responseBody === 'object' && 'error' in responseBody
+              ? String((responseBody as { error?: unknown }).error)
+              : `Webhook did not return success:true (HTTP ${response.status}).`,
+        });
 
         return {
           appId: target.appId,
@@ -245,15 +338,19 @@ export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise
       if (entry.status === 'fulfilled') return entry.value;
 
       const target = targets[index];
-      if (target.appStatus === 'development') {
-        await logAccountUpdateWebhookDispatch({
-          appId: target.appId,
-          webhookUrl: target.webhookUrl,
-          statusCode: 0,
-          requestBody: { eventType: 'account.updated', encrypted: true },
-          error: entry.reason instanceof Error ? entry.reason.message : 'Webhook request failed.',
-        });
-      }
+      console.error('[account.updated] dispatch:error', {
+        appId: target.appId,
+        connectionId: target.connectionId,
+        webhookUrl: target.webhookUrl,
+        error: entry.reason instanceof Error ? entry.reason.message : 'Webhook request failed.',
+      });
+      await logAccountUpdateWebhookDispatch({
+        appId: target.appId,
+        webhookUrl: target.webhookUrl,
+        statusCode: 0,
+        requestBody: { eventType: 'account.updated', encrypted: true },
+        error: entry.reason instanceof Error ? entry.reason.message : 'Webhook request failed.',
+      });
 
       return {
         appId: targets[index].appId,

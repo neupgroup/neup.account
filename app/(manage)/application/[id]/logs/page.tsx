@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FlowLink } from '@/components/ui/flow-link';
-import { getApplicationDetailsForViewerV2, getApplicationDevLogsPaginated } from '@/services/applications/manage';
+import { clearApplicationDevLogs, getApplicationDetailsForViewerV2, getApplicationDevLogsPaginated } from '@/services/applications/manage';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -64,6 +64,10 @@ export default async function ApplicationLogsPage({ params, searchParams }: Prop
   const logPage = await getApplicationDevLogsPaginated({ appId: id, page, pageSize });
   if (logPage === null) notFound();
   const logs = logPage.logs;
+  const clearLogsAction = async () => {
+    'use server';
+    await clearApplicationDevLogs(id);
+  };
 
   return (
     <div className="grid gap-6">
@@ -145,6 +149,14 @@ export default async function ApplicationLogsPage({ params, searchParams }: Prop
           ))}
         </div>
       )}
+
+      <div className="flex justify-start">
+        <form action={clearLogsAction}>
+          <Button type="submit" variant="destructive">
+            Clear All Logs
+          </Button>
+        </form>
+      </div>
     </div>
   );
 }

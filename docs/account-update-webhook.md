@@ -1,16 +1,58 @@
-# Account Update Webhook Integration Guide
+# Account Update Webhook Payload Guide
 
-This guide explains how a target application can receive and process `account.updated` events from `neup.account`.
+This guide documents the public payload contract for `account.updated` events.
 
-## 1. What this event is
+## Event
 
-When a connected account profile changes, `neup.account` sends a webhook event to subscribed apps.
+- `eventType`: `account.updated`
+- Meaning: one or more account-related values changed.
 
-Event source:
-- `sourceAppId: "neup.account"`
-- `eventType: "account.updated"`
+## Payload Shape
 
-Changed fields that may be included in `changedFields`:
+```json
+{
+  "success": true,
+  "eventId": "evt_01J...",
+  "eventType": "account.updated",
+  "sourceAppId": "neup.account",
+  "occurredAt": "2026-05-28T12:34:56.789Z",
+  "appId": "target-app-id",
+  "connectionId": "connection-id",
+  "changedFields": ["displayName"],
+  "account": {
+    "id": "f18af8c5-5099-4234-8f78-10cf52f08038"
+  },
+  "profile": {
+    "displayName": "Kishor Neupane"
+  }
+}
+```
+
+## Field Meanings
+
+- `success`: always `true` for a valid event payload.
+- `eventId`: unique ID of this event. Use for idempotency.
+- `eventType`: always `account.updated` in this guide.
+- `sourceAppId`: source system identifier.
+- `occurredAt`: ISO-8601 timestamp when event was produced.
+- `appId`: receiving app identifier context.
+- `connectionId`: connection context for the receiving app.
+- `changedFields`: list of logical fields that changed.
+- `account`: always present; always includes `id`.
+- `profile`: present only if one or more profile fields changed.
+- `role`: present only if role changed for this app connection.
+- `access`: present only if access changes are included for this event type in future/active integrations.
+
+## Presence Rules (What Will Be There / Not There)
+
+- `account` is always present.
+- `account.id` is always present.
+- Unchanged sections are omitted, not sent as `null`.
+- Unchanged keys inside a sent section are omitted.
+- `changedFields` reflects only changed logical fields.
+
+## Supported `changedFields`
+
 - `neupId`
 - `displayName`
 - `displayImage`
@@ -21,156 +63,110 @@ Changed fields that may be included in `changedFields`:
 - `isMinor`
 - `accountType`
 
-## 2. Webhook registration
+## Detailed Examples
 
-Your app must provide a webhook URL in bridge config with:
-- `type = "accountUpdateWebhook"`
-- `value = "https://your-domain.com/your-webhook-endpoint"`
-
-Only HTTPS URLs should be used.
-
-## 3. Security model
-
-Each webhook message is:
-- encrypted using your app's `appSecret`
-- signed using your app's `appSecret`
-
-Algorithms:
-- encryption: `AES-256-GCM`
-- signature: `HMAC-SHA256`
-
-## 4. Incoming request format
-
-Headers:
-- `x-bridge-encryption: aes-256-gcm`
-- `x-bridge-signature-alg: hmac-sha256`
-- `x-bridge-signature: <hex-signature>`
-
-Body:
-```json
-{
-  "eventType": "account.updated",
-  "encrypted": true,
-  "iv": "base64",
-  "tag": "base64",
-  "data": "base64"
-}
-```
-
-## 5. Receiver workflow
-
-1. Read raw body JSON.
-2. Validate required fields: `eventType`, `encrypted`, `iv`, `tag`, `data`.
-3. Recompute signature using your `appSecret`:
-   - signing input: `iv + "." + tag + "." + data`
-   - expected signature: `HMAC_SHA256(signing_input, appSecret)` in hex
-4. Compare with `x-bridge-signature` using constant-time comparison.
-5. If signature is valid, decrypt:
-   - key = `SHA256(appSecret)` (32 bytes)
-   - iv = base64 decode `iv`
-   - auth tag = base64 decode `tag`
-   - ciphertext = base64 decode `data`
-   - algorithm: `AES-256-GCM`
-6. Parse decrypted plaintext JSON.
-7. Persist the event in your system.
-8. Return acknowledgment.
-
-## 6. Acknowledgment contract
-
-Return exactly one of:
-
-Success:
-```json
-{ "success": true }
-```
-
-Failure:
-```json
-{ "success": false, "error": "errorCode", "reason": "optional detail" }
-```
-
-You can include extra fields on failure. They are captured by sender-side development logs when applicable.
-
-## 7. Decrypted payload shape
+### 1) Only display name changed
 
 ```json
 {
   "success": true,
-  "eventId": "uuid",
+  "eventId": "evt_1001",
   "eventType": "account.updated",
   "sourceAppId": "neup.account",
   "occurredAt": "2026-05-28T12:34:56.789Z",
-  "appId": "target-app-id",
-  "connectionId": "connection-id",
-  "changedFields": ["displayName", "displayImage"],
+  "appId": "my.app",
+  "connectionId": "conn_1",
+  "changedFields": ["displayName"],
   "account": {
-    "id": "account_uuid"
+    "id": "f18af8c5-5099-4234-8f78-10cf52f08038"
   },
   "profile": {
-    "displayName": "New Name",
-    "displayImage": "https://...",
-    "gender": "male"
+    "displayName": "Changed Name"
+  }
+}
+```
+
+Not included:
+- `profile.displayImage`
+- `profile.gender`
+- `role`
+- other unchanged account fields
+
+### 2) Only account type changed
+
+```json
+{
+  "success": true,
+  "eventId": "evt_1002",
+  "eventType": "account.updated",
+  "sourceAppId": "neup.account",
+  "occurredAt": "2026-05-28T12:40:00.000Z",
+  "appId": "my.app",
+  "connectionId": "conn_1",
+  "changedFields": ["accountType"],
+  "account": {
+    "id": "f18af8c5-5099-4234-8f78-10cf52f08038",
+    "accountType": "individual"
+  }
+}
+```
+
+Not included:
+- `profile`
+- `role`
+- unrelated account keys
+
+### 3) Role changed
+
+```json
+{
+  "success": true,
+  "eventId": "evt_1003",
+  "eventType": "account.updated",
+  "sourceAppId": "neup.account",
+  "occurredAt": "2026-05-28T12:45:00.000Z",
+  "appId": "my.app",
+  "connectionId": "conn_1",
+  "changedFields": ["role"],
+  "account": {
+    "id": "f18af8c5-5099-4234-8f78-10cf52f08038"
   },
   "role": {
-    "id": "role_uuid",
+    "id": "0f299f90-dc73-4f87-a800-8bdb61c806cc",
     "name": "root.full"
   }
 }
 ```
 
-## 8. Node.js example (verify + decrypt)
+Not included:
+- `profile`
+- other account keys unless they changed in same event
 
-```ts
-import { createHash, createHmac, createDecipheriv, timingSafeEqual } from 'crypto';
+### 4) Multiple fields changed together
 
-function sha256(input: string): Buffer {
-  return createHash('sha256').update(input, 'utf8').digest();
-}
-
-function verifySignature(params: {
-  iv: string;
-  tag: string;
-  data: string;
-  receivedSignature: string;
-  appSecret: string;
-}): boolean {
-  const signingInput = `${params.iv}.${params.tag}.${params.data}`;
-  const expected = createHmac('sha256', params.appSecret).update(signingInput, 'utf8').digest('hex');
-
-  const a = Buffer.from(expected, 'utf8');
-  const b = Buffer.from(params.receivedSignature || '', 'utf8');
-  if (a.length !== b.length) return false;
-  return timingSafeEqual(a, b);
-}
-
-function decryptEnvelope(params: {
-  iv: string;
-  tag: string;
-  data: string;
-  appSecret: string;
-}): string {
-  const key = sha256(params.appSecret);
-  const iv = Buffer.from(params.iv, 'base64');
-  const tag = Buffer.from(params.tag, 'base64');
-  const ciphertext = Buffer.from(params.data, 'base64');
-
-  const decipher = createDecipheriv('aes-256-gcm', key, iv);
-  decipher.setAuthTag(tag);
-
-  const plain = Buffer.concat([decipher.update(ciphertext), decipher.final()]);
-  return plain.toString('utf8');
+```json
+{
+  "success": true,
+  "eventId": "evt_1004",
+  "eventType": "account.updated",
+  "sourceAppId": "neup.account",
+  "occurredAt": "2026-05-28T12:50:00.000Z",
+  "appId": "my.app",
+  "connectionId": "conn_1",
+  "changedFields": ["displayName", "displayImage", "isMinor"],
+  "account": {
+    "id": "f18af8c5-5099-4234-8f78-10cf52f08038",
+    "isMinor": false
+  },
+  "profile": {
+    "displayName": "Kishor Neupane",
+    "displayImage": "https://cdn.neupgroup.com/neupaccount/assets/displayImage/strategist_male.jpg"
+  }
 }
 ```
 
-## 9. Minimal HTTP handler behavior
+## Consumer Recommendations
 
-- If signature check fails: return `{ "success": false, "error": "invalid_signature" }`
-- If decryption fails: return `{ "success": false, "error": "decrypt_failed" }`
-- If persistence fails: return `{ "success": false, "error": "record_failed" }`
-- If successful: return `{ "success": true }`
-
-## 10. Notes
-
-- Keep your `appSecret` server-side only.
-- Rotate webhook URLs and secrets using your operational process.
-- Use idempotency with `eventId` to avoid duplicate processing.
+- Use `eventId` for idempotency.
+- Update only the keys present in payload.
+- Do not clear fields just because they are absent.

@@ -1,130 +1,103 @@
-# Role Update Webhook Integration Guide
+# Role Update Webhook Payload Guide
 
-This guide explains how to receive and process encrypted role update events from `neup.account`.
+This guide documents the public payload contract for role events.
 
-## 1. Event overview
+## Events
 
-Role webhook events are sent from:
-- `sourceAppId: "neup.account"`
+- `role.updated`: role data should be created or updated.
+- `role.deleted`: role should be deleted on the receiver side.
 
-Event type mapping:
-- role create -> `role.updated`
-- role permission update -> `role.updated`
-- role delete/remove -> `role.deleted`
+## Common Payload Fields
 
-## 2. Webhook registration
-
-In app configuration, set:
-- Bridge type: `roleUpdateWebhook`
-- Value: your public HTTPS endpoint
-
-Example:
-- `https://your-domain.com/webhooks/role-update`
-
-If unset, role events are not dispatched.
-
-## 3. Security model
-
-Every request is:
-- encrypted with your app's `appSecret` (`AES-256-GCM`)
-- signed with your app's `appSecret` (`HMAC-SHA256`)
-
-Headers:
-- `x-bridge-encryption: aes-256-gcm`
-- `x-bridge-signature-alg: hmac-sha256`
-- `x-bridge-signature: <hex_hmac>`
-
-Body:
 ```json
 {
+  "success": true,
+  "eventId": "evt_02A...",
   "eventType": "role.updated",
-  "encrypted": true,
-  "iv": "base64",
-  "tag": "base64",
-  "data": "base64"
-}
-```
-
-## 4. Decrypted payload contract
-
-```json
-{
-  "eventId": "evt_123",
-  "eventType": "role.updated | role.deleted",
-  "appId": "neup.estate",
+  "appId": "target-app-id",
   "sourceAppId": "neup.account",
   "occurredAt": "2026-05-28T12:00:00.000Z",
   "role": {
     "id": "role_uuid",
-    "name": "Admin",
-    "description": "Can manage everything",
-    "scope": "global",
-    "permissions": ["permission1", "permission2", "permission3"]
+    "name": "root.full"
   }
 }
 ```
 
-## 5. Receiver checklist
+Field meanings:
+- `success`: always `true` for a valid payload.
+- `eventId`: unique event identifier.
+- `eventType`: `role.updated` or `role.deleted`.
+- `appId`: app identifier context.
+- `sourceAppId`: source system identifier.
+- `occurredAt`: ISO-8601 event timestamp.
+- `role`: role object; exact keys depend on event type.
 
-1. Parse JSON envelope.
-2. Verify required fields: `iv`, `tag`, `data`, `eventType`.
-3. Verify signature using your `appSecret`:
-   - signing input: `iv + "." + tag + "." + data`
-   - expected: `HMAC_SHA256(signing_input, appSecret)` hex
-4. Decrypt with `AES-256-GCM`:
-   - key: `SHA256(appSecret)`
-   - iv/tag/data: base64-decoded
-5. Parse decrypted payload.
-6. Apply role update/delete in your system.
-7. Return acknowledgment.
+## Event-Specific Role Shape
 
-## 6. Acknowledgment response
+### `role.updated`
 
-Success:
+For updates, the full role shape is sent, including `permissions`.
+
 ```json
-{ "success": true }
+{
+  "success": true,
+  "eventId": "evt_role_2001",
+  "eventType": "role.updated",
+  "appId": "my.app",
+  "sourceAppId": "neup.account",
+  "occurredAt": "2026-05-28T13:00:00.000Z",
+  "role": {
+    "id": "0f299f90-dc73-4f87-a800-8bdb61c806cc",
+    "name": "root.full",
+    "description": "description for the role string",
+    "scope": "global",
+    "permissions": [
+      "permission_string_1",
+      "permission_string_2",
+      "permission_string_3"
+    ]
+  }
+}
 ```
 
-Failure (can include extra fields):
+What this means:
+- Replace/sync your role data using all provided role fields.
+- `permissions` is authoritative for this role at this event time.
+
+### `role.deleted`
+
+For deletes, only role identity is sent.
+
 ```json
-{ "success": false, "error": "error_code", "reason": "optional details" }
-```
-
-## 7. Node.js verify + decrypt example
-
-```ts
-import { createHash, createHmac, createDecipheriv, timingSafeEqual } from 'crypto';
-
-function sha256(input: string): Buffer {
-  return createHash('sha256').update(input, 'utf8').digest();
-}
-
-function verifySignature(iv: string, tag: string, data: string, receivedSignature: string, appSecret: string): boolean {
-  const signingInput = `${iv}.${tag}.${data}`;
-  const expected = createHmac('sha256', appSecret).update(signingInput, 'utf8').digest('hex');
-
-  const a = Buffer.from(expected, 'utf8');
-  const b = Buffer.from(receivedSignature || '', 'utf8');
-  if (a.length !== b.length) return false;
-  return timingSafeEqual(a, b);
-}
-
-function decryptEnvelope(ivB64: string, tagB64: string, dataB64: string, appSecret: string): string {
-  const key = sha256(appSecret);
-  const iv = Buffer.from(ivB64, 'base64');
-  const tag = Buffer.from(tagB64, 'base64');
-  const ciphertext = Buffer.from(dataB64, 'base64');
-
-  const decipher = createDecipheriv('aes-256-gcm', key, iv);
-  decipher.setAuthTag(tag);
-
-  const plaintext = Buffer.concat([decipher.update(ciphertext), decipher.final()]);
-  return plaintext.toString('utf8');
+{
+  "success": true,
+  "eventId": "evt_role_2002",
+  "eventType": "role.deleted",
+  "appId": "my.app",
+  "sourceAppId": "neup.account",
+  "occurredAt": "2026-05-28T13:10:00.000Z",
+  "role": {
+    "id": "0f299f90-dc73-4f87-a800-8bdb61c806cc",
+    "name": "root.full"
+  }
 }
 ```
 
-## 8. Recommended behavior
+What will not be included for `role.deleted`:
+- `role.description`
+- `role.scope`
+- `role.permissions`
 
-- Treat `eventId` as idempotency key.
-- Reject invalid signature/decrypt attempts with `{ "success": false }`.
-- Keep `appSecret` server-side only.
+## Presence Rules
+
+- `role` is always present for role events.
+- `role.id` and `role.name` are always present.
+- `permissions` is present only for `role.updated`.
+- Missing keys mean "not included for this event type", not necessarily null/empty.
+
+## Consumer Recommendations
+
+- Use `eventId` for idempotency.
+- For `role.updated`, upsert role and sync permissions from payload.
+- For `role.deleted`, delete by `role.id`.

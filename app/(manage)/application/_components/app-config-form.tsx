@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '@/core/hooks/use-toast';
-import { saveAppConfig, addSilentSsoOrigin, removeSilentSsoOrigin, addServerIp, removeServerIp } from '@/services/applications/manage';
+import { saveAppConfig, addSilentSsoOrigin, removeSilentSsoOrigin, addServerIp, removeServerIp, saveAccountUpdateWebhookUrl } from '@/services/applications/manage';
 import {
   applicationResponseFields,
   applicationTokenFields,
@@ -80,6 +80,7 @@ type Props = {
   initialTokenFields: ApplicationAccessField[];
   initialOrigins: Array<{ id: string; value: string }>;
   initialServerIps: Array<{ id: string; value: string }>;
+  initialAccountUpdateWebhookUrl: string | null;
   initialAllowDevMode: boolean;
   initialAllowDevIpMode: boolean;
 };
@@ -95,6 +96,7 @@ export function AppConfigForm({
   initialTokenFields,
   initialOrigins,
   initialServerIps,
+  initialAccountUpdateWebhookUrl,
   initialAllowDevMode,
   initialAllowDevIpMode,
 }: Props) {
@@ -104,6 +106,7 @@ export function AppConfigForm({
   const [showSecret, setShowSecret] = useState(false);
   const [newOrigin, setNewOrigin] = useState('');
   const [newServerIp, setNewServerIp] = useState('');
+  const [accountUpdateWebhookUrl, setAccountUpdateWebhookUrl] = useState(initialAccountUpdateWebhookUrl ?? '');
   const [origins, setOrigins] = useState(initialOrigins);
   const [serverIps, setServerIps] = useState(initialServerIps);
 
@@ -195,6 +198,21 @@ export function AppConfigForm({
       if (result.success) {
         setServerIps((prev) => prev.filter((entry) => entry.id !== bridgeId));
         toast({ title: 'Server IP removed' });
+      } else {
+        toast({ variant: 'destructive', title: 'Error', description: result.error });
+      }
+    });
+  };
+
+  const handleSaveAccountUpdateWebhook = () => {
+    startTransition(async () => {
+      const result = await saveAccountUpdateWebhookUrl({
+        appId,
+        url: accountUpdateWebhookUrl,
+      });
+
+      if (result.success) {
+        toast({ title: 'Saved', description: 'Account update webhook URL saved.' });
       } else {
         toast({ variant: 'destructive', title: 'Error', description: result.error });
       }
@@ -483,6 +501,43 @@ export function AppConfigForm({
               <Button type="submit" disabled={isPending}>
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Save Configuration
+              </Button>
+            </CardFooter>
+          </Card>
+
+          {/* Account Update Webhook */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Globe className="h-4 w-4 text-muted-foreground" />
+                <CardTitle>Account Update Webhook</CardTitle>
+              </div>
+              <CardDescription>
+                Optional endpoint to receive encrypted <code className="text-xs">account.updated</code> events.
+                Leave empty to disable.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="space-y-1.5">
+                <label htmlFor="account-update-webhook" className="text-sm font-medium">
+                  Webhook URL
+                </label>
+                <Input
+                  id="account-update-webhook"
+                  type="url"
+                  placeholder="https://example.com/webhooks/account-updated"
+                  value={accountUpdateWebhookUrl}
+                  onChange={(e) => setAccountUpdateWebhookUrl(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Must be HTTPS. If unset, no account update events are sent to this application.
+                </p>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button type="button" onClick={handleSaveAccountUpdateWebhook} disabled={isPending}>
+                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Webhook
               </Button>
             </CardFooter>
           </Card>

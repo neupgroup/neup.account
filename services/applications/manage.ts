@@ -2060,6 +2060,7 @@ export async function getAppConfigData(appId: string): Promise<{
   tokenFields: ApplicationAccessField[];
   silentSsoOrigins: Array<{ id: string; value: string }>;
   serverIps: Array<{ id: string; value: string }>;
+  accountUpdateWebhookUrl: string | null;
   allowDevMode: boolean;
   allowDevIpMode: boolean;
   status: string;
@@ -2071,7 +2072,7 @@ export async function getAppConfigData(appId: string): Promise<{
   if (!canEdit) return null;
 
   try {
-    const [app, originRows, serverIpRows] = await Promise.all([
+    const [app, originRows, serverIpRows, accountUpdateWebhookRecord] = await Promise.all([
       prisma.application.findUnique({
         where: { id: appId },
         select: { appSecret: true, responseFields: true, tokenFields: true, details: true, status: true },
@@ -2085,6 +2086,10 @@ export async function getAppConfigData(appId: string): Promise<{
         where: { appId, type: 'serverIp' },
         select: { id: true, value: true },
         orderBy: { createdAt: 'asc' },
+      }),
+      prisma.applicationBridge.findFirst({
+        where: { appId, type: 'accountUpdateWebhook' },
+        select: { value: true },
       }),
     ]);
 
@@ -2107,6 +2112,7 @@ export async function getAppConfigData(appId: string): Promise<{
       tokenFields: normalizeAccess(tokenFieldSource).filter((field) => tokenFieldSet.has(field)),
       silentSsoOrigins: originRows,
       serverIps: serverIpRows,
+      accountUpdateWebhookUrl: accountUpdateWebhookRecord?.value ?? null,
       allowDevMode,
       allowDevIpMode,
       status: app.status ?? 'development',
@@ -2114,6 +2120,60 @@ export async function getAppConfigData(appId: string): Promise<{
   } catch (error) {
     await logError('database', error, `getAppConfigData:${appId}`);
     return null;
+  }
+}
+
+export async function saveAccountUpdateWebhookUrl(input: {
+  appId: string;
+  url: string;
+}): Promise<{ success: boolean; error?: string }> {
+  const accountId = await getActiveAccountId();
+  if (!accountId) return { success: false, error: 'Not signed in.' };
+
+  const canEdit = await isApplicationOwnerForAccount(accountId, input.appId);
+  if (!canEdit) return { success: false, error: 'Only the application owner can configure this application.' };
+
+  const url = input.url.trim();
+
+  if (url) {
+    try {
+      const parsed = new URL(url);
+      if (parsed.protocol !== 'https:') {
+        return { success: false, error: 'Webhook URL must use HTTPS.' };
+      }
+    } catch {
+      return { success: false, error: 'Invalid webhook URL.' };
+    }
+  }
+
+  try {
+    if (!url) {
+      await prisma.applicationBridge.deleteMany({
+        where: { appId: input.appId, type: 'accountUpdateWebhook' },
+      });
+    } else {
+      const existing = await prisma.applicationBridge.findFirst({
+        where: { appId: input.appId, type: 'accountUpdateWebhook' },
+        select: { id: true },
+      });
+
+      if (existing) {
+        await prisma.applicationBridge.update({
+          where: { id: existing.id },
+          data: { value: url },
+        });
+      } else {
+        await prisma.applicationBridge.create({
+          data: { appId: input.appId, type: 'accountUpdateWebhook', value: url },
+        });
+      }
+    }
+
+    revalidatePath(`/application/${input.appId}/config`);
+    return { success: true };
+  } catch (error) {
+    await logError('database', error, `saveAccountUpdateWebhookUrl:${input.appId}`);
+    return { success: false, error: 'Failed to save webhook URL.' };
   }
 }
 

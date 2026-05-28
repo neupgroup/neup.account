@@ -50,6 +50,7 @@ export default async function ApplicationConfigPage({ params }: Props) {
         initialTokenFields={config.tokenFields}
         initialOrigins={config.silentSsoOrigins}
         initialServerIps={config.serverIps}
+        initialAccountUpdateWebhookUrl={config.accountUpdateWebhookUrl}
         initialAllowDevMode={config.allowDevMode}
         initialAllowDevIpMode={config.allowDevIpMode}
       />

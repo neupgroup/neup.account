@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 function corsHeaders(origin: string) {
   return {
     'Access-Control-Allow-Origin': origin,
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Vary': 'Origin',
   };
@@ -28,38 +28,26 @@ async function resolveRequestOrigin(request: NextRequest): Promise<string | null
 }
 
 export async function OPTIONS(request: NextRequest) {
-  const sp = request.nextUrl.searchParams;
-  if (sp.has('appId')) {
-    return new NextResponse(null, { status: 400 });
-  }
-  const appId = sp.get('app')?.trim() || '';
   const origin = await resolveRequestOrigin(request);
-
-  // If this is a browser-origin request, only allow it from a registered Silent SSO Origin.
-  if (origin && appId) {
-    const { valid, appId: originAppId } = await validateSilentSsoOrigin(origin);
-    if (valid && originAppId === appId) {
-      return new NextResponse(null, { status: 204, headers: corsHeaders(new URL(origin).origin) });
-    }
-  }
-
-  // If there's no Origin header, treat it as non-browser (server-to-server) and no CORS needed.
-  return new NextResponse(null, { status: 204 });
+  if (!origin) return new NextResponse(null, { status: 403 });
+  const { valid } = await validateSilentSsoOrigin(origin);
+  if (!valid) return new NextResponse(null, { status: 403 });
+  return new NextResponse(null, { status: 204, headers: corsHeaders(new URL(origin).origin) });
 }
 
 /**
- * GET /bridge/api.v1/application/users
+ * POST /bridge/api.v1/application/users
  *
  * Returns accounts (users) that have connected to the given application,
  * with their profile data.
  *
  * Auth (required):
- *   appId     — application ID
- *   appSecret — application secret
+ *   body.appId / appid / app-id / app_id
+ *   body.appSecret / appsecret / app-secret / app_secret
  *
- * Pagination — choose one mode:
- *   Offset:  ?start=0&end=100          (default: 0–100)
- *   Cursor:  ?startFrom=<connectionId>&limit=100
+ * Pagination (query):
+ *   ?offset=0&limit=100
+ *   (start/end/startFrom are still supported for backwards compatibility)
  *
  * Date filter (optional, filters on connectedAt):
  *   ?fromDate=2025-01-01&toDate=2026-01-01
@@ -83,33 +71,59 @@ export async function OPTIONS(request: NextRequest) {
  *   }
  * }
  */
-export async function GET(request: NextRequest) {
-  const sp = request.nextUrl.searchParams;
+function normalizeKey(input: string): string {
+  return input.replace(/[_-]/g, '').toLowerCase();
+}
 
-  if (sp.has('appId')) {
+function readNormalizedBodyValue(body: Record<string, unknown>, canonical: string): string | null {
+  const target = normalizeKey(canonical);
+  for (const [k, v] of Object.entries(body)) {
+    if (normalizeKey(k) !== target) continue;
+    if (typeof v !== 'string') return null;
+    const trimmed = v.trim();
+    return trimmed ? trimmed : null;
+  }
+  return null;
+}
+
+export async function POST(request: NextRequest) {
+  const sp = request.nextUrl.searchParams;
+  const origin = await resolveRequestOrigin(request);
+
+  // Endpoint is restricted to registered origins only.
+  if (!origin) {
+    return NextResponse.json({ success: false, error: 'forbidden_missingOrigin' }, { status: 403 });
+  }
+
+  const body = await request.json().catch(() => null);
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
     return NextResponse.json(
-      { success: false, error: 'invalid_request', error_description: 'Use `app` (not `appId`).' },
-      { status: 400 }
+      { success: false, error: 'invalid_request' },
+      { status: 400, headers: corsHeaders(new URL(origin).origin) }
     );
   }
 
-  const appId = sp.get('app')?.trim() || '';
-  const origin = await resolveRequestOrigin(request);
+  const appId = readNormalizedBodyValue(body as Record<string, unknown>, 'appid');
+  const appSecret = readNormalizedBodyValue(body as Record<string, unknown>, 'appsecret');
+  if (!appId || !appSecret) {
+    return NextResponse.json(
+      { success: false, error: 'forbidden_missingAppCredentails' },
+      { status: 400, headers: corsHeaders(new URL(origin).origin) }
+    );
+  }
 
-  // If called from a browser origin, require that origin to be registered as a Silent SSO Origin for this app.
-  if (origin && appId) {
-    const { valid, appId: originAppId } = await validateSilentSsoOrigin(origin);
-    if (!valid || originAppId !== appId) {
-      return NextResponse.json(
-        { success: false, error: 'forbidden', error_description: 'Origin not registered for this app.' },
-        { status: 403 }
-      );
-    }
+  const { valid, appId: originAppId } = await validateSilentSsoOrigin(origin);
+  if (!valid || originAppId !== appId) {
+    return NextResponse.json(
+      { success: false, error: 'forbidden_invalidOrigin' },
+      { status: 403, headers: corsHeaders(new URL(origin).origin) }
+    );
   }
 
   const result = await getApplicationUsers({
     appId,
-    appSecret: sp.get('appSecret'),
+    appSecret,
+    offset:    sp.get('offset'),
     start:     sp.get('start'),
     end:       sp.get('end'),
     startFrom: sp.get('startFrom'),
@@ -120,4 +134,8 @@ export async function GET(request: NextRequest) {
 
   const headers = origin ? corsHeaders(new URL(origin).origin) : undefined;
   return NextResponse.json(result.body, { status: result.status, headers });
+}
+
+export async function GET() {
+  return NextResponse.json({ success: false, error: 'method_not_allowed' }, { status: 405 });
 }

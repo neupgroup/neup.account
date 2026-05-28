@@ -4,7 +4,7 @@
  * Returns accounts (users) that have an ApplicationConnection to the given app.
  *
  * Pagination:
- *   Offset mode  — ?start=0&end=100
+ *   Offset mode  — ?offset=0&limit=100 (also supports legacy ?start=0&end=100)
  *   Cursor mode  — ?startFrom=<connectionId>&limit=100
  *
  * Date filtering:
@@ -37,7 +37,7 @@ export type ApplicationUsersResult =
     }
   | {
       status: 400 | 401 | 500;
-      body: { success: false; error: string; error_description?: string };
+      body: { success: false; error: string };
     };
 
 // ---------------------------------------------------------------------------
@@ -58,6 +58,7 @@ function clampLimit(raw: string | null): number {
 export async function getApplicationUsers(params: {
   appId: string | null;
   appSecret: string | null;
+  offset: string | null;
   start: string | null;
   end: string | null;
   startFrom: string | null;
@@ -65,13 +66,13 @@ export async function getApplicationUsers(params: {
   fromDate: string | null;
   toDate: string | null;
 }): Promise<ApplicationUsersResult> {
-  const { appId, appSecret, start, end, startFrom, limit, fromDate, toDate } = params;
+  const { appId, appSecret, offset, start, end, startFrom, limit, fromDate, toDate } = params;
 
   // 1. Validate credentials
   if (!appId || !appSecret) {
     return {
       status: 400,
-      body: { success: false, error: 'appId and appSecret are required.' },
+      body: { success: false, error: 'forbidden_missingAppCredentails' },
     };
   }
 
@@ -84,7 +85,7 @@ export async function getApplicationUsers(params: {
     if (!application || application.appSecret !== appSecret) {
       return {
         status: 401,
-        body: { success: false, error: 'Invalid application credentials.' },
+        body: { success: false, error: 'forbidden_invalidAppCredentials' },
       };
     }
 
@@ -112,10 +113,16 @@ export async function getApplicationUsers(params: {
       cursorId = startFrom;
     } else {
       // Offset-based pagination
-      const startIdx = start ? parseInt(start, 10) : 0;
-      const endIdx = end ? parseInt(end, 10) : PAGE_LIMIT;
+      const offsetRaw = offset ?? start;
+      const startIdx = offsetRaw ? parseInt(offsetRaw, 10) : 0;
       skip = Number.isFinite(startIdx) && startIdx >= 0 ? startIdx : 0;
-      take = Number.isFinite(endIdx) && endIdx > skip ? Math.min(endIdx - skip, PAGE_LIMIT) : PAGE_LIMIT;
+
+      if (limit) {
+        take = clampLimit(limit);
+      } else {
+        const endIdx = end ? parseInt(end, 10) : PAGE_LIMIT;
+        take = Number.isFinite(endIdx) && endIdx > skip ? Math.min(endIdx - skip, PAGE_LIMIT) : PAGE_LIMIT;
+      }
     }
 
     // 4. Count total (for meta)

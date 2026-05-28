@@ -7,7 +7,7 @@ import { logError } from '@/core/helpers/logger';
 const BRIDGE_TYPE = 'roleUpdateWebhook';
 const SOURCE_APP_ID = 'neup.account';
 
-type RoleEventType = 'role.updated' | 'role.removed';
+type RoleEventType = 'role.updated' | 'role.deleted';
 
 type RolePayload = {
   id: string;
@@ -79,20 +79,24 @@ export async function dispatchRoleUpdateWebhook(input: {
     const appSecret = app?.appSecret?.trim() ?? '';
     if (!app || !webhookUrl || !appSecret) return;
 
-    const payload = {
+    const payload: Record<string, unknown> = {
+      success: true,
       eventId: randomUUID(),
       eventType: input.eventType,
       appId: input.appId,
       sourceAppId: SOURCE_APP_ID,
       occurredAt: new Date().toISOString(),
-      role: {
+      role: { id: input.role.id, name: input.role.name },
+    };
+    if (input.eventType === 'role.updated') {
+      payload.role = {
         id: input.role.id,
         name: input.role.name,
         description: input.role.description,
         scope: input.role.scope,
         permissions: input.role.permissions,
-      },
-    };
+      };
+    }
 
     const encrypted = encryptForApp(JSON.stringify(payload), appSecret);
     const signature = signEnvelope(encrypted, appSecret);

@@ -17,6 +17,7 @@ Changed fields that may be included in `changedFields`:
 - `gender`
 - `dateOfBirth`
 - `role`
+- `access`
 - `isMinor`
 - `accountType`
 
@@ -94,6 +95,7 @@ You can include extra fields on failure. They are captured by sender-side develo
 
 ```json
 {
+  "success": true,
   "eventId": "uuid",
   "eventType": "account.updated",
   "sourceAppId": "neup.account",
@@ -102,14 +104,16 @@ You can include extra fields on failure. They are captured by sender-side develo
   "connectionId": "connection-id",
   "changedFields": ["displayName", "displayImage"],
   "account": {
-    "neupId": "np_...",
+    "id": "account_uuid"
+  },
+  "profile": {
     "displayName": "New Name",
     "displayImage": "https://...",
-    "gender": "male",
-    "dateOfBirth": "2000-01-31",
-    "role": "role.id",
-    "isMinor": false,
-    "accountType": "individual"
+    "gender": "male"
+  },
+  "role": {
+    "id": "role_uuid",
+    "name": "root.full"
   }
 }
 ```

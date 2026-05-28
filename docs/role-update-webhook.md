@@ -10,7 +10,7 @@ Role webhook events are sent from:
 Event type mapping:
 - role create -> `role.updated`
 - role permission update -> `role.updated`
-- role delete/remove -> `role.removed`
+- role delete/remove -> `role.deleted`
 
 ## 2. Webhook registration
 
@@ -50,7 +50,7 @@ Body:
 ```json
 {
   "eventId": "evt_123",
-  "eventType": "role.updated | role.removed",
+  "eventType": "role.updated | role.deleted",
   "appId": "neup.estate",
   "sourceAppId": "neup.account",
   "occurredAt": "2026-05-28T12:00:00.000Z",
@@ -75,7 +75,7 @@ Body:
    - key: `SHA256(appSecret)`
    - iv/tag/data: base64-decoded
 5. Parse decrypted payload.
-6. Apply role update/remove in your system.
+6. Apply role update/delete in your system.
 7. Return acknowledgment.
 
 ## 6. Acknowledgment response

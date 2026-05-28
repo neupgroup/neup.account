@@ -14,6 +14,7 @@ export type AccountUpdateEventField =
   | 'gender'
   | 'dateOfBirth'
   | 'role'
+  | 'access'
   | 'isMinor'
   | 'accountType';
 
@@ -196,31 +197,50 @@ export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise
 
     const occurredAt = new Date().toISOString();
     const eventId = randomUUID();
+
+    const profileChanges: Record<string, unknown> = {};
+    if (changedFields.includes('displayName')) profileChanges.displayName = account.displayName;
+    if (changedFields.includes('displayImage')) profileChanges.displayImage = account.displayImage;
+    if (changedFields.includes('gender')) {
+      profileChanges.gender = typeof detailsRecord.gender === 'string' ? detailsRecord.gender : null;
+    }
+
+    const accountChanges: Record<string, unknown> = {};
+    if (changedFields.includes('neupId')) accountChanges.neupId = account.neupIds[0]?.neupId ?? null;
+    if (changedFields.includes('dateOfBirth')) {
+      accountChanges.dateOfBirth = toIsoDateOnly(account.individualProfile?.dateOfBirth);
+    }
+    if (changedFields.includes('isMinor')) {
+      accountChanges.isMinor = typeof detailsRecord.isMinor === 'boolean' ? detailsRecord.isMinor : null;
+    }
+    if (changedFields.includes('accountType')) accountChanges.accountType = account.accountType ?? null;
     const basePayload = {
       eventId,
       eventType: 'account.updated',
       sourceAppId: SOURCE_APP_ID,
       occurredAt,
-      account: {
-        neupId: account.neupIds[0]?.neupId ?? null,
-        displayName: account.displayName,
-        displayImage: account.displayImage,
-        gender: typeof detailsRecord.gender === 'string' ? detailsRecord.gender : null,
-        dateOfBirth: toIsoDateOnly(account.individualProfile?.dateOfBirth),
-        isMinor: typeof detailsRecord.isMinor === 'boolean' ? detailsRecord.isMinor : null,
-        accountType: account.accountType ?? null,
-      },
       changedFields,
     };
 
     const settled = await Promise.allSettled(
       targets.map(async (target) => {
-        const payload = {
+        const payload: Record<string, unknown> = {
+          success: true,
           ...basePayload,
           appId: target.appId,
           connectionId: target.connectionId,
-          role: target.role,
+          account: {
+            id: account.id,
+          },
         };
+        if (Object.keys(accountChanges).length > 0) {
+          payload.account = {
+            ...(payload.account as Record<string, unknown>),
+            ...accountChanges,
+          };
+        }
+        if (Object.keys(profileChanges).length > 0) payload.profile = profileChanges;
+        if (changedFields.includes('role') && target.role) payload.role = target.role;
         const encrypted = encryptForApp(JSON.stringify(payload), target.appSecret);
         const signature = signEnvelope(encrypted, target.appSecret);
         const requestBody = {

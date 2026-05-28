@@ -568,7 +568,7 @@ export function AppConfigForm({
                 <CardTitle>Role Update Webhook</CardTitle>
               </div>
               <CardDescription>
-                Optional endpoint to receive encrypted <code className="text-xs">role.created</code>, <code className="text-xs">role.updated</code>, and <code className="text-xs">role.removed</code> events.
+                Optional endpoint to receive encrypted <code className="text-xs">role.created</code>, <code className="text-xs">role.updated</code>, and <code className="text-xs">role.deleted</code> events.
                 Leave empty to disable.
               </CardDescription>
             </CardHeader>

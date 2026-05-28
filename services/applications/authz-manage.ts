@@ -450,7 +450,7 @@ export async function deleteAppRole(input: {
     if (rolePayload) {
       await dispatchRoleUpdateWebhook({
         appId: input.appId,
-        eventType: 'role.removed',
+        eventType: 'role.deleted',
         role: rolePayload,
       });
     }

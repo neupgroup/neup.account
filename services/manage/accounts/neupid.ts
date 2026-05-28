@@ -3,9 +3,10 @@
  import prisma from '@/core/helpers/prisma';
  import { getPersonalAccountId } from '@/core/auth/verify';
  import { logActivity } from '@/services/log-actions';
- import { logError } from '@/core/helpers/logger';
- import { checkPermissions, getUserNeupIds } from '@/services/user';
- import { revalidatePath } from 'next/cache';
+import { logError } from '@/core/helpers/logger';
+import { checkPermissions, getUserNeupIds } from '@/services/user';
+import { revalidatePath } from 'next/cache';
+import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';
  
  /**
   * Function addNeupId.
@@ -107,6 +108,14 @@
       where: { id: newPrimaryNeupId },
       data: { isPrimary: true },
     });
+
+    const dispatchResult = await dispatchAccountUpdatedEvent({
+      accountId,
+      changedFields: ['neupId'],
+    });
+    if (dispatchResult.sent > 0 && dispatchResult.succeeded === 0) {
+      await logError('webhook', new Error('No downstream app returned success for account update event.'), `dispatchAccountUpdatedEvent:${accountId}:setPrimaryNeupId`);
+    }
  
      await logActivity(accountId, `Primary NeupID set to: ${newPrimaryNeupId}`, 'Success', undefined, adminId);
      revalidatePath(`/manage/${accountId}/profile/neupid`);

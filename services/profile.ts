@@ -173,24 +173,19 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
 
     try {
         const changedFields = new Set<AccountUpdateEventField>();
+        const beforeSnapshot = await prisma.account.findUnique({
+            where: { id: accountId },
+            select: {
+                displayName: true,
+                displayImage: true,
+                neupIds: {
+                    where: { isPrimary: true },
+                    select: { neupId: true },
+                    take: 1,
+                },
+            },
+        });
 
-        if (
-            data.newNeupIdRequest !== undefined ||
-            data.neupId !== undefined ||
-            data.neupIdPrimary !== undefined
-        ) {
-            changedFields.add('neupId');
-        }
-        if (
-            data.nameDisplay !== undefined ||
-            data.nameFirst !== undefined ||
-            data.nameMiddle !== undefined ||
-            data.nameLast !== undefined ||
-            data.customDisplayNameRequest !== undefined
-        ) {
-            changedFields.add('displayName');
-        }
-        if (data.accountPhoto !== undefined) changedFields.add('displayImage');
         if (data.gender !== undefined) changedFields.add('gender');
         if (data.dateBirth !== undefined) changedFields.add('dateOfBirth');
         if (data.roleId !== undefined || data.role !== undefined) changedFields.add('role');
@@ -305,6 +300,31 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
             await updateOrCreateContact(tx, accountId, 'workLocation', data.workLocation, canModifyContact);
             await updateOrCreateContact(tx, accountId, 'otherLocation', data.otherLocation, canModifyContact);
         });
+
+        const afterSnapshot = await prisma.account.findUnique({
+            where: { id: accountId },
+            select: {
+                displayName: true,
+                displayImage: true,
+                neupIds: {
+                    where: { isPrimary: true },
+                    select: { neupId: true },
+                    take: 1,
+                },
+            },
+        });
+
+        if ((beforeSnapshot?.displayName ?? null) !== (afterSnapshot?.displayName ?? null)) {
+            changedFields.add('displayName');
+        }
+        if ((beforeSnapshot?.displayImage ?? null) !== (afterSnapshot?.displayImage ?? null)) {
+            changedFields.add('displayImage');
+        }
+        const beforePrimaryNeupId = beforeSnapshot?.neupIds[0]?.neupId ?? null;
+        const afterPrimaryNeupId = afterSnapshot?.neupIds[0]?.neupId ?? null;
+        if (beforePrimaryNeupId !== afterPrimaryNeupId) {
+            changedFields.add('neupId');
+        }
         
         await logActivity(accountId, 'Profile Update', 'Success', undefined, geolocation);
 

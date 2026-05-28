@@ -3,6 +3,7 @@ import { logError } from '@/core/helpers/logger';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import type { Identity } from '@/prisma/generated/client';
+import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 
 // ---------------------------------------------------------------------------
 // Rate limiting
@@ -233,10 +234,11 @@ export async function ensureApplicationConnection(
   appId: string
 ): Promise<void> {
   try {
+    const defaultRoleId = await getApplicationDefaultRoleId(appId);
     await prisma.connection.upsert({
       where: { accountId_appId: { accountId, appId } },
       update: {},
-      create: { accountId, appId, status: 'active' },
+      create: { accountId, appId, status: 'active', roleId: defaultRoleId },
     });
   } catch (error) {
     // Non-fatal — log but don't block the auth response

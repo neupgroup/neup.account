@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { logError } from '@/core/helpers/logger';
 import { makeNotification } from '@/services/notifications';
 import { getAccountPermission, isRootUser } from '@/services/user';
+import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 
 const EXTERNAL_LOGIN_PREFIX = 'external_app:';
 function externalLoginType(appId: string) {
@@ -120,6 +121,7 @@ export async function bridgeIssueGrant(input: {
       };
     }
 
+    const defaultRoleId = await getApplicationDefaultRoleId(appId);
     await prisma.connection.upsert({
       where: {
         accountId_appId: {
@@ -131,6 +133,7 @@ export async function bridgeIssueGrant(input: {
       create: {
         accountId: request.accountId,
         appId,
+        roleId: defaultRoleId,
       },
     });
 

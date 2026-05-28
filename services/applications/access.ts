@@ -5,6 +5,7 @@ import { z } from 'zod';
 import prisma from '@/core/helpers/prisma';
 import { getPersonalAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
+import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 
 const manageApplicationSchema = z.object({
   appId: z.string().min(1, 'Application ID is required.'),
@@ -91,10 +92,11 @@ export async function addUserApplicationAccess(input: { appId: string; permissio
     if (!application) return { success: false, error: 'Application not found.' };
 
     await prisma.$transaction(async (tx) => {
+      const defaultRoleId = await getApplicationDefaultRoleId(appId);
       await tx.connection.upsert({
         where: { accountId_appId: { accountId, appId } },
         update: {},
-        create: { accountId, appId, status: 'active' },
+        create: { accountId, appId, status: 'active', roleId: defaultRoleId },
       });
 
       await tx.member.deleteMany({

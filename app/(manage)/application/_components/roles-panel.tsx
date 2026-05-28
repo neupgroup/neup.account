@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   pushAuthzToWebhook,
   clearAuthzPushStatus,
+  setAppDefaultRole,
   type AppRole,
 } from '@/services/applications/authz-manage';
 
@@ -15,12 +16,15 @@ type Props = {
   appId: string;
   initialRoles: AppRole[];
   hasWebhook: boolean;
+  initialDefaultRoleId: string | null;
 };
 
-export function RolesPanel({ appId, initialRoles, hasWebhook }: Props) {
+export function RolesPanel({ appId, initialRoles, hasWebhook, initialDefaultRoleId }: Props) {
   const { toast } = useToast();
   const [pushPending, setPushPending] = useState(false);
   const [clearPending, setClearPending] = useState(false);
+  const [defaultRoleId, setDefaultRoleId] = useState<string | null>(initialDefaultRoleId);
+  const [defaultPendingRoleId, setDefaultPendingRoleId] = useState<string | null>(null);
 
   const handlePush = async () => {
     setPushPending(true);
@@ -58,6 +62,20 @@ export function RolesPanel({ appId, initialRoles, hasWebhook }: Props) {
     });
   };
 
+  const handleSetDefaultRole = async (roleId: string | null) => {
+    setDefaultPendingRoleId(roleId ?? '__none__');
+    const result = await setAppDefaultRole({ appId, roleId });
+    setDefaultPendingRoleId(null);
+
+    if (!result.success) {
+      toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not set default role.' });
+      return;
+    }
+
+    setDefaultRoleId(roleId);
+    toast({ title: 'Default role updated' });
+  };
+
   return (
     <div className="grid gap-6">
       <div className="overflow-hidden rounded-2xl border bg-card">
@@ -69,25 +87,51 @@ export function RolesPanel({ appId, initialRoles, hasWebhook }: Props) {
           <p className="text-sm text-muted-foreground">Define title, description, scope, and initial permissions.</p>
         </Link>
 
+        <div className="border-b px-4 py-4 sm:px-5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-base font-medium leading-6">Default role</p>
+              <p className="text-sm text-muted-foreground">New application connections will be created with this role.</p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={defaultPendingRoleId === '__none__' || defaultRoleId === null}
+              onClick={() => handleSetDefaultRole(null)}
+            >
+              {defaultPendingRoleId === '__none__' ? 'Clearing...' : 'Clear Default'}
+            </Button>
+          </div>
+        </div>
+
         {initialRoles.length > 0 ? (
           initialRoles.map((role) => (
-            <Link
-              key={role.id}
-              href={`/application/${appId}/roles/${role.id}?mode=root`}
-              className="group block border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
-            >
-              <div className="flex items-start gap-3">
-                <div className="min-w-0">
+            <div key={role.id} className="border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5">
+              <div className="flex items-start justify-between gap-4">
+                <Link href={`/application/${appId}/roles/${role.id}?mode=root`} className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <p className="truncate text-base font-medium leading-6">{role.name}</p>
                     {role.scope && (
                       <Badge variant="outline" className="text-xs">{role.scope}</Badge>
                     )}
+                    {defaultRoleId === role.id ? (
+                      <Badge className="text-xs">Default</Badge>
+                    ) : null}
                   </div>
                   <p className="truncate text-sm text-muted-foreground">{role.description || 'No description'}</p>
-                </div>
+                </Link>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={defaultRoleId === role.id ? 'secondary' : 'outline'}
+                  disabled={defaultPendingRoleId === role.id || defaultRoleId === role.id}
+                  onClick={() => handleSetDefaultRole(role.id)}
+                >
+                  {defaultPendingRoleId === role.id ? 'Saving...' : defaultRoleId === role.id ? 'Default' : 'Set Default'}
+                </Button>
               </div>
-            </Link>
+            </div>
           ))
         ) : (
           <div className="px-4 py-8 text-center text-sm text-muted-foreground sm:px-5">

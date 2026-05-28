@@ -15,6 +15,7 @@
 import jwt from 'jsonwebtoken';
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
+import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -122,10 +123,11 @@ export async function issueAccountToken(input: {
     }
 
     // 3. Ensure Connection exists — get its ID
+    const defaultRoleId = await getApplicationDefaultRoleId(appId);
     const connection = await prisma.connection.upsert({
       where: { accountId_appId: { accountId: aid, appId } },
       update: {},
-      create: { accountId: aid, appId, status: 'active' },
+      create: { accountId: aid, appId, status: 'active', roleId: defaultRoleId },
       select: { id: true },
     });
 

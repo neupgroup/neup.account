@@ -5,6 +5,7 @@ import prisma from '@/core/helpers/prisma';
 import { randomBytes } from 'crypto';
 import { getUserProfile } from '@/services/user';
 import { validateExternalRequest } from '@/services/auth/validate';
+import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 
 const EXTERNAL_LOGIN_PREFIX = 'external_app:';
 function externalLoginType(appId: string) {
@@ -459,6 +460,7 @@ export async function bridgeSignIntoApplication(input: { appId?: string; appType
 			const activeTill = new Date();
 			activeTill.setDate(activeTill.getDate() + 30);
 
+			const defaultRoleId = await getApplicationDefaultRoleId(appId);
 			await prisma.connection.upsert({
 				where: {
 					accountId_appId: {
@@ -467,7 +469,7 @@ export async function bridgeSignIntoApplication(input: { appId?: string; appType
 					},
 				},
 				update: {},
-				create: { accountId, appId },
+				create: { accountId, appId, roleId: defaultRoleId },
 			});
 
 						await prisma.authnSession.create({

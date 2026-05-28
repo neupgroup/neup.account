@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
-import { getAppRoles } from '@/services/applications/authz-manage';
+import { getAppDefaultRoleId, getAppRoles } from '@/services/applications/authz-manage';
 import { getAuthzWebhookUrl } from '@/services/applications/authz-webhook';
 import { checkPermissions } from '@/services/user';
 import { BackButton } from '@/components/ui/back-button';
@@ -39,9 +39,10 @@ export default async function ApplicationRolesPage({ params }: Props) {
     );
   }
 
-  const [roles, webhookUrl] = await Promise.all([
+  const [roles, webhookUrl, defaultRoleId] = await Promise.all([
     getAppRoles(id),
     getAuthzWebhookUrl(id),
+    getAppDefaultRoleId(id),
   ]);
 
   return (
@@ -58,6 +59,7 @@ export default async function ApplicationRolesPage({ params }: Props) {
         appId={id}
         initialRoles={roles}
         hasWebhook={Boolean(webhookUrl)}
+        initialDefaultRoleId={defaultRoleId}
       />
     </div>
   );

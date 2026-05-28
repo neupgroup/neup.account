@@ -6,6 +6,7 @@ import { verifyAccountToken } from '@/core/auth/accountToken';
 import { resolveWhoAmI } from '@/services/auth/whoami';
 import { resolveGuestAccount } from '@/services/auth/guestAccount';
 import { getSessionCookies } from '@/core/helpers/cookies';
+import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 
 export const dynamic = 'force-dynamic';
 
@@ -132,10 +133,11 @@ async function ensureConnectionForApp(accountId: string, appId: string): Promise
   status: number;
   body: { error: string; error_description?: string };
 }> {
+  const defaultRoleId = await getApplicationDefaultRoleId(appId);
   const connection = await prisma.connection.upsert({
     where: { accountId_appId: { accountId, appId } },
     update: {},
-    create: { accountId, appId, status: 'active' },
+    create: { accountId, appId, status: 'active', roleId: defaultRoleId },
     select: { status: true },
   });
 

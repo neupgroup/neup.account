@@ -4279,12 +4279,14 @@ export namespace Prisma {
     assetsGrants: number
     members: number
     connections: number
+    defaultForApplications: number
   }
 
   export type AuthzRoleCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     assetsGrants?: boolean | AuthzRoleCountOutputTypeCountAssetsGrantsArgs
     members?: boolean | AuthzRoleCountOutputTypeCountMembersArgs
     connections?: boolean | AuthzRoleCountOutputTypeCountConnectionsArgs
+    defaultForApplications?: boolean | AuthzRoleCountOutputTypeCountDefaultForApplicationsArgs
   }
 
   // Custom InputTypes
@@ -4317,6 +4319,13 @@ export namespace Prisma {
    */
   export type AuthzRoleCountOutputTypeCountConnectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ConnectionWhereInput
+  }
+
+  /**
+   * AuthzRoleCountOutputType without action
+   */
+  export type AuthzRoleCountOutputTypeCountDefaultForApplicationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ApplicationWhereInput
   }
 
 
@@ -24445,6 +24454,7 @@ export namespace Prisma {
     isInternal: boolean | null
     party: number | null
     providerId: string | null
+    defaultRoleId: string | null
   }
 
   export type ApplicationMaxAggregateOutputType = {
@@ -24459,6 +24469,7 @@ export namespace Prisma {
     isInternal: boolean | null
     party: number | null
     providerId: string | null
+    defaultRoleId: string | null
   }
 
   export type ApplicationCountAggregateOutputType = {
@@ -24477,6 +24488,7 @@ export namespace Prisma {
     details: number
     party: number
     providerId: number
+    defaultRoleId: number
     _all: number
   }
 
@@ -24501,6 +24513,7 @@ export namespace Prisma {
     isInternal?: true
     party?: true
     providerId?: true
+    defaultRoleId?: true
   }
 
   export type ApplicationMaxAggregateInputType = {
@@ -24515,6 +24528,7 @@ export namespace Prisma {
     isInternal?: true
     party?: true
     providerId?: true
+    defaultRoleId?: true
   }
 
   export type ApplicationCountAggregateInputType = {
@@ -24533,6 +24547,7 @@ export namespace Prisma {
     details?: true
     party?: true
     providerId?: true
+    defaultRoleId?: true
     _all?: true
   }
 
@@ -24638,6 +24653,7 @@ export namespace Prisma {
     details: JsonValue | null
     party: number
     providerId: string | null
+    defaultRoleId: string | null
     _count: ApplicationCountAggregateOutputType | null
     _avg: ApplicationAvgAggregateOutputType | null
     _sum: ApplicationSumAggregateOutputType | null
@@ -24675,7 +24691,9 @@ export namespace Prisma {
     details?: boolean
     party?: boolean
     providerId?: boolean
+    defaultRoleId?: boolean
     provider?: boolean | Application$providerArgs<ExtArgs>
+    defaultRole?: boolean | Application$defaultRoleArgs<ExtArgs>
     connections?: boolean | Application$connectionsArgs<ExtArgs>
     bridge?: boolean | Application$bridgeArgs<ExtArgs>
     policies?: boolean | Application$policiesArgs<ExtArgs>
@@ -24704,7 +24722,9 @@ export namespace Prisma {
     details?: boolean
     party?: boolean
     providerId?: boolean
+    defaultRoleId?: boolean
     provider?: boolean | Application$providerArgs<ExtArgs>
+    defaultRole?: boolean | Application$defaultRoleArgs<ExtArgs>
   }, ExtArgs["result"]["application"]>
 
   export type ApplicationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -24723,7 +24743,9 @@ export namespace Prisma {
     details?: boolean
     party?: boolean
     providerId?: boolean
+    defaultRoleId?: boolean
     provider?: boolean | Application$providerArgs<ExtArgs>
+    defaultRole?: boolean | Application$defaultRoleArgs<ExtArgs>
   }, ExtArgs["result"]["application"]>
 
   export type ApplicationSelectScalar = {
@@ -24742,11 +24764,13 @@ export namespace Prisma {
     details?: boolean
     party?: boolean
     providerId?: boolean
+    defaultRoleId?: boolean
   }
 
-  export type ApplicationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "icon" | "website" | "appSecret" | "createdAt" | "endpoints" | "status" | "isInternal" | "responseFields" | "tokenFields" | "details" | "party" | "providerId", ExtArgs["result"]["application"]>
+  export type ApplicationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "icon" | "website" | "appSecret" | "createdAt" | "endpoints" | "status" | "isInternal" | "responseFields" | "tokenFields" | "details" | "party" | "providerId" | "defaultRoleId", ExtArgs["result"]["application"]>
   export type ApplicationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     provider?: boolean | Application$providerArgs<ExtArgs>
+    defaultRole?: boolean | Application$defaultRoleArgs<ExtArgs>
     connections?: boolean | Application$connectionsArgs<ExtArgs>
     bridge?: boolean | Application$bridgeArgs<ExtArgs>
     policies?: boolean | Application$policiesArgs<ExtArgs>
@@ -24760,15 +24784,18 @@ export namespace Prisma {
   }
   export type ApplicationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     provider?: boolean | Application$providerArgs<ExtArgs>
+    defaultRole?: boolean | Application$defaultRoleArgs<ExtArgs>
   }
   export type ApplicationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     provider?: boolean | Application$providerArgs<ExtArgs>
+    defaultRole?: boolean | Application$defaultRoleArgs<ExtArgs>
   }
 
   export type $ApplicationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Application"
     objects: {
       provider: Prisma.$ApplicationProviderPayload<ExtArgs> | null
+      defaultRole: Prisma.$AuthzRolePayload<ExtArgs> | null
       connections: Prisma.$ConnectionPayload<ExtArgs>[]
       bridge: Prisma.$ApplicationBridgePayload<ExtArgs>[]
       policies: Prisma.$ApplicationPolicyPayload<ExtArgs>[]
@@ -24795,6 +24822,7 @@ export namespace Prisma {
       details: Prisma.JsonValue | null
       party: number
       providerId: string | null
+      defaultRoleId: string | null
     }, ExtArgs["result"]["application"]>
     composites: {}
   }
@@ -25190,6 +25218,7 @@ export namespace Prisma {
   export interface Prisma__ApplicationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     provider<T extends Application$providerArgs<ExtArgs> = {}>(args?: Subset<T, Application$providerArgs<ExtArgs>>): Prisma__ApplicationProviderClient<$Result.GetResult<Prisma.$ApplicationProviderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    defaultRole<T extends Application$defaultRoleArgs<ExtArgs> = {}>(args?: Subset<T, Application$defaultRoleArgs<ExtArgs>>): Prisma__AuthzRoleClient<$Result.GetResult<Prisma.$AuthzRolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     connections<T extends Application$connectionsArgs<ExtArgs> = {}>(args?: Subset<T, Application$connectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     bridge<T extends Application$bridgeArgs<ExtArgs> = {}>(args?: Subset<T, Application$bridgeArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicationBridgePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     policies<T extends Application$policiesArgs<ExtArgs> = {}>(args?: Subset<T, Application$policiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicationPolicyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -25243,6 +25272,7 @@ export namespace Prisma {
     readonly details: FieldRef<"Application", 'Json'>
     readonly party: FieldRef<"Application", 'Int'>
     readonly providerId: FieldRef<"Application", 'String'>
+    readonly defaultRoleId: FieldRef<"Application", 'String'>
   }
     
 
@@ -25655,6 +25685,25 @@ export namespace Prisma {
      */
     include?: ApplicationProviderInclude<ExtArgs> | null
     where?: ApplicationProviderWhereInput
+  }
+
+  /**
+   * Application.defaultRole
+   */
+  export type Application$defaultRoleArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthzRole
+     */
+    select?: AuthzRoleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthzRole
+     */
+    omit?: AuthzRoleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthzRoleInclude<ExtArgs> | null
+    where?: AuthzRoleWhereInput
   }
 
   /**
@@ -36351,6 +36400,7 @@ export namespace Prisma {
     assetsGrants?: boolean | AuthzRole$assetsGrantsArgs<ExtArgs>
     members?: boolean | AuthzRole$membersArgs<ExtArgs>
     connections?: boolean | AuthzRole$connectionsArgs<ExtArgs>
+    defaultForApplications?: boolean | AuthzRole$defaultForApplicationsArgs<ExtArgs>
     _count?: boolean | AuthzRoleCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["authzRole"]>
 
@@ -36392,6 +36442,7 @@ export namespace Prisma {
     assetsGrants?: boolean | AuthzRole$assetsGrantsArgs<ExtArgs>
     members?: boolean | AuthzRole$membersArgs<ExtArgs>
     connections?: boolean | AuthzRole$connectionsArgs<ExtArgs>
+    defaultForApplications?: boolean | AuthzRole$defaultForApplicationsArgs<ExtArgs>
     _count?: boolean | AuthzRoleCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AuthzRoleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -36408,6 +36459,7 @@ export namespace Prisma {
       assetsGrants: Prisma.$AuthzAssetsAccessGrantPayload<ExtArgs>[]
       members: Prisma.$MemberPayload<ExtArgs>[]
       connections: Prisma.$ConnectionPayload<ExtArgs>[]
+      defaultForApplications: Prisma.$ApplicationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -36815,6 +36867,7 @@ export namespace Prisma {
     assetsGrants<T extends AuthzRole$assetsGrantsArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRole$assetsGrantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzAssetsAccessGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     members<T extends AuthzRole$membersArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRole$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     connections<T extends AuthzRole$connectionsArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRole$connectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    defaultForApplications<T extends AuthzRole$defaultForApplicationsArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRole$defaultForApplicationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -37335,6 +37388,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ConnectionScalarFieldEnum | ConnectionScalarFieldEnum[]
+  }
+
+  /**
+   * AuthzRole.defaultForApplications
+   */
+  export type AuthzRole$defaultForApplicationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Application
+     */
+    select?: ApplicationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Application
+     */
+    omit?: ApplicationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApplicationInclude<ExtArgs> | null
+    where?: ApplicationWhereInput
+    orderBy?: ApplicationOrderByWithRelationInput | ApplicationOrderByWithRelationInput[]
+    cursor?: ApplicationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ApplicationScalarFieldEnum | ApplicationScalarFieldEnum[]
   }
 
   /**
@@ -40930,7 +41007,8 @@ export namespace Prisma {
     tokenFields: 'tokenFields',
     details: 'details',
     party: 'party',
-    providerId: 'providerId'
+    providerId: 'providerId',
+    defaultRoleId: 'defaultRoleId'
   };
 
   export type ApplicationScalarFieldEnum = (typeof ApplicationScalarFieldEnum)[keyof typeof ApplicationScalarFieldEnum]
@@ -42531,7 +42609,9 @@ export namespace Prisma {
     details?: JsonNullableFilter<"Application">
     party?: IntFilter<"Application"> | number
     providerId?: StringNullableFilter<"Application"> | string | null
+    defaultRoleId?: StringNullableFilter<"Application"> | string | null
     provider?: XOR<ApplicationProviderNullableScalarRelationFilter, ApplicationProviderWhereInput> | null
+    defaultRole?: XOR<AuthzRoleNullableScalarRelationFilter, AuthzRoleWhereInput> | null
     connections?: ConnectionListRelationFilter
     bridge?: ApplicationBridgeListRelationFilter
     policies?: ApplicationPolicyListRelationFilter
@@ -42559,7 +42639,9 @@ export namespace Prisma {
     details?: SortOrderInput | SortOrder
     party?: SortOrder
     providerId?: SortOrderInput | SortOrder
+    defaultRoleId?: SortOrderInput | SortOrder
     provider?: ApplicationProviderOrderByWithRelationInput
+    defaultRole?: AuthzRoleOrderByWithRelationInput
     connections?: ConnectionOrderByRelationAggregateInput
     bridge?: ApplicationBridgeOrderByRelationAggregateInput
     policies?: ApplicationPolicyOrderByRelationAggregateInput
@@ -42590,7 +42672,9 @@ export namespace Prisma {
     details?: JsonNullableFilter<"Application">
     party?: IntFilter<"Application"> | number
     providerId?: StringNullableFilter<"Application"> | string | null
+    defaultRoleId?: StringNullableFilter<"Application"> | string | null
     provider?: XOR<ApplicationProviderNullableScalarRelationFilter, ApplicationProviderWhereInput> | null
+    defaultRole?: XOR<AuthzRoleNullableScalarRelationFilter, AuthzRoleWhereInput> | null
     connections?: ConnectionListRelationFilter
     bridge?: ApplicationBridgeListRelationFilter
     policies?: ApplicationPolicyListRelationFilter
@@ -42618,6 +42702,7 @@ export namespace Prisma {
     details?: SortOrderInput | SortOrder
     party?: SortOrder
     providerId?: SortOrderInput | SortOrder
+    defaultRoleId?: SortOrderInput | SortOrder
     _count?: ApplicationCountOrderByAggregateInput
     _avg?: ApplicationAvgOrderByAggregateInput
     _max?: ApplicationMaxOrderByAggregateInput
@@ -42644,6 +42729,7 @@ export namespace Prisma {
     details?: JsonNullableWithAggregatesFilter<"Application">
     party?: IntWithAggregatesFilter<"Application"> | number
     providerId?: StringNullableWithAggregatesFilter<"Application"> | string | null
+    defaultRoleId?: StringNullableWithAggregatesFilter<"Application"> | string | null
   }
 
   export type ApplicationDevLogWhereInput = {
@@ -43323,6 +43409,7 @@ export namespace Prisma {
     assetsGrants?: AuthzAssetsAccessGrantListRelationFilter
     members?: MemberListRelationFilter
     connections?: ConnectionListRelationFilter
+    defaultForApplications?: ApplicationListRelationFilter
   }
 
   export type AuthzRoleOrderByWithRelationInput = {
@@ -43337,6 +43424,7 @@ export namespace Prisma {
     assetsGrants?: AuthzAssetsAccessGrantOrderByRelationAggregateInput
     members?: MemberOrderByRelationAggregateInput
     connections?: ConnectionOrderByRelationAggregateInput
+    defaultForApplications?: ApplicationOrderByRelationAggregateInput
   }
 
   export type AuthzRoleWhereUniqueInput = Prisma.AtLeast<{
@@ -43355,6 +43443,7 @@ export namespace Prisma {
     assetsGrants?: AuthzAssetsAccessGrantListRelationFilter
     members?: MemberListRelationFilter
     connections?: ConnectionListRelationFilter
+    defaultForApplications?: ApplicationListRelationFilter
   }, "id" | "name_appId">
 
   export type AuthzRoleOrderByWithAggregationInput = {
@@ -44934,6 +45023,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
+    defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
@@ -44961,6 +45051,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
     providerId?: string | null
+    defaultRoleId?: string | null
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
@@ -44988,6 +45079,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
+    defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
@@ -45015,6 +45107,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
@@ -45042,6 +45135,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
     providerId?: string | null
+    defaultRoleId?: string | null
   }
 
   export type ApplicationUpdateManyMutationInput = {
@@ -45077,6 +45171,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ApplicationDevLogCreateInput = {
@@ -45751,6 +45846,7 @@ export namespace Prisma {
     assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
     members?: MemberCreateNestedManyWithoutRoleInput
     connections?: ConnectionCreateNestedManyWithoutRoleInput
+    defaultForApplications?: ApplicationCreateNestedManyWithoutDefaultRoleInput
   }
 
   export type AuthzRoleUncheckedCreateInput = {
@@ -45764,6 +45860,7 @@ export namespace Prisma {
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
     members?: MemberUncheckedCreateNestedManyWithoutRoleInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutRoleInput
+    defaultForApplications?: ApplicationUncheckedCreateNestedManyWithoutDefaultRoleInput
   }
 
   export type AuthzRoleUpdateInput = {
@@ -45777,6 +45874,7 @@ export namespace Prisma {
     assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
     members?: MemberUpdateManyWithoutRoleNestedInput
     connections?: ConnectionUpdateManyWithoutRoleNestedInput
+    defaultForApplications?: ApplicationUpdateManyWithoutDefaultRoleNestedInput
   }
 
   export type AuthzRoleUncheckedUpdateInput = {
@@ -45790,6 +45888,7 @@ export namespace Prisma {
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
     members?: MemberUncheckedUpdateManyWithoutRoleNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutRoleNestedInput
+    defaultForApplications?: ApplicationUncheckedUpdateManyWithoutDefaultRoleNestedInput
   }
 
   export type AuthzRoleCreateManyInput = {
@@ -47014,6 +47113,11 @@ export namespace Prisma {
     isNot?: ApplicationProviderWhereInput | null
   }
 
+  export type AuthzRoleNullableScalarRelationFilter = {
+    is?: AuthzRoleWhereInput | null
+    isNot?: AuthzRoleWhereInput | null
+  }
+
   export type ApplicationBridgeListRelationFilter = {
     every?: ApplicationBridgeWhereInput
     some?: ApplicationBridgeWhereInput
@@ -47090,6 +47194,7 @@ export namespace Prisma {
     details?: SortOrder
     party?: SortOrder
     providerId?: SortOrder
+    defaultRoleId?: SortOrder
   }
 
   export type ApplicationAvgOrderByAggregateInput = {
@@ -47108,6 +47213,7 @@ export namespace Prisma {
     isInternal?: SortOrder
     party?: SortOrder
     providerId?: SortOrder
+    defaultRoleId?: SortOrder
   }
 
   export type ApplicationMinOrderByAggregateInput = {
@@ -47122,6 +47228,7 @@ export namespace Prisma {
     isInternal?: SortOrder
     party?: SortOrder
     providerId?: SortOrder
+    defaultRoleId?: SortOrder
   }
 
   export type ApplicationSumOrderByAggregateInput = {
@@ -47393,11 +47500,6 @@ export namespace Prisma {
     childrenId?: SortOrder
     type?: SortOrder
     createdAt?: SortOrder
-  }
-
-  export type AuthzRoleNullableScalarRelationFilter = {
-    is?: AuthzRoleWhereInput | null
-    isNot?: AuthzRoleWhereInput | null
   }
 
   export type ConnectionAccountIdAppIdCompoundUniqueInput = {
@@ -49115,6 +49217,12 @@ export namespace Prisma {
     connect?: ApplicationProviderWhereUniqueInput
   }
 
+  export type AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput = {
+    create?: XOR<AuthzRoleCreateWithoutDefaultForApplicationsInput, AuthzRoleUncheckedCreateWithoutDefaultForApplicationsInput>
+    connectOrCreate?: AuthzRoleCreateOrConnectWithoutDefaultForApplicationsInput
+    connect?: AuthzRoleWhereUniqueInput
+  }
+
   export type ConnectionCreateNestedManyWithoutApplicationInput = {
     create?: XOR<ConnectionCreateWithoutApplicationInput, ConnectionUncheckedCreateWithoutApplicationInput> | ConnectionCreateWithoutApplicationInput[] | ConnectionUncheckedCreateWithoutApplicationInput[]
     connectOrCreate?: ConnectionCreateOrConnectWithoutApplicationInput | ConnectionCreateOrConnectWithoutApplicationInput[]
@@ -49267,6 +49375,16 @@ export namespace Prisma {
     delete?: ApplicationProviderWhereInput | boolean
     connect?: ApplicationProviderWhereUniqueInput
     update?: XOR<XOR<ApplicationProviderUpdateToOneWithWhereWithoutApplicationsInput, ApplicationProviderUpdateWithoutApplicationsInput>, ApplicationProviderUncheckedUpdateWithoutApplicationsInput>
+  }
+
+  export type AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput = {
+    create?: XOR<AuthzRoleCreateWithoutDefaultForApplicationsInput, AuthzRoleUncheckedCreateWithoutDefaultForApplicationsInput>
+    connectOrCreate?: AuthzRoleCreateOrConnectWithoutDefaultForApplicationsInput
+    upsert?: AuthzRoleUpsertWithoutDefaultForApplicationsInput
+    disconnect?: AuthzRoleWhereInput | boolean
+    delete?: AuthzRoleWhereInput | boolean
+    connect?: AuthzRoleWhereUniqueInput
+    update?: XOR<XOR<AuthzRoleUpdateToOneWithWhereWithoutDefaultForApplicationsInput, AuthzRoleUpdateWithoutDefaultForApplicationsInput>, AuthzRoleUncheckedUpdateWithoutDefaultForApplicationsInput>
   }
 
   export type ConnectionUpdateManyWithoutApplicationNestedInput = {
@@ -50128,6 +50246,13 @@ export namespace Prisma {
     connect?: ConnectionWhereUniqueInput | ConnectionWhereUniqueInput[]
   }
 
+  export type ApplicationCreateNestedManyWithoutDefaultRoleInput = {
+    create?: XOR<ApplicationCreateWithoutDefaultRoleInput, ApplicationUncheckedCreateWithoutDefaultRoleInput> | ApplicationCreateWithoutDefaultRoleInput[] | ApplicationUncheckedCreateWithoutDefaultRoleInput[]
+    connectOrCreate?: ApplicationCreateOrConnectWithoutDefaultRoleInput | ApplicationCreateOrConnectWithoutDefaultRoleInput[]
+    createMany?: ApplicationCreateManyDefaultRoleInputEnvelope
+    connect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+  }
+
   export type AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput = {
     create?: XOR<AuthzAssetsAccessGrantCreateWithoutRoleInput, AuthzAssetsAccessGrantUncheckedCreateWithoutRoleInput> | AuthzAssetsAccessGrantCreateWithoutRoleInput[] | AuthzAssetsAccessGrantUncheckedCreateWithoutRoleInput[]
     connectOrCreate?: AuthzAssetsAccessGrantCreateOrConnectWithoutRoleInput | AuthzAssetsAccessGrantCreateOrConnectWithoutRoleInput[]
@@ -50147,6 +50272,13 @@ export namespace Prisma {
     connectOrCreate?: ConnectionCreateOrConnectWithoutRoleInput | ConnectionCreateOrConnectWithoutRoleInput[]
     createMany?: ConnectionCreateManyRoleInputEnvelope
     connect?: ConnectionWhereUniqueInput | ConnectionWhereUniqueInput[]
+  }
+
+  export type ApplicationUncheckedCreateNestedManyWithoutDefaultRoleInput = {
+    create?: XOR<ApplicationCreateWithoutDefaultRoleInput, ApplicationUncheckedCreateWithoutDefaultRoleInput> | ApplicationCreateWithoutDefaultRoleInput[] | ApplicationUncheckedCreateWithoutDefaultRoleInput[]
+    connectOrCreate?: ApplicationCreateOrConnectWithoutDefaultRoleInput | ApplicationCreateOrConnectWithoutDefaultRoleInput[]
+    createMany?: ApplicationCreateManyDefaultRoleInputEnvelope
+    connect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
   }
 
   export type ApplicationUpdateOneWithoutAuthzRolesNestedInput = {
@@ -50201,6 +50333,20 @@ export namespace Prisma {
     deleteMany?: ConnectionScalarWhereInput | ConnectionScalarWhereInput[]
   }
 
+  export type ApplicationUpdateManyWithoutDefaultRoleNestedInput = {
+    create?: XOR<ApplicationCreateWithoutDefaultRoleInput, ApplicationUncheckedCreateWithoutDefaultRoleInput> | ApplicationCreateWithoutDefaultRoleInput[] | ApplicationUncheckedCreateWithoutDefaultRoleInput[]
+    connectOrCreate?: ApplicationCreateOrConnectWithoutDefaultRoleInput | ApplicationCreateOrConnectWithoutDefaultRoleInput[]
+    upsert?: ApplicationUpsertWithWhereUniqueWithoutDefaultRoleInput | ApplicationUpsertWithWhereUniqueWithoutDefaultRoleInput[]
+    createMany?: ApplicationCreateManyDefaultRoleInputEnvelope
+    set?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    disconnect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    delete?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    connect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    update?: ApplicationUpdateWithWhereUniqueWithoutDefaultRoleInput | ApplicationUpdateWithWhereUniqueWithoutDefaultRoleInput[]
+    updateMany?: ApplicationUpdateManyWithWhereWithoutDefaultRoleInput | ApplicationUpdateManyWithWhereWithoutDefaultRoleInput[]
+    deleteMany?: ApplicationScalarWhereInput | ApplicationScalarWhereInput[]
+  }
+
   export type AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput = {
     create?: XOR<AuthzAssetsAccessGrantCreateWithoutRoleInput, AuthzAssetsAccessGrantUncheckedCreateWithoutRoleInput> | AuthzAssetsAccessGrantCreateWithoutRoleInput[] | AuthzAssetsAccessGrantUncheckedCreateWithoutRoleInput[]
     connectOrCreate?: AuthzAssetsAccessGrantCreateOrConnectWithoutRoleInput | AuthzAssetsAccessGrantCreateOrConnectWithoutRoleInput[]
@@ -50241,6 +50387,20 @@ export namespace Prisma {
     update?: ConnectionUpdateWithWhereUniqueWithoutRoleInput | ConnectionUpdateWithWhereUniqueWithoutRoleInput[]
     updateMany?: ConnectionUpdateManyWithWhereWithoutRoleInput | ConnectionUpdateManyWithWhereWithoutRoleInput[]
     deleteMany?: ConnectionScalarWhereInput | ConnectionScalarWhereInput[]
+  }
+
+  export type ApplicationUncheckedUpdateManyWithoutDefaultRoleNestedInput = {
+    create?: XOR<ApplicationCreateWithoutDefaultRoleInput, ApplicationUncheckedCreateWithoutDefaultRoleInput> | ApplicationCreateWithoutDefaultRoleInput[] | ApplicationUncheckedCreateWithoutDefaultRoleInput[]
+    connectOrCreate?: ApplicationCreateOrConnectWithoutDefaultRoleInput | ApplicationCreateOrConnectWithoutDefaultRoleInput[]
+    upsert?: ApplicationUpsertWithWhereUniqueWithoutDefaultRoleInput | ApplicationUpsertWithWhereUniqueWithoutDefaultRoleInput[]
+    createMany?: ApplicationCreateManyDefaultRoleInputEnvelope
+    set?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    disconnect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    delete?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    connect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    update?: ApplicationUpdateWithWhereUniqueWithoutDefaultRoleInput | ApplicationUpdateWithWhereUniqueWithoutDefaultRoleInput[]
+    updateMany?: ApplicationUpdateManyWithWhereWithoutDefaultRoleInput | ApplicationUpdateManyWithWhereWithoutDefaultRoleInput[]
+    deleteMany?: ApplicationScalarWhereInput | ApplicationScalarWhereInput[]
   }
 
   export type AssetCreateNestedOneWithoutAuthzAssetsAccessGrantsInput = {
@@ -54959,6 +55119,7 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
@@ -54985,6 +55146,7 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    defaultRoleId?: string | null
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
@@ -55041,6 +55203,7 @@ export namespace Prisma {
     details?: JsonNullableFilter<"Application">
     party?: IntFilter<"Application"> | number
     providerId?: StringNullableFilter<"Application"> | string | null
+    defaultRoleId?: StringNullableFilter<"Application"> | string | null
   }
 
   export type ApplicationProviderCreateWithoutApplicationsInput = {
@@ -55060,6 +55223,37 @@ export namespace Prisma {
   export type ApplicationProviderCreateOrConnectWithoutApplicationsInput = {
     where: ApplicationProviderWhereUniqueInput
     create: XOR<ApplicationProviderCreateWithoutApplicationsInput, ApplicationProviderUncheckedCreateWithoutApplicationsInput>
+  }
+
+  export type AuthzRoleCreateWithoutDefaultForApplicationsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    scope?: string | null
+    pushed?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
+    assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
+    members?: MemberCreateNestedManyWithoutRoleInput
+    connections?: ConnectionCreateNestedManyWithoutRoleInput
+  }
+
+  export type AuthzRoleUncheckedCreateWithoutDefaultForApplicationsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    appId?: string | null
+    scope?: string | null
+    pushed?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
+    members?: MemberUncheckedCreateNestedManyWithoutRoleInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutRoleInput
+  }
+
+  export type AuthzRoleCreateOrConnectWithoutDefaultForApplicationsInput = {
+    where: AuthzRoleWhereUniqueInput
+    create: XOR<AuthzRoleCreateWithoutDefaultForApplicationsInput, AuthzRoleUncheckedCreateWithoutDefaultForApplicationsInput>
   }
 
   export type ConnectionCreateWithoutApplicationInput = {
@@ -55216,6 +55410,7 @@ export namespace Prisma {
     assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
     members?: MemberCreateNestedManyWithoutRoleInput
     connections?: ConnectionCreateNestedManyWithoutRoleInput
+    defaultForApplications?: ApplicationCreateNestedManyWithoutDefaultRoleInput
   }
 
   export type AuthzRoleUncheckedCreateWithoutApplicationInput = {
@@ -55228,6 +55423,7 @@ export namespace Prisma {
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
     members?: MemberUncheckedCreateNestedManyWithoutRoleInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutRoleInput
+    defaultForApplications?: ApplicationUncheckedCreateNestedManyWithoutDefaultRoleInput
   }
 
   export type AuthzRoleCreateOrConnectWithoutApplicationInput = {
@@ -55367,6 +55563,43 @@ export namespace Prisma {
     providerName?: StringFieldUpdateOperationsInput | string
     providerSite?: StringFieldUpdateOperationsInput | string
     secretHash?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type AuthzRoleUpsertWithoutDefaultForApplicationsInput = {
+    update: XOR<AuthzRoleUpdateWithoutDefaultForApplicationsInput, AuthzRoleUncheckedUpdateWithoutDefaultForApplicationsInput>
+    create: XOR<AuthzRoleCreateWithoutDefaultForApplicationsInput, AuthzRoleUncheckedCreateWithoutDefaultForApplicationsInput>
+    where?: AuthzRoleWhereInput
+  }
+
+  export type AuthzRoleUpdateToOneWithWhereWithoutDefaultForApplicationsInput = {
+    where?: AuthzRoleWhereInput
+    data: XOR<AuthzRoleUpdateWithoutDefaultForApplicationsInput, AuthzRoleUncheckedUpdateWithoutDefaultForApplicationsInput>
+  }
+
+  export type AuthzRoleUpdateWithoutDefaultForApplicationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    pushed?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
+    assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
+    members?: MemberUpdateManyWithoutRoleNestedInput
+    connections?: ConnectionUpdateManyWithoutRoleNestedInput
+  }
+
+  export type AuthzRoleUncheckedUpdateWithoutDefaultForApplicationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    appId?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    pushed?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
+    members?: MemberUncheckedUpdateManyWithoutRoleNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutRoleNestedInput
   }
 
   export type ConnectionUpsertWithWhereUniqueWithoutApplicationInput = {
@@ -55610,6 +55843,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
+    defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
@@ -55636,6 +55870,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
     providerId?: string | null
+    defaultRoleId?: string | null
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
@@ -55678,6 +55913,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
+    defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
@@ -55704,6 +55940,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
@@ -56061,6 +56298,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
+    defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
@@ -56087,6 +56325,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
     providerId?: string | null
+    defaultRoleId?: string | null
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
@@ -56387,6 +56626,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
+    defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
@@ -56413,6 +56653,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
@@ -56731,6 +56972,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
+    defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
@@ -56757,6 +56999,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
     providerId?: string | null
+    defaultRoleId?: string | null
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
@@ -56832,6 +57075,7 @@ export namespace Prisma {
     application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
     assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
     connections?: ConnectionCreateNestedManyWithoutRoleInput
+    defaultForApplications?: ApplicationCreateNestedManyWithoutDefaultRoleInput
   }
 
   export type AuthzRoleUncheckedCreateWithoutMembersInput = {
@@ -56844,6 +57088,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutRoleInput
+    defaultForApplications?: ApplicationUncheckedCreateNestedManyWithoutDefaultRoleInput
   }
 
   export type AuthzRoleCreateOrConnectWithoutMembersInput = {
@@ -57139,6 +57384,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
+    defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
@@ -57165,6 +57411,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
@@ -57258,6 +57505,7 @@ export namespace Prisma {
     application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
     assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
     connections?: ConnectionUpdateManyWithoutRoleNestedInput
+    defaultForApplications?: ApplicationUpdateManyWithoutDefaultRoleNestedInput
   }
 
   export type AuthzRoleUncheckedUpdateWithoutMembersInput = {
@@ -57270,6 +57518,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutRoleNestedInput
+    defaultForApplications?: ApplicationUncheckedUpdateManyWithoutDefaultRoleNestedInput
   }
 
   export type AccountCreateWithoutChildOwnershipsInput = {
@@ -57705,6 +57954,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
+    defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
     parentMembers?: MemberCreateNestedManyWithoutParentApplicationInput
@@ -57731,6 +57981,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
     providerId?: string | null
+    defaultRoleId?: string | null
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
     parentMembers?: MemberUncheckedCreateNestedManyWithoutParentApplicationInput
@@ -57756,6 +58007,7 @@ export namespace Prisma {
     application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
     assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
     members?: MemberCreateNestedManyWithoutRoleInput
+    defaultForApplications?: ApplicationCreateNestedManyWithoutDefaultRoleInput
   }
 
   export type AuthzRoleUncheckedCreateWithoutConnectionsInput = {
@@ -57768,6 +58020,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
     members?: MemberUncheckedCreateNestedManyWithoutRoleInput
+    defaultForApplications?: ApplicationUncheckedCreateNestedManyWithoutDefaultRoleInput
   }
 
   export type AuthzRoleCreateOrConnectWithoutConnectionsInput = {
@@ -57959,6 +58212,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
+    defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
     parentMembers?: MemberUpdateManyWithoutParentApplicationNestedInput
@@ -57985,6 +58239,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
     parentMembers?: MemberUncheckedUpdateManyWithoutParentApplicationNestedInput
@@ -58016,6 +58271,7 @@ export namespace Prisma {
     application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
     assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
     members?: MemberUpdateManyWithoutRoleNestedInput
+    defaultForApplications?: ApplicationUpdateManyWithoutDefaultRoleNestedInput
   }
 
   export type AuthzRoleUncheckedUpdateWithoutConnectionsInput = {
@@ -58028,6 +58284,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
     members?: MemberUncheckedUpdateManyWithoutRoleNestedInput
+    defaultForApplications?: ApplicationUncheckedUpdateManyWithoutDefaultRoleNestedInput
   }
 
   export type MemberUpsertWithWhereUniqueWithoutParentConnectionInput = {
@@ -58078,6 +58335,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
+    defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
     parentMembers?: MemberCreateNestedManyWithoutParentApplicationInput
@@ -58104,6 +58362,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
     providerId?: string | null
+    defaultRoleId?: string | null
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
     parentMembers?: MemberUncheckedCreateNestedManyWithoutParentApplicationInput
@@ -58146,6 +58405,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
+    defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
     parentMembers?: MemberUpdateManyWithoutParentApplicationNestedInput
@@ -58172,6 +58432,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
     parentMembers?: MemberUncheckedUpdateManyWithoutParentApplicationNestedInput
@@ -58198,6 +58459,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
+    defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
     parentMembers?: MemberCreateNestedManyWithoutParentApplicationInput
@@ -58224,6 +58486,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
     providerId?: string | null
+    defaultRoleId?: string | null
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     parentMembers?: MemberUncheckedCreateNestedManyWithoutParentApplicationInput
@@ -58266,6 +58529,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
+    defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
     parentMembers?: MemberUpdateManyWithoutParentApplicationNestedInput
@@ -58292,6 +58556,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     parentMembers?: MemberUncheckedUpdateManyWithoutParentApplicationNestedInput
@@ -58318,6 +58583,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
+    defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
@@ -58344,6 +58610,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
     providerId?: string | null
+    defaultRoleId?: string | null
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
@@ -58386,6 +58653,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
+    defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
@@ -58412,6 +58680,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
@@ -58438,6 +58707,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
+    defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
@@ -58464,6 +58734,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
     providerId?: string | null
+    defaultRoleId?: string | null
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
@@ -58577,6 +58848,70 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ApplicationCreateWithoutDefaultRoleInput = {
+    id: string
+    name: string
+    description?: string | null
+    icon?: string | null
+    website?: string | null
+    appSecret?: string | null
+    createdAt?: Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    isInternal?: boolean
+    responseFields?: ApplicationCreateresponseFieldsInput | string[]
+    tokenFields?: ApplicationCreatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: number
+    provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
+    connections?: ConnectionCreateNestedManyWithoutApplicationInput
+    bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
+    policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberCreateNestedManyWithoutParentApplicationInput
+    authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
+    authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
+    identities?: IdentityCreateNestedManyWithoutApplicationInput
+    childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
+    devLogs?: ApplicationDevLogCreateNestedManyWithoutApplicationInput
+  }
+
+  export type ApplicationUncheckedCreateWithoutDefaultRoleInput = {
+    id: string
+    name: string
+    description?: string | null
+    icon?: string | null
+    website?: string | null
+    appSecret?: string | null
+    createdAt?: Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    isInternal?: boolean
+    responseFields?: ApplicationCreateresponseFieldsInput | string[]
+    tokenFields?: ApplicationCreatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: number
+    providerId?: string | null
+    connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
+    bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
+    policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberUncheckedCreateNestedManyWithoutParentApplicationInput
+    authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
+    authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
+    identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
+    devLogs?: ApplicationDevLogUncheckedCreateNestedManyWithoutApplicationInput
+  }
+
+  export type ApplicationCreateOrConnectWithoutDefaultRoleInput = {
+    where: ApplicationWhereUniqueInput
+    create: XOR<ApplicationCreateWithoutDefaultRoleInput, ApplicationUncheckedCreateWithoutDefaultRoleInput>
+  }
+
+  export type ApplicationCreateManyDefaultRoleInputEnvelope = {
+    data: ApplicationCreateManyDefaultRoleInput | ApplicationCreateManyDefaultRoleInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ApplicationUpsertWithoutAuthzRolesInput = {
     update: XOR<ApplicationUpdateWithoutAuthzRolesInput, ApplicationUncheckedUpdateWithoutAuthzRolesInput>
     create: XOR<ApplicationCreateWithoutAuthzRolesInput, ApplicationUncheckedCreateWithoutAuthzRolesInput>
@@ -58604,6 +58939,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
+    defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
@@ -58630,6 +58966,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
@@ -58686,6 +59023,22 @@ export namespace Prisma {
   export type ConnectionUpdateManyWithWhereWithoutRoleInput = {
     where: ConnectionScalarWhereInput
     data: XOR<ConnectionUpdateManyMutationInput, ConnectionUncheckedUpdateManyWithoutRoleInput>
+  }
+
+  export type ApplicationUpsertWithWhereUniqueWithoutDefaultRoleInput = {
+    where: ApplicationWhereUniqueInput
+    update: XOR<ApplicationUpdateWithoutDefaultRoleInput, ApplicationUncheckedUpdateWithoutDefaultRoleInput>
+    create: XOR<ApplicationCreateWithoutDefaultRoleInput, ApplicationUncheckedCreateWithoutDefaultRoleInput>
+  }
+
+  export type ApplicationUpdateWithWhereUniqueWithoutDefaultRoleInput = {
+    where: ApplicationWhereUniqueInput
+    data: XOR<ApplicationUpdateWithoutDefaultRoleInput, ApplicationUncheckedUpdateWithoutDefaultRoleInput>
+  }
+
+  export type ApplicationUpdateManyWithWhereWithoutDefaultRoleInput = {
+    where: ApplicationScalarWhereInput
+    data: XOR<ApplicationUpdateManyMutationInput, ApplicationUncheckedUpdateManyWithoutDefaultRoleInput>
   }
 
   export type AssetCreateWithoutAuthzAssetsAccessGrantsInput = {
@@ -58806,6 +59159,7 @@ export namespace Prisma {
     application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
     members?: MemberCreateNestedManyWithoutRoleInput
     connections?: ConnectionCreateNestedManyWithoutRoleInput
+    defaultForApplications?: ApplicationCreateNestedManyWithoutDefaultRoleInput
   }
 
   export type AuthzRoleUncheckedCreateWithoutAssetsGrantsInput = {
@@ -58818,6 +59172,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     members?: MemberUncheckedCreateNestedManyWithoutRoleInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutRoleInput
+    defaultForApplications?: ApplicationUncheckedCreateNestedManyWithoutDefaultRoleInput
   }
 
   export type AuthzRoleCreateOrConnectWithoutAssetsGrantsInput = {
@@ -58989,6 +59344,7 @@ export namespace Prisma {
     application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
     members?: MemberUpdateManyWithoutRoleNestedInput
     connections?: ConnectionUpdateManyWithoutRoleNestedInput
+    defaultForApplications?: ApplicationUpdateManyWithoutDefaultRoleNestedInput
   }
 
   export type AuthzRoleUncheckedUpdateWithoutAssetsGrantsInput = {
@@ -59001,6 +59357,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     members?: MemberUncheckedUpdateManyWithoutRoleNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutRoleNestedInput
+    defaultForApplications?: ApplicationUncheckedUpdateManyWithoutDefaultRoleNestedInput
   }
 
   export type PortfolioUpsertWithoutAuthzAssetsAccessGrantsInput = {
@@ -59384,6 +59741,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
+    defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
@@ -59410,6 +59768,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
     providerId?: string | null
+    defaultRoleId?: string | null
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
@@ -59452,6 +59811,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
+    defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
@@ -59478,6 +59838,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
@@ -60593,6 +60954,7 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    defaultRoleId?: string | null
   }
 
   export type ApplicationUpdateWithoutProviderInput = {
@@ -60610,6 +60972,7 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
@@ -60636,6 +60999,7 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
@@ -60662,6 +61026,7 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ConnectionCreateManyApplicationInput = {
@@ -60903,6 +61268,7 @@ export namespace Prisma {
     assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
     members?: MemberUpdateManyWithoutRoleNestedInput
     connections?: ConnectionUpdateManyWithoutRoleNestedInput
+    defaultForApplications?: ApplicationUpdateManyWithoutDefaultRoleNestedInput
   }
 
   export type AuthzRoleUncheckedUpdateWithoutApplicationInput = {
@@ -60915,6 +61281,7 @@ export namespace Prisma {
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
     members?: MemberUncheckedUpdateManyWithoutRoleNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutRoleNestedInput
+    defaultForApplications?: ApplicationUncheckedUpdateManyWithoutDefaultRoleNestedInput
   }
 
   export type AuthzRoleUncheckedUpdateManyWithoutApplicationInput = {
@@ -61336,6 +61703,24 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
   }
 
+  export type ApplicationCreateManyDefaultRoleInput = {
+    id: string
+    name: string
+    description?: string | null
+    icon?: string | null
+    website?: string | null
+    appSecret?: string | null
+    createdAt?: Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    isInternal?: boolean
+    responseFields?: ApplicationCreateresponseFieldsInput | string[]
+    tokenFields?: ApplicationCreatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: number
+    providerId?: string | null
+  }
+
   export type AuthzAssetsAccessGrantUpdateWithoutRoleInput = {
     id?: StringFieldUpdateOperationsInput | string
     app_id?: StringFieldUpdateOperationsInput | string
@@ -61434,6 +61819,78 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type ApplicationUpdateWithoutDefaultRoleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    appSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    responseFields?: ApplicationUpdateresponseFieldsInput | string[]
+    tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: IntFieldUpdateOperationsInput | number
+    provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
+    connections?: ConnectionUpdateManyWithoutApplicationNestedInput
+    bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
+    policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUpdateManyWithoutParentApplicationNestedInput
+    authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
+    authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
+    identities?: IdentityUpdateManyWithoutApplicationNestedInput
+    childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
+    devLogs?: ApplicationDevLogUpdateManyWithoutApplicationNestedInput
+  }
+
+  export type ApplicationUncheckedUpdateWithoutDefaultRoleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    appSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    responseFields?: ApplicationUpdateresponseFieldsInput | string[]
+    tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: IntFieldUpdateOperationsInput | number
+    providerId?: NullableStringFieldUpdateOperationsInput | string | null
+    connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
+    bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
+    policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUncheckedUpdateManyWithoutParentApplicationNestedInput
+    authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
+    authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
+    identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
+    devLogs?: ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput
+  }
+
+  export type ApplicationUncheckedUpdateManyWithoutDefaultRoleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    appSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    responseFields?: ApplicationUpdateresponseFieldsInput | string[]
+    tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: IntFieldUpdateOperationsInput | number
+    providerId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
 

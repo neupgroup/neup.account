@@ -291,7 +291,9 @@ model Application {
   details          Json?
   party            Int                  @default(1)
   providerId       String?              @map("provider_id")
+  defaultRoleId    String?              @map("def_role_id")
   provider         ApplicationProvider? @relation(fields: [providerId], references: [id], map: "application_provider_id_fkey")
+  defaultRole      AuthzRole?           @relation("ApplicationDefaultRole", fields: [defaultRoleId], references: [id], map: "application_def_role_id_fkey")
   connections      Connection[]
   bridge           ApplicationBridge[]
   policies         ApplicationPolicy[]
@@ -505,6 +507,7 @@ model AuthzRole {
   assetsGrants AuthzAssetsAccessGrant[]
   members      Member[]                 @relation("MemberRole")
   connections  Connection[]             @relation("ConnectionRole")
+  defaultForApplications Application[]  @relation("ApplicationDefaultRole")
 
   @@unique([name, appId], map: "authz_role_name_app_id_key")
   @@map("authz_role")

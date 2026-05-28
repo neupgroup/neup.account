@@ -26,6 +26,19 @@ export type AppRole = {
   permissions: AppPermission[];
 };
 
+export async function getAppDefaultRoleId(appId: string): Promise<string | null> {
+  try {
+    const app = await prisma.application.findUnique({
+      where: { id: appId },
+      select: { defaultRoleId: true },
+    });
+    return app?.defaultRoleId ?? null;
+  } catch (error) {
+    await logError('database', error, `getAppDefaultRoleId:${appId}`);
+    return null;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Auth guard
 // ---------------------------------------------------------------------------
@@ -415,6 +428,36 @@ export async function deleteAppRole(input: {
   } catch (error) {
     await logError('database', error, `deleteAppRole:${input.appId}`);
     return { success: false, error: 'Failed to delete role.' };
+  }
+}
+
+export async function setAppDefaultRole(input: {
+  appId: string;
+  roleId: string | null;
+}): Promise<{ success: boolean; error?: string }> {
+  const auth = await assertCanManageAuthz(input.appId);
+  if ('error' in auth) return { success: false, error: auth.error };
+
+  try {
+    if (input.roleId) {
+      const role = await prisma.authzRole.findFirst({
+        where: { id: input.roleId, appId: input.appId },
+        select: { id: true },
+      });
+      if (!role) return { success: false, error: 'Role does not belong to this application.' };
+    }
+
+    await prisma.application.update({
+      where: { id: input.appId },
+      data: { defaultRoleId: input.roleId ?? null },
+    });
+
+    revalidatePath(`/application/${input.appId}/roles`);
+    revalidatePath(`/application/${input.appId}/config`);
+    return { success: true };
+  } catch (error) {
+    await logError('database', error, `setAppDefaultRole:${input.appId}`);
+    return { success: false, error: 'Failed to set default role.' };
   }
 }
 

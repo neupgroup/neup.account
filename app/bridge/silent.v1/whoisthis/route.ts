@@ -4,6 +4,7 @@ import { getAccounts } from '@/core/auth/accounts';
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { resolveGuestAccount } from '@/services/auth/guestAccount';
+import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import {
   checkRateLimit,
   validateSilentSsoOrigin,
@@ -247,10 +248,11 @@ export async function GET(request: NextRequest): Promise<Response> {
   if (isAuthenticated && accountId) {
     // Ensure ApplicationConnection exists and get its stable ID
     try {
+      const defaultRoleId = await getApplicationDefaultRoleId(appId);
       const connection = await prisma.connection.upsert({
         where: { accountId_appId: { accountId, appId } },
         update: {},
-        create: { accountId, appId, status: 'active' },
+        create: { accountId, appId, status: 'active', roleId: defaultRoleId },
         select: { id: true },
       });
       cid = connection.id;

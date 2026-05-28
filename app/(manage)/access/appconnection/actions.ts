@@ -6,6 +6,7 @@ import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
 import { getUserProfile } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
+import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -197,8 +198,9 @@ export async function assignAppAccessToAccount(input: {
     });
 
     if (!existingConnection) {
+      const defaultRoleId = await getApplicationDefaultRoleId(appId);
       await prisma.connection.create({
-        data: { accountId: memberId, appId, status: 'inactive_invited' },
+        data: { accountId: memberId, appId, status: 'inactive_invited', roleId: defaultRoleId },
       });
     }
     // If a connection already exists, leave its status untouched.

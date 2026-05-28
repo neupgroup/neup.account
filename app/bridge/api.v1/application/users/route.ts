@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { getApplicationUsers } from '@/services/bridge/application-users';
 import { validateSilentSsoOrigin } from '@/services/auth/silent-sso';
+import prisma from '@/core/helpers/prisma';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,10 +30,8 @@ async function resolveRequestOrigin(request: NextRequest): Promise<string | null
 
 export async function OPTIONS(request: NextRequest) {
   const origin = await resolveRequestOrigin(request);
-  if (!origin) return new NextResponse(null, { status: 403 });
-  const { valid } = await validateSilentSsoOrigin(origin);
-  if (!valid) return new NextResponse(null, { status: 403 });
-  return new NextResponse(null, { status: 204, headers: corsHeaders(new URL(origin).origin) });
+  const headers = origin ? corsHeaders(new URL(origin).origin) : undefined;
+  return new NextResponse(null, { status: 204, headers });
 }
 
 /**
@@ -89,17 +88,13 @@ function readNormalizedBodyValue(body: Record<string, unknown>, canonical: strin
 export async function POST(request: NextRequest) {
   const sp = request.nextUrl.searchParams;
   const origin = await resolveRequestOrigin(request);
-
-  // Endpoint is restricted to registered origins only.
-  if (!origin) {
-    return NextResponse.json({ success: false, error: 'forbidden_missingOrigin' }, { status: 403 });
-  }
+  const headers = origin ? corsHeaders(new URL(origin).origin) : undefined;
 
   const body = await request.json().catch(() => null);
   if (!body || typeof body !== 'object' || Array.isArray(body)) {
     return NextResponse.json(
       { success: false, error: 'invalid_request' },
-      { status: 400, headers: corsHeaders(new URL(origin).origin) }
+      { status: 400, headers }
     );
   }
 
@@ -108,16 +103,28 @@ export async function POST(request: NextRequest) {
   if (!appId || !appSecret) {
     return NextResponse.json(
       { success: false, error: 'forbidden_missingAppCredentails' },
-      { status: 400, headers: corsHeaders(new URL(origin).origin) }
+      { status: 400, headers }
     );
   }
 
-  const { valid, appId: originAppId } = await validateSilentSsoOrigin(origin);
-  if (!valid || originAppId !== appId) {
-    return NextResponse.json(
-      { success: false, error: 'forbidden_invalidOrigin' },
-      { status: 403, headers: corsHeaders(new URL(origin).origin) }
-    );
+  const app = await prisma.application.findUnique({
+    where: { id: appId },
+    select: { details: true },
+  });
+  const appDetails =
+    app?.details && typeof app.details === 'object'
+      ? (app.details as Record<string, unknown>)
+      : {};
+  const allowDevModeForApp = Boolean(appDetails.allowDevMode);
+
+  if (!allowDevModeForApp) {
+    if (!origin) {
+      return NextResponse.json({ success: false, error: 'forbidden_missingOrigin' }, { status: 403, headers });
+    }
+    const { valid, appId: originAppId } = await validateSilentSsoOrigin(origin);
+    if (!valid || originAppId !== appId) {
+      return NextResponse.json({ success: false, error: 'forbidden_invalidOrigin' }, { status: 403, headers });
+    }
   }
 
   const result = await getApplicationUsers({
@@ -132,7 +139,6 @@ export async function POST(request: NextRequest) {
     toDate:    sp.get('toDate'),
   });
 
-  const headers = origin ? corsHeaders(new URL(origin).origin) : undefined;
   return NextResponse.json(result.body, { status: result.status, headers });
 }
 

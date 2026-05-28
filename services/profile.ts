@@ -11,6 +11,7 @@ import { getUserProfile, checkPermissions, checkNeupIdAvailability, getUserNeupI
 import { logActivity } from '@/services/log-actions';
 import { getAITextResponse } from '@/services/shared/ai';
 import { logDisplayImageResourceForAccount } from '@/services/manage/site/resources';
+import { dispatchAccountUpdatedEvent, type AccountUpdateEventField } from '@/services/applications/account-update-events';
 
 const DEFAULT_ACCOUNT_AVATAR = 'https://neupgroup.com/assets/user.png';
 
@@ -171,6 +172,31 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
     }
 
     try {
+        const changedFields = new Set<AccountUpdateEventField>();
+
+        if (
+            data.newNeupIdRequest !== undefined ||
+            data.neupId !== undefined ||
+            data.neupIdPrimary !== undefined
+        ) {
+            changedFields.add('neupId');
+        }
+        if (
+            data.nameDisplay !== undefined ||
+            data.nameFirst !== undefined ||
+            data.nameMiddle !== undefined ||
+            data.nameLast !== undefined ||
+            data.customDisplayNameRequest !== undefined
+        ) {
+            changedFields.add('displayName');
+        }
+        if (data.accountPhoto !== undefined) changedFields.add('displayImage');
+        if (data.gender !== undefined) changedFields.add('gender');
+        if (data.dateBirth !== undefined) changedFields.add('dateOfBirth');
+        if (data.roleId !== undefined || data.role !== undefined) changedFields.add('role');
+        if (data.isMinor !== undefined) changedFields.add('isMinor');
+        if (data.accountType !== undefined) changedFields.add('accountType');
+
         await prisma.$transaction(async (tx: any) => {
 
             if (canModifyProfile) {
@@ -281,6 +307,17 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
         });
         
         await logActivity(accountId, 'Profile Update', 'Success', undefined, geolocation);
+
+        if (changedFields.size > 0) {
+            const dispatchResult = await dispatchAccountUpdatedEvent({
+                accountId,
+                changedFields: Array.from(changedFields),
+            });
+
+            if (dispatchResult.sent > 0 && dispatchResult.recorded === 0) {
+                await logError('webhook', new Error('No downstream app confirmed account update recording.'), `dispatchAccountUpdatedEvent:${accountId}`);
+            }
+        }
         
         const message = data.customDisplayNameRequest 
             ? "Your display name request has been submitted for review."

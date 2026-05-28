@@ -85,6 +85,19 @@ function readNormalizedBodyValue(body: Record<string, unknown>, canonical: strin
   return null;
 }
 
+function getClientIp(request: NextRequest): string | null {
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) {
+    const first = forwarded.split(',')[0]?.trim();
+    if (first) return first;
+  }
+  const cfIp = request.headers.get('cf-connecting-ip')?.trim();
+  if (cfIp) return cfIp;
+  const realIp = request.headers.get('x-real-ip')?.trim();
+  if (realIp) return realIp;
+  return null;
+}
+
 export async function POST(request: NextRequest) {
   const sp = request.nextUrl.searchParams;
   const origin = await resolveRequestOrigin(request);
@@ -116,14 +129,27 @@ export async function POST(request: NextRequest) {
       ? (app.details as Record<string, unknown>)
       : {};
   const allowDevModeForApp = Boolean(appDetails.allowDevMode);
+  const allowDevIpModeForApp = Boolean(appDetails.allowDevIpMode);
 
   if (!allowDevModeForApp) {
-    if (!origin) {
-      return NextResponse.json({ success: false, error: 'forbidden_missingOrigin' }, { status: 403, headers });
-    }
-    const { valid, appId: originAppId } = await validateSilentSsoOrigin(origin);
-    if (!valid || originAppId !== appId) {
-      return NextResponse.json({ success: false, error: 'forbidden_invalidOrigin' }, { status: 403, headers });
+    if (origin) {
+      const { valid, appId: originAppId } = await validateSilentSsoOrigin(origin);
+      if (!valid || originAppId !== appId) {
+        return NextResponse.json({ success: false, error: 'forbidden_invalidOrigin' }, { status: 403, headers });
+      }
+    } else if (!allowDevIpModeForApp) {
+      const clientIp = getClientIp(request);
+      if (!clientIp) {
+        return NextResponse.json({ success: false, error: 'forbidden_invalidServerIp' }, { status: 403, headers });
+      }
+
+      const serverIp = await prisma.applicationBridge.findFirst({
+        where: { appId, type: 'serverIp', value: clientIp.toLowerCase() },
+        select: { id: true },
+      });
+      if (!serverIp) {
+        return NextResponse.json({ success: false, error: 'forbidden_invalidServerIp' }, { status: 403, headers });
+      }
     }
   }
 

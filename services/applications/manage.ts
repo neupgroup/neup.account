@@ -1,6 +1,7 @@
 'use server';
 
 import { randomUUID } from 'crypto';
+import { isIP } from 'node:net';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import prisma from '@/core/helpers/prisma';
@@ -956,6 +957,84 @@ export async function removeSilentSsoOrigin(input: {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Server IPs
+// ---------------------------------------------------------------------------
+
+function isValidIpAddress(value: string): boolean {
+  return isIP(value) !== 0;
+}
+
+/**
+ * Adds a server IP entry for an application.
+ */
+export async function addServerIp(input: {
+  appId: string;
+  ip: string;
+}): Promise<{ success: boolean; error?: string }> {
+  const accountId = await getActiveAccountId();
+  if (!accountId) return { success: false, error: 'Not signed in.' };
+
+  const normalizedIp = input.ip.trim().toLowerCase();
+  if (!normalizedIp || !isValidIpAddress(normalizedIp)) {
+    return { success: false, error: 'Invalid IP address.' };
+  }
+
+  try {
+    const authorization = await getApplicationAuthorization(accountId, input.appId);
+    if (!authorization.exists) return { success: false, error: 'Application not found.' };
+    if (!authorization.canEdit) return { success: false, error: 'Permission denied.' };
+
+    const existing = await prisma.applicationBridge.findFirst({
+      where: { appId: input.appId, type: 'serverIp', value: normalizedIp },
+    });
+    if (existing) return { success: false, error: 'This IP is already registered.' };
+
+    await prisma.applicationBridge.create({
+      data: {
+        appId: input.appId,
+        type: 'serverIp',
+        value: normalizedIp,
+      },
+    });
+
+    revalidatePath(`/application/${input.appId}`);
+    revalidatePath(`/application/${input.appId}/config`);
+    return { success: true };
+  } catch (error) {
+    await logError('database', error, `addServerIp:${input.appId}`);
+    return { success: false, error: 'Failed to add server IP.' };
+  }
+}
+
+/**
+ * Removes a server IP entry for an application.
+ */
+export async function removeServerIp(input: {
+  appId: string;
+  bridgeId: string;
+}): Promise<{ success: boolean; error?: string }> {
+  const accountId = await getActiveAccountId();
+  if (!accountId) return { success: false, error: 'Not signed in.' };
+
+  try {
+    const authorization = await getApplicationAuthorization(accountId, input.appId);
+    if (!authorization.exists) return { success: false, error: 'Application not found.' };
+    if (!authorization.canEdit) return { success: false, error: 'Permission denied.' };
+
+    await prisma.applicationBridge.deleteMany({
+      where: { id: input.bridgeId, appId: input.appId, type: 'serverIp' },
+    });
+
+    revalidatePath(`/application/${input.appId}`);
+    revalidatePath(`/application/${input.appId}/config`);
+    return { success: true };
+  } catch (error) {
+    await logError('database', error, `removeServerIp:${input.appId}`);
+    return { success: false, error: 'Failed to remove server IP.' };
+  }
+}
+
 
 /**
  * Function getApplicationDetailsForViewerV2.
@@ -1687,6 +1766,7 @@ const saveAppConfigSchema = z.object({
   access: z.array(z.enum(applicationAccessFields)).default([]),
   tokenFields: z.array(z.enum(applicationTokenFields)).default([]),
   allowDevMode: z.boolean().optional().default(false),
+  allowDevIpMode: z.boolean().optional().default(false),
 });
 
 /**
@@ -1710,7 +1790,7 @@ export async function saveAppConfig(
     return { success: false, fieldErrors };
   }
 
-  const { appId, secretKey, access, tokenFields, allowDevMode } = parsed.data;
+  const { appId, secretKey, access, tokenFields, allowDevMode, allowDevIpMode } = parsed.data;
   const sanitizedAccess = access.filter((field) => responseAccessSet.has(field));
   const sanitizedTokenFields = tokenFields.filter((field) => tokenFieldSet.has(field));
 
@@ -1732,7 +1812,13 @@ export async function saveAppConfig(
       responseFields: sanitizedAccess,
       tokenFields: sanitizedTokenFields,
       // Backward-compat: keep legacy JSON in sync until all callers are migrated.
-      details: { ...existingDetails, access: sanitizedAccess, token_fields: sanitizedTokenFields, allowDevMode },
+      details: {
+        ...existingDetails,
+        access: sanitizedAccess,
+        token_fields: sanitizedTokenFields,
+        allowDevMode,
+        allowDevIpMode,
+      },
     };
     if (secretKey && secretKey.trim().length >= 16) {
       updateData.appSecret = secretKey.trim();
@@ -1763,7 +1849,9 @@ export async function getAppConfigData(appId: string): Promise<{
   access: ApplicationAccessField[];
   tokenFields: ApplicationAccessField[];
   silentSsoOrigins: Array<{ id: string; value: string }>;
+  serverIps: Array<{ id: string; value: string }>;
   allowDevMode: boolean;
+  allowDevIpMode: boolean;
   status: string;
 } | null> {
   const accountId = await getActiveAccountId();
@@ -1773,13 +1861,18 @@ export async function getAppConfigData(appId: string): Promise<{
   if (!canEdit) return null;
 
   try {
-    const [app, origins] = await Promise.all([
+    const [app, originRows, serverIpRows] = await Promise.all([
       prisma.application.findUnique({
         where: { id: appId },
         select: { appSecret: true, responseFields: true, tokenFields: true, details: true, status: true },
       }),
       prisma.applicationBridge.findMany({
         where: { appId, type: 'silentSsoOrigin' },
+        select: { id: true, value: true },
+        orderBy: { createdAt: 'asc' },
+      }),
+      prisma.applicationBridge.findMany({
+        where: { appId, type: 'serverIp' },
         select: { id: true, value: true },
         orderBy: { createdAt: 'asc' },
       }),
@@ -1796,13 +1889,16 @@ export async function getAppConfigData(appId: string): Promise<{
     const tokenFieldSource =
       app.tokenFields.length > 0 ? app.tokenFields : (legacyDetails as any).token_fields ?? [];
     const allowDevMode = Boolean((legacyDetails as any).allowDevMode);
+    const allowDevIpMode = Boolean((legacyDetails as any).allowDevIpMode);
 
     return {
       hasSecretKey: Boolean(app.appSecret),
       access: normalizeAccess(responseFieldSource).filter((field) => responseAccessSet.has(field)),
       tokenFields: normalizeAccess(tokenFieldSource).filter((field) => tokenFieldSet.has(field)),
-      silentSsoOrigins: origins,
+      silentSsoOrigins: originRows,
+      serverIps: serverIpRows,
       allowDevMode,
+      allowDevIpMode,
       status: app.status ?? 'development',
     };
   } catch (error) {

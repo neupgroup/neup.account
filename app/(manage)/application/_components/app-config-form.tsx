@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '@/core/hooks/use-toast';
-import { saveAppConfig, addSilentSsoOrigin, removeSilentSsoOrigin } from '@/services/applications/manage';
+import { saveAppConfig, addSilentSsoOrigin, removeSilentSsoOrigin, addServerIp, removeServerIp } from '@/services/applications/manage';
 import {
   applicationResponseFields,
   applicationTokenFields,
@@ -57,6 +57,7 @@ const schema = z.object({
   access: z.array(z.enum(applicationResponseFields)).default([]),
   tokenFields: z.array(z.enum(applicationTokenFields)).default([]),
   allowDevMode: z.boolean().default(false),
+  allowDevIpMode: z.boolean().default(false),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -77,20 +78,33 @@ type Props = {
   initialAccess: ApplicationAccessField[];
   initialTokenFields: ApplicationAccessField[];
   initialOrigins: Array<{ id: string; value: string }>;
+  initialServerIps: Array<{ id: string; value: string }>;
   initialAllowDevMode: boolean;
+  initialAllowDevIpMode: boolean;
 };
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
-export function AppConfigForm({ appId, hasSecretKey, initialAccess, initialTokenFields, initialOrigins, initialAllowDevMode }: Props) {
+export function AppConfigForm({
+  appId,
+  hasSecretKey,
+  initialAccess,
+  initialTokenFields,
+  initialOrigins,
+  initialServerIps,
+  initialAllowDevMode,
+  initialAllowDevIpMode,
+}: Props) {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
   const [isOriginPending, startOriginTransition] = useTransition();
   const [showSecret, setShowSecret] = useState(false);
   const [newOrigin, setNewOrigin] = useState('');
+  const [newServerIp, setNewServerIp] = useState('');
   const [origins, setOrigins] = useState(initialOrigins);
+  const [serverIps, setServerIps] = useState(initialServerIps);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -99,6 +113,7 @@ export function AppConfigForm({ appId, hasSecretKey, initialAccess, initialToken
       access: initialAccess.filter(isResponseField),
       tokenFields: initialTokenFields.filter(isTokenField),
       allowDevMode: initialAllowDevMode,
+      allowDevIpMode: initialAllowDevIpMode,
     },
   });
 
@@ -110,6 +125,7 @@ export function AppConfigForm({ appId, hasSecretKey, initialAccess, initialToken
         access: values.access,
         tokenFields: values.tokenFields,
         allowDevMode: values.allowDevMode,
+        allowDevIpMode: values.allowDevIpMode,
       });
       if (result.success) {
         toast({ title: 'Saved', description: 'Configuration updated.' });
@@ -151,6 +167,33 @@ export function AppConfigForm({ appId, hasSecretKey, initialAccess, initialToken
       if (result.success) {
         setOrigins((prev) => prev.filter((o) => o.id !== bridgeId));
         toast({ title: 'Origin removed' });
+      } else {
+        toast({ variant: 'destructive', title: 'Error', description: result.error });
+      }
+    });
+  };
+
+  const handleAddServerIp = () => {
+    const ip = newServerIp.trim();
+    if (!ip) return;
+    startOriginTransition(async () => {
+      const result = await addServerIp({ appId, ip });
+      if (result.success) {
+        setServerIps((prev) => [...prev, { id: crypto.randomUUID(), value: ip.toLowerCase() }]);
+        setNewServerIp('');
+        toast({ title: 'Server IP added' });
+      } else {
+        toast({ variant: 'destructive', title: 'Error', description: result.error });
+      }
+    });
+  };
+
+  const handleRemoveServerIp = (bridgeId: string) => {
+    startOriginTransition(async () => {
+      const result = await removeServerIp({ appId, bridgeId });
+      if (result.success) {
+        setServerIps((prev) => prev.filter((entry) => entry.id !== bridgeId));
+        toast({ title: 'Server IP removed' });
       } else {
         toast({ variant: 'destructive', title: 'Error', description: result.error });
       }
@@ -338,6 +381,99 @@ export function AppConfigForm({ appId, hasSecretKey, initialAccess, initialToken
                       </div>
                     </div>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+            <CardFooter>
+              <Button type="submit" disabled={isPending}>
+                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Configuration
+              </Button>
+            </CardFooter>
+          </Card>
+
+          {/* Server IPs */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Globe className="h-4 w-4 text-muted-foreground" />
+                <CardTitle>Server IPs</CardTitle>
+              </div>
+              <CardDescription>
+                Allowed server IP addresses for requests that do not include an Origin header.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {serverIps.length > 0 ? (
+                <ul className="space-y-2">
+                  {serverIps.map((entry) => (
+                    <li key={entry.id} className="flex items-center justify-between gap-4 rounded-md border px-4 py-3">
+                      <code className="text-sm break-all">{entry.value}</code>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        disabled={isOriginPending}
+                        onClick={() => handleRemoveServerIp(entry.id)}
+                        aria-label={`Remove ${entry.value}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-muted-foreground">No server IPs registered yet.</p>
+              )}
+
+              <div className="flex flex-wrap items-end gap-3 pt-2">
+                <div className="flex-1 min-w-[240px] space-y-1.5">
+                  <label htmlFor="new-server-ip" className="text-sm font-medium">
+                    Add server IP
+                  </label>
+                  <Input
+                    id="new-server-ip"
+                    placeholder="203.0.113.10"
+                    value={newServerIp}
+                    onChange={(e) => setNewServerIp(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddServerIp();
+                      }
+                    }}
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={isOriginPending || !newServerIp.trim()}
+                  onClick={handleAddServerIp}
+                >
+                  {isOriginPending ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Plus className="mr-2 h-4 w-4" />
+                  )}
+                  Add
+                </Button>
+              </div>
+
+              <FormField
+                control={form.control}
+                name="allowDevIpMode"
+                render={({ field }) => (
+                  <FormItem className="flex items-start gap-3 rounded-lg border p-3">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
+                    </FormControl>
+                    <div className="space-y-0.5 leading-none">
+                      <FormLabel className="font-medium cursor-pointer">Allow dev IP mode</FormLabel>
+                      <p className="text-xs text-muted-foreground">
+                        If enabled, server IP validation is skipped when Origin is missing.
+                      </p>
+                    </div>
                   </FormItem>
                 )}
               />

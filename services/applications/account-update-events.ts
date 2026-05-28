@@ -32,7 +32,7 @@ type DispatchResult = {
   error?: string;
 };
 
-async function logAccountUpdateWebhookFailure(input: {
+async function logAccountUpdateWebhookDispatch(input: {
   appId: string;
   webhookUrl: string;
   statusCode: number;
@@ -58,7 +58,7 @@ async function logAccountUpdateWebhookFailure(input: {
       },
     });
   } catch (error) {
-    await logError('database', error, `logAccountUpdateWebhookFailure:${input.appId}`);
+    await logError('database', error, `logAccountUpdateWebhookDispatch:${input.appId}`);
   }
 }
 
@@ -215,15 +215,16 @@ export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise
           responseBody = null;
         }
 
-        if (target.appStatus === 'development' && !success) {
-          await logAccountUpdateWebhookFailure({
+        if (target.appStatus === 'development') {
+          await logAccountUpdateWebhookDispatch({
             appId: target.appId,
             webhookUrl: target.webhookUrl,
             statusCode: response.status,
             requestBody: requestBody as unknown as Record<string, unknown>,
             responseBody,
-            error:
-              responseBody && typeof responseBody === 'object' && 'error' in responseBody
+            error: success
+              ? undefined
+              : responseBody && typeof responseBody === 'object' && 'error' in responseBody
                 ? String((responseBody as { error?: unknown }).error)
                 : `Webhook did not return success:true (HTTP ${response.status}).`,
           });
@@ -245,7 +246,7 @@ export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise
 
       const target = targets[index];
       if (target.appStatus === 'development') {
-        await logAccountUpdateWebhookFailure({
+        await logAccountUpdateWebhookDispatch({
           appId: target.appId,
           webhookUrl: target.webhookUrl,
           statusCode: 0,

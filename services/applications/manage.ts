@@ -2134,28 +2134,58 @@ export type ApplicationDevLogEntry = {
   error: string | null;
 };
 
+export type ApplicationDevLogsPage = {
+  logs: ApplicationDevLogEntry[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+};
+
 export async function getApplicationDevLogs(
   appId: string,
   limit = 200,
 ): Promise<ApplicationDevLogEntry[] | null> {
+  const paged = await getApplicationDevLogsPaginated({
+    appId,
+    page: 1,
+    pageSize: Math.min(Math.max(limit, 1), 500),
+  });
+  if (paged === null) return null;
+  return paged.logs;
+}
+
+export async function getApplicationDevLogsPaginated(input: {
+  appId: string;
+  page: number;
+  pageSize: number;
+}): Promise<ApplicationDevLogsPage | null> {
   const accountId = await getActiveAccountId();
   if (!accountId) return null;
 
   const [isRootViewer, canViewDevLogs] = await Promise.all([
     checkPermissions(['root.application.devlogs.view']),
-    hasApplicationPermission(accountId, appId, ['application.devlogs.view']),
+    hasApplicationPermission(accountId, input.appId, ['application.devlogs.view']),
   ]);
 
   if (!isRootViewer && !canViewDevLogs) return null;
 
   try {
-    const rows = await prisma.applicationDevLog.findMany({
-      where: { appId },
-      orderBy: { createdAt: 'desc' },
-      take: Math.min(Math.max(limit, 1), 500),
-    });
+    const page = Math.max(1, Math.floor(input.page));
+    const pageSize = Math.max(1, Math.floor(input.pageSize));
+    const where = { appId: input.appId };
 
-    return rows.map((row) => ({
+    const [total, rows] = await Promise.all([
+      prisma.applicationDevLog.count({ where }),
+      prisma.applicationDevLog.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+    ]);
+
+    const logs = rows.map((row) => ({
       id: row.id,
       createdAt: row.createdAt.toISOString(),
       endpoint: row.endpoint,
@@ -2171,9 +2201,17 @@ export async function getApplicationDevLogs(
       responseBody: row.responseBody ?? null,
       error: row.error ?? null,
     }));
+
+    return {
+      logs,
+      total,
+      page,
+      pageSize,
+      totalPages: Math.max(1, Math.ceil(total / pageSize)),
+    };
   } catch (error) {
-    await logError('database', error, `getApplicationDevLogs:${appId}`);
-    return [];
+    await logError('database', error, `getApplicationDevLogsPaginated:${input.appId}`);
+    return { logs: [], total: 0, page: 1, pageSize: input.pageSize, totalPages: 1 };
   }
 }
 

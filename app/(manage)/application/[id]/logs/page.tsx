@@ -1,11 +1,34 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { BackButton } from '@/components/ui/back-button';
 import { PrimaryHeader } from '@/components/ui/primary-header';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { getApplicationDetailsForViewerV2, getApplicationDevLogs } from '@/services/applications/manage';
+import { Button } from '@/components/ui/button';
+import { FlowLink } from '@/components/ui/flow-link';
+import { getApplicationDetailsForViewerV2, getApplicationDevLogsPaginated } from '@/services/applications/manage';
 
-type Props = { params: Promise<{ id: string }> };
+type Props = {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ page?: string; pageSize?: string; mode?: string }>;
+};
+
+const DEFAULT_PAGE = 1;
+const DEFAULT_PAGE_SIZE = 20;
+const MIN_PAGE_SIZE = 10;
+const MAX_PAGE_SIZE = 50;
+
+function normalizePositiveInt(value: string | undefined, fallback: number): number {
+  const parsed = Number.parseInt(value ?? '', 10);
+  if (!Number.isFinite(parsed) || parsed < 1) return fallback;
+  return parsed;
+}
+
+function normalizePageSize(value: string | undefined): number {
+  const parsed = Number.parseInt(value ?? '', 10);
+  if (!Number.isFinite(parsed)) return DEFAULT_PAGE_SIZE;
+  if (parsed < MIN_PAGE_SIZE || parsed > MAX_PAGE_SIZE) return 10;
+  return parsed;
+}
 
 function pretty(value: unknown): string {
   try {
@@ -15,13 +38,32 @@ function pretty(value: unknown): string {
   }
 }
 
-export default async function ApplicationLogsPage({ params }: Props) {
+export default async function ApplicationLogsPage({ params, searchParams }: Props) {
   const { id } = await params;
+  const query = await searchParams;
+  const page = normalizePositiveInt(query.page, DEFAULT_PAGE);
+  const pageSize = normalizePageSize(query.pageSize);
+  const mode = query.mode?.trim();
+
+  const canonical = new URLSearchParams();
+  if (mode) canonical.set('mode', mode);
+  canonical.set('page', String(page));
+  canonical.set('pageSize', String(pageSize));
+
+  const isCanonical =
+    (query.page ?? '') === String(page) &&
+    (query.pageSize ?? '') === String(pageSize);
+
+  if (!isCanonical) {
+    redirect(`/application/${id}/logs?${canonical.toString()}`);
+  }
+
   const details = await getApplicationDetailsForViewerV2(id);
   if (!details) notFound();
 
-  const logs = await getApplicationDevLogs(id, 200);
-  if (logs === null) notFound();
+  const logPage = await getApplicationDevLogsPaginated({ appId: id, page, pageSize });
+  if (logPage === null) notFound();
+  const logs = logPage.logs;
 
   return (
     <div className="grid gap-6">
@@ -42,6 +84,28 @@ export default async function ApplicationLogsPage({ params }: Props) {
         </Card>
       ) : (
         <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              Showing {(logPage.page - 1) * logPage.pageSize + 1}-
+              {Math.min(logPage.page * logPage.pageSize, logPage.total)} of {logPage.total}
+            </p>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" asChild disabled={logPage.page <= 1}>
+                <FlowLink href={`/application/${id}/logs?${new URLSearchParams({ ...(mode ? { mode } : {}), page: String(logPage.page - 1), pageSize: String(logPage.pageSize) }).toString()}`}>
+                  Previous
+                </FlowLink>
+              </Button>
+              <span className="text-sm text-muted-foreground">
+                Page {logPage.page} of {logPage.totalPages}
+              </span>
+              <Button variant="outline" size="sm" asChild disabled={logPage.page >= logPage.totalPages}>
+                <FlowLink href={`/application/${id}/logs?${new URLSearchParams({ ...(mode ? { mode } : {}), page: String(logPage.page + 1), pageSize: String(logPage.pageSize) }).toString()}`}>
+                  Next
+                </FlowLink>
+              </Button>
+            </div>
+          </div>
+
           {logs.map((log) => (
             <Card key={log.id}>
               <CardHeader>
@@ -84,4 +148,3 @@ export default async function ApplicationLogsPage({ params }: Props) {
     </div>
   );
 }
-

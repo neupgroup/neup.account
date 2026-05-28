@@ -159,6 +159,11 @@ export type AuthzPermission = $Result.DefaultSelection<Prisma.$AuthzPermissionPa
  */
 export type AuthzRole = $Result.DefaultSelection<Prisma.$AuthzRolePayload>
 /**
+ * Model AuthzRolePermissionMap
+ * 
+ */
+export type AuthzRolePermissionMap = $Result.DefaultSelection<Prisma.$AuthzRolePermissionMapPayload>
+/**
  * Model AuthzAssetsAccessGrant
  * 
  */
@@ -641,6 +646,16 @@ export class PrismaClient<
     * ```
     */
   get authzRole(): Prisma.AuthzRoleDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.authzRolePermissionMap`: Exposes CRUD operations for the **AuthzRolePermissionMap** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AuthzRolePermissionMaps
+    * const authzRolePermissionMaps = await prisma.authzRolePermissionMap.findMany()
+    * ```
+    */
+  get authzRolePermissionMap(): Prisma.AuthzRolePermissionMapDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.authzAssetsAccessGrant`: Exposes CRUD operations for the **AuthzAssetsAccessGrant** model.
@@ -1134,6 +1149,7 @@ export namespace Prisma {
     ApplicationPolicy: 'ApplicationPolicy',
     AuthzPermission: 'AuthzPermission',
     AuthzRole: 'AuthzRole',
+    AuthzRolePermissionMap: 'AuthzRolePermissionMap',
     AuthzAssetsAccessGrant: 'AuthzAssetsAccessGrant',
     Permit: 'Permit',
     Identity: 'Identity'
@@ -1152,7 +1168,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "resource" | "accountTypeIndividual" | "accountTypeBrand" | "systemConfig" | "authnRequest" | "activity" | "notification" | "request" | "family" | "familyMember" | "verification" | "contact" | "neupId" | "authnMethod" | "authnSession" | "systemError" | "applicationProvider" | "application" | "applicationDevLog" | "portfolio" | "asset" | "member" | "accountOwnership" | "connection" | "applicationBridge" | "applicationPolicy" | "authzPermission" | "authzRole" | "authzAssetsAccessGrant" | "permit" | "identity"
+      modelProps: "account" | "resource" | "accountTypeIndividual" | "accountTypeBrand" | "systemConfig" | "authnRequest" | "activity" | "notification" | "request" | "family" | "familyMember" | "verification" | "contact" | "neupId" | "authnMethod" | "authnSession" | "systemError" | "applicationProvider" | "application" | "applicationDevLog" | "portfolio" | "asset" | "member" | "accountOwnership" | "connection" | "applicationBridge" | "applicationPolicy" | "authzPermission" | "authzRole" | "authzRolePermissionMap" | "authzAssetsAccessGrant" | "permit" | "identity"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -3302,6 +3318,80 @@ export namespace Prisma {
           }
         }
       }
+      AuthzRolePermissionMap: {
+        payload: Prisma.$AuthzRolePermissionMapPayload<ExtArgs>
+        fields: Prisma.AuthzRolePermissionMapFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AuthzRolePermissionMapFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthzRolePermissionMapPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AuthzRolePermissionMapFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthzRolePermissionMapPayload>
+          }
+          findFirst: {
+            args: Prisma.AuthzRolePermissionMapFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthzRolePermissionMapPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AuthzRolePermissionMapFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthzRolePermissionMapPayload>
+          }
+          findMany: {
+            args: Prisma.AuthzRolePermissionMapFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthzRolePermissionMapPayload>[]
+          }
+          create: {
+            args: Prisma.AuthzRolePermissionMapCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthzRolePermissionMapPayload>
+          }
+          createMany: {
+            args: Prisma.AuthzRolePermissionMapCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AuthzRolePermissionMapCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthzRolePermissionMapPayload>[]
+          }
+          delete: {
+            args: Prisma.AuthzRolePermissionMapDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthzRolePermissionMapPayload>
+          }
+          update: {
+            args: Prisma.AuthzRolePermissionMapUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthzRolePermissionMapPayload>
+          }
+          deleteMany: {
+            args: Prisma.AuthzRolePermissionMapDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AuthzRolePermissionMapUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AuthzRolePermissionMapUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthzRolePermissionMapPayload>[]
+          }
+          upsert: {
+            args: Prisma.AuthzRolePermissionMapUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthzRolePermissionMapPayload>
+          }
+          aggregate: {
+            args: Prisma.AuthzRolePermissionMapAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAuthzRolePermissionMap>
+          }
+          groupBy: {
+            args: Prisma.AuthzRolePermissionMapGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AuthzRolePermissionMapGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AuthzRolePermissionMapCountArgs<ExtArgs>
+            result: $Utils.Optional<AuthzRolePermissionMapCountAggregateOutputType> | number
+          }
+        }
+      }
       AuthzAssetsAccessGrant: {
         payload: Prisma.$AuthzAssetsAccessGrantPayload<ExtArgs>
         fields: Prisma.AuthzAssetsAccessGrantFieldRefs
@@ -3661,6 +3751,7 @@ export namespace Prisma {
     applicationPolicy?: ApplicationPolicyOmit
     authzPermission?: AuthzPermissionOmit
     authzRole?: AuthzRoleOmit
+    authzRolePermissionMap?: AuthzRolePermissionMapOmit
     authzAssetsAccessGrant?: AuthzAssetsAccessGrantOmit
     permit?: PermitOmit
     identity?: IdentityOmit
@@ -4272,11 +4363,43 @@ export namespace Prisma {
 
 
   /**
+   * Count Type AuthzPermissionCountOutputType
+   */
+
+  export type AuthzPermissionCountOutputType = {
+    roleMappings: number
+  }
+
+  export type AuthzPermissionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    roleMappings?: boolean | AuthzPermissionCountOutputTypeCountRoleMappingsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * AuthzPermissionCountOutputType without action
+   */
+  export type AuthzPermissionCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthzPermissionCountOutputType
+     */
+    select?: AuthzPermissionCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * AuthzPermissionCountOutputType without action
+   */
+  export type AuthzPermissionCountOutputTypeCountRoleMappingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuthzRolePermissionMapWhereInput
+  }
+
+
+  /**
    * Count Type AuthzRoleCountOutputType
    */
 
   export type AuthzRoleCountOutputType = {
     assetsGrants: number
+    permissionMappings: number
     members: number
     connections: number
     defaultForApplications: number
@@ -4284,6 +4407,7 @@ export namespace Prisma {
 
   export type AuthzRoleCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     assetsGrants?: boolean | AuthzRoleCountOutputTypeCountAssetsGrantsArgs
+    permissionMappings?: boolean | AuthzRoleCountOutputTypeCountPermissionMappingsArgs
     members?: boolean | AuthzRoleCountOutputTypeCountMembersArgs
     connections?: boolean | AuthzRoleCountOutputTypeCountConnectionsArgs
     defaultForApplications?: boolean | AuthzRoleCountOutputTypeCountDefaultForApplicationsArgs
@@ -4305,6 +4429,13 @@ export namespace Prisma {
    */
   export type AuthzRoleCountOutputTypeCountAssetsGrantsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AuthzAssetsAccessGrantWhereInput
+  }
+
+  /**
+   * AuthzRoleCountOutputType without action
+   */
+  export type AuthzRoleCountOutputTypeCountPermissionMappingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuthzRolePermissionMapWhereInput
   }
 
   /**
@@ -35308,6 +35439,8 @@ export namespace Prisma {
     appId?: boolean
     scope?: boolean
     application?: boolean | AuthzPermission$applicationArgs<ExtArgs>
+    roleMappings?: boolean | AuthzPermission$roleMappingsArgs<ExtArgs>
+    _count?: boolean | AuthzPermissionCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["authzPermission"]>
 
   export type AuthzPermissionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -35339,6 +35472,8 @@ export namespace Prisma {
   export type AuthzPermissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "appId" | "scope", ExtArgs["result"]["authzPermission"]>
   export type AuthzPermissionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     application?: boolean | AuthzPermission$applicationArgs<ExtArgs>
+    roleMappings?: boolean | AuthzPermission$roleMappingsArgs<ExtArgs>
+    _count?: boolean | AuthzPermissionCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AuthzPermissionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     application?: boolean | AuthzPermission$applicationArgs<ExtArgs>
@@ -35351,6 +35486,7 @@ export namespace Prisma {
     name: "AuthzPermission"
     objects: {
       application: Prisma.$ApplicationPayload<ExtArgs> | null
+      roleMappings: Prisma.$AuthzRolePermissionMapPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -35753,6 +35889,7 @@ export namespace Prisma {
   export interface Prisma__AuthzPermissionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     application<T extends AuthzPermission$applicationArgs<ExtArgs> = {}>(args?: Subset<T, AuthzPermission$applicationArgs<ExtArgs>>): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    roleMappings<T extends AuthzPermission$roleMappingsArgs<ExtArgs> = {}>(args?: Subset<T, AuthzPermission$roleMappingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzRolePermissionMapPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -36202,6 +36339,30 @@ export namespace Prisma {
   }
 
   /**
+   * AuthzPermission.roleMappings
+   */
+  export type AuthzPermission$roleMappingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthzRolePermissionMap
+     */
+    select?: AuthzRolePermissionMapSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthzRolePermissionMap
+     */
+    omit?: AuthzRolePermissionMapOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthzRolePermissionMapInclude<ExtArgs> | null
+    where?: AuthzRolePermissionMapWhereInput
+    orderBy?: AuthzRolePermissionMapOrderByWithRelationInput | AuthzRolePermissionMapOrderByWithRelationInput[]
+    cursor?: AuthzRolePermissionMapWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AuthzRolePermissionMapScalarFieldEnum | AuthzRolePermissionMapScalarFieldEnum[]
+  }
+
+  /**
    * AuthzPermission without action
    */
   export type AuthzPermissionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -36398,6 +36559,7 @@ export namespace Prisma {
     permissions?: boolean
     application?: boolean | AuthzRole$applicationArgs<ExtArgs>
     assetsGrants?: boolean | AuthzRole$assetsGrantsArgs<ExtArgs>
+    permissionMappings?: boolean | AuthzRole$permissionMappingsArgs<ExtArgs>
     members?: boolean | AuthzRole$membersArgs<ExtArgs>
     connections?: boolean | AuthzRole$connectionsArgs<ExtArgs>
     defaultForApplications?: boolean | AuthzRole$defaultForApplicationsArgs<ExtArgs>
@@ -36440,6 +36602,7 @@ export namespace Prisma {
   export type AuthzRoleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     application?: boolean | AuthzRole$applicationArgs<ExtArgs>
     assetsGrants?: boolean | AuthzRole$assetsGrantsArgs<ExtArgs>
+    permissionMappings?: boolean | AuthzRole$permissionMappingsArgs<ExtArgs>
     members?: boolean | AuthzRole$membersArgs<ExtArgs>
     connections?: boolean | AuthzRole$connectionsArgs<ExtArgs>
     defaultForApplications?: boolean | AuthzRole$defaultForApplicationsArgs<ExtArgs>
@@ -36457,6 +36620,7 @@ export namespace Prisma {
     objects: {
       application: Prisma.$ApplicationPayload<ExtArgs> | null
       assetsGrants: Prisma.$AuthzAssetsAccessGrantPayload<ExtArgs>[]
+      permissionMappings: Prisma.$AuthzRolePermissionMapPayload<ExtArgs>[]
       members: Prisma.$MemberPayload<ExtArgs>[]
       connections: Prisma.$ConnectionPayload<ExtArgs>[]
       defaultForApplications: Prisma.$ApplicationPayload<ExtArgs>[]
@@ -36865,6 +37029,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     application<T extends AuthzRole$applicationArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRole$applicationArgs<ExtArgs>>): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     assetsGrants<T extends AuthzRole$assetsGrantsArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRole$assetsGrantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzAssetsAccessGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    permissionMappings<T extends AuthzRole$permissionMappingsArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRole$permissionMappingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzRolePermissionMapPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     members<T extends AuthzRole$membersArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRole$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     connections<T extends AuthzRole$connectionsArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRole$connectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     defaultForApplications<T extends AuthzRole$defaultForApplicationsArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRole$defaultForApplicationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -37343,6 +37508,30 @@ export namespace Prisma {
   }
 
   /**
+   * AuthzRole.permissionMappings
+   */
+  export type AuthzRole$permissionMappingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthzRolePermissionMap
+     */
+    select?: AuthzRolePermissionMapSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthzRolePermissionMap
+     */
+    omit?: AuthzRolePermissionMapOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthzRolePermissionMapInclude<ExtArgs> | null
+    where?: AuthzRolePermissionMapWhereInput
+    orderBy?: AuthzRolePermissionMapOrderByWithRelationInput | AuthzRolePermissionMapOrderByWithRelationInput[]
+    cursor?: AuthzRolePermissionMapWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AuthzRolePermissionMapScalarFieldEnum | AuthzRolePermissionMapScalarFieldEnum[]
+  }
+
+  /**
    * AuthzRole.members
    */
   export type AuthzRole$membersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -37430,6 +37619,1059 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: AuthzRoleInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AuthzRolePermissionMap
+   */
+
+  export type AggregateAuthzRolePermissionMap = {
+    _count: AuthzRolePermissionMapCountAggregateOutputType | null
+    _min: AuthzRolePermissionMapMinAggregateOutputType | null
+    _max: AuthzRolePermissionMapMaxAggregateOutputType | null
+  }
+
+  export type AuthzRolePermissionMapMinAggregateOutputType = {
+    id: string | null
+    roleId: string | null
+    permissionId: string | null
+    createdAt: Date | null
+  }
+
+  export type AuthzRolePermissionMapMaxAggregateOutputType = {
+    id: string | null
+    roleId: string | null
+    permissionId: string | null
+    createdAt: Date | null
+  }
+
+  export type AuthzRolePermissionMapCountAggregateOutputType = {
+    id: number
+    roleId: number
+    permissionId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AuthzRolePermissionMapMinAggregateInputType = {
+    id?: true
+    roleId?: true
+    permissionId?: true
+    createdAt?: true
+  }
+
+  export type AuthzRolePermissionMapMaxAggregateInputType = {
+    id?: true
+    roleId?: true
+    permissionId?: true
+    createdAt?: true
+  }
+
+  export type AuthzRolePermissionMapCountAggregateInputType = {
+    id?: true
+    roleId?: true
+    permissionId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AuthzRolePermissionMapAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuthzRolePermissionMap to aggregate.
+     */
+    where?: AuthzRolePermissionMapWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuthzRolePermissionMaps to fetch.
+     */
+    orderBy?: AuthzRolePermissionMapOrderByWithRelationInput | AuthzRolePermissionMapOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AuthzRolePermissionMapWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuthzRolePermissionMaps from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuthzRolePermissionMaps.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AuthzRolePermissionMaps
+    **/
+    _count?: true | AuthzRolePermissionMapCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AuthzRolePermissionMapMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AuthzRolePermissionMapMaxAggregateInputType
+  }
+
+  export type GetAuthzRolePermissionMapAggregateType<T extends AuthzRolePermissionMapAggregateArgs> = {
+        [P in keyof T & keyof AggregateAuthzRolePermissionMap]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAuthzRolePermissionMap[P]>
+      : GetScalarType<T[P], AggregateAuthzRolePermissionMap[P]>
+  }
+
+
+
+
+  export type AuthzRolePermissionMapGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuthzRolePermissionMapWhereInput
+    orderBy?: AuthzRolePermissionMapOrderByWithAggregationInput | AuthzRolePermissionMapOrderByWithAggregationInput[]
+    by: AuthzRolePermissionMapScalarFieldEnum[] | AuthzRolePermissionMapScalarFieldEnum
+    having?: AuthzRolePermissionMapScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AuthzRolePermissionMapCountAggregateInputType | true
+    _min?: AuthzRolePermissionMapMinAggregateInputType
+    _max?: AuthzRolePermissionMapMaxAggregateInputType
+  }
+
+  export type AuthzRolePermissionMapGroupByOutputType = {
+    id: string
+    roleId: string
+    permissionId: string
+    createdAt: Date
+    _count: AuthzRolePermissionMapCountAggregateOutputType | null
+    _min: AuthzRolePermissionMapMinAggregateOutputType | null
+    _max: AuthzRolePermissionMapMaxAggregateOutputType | null
+  }
+
+  type GetAuthzRolePermissionMapGroupByPayload<T extends AuthzRolePermissionMapGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AuthzRolePermissionMapGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AuthzRolePermissionMapGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AuthzRolePermissionMapGroupByOutputType[P]>
+            : GetScalarType<T[P], AuthzRolePermissionMapGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AuthzRolePermissionMapSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    roleId?: boolean
+    permissionId?: boolean
+    createdAt?: boolean
+    role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
+    permission?: boolean | AuthzPermissionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["authzRolePermissionMap"]>
+
+  export type AuthzRolePermissionMapSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    roleId?: boolean
+    permissionId?: boolean
+    createdAt?: boolean
+    role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
+    permission?: boolean | AuthzPermissionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["authzRolePermissionMap"]>
+
+  export type AuthzRolePermissionMapSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    roleId?: boolean
+    permissionId?: boolean
+    createdAt?: boolean
+    role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
+    permission?: boolean | AuthzPermissionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["authzRolePermissionMap"]>
+
+  export type AuthzRolePermissionMapSelectScalar = {
+    id?: boolean
+    roleId?: boolean
+    permissionId?: boolean
+    createdAt?: boolean
+  }
+
+  export type AuthzRolePermissionMapOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "roleId" | "permissionId" | "createdAt", ExtArgs["result"]["authzRolePermissionMap"]>
+  export type AuthzRolePermissionMapInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
+    permission?: boolean | AuthzPermissionDefaultArgs<ExtArgs>
+  }
+  export type AuthzRolePermissionMapIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
+    permission?: boolean | AuthzPermissionDefaultArgs<ExtArgs>
+  }
+  export type AuthzRolePermissionMapIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
+    permission?: boolean | AuthzPermissionDefaultArgs<ExtArgs>
+  }
+
+  export type $AuthzRolePermissionMapPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AuthzRolePermissionMap"
+    objects: {
+      role: Prisma.$AuthzRolePayload<ExtArgs>
+      permission: Prisma.$AuthzPermissionPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      roleId: string
+      permissionId: string
+      createdAt: Date
+    }, ExtArgs["result"]["authzRolePermissionMap"]>
+    composites: {}
+  }
+
+  type AuthzRolePermissionMapGetPayload<S extends boolean | null | undefined | AuthzRolePermissionMapDefaultArgs> = $Result.GetResult<Prisma.$AuthzRolePermissionMapPayload, S>
+
+  type AuthzRolePermissionMapCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AuthzRolePermissionMapFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AuthzRolePermissionMapCountAggregateInputType | true
+    }
+
+  export interface AuthzRolePermissionMapDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AuthzRolePermissionMap'], meta: { name: 'AuthzRolePermissionMap' } }
+    /**
+     * Find zero or one AuthzRolePermissionMap that matches the filter.
+     * @param {AuthzRolePermissionMapFindUniqueArgs} args - Arguments to find a AuthzRolePermissionMap
+     * @example
+     * // Get one AuthzRolePermissionMap
+     * const authzRolePermissionMap = await prisma.authzRolePermissionMap.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AuthzRolePermissionMapFindUniqueArgs>(args: SelectSubset<T, AuthzRolePermissionMapFindUniqueArgs<ExtArgs>>): Prisma__AuthzRolePermissionMapClient<$Result.GetResult<Prisma.$AuthzRolePermissionMapPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AuthzRolePermissionMap that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AuthzRolePermissionMapFindUniqueOrThrowArgs} args - Arguments to find a AuthzRolePermissionMap
+     * @example
+     * // Get one AuthzRolePermissionMap
+     * const authzRolePermissionMap = await prisma.authzRolePermissionMap.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AuthzRolePermissionMapFindUniqueOrThrowArgs>(args: SelectSubset<T, AuthzRolePermissionMapFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AuthzRolePermissionMapClient<$Result.GetResult<Prisma.$AuthzRolePermissionMapPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AuthzRolePermissionMap that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthzRolePermissionMapFindFirstArgs} args - Arguments to find a AuthzRolePermissionMap
+     * @example
+     * // Get one AuthzRolePermissionMap
+     * const authzRolePermissionMap = await prisma.authzRolePermissionMap.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AuthzRolePermissionMapFindFirstArgs>(args?: SelectSubset<T, AuthzRolePermissionMapFindFirstArgs<ExtArgs>>): Prisma__AuthzRolePermissionMapClient<$Result.GetResult<Prisma.$AuthzRolePermissionMapPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AuthzRolePermissionMap that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthzRolePermissionMapFindFirstOrThrowArgs} args - Arguments to find a AuthzRolePermissionMap
+     * @example
+     * // Get one AuthzRolePermissionMap
+     * const authzRolePermissionMap = await prisma.authzRolePermissionMap.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AuthzRolePermissionMapFindFirstOrThrowArgs>(args?: SelectSubset<T, AuthzRolePermissionMapFindFirstOrThrowArgs<ExtArgs>>): Prisma__AuthzRolePermissionMapClient<$Result.GetResult<Prisma.$AuthzRolePermissionMapPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AuthzRolePermissionMaps that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthzRolePermissionMapFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AuthzRolePermissionMaps
+     * const authzRolePermissionMaps = await prisma.authzRolePermissionMap.findMany()
+     * 
+     * // Get first 10 AuthzRolePermissionMaps
+     * const authzRolePermissionMaps = await prisma.authzRolePermissionMap.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const authzRolePermissionMapWithIdOnly = await prisma.authzRolePermissionMap.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AuthzRolePermissionMapFindManyArgs>(args?: SelectSubset<T, AuthzRolePermissionMapFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzRolePermissionMapPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AuthzRolePermissionMap.
+     * @param {AuthzRolePermissionMapCreateArgs} args - Arguments to create a AuthzRolePermissionMap.
+     * @example
+     * // Create one AuthzRolePermissionMap
+     * const AuthzRolePermissionMap = await prisma.authzRolePermissionMap.create({
+     *   data: {
+     *     // ... data to create a AuthzRolePermissionMap
+     *   }
+     * })
+     * 
+     */
+    create<T extends AuthzRolePermissionMapCreateArgs>(args: SelectSubset<T, AuthzRolePermissionMapCreateArgs<ExtArgs>>): Prisma__AuthzRolePermissionMapClient<$Result.GetResult<Prisma.$AuthzRolePermissionMapPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AuthzRolePermissionMaps.
+     * @param {AuthzRolePermissionMapCreateManyArgs} args - Arguments to create many AuthzRolePermissionMaps.
+     * @example
+     * // Create many AuthzRolePermissionMaps
+     * const authzRolePermissionMap = await prisma.authzRolePermissionMap.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AuthzRolePermissionMapCreateManyArgs>(args?: SelectSubset<T, AuthzRolePermissionMapCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AuthzRolePermissionMaps and returns the data saved in the database.
+     * @param {AuthzRolePermissionMapCreateManyAndReturnArgs} args - Arguments to create many AuthzRolePermissionMaps.
+     * @example
+     * // Create many AuthzRolePermissionMaps
+     * const authzRolePermissionMap = await prisma.authzRolePermissionMap.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AuthzRolePermissionMaps and only return the `id`
+     * const authzRolePermissionMapWithIdOnly = await prisma.authzRolePermissionMap.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AuthzRolePermissionMapCreateManyAndReturnArgs>(args?: SelectSubset<T, AuthzRolePermissionMapCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzRolePermissionMapPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AuthzRolePermissionMap.
+     * @param {AuthzRolePermissionMapDeleteArgs} args - Arguments to delete one AuthzRolePermissionMap.
+     * @example
+     * // Delete one AuthzRolePermissionMap
+     * const AuthzRolePermissionMap = await prisma.authzRolePermissionMap.delete({
+     *   where: {
+     *     // ... filter to delete one AuthzRolePermissionMap
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AuthzRolePermissionMapDeleteArgs>(args: SelectSubset<T, AuthzRolePermissionMapDeleteArgs<ExtArgs>>): Prisma__AuthzRolePermissionMapClient<$Result.GetResult<Prisma.$AuthzRolePermissionMapPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AuthzRolePermissionMap.
+     * @param {AuthzRolePermissionMapUpdateArgs} args - Arguments to update one AuthzRolePermissionMap.
+     * @example
+     * // Update one AuthzRolePermissionMap
+     * const authzRolePermissionMap = await prisma.authzRolePermissionMap.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AuthzRolePermissionMapUpdateArgs>(args: SelectSubset<T, AuthzRolePermissionMapUpdateArgs<ExtArgs>>): Prisma__AuthzRolePermissionMapClient<$Result.GetResult<Prisma.$AuthzRolePermissionMapPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AuthzRolePermissionMaps.
+     * @param {AuthzRolePermissionMapDeleteManyArgs} args - Arguments to filter AuthzRolePermissionMaps to delete.
+     * @example
+     * // Delete a few AuthzRolePermissionMaps
+     * const { count } = await prisma.authzRolePermissionMap.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AuthzRolePermissionMapDeleteManyArgs>(args?: SelectSubset<T, AuthzRolePermissionMapDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AuthzRolePermissionMaps.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthzRolePermissionMapUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AuthzRolePermissionMaps
+     * const authzRolePermissionMap = await prisma.authzRolePermissionMap.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AuthzRolePermissionMapUpdateManyArgs>(args: SelectSubset<T, AuthzRolePermissionMapUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AuthzRolePermissionMaps and returns the data updated in the database.
+     * @param {AuthzRolePermissionMapUpdateManyAndReturnArgs} args - Arguments to update many AuthzRolePermissionMaps.
+     * @example
+     * // Update many AuthzRolePermissionMaps
+     * const authzRolePermissionMap = await prisma.authzRolePermissionMap.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AuthzRolePermissionMaps and only return the `id`
+     * const authzRolePermissionMapWithIdOnly = await prisma.authzRolePermissionMap.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AuthzRolePermissionMapUpdateManyAndReturnArgs>(args: SelectSubset<T, AuthzRolePermissionMapUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzRolePermissionMapPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AuthzRolePermissionMap.
+     * @param {AuthzRolePermissionMapUpsertArgs} args - Arguments to update or create a AuthzRolePermissionMap.
+     * @example
+     * // Update or create a AuthzRolePermissionMap
+     * const authzRolePermissionMap = await prisma.authzRolePermissionMap.upsert({
+     *   create: {
+     *     // ... data to create a AuthzRolePermissionMap
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AuthzRolePermissionMap we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AuthzRolePermissionMapUpsertArgs>(args: SelectSubset<T, AuthzRolePermissionMapUpsertArgs<ExtArgs>>): Prisma__AuthzRolePermissionMapClient<$Result.GetResult<Prisma.$AuthzRolePermissionMapPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AuthzRolePermissionMaps.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthzRolePermissionMapCountArgs} args - Arguments to filter AuthzRolePermissionMaps to count.
+     * @example
+     * // Count the number of AuthzRolePermissionMaps
+     * const count = await prisma.authzRolePermissionMap.count({
+     *   where: {
+     *     // ... the filter for the AuthzRolePermissionMaps we want to count
+     *   }
+     * })
+    **/
+    count<T extends AuthzRolePermissionMapCountArgs>(
+      args?: Subset<T, AuthzRolePermissionMapCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AuthzRolePermissionMapCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AuthzRolePermissionMap.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthzRolePermissionMapAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AuthzRolePermissionMapAggregateArgs>(args: Subset<T, AuthzRolePermissionMapAggregateArgs>): Prisma.PrismaPromise<GetAuthzRolePermissionMapAggregateType<T>>
+
+    /**
+     * Group by AuthzRolePermissionMap.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthzRolePermissionMapGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AuthzRolePermissionMapGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AuthzRolePermissionMapGroupByArgs['orderBy'] }
+        : { orderBy?: AuthzRolePermissionMapGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AuthzRolePermissionMapGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAuthzRolePermissionMapGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AuthzRolePermissionMap model
+   */
+  readonly fields: AuthzRolePermissionMapFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AuthzRolePermissionMap.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AuthzRolePermissionMapClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    role<T extends AuthzRoleDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRoleDefaultArgs<ExtArgs>>): Prisma__AuthzRoleClient<$Result.GetResult<Prisma.$AuthzRolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    permission<T extends AuthzPermissionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AuthzPermissionDefaultArgs<ExtArgs>>): Prisma__AuthzPermissionClient<$Result.GetResult<Prisma.$AuthzPermissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AuthzRolePermissionMap model
+   */
+  interface AuthzRolePermissionMapFieldRefs {
+    readonly id: FieldRef<"AuthzRolePermissionMap", 'String'>
+    readonly roleId: FieldRef<"AuthzRolePermissionMap", 'String'>
+    readonly permissionId: FieldRef<"AuthzRolePermissionMap", 'String'>
+    readonly createdAt: FieldRef<"AuthzRolePermissionMap", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AuthzRolePermissionMap findUnique
+   */
+  export type AuthzRolePermissionMapFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthzRolePermissionMap
+     */
+    select?: AuthzRolePermissionMapSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthzRolePermissionMap
+     */
+    omit?: AuthzRolePermissionMapOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthzRolePermissionMapInclude<ExtArgs> | null
+    /**
+     * Filter, which AuthzRolePermissionMap to fetch.
+     */
+    where: AuthzRolePermissionMapWhereUniqueInput
+  }
+
+  /**
+   * AuthzRolePermissionMap findUniqueOrThrow
+   */
+  export type AuthzRolePermissionMapFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthzRolePermissionMap
+     */
+    select?: AuthzRolePermissionMapSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthzRolePermissionMap
+     */
+    omit?: AuthzRolePermissionMapOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthzRolePermissionMapInclude<ExtArgs> | null
+    /**
+     * Filter, which AuthzRolePermissionMap to fetch.
+     */
+    where: AuthzRolePermissionMapWhereUniqueInput
+  }
+
+  /**
+   * AuthzRolePermissionMap findFirst
+   */
+  export type AuthzRolePermissionMapFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthzRolePermissionMap
+     */
+    select?: AuthzRolePermissionMapSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthzRolePermissionMap
+     */
+    omit?: AuthzRolePermissionMapOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthzRolePermissionMapInclude<ExtArgs> | null
+    /**
+     * Filter, which AuthzRolePermissionMap to fetch.
+     */
+    where?: AuthzRolePermissionMapWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuthzRolePermissionMaps to fetch.
+     */
+    orderBy?: AuthzRolePermissionMapOrderByWithRelationInput | AuthzRolePermissionMapOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuthzRolePermissionMaps.
+     */
+    cursor?: AuthzRolePermissionMapWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuthzRolePermissionMaps from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuthzRolePermissionMaps.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuthzRolePermissionMaps.
+     */
+    distinct?: AuthzRolePermissionMapScalarFieldEnum | AuthzRolePermissionMapScalarFieldEnum[]
+  }
+
+  /**
+   * AuthzRolePermissionMap findFirstOrThrow
+   */
+  export type AuthzRolePermissionMapFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthzRolePermissionMap
+     */
+    select?: AuthzRolePermissionMapSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthzRolePermissionMap
+     */
+    omit?: AuthzRolePermissionMapOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthzRolePermissionMapInclude<ExtArgs> | null
+    /**
+     * Filter, which AuthzRolePermissionMap to fetch.
+     */
+    where?: AuthzRolePermissionMapWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuthzRolePermissionMaps to fetch.
+     */
+    orderBy?: AuthzRolePermissionMapOrderByWithRelationInput | AuthzRolePermissionMapOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuthzRolePermissionMaps.
+     */
+    cursor?: AuthzRolePermissionMapWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuthzRolePermissionMaps from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuthzRolePermissionMaps.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuthzRolePermissionMaps.
+     */
+    distinct?: AuthzRolePermissionMapScalarFieldEnum | AuthzRolePermissionMapScalarFieldEnum[]
+  }
+
+  /**
+   * AuthzRolePermissionMap findMany
+   */
+  export type AuthzRolePermissionMapFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthzRolePermissionMap
+     */
+    select?: AuthzRolePermissionMapSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthzRolePermissionMap
+     */
+    omit?: AuthzRolePermissionMapOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthzRolePermissionMapInclude<ExtArgs> | null
+    /**
+     * Filter, which AuthzRolePermissionMaps to fetch.
+     */
+    where?: AuthzRolePermissionMapWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuthzRolePermissionMaps to fetch.
+     */
+    orderBy?: AuthzRolePermissionMapOrderByWithRelationInput | AuthzRolePermissionMapOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AuthzRolePermissionMaps.
+     */
+    cursor?: AuthzRolePermissionMapWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuthzRolePermissionMaps from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuthzRolePermissionMaps.
+     */
+    skip?: number
+    distinct?: AuthzRolePermissionMapScalarFieldEnum | AuthzRolePermissionMapScalarFieldEnum[]
+  }
+
+  /**
+   * AuthzRolePermissionMap create
+   */
+  export type AuthzRolePermissionMapCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthzRolePermissionMap
+     */
+    select?: AuthzRolePermissionMapSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthzRolePermissionMap
+     */
+    omit?: AuthzRolePermissionMapOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthzRolePermissionMapInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AuthzRolePermissionMap.
+     */
+    data: XOR<AuthzRolePermissionMapCreateInput, AuthzRolePermissionMapUncheckedCreateInput>
+  }
+
+  /**
+   * AuthzRolePermissionMap createMany
+   */
+  export type AuthzRolePermissionMapCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AuthzRolePermissionMaps.
+     */
+    data: AuthzRolePermissionMapCreateManyInput | AuthzRolePermissionMapCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AuthzRolePermissionMap createManyAndReturn
+   */
+  export type AuthzRolePermissionMapCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthzRolePermissionMap
+     */
+    select?: AuthzRolePermissionMapSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthzRolePermissionMap
+     */
+    omit?: AuthzRolePermissionMapOmit<ExtArgs> | null
+    /**
+     * The data used to create many AuthzRolePermissionMaps.
+     */
+    data: AuthzRolePermissionMapCreateManyInput | AuthzRolePermissionMapCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthzRolePermissionMapIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AuthzRolePermissionMap update
+   */
+  export type AuthzRolePermissionMapUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthzRolePermissionMap
+     */
+    select?: AuthzRolePermissionMapSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthzRolePermissionMap
+     */
+    omit?: AuthzRolePermissionMapOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthzRolePermissionMapInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AuthzRolePermissionMap.
+     */
+    data: XOR<AuthzRolePermissionMapUpdateInput, AuthzRolePermissionMapUncheckedUpdateInput>
+    /**
+     * Choose, which AuthzRolePermissionMap to update.
+     */
+    where: AuthzRolePermissionMapWhereUniqueInput
+  }
+
+  /**
+   * AuthzRolePermissionMap updateMany
+   */
+  export type AuthzRolePermissionMapUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AuthzRolePermissionMaps.
+     */
+    data: XOR<AuthzRolePermissionMapUpdateManyMutationInput, AuthzRolePermissionMapUncheckedUpdateManyInput>
+    /**
+     * Filter which AuthzRolePermissionMaps to update
+     */
+    where?: AuthzRolePermissionMapWhereInput
+    /**
+     * Limit how many AuthzRolePermissionMaps to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AuthzRolePermissionMap updateManyAndReturn
+   */
+  export type AuthzRolePermissionMapUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthzRolePermissionMap
+     */
+    select?: AuthzRolePermissionMapSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthzRolePermissionMap
+     */
+    omit?: AuthzRolePermissionMapOmit<ExtArgs> | null
+    /**
+     * The data used to update AuthzRolePermissionMaps.
+     */
+    data: XOR<AuthzRolePermissionMapUpdateManyMutationInput, AuthzRolePermissionMapUncheckedUpdateManyInput>
+    /**
+     * Filter which AuthzRolePermissionMaps to update
+     */
+    where?: AuthzRolePermissionMapWhereInput
+    /**
+     * Limit how many AuthzRolePermissionMaps to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthzRolePermissionMapIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AuthzRolePermissionMap upsert
+   */
+  export type AuthzRolePermissionMapUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthzRolePermissionMap
+     */
+    select?: AuthzRolePermissionMapSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthzRolePermissionMap
+     */
+    omit?: AuthzRolePermissionMapOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthzRolePermissionMapInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AuthzRolePermissionMap to update in case it exists.
+     */
+    where: AuthzRolePermissionMapWhereUniqueInput
+    /**
+     * In case the AuthzRolePermissionMap found by the `where` argument doesn't exist, create a new AuthzRolePermissionMap with this data.
+     */
+    create: XOR<AuthzRolePermissionMapCreateInput, AuthzRolePermissionMapUncheckedCreateInput>
+    /**
+     * In case the AuthzRolePermissionMap was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AuthzRolePermissionMapUpdateInput, AuthzRolePermissionMapUncheckedUpdateInput>
+  }
+
+  /**
+   * AuthzRolePermissionMap delete
+   */
+  export type AuthzRolePermissionMapDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthzRolePermissionMap
+     */
+    select?: AuthzRolePermissionMapSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthzRolePermissionMap
+     */
+    omit?: AuthzRolePermissionMapOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthzRolePermissionMapInclude<ExtArgs> | null
+    /**
+     * Filter which AuthzRolePermissionMap to delete.
+     */
+    where: AuthzRolePermissionMapWhereUniqueInput
+  }
+
+  /**
+   * AuthzRolePermissionMap deleteMany
+   */
+  export type AuthzRolePermissionMapDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuthzRolePermissionMaps to delete
+     */
+    where?: AuthzRolePermissionMapWhereInput
+    /**
+     * Limit how many AuthzRolePermissionMaps to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AuthzRolePermissionMap without action
+   */
+  export type AuthzRolePermissionMapDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthzRolePermissionMap
+     */
+    select?: AuthzRolePermissionMapSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthzRolePermissionMap
+     */
+    omit?: AuthzRolePermissionMapOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuthzRolePermissionMapInclude<ExtArgs> | null
   }
 
 
@@ -41148,6 +42390,16 @@ export namespace Prisma {
   export type AuthzRoleScalarFieldEnum = (typeof AuthzRoleScalarFieldEnum)[keyof typeof AuthzRoleScalarFieldEnum]
 
 
+  export const AuthzRolePermissionMapScalarFieldEnum: {
+    id: 'id',
+    roleId: 'roleId',
+    permissionId: 'permissionId',
+    createdAt: 'createdAt'
+  };
+
+  export type AuthzRolePermissionMapScalarFieldEnum = (typeof AuthzRolePermissionMapScalarFieldEnum)[keyof typeof AuthzRolePermissionMapScalarFieldEnum]
+
+
   export const AuthzAssetsAccessGrantScalarFieldEnum: {
     id: 'id',
     asset_id: 'asset_id',
@@ -43349,6 +44601,7 @@ export namespace Prisma {
     appId?: StringNullableFilter<"AuthzPermission"> | string | null
     scope?: StringNullableFilter<"AuthzPermission"> | string | null
     application?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
+    roleMappings?: AuthzRolePermissionMapListRelationFilter
   }
 
   export type AuthzPermissionOrderByWithRelationInput = {
@@ -43358,6 +44611,7 @@ export namespace Prisma {
     appId?: SortOrderInput | SortOrder
     scope?: SortOrderInput | SortOrder
     application?: ApplicationOrderByWithRelationInput
+    roleMappings?: AuthzRolePermissionMapOrderByRelationAggregateInput
   }
 
   export type AuthzPermissionWhereUniqueInput = Prisma.AtLeast<{
@@ -43370,6 +44624,7 @@ export namespace Prisma {
     appId?: StringNullableFilter<"AuthzPermission"> | string | null
     scope?: StringNullableFilter<"AuthzPermission"> | string | null
     application?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
+    roleMappings?: AuthzRolePermissionMapListRelationFilter
   }, "id">
 
   export type AuthzPermissionOrderByWithAggregationInput = {
@@ -43407,6 +44662,7 @@ export namespace Prisma {
     permissions?: JsonNullableFilter<"AuthzRole">
     application?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
     assetsGrants?: AuthzAssetsAccessGrantListRelationFilter
+    permissionMappings?: AuthzRolePermissionMapListRelationFilter
     members?: MemberListRelationFilter
     connections?: ConnectionListRelationFilter
     defaultForApplications?: ApplicationListRelationFilter
@@ -43422,6 +44678,7 @@ export namespace Prisma {
     permissions?: SortOrderInput | SortOrder
     application?: ApplicationOrderByWithRelationInput
     assetsGrants?: AuthzAssetsAccessGrantOrderByRelationAggregateInput
+    permissionMappings?: AuthzRolePermissionMapOrderByRelationAggregateInput
     members?: MemberOrderByRelationAggregateInput
     connections?: ConnectionOrderByRelationAggregateInput
     defaultForApplications?: ApplicationOrderByRelationAggregateInput
@@ -43441,6 +44698,7 @@ export namespace Prisma {
     permissions?: JsonNullableFilter<"AuthzRole">
     application?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
     assetsGrants?: AuthzAssetsAccessGrantListRelationFilter
+    permissionMappings?: AuthzRolePermissionMapListRelationFilter
     members?: MemberListRelationFilter
     connections?: ConnectionListRelationFilter
     defaultForApplications?: ApplicationListRelationFilter
@@ -43470,6 +44728,60 @@ export namespace Prisma {
     scope?: StringNullableWithAggregatesFilter<"AuthzRole"> | string | null
     pushed?: BoolWithAggregatesFilter<"AuthzRole"> | boolean
     permissions?: JsonNullableWithAggregatesFilter<"AuthzRole">
+  }
+
+  export type AuthzRolePermissionMapWhereInput = {
+    AND?: AuthzRolePermissionMapWhereInput | AuthzRolePermissionMapWhereInput[]
+    OR?: AuthzRolePermissionMapWhereInput[]
+    NOT?: AuthzRolePermissionMapWhereInput | AuthzRolePermissionMapWhereInput[]
+    id?: StringFilter<"AuthzRolePermissionMap"> | string
+    roleId?: StringFilter<"AuthzRolePermissionMap"> | string
+    permissionId?: StringFilter<"AuthzRolePermissionMap"> | string
+    createdAt?: DateTimeFilter<"AuthzRolePermissionMap"> | Date | string
+    role?: XOR<AuthzRoleScalarRelationFilter, AuthzRoleWhereInput>
+    permission?: XOR<AuthzPermissionScalarRelationFilter, AuthzPermissionWhereInput>
+  }
+
+  export type AuthzRolePermissionMapOrderByWithRelationInput = {
+    id?: SortOrder
+    roleId?: SortOrder
+    permissionId?: SortOrder
+    createdAt?: SortOrder
+    role?: AuthzRoleOrderByWithRelationInput
+    permission?: AuthzPermissionOrderByWithRelationInput
+  }
+
+  export type AuthzRolePermissionMapWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    roleId_permissionId?: AuthzRolePermissionMapRoleIdPermissionIdCompoundUniqueInput
+    AND?: AuthzRolePermissionMapWhereInput | AuthzRolePermissionMapWhereInput[]
+    OR?: AuthzRolePermissionMapWhereInput[]
+    NOT?: AuthzRolePermissionMapWhereInput | AuthzRolePermissionMapWhereInput[]
+    roleId?: StringFilter<"AuthzRolePermissionMap"> | string
+    permissionId?: StringFilter<"AuthzRolePermissionMap"> | string
+    createdAt?: DateTimeFilter<"AuthzRolePermissionMap"> | Date | string
+    role?: XOR<AuthzRoleScalarRelationFilter, AuthzRoleWhereInput>
+    permission?: XOR<AuthzPermissionScalarRelationFilter, AuthzPermissionWhereInput>
+  }, "id" | "roleId_permissionId">
+
+  export type AuthzRolePermissionMapOrderByWithAggregationInput = {
+    id?: SortOrder
+    roleId?: SortOrder
+    permissionId?: SortOrder
+    createdAt?: SortOrder
+    _count?: AuthzRolePermissionMapCountOrderByAggregateInput
+    _max?: AuthzRolePermissionMapMaxOrderByAggregateInput
+    _min?: AuthzRolePermissionMapMinOrderByAggregateInput
+  }
+
+  export type AuthzRolePermissionMapScalarWhereWithAggregatesInput = {
+    AND?: AuthzRolePermissionMapScalarWhereWithAggregatesInput | AuthzRolePermissionMapScalarWhereWithAggregatesInput[]
+    OR?: AuthzRolePermissionMapScalarWhereWithAggregatesInput[]
+    NOT?: AuthzRolePermissionMapScalarWhereWithAggregatesInput | AuthzRolePermissionMapScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AuthzRolePermissionMap"> | string
+    roleId?: StringWithAggregatesFilter<"AuthzRolePermissionMap"> | string
+    permissionId?: StringWithAggregatesFilter<"AuthzRolePermissionMap"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"AuthzRolePermissionMap"> | Date | string
   }
 
   export type AuthzAssetsAccessGrantWhereInput = {
@@ -45786,6 +47098,7 @@ export namespace Prisma {
     description?: string | null
     scope?: string | null
     application?: ApplicationCreateNestedOneWithoutAuthzPermissionsInput
+    roleMappings?: AuthzRolePermissionMapCreateNestedManyWithoutPermissionInput
   }
 
   export type AuthzPermissionUncheckedCreateInput = {
@@ -45794,6 +47107,7 @@ export namespace Prisma {
     description?: string | null
     appId?: string | null
     scope?: string | null
+    roleMappings?: AuthzRolePermissionMapUncheckedCreateNestedManyWithoutPermissionInput
   }
 
   export type AuthzPermissionUpdateInput = {
@@ -45802,6 +47116,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     application?: ApplicationUpdateOneWithoutAuthzPermissionsNestedInput
+    roleMappings?: AuthzRolePermissionMapUpdateManyWithoutPermissionNestedInput
   }
 
   export type AuthzPermissionUncheckedUpdateInput = {
@@ -45810,6 +47125,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     appId?: NullableStringFieldUpdateOperationsInput | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
+    roleMappings?: AuthzRolePermissionMapUncheckedUpdateManyWithoutPermissionNestedInput
   }
 
   export type AuthzPermissionCreateManyInput = {
@@ -45844,6 +47160,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
     assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
+    permissionMappings?: AuthzRolePermissionMapCreateNestedManyWithoutRoleInput
     members?: MemberCreateNestedManyWithoutRoleInput
     connections?: ConnectionCreateNestedManyWithoutRoleInput
     defaultForApplications?: ApplicationCreateNestedManyWithoutDefaultRoleInput
@@ -45858,6 +47175,7 @@ export namespace Prisma {
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
+    permissionMappings?: AuthzRolePermissionMapUncheckedCreateNestedManyWithoutRoleInput
     members?: MemberUncheckedCreateNestedManyWithoutRoleInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutRoleInput
     defaultForApplications?: ApplicationUncheckedCreateNestedManyWithoutDefaultRoleInput
@@ -45872,6 +47190,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
     assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
+    permissionMappings?: AuthzRolePermissionMapUpdateManyWithoutRoleNestedInput
     members?: MemberUpdateManyWithoutRoleNestedInput
     connections?: ConnectionUpdateManyWithoutRoleNestedInput
     defaultForApplications?: ApplicationUpdateManyWithoutDefaultRoleNestedInput
@@ -45886,6 +47205,7 @@ export namespace Prisma {
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
+    permissionMappings?: AuthzRolePermissionMapUncheckedUpdateManyWithoutRoleNestedInput
     members?: MemberUncheckedUpdateManyWithoutRoleNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutRoleNestedInput
     defaultForApplications?: ApplicationUncheckedUpdateManyWithoutDefaultRoleNestedInput
@@ -45918,6 +47238,53 @@ export namespace Prisma {
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type AuthzRolePermissionMapCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    role: AuthzRoleCreateNestedOneWithoutPermissionMappingsInput
+    permission: AuthzPermissionCreateNestedOneWithoutRoleMappingsInput
+  }
+
+  export type AuthzRolePermissionMapUncheckedCreateInput = {
+    id?: string
+    roleId: string
+    permissionId: string
+    createdAt?: Date | string
+  }
+
+  export type AuthzRolePermissionMapUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: AuthzRoleUpdateOneRequiredWithoutPermissionMappingsNestedInput
+    permission?: AuthzPermissionUpdateOneRequiredWithoutRoleMappingsNestedInput
+  }
+
+  export type AuthzRolePermissionMapUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    roleId?: StringFieldUpdateOperationsInput | string
+    permissionId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthzRolePermissionMapCreateManyInput = {
+    id?: string
+    roleId: string
+    permissionId: string
+    createdAt?: Date | string
+  }
+
+  export type AuthzRolePermissionMapUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthzRolePermissionMapUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    roleId?: StringFieldUpdateOperationsInput | string
+    permissionId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AuthzAssetsAccessGrantCreateInput = {
@@ -47582,6 +48949,16 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type AuthzRolePermissionMapListRelationFilter = {
+    every?: AuthzRolePermissionMapWhereInput
+    some?: AuthzRolePermissionMapWhereInput
+    none?: AuthzRolePermissionMapWhereInput
+  }
+
+  export type AuthzRolePermissionMapOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type AuthzPermissionCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -47637,6 +49014,37 @@ export namespace Prisma {
     appId?: SortOrder
     scope?: SortOrder
     pushed?: SortOrder
+  }
+
+  export type AuthzPermissionScalarRelationFilter = {
+    is?: AuthzPermissionWhereInput
+    isNot?: AuthzPermissionWhereInput
+  }
+
+  export type AuthzRolePermissionMapRoleIdPermissionIdCompoundUniqueInput = {
+    roleId: string
+    permissionId: string
+  }
+
+  export type AuthzRolePermissionMapCountOrderByAggregateInput = {
+    id?: SortOrder
+    roleId?: SortOrder
+    permissionId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AuthzRolePermissionMapMaxOrderByAggregateInput = {
+    id?: SortOrder
+    roleId?: SortOrder
+    permissionId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AuthzRolePermissionMapMinOrderByAggregateInput = {
+    id?: SortOrder
+    roleId?: SortOrder
+    permissionId?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type AssetScalarRelationFilter = {
@@ -50209,6 +51617,20 @@ export namespace Prisma {
     connect?: ApplicationWhereUniqueInput
   }
 
+  export type AuthzRolePermissionMapCreateNestedManyWithoutPermissionInput = {
+    create?: XOR<AuthzRolePermissionMapCreateWithoutPermissionInput, AuthzRolePermissionMapUncheckedCreateWithoutPermissionInput> | AuthzRolePermissionMapCreateWithoutPermissionInput[] | AuthzRolePermissionMapUncheckedCreateWithoutPermissionInput[]
+    connectOrCreate?: AuthzRolePermissionMapCreateOrConnectWithoutPermissionInput | AuthzRolePermissionMapCreateOrConnectWithoutPermissionInput[]
+    createMany?: AuthzRolePermissionMapCreateManyPermissionInputEnvelope
+    connect?: AuthzRolePermissionMapWhereUniqueInput | AuthzRolePermissionMapWhereUniqueInput[]
+  }
+
+  export type AuthzRolePermissionMapUncheckedCreateNestedManyWithoutPermissionInput = {
+    create?: XOR<AuthzRolePermissionMapCreateWithoutPermissionInput, AuthzRolePermissionMapUncheckedCreateWithoutPermissionInput> | AuthzRolePermissionMapCreateWithoutPermissionInput[] | AuthzRolePermissionMapUncheckedCreateWithoutPermissionInput[]
+    connectOrCreate?: AuthzRolePermissionMapCreateOrConnectWithoutPermissionInput | AuthzRolePermissionMapCreateOrConnectWithoutPermissionInput[]
+    createMany?: AuthzRolePermissionMapCreateManyPermissionInputEnvelope
+    connect?: AuthzRolePermissionMapWhereUniqueInput | AuthzRolePermissionMapWhereUniqueInput[]
+  }
+
   export type ApplicationUpdateOneWithoutAuthzPermissionsNestedInput = {
     create?: XOR<ApplicationCreateWithoutAuthzPermissionsInput, ApplicationUncheckedCreateWithoutAuthzPermissionsInput>
     connectOrCreate?: ApplicationCreateOrConnectWithoutAuthzPermissionsInput
@@ -50217,6 +51639,34 @@ export namespace Prisma {
     delete?: ApplicationWhereInput | boolean
     connect?: ApplicationWhereUniqueInput
     update?: XOR<XOR<ApplicationUpdateToOneWithWhereWithoutAuthzPermissionsInput, ApplicationUpdateWithoutAuthzPermissionsInput>, ApplicationUncheckedUpdateWithoutAuthzPermissionsInput>
+  }
+
+  export type AuthzRolePermissionMapUpdateManyWithoutPermissionNestedInput = {
+    create?: XOR<AuthzRolePermissionMapCreateWithoutPermissionInput, AuthzRolePermissionMapUncheckedCreateWithoutPermissionInput> | AuthzRolePermissionMapCreateWithoutPermissionInput[] | AuthzRolePermissionMapUncheckedCreateWithoutPermissionInput[]
+    connectOrCreate?: AuthzRolePermissionMapCreateOrConnectWithoutPermissionInput | AuthzRolePermissionMapCreateOrConnectWithoutPermissionInput[]
+    upsert?: AuthzRolePermissionMapUpsertWithWhereUniqueWithoutPermissionInput | AuthzRolePermissionMapUpsertWithWhereUniqueWithoutPermissionInput[]
+    createMany?: AuthzRolePermissionMapCreateManyPermissionInputEnvelope
+    set?: AuthzRolePermissionMapWhereUniqueInput | AuthzRolePermissionMapWhereUniqueInput[]
+    disconnect?: AuthzRolePermissionMapWhereUniqueInput | AuthzRolePermissionMapWhereUniqueInput[]
+    delete?: AuthzRolePermissionMapWhereUniqueInput | AuthzRolePermissionMapWhereUniqueInput[]
+    connect?: AuthzRolePermissionMapWhereUniqueInput | AuthzRolePermissionMapWhereUniqueInput[]
+    update?: AuthzRolePermissionMapUpdateWithWhereUniqueWithoutPermissionInput | AuthzRolePermissionMapUpdateWithWhereUniqueWithoutPermissionInput[]
+    updateMany?: AuthzRolePermissionMapUpdateManyWithWhereWithoutPermissionInput | AuthzRolePermissionMapUpdateManyWithWhereWithoutPermissionInput[]
+    deleteMany?: AuthzRolePermissionMapScalarWhereInput | AuthzRolePermissionMapScalarWhereInput[]
+  }
+
+  export type AuthzRolePermissionMapUncheckedUpdateManyWithoutPermissionNestedInput = {
+    create?: XOR<AuthzRolePermissionMapCreateWithoutPermissionInput, AuthzRolePermissionMapUncheckedCreateWithoutPermissionInput> | AuthzRolePermissionMapCreateWithoutPermissionInput[] | AuthzRolePermissionMapUncheckedCreateWithoutPermissionInput[]
+    connectOrCreate?: AuthzRolePermissionMapCreateOrConnectWithoutPermissionInput | AuthzRolePermissionMapCreateOrConnectWithoutPermissionInput[]
+    upsert?: AuthzRolePermissionMapUpsertWithWhereUniqueWithoutPermissionInput | AuthzRolePermissionMapUpsertWithWhereUniqueWithoutPermissionInput[]
+    createMany?: AuthzRolePermissionMapCreateManyPermissionInputEnvelope
+    set?: AuthzRolePermissionMapWhereUniqueInput | AuthzRolePermissionMapWhereUniqueInput[]
+    disconnect?: AuthzRolePermissionMapWhereUniqueInput | AuthzRolePermissionMapWhereUniqueInput[]
+    delete?: AuthzRolePermissionMapWhereUniqueInput | AuthzRolePermissionMapWhereUniqueInput[]
+    connect?: AuthzRolePermissionMapWhereUniqueInput | AuthzRolePermissionMapWhereUniqueInput[]
+    update?: AuthzRolePermissionMapUpdateWithWhereUniqueWithoutPermissionInput | AuthzRolePermissionMapUpdateWithWhereUniqueWithoutPermissionInput[]
+    updateMany?: AuthzRolePermissionMapUpdateManyWithWhereWithoutPermissionInput | AuthzRolePermissionMapUpdateManyWithWhereWithoutPermissionInput[]
+    deleteMany?: AuthzRolePermissionMapScalarWhereInput | AuthzRolePermissionMapScalarWhereInput[]
   }
 
   export type ApplicationCreateNestedOneWithoutAuthzRolesInput = {
@@ -50230,6 +51680,13 @@ export namespace Prisma {
     connectOrCreate?: AuthzAssetsAccessGrantCreateOrConnectWithoutRoleInput | AuthzAssetsAccessGrantCreateOrConnectWithoutRoleInput[]
     createMany?: AuthzAssetsAccessGrantCreateManyRoleInputEnvelope
     connect?: AuthzAssetsAccessGrantWhereUniqueInput | AuthzAssetsAccessGrantWhereUniqueInput[]
+  }
+
+  export type AuthzRolePermissionMapCreateNestedManyWithoutRoleInput = {
+    create?: XOR<AuthzRolePermissionMapCreateWithoutRoleInput, AuthzRolePermissionMapUncheckedCreateWithoutRoleInput> | AuthzRolePermissionMapCreateWithoutRoleInput[] | AuthzRolePermissionMapUncheckedCreateWithoutRoleInput[]
+    connectOrCreate?: AuthzRolePermissionMapCreateOrConnectWithoutRoleInput | AuthzRolePermissionMapCreateOrConnectWithoutRoleInput[]
+    createMany?: AuthzRolePermissionMapCreateManyRoleInputEnvelope
+    connect?: AuthzRolePermissionMapWhereUniqueInput | AuthzRolePermissionMapWhereUniqueInput[]
   }
 
   export type MemberCreateNestedManyWithoutRoleInput = {
@@ -50258,6 +51715,13 @@ export namespace Prisma {
     connectOrCreate?: AuthzAssetsAccessGrantCreateOrConnectWithoutRoleInput | AuthzAssetsAccessGrantCreateOrConnectWithoutRoleInput[]
     createMany?: AuthzAssetsAccessGrantCreateManyRoleInputEnvelope
     connect?: AuthzAssetsAccessGrantWhereUniqueInput | AuthzAssetsAccessGrantWhereUniqueInput[]
+  }
+
+  export type AuthzRolePermissionMapUncheckedCreateNestedManyWithoutRoleInput = {
+    create?: XOR<AuthzRolePermissionMapCreateWithoutRoleInput, AuthzRolePermissionMapUncheckedCreateWithoutRoleInput> | AuthzRolePermissionMapCreateWithoutRoleInput[] | AuthzRolePermissionMapUncheckedCreateWithoutRoleInput[]
+    connectOrCreate?: AuthzRolePermissionMapCreateOrConnectWithoutRoleInput | AuthzRolePermissionMapCreateOrConnectWithoutRoleInput[]
+    createMany?: AuthzRolePermissionMapCreateManyRoleInputEnvelope
+    connect?: AuthzRolePermissionMapWhereUniqueInput | AuthzRolePermissionMapWhereUniqueInput[]
   }
 
   export type MemberUncheckedCreateNestedManyWithoutRoleInput = {
@@ -50303,6 +51767,20 @@ export namespace Prisma {
     update?: AuthzAssetsAccessGrantUpdateWithWhereUniqueWithoutRoleInput | AuthzAssetsAccessGrantUpdateWithWhereUniqueWithoutRoleInput[]
     updateMany?: AuthzAssetsAccessGrantUpdateManyWithWhereWithoutRoleInput | AuthzAssetsAccessGrantUpdateManyWithWhereWithoutRoleInput[]
     deleteMany?: AuthzAssetsAccessGrantScalarWhereInput | AuthzAssetsAccessGrantScalarWhereInput[]
+  }
+
+  export type AuthzRolePermissionMapUpdateManyWithoutRoleNestedInput = {
+    create?: XOR<AuthzRolePermissionMapCreateWithoutRoleInput, AuthzRolePermissionMapUncheckedCreateWithoutRoleInput> | AuthzRolePermissionMapCreateWithoutRoleInput[] | AuthzRolePermissionMapUncheckedCreateWithoutRoleInput[]
+    connectOrCreate?: AuthzRolePermissionMapCreateOrConnectWithoutRoleInput | AuthzRolePermissionMapCreateOrConnectWithoutRoleInput[]
+    upsert?: AuthzRolePermissionMapUpsertWithWhereUniqueWithoutRoleInput | AuthzRolePermissionMapUpsertWithWhereUniqueWithoutRoleInput[]
+    createMany?: AuthzRolePermissionMapCreateManyRoleInputEnvelope
+    set?: AuthzRolePermissionMapWhereUniqueInput | AuthzRolePermissionMapWhereUniqueInput[]
+    disconnect?: AuthzRolePermissionMapWhereUniqueInput | AuthzRolePermissionMapWhereUniqueInput[]
+    delete?: AuthzRolePermissionMapWhereUniqueInput | AuthzRolePermissionMapWhereUniqueInput[]
+    connect?: AuthzRolePermissionMapWhereUniqueInput | AuthzRolePermissionMapWhereUniqueInput[]
+    update?: AuthzRolePermissionMapUpdateWithWhereUniqueWithoutRoleInput | AuthzRolePermissionMapUpdateWithWhereUniqueWithoutRoleInput[]
+    updateMany?: AuthzRolePermissionMapUpdateManyWithWhereWithoutRoleInput | AuthzRolePermissionMapUpdateManyWithWhereWithoutRoleInput[]
+    deleteMany?: AuthzRolePermissionMapScalarWhereInput | AuthzRolePermissionMapScalarWhereInput[]
   }
 
   export type MemberUpdateManyWithoutRoleNestedInput = {
@@ -50361,6 +51839,20 @@ export namespace Prisma {
     deleteMany?: AuthzAssetsAccessGrantScalarWhereInput | AuthzAssetsAccessGrantScalarWhereInput[]
   }
 
+  export type AuthzRolePermissionMapUncheckedUpdateManyWithoutRoleNestedInput = {
+    create?: XOR<AuthzRolePermissionMapCreateWithoutRoleInput, AuthzRolePermissionMapUncheckedCreateWithoutRoleInput> | AuthzRolePermissionMapCreateWithoutRoleInput[] | AuthzRolePermissionMapUncheckedCreateWithoutRoleInput[]
+    connectOrCreate?: AuthzRolePermissionMapCreateOrConnectWithoutRoleInput | AuthzRolePermissionMapCreateOrConnectWithoutRoleInput[]
+    upsert?: AuthzRolePermissionMapUpsertWithWhereUniqueWithoutRoleInput | AuthzRolePermissionMapUpsertWithWhereUniqueWithoutRoleInput[]
+    createMany?: AuthzRolePermissionMapCreateManyRoleInputEnvelope
+    set?: AuthzRolePermissionMapWhereUniqueInput | AuthzRolePermissionMapWhereUniqueInput[]
+    disconnect?: AuthzRolePermissionMapWhereUniqueInput | AuthzRolePermissionMapWhereUniqueInput[]
+    delete?: AuthzRolePermissionMapWhereUniqueInput | AuthzRolePermissionMapWhereUniqueInput[]
+    connect?: AuthzRolePermissionMapWhereUniqueInput | AuthzRolePermissionMapWhereUniqueInput[]
+    update?: AuthzRolePermissionMapUpdateWithWhereUniqueWithoutRoleInput | AuthzRolePermissionMapUpdateWithWhereUniqueWithoutRoleInput[]
+    updateMany?: AuthzRolePermissionMapUpdateManyWithWhereWithoutRoleInput | AuthzRolePermissionMapUpdateManyWithWhereWithoutRoleInput[]
+    deleteMany?: AuthzRolePermissionMapScalarWhereInput | AuthzRolePermissionMapScalarWhereInput[]
+  }
+
   export type MemberUncheckedUpdateManyWithoutRoleNestedInput = {
     create?: XOR<MemberCreateWithoutRoleInput, MemberUncheckedCreateWithoutRoleInput> | MemberCreateWithoutRoleInput[] | MemberUncheckedCreateWithoutRoleInput[]
     connectOrCreate?: MemberCreateOrConnectWithoutRoleInput | MemberCreateOrConnectWithoutRoleInput[]
@@ -50401,6 +51893,34 @@ export namespace Prisma {
     update?: ApplicationUpdateWithWhereUniqueWithoutDefaultRoleInput | ApplicationUpdateWithWhereUniqueWithoutDefaultRoleInput[]
     updateMany?: ApplicationUpdateManyWithWhereWithoutDefaultRoleInput | ApplicationUpdateManyWithWhereWithoutDefaultRoleInput[]
     deleteMany?: ApplicationScalarWhereInput | ApplicationScalarWhereInput[]
+  }
+
+  export type AuthzRoleCreateNestedOneWithoutPermissionMappingsInput = {
+    create?: XOR<AuthzRoleCreateWithoutPermissionMappingsInput, AuthzRoleUncheckedCreateWithoutPermissionMappingsInput>
+    connectOrCreate?: AuthzRoleCreateOrConnectWithoutPermissionMappingsInput
+    connect?: AuthzRoleWhereUniqueInput
+  }
+
+  export type AuthzPermissionCreateNestedOneWithoutRoleMappingsInput = {
+    create?: XOR<AuthzPermissionCreateWithoutRoleMappingsInput, AuthzPermissionUncheckedCreateWithoutRoleMappingsInput>
+    connectOrCreate?: AuthzPermissionCreateOrConnectWithoutRoleMappingsInput
+    connect?: AuthzPermissionWhereUniqueInput
+  }
+
+  export type AuthzRoleUpdateOneRequiredWithoutPermissionMappingsNestedInput = {
+    create?: XOR<AuthzRoleCreateWithoutPermissionMappingsInput, AuthzRoleUncheckedCreateWithoutPermissionMappingsInput>
+    connectOrCreate?: AuthzRoleCreateOrConnectWithoutPermissionMappingsInput
+    upsert?: AuthzRoleUpsertWithoutPermissionMappingsInput
+    connect?: AuthzRoleWhereUniqueInput
+    update?: XOR<XOR<AuthzRoleUpdateToOneWithWhereWithoutPermissionMappingsInput, AuthzRoleUpdateWithoutPermissionMappingsInput>, AuthzRoleUncheckedUpdateWithoutPermissionMappingsInput>
+  }
+
+  export type AuthzPermissionUpdateOneRequiredWithoutRoleMappingsNestedInput = {
+    create?: XOR<AuthzPermissionCreateWithoutRoleMappingsInput, AuthzPermissionUncheckedCreateWithoutRoleMappingsInput>
+    connectOrCreate?: AuthzPermissionCreateOrConnectWithoutRoleMappingsInput
+    upsert?: AuthzPermissionUpsertWithoutRoleMappingsInput
+    connect?: AuthzPermissionWhereUniqueInput
+    update?: XOR<XOR<AuthzPermissionUpdateToOneWithWhereWithoutRoleMappingsInput, AuthzPermissionUpdateWithoutRoleMappingsInput>, AuthzPermissionUncheckedUpdateWithoutRoleMappingsInput>
   }
 
   export type AssetCreateNestedOneWithoutAuthzAssetsAccessGrantsInput = {
@@ -55234,6 +56754,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
     assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
+    permissionMappings?: AuthzRolePermissionMapCreateNestedManyWithoutRoleInput
     members?: MemberCreateNestedManyWithoutRoleInput
     connections?: ConnectionCreateNestedManyWithoutRoleInput
   }
@@ -55247,6 +56768,7 @@ export namespace Prisma {
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
+    permissionMappings?: AuthzRolePermissionMapUncheckedCreateNestedManyWithoutRoleInput
     members?: MemberUncheckedCreateNestedManyWithoutRoleInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutRoleInput
   }
@@ -55381,6 +56903,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     scope?: string | null
+    roleMappings?: AuthzRolePermissionMapCreateNestedManyWithoutPermissionInput
   }
 
   export type AuthzPermissionUncheckedCreateWithoutApplicationInput = {
@@ -55388,6 +56911,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     scope?: string | null
+    roleMappings?: AuthzRolePermissionMapUncheckedCreateNestedManyWithoutPermissionInput
   }
 
   export type AuthzPermissionCreateOrConnectWithoutApplicationInput = {
@@ -55408,6 +56932,7 @@ export namespace Prisma {
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
+    permissionMappings?: AuthzRolePermissionMapCreateNestedManyWithoutRoleInput
     members?: MemberCreateNestedManyWithoutRoleInput
     connections?: ConnectionCreateNestedManyWithoutRoleInput
     defaultForApplications?: ApplicationCreateNestedManyWithoutDefaultRoleInput
@@ -55421,6 +56946,7 @@ export namespace Prisma {
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
+    permissionMappings?: AuthzRolePermissionMapUncheckedCreateNestedManyWithoutRoleInput
     members?: MemberUncheckedCreateNestedManyWithoutRoleInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutRoleInput
     defaultForApplications?: ApplicationUncheckedCreateNestedManyWithoutDefaultRoleInput
@@ -55585,6 +57111,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
     assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
+    permissionMappings?: AuthzRolePermissionMapUpdateManyWithoutRoleNestedInput
     members?: MemberUpdateManyWithoutRoleNestedInput
     connections?: ConnectionUpdateManyWithoutRoleNestedInput
   }
@@ -55598,6 +57125,7 @@ export namespace Prisma {
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
+    permissionMappings?: AuthzRolePermissionMapUncheckedUpdateManyWithoutRoleNestedInput
     members?: MemberUncheckedUpdateManyWithoutRoleNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutRoleNestedInput
   }
@@ -57074,6 +58602,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
     assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
+    permissionMappings?: AuthzRolePermissionMapCreateNestedManyWithoutRoleInput
     connections?: ConnectionCreateNestedManyWithoutRoleInput
     defaultForApplications?: ApplicationCreateNestedManyWithoutDefaultRoleInput
   }
@@ -57087,6 +58616,7 @@ export namespace Prisma {
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
+    permissionMappings?: AuthzRolePermissionMapUncheckedCreateNestedManyWithoutRoleInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutRoleInput
     defaultForApplications?: ApplicationUncheckedCreateNestedManyWithoutDefaultRoleInput
   }
@@ -57504,6 +59034,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
     assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
+    permissionMappings?: AuthzRolePermissionMapUpdateManyWithoutRoleNestedInput
     connections?: ConnectionUpdateManyWithoutRoleNestedInput
     defaultForApplications?: ApplicationUpdateManyWithoutDefaultRoleNestedInput
   }
@@ -57517,6 +59048,7 @@ export namespace Prisma {
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
+    permissionMappings?: AuthzRolePermissionMapUncheckedUpdateManyWithoutRoleNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutRoleNestedInput
     defaultForApplications?: ApplicationUncheckedUpdateManyWithoutDefaultRoleNestedInput
   }
@@ -58006,6 +59538,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
     assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
+    permissionMappings?: AuthzRolePermissionMapCreateNestedManyWithoutRoleInput
     members?: MemberCreateNestedManyWithoutRoleInput
     defaultForApplications?: ApplicationCreateNestedManyWithoutDefaultRoleInput
   }
@@ -58019,6 +59552,7 @@ export namespace Prisma {
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
+    permissionMappings?: AuthzRolePermissionMapUncheckedCreateNestedManyWithoutRoleInput
     members?: MemberUncheckedCreateNestedManyWithoutRoleInput
     defaultForApplications?: ApplicationUncheckedCreateNestedManyWithoutDefaultRoleInput
   }
@@ -58270,6 +59804,7 @@ export namespace Prisma {
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
     assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
+    permissionMappings?: AuthzRolePermissionMapUpdateManyWithoutRoleNestedInput
     members?: MemberUpdateManyWithoutRoleNestedInput
     defaultForApplications?: ApplicationUpdateManyWithoutDefaultRoleNestedInput
   }
@@ -58283,6 +59818,7 @@ export namespace Prisma {
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
+    permissionMappings?: AuthzRolePermissionMapUncheckedUpdateManyWithoutRoleNestedInput
     members?: MemberUncheckedUpdateManyWithoutRoleNestedInput
     defaultForApplications?: ApplicationUncheckedUpdateManyWithoutDefaultRoleNestedInput
   }
@@ -58626,6 +60162,28 @@ export namespace Prisma {
     create: XOR<ApplicationCreateWithoutAuthzPermissionsInput, ApplicationUncheckedCreateWithoutAuthzPermissionsInput>
   }
 
+  export type AuthzRolePermissionMapCreateWithoutPermissionInput = {
+    id?: string
+    createdAt?: Date | string
+    role: AuthzRoleCreateNestedOneWithoutPermissionMappingsInput
+  }
+
+  export type AuthzRolePermissionMapUncheckedCreateWithoutPermissionInput = {
+    id?: string
+    roleId: string
+    createdAt?: Date | string
+  }
+
+  export type AuthzRolePermissionMapCreateOrConnectWithoutPermissionInput = {
+    where: AuthzRolePermissionMapWhereUniqueInput
+    create: XOR<AuthzRolePermissionMapCreateWithoutPermissionInput, AuthzRolePermissionMapUncheckedCreateWithoutPermissionInput>
+  }
+
+  export type AuthzRolePermissionMapCreateManyPermissionInputEnvelope = {
+    data: AuthzRolePermissionMapCreateManyPermissionInput | AuthzRolePermissionMapCreateManyPermissionInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ApplicationUpsertWithoutAuthzPermissionsInput = {
     update: XOR<ApplicationUpdateWithoutAuthzPermissionsInput, ApplicationUncheckedUpdateWithoutAuthzPermissionsInput>
     create: XOR<ApplicationCreateWithoutAuthzPermissionsInput, ApplicationUncheckedCreateWithoutAuthzPermissionsInput>
@@ -58689,6 +60247,32 @@ export namespace Prisma {
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
     devLogs?: ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput
+  }
+
+  export type AuthzRolePermissionMapUpsertWithWhereUniqueWithoutPermissionInput = {
+    where: AuthzRolePermissionMapWhereUniqueInput
+    update: XOR<AuthzRolePermissionMapUpdateWithoutPermissionInput, AuthzRolePermissionMapUncheckedUpdateWithoutPermissionInput>
+    create: XOR<AuthzRolePermissionMapCreateWithoutPermissionInput, AuthzRolePermissionMapUncheckedCreateWithoutPermissionInput>
+  }
+
+  export type AuthzRolePermissionMapUpdateWithWhereUniqueWithoutPermissionInput = {
+    where: AuthzRolePermissionMapWhereUniqueInput
+    data: XOR<AuthzRolePermissionMapUpdateWithoutPermissionInput, AuthzRolePermissionMapUncheckedUpdateWithoutPermissionInput>
+  }
+
+  export type AuthzRolePermissionMapUpdateManyWithWhereWithoutPermissionInput = {
+    where: AuthzRolePermissionMapScalarWhereInput
+    data: XOR<AuthzRolePermissionMapUpdateManyMutationInput, AuthzRolePermissionMapUncheckedUpdateManyWithoutPermissionInput>
+  }
+
+  export type AuthzRolePermissionMapScalarWhereInput = {
+    AND?: AuthzRolePermissionMapScalarWhereInput | AuthzRolePermissionMapScalarWhereInput[]
+    OR?: AuthzRolePermissionMapScalarWhereInput[]
+    NOT?: AuthzRolePermissionMapScalarWhereInput | AuthzRolePermissionMapScalarWhereInput[]
+    id?: StringFilter<"AuthzRolePermissionMap"> | string
+    roleId?: StringFilter<"AuthzRolePermissionMap"> | string
+    permissionId?: StringFilter<"AuthzRolePermissionMap"> | string
+    createdAt?: DateTimeFilter<"AuthzRolePermissionMap"> | Date | string
   }
 
   export type ApplicationCreateWithoutAuthzRolesInput = {
@@ -58775,6 +60359,28 @@ export namespace Prisma {
 
   export type AuthzAssetsAccessGrantCreateManyRoleInputEnvelope = {
     data: AuthzAssetsAccessGrantCreateManyRoleInput | AuthzAssetsAccessGrantCreateManyRoleInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AuthzRolePermissionMapCreateWithoutRoleInput = {
+    id?: string
+    createdAt?: Date | string
+    permission: AuthzPermissionCreateNestedOneWithoutRoleMappingsInput
+  }
+
+  export type AuthzRolePermissionMapUncheckedCreateWithoutRoleInput = {
+    id?: string
+    permissionId: string
+    createdAt?: Date | string
+  }
+
+  export type AuthzRolePermissionMapCreateOrConnectWithoutRoleInput = {
+    where: AuthzRolePermissionMapWhereUniqueInput
+    create: XOR<AuthzRolePermissionMapCreateWithoutRoleInput, AuthzRolePermissionMapUncheckedCreateWithoutRoleInput>
+  }
+
+  export type AuthzRolePermissionMapCreateManyRoleInputEnvelope = {
+    data: AuthzRolePermissionMapCreateManyRoleInput | AuthzRolePermissionMapCreateManyRoleInput[]
     skipDuplicates?: boolean
   }
 
@@ -58993,6 +60599,22 @@ export namespace Prisma {
     data: XOR<AuthzAssetsAccessGrantUpdateManyMutationInput, AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleInput>
   }
 
+  export type AuthzRolePermissionMapUpsertWithWhereUniqueWithoutRoleInput = {
+    where: AuthzRolePermissionMapWhereUniqueInput
+    update: XOR<AuthzRolePermissionMapUpdateWithoutRoleInput, AuthzRolePermissionMapUncheckedUpdateWithoutRoleInput>
+    create: XOR<AuthzRolePermissionMapCreateWithoutRoleInput, AuthzRolePermissionMapUncheckedCreateWithoutRoleInput>
+  }
+
+  export type AuthzRolePermissionMapUpdateWithWhereUniqueWithoutRoleInput = {
+    where: AuthzRolePermissionMapWhereUniqueInput
+    data: XOR<AuthzRolePermissionMapUpdateWithoutRoleInput, AuthzRolePermissionMapUncheckedUpdateWithoutRoleInput>
+  }
+
+  export type AuthzRolePermissionMapUpdateManyWithWhereWithoutRoleInput = {
+    where: AuthzRolePermissionMapScalarWhereInput
+    data: XOR<AuthzRolePermissionMapUpdateManyMutationInput, AuthzRolePermissionMapUncheckedUpdateManyWithoutRoleInput>
+  }
+
   export type MemberUpsertWithWhereUniqueWithoutRoleInput = {
     where: MemberWhereUniqueInput
     update: XOR<MemberUpdateWithoutRoleInput, MemberUncheckedUpdateWithoutRoleInput>
@@ -59039,6 +60661,126 @@ export namespace Prisma {
   export type ApplicationUpdateManyWithWhereWithoutDefaultRoleInput = {
     where: ApplicationScalarWhereInput
     data: XOR<ApplicationUpdateManyMutationInput, ApplicationUncheckedUpdateManyWithoutDefaultRoleInput>
+  }
+
+  export type AuthzRoleCreateWithoutPermissionMappingsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    scope?: string | null
+    pushed?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
+    assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
+    members?: MemberCreateNestedManyWithoutRoleInput
+    connections?: ConnectionCreateNestedManyWithoutRoleInput
+    defaultForApplications?: ApplicationCreateNestedManyWithoutDefaultRoleInput
+  }
+
+  export type AuthzRoleUncheckedCreateWithoutPermissionMappingsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    appId?: string | null
+    scope?: string | null
+    pushed?: boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
+    members?: MemberUncheckedCreateNestedManyWithoutRoleInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutRoleInput
+    defaultForApplications?: ApplicationUncheckedCreateNestedManyWithoutDefaultRoleInput
+  }
+
+  export type AuthzRoleCreateOrConnectWithoutPermissionMappingsInput = {
+    where: AuthzRoleWhereUniqueInput
+    create: XOR<AuthzRoleCreateWithoutPermissionMappingsInput, AuthzRoleUncheckedCreateWithoutPermissionMappingsInput>
+  }
+
+  export type AuthzPermissionCreateWithoutRoleMappingsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    scope?: string | null
+    application?: ApplicationCreateNestedOneWithoutAuthzPermissionsInput
+  }
+
+  export type AuthzPermissionUncheckedCreateWithoutRoleMappingsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    appId?: string | null
+    scope?: string | null
+  }
+
+  export type AuthzPermissionCreateOrConnectWithoutRoleMappingsInput = {
+    where: AuthzPermissionWhereUniqueInput
+    create: XOR<AuthzPermissionCreateWithoutRoleMappingsInput, AuthzPermissionUncheckedCreateWithoutRoleMappingsInput>
+  }
+
+  export type AuthzRoleUpsertWithoutPermissionMappingsInput = {
+    update: XOR<AuthzRoleUpdateWithoutPermissionMappingsInput, AuthzRoleUncheckedUpdateWithoutPermissionMappingsInput>
+    create: XOR<AuthzRoleCreateWithoutPermissionMappingsInput, AuthzRoleUncheckedCreateWithoutPermissionMappingsInput>
+    where?: AuthzRoleWhereInput
+  }
+
+  export type AuthzRoleUpdateToOneWithWhereWithoutPermissionMappingsInput = {
+    where?: AuthzRoleWhereInput
+    data: XOR<AuthzRoleUpdateWithoutPermissionMappingsInput, AuthzRoleUncheckedUpdateWithoutPermissionMappingsInput>
+  }
+
+  export type AuthzRoleUpdateWithoutPermissionMappingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    pushed?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
+    assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
+    members?: MemberUpdateManyWithoutRoleNestedInput
+    connections?: ConnectionUpdateManyWithoutRoleNestedInput
+    defaultForApplications?: ApplicationUpdateManyWithoutDefaultRoleNestedInput
+  }
+
+  export type AuthzRoleUncheckedUpdateWithoutPermissionMappingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    appId?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    pushed?: BoolFieldUpdateOperationsInput | boolean
+    permissions?: NullableJsonNullValueInput | InputJsonValue
+    assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
+    members?: MemberUncheckedUpdateManyWithoutRoleNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutRoleNestedInput
+    defaultForApplications?: ApplicationUncheckedUpdateManyWithoutDefaultRoleNestedInput
+  }
+
+  export type AuthzPermissionUpsertWithoutRoleMappingsInput = {
+    update: XOR<AuthzPermissionUpdateWithoutRoleMappingsInput, AuthzPermissionUncheckedUpdateWithoutRoleMappingsInput>
+    create: XOR<AuthzPermissionCreateWithoutRoleMappingsInput, AuthzPermissionUncheckedCreateWithoutRoleMappingsInput>
+    where?: AuthzPermissionWhereInput
+  }
+
+  export type AuthzPermissionUpdateToOneWithWhereWithoutRoleMappingsInput = {
+    where?: AuthzPermissionWhereInput
+    data: XOR<AuthzPermissionUpdateWithoutRoleMappingsInput, AuthzPermissionUncheckedUpdateWithoutRoleMappingsInput>
+  }
+
+  export type AuthzPermissionUpdateWithoutRoleMappingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    application?: ApplicationUpdateOneWithoutAuthzPermissionsNestedInput
+  }
+
+  export type AuthzPermissionUncheckedUpdateWithoutRoleMappingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    appId?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AssetCreateWithoutAuthzAssetsAccessGrantsInput = {
@@ -59157,6 +60899,7 @@ export namespace Prisma {
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
+    permissionMappings?: AuthzRolePermissionMapCreateNestedManyWithoutRoleInput
     members?: MemberCreateNestedManyWithoutRoleInput
     connections?: ConnectionCreateNestedManyWithoutRoleInput
     defaultForApplications?: ApplicationCreateNestedManyWithoutDefaultRoleInput
@@ -59170,6 +60913,7 @@ export namespace Prisma {
     scope?: string | null
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    permissionMappings?: AuthzRolePermissionMapUncheckedCreateNestedManyWithoutRoleInput
     members?: MemberUncheckedCreateNestedManyWithoutRoleInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutRoleInput
     defaultForApplications?: ApplicationUncheckedCreateNestedManyWithoutDefaultRoleInput
@@ -59342,6 +61086,7 @@ export namespace Prisma {
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
+    permissionMappings?: AuthzRolePermissionMapUpdateManyWithoutRoleNestedInput
     members?: MemberUpdateManyWithoutRoleNestedInput
     connections?: ConnectionUpdateManyWithoutRoleNestedInput
     defaultForApplications?: ApplicationUpdateManyWithoutDefaultRoleNestedInput
@@ -59355,6 +61100,7 @@ export namespace Prisma {
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
+    permissionMappings?: AuthzRolePermissionMapUncheckedUpdateManyWithoutRoleNestedInput
     members?: MemberUncheckedUpdateManyWithoutRoleNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutRoleNestedInput
     defaultForApplications?: ApplicationUncheckedUpdateManyWithoutDefaultRoleNestedInput
@@ -61242,6 +62988,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
+    roleMappings?: AuthzRolePermissionMapUpdateManyWithoutPermissionNestedInput
   }
 
   export type AuthzPermissionUncheckedUpdateWithoutApplicationInput = {
@@ -61249,6 +62996,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
+    roleMappings?: AuthzRolePermissionMapUncheckedUpdateManyWithoutPermissionNestedInput
   }
 
   export type AuthzPermissionUncheckedUpdateManyWithoutApplicationInput = {
@@ -61266,6 +63014,7 @@ export namespace Prisma {
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
+    permissionMappings?: AuthzRolePermissionMapUpdateManyWithoutRoleNestedInput
     members?: MemberUpdateManyWithoutRoleNestedInput
     connections?: ConnectionUpdateManyWithoutRoleNestedInput
     defaultForApplications?: ApplicationUpdateManyWithoutDefaultRoleNestedInput
@@ -61279,6 +63028,7 @@ export namespace Prisma {
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
+    permissionMappings?: AuthzRolePermissionMapUncheckedUpdateManyWithoutRoleNestedInput
     members?: MemberUncheckedUpdateManyWithoutRoleNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutRoleNestedInput
     defaultForApplications?: ApplicationUncheckedUpdateManyWithoutDefaultRoleNestedInput
@@ -61671,6 +63421,30 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
   }
 
+  export type AuthzRolePermissionMapCreateManyPermissionInput = {
+    id?: string
+    roleId: string
+    createdAt?: Date | string
+  }
+
+  export type AuthzRolePermissionMapUpdateWithoutPermissionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: AuthzRoleUpdateOneRequiredWithoutPermissionMappingsNestedInput
+  }
+
+  export type AuthzRolePermissionMapUncheckedUpdateWithoutPermissionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    roleId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthzRolePermissionMapUncheckedUpdateManyWithoutPermissionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    roleId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type AuthzAssetsAccessGrantCreateManyRoleInput = {
     id?: string
     asset_id: string
@@ -61678,6 +63452,12 @@ export namespace Prisma {
     portfolio_id?: string | null
     app_id: string
     asset_type?: string | null
+  }
+
+  export type AuthzRolePermissionMapCreateManyRoleInput = {
+    id?: string
+    permissionId: string
+    createdAt?: Date | string
   }
 
   export type MemberCreateManyRoleInput = {
@@ -61746,6 +63526,24 @@ export namespace Prisma {
     portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     app_id?: StringFieldUpdateOperationsInput | string
     asset_type?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type AuthzRolePermissionMapUpdateWithoutRoleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    permission?: AuthzPermissionUpdateOneRequiredWithoutRoleMappingsNestedInput
+  }
+
+  export type AuthzRolePermissionMapUncheckedUpdateWithoutRoleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    permissionId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthzRolePermissionMapUncheckedUpdateManyWithoutRoleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    permissionId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type MemberUpdateWithoutRoleInput = {

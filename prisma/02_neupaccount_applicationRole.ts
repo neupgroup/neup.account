@@ -6,7 +6,7 @@
  * Order of operations (must be followed to satisfy FK constraints):
  *   1. Upsert permissions  (application.view, application.edit, application.delete, application.logs.view, application.devlogs.view)
  *   2. Upsert role          (application.owner)
- *   3. Upsert permission-to-role maps (AuthzRolePermission)
+ *   3. Upsert permission-to-role maps (AuthzRolePermissionMap)
  *
  * Safe to re-run — all operations are idempotent upserts.
  *
@@ -117,25 +117,17 @@ async function main() {
 
   // 3. Upsert permission-to-role maps
   for (const cap of CAPABILITIES) {
-    // Stable composite ID so re-runs don't create duplicates.
-    const mapId = `${ROLE.id}::${cap.id}`;
-
-    await prisma.authzRolePermission.upsert({
-      where: { id: mapId },
-      update: {
-        roleId: ROLE.id,
-        permissionId: cap.id,
-        appId: APP_ID,
-        roleName: ROLE.name,
-        denormalizedPermission: [cap.name],
+    await prisma.authzRolePermissionMap.upsert({
+      where: {
+        roleId_permissionId: {
+          roleId: ROLE.id,
+          permissionId: cap.id,
+        },
       },
+      update: {},
       create: {
-        id: mapId,
         roleId: ROLE.id,
         permissionId: cap.id,
-        appId: APP_ID,
-        roleName: ROLE.name,
-        denormalizedPermission: [cap.name],
       },
     });
     console.log(`  ✓ Role-permission map upserted: ${ROLE.id} → ${cap.id}`);

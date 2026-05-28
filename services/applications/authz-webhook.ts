@@ -93,7 +93,7 @@ export async function saveAuthzWebhookUrl(input: {
 // ---------------------------------------------------------------------------
 
 type WebhookTable =
-  | 'authz_role_capability'
+  | 'authz_role_permission_map'
   | 'authz_account_access_grant'
   | 'authz_assets_access_grant';
 

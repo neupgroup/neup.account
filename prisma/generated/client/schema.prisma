@@ -485,12 +485,13 @@ enum MemberStatus {
 }
 
 model AuthzPermission {
-  id          String       @id @default(uuid())
-  name        String
-  description String?
-  appId       String?      @map("app_id")
-  scope       String?
-  application Application? @relation(fields: [appId], references: [id])
+  id           String                   @id @default(uuid())
+  name         String
+  description  String?
+  appId        String?                  @map("app_id")
+  scope        String?
+  application  Application?             @relation(fields: [appId], references: [id])
+  roleMappings AuthzRolePermissionMap[]
 
   @@map("authz_permission")
 }
@@ -505,12 +506,27 @@ model AuthzRole {
   permissions            Json?
   application            Application?             @relation(fields: [appId], references: [id])
   assetsGrants           AuthzAssetsAccessGrant[]
+  permissionMappings     AuthzRolePermissionMap[]
   members                Member[]                 @relation("MemberRole")
   connections            Connection[]             @relation("ConnectionRole")
   defaultForApplications Application[]            @relation("ApplicationDefaultRole")
 
   @@unique([name, appId], map: "authz_role_name_app_id_key")
   @@map("authz_role")
+}
+
+model AuthzRolePermissionMap {
+  id           String          @id @default(uuid())
+  roleId       String          @map("role_id")
+  permissionId String          @map("permission_id")
+  createdAt    DateTime        @default(now()) @map("created_at")
+  role         AuthzRole       @relation(fields: [roleId], references: [id], onDelete: Cascade, map: "authz_role_permission_map_role_id_fkey")
+  permission   AuthzPermission @relation(fields: [permissionId], references: [id], onDelete: Cascade, map: "authz_role_permission_map_permission_id_fkey")
+
+  @@unique([roleId, permissionId], map: "authz_role_permission_map_role_permission_key")
+  @@index([roleId], map: "authz_role_permission_map_role_id_idx")
+  @@index([permissionId], map: "authz_role_permission_map_permission_id_idx")
+  @@map("authz_role_permission_map")
 }
 
 model AuthzAssetsAccessGrant {

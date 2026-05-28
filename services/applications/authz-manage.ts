@@ -47,6 +47,47 @@ export async function getAppDefaultRoleId(appId: string): Promise<string | null>
 const ROOT_ROLE_MANAGE_PERMISSIONS = ['root.application.edit'];
 const GLOBAL_AUTHZ_APP_ID = 'neup.account';
 
+async function syncRolePermissionMappings(tx: any, roleId: string, permissionIds: string[]): Promise<void> {
+  await tx.authzRolePermissionMap.deleteMany({ where: { roleId } });
+  if (permissionIds.length === 0) return;
+
+  await tx.authzRolePermissionMap.createMany({
+    data: permissionIds.map((permissionId) => ({ roleId, permissionId })),
+    skipDuplicates: true,
+  });
+}
+
+async function syncRolePermissionsDenormalized(tx: any, roleId: string): Promise<void> {
+  const mappedPermissions = await tx.authzRolePermissionMap.findMany({
+    where: { roleId },
+    select: {
+      permission: {
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          scope: true,
+        },
+      },
+    },
+    orderBy: { createdAt: 'asc' },
+  });
+
+  const permissions = mappedPermissions
+    .map((row: { permission: { id: string; name: string; description: string | null; scope: string | null } }) => row.permission)
+    .map((permission: { id: string; name: string; description: string | null; scope: string | null }) => ({
+    id: permission.id,
+    name: permission.name,
+    description: permission.description ?? null,
+    scope: permission.scope ?? null,
+  }));
+
+  await tx.authzRole.update({
+    where: { id: roleId },
+    data: { permissions },
+  });
+}
+
 async function ensureApplicationManagementRoles(): Promise<void> {
   const permissions = [
     { id: 'cap-appmanage-application-view', name: 'application.view', description: 'View application details and settings.' },
@@ -103,12 +144,10 @@ async function ensureApplicationManagementRoles(): Promise<void> {
       });
     }
 
-    const basePermissions = permissions.map((cap) => ({ id: cap.id, name: cap.name }));
     for (const roleId of ['application.owner', 'application.manage']) {
-      await tx.authzRole.update({
-        where: { id: roleId },
-        data: { permissions: basePermissions },
-      });
+      const permissionIds = permissions.map((cap) => cap.id);
+      await syncRolePermissionMappings(tx, roleId, permissionIds);
+      await syncRolePermissionsDenormalized(tx, roleId);
     }
   });
 }
@@ -347,12 +386,11 @@ export async function createAppRole(input: {
           select: { id: true, name: true },
         });
 
-        await tx.authzRole.update({
-          where: { id: created.id },
-          data: {
-            permissions: caps.map((cap) => ({ id: cap.id, name: cap.name })),
-          },
-        });
+        await syncRolePermissionMappings(tx, created.id, caps.map((cap) => cap.id));
+        await syncRolePermissionsDenormalized(tx, created.id);
+      } else {
+        await syncRolePermissionMappings(tx, created.id, []);
+        await syncRolePermissionsDenormalized(tx, created.id);
       }
 
       return created;
@@ -405,17 +443,11 @@ export async function updateAppRolePermissions(input: {
           select: { id: true, name: true },
         });
 
-        await tx.authzRole.update({
-          where: { id: input.roleId },
-          data: {
-            permissions: caps.map((cap) => ({ id: cap.id, name: cap.name })),
-          },
-        });
+        await syncRolePermissionMappings(tx, input.roleId, caps.map((cap) => cap.id));
+        await syncRolePermissionsDenormalized(tx, input.roleId);
       } else {
-        await tx.authzRole.update({
-          where: { id: input.roleId },
-          data: { permissions: [] },
-        });
+        await syncRolePermissionMappings(tx, input.roleId, []);
+        await syncRolePermissionsDenormalized(tx, input.roleId);
       }
     });
 
@@ -537,7 +569,7 @@ export async function pushAuthzToWebhook(appId: string): Promise<{
     // Push each role-permission mapping as an insert
     for (const map of roleMaps) {
       await dispatchAuthzWebhook(appId, {
-        table: 'authz_role_capability',
+        table: 'authz_role_permission_map',
         operation: 'insert',
         data: {
           roleId: map.roleId,

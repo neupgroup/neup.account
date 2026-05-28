@@ -417,6 +417,13 @@ exports.Prisma.AuthzRoleScalarFieldEnum = {
   permissions: 'permissions'
 };
 
+exports.Prisma.AuthzRolePermissionMapScalarFieldEnum = {
+  id: 'id',
+  roleId: 'roleId',
+  permissionId: 'permissionId',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.AuthzAssetsAccessGrantScalarFieldEnum = {
   id: 'id',
   asset_id: 'asset_id',
@@ -527,6 +534,7 @@ exports.Prisma.ModelName = {
   ApplicationPolicy: 'ApplicationPolicy',
   AuthzPermission: 'AuthzPermission',
   AuthzRole: 'AuthzRole',
+  AuthzRolePermissionMap: 'AuthzRolePermissionMap',
   AuthzAssetsAccessGrant: 'AuthzAssetsAccessGrant',
   Permit: 'Permit',
   Identity: 'Identity'

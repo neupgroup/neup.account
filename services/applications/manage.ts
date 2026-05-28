@@ -417,10 +417,17 @@ export async function createManagedApplication(input: { name: string }) {
         update: { name: 'application.owner', description: 'Full ownership of an application.', appId: 'neup.account', scope: 'application' },
         create: { id: 'application.owner', name: 'application.owner', description: 'Full ownership of an application.', appId: 'neup.account', scope: 'application' },
       });
+      await tx.authzRolePermissionMap.deleteMany({
+        where: { roleId: 'application.owner' },
+      });
+      await tx.authzRolePermissionMap.createMany({
+        data: permissions.map((cap) => ({ roleId: 'application.owner', permissionId: cap.id })),
+        skipDuplicates: true,
+      });
       await tx.authzRole.update({
         where: { id: 'application.owner' },
         data: {
-          permissions: permissions.map((cap) => ({ id: cap.id, name: cap.name })),
+          permissions: permissions.map((cap) => ({ id: cap.id, name: cap.name, description: cap.description ?? null, scope: 'application' })),
         },
       });
       const createdApp = await tx.application.create({

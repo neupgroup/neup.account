@@ -365,10 +365,12 @@ export async function createAppRole(input: {
 
     await dispatchRoleUpdateWebhook({
       appId: input.appId,
-      eventType: 'role.created',
+      eventType: 'role.updated',
       role: {
         id: fullRole.id,
         name: fullRole.name,
+        description: fullRole.description,
+        scope: fullRole.scope,
         permissions: fullRole.permissions.map((p) => p.name),
       },
     });

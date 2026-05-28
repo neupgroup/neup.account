@@ -7,11 +7,13 @@ import { logError } from '@/core/helpers/logger';
 const BRIDGE_TYPE = 'roleUpdateWebhook';
 const SOURCE_APP_ID = 'neup.account';
 
-type RoleEventType = 'role.created' | 'role.updated' | 'role.removed';
+type RoleEventType = 'role.updated' | 'role.removed';
 
 type RolePayload = {
   id: string;
   name: string;
+  description: string | null;
+  scope: string | null;
   permissions: string[];
 };
 
@@ -80,11 +82,14 @@ export async function dispatchRoleUpdateWebhook(input: {
     const payload = {
       eventId: randomUUID(),
       eventType: input.eventType,
+      appId: input.appId,
       sourceAppId: SOURCE_APP_ID,
       occurredAt: new Date().toISOString(),
-      data: {
+      role: {
         id: input.role.id,
         name: input.role.name,
+        description: input.role.description,
+        scope: input.role.scope,
         permissions: input.role.permissions,
       },
     };
@@ -156,12 +161,14 @@ export async function getRolePayload(appId: string, roleId: string): Promise<Rol
   try {
     const role = await prisma.authzRole.findFirst({
       where: { id: roleId, appId },
-      select: { id: true, name: true, permissions: true },
+      select: { id: true, name: true, description: true, scope: true, permissions: true },
     });
     if (!role) return null;
     return {
       id: role.id,
       name: role.name,
+      description: role.description ?? null,
+      scope: role.scope ?? null,
       permissions: extractPermissionNames(role.permissions),
     };
   } catch (error) {
@@ -169,4 +176,3 @@ export async function getRolePayload(appId: string, roleId: string): Promise<Rol
     return null;
   }
 }
-

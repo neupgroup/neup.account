@@ -26,6 +26,7 @@ export type ApplicationAccessField = (typeof applicationAccessFields)[number];
 // Fields the application owner can toggle for API "response" payloads.
 export const applicationResponseFields = [
   'displayName',
+  'displayImage',
   'lastActive',
   'dateBirth',
   'age',

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { getApplicationUsers } from '@/services/bridge/application-users';
 import { validateSilentSsoOrigin } from '@/services/auth/silent-sso';
 import prisma from '@/core/helpers/prisma';
+import { writeApplicationDevLog } from '@/services/bridge/dev-logs';
 
 export const dynamic = 'force-dynamic';
 
@@ -102,21 +103,39 @@ export async function POST(request: NextRequest) {
   const sp = request.nextUrl.searchParams;
   const origin = await resolveRequestOrigin(request);
   const headers = origin ? corsHeaders(new URL(origin).origin) : undefined;
+  let appIdForLog: string | null = null;
+  let requestBodyForLog: Record<string, unknown> | null = null;
+
+  const respond = async (payload: Record<string, unknown>, status: number) => {
+    await writeApplicationDevLog({
+      appId: appIdForLog,
+      endpoint: '/bridge/api.v1/application/users',
+      method: 'POST',
+      request,
+      statusCode: status,
+      requestBody: requestBodyForLog ?? undefined,
+      responseBody: payload,
+      error: typeof payload.error === 'string' ? payload.error : undefined,
+    });
+    return NextResponse.json(payload, { status, headers });
+  };
 
   const body = await request.json().catch(() => null);
   if (!body || typeof body !== 'object' || Array.isArray(body)) {
-    return NextResponse.json(
+    return respond(
       { success: false, error: 'invalid_request' },
-      { status: 400, headers }
+      400
     );
   }
+  requestBodyForLog = body as Record<string, unknown>;
 
   const appId = readNormalizedBodyValue(body as Record<string, unknown>, 'appid');
+  appIdForLog = appId;
   const appSecret = readNormalizedBodyValue(body as Record<string, unknown>, 'appsecret');
   if (!appId || !appSecret) {
-    return NextResponse.json(
+    return respond(
       { success: false, error: 'forbidden_missingAppCredentails' },
-      { status: 400, headers }
+      400
     );
   }
 
@@ -135,12 +154,12 @@ export async function POST(request: NextRequest) {
     if (origin) {
       const { valid, appId: originAppId } = await validateSilentSsoOrigin(origin);
       if (!valid || originAppId !== appId) {
-        return NextResponse.json({ success: false, error: 'forbidden_invalidOrigin' }, { status: 403, headers });
+        return respond({ success: false, error: 'forbidden_invalidOrigin' }, 403);
       }
     } else if (!allowDevIpModeForApp) {
       const clientIp = getClientIp(request);
       if (!clientIp) {
-        return NextResponse.json({ success: false, error: 'forbidden_invalidServerIp' }, { status: 403, headers });
+        return respond({ success: false, error: 'forbidden_invalidServerIp' }, 403);
       }
 
       const serverIp = await prisma.applicationBridge.findFirst({
@@ -148,7 +167,7 @@ export async function POST(request: NextRequest) {
         select: { id: true },
       });
       if (!serverIp) {
-        return NextResponse.json({ success: false, error: 'forbidden_invalidServerIp' }, { status: 403, headers });
+        return respond({ success: false, error: 'forbidden_invalidServerIp' }, 403);
       }
     }
   }
@@ -165,7 +184,7 @@ export async function POST(request: NextRequest) {
     toDate:    sp.get('toDate'),
   });
 
-  return NextResponse.json(result.body, { status: result.status, headers });
+  return respond(result.body as Record<string, unknown>, result.status);
 }
 
 export async function GET() {

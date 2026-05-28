@@ -1906,3 +1906,63 @@ export async function getAppConfigData(appId: string): Promise<{
     return null;
   }
 }
+
+export type ApplicationDevLogEntry = {
+  id: string;
+  createdAt: string;
+  endpoint: string;
+  method: string;
+  statusCode: number;
+  requesterIp: string | null;
+  origin: string | null;
+  referer: string | null;
+  userAgent: string | null;
+  requestBody: unknown;
+  query: unknown;
+  requestMeta: unknown;
+  responseBody: unknown;
+  error: string | null;
+};
+
+export async function getApplicationDevLogs(
+  appId: string,
+  limit = 200,
+): Promise<ApplicationDevLogEntry[] | null> {
+  const accountId = await getActiveAccountId();
+  if (!accountId) return null;
+
+  const [isRootViewer, access] = await Promise.all([
+    checkPermissions(['root.application.view']),
+    resolveApplicationAccessForAccount(accountId, appId),
+  ]);
+
+  if (!isRootViewer && !access.canEdit) return null;
+
+  try {
+    const rows = await prisma.applicationDevLog.findMany({
+      where: { appId },
+      orderBy: { createdAt: 'desc' },
+      take: Math.min(Math.max(limit, 1), 500),
+    });
+
+    return rows.map((row) => ({
+      id: row.id,
+      createdAt: row.createdAt.toISOString(),
+      endpoint: row.endpoint,
+      method: row.method,
+      statusCode: row.statusCode,
+      requesterIp: row.requesterIp ?? null,
+      origin: row.origin ?? null,
+      referer: row.referer ?? null,
+      userAgent: row.userAgent ?? null,
+      requestBody: row.requestBody ?? null,
+      query: row.query ?? null,
+      requestMeta: row.requestMeta ?? null,
+      responseBody: row.responseBody ?? null,
+      error: row.error ?? null,
+    }));
+  } catch (error) {
+    await logError('database', error, `getApplicationDevLogs:${appId}`);
+    return [];
+  }
+}

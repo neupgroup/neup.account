@@ -109,6 +109,11 @@ export type ApplicationProvider = $Result.DefaultSelection<Prisma.$ApplicationPr
  */
 export type Application = $Result.DefaultSelection<Prisma.$ApplicationPayload>
 /**
+ * Model ApplicationDevLog
+ * 
+ */
+export type ApplicationDevLog = $Result.DefaultSelection<Prisma.$ApplicationDevLogPayload>
+/**
  * Model Portfolio
  * 
  */
@@ -536,6 +541,16 @@ export class PrismaClient<
     * ```
     */
   get application(): Prisma.ApplicationDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.applicationDevLog`: Exposes CRUD operations for the **ApplicationDevLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ApplicationDevLogs
+    * const applicationDevLogs = await prisma.applicationDevLog.findMany()
+    * ```
+    */
+  get applicationDevLog(): Prisma.ApplicationDevLogDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.portfolio`: Exposes CRUD operations for the **Portfolio** model.
@@ -1109,6 +1124,7 @@ export namespace Prisma {
     SystemError: 'SystemError',
     ApplicationProvider: 'ApplicationProvider',
     Application: 'Application',
+    ApplicationDevLog: 'ApplicationDevLog',
     Portfolio: 'Portfolio',
     Asset: 'Asset',
     Member: 'Member',
@@ -1136,7 +1152,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "resource" | "accountTypeIndividual" | "accountTypeBrand" | "systemConfig" | "authnRequest" | "activity" | "notification" | "request" | "family" | "familyMember" | "verification" | "contact" | "neupId" | "authnMethod" | "authnSession" | "systemError" | "applicationProvider" | "application" | "portfolio" | "asset" | "member" | "accountOwnership" | "connection" | "applicationBridge" | "applicationPolicy" | "authzPermission" | "authzRole" | "authzAssetsAccessGrant" | "permit" | "identity"
+      modelProps: "account" | "resource" | "accountTypeIndividual" | "accountTypeBrand" | "systemConfig" | "authnRequest" | "activity" | "notification" | "request" | "family" | "familyMember" | "verification" | "contact" | "neupId" | "authnMethod" | "authnSession" | "systemError" | "applicationProvider" | "application" | "applicationDevLog" | "portfolio" | "asset" | "member" | "accountOwnership" | "connection" | "applicationBridge" | "applicationPolicy" | "authzPermission" | "authzRole" | "authzAssetsAccessGrant" | "permit" | "identity"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2546,6 +2562,80 @@ export namespace Prisma {
           }
         }
       }
+      ApplicationDevLog: {
+        payload: Prisma.$ApplicationDevLogPayload<ExtArgs>
+        fields: Prisma.ApplicationDevLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ApplicationDevLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApplicationDevLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ApplicationDevLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApplicationDevLogPayload>
+          }
+          findFirst: {
+            args: Prisma.ApplicationDevLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApplicationDevLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ApplicationDevLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApplicationDevLogPayload>
+          }
+          findMany: {
+            args: Prisma.ApplicationDevLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApplicationDevLogPayload>[]
+          }
+          create: {
+            args: Prisma.ApplicationDevLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApplicationDevLogPayload>
+          }
+          createMany: {
+            args: Prisma.ApplicationDevLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ApplicationDevLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApplicationDevLogPayload>[]
+          }
+          delete: {
+            args: Prisma.ApplicationDevLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApplicationDevLogPayload>
+          }
+          update: {
+            args: Prisma.ApplicationDevLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApplicationDevLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.ApplicationDevLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ApplicationDevLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ApplicationDevLogUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApplicationDevLogPayload>[]
+          }
+          upsert: {
+            args: Prisma.ApplicationDevLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ApplicationDevLogPayload>
+          }
+          aggregate: {
+            args: Prisma.ApplicationDevLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateApplicationDevLog>
+          }
+          groupBy: {
+            args: Prisma.ApplicationDevLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ApplicationDevLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ApplicationDevLogCountArgs<ExtArgs>
+            result: $Utils.Optional<ApplicationDevLogCountAggregateOutputType> | number
+          }
+        }
+      }
       Portfolio: {
         payload: Prisma.$PortfolioPayload<ExtArgs>
         fields: Prisma.PortfolioFieldRefs
@@ -3561,6 +3651,7 @@ export namespace Prisma {
     systemError?: SystemErrorOmit
     applicationProvider?: ApplicationProviderOmit
     application?: ApplicationOmit
+    applicationDevLog?: ApplicationDevLogOmit
     portfolio?: PortfolioOmit
     asset?: AssetOmit
     member?: MemberOmit
@@ -3970,6 +4061,7 @@ export namespace Prisma {
     authzRoles: number
     identities: number
     childAssets: number
+    devLogs: number
   }
 
   export type ApplicationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3981,6 +4073,7 @@ export namespace Prisma {
     authzRoles?: boolean | ApplicationCountOutputTypeCountAuthzRolesArgs
     identities?: boolean | ApplicationCountOutputTypeCountIdentitiesArgs
     childAssets?: boolean | ApplicationCountOutputTypeCountChildAssetsArgs
+    devLogs?: boolean | ApplicationCountOutputTypeCountDevLogsArgs
   }
 
   // Custom InputTypes
@@ -4048,6 +4141,13 @@ export namespace Prisma {
    */
   export type ApplicationCountOutputTypeCountChildAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AssetWhereInput
+  }
+
+  /**
+   * ApplicationCountOutputType without action
+   */
+  export type ApplicationCountOutputTypeCountDevLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ApplicationDevLogWhereInput
   }
 
 
@@ -24575,6 +24675,7 @@ export namespace Prisma {
     authzRoles?: boolean | Application$authzRolesArgs<ExtArgs>
     identities?: boolean | Application$identitiesArgs<ExtArgs>
     childAssets?: boolean | Application$childAssetsArgs<ExtArgs>
+    devLogs?: boolean | Application$devLogsArgs<ExtArgs>
     _count?: boolean | ApplicationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["application"]>
 
@@ -24645,6 +24746,7 @@ export namespace Prisma {
     authzRoles?: boolean | Application$authzRolesArgs<ExtArgs>
     identities?: boolean | Application$identitiesArgs<ExtArgs>
     childAssets?: boolean | Application$childAssetsArgs<ExtArgs>
+    devLogs?: boolean | Application$devLogsArgs<ExtArgs>
     _count?: boolean | ApplicationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ApplicationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -24666,6 +24768,7 @@ export namespace Prisma {
       authzRoles: Prisma.$AuthzRolePayload<ExtArgs>[]
       identities: Prisma.$IdentityPayload<ExtArgs>[]
       childAssets: Prisma.$AssetPayload<ExtArgs>[]
+      devLogs: Prisma.$ApplicationDevLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -25086,6 +25189,7 @@ export namespace Prisma {
     authzRoles<T extends Application$authzRolesArgs<ExtArgs> = {}>(args?: Subset<T, Application$authzRolesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     identities<T extends Application$identitiesArgs<ExtArgs> = {}>(args?: Subset<T, Application$identitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IdentityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     childAssets<T extends Application$childAssetsArgs<ExtArgs> = {}>(args?: Subset<T, Application$childAssetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    devLogs<T extends Application$devLogsArgs<ExtArgs> = {}>(args?: Subset<T, Application$devLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicationDevLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -25737,6 +25841,30 @@ export namespace Prisma {
   }
 
   /**
+   * Application.devLogs
+   */
+  export type Application$devLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApplicationDevLog
+     */
+    select?: ApplicationDevLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApplicationDevLog
+     */
+    omit?: ApplicationDevLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApplicationDevLogInclude<ExtArgs> | null
+    where?: ApplicationDevLogWhereInput
+    orderBy?: ApplicationDevLogOrderByWithRelationInput | ApplicationDevLogOrderByWithRelationInput[]
+    cursor?: ApplicationDevLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ApplicationDevLogScalarFieldEnum | ApplicationDevLogScalarFieldEnum[]
+  }
+
+  /**
    * Application without action
    */
   export type ApplicationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -25752,6 +25880,1212 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ApplicationInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ApplicationDevLog
+   */
+
+  export type AggregateApplicationDevLog = {
+    _count: ApplicationDevLogCountAggregateOutputType | null
+    _avg: ApplicationDevLogAvgAggregateOutputType | null
+    _sum: ApplicationDevLogSumAggregateOutputType | null
+    _min: ApplicationDevLogMinAggregateOutputType | null
+    _max: ApplicationDevLogMaxAggregateOutputType | null
+  }
+
+  export type ApplicationDevLogAvgAggregateOutputType = {
+    statusCode: number | null
+  }
+
+  export type ApplicationDevLogSumAggregateOutputType = {
+    statusCode: number | null
+  }
+
+  export type ApplicationDevLogMinAggregateOutputType = {
+    id: string | null
+    appId: string | null
+    endpoint: string | null
+    method: string | null
+    statusCode: number | null
+    requesterIp: string | null
+    origin: string | null
+    referer: string | null
+    userAgent: string | null
+    error: string | null
+    createdAt: Date | null
+  }
+
+  export type ApplicationDevLogMaxAggregateOutputType = {
+    id: string | null
+    appId: string | null
+    endpoint: string | null
+    method: string | null
+    statusCode: number | null
+    requesterIp: string | null
+    origin: string | null
+    referer: string | null
+    userAgent: string | null
+    error: string | null
+    createdAt: Date | null
+  }
+
+  export type ApplicationDevLogCountAggregateOutputType = {
+    id: number
+    appId: number
+    endpoint: number
+    method: number
+    statusCode: number
+    requesterIp: number
+    origin: number
+    referer: number
+    userAgent: number
+    requestBody: number
+    query: number
+    requestMeta: number
+    responseBody: number
+    error: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ApplicationDevLogAvgAggregateInputType = {
+    statusCode?: true
+  }
+
+  export type ApplicationDevLogSumAggregateInputType = {
+    statusCode?: true
+  }
+
+  export type ApplicationDevLogMinAggregateInputType = {
+    id?: true
+    appId?: true
+    endpoint?: true
+    method?: true
+    statusCode?: true
+    requesterIp?: true
+    origin?: true
+    referer?: true
+    userAgent?: true
+    error?: true
+    createdAt?: true
+  }
+
+  export type ApplicationDevLogMaxAggregateInputType = {
+    id?: true
+    appId?: true
+    endpoint?: true
+    method?: true
+    statusCode?: true
+    requesterIp?: true
+    origin?: true
+    referer?: true
+    userAgent?: true
+    error?: true
+    createdAt?: true
+  }
+
+  export type ApplicationDevLogCountAggregateInputType = {
+    id?: true
+    appId?: true
+    endpoint?: true
+    method?: true
+    statusCode?: true
+    requesterIp?: true
+    origin?: true
+    referer?: true
+    userAgent?: true
+    requestBody?: true
+    query?: true
+    requestMeta?: true
+    responseBody?: true
+    error?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ApplicationDevLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ApplicationDevLog to aggregate.
+     */
+    where?: ApplicationDevLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ApplicationDevLogs to fetch.
+     */
+    orderBy?: ApplicationDevLogOrderByWithRelationInput | ApplicationDevLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ApplicationDevLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ApplicationDevLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ApplicationDevLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ApplicationDevLogs
+    **/
+    _count?: true | ApplicationDevLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ApplicationDevLogAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ApplicationDevLogSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ApplicationDevLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ApplicationDevLogMaxAggregateInputType
+  }
+
+  export type GetApplicationDevLogAggregateType<T extends ApplicationDevLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateApplicationDevLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateApplicationDevLog[P]>
+      : GetScalarType<T[P], AggregateApplicationDevLog[P]>
+  }
+
+
+
+
+  export type ApplicationDevLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ApplicationDevLogWhereInput
+    orderBy?: ApplicationDevLogOrderByWithAggregationInput | ApplicationDevLogOrderByWithAggregationInput[]
+    by: ApplicationDevLogScalarFieldEnum[] | ApplicationDevLogScalarFieldEnum
+    having?: ApplicationDevLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ApplicationDevLogCountAggregateInputType | true
+    _avg?: ApplicationDevLogAvgAggregateInputType
+    _sum?: ApplicationDevLogSumAggregateInputType
+    _min?: ApplicationDevLogMinAggregateInputType
+    _max?: ApplicationDevLogMaxAggregateInputType
+  }
+
+  export type ApplicationDevLogGroupByOutputType = {
+    id: string
+    appId: string
+    endpoint: string
+    method: string
+    statusCode: number
+    requesterIp: string | null
+    origin: string | null
+    referer: string | null
+    userAgent: string | null
+    requestBody: JsonValue | null
+    query: JsonValue | null
+    requestMeta: JsonValue | null
+    responseBody: JsonValue | null
+    error: string | null
+    createdAt: Date
+    _count: ApplicationDevLogCountAggregateOutputType | null
+    _avg: ApplicationDevLogAvgAggregateOutputType | null
+    _sum: ApplicationDevLogSumAggregateOutputType | null
+    _min: ApplicationDevLogMinAggregateOutputType | null
+    _max: ApplicationDevLogMaxAggregateOutputType | null
+  }
+
+  type GetApplicationDevLogGroupByPayload<T extends ApplicationDevLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ApplicationDevLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ApplicationDevLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ApplicationDevLogGroupByOutputType[P]>
+            : GetScalarType<T[P], ApplicationDevLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ApplicationDevLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    appId?: boolean
+    endpoint?: boolean
+    method?: boolean
+    statusCode?: boolean
+    requesterIp?: boolean
+    origin?: boolean
+    referer?: boolean
+    userAgent?: boolean
+    requestBody?: boolean
+    query?: boolean
+    requestMeta?: boolean
+    responseBody?: boolean
+    error?: boolean
+    createdAt?: boolean
+    application?: boolean | ApplicationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["applicationDevLog"]>
+
+  export type ApplicationDevLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    appId?: boolean
+    endpoint?: boolean
+    method?: boolean
+    statusCode?: boolean
+    requesterIp?: boolean
+    origin?: boolean
+    referer?: boolean
+    userAgent?: boolean
+    requestBody?: boolean
+    query?: boolean
+    requestMeta?: boolean
+    responseBody?: boolean
+    error?: boolean
+    createdAt?: boolean
+    application?: boolean | ApplicationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["applicationDevLog"]>
+
+  export type ApplicationDevLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    appId?: boolean
+    endpoint?: boolean
+    method?: boolean
+    statusCode?: boolean
+    requesterIp?: boolean
+    origin?: boolean
+    referer?: boolean
+    userAgent?: boolean
+    requestBody?: boolean
+    query?: boolean
+    requestMeta?: boolean
+    responseBody?: boolean
+    error?: boolean
+    createdAt?: boolean
+    application?: boolean | ApplicationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["applicationDevLog"]>
+
+  export type ApplicationDevLogSelectScalar = {
+    id?: boolean
+    appId?: boolean
+    endpoint?: boolean
+    method?: boolean
+    statusCode?: boolean
+    requesterIp?: boolean
+    origin?: boolean
+    referer?: boolean
+    userAgent?: boolean
+    requestBody?: boolean
+    query?: boolean
+    requestMeta?: boolean
+    responseBody?: boolean
+    error?: boolean
+    createdAt?: boolean
+  }
+
+  export type ApplicationDevLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "appId" | "endpoint" | "method" | "statusCode" | "requesterIp" | "origin" | "referer" | "userAgent" | "requestBody" | "query" | "requestMeta" | "responseBody" | "error" | "createdAt", ExtArgs["result"]["applicationDevLog"]>
+  export type ApplicationDevLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    application?: boolean | ApplicationDefaultArgs<ExtArgs>
+  }
+  export type ApplicationDevLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    application?: boolean | ApplicationDefaultArgs<ExtArgs>
+  }
+  export type ApplicationDevLogIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    application?: boolean | ApplicationDefaultArgs<ExtArgs>
+  }
+
+  export type $ApplicationDevLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ApplicationDevLog"
+    objects: {
+      application: Prisma.$ApplicationPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      appId: string
+      endpoint: string
+      method: string
+      statusCode: number
+      requesterIp: string | null
+      origin: string | null
+      referer: string | null
+      userAgent: string | null
+      requestBody: Prisma.JsonValue | null
+      query: Prisma.JsonValue | null
+      requestMeta: Prisma.JsonValue | null
+      responseBody: Prisma.JsonValue | null
+      error: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["applicationDevLog"]>
+    composites: {}
+  }
+
+  type ApplicationDevLogGetPayload<S extends boolean | null | undefined | ApplicationDevLogDefaultArgs> = $Result.GetResult<Prisma.$ApplicationDevLogPayload, S>
+
+  type ApplicationDevLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ApplicationDevLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ApplicationDevLogCountAggregateInputType | true
+    }
+
+  export interface ApplicationDevLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ApplicationDevLog'], meta: { name: 'ApplicationDevLog' } }
+    /**
+     * Find zero or one ApplicationDevLog that matches the filter.
+     * @param {ApplicationDevLogFindUniqueArgs} args - Arguments to find a ApplicationDevLog
+     * @example
+     * // Get one ApplicationDevLog
+     * const applicationDevLog = await prisma.applicationDevLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ApplicationDevLogFindUniqueArgs>(args: SelectSubset<T, ApplicationDevLogFindUniqueArgs<ExtArgs>>): Prisma__ApplicationDevLogClient<$Result.GetResult<Prisma.$ApplicationDevLogPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ApplicationDevLog that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ApplicationDevLogFindUniqueOrThrowArgs} args - Arguments to find a ApplicationDevLog
+     * @example
+     * // Get one ApplicationDevLog
+     * const applicationDevLog = await prisma.applicationDevLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ApplicationDevLogFindUniqueOrThrowArgs>(args: SelectSubset<T, ApplicationDevLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ApplicationDevLogClient<$Result.GetResult<Prisma.$ApplicationDevLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ApplicationDevLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApplicationDevLogFindFirstArgs} args - Arguments to find a ApplicationDevLog
+     * @example
+     * // Get one ApplicationDevLog
+     * const applicationDevLog = await prisma.applicationDevLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ApplicationDevLogFindFirstArgs>(args?: SelectSubset<T, ApplicationDevLogFindFirstArgs<ExtArgs>>): Prisma__ApplicationDevLogClient<$Result.GetResult<Prisma.$ApplicationDevLogPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ApplicationDevLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApplicationDevLogFindFirstOrThrowArgs} args - Arguments to find a ApplicationDevLog
+     * @example
+     * // Get one ApplicationDevLog
+     * const applicationDevLog = await prisma.applicationDevLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ApplicationDevLogFindFirstOrThrowArgs>(args?: SelectSubset<T, ApplicationDevLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__ApplicationDevLogClient<$Result.GetResult<Prisma.$ApplicationDevLogPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ApplicationDevLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApplicationDevLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ApplicationDevLogs
+     * const applicationDevLogs = await prisma.applicationDevLog.findMany()
+     * 
+     * // Get first 10 ApplicationDevLogs
+     * const applicationDevLogs = await prisma.applicationDevLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const applicationDevLogWithIdOnly = await prisma.applicationDevLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ApplicationDevLogFindManyArgs>(args?: SelectSubset<T, ApplicationDevLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicationDevLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ApplicationDevLog.
+     * @param {ApplicationDevLogCreateArgs} args - Arguments to create a ApplicationDevLog.
+     * @example
+     * // Create one ApplicationDevLog
+     * const ApplicationDevLog = await prisma.applicationDevLog.create({
+     *   data: {
+     *     // ... data to create a ApplicationDevLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends ApplicationDevLogCreateArgs>(args: SelectSubset<T, ApplicationDevLogCreateArgs<ExtArgs>>): Prisma__ApplicationDevLogClient<$Result.GetResult<Prisma.$ApplicationDevLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ApplicationDevLogs.
+     * @param {ApplicationDevLogCreateManyArgs} args - Arguments to create many ApplicationDevLogs.
+     * @example
+     * // Create many ApplicationDevLogs
+     * const applicationDevLog = await prisma.applicationDevLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ApplicationDevLogCreateManyArgs>(args?: SelectSubset<T, ApplicationDevLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ApplicationDevLogs and returns the data saved in the database.
+     * @param {ApplicationDevLogCreateManyAndReturnArgs} args - Arguments to create many ApplicationDevLogs.
+     * @example
+     * // Create many ApplicationDevLogs
+     * const applicationDevLog = await prisma.applicationDevLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ApplicationDevLogs and only return the `id`
+     * const applicationDevLogWithIdOnly = await prisma.applicationDevLog.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ApplicationDevLogCreateManyAndReturnArgs>(args?: SelectSubset<T, ApplicationDevLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicationDevLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ApplicationDevLog.
+     * @param {ApplicationDevLogDeleteArgs} args - Arguments to delete one ApplicationDevLog.
+     * @example
+     * // Delete one ApplicationDevLog
+     * const ApplicationDevLog = await prisma.applicationDevLog.delete({
+     *   where: {
+     *     // ... filter to delete one ApplicationDevLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ApplicationDevLogDeleteArgs>(args: SelectSubset<T, ApplicationDevLogDeleteArgs<ExtArgs>>): Prisma__ApplicationDevLogClient<$Result.GetResult<Prisma.$ApplicationDevLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ApplicationDevLog.
+     * @param {ApplicationDevLogUpdateArgs} args - Arguments to update one ApplicationDevLog.
+     * @example
+     * // Update one ApplicationDevLog
+     * const applicationDevLog = await prisma.applicationDevLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ApplicationDevLogUpdateArgs>(args: SelectSubset<T, ApplicationDevLogUpdateArgs<ExtArgs>>): Prisma__ApplicationDevLogClient<$Result.GetResult<Prisma.$ApplicationDevLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ApplicationDevLogs.
+     * @param {ApplicationDevLogDeleteManyArgs} args - Arguments to filter ApplicationDevLogs to delete.
+     * @example
+     * // Delete a few ApplicationDevLogs
+     * const { count } = await prisma.applicationDevLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ApplicationDevLogDeleteManyArgs>(args?: SelectSubset<T, ApplicationDevLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ApplicationDevLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApplicationDevLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ApplicationDevLogs
+     * const applicationDevLog = await prisma.applicationDevLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ApplicationDevLogUpdateManyArgs>(args: SelectSubset<T, ApplicationDevLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ApplicationDevLogs and returns the data updated in the database.
+     * @param {ApplicationDevLogUpdateManyAndReturnArgs} args - Arguments to update many ApplicationDevLogs.
+     * @example
+     * // Update many ApplicationDevLogs
+     * const applicationDevLog = await prisma.applicationDevLog.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ApplicationDevLogs and only return the `id`
+     * const applicationDevLogWithIdOnly = await prisma.applicationDevLog.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ApplicationDevLogUpdateManyAndReturnArgs>(args: SelectSubset<T, ApplicationDevLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicationDevLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ApplicationDevLog.
+     * @param {ApplicationDevLogUpsertArgs} args - Arguments to update or create a ApplicationDevLog.
+     * @example
+     * // Update or create a ApplicationDevLog
+     * const applicationDevLog = await prisma.applicationDevLog.upsert({
+     *   create: {
+     *     // ... data to create a ApplicationDevLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ApplicationDevLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ApplicationDevLogUpsertArgs>(args: SelectSubset<T, ApplicationDevLogUpsertArgs<ExtArgs>>): Prisma__ApplicationDevLogClient<$Result.GetResult<Prisma.$ApplicationDevLogPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ApplicationDevLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApplicationDevLogCountArgs} args - Arguments to filter ApplicationDevLogs to count.
+     * @example
+     * // Count the number of ApplicationDevLogs
+     * const count = await prisma.applicationDevLog.count({
+     *   where: {
+     *     // ... the filter for the ApplicationDevLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends ApplicationDevLogCountArgs>(
+      args?: Subset<T, ApplicationDevLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ApplicationDevLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ApplicationDevLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApplicationDevLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ApplicationDevLogAggregateArgs>(args: Subset<T, ApplicationDevLogAggregateArgs>): Prisma.PrismaPromise<GetApplicationDevLogAggregateType<T>>
+
+    /**
+     * Group by ApplicationDevLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ApplicationDevLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ApplicationDevLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ApplicationDevLogGroupByArgs['orderBy'] }
+        : { orderBy?: ApplicationDevLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ApplicationDevLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetApplicationDevLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ApplicationDevLog model
+   */
+  readonly fields: ApplicationDevLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ApplicationDevLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ApplicationDevLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    application<T extends ApplicationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ApplicationDefaultArgs<ExtArgs>>): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ApplicationDevLog model
+   */
+  interface ApplicationDevLogFieldRefs {
+    readonly id: FieldRef<"ApplicationDevLog", 'String'>
+    readonly appId: FieldRef<"ApplicationDevLog", 'String'>
+    readonly endpoint: FieldRef<"ApplicationDevLog", 'String'>
+    readonly method: FieldRef<"ApplicationDevLog", 'String'>
+    readonly statusCode: FieldRef<"ApplicationDevLog", 'Int'>
+    readonly requesterIp: FieldRef<"ApplicationDevLog", 'String'>
+    readonly origin: FieldRef<"ApplicationDevLog", 'String'>
+    readonly referer: FieldRef<"ApplicationDevLog", 'String'>
+    readonly userAgent: FieldRef<"ApplicationDevLog", 'String'>
+    readonly requestBody: FieldRef<"ApplicationDevLog", 'Json'>
+    readonly query: FieldRef<"ApplicationDevLog", 'Json'>
+    readonly requestMeta: FieldRef<"ApplicationDevLog", 'Json'>
+    readonly responseBody: FieldRef<"ApplicationDevLog", 'Json'>
+    readonly error: FieldRef<"ApplicationDevLog", 'String'>
+    readonly createdAt: FieldRef<"ApplicationDevLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ApplicationDevLog findUnique
+   */
+  export type ApplicationDevLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApplicationDevLog
+     */
+    select?: ApplicationDevLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApplicationDevLog
+     */
+    omit?: ApplicationDevLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApplicationDevLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ApplicationDevLog to fetch.
+     */
+    where: ApplicationDevLogWhereUniqueInput
+  }
+
+  /**
+   * ApplicationDevLog findUniqueOrThrow
+   */
+  export type ApplicationDevLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApplicationDevLog
+     */
+    select?: ApplicationDevLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApplicationDevLog
+     */
+    omit?: ApplicationDevLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApplicationDevLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ApplicationDevLog to fetch.
+     */
+    where: ApplicationDevLogWhereUniqueInput
+  }
+
+  /**
+   * ApplicationDevLog findFirst
+   */
+  export type ApplicationDevLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApplicationDevLog
+     */
+    select?: ApplicationDevLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApplicationDevLog
+     */
+    omit?: ApplicationDevLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApplicationDevLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ApplicationDevLog to fetch.
+     */
+    where?: ApplicationDevLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ApplicationDevLogs to fetch.
+     */
+    orderBy?: ApplicationDevLogOrderByWithRelationInput | ApplicationDevLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ApplicationDevLogs.
+     */
+    cursor?: ApplicationDevLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ApplicationDevLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ApplicationDevLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ApplicationDevLogs.
+     */
+    distinct?: ApplicationDevLogScalarFieldEnum | ApplicationDevLogScalarFieldEnum[]
+  }
+
+  /**
+   * ApplicationDevLog findFirstOrThrow
+   */
+  export type ApplicationDevLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApplicationDevLog
+     */
+    select?: ApplicationDevLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApplicationDevLog
+     */
+    omit?: ApplicationDevLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApplicationDevLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ApplicationDevLog to fetch.
+     */
+    where?: ApplicationDevLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ApplicationDevLogs to fetch.
+     */
+    orderBy?: ApplicationDevLogOrderByWithRelationInput | ApplicationDevLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ApplicationDevLogs.
+     */
+    cursor?: ApplicationDevLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ApplicationDevLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ApplicationDevLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ApplicationDevLogs.
+     */
+    distinct?: ApplicationDevLogScalarFieldEnum | ApplicationDevLogScalarFieldEnum[]
+  }
+
+  /**
+   * ApplicationDevLog findMany
+   */
+  export type ApplicationDevLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApplicationDevLog
+     */
+    select?: ApplicationDevLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApplicationDevLog
+     */
+    omit?: ApplicationDevLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApplicationDevLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ApplicationDevLogs to fetch.
+     */
+    where?: ApplicationDevLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ApplicationDevLogs to fetch.
+     */
+    orderBy?: ApplicationDevLogOrderByWithRelationInput | ApplicationDevLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ApplicationDevLogs.
+     */
+    cursor?: ApplicationDevLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ApplicationDevLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ApplicationDevLogs.
+     */
+    skip?: number
+    distinct?: ApplicationDevLogScalarFieldEnum | ApplicationDevLogScalarFieldEnum[]
+  }
+
+  /**
+   * ApplicationDevLog create
+   */
+  export type ApplicationDevLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApplicationDevLog
+     */
+    select?: ApplicationDevLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApplicationDevLog
+     */
+    omit?: ApplicationDevLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApplicationDevLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ApplicationDevLog.
+     */
+    data: XOR<ApplicationDevLogCreateInput, ApplicationDevLogUncheckedCreateInput>
+  }
+
+  /**
+   * ApplicationDevLog createMany
+   */
+  export type ApplicationDevLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ApplicationDevLogs.
+     */
+    data: ApplicationDevLogCreateManyInput | ApplicationDevLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ApplicationDevLog createManyAndReturn
+   */
+  export type ApplicationDevLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApplicationDevLog
+     */
+    select?: ApplicationDevLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApplicationDevLog
+     */
+    omit?: ApplicationDevLogOmit<ExtArgs> | null
+    /**
+     * The data used to create many ApplicationDevLogs.
+     */
+    data: ApplicationDevLogCreateManyInput | ApplicationDevLogCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApplicationDevLogIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ApplicationDevLog update
+   */
+  export type ApplicationDevLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApplicationDevLog
+     */
+    select?: ApplicationDevLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApplicationDevLog
+     */
+    omit?: ApplicationDevLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApplicationDevLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ApplicationDevLog.
+     */
+    data: XOR<ApplicationDevLogUpdateInput, ApplicationDevLogUncheckedUpdateInput>
+    /**
+     * Choose, which ApplicationDevLog to update.
+     */
+    where: ApplicationDevLogWhereUniqueInput
+  }
+
+  /**
+   * ApplicationDevLog updateMany
+   */
+  export type ApplicationDevLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ApplicationDevLogs.
+     */
+    data: XOR<ApplicationDevLogUpdateManyMutationInput, ApplicationDevLogUncheckedUpdateManyInput>
+    /**
+     * Filter which ApplicationDevLogs to update
+     */
+    where?: ApplicationDevLogWhereInput
+    /**
+     * Limit how many ApplicationDevLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ApplicationDevLog updateManyAndReturn
+   */
+  export type ApplicationDevLogUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApplicationDevLog
+     */
+    select?: ApplicationDevLogSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApplicationDevLog
+     */
+    omit?: ApplicationDevLogOmit<ExtArgs> | null
+    /**
+     * The data used to update ApplicationDevLogs.
+     */
+    data: XOR<ApplicationDevLogUpdateManyMutationInput, ApplicationDevLogUncheckedUpdateManyInput>
+    /**
+     * Filter which ApplicationDevLogs to update
+     */
+    where?: ApplicationDevLogWhereInput
+    /**
+     * Limit how many ApplicationDevLogs to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApplicationDevLogIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ApplicationDevLog upsert
+   */
+  export type ApplicationDevLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApplicationDevLog
+     */
+    select?: ApplicationDevLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApplicationDevLog
+     */
+    omit?: ApplicationDevLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApplicationDevLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ApplicationDevLog to update in case it exists.
+     */
+    where: ApplicationDevLogWhereUniqueInput
+    /**
+     * In case the ApplicationDevLog found by the `where` argument doesn't exist, create a new ApplicationDevLog with this data.
+     */
+    create: XOR<ApplicationDevLogCreateInput, ApplicationDevLogUncheckedCreateInput>
+    /**
+     * In case the ApplicationDevLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ApplicationDevLogUpdateInput, ApplicationDevLogUncheckedUpdateInput>
+  }
+
+  /**
+   * ApplicationDevLog delete
+   */
+  export type ApplicationDevLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApplicationDevLog
+     */
+    select?: ApplicationDevLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApplicationDevLog
+     */
+    omit?: ApplicationDevLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApplicationDevLogInclude<ExtArgs> | null
+    /**
+     * Filter which ApplicationDevLog to delete.
+     */
+    where: ApplicationDevLogWhereUniqueInput
+  }
+
+  /**
+   * ApplicationDevLog deleteMany
+   */
+  export type ApplicationDevLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ApplicationDevLogs to delete
+     */
+    where?: ApplicationDevLogWhereInput
+    /**
+     * Limit how many ApplicationDevLogs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ApplicationDevLog without action
+   */
+  export type ApplicationDevLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApplicationDevLog
+     */
+    select?: ApplicationDevLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ApplicationDevLog
+     */
+    omit?: ApplicationDevLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApplicationDevLogInclude<ExtArgs> | null
   }
 
 
@@ -39525,6 +40859,27 @@ export namespace Prisma {
   export type ApplicationScalarFieldEnum = (typeof ApplicationScalarFieldEnum)[keyof typeof ApplicationScalarFieldEnum]
 
 
+  export const ApplicationDevLogScalarFieldEnum: {
+    id: 'id',
+    appId: 'appId',
+    endpoint: 'endpoint',
+    method: 'method',
+    statusCode: 'statusCode',
+    requesterIp: 'requesterIp',
+    origin: 'origin',
+    referer: 'referer',
+    userAgent: 'userAgent',
+    requestBody: 'requestBody',
+    query: 'query',
+    requestMeta: 'requestMeta',
+    responseBody: 'responseBody',
+    error: 'error',
+    createdAt: 'createdAt'
+  };
+
+  export type ApplicationDevLogScalarFieldEnum = (typeof ApplicationDevLogScalarFieldEnum)[keyof typeof ApplicationDevLogScalarFieldEnum]
+
+
   export const PortfolioScalarFieldEnum: {
     id: 'id',
     name: 'name',
@@ -41107,6 +42462,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleListRelationFilter
     identities?: IdentityListRelationFilter
     childAssets?: AssetListRelationFilter
+    devLogs?: ApplicationDevLogListRelationFilter
   }
 
   export type ApplicationOrderByWithRelationInput = {
@@ -41134,6 +42490,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleOrderByRelationAggregateInput
     identities?: IdentityOrderByRelationAggregateInput
     childAssets?: AssetOrderByRelationAggregateInput
+    devLogs?: ApplicationDevLogOrderByRelationAggregateInput
   }
 
   export type ApplicationWhereUniqueInput = Prisma.AtLeast<{
@@ -41164,6 +42521,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleListRelationFilter
     identities?: IdentityListRelationFilter
     childAssets?: AssetListRelationFilter
+    devLogs?: ApplicationDevLogListRelationFilter
   }, "id">
 
   export type ApplicationOrderByWithAggregationInput = {
@@ -41208,6 +42566,113 @@ export namespace Prisma {
     details?: JsonNullableWithAggregatesFilter<"Application">
     party?: IntWithAggregatesFilter<"Application"> | number
     providerId?: StringNullableWithAggregatesFilter<"Application"> | string | null
+  }
+
+  export type ApplicationDevLogWhereInput = {
+    AND?: ApplicationDevLogWhereInput | ApplicationDevLogWhereInput[]
+    OR?: ApplicationDevLogWhereInput[]
+    NOT?: ApplicationDevLogWhereInput | ApplicationDevLogWhereInput[]
+    id?: StringFilter<"ApplicationDevLog"> | string
+    appId?: StringFilter<"ApplicationDevLog"> | string
+    endpoint?: StringFilter<"ApplicationDevLog"> | string
+    method?: StringFilter<"ApplicationDevLog"> | string
+    statusCode?: IntFilter<"ApplicationDevLog"> | number
+    requesterIp?: StringNullableFilter<"ApplicationDevLog"> | string | null
+    origin?: StringNullableFilter<"ApplicationDevLog"> | string | null
+    referer?: StringNullableFilter<"ApplicationDevLog"> | string | null
+    userAgent?: StringNullableFilter<"ApplicationDevLog"> | string | null
+    requestBody?: JsonNullableFilter<"ApplicationDevLog">
+    query?: JsonNullableFilter<"ApplicationDevLog">
+    requestMeta?: JsonNullableFilter<"ApplicationDevLog">
+    responseBody?: JsonNullableFilter<"ApplicationDevLog">
+    error?: StringNullableFilter<"ApplicationDevLog"> | string | null
+    createdAt?: DateTimeFilter<"ApplicationDevLog"> | Date | string
+    application?: XOR<ApplicationScalarRelationFilter, ApplicationWhereInput>
+  }
+
+  export type ApplicationDevLogOrderByWithRelationInput = {
+    id?: SortOrder
+    appId?: SortOrder
+    endpoint?: SortOrder
+    method?: SortOrder
+    statusCode?: SortOrder
+    requesterIp?: SortOrderInput | SortOrder
+    origin?: SortOrderInput | SortOrder
+    referer?: SortOrderInput | SortOrder
+    userAgent?: SortOrderInput | SortOrder
+    requestBody?: SortOrderInput | SortOrder
+    query?: SortOrderInput | SortOrder
+    requestMeta?: SortOrderInput | SortOrder
+    responseBody?: SortOrderInput | SortOrder
+    error?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    application?: ApplicationOrderByWithRelationInput
+  }
+
+  export type ApplicationDevLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ApplicationDevLogWhereInput | ApplicationDevLogWhereInput[]
+    OR?: ApplicationDevLogWhereInput[]
+    NOT?: ApplicationDevLogWhereInput | ApplicationDevLogWhereInput[]
+    appId?: StringFilter<"ApplicationDevLog"> | string
+    endpoint?: StringFilter<"ApplicationDevLog"> | string
+    method?: StringFilter<"ApplicationDevLog"> | string
+    statusCode?: IntFilter<"ApplicationDevLog"> | number
+    requesterIp?: StringNullableFilter<"ApplicationDevLog"> | string | null
+    origin?: StringNullableFilter<"ApplicationDevLog"> | string | null
+    referer?: StringNullableFilter<"ApplicationDevLog"> | string | null
+    userAgent?: StringNullableFilter<"ApplicationDevLog"> | string | null
+    requestBody?: JsonNullableFilter<"ApplicationDevLog">
+    query?: JsonNullableFilter<"ApplicationDevLog">
+    requestMeta?: JsonNullableFilter<"ApplicationDevLog">
+    responseBody?: JsonNullableFilter<"ApplicationDevLog">
+    error?: StringNullableFilter<"ApplicationDevLog"> | string | null
+    createdAt?: DateTimeFilter<"ApplicationDevLog"> | Date | string
+    application?: XOR<ApplicationScalarRelationFilter, ApplicationWhereInput>
+  }, "id">
+
+  export type ApplicationDevLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    appId?: SortOrder
+    endpoint?: SortOrder
+    method?: SortOrder
+    statusCode?: SortOrder
+    requesterIp?: SortOrderInput | SortOrder
+    origin?: SortOrderInput | SortOrder
+    referer?: SortOrderInput | SortOrder
+    userAgent?: SortOrderInput | SortOrder
+    requestBody?: SortOrderInput | SortOrder
+    query?: SortOrderInput | SortOrder
+    requestMeta?: SortOrderInput | SortOrder
+    responseBody?: SortOrderInput | SortOrder
+    error?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: ApplicationDevLogCountOrderByAggregateInput
+    _avg?: ApplicationDevLogAvgOrderByAggregateInput
+    _max?: ApplicationDevLogMaxOrderByAggregateInput
+    _min?: ApplicationDevLogMinOrderByAggregateInput
+    _sum?: ApplicationDevLogSumOrderByAggregateInput
+  }
+
+  export type ApplicationDevLogScalarWhereWithAggregatesInput = {
+    AND?: ApplicationDevLogScalarWhereWithAggregatesInput | ApplicationDevLogScalarWhereWithAggregatesInput[]
+    OR?: ApplicationDevLogScalarWhereWithAggregatesInput[]
+    NOT?: ApplicationDevLogScalarWhereWithAggregatesInput | ApplicationDevLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ApplicationDevLog"> | string
+    appId?: StringWithAggregatesFilter<"ApplicationDevLog"> | string
+    endpoint?: StringWithAggregatesFilter<"ApplicationDevLog"> | string
+    method?: StringWithAggregatesFilter<"ApplicationDevLog"> | string
+    statusCode?: IntWithAggregatesFilter<"ApplicationDevLog"> | number
+    requesterIp?: StringNullableWithAggregatesFilter<"ApplicationDevLog"> | string | null
+    origin?: StringNullableWithAggregatesFilter<"ApplicationDevLog"> | string | null
+    referer?: StringNullableWithAggregatesFilter<"ApplicationDevLog"> | string | null
+    userAgent?: StringNullableWithAggregatesFilter<"ApplicationDevLog"> | string | null
+    requestBody?: JsonNullableWithAggregatesFilter<"ApplicationDevLog">
+    query?: JsonNullableWithAggregatesFilter<"ApplicationDevLog">
+    requestMeta?: JsonNullableWithAggregatesFilter<"ApplicationDevLog">
+    responseBody?: JsonNullableWithAggregatesFilter<"ApplicationDevLog">
+    error?: StringNullableWithAggregatesFilter<"ApplicationDevLog"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"ApplicationDevLog"> | Date | string
   }
 
   export type PortfolioWhereInput = {
@@ -43388,6 +44853,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
     childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
+    devLogs?: ApplicationDevLogCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateInput = {
@@ -43414,6 +44880,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
+    devLogs?: ApplicationDevLogUncheckedCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUpdateInput = {
@@ -43440,6 +44907,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
+    devLogs?: ApplicationDevLogUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateInput = {
@@ -43466,6 +44934,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
+    devLogs?: ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationCreateManyInput = {
@@ -43519,6 +44988,131 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ApplicationDevLogCreateInput = {
+    id?: string
+    endpoint: string
+    method: string
+    statusCode: number
+    requesterIp?: string | null
+    origin?: string | null
+    referer?: string | null
+    userAgent?: string | null
+    requestBody?: NullableJsonNullValueInput | InputJsonValue
+    query?: NullableJsonNullValueInput | InputJsonValue
+    requestMeta?: NullableJsonNullValueInput | InputJsonValue
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    error?: string | null
+    createdAt?: Date | string
+    application: ApplicationCreateNestedOneWithoutDevLogsInput
+  }
+
+  export type ApplicationDevLogUncheckedCreateInput = {
+    id?: string
+    appId: string
+    endpoint: string
+    method: string
+    statusCode: number
+    requesterIp?: string | null
+    origin?: string | null
+    referer?: string | null
+    userAgent?: string | null
+    requestBody?: NullableJsonNullValueInput | InputJsonValue
+    query?: NullableJsonNullValueInput | InputJsonValue
+    requestMeta?: NullableJsonNullValueInput | InputJsonValue
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ApplicationDevLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    endpoint?: StringFieldUpdateOperationsInput | string
+    method?: StringFieldUpdateOperationsInput | string
+    statusCode?: IntFieldUpdateOperationsInput | number
+    requesterIp?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: NullableStringFieldUpdateOperationsInput | string | null
+    referer?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    requestBody?: NullableJsonNullValueInput | InputJsonValue
+    query?: NullableJsonNullValueInput | InputJsonValue
+    requestMeta?: NullableJsonNullValueInput | InputJsonValue
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    application?: ApplicationUpdateOneRequiredWithoutDevLogsNestedInput
+  }
+
+  export type ApplicationDevLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    appId?: StringFieldUpdateOperationsInput | string
+    endpoint?: StringFieldUpdateOperationsInput | string
+    method?: StringFieldUpdateOperationsInput | string
+    statusCode?: IntFieldUpdateOperationsInput | number
+    requesterIp?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: NullableStringFieldUpdateOperationsInput | string | null
+    referer?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    requestBody?: NullableJsonNullValueInput | InputJsonValue
+    query?: NullableJsonNullValueInput | InputJsonValue
+    requestMeta?: NullableJsonNullValueInput | InputJsonValue
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApplicationDevLogCreateManyInput = {
+    id?: string
+    appId: string
+    endpoint: string
+    method: string
+    statusCode: number
+    requesterIp?: string | null
+    origin?: string | null
+    referer?: string | null
+    userAgent?: string | null
+    requestBody?: NullableJsonNullValueInput | InputJsonValue
+    query?: NullableJsonNullValueInput | InputJsonValue
+    requestMeta?: NullableJsonNullValueInput | InputJsonValue
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ApplicationDevLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    endpoint?: StringFieldUpdateOperationsInput | string
+    method?: StringFieldUpdateOperationsInput | string
+    statusCode?: IntFieldUpdateOperationsInput | number
+    requesterIp?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: NullableStringFieldUpdateOperationsInput | string | null
+    referer?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    requestBody?: NullableJsonNullValueInput | InputJsonValue
+    query?: NullableJsonNullValueInput | InputJsonValue
+    requestMeta?: NullableJsonNullValueInput | InputJsonValue
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApplicationDevLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    appId?: StringFieldUpdateOperationsInput | string
+    endpoint?: StringFieldUpdateOperationsInput | string
+    method?: StringFieldUpdateOperationsInput | string
+    statusCode?: IntFieldUpdateOperationsInput | number
+    requesterIp?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: NullableStringFieldUpdateOperationsInput | string | null
+    referer?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    requestBody?: NullableJsonNullValueInput | InputJsonValue
+    query?: NullableJsonNullValueInput | InputJsonValue
+    requestMeta?: NullableJsonNullValueInput | InputJsonValue
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PortfolioCreateInput = {
@@ -45351,6 +46945,12 @@ export namespace Prisma {
     none?: IdentityWhereInput
   }
 
+  export type ApplicationDevLogListRelationFilter = {
+    every?: ApplicationDevLogWhereInput
+    some?: ApplicationDevLogWhereInput
+    none?: ApplicationDevLogWhereInput
+  }
+
   export type ApplicationBridgeOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -45368,6 +46968,10 @@ export namespace Prisma {
   }
 
   export type IdentityOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ApplicationDevLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -45439,6 +47043,65 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type ApplicationScalarRelationFilter = {
+    is?: ApplicationWhereInput
+    isNot?: ApplicationWhereInput
+  }
+
+  export type ApplicationDevLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    appId?: SortOrder
+    endpoint?: SortOrder
+    method?: SortOrder
+    statusCode?: SortOrder
+    requesterIp?: SortOrder
+    origin?: SortOrder
+    referer?: SortOrder
+    userAgent?: SortOrder
+    requestBody?: SortOrder
+    query?: SortOrder
+    requestMeta?: SortOrder
+    responseBody?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ApplicationDevLogAvgOrderByAggregateInput = {
+    statusCode?: SortOrder
+  }
+
+  export type ApplicationDevLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    appId?: SortOrder
+    endpoint?: SortOrder
+    method?: SortOrder
+    statusCode?: SortOrder
+    requesterIp?: SortOrder
+    origin?: SortOrder
+    referer?: SortOrder
+    userAgent?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ApplicationDevLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    appId?: SortOrder
+    endpoint?: SortOrder
+    method?: SortOrder
+    statusCode?: SortOrder
+    requesterIp?: SortOrder
+    origin?: SortOrder
+    referer?: SortOrder
+    userAgent?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ApplicationDevLogSumOrderByAggregateInput = {
+    statusCode?: SortOrder
   }
 
   export type PortfolioCountOrderByAggregateInput = {
@@ -45631,11 +47294,6 @@ export namespace Prisma {
     childrenId?: SortOrder
     type?: SortOrder
     createdAt?: SortOrder
-  }
-
-  export type ApplicationScalarRelationFilter = {
-    is?: ApplicationWhereInput
-    isNot?: ApplicationWhereInput
   }
 
   export type ConnectionAccountIdAppIdCompoundUniqueInput = {
@@ -47406,6 +49064,13 @@ export namespace Prisma {
     connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
   }
 
+  export type ApplicationDevLogCreateNestedManyWithoutApplicationInput = {
+    create?: XOR<ApplicationDevLogCreateWithoutApplicationInput, ApplicationDevLogUncheckedCreateWithoutApplicationInput> | ApplicationDevLogCreateWithoutApplicationInput[] | ApplicationDevLogUncheckedCreateWithoutApplicationInput[]
+    connectOrCreate?: ApplicationDevLogCreateOrConnectWithoutApplicationInput | ApplicationDevLogCreateOrConnectWithoutApplicationInput[]
+    createMany?: ApplicationDevLogCreateManyApplicationInputEnvelope
+    connect?: ApplicationDevLogWhereUniqueInput | ApplicationDevLogWhereUniqueInput[]
+  }
+
   export type ConnectionUncheckedCreateNestedManyWithoutApplicationInput = {
     create?: XOR<ConnectionCreateWithoutApplicationInput, ConnectionUncheckedCreateWithoutApplicationInput> | ConnectionCreateWithoutApplicationInput[] | ConnectionUncheckedCreateWithoutApplicationInput[]
     connectOrCreate?: ConnectionCreateOrConnectWithoutApplicationInput | ConnectionCreateOrConnectWithoutApplicationInput[]
@@ -47460,6 +49125,13 @@ export namespace Prisma {
     connectOrCreate?: AssetCreateOrConnectWithoutChildApplicationInput | AssetCreateOrConnectWithoutChildApplicationInput[]
     createMany?: AssetCreateManyChildApplicationInputEnvelope
     connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
+  }
+
+  export type ApplicationDevLogUncheckedCreateNestedManyWithoutApplicationInput = {
+    create?: XOR<ApplicationDevLogCreateWithoutApplicationInput, ApplicationDevLogUncheckedCreateWithoutApplicationInput> | ApplicationDevLogCreateWithoutApplicationInput[] | ApplicationDevLogUncheckedCreateWithoutApplicationInput[]
+    connectOrCreate?: ApplicationDevLogCreateOrConnectWithoutApplicationInput | ApplicationDevLogCreateOrConnectWithoutApplicationInput[]
+    createMany?: ApplicationDevLogCreateManyApplicationInputEnvelope
+    connect?: ApplicationDevLogWhereUniqueInput | ApplicationDevLogWhereUniqueInput[]
   }
 
   export type ApplicationUpdateresponseFieldsInput = {
@@ -47602,6 +49274,20 @@ export namespace Prisma {
     deleteMany?: AssetScalarWhereInput | AssetScalarWhereInput[]
   }
 
+  export type ApplicationDevLogUpdateManyWithoutApplicationNestedInput = {
+    create?: XOR<ApplicationDevLogCreateWithoutApplicationInput, ApplicationDevLogUncheckedCreateWithoutApplicationInput> | ApplicationDevLogCreateWithoutApplicationInput[] | ApplicationDevLogUncheckedCreateWithoutApplicationInput[]
+    connectOrCreate?: ApplicationDevLogCreateOrConnectWithoutApplicationInput | ApplicationDevLogCreateOrConnectWithoutApplicationInput[]
+    upsert?: ApplicationDevLogUpsertWithWhereUniqueWithoutApplicationInput | ApplicationDevLogUpsertWithWhereUniqueWithoutApplicationInput[]
+    createMany?: ApplicationDevLogCreateManyApplicationInputEnvelope
+    set?: ApplicationDevLogWhereUniqueInput | ApplicationDevLogWhereUniqueInput[]
+    disconnect?: ApplicationDevLogWhereUniqueInput | ApplicationDevLogWhereUniqueInput[]
+    delete?: ApplicationDevLogWhereUniqueInput | ApplicationDevLogWhereUniqueInput[]
+    connect?: ApplicationDevLogWhereUniqueInput | ApplicationDevLogWhereUniqueInput[]
+    update?: ApplicationDevLogUpdateWithWhereUniqueWithoutApplicationInput | ApplicationDevLogUpdateWithWhereUniqueWithoutApplicationInput[]
+    updateMany?: ApplicationDevLogUpdateManyWithWhereWithoutApplicationInput | ApplicationDevLogUpdateManyWithWhereWithoutApplicationInput[]
+    deleteMany?: ApplicationDevLogScalarWhereInput | ApplicationDevLogScalarWhereInput[]
+  }
+
   export type ConnectionUncheckedUpdateManyWithoutApplicationNestedInput = {
     create?: XOR<ConnectionCreateWithoutApplicationInput, ConnectionUncheckedCreateWithoutApplicationInput> | ConnectionCreateWithoutApplicationInput[] | ConnectionUncheckedCreateWithoutApplicationInput[]
     connectOrCreate?: ConnectionCreateOrConnectWithoutApplicationInput | ConnectionCreateOrConnectWithoutApplicationInput[]
@@ -47712,6 +49398,34 @@ export namespace Prisma {
     update?: AssetUpdateWithWhereUniqueWithoutChildApplicationInput | AssetUpdateWithWhereUniqueWithoutChildApplicationInput[]
     updateMany?: AssetUpdateManyWithWhereWithoutChildApplicationInput | AssetUpdateManyWithWhereWithoutChildApplicationInput[]
     deleteMany?: AssetScalarWhereInput | AssetScalarWhereInput[]
+  }
+
+  export type ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput = {
+    create?: XOR<ApplicationDevLogCreateWithoutApplicationInput, ApplicationDevLogUncheckedCreateWithoutApplicationInput> | ApplicationDevLogCreateWithoutApplicationInput[] | ApplicationDevLogUncheckedCreateWithoutApplicationInput[]
+    connectOrCreate?: ApplicationDevLogCreateOrConnectWithoutApplicationInput | ApplicationDevLogCreateOrConnectWithoutApplicationInput[]
+    upsert?: ApplicationDevLogUpsertWithWhereUniqueWithoutApplicationInput | ApplicationDevLogUpsertWithWhereUniqueWithoutApplicationInput[]
+    createMany?: ApplicationDevLogCreateManyApplicationInputEnvelope
+    set?: ApplicationDevLogWhereUniqueInput | ApplicationDevLogWhereUniqueInput[]
+    disconnect?: ApplicationDevLogWhereUniqueInput | ApplicationDevLogWhereUniqueInput[]
+    delete?: ApplicationDevLogWhereUniqueInput | ApplicationDevLogWhereUniqueInput[]
+    connect?: ApplicationDevLogWhereUniqueInput | ApplicationDevLogWhereUniqueInput[]
+    update?: ApplicationDevLogUpdateWithWhereUniqueWithoutApplicationInput | ApplicationDevLogUpdateWithWhereUniqueWithoutApplicationInput[]
+    updateMany?: ApplicationDevLogUpdateManyWithWhereWithoutApplicationInput | ApplicationDevLogUpdateManyWithWhereWithoutApplicationInput[]
+    deleteMany?: ApplicationDevLogScalarWhereInput | ApplicationDevLogScalarWhereInput[]
+  }
+
+  export type ApplicationCreateNestedOneWithoutDevLogsInput = {
+    create?: XOR<ApplicationCreateWithoutDevLogsInput, ApplicationUncheckedCreateWithoutDevLogsInput>
+    connectOrCreate?: ApplicationCreateOrConnectWithoutDevLogsInput
+    connect?: ApplicationWhereUniqueInput
+  }
+
+  export type ApplicationUpdateOneRequiredWithoutDevLogsNestedInput = {
+    create?: XOR<ApplicationCreateWithoutDevLogsInput, ApplicationUncheckedCreateWithoutDevLogsInput>
+    connectOrCreate?: ApplicationCreateOrConnectWithoutDevLogsInput
+    upsert?: ApplicationUpsertWithoutDevLogsInput
+    connect?: ApplicationWhereUniqueInput
+    update?: XOR<XOR<ApplicationUpdateToOneWithWhereWithoutDevLogsInput, ApplicationUpdateWithoutDevLogsInput>, ApplicationUncheckedUpdateWithoutDevLogsInput>
   }
 
   export type AssetCreateNestedManyWithoutPortfolioInput = {
@@ -53085,6 +54799,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
     childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
+    devLogs?: ApplicationDevLogCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutProviderInput = {
@@ -53110,6 +54825,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
+    devLogs?: ApplicationDevLogUncheckedCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutProviderInput = {
@@ -53412,6 +55128,50 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ApplicationDevLogCreateWithoutApplicationInput = {
+    id?: string
+    endpoint: string
+    method: string
+    statusCode: number
+    requesterIp?: string | null
+    origin?: string | null
+    referer?: string | null
+    userAgent?: string | null
+    requestBody?: NullableJsonNullValueInput | InputJsonValue
+    query?: NullableJsonNullValueInput | InputJsonValue
+    requestMeta?: NullableJsonNullValueInput | InputJsonValue
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ApplicationDevLogUncheckedCreateWithoutApplicationInput = {
+    id?: string
+    endpoint: string
+    method: string
+    statusCode: number
+    requesterIp?: string | null
+    origin?: string | null
+    referer?: string | null
+    userAgent?: string | null
+    requestBody?: NullableJsonNullValueInput | InputJsonValue
+    query?: NullableJsonNullValueInput | InputJsonValue
+    requestMeta?: NullableJsonNullValueInput | InputJsonValue
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ApplicationDevLogCreateOrConnectWithoutApplicationInput = {
+    where: ApplicationDevLogWhereUniqueInput
+    create: XOR<ApplicationDevLogCreateWithoutApplicationInput, ApplicationDevLogUncheckedCreateWithoutApplicationInput>
+  }
+
+  export type ApplicationDevLogCreateManyApplicationInputEnvelope = {
+    data: ApplicationDevLogCreateManyApplicationInput | ApplicationDevLogCreateManyApplicationInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ApplicationProviderUpsertWithoutApplicationsInput = {
     update: XOR<ApplicationProviderUpdateWithoutApplicationsInput, ApplicationProviderUncheckedUpdateWithoutApplicationsInput>
     create: XOR<ApplicationProviderCreateWithoutApplicationsInput, ApplicationProviderUncheckedCreateWithoutApplicationsInput>
@@ -53623,6 +55383,163 @@ export namespace Prisma {
   export type AssetUpdateManyWithWhereWithoutChildApplicationInput = {
     where: AssetScalarWhereInput
     data: XOR<AssetUpdateManyMutationInput, AssetUncheckedUpdateManyWithoutChildApplicationInput>
+  }
+
+  export type ApplicationDevLogUpsertWithWhereUniqueWithoutApplicationInput = {
+    where: ApplicationDevLogWhereUniqueInput
+    update: XOR<ApplicationDevLogUpdateWithoutApplicationInput, ApplicationDevLogUncheckedUpdateWithoutApplicationInput>
+    create: XOR<ApplicationDevLogCreateWithoutApplicationInput, ApplicationDevLogUncheckedCreateWithoutApplicationInput>
+  }
+
+  export type ApplicationDevLogUpdateWithWhereUniqueWithoutApplicationInput = {
+    where: ApplicationDevLogWhereUniqueInput
+    data: XOR<ApplicationDevLogUpdateWithoutApplicationInput, ApplicationDevLogUncheckedUpdateWithoutApplicationInput>
+  }
+
+  export type ApplicationDevLogUpdateManyWithWhereWithoutApplicationInput = {
+    where: ApplicationDevLogScalarWhereInput
+    data: XOR<ApplicationDevLogUpdateManyMutationInput, ApplicationDevLogUncheckedUpdateManyWithoutApplicationInput>
+  }
+
+  export type ApplicationDevLogScalarWhereInput = {
+    AND?: ApplicationDevLogScalarWhereInput | ApplicationDevLogScalarWhereInput[]
+    OR?: ApplicationDevLogScalarWhereInput[]
+    NOT?: ApplicationDevLogScalarWhereInput | ApplicationDevLogScalarWhereInput[]
+    id?: StringFilter<"ApplicationDevLog"> | string
+    appId?: StringFilter<"ApplicationDevLog"> | string
+    endpoint?: StringFilter<"ApplicationDevLog"> | string
+    method?: StringFilter<"ApplicationDevLog"> | string
+    statusCode?: IntFilter<"ApplicationDevLog"> | number
+    requesterIp?: StringNullableFilter<"ApplicationDevLog"> | string | null
+    origin?: StringNullableFilter<"ApplicationDevLog"> | string | null
+    referer?: StringNullableFilter<"ApplicationDevLog"> | string | null
+    userAgent?: StringNullableFilter<"ApplicationDevLog"> | string | null
+    requestBody?: JsonNullableFilter<"ApplicationDevLog">
+    query?: JsonNullableFilter<"ApplicationDevLog">
+    requestMeta?: JsonNullableFilter<"ApplicationDevLog">
+    responseBody?: JsonNullableFilter<"ApplicationDevLog">
+    error?: StringNullableFilter<"ApplicationDevLog"> | string | null
+    createdAt?: DateTimeFilter<"ApplicationDevLog"> | Date | string
+  }
+
+  export type ApplicationCreateWithoutDevLogsInput = {
+    id: string
+    name: string
+    description?: string | null
+    icon?: string | null
+    website?: string | null
+    appSecret?: string | null
+    createdAt?: Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    isInternal?: boolean
+    responseFields?: ApplicationCreateresponseFieldsInput | string[]
+    tokenFields?: ApplicationCreatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: number
+    provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
+    connections?: ConnectionCreateNestedManyWithoutApplicationInput
+    bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
+    policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberCreateNestedManyWithoutParentApplicationInput
+    authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
+    authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
+    identities?: IdentityCreateNestedManyWithoutApplicationInput
+    childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
+  }
+
+  export type ApplicationUncheckedCreateWithoutDevLogsInput = {
+    id: string
+    name: string
+    description?: string | null
+    icon?: string | null
+    website?: string | null
+    appSecret?: string | null
+    createdAt?: Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    isInternal?: boolean
+    responseFields?: ApplicationCreateresponseFieldsInput | string[]
+    tokenFields?: ApplicationCreatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: number
+    providerId?: string | null
+    connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
+    bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
+    policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
+    parentMembers?: MemberUncheckedCreateNestedManyWithoutParentApplicationInput
+    authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
+    authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
+    identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
+  }
+
+  export type ApplicationCreateOrConnectWithoutDevLogsInput = {
+    where: ApplicationWhereUniqueInput
+    create: XOR<ApplicationCreateWithoutDevLogsInput, ApplicationUncheckedCreateWithoutDevLogsInput>
+  }
+
+  export type ApplicationUpsertWithoutDevLogsInput = {
+    update: XOR<ApplicationUpdateWithoutDevLogsInput, ApplicationUncheckedUpdateWithoutDevLogsInput>
+    create: XOR<ApplicationCreateWithoutDevLogsInput, ApplicationUncheckedCreateWithoutDevLogsInput>
+    where?: ApplicationWhereInput
+  }
+
+  export type ApplicationUpdateToOneWithWhereWithoutDevLogsInput = {
+    where?: ApplicationWhereInput
+    data: XOR<ApplicationUpdateWithoutDevLogsInput, ApplicationUncheckedUpdateWithoutDevLogsInput>
+  }
+
+  export type ApplicationUpdateWithoutDevLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    appSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    responseFields?: ApplicationUpdateresponseFieldsInput | string[]
+    tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: IntFieldUpdateOperationsInput | number
+    provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
+    connections?: ConnectionUpdateManyWithoutApplicationNestedInput
+    bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
+    policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUpdateManyWithoutParentApplicationNestedInput
+    authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
+    authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
+    identities?: IdentityUpdateManyWithoutApplicationNestedInput
+    childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
+  }
+
+  export type ApplicationUncheckedUpdateWithoutDevLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    appSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    responseFields?: ApplicationUpdateresponseFieldsInput | string[]
+    tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: IntFieldUpdateOperationsInput | number
+    providerId?: NullableStringFieldUpdateOperationsInput | string | null
+    connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
+    bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
+    policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
+    parentMembers?: MemberUncheckedUpdateManyWithoutParentApplicationNestedInput
+    authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
+    authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
+    identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
   }
 
   export type AssetCreateWithoutPortfolioInput = {
@@ -53979,6 +55896,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
+    devLogs?: ApplicationDevLogCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutChildAssetsInput = {
@@ -54004,6 +55922,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
+    devLogs?: ApplicationDevLogUncheckedCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutChildAssetsInput = {
@@ -54301,6 +56220,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
+    devLogs?: ApplicationDevLogUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutChildAssetsInput = {
@@ -54326,6 +56246,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
+    devLogs?: ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type ConnectionUpsertWithoutChildAssetsInput = {
@@ -54641,6 +56562,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
     childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
+    devLogs?: ApplicationDevLogCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutParentMembersInput = {
@@ -54666,6 +56588,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
+    devLogs?: ApplicationDevLogUncheckedCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutParentMembersInput = {
@@ -55043,6 +56966,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
+    devLogs?: ApplicationDevLogUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutParentMembersInput = {
@@ -55068,6 +56992,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
+    devLogs?: ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type ConnectionUpsertWithoutParentMembersInput = {
@@ -55603,6 +57528,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
     childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
+    devLogs?: ApplicationDevLogCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutConnectionsInput = {
@@ -55628,6 +57554,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
+    devLogs?: ApplicationDevLogUncheckedCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutConnectionsInput = {
@@ -55826,6 +57753,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
+    devLogs?: ApplicationDevLogUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutConnectionsInput = {
@@ -55851,6 +57779,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
+    devLogs?: ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type MemberUpsertWithWhereUniqueWithoutParentConnectionInput = {
@@ -55908,6 +57837,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
     childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
+    devLogs?: ApplicationDevLogCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutBridgeInput = {
@@ -55933,6 +57863,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
+    devLogs?: ApplicationDevLogUncheckedCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutBridgeInput = {
@@ -55974,6 +57905,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
+    devLogs?: ApplicationDevLogUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutBridgeInput = {
@@ -55999,6 +57931,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
+    devLogs?: ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationCreateWithoutPoliciesInput = {
@@ -56024,6 +57957,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
     childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
+    devLogs?: ApplicationDevLogCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutPoliciesInput = {
@@ -56049,6 +57983,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
+    devLogs?: ApplicationDevLogUncheckedCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutPoliciesInput = {
@@ -56090,6 +58025,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
+    devLogs?: ApplicationDevLogUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutPoliciesInput = {
@@ -56115,6 +58051,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
+    devLogs?: ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationCreateWithoutAuthzPermissionsInput = {
@@ -56140,6 +58077,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
     childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
+    devLogs?: ApplicationDevLogCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutAuthzPermissionsInput = {
@@ -56165,6 +58103,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
+    devLogs?: ApplicationDevLogUncheckedCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutAuthzPermissionsInput = {
@@ -56206,6 +58145,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
+    devLogs?: ApplicationDevLogUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutAuthzPermissionsInput = {
@@ -56231,6 +58171,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
+    devLogs?: ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationCreateWithoutAuthzRolesInput = {
@@ -56256,6 +58197,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
     childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
+    devLogs?: ApplicationDevLogCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutAuthzRolesInput = {
@@ -56281,6 +58223,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
+    devLogs?: ApplicationDevLogUncheckedCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutAuthzRolesInput = {
@@ -56388,6 +58331,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
+    devLogs?: ApplicationDevLogUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutAuthzRolesInput = {
@@ -56413,6 +58357,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
+    devLogs?: ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type AuthzAssetsAccessGrantUpsertWithWhereUniqueWithoutRoleInput = {
@@ -57146,6 +59091,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
+    devLogs?: ApplicationDevLogCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationUncheckedCreateWithoutIdentitiesInput = {
@@ -57171,6 +59117,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
+    devLogs?: ApplicationDevLogUncheckedCreateNestedManyWithoutApplicationInput
   }
 
   export type ApplicationCreateOrConnectWithoutIdentitiesInput = {
@@ -57212,6 +59159,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
+    devLogs?: ApplicationDevLogUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutIdentitiesInput = {
@@ -57237,6 +59185,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
+    devLogs?: ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type ConnectionCreateManyAccountInput = {
@@ -58365,6 +60314,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
+    devLogs?: ApplicationDevLogUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateWithoutProviderInput = {
@@ -58390,6 +60340,7 @@ export namespace Prisma {
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
+    devLogs?: ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type ApplicationUncheckedUpdateManyWithoutProviderInput = {
@@ -58479,6 +60430,23 @@ export namespace Prisma {
     childAccountId?: string | null
     childConnectionId?: string | null
     details?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type ApplicationDevLogCreateManyApplicationInput = {
+    id?: string
+    endpoint: string
+    method: string
+    statusCode: number
+    requesterIp?: string | null
+    origin?: string | null
+    referer?: string | null
+    userAgent?: string | null
+    requestBody?: NullableJsonNullValueInput | InputJsonValue
+    query?: NullableJsonNullValueInput | InputJsonValue
+    requestMeta?: NullableJsonNullValueInput | InputJsonValue
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    error?: string | null
+    createdAt?: Date | string
   }
 
   export type ConnectionUpdateWithoutApplicationInput = {
@@ -58705,6 +60673,57 @@ export namespace Prisma {
     childAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     childConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type ApplicationDevLogUpdateWithoutApplicationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    endpoint?: StringFieldUpdateOperationsInput | string
+    method?: StringFieldUpdateOperationsInput | string
+    statusCode?: IntFieldUpdateOperationsInput | number
+    requesterIp?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: NullableStringFieldUpdateOperationsInput | string | null
+    referer?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    requestBody?: NullableJsonNullValueInput | InputJsonValue
+    query?: NullableJsonNullValueInput | InputJsonValue
+    requestMeta?: NullableJsonNullValueInput | InputJsonValue
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApplicationDevLogUncheckedUpdateWithoutApplicationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    endpoint?: StringFieldUpdateOperationsInput | string
+    method?: StringFieldUpdateOperationsInput | string
+    statusCode?: IntFieldUpdateOperationsInput | number
+    requesterIp?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: NullableStringFieldUpdateOperationsInput | string | null
+    referer?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    requestBody?: NullableJsonNullValueInput | InputJsonValue
+    query?: NullableJsonNullValueInput | InputJsonValue
+    requestMeta?: NullableJsonNullValueInput | InputJsonValue
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ApplicationDevLogUncheckedUpdateManyWithoutApplicationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    endpoint?: StringFieldUpdateOperationsInput | string
+    method?: StringFieldUpdateOperationsInput | string
+    statusCode?: IntFieldUpdateOperationsInput | number
+    requesterIp?: NullableStringFieldUpdateOperationsInput | string | null
+    origin?: NullableStringFieldUpdateOperationsInput | string | null
+    referer?: NullableStringFieldUpdateOperationsInput | string | null
+    userAgent?: NullableStringFieldUpdateOperationsInput | string | null
+    requestBody?: NullableJsonNullValueInput | InputJsonValue
+    query?: NullableJsonNullValueInput | InputJsonValue
+    requestMeta?: NullableJsonNullValueInput | InputJsonValue
+    responseBody?: NullableJsonNullValueInput | InputJsonValue
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AssetCreateManyPortfolioInput = {

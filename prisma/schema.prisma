@@ -300,8 +300,32 @@ model Application {
   authzRoles       AuthzRole[]
   identities       Identity[]
   childAssets      Asset[]               @relation("AssetChildApplication")
+  devLogs          ApplicationDevLog[]
 
   @@map("application")
+}
+
+model ApplicationDevLog {
+  id           String      @id @default(uuid())
+  appId        String      @map("app_id")
+  endpoint     String
+  method       String
+  statusCode   Int         @map("status_code")
+  requesterIp  String?     @map("requester_ip")
+  origin       String?
+  referer      String?
+  userAgent    String?     @map("user_agent")
+  requestBody  Json?       @map("request_body")
+  query        Json?
+  requestMeta  Json?       @map("request_meta")
+  responseBody Json?       @map("response_body")
+  error        String?
+  createdAt    DateTime    @default(now()) @map("created_at")
+  application  Application @relation(fields: [appId], references: [id], onDelete: Cascade)
+
+  @@index([appId, createdAt], map: "application_dev_log_app_id_created_at_idx")
+  @@index([createdAt], map: "application_dev_log_created_at_idx")
+  @@map("application_dev_log")
 }
 
 model Portfolio {

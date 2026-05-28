@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { applicationAccessFields, type ApplicationAccessField } from '@/services/applications/types';
+import { writeApplicationDevLog } from '@/services/bridge/dev-logs';
 
 export const dynamic = 'force-dynamic';
 const accessFieldSet = new Set<ApplicationAccessField>(applicationAccessFields);
@@ -36,18 +37,34 @@ function hasDisallowedLocationInput(request: NextRequest): boolean {
 }
 
 export async function POST(request: NextRequest) {
+  let requestBodyForLog: Record<string, unknown> | null = null;
+
+  const respond = async (payload: Record<string, unknown>, status: number, appIdForLog?: string | null) => {
+    await writeApplicationDevLog({
+      appId: appIdForLog ?? (typeof requestBodyForLog?.appId === 'string' ? requestBodyForLog.appId : null),
+      endpoint: '/bridge/api.v1/accounts/lookup',
+      method: 'POST',
+      request,
+      statusCode: status,
+      requestBody: requestBodyForLog ?? undefined,
+      responseBody: payload,
+      error: typeof payload.error === 'string' ? payload.error : undefined,
+    });
+    return NextResponse.json(payload, { status });
+  };
+
   if (hasDisallowedLocationInput(request)) {
-    return NextResponse.json(
+    return respond(
       { success: false, reason: 'invalid location used. use raw json to make request.' },
-      { status: 400 }
+      400
     );
   }
 
   const contentType = request.headers.get('content-type') || '';
   if (!contentType.toLowerCase().includes('application/json')) {
-    return NextResponse.json(
+    return respond(
       { success: false, reason: 'invalid location used. use raw json to make request.' },
-      { status: 400 }
+      400
     );
   }
 
@@ -57,27 +74,31 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
+    requestBodyForLog = body && typeof body === 'object' ? (body as Record<string, unknown>) : null;
     appId = typeof body?.appId === 'string' ? body.appId.trim() : null;
     appSecret = typeof body?.appSecret === 'string' ? body.appSecret.trim() : null;
     accountId = typeof body?.accountId === 'string' ? body.accountId.trim() : null;
   } catch {
-    return NextResponse.json(
+    return respond(
       { success: false, error: 'Invalid JSON body.' },
-      { status: 400 }
+      400,
+      appId
     );
   }
 
   if (!appId || !appSecret) {
-    return NextResponse.json(
+    return respond(
       { success: false, error: 'appId and appSecret are required.' },
-      { status: 400 }
+      400,
+      appId
     );
   }
 
   if (!accountId) {
-    return NextResponse.json(
+    return respond(
       { success: false, error: 'accountId is required.' },
-      { status: 400 }
+      400,
+      appId
     );
   }
 
@@ -88,9 +109,10 @@ export async function POST(request: NextRequest) {
     });
 
     if (!application || application.appSecret !== appSecret) {
-      return NextResponse.json(
+      return respond(
         { success: false, error: 'Invalid application credentials.' },
-        { status: 401 }
+        401,
+        appId
       );
     }
 
@@ -142,10 +164,11 @@ export async function POST(request: NextRequest) {
     });
 
     if (!account) {
-      return NextResponse.json(
+      return respond(
         { success: false, error: 'Account not found.' },
-        { status: 404 }
-        );
+        404,
+        appId
+      );
       }
 
     const connection = await prisma.connection.findUnique({
@@ -154,29 +177,32 @@ export async function POST(request: NextRequest) {
     });
 
     if (!connection) {
-      return NextResponse.json(
+      return respond(
         {
           success: false,
           error: 'connection_not_found',
         },
-        { status: 404 }
+        404,
+        appId
       );
     }
 
     if (connection.status === 'invited') {
-      return NextResponse.json(
+      return respond(
         {
           success: false,
           error: 'connection_invited',
         },
-        { status: 200 }
+        200,
+        appId
       );
     }
 
     if (connection.status !== 'active') {
-      return NextResponse.json(
+      return respond(
         { success: false, error: `connection_${connection.status}` },
-        { status: 200 }
+        200,
+        appId
       );
     }
 
@@ -272,18 +298,19 @@ export async function POST(request: NextRequest) {
       profile[field] = valueByField[field];
     }
 
-    return NextResponse.json({
+    return respond({
       success: true,
       profile,
       role: topRole,
       permissions: topPermission,
       access,
-    });
+    }, 200, appId);
   } catch (error) {
     await logError('auth', error, `accounts/lookup:${appId}`);
-    return NextResponse.json(
+    return respond(
       { success: false, error: 'Internal server error.' },
-      { status: 500 }
+      500,
+      appId
     );
   }
 }

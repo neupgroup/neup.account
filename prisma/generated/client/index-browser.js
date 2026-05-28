@@ -312,6 +312,24 @@ exports.Prisma.ApplicationScalarFieldEnum = {
   providerId: 'providerId'
 };
 
+exports.Prisma.ApplicationDevLogScalarFieldEnum = {
+  id: 'id',
+  appId: 'appId',
+  endpoint: 'endpoint',
+  method: 'method',
+  statusCode: 'statusCode',
+  requesterIp: 'requesterIp',
+  origin: 'origin',
+  referer: 'referer',
+  userAgent: 'userAgent',
+  requestBody: 'requestBody',
+  query: 'query',
+  requestMeta: 'requestMeta',
+  responseBody: 'responseBody',
+  error: 'error',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.PortfolioScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -497,6 +515,7 @@ exports.Prisma.ModelName = {
   SystemError: 'SystemError',
   ApplicationProvider: 'ApplicationProvider',
   Application: 'Application',
+  ApplicationDevLog: 'ApplicationDevLog',
   Portfolio: 'Portfolio',
   Asset: 'Asset',
   Member: 'Member',

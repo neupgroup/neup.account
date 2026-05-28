@@ -51,6 +51,7 @@ export default async function ApplicationConfigPage({ params }: Props) {
         initialOrigins={config.silentSsoOrigins}
         initialServerIps={config.serverIps}
         initialAccountUpdateWebhookUrl={config.accountUpdateWebhookUrl}
+        initialRoleUpdateWebhookUrl={config.roleUpdateWebhookUrl}
         initialAllowDevMode={config.allowDevMode}
         initialAllowDevIpMode={config.allowDevIpMode}
       />

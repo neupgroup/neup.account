@@ -6,6 +6,7 @@ import { getActiveAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
 import { dispatchAuthzWebhook } from './authz-webhook';
 import { checkPermissions } from '@/services/user';
+import { dispatchRoleUpdateWebhook, getRolePayload } from './role-update-events';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -362,6 +363,16 @@ export async function createAppRole(input: {
       roles.find((r) => r.id === role.id) ?? { ...role, permissions: [] }
     );
 
+    await dispatchRoleUpdateWebhook({
+      appId: input.appId,
+      eventType: 'role.created',
+      role: {
+        id: fullRole.id,
+        name: fullRole.name,
+        permissions: fullRole.permissions.map((p) => p.name),
+      },
+    });
+
     revalidatePath(`/data/appconnection/${input.appId}`);
     return { success: true, role: fullRole };
   } catch (error) {
@@ -406,6 +417,15 @@ export async function updateAppRolePermissions(input: {
       }
     });
 
+    const rolePayload = await getRolePayload(input.appId, input.roleId);
+    if (rolePayload) {
+      await dispatchRoleUpdateWebhook({
+        appId: input.appId,
+        eventType: 'role.updated',
+        role: rolePayload,
+      });
+    }
+
     revalidatePath(`/data/appconnection/${input.appId}`);
     return { success: true };
   } catch (error) {
@@ -422,7 +442,17 @@ export async function deleteAppRole(input: {
   if ('error' in auth) return { success: false, error: auth.error };
 
   try {
+    const rolePayload = await getRolePayload(input.appId, input.roleId);
     await prisma.authzRole.delete({ where: { id: input.roleId } });
+
+    if (rolePayload) {
+      await dispatchRoleUpdateWebhook({
+        appId: input.appId,
+        eventType: 'role.removed',
+        role: rolePayload,
+      });
+    }
+
     revalidatePath(`/data/appconnection/${input.appId}`);
     return { success: true };
   } catch (error) {

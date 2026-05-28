@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '@/core/hooks/use-toast';
-import { saveAppConfig, addSilentSsoOrigin, removeSilentSsoOrigin, addServerIp, removeServerIp, saveAccountUpdateWebhookUrl } from '@/services/applications/manage';
+import { saveAppConfig, addSilentSsoOrigin, removeSilentSsoOrigin, addServerIp, removeServerIp, saveAccountUpdateWebhookUrl, saveRoleUpdateWebhookUrl } from '@/services/applications/manage';
 import {
   applicationResponseFields,
   applicationTokenFields,
@@ -81,6 +81,7 @@ type Props = {
   initialOrigins: Array<{ id: string; value: string }>;
   initialServerIps: Array<{ id: string; value: string }>;
   initialAccountUpdateWebhookUrl: string | null;
+  initialRoleUpdateWebhookUrl: string | null;
   initialAllowDevMode: boolean;
   initialAllowDevIpMode: boolean;
 };
@@ -97,6 +98,7 @@ export function AppConfigForm({
   initialOrigins,
   initialServerIps,
   initialAccountUpdateWebhookUrl,
+  initialRoleUpdateWebhookUrl,
   initialAllowDevMode,
   initialAllowDevIpMode,
 }: Props) {
@@ -107,6 +109,7 @@ export function AppConfigForm({
   const [newOrigin, setNewOrigin] = useState('');
   const [newServerIp, setNewServerIp] = useState('');
   const [accountUpdateWebhookUrl, setAccountUpdateWebhookUrl] = useState(initialAccountUpdateWebhookUrl ?? '');
+  const [roleUpdateWebhookUrl, setRoleUpdateWebhookUrl] = useState(initialRoleUpdateWebhookUrl ?? '');
   const [origins, setOrigins] = useState(initialOrigins);
   const [serverIps, setServerIps] = useState(initialServerIps);
 
@@ -213,6 +216,21 @@ export function AppConfigForm({
 
       if (result.success) {
         toast({ title: 'Saved', description: 'Account update webhook URL saved.' });
+      } else {
+        toast({ variant: 'destructive', title: 'Error', description: result.error });
+      }
+    });
+  };
+
+  const handleSaveRoleUpdateWebhook = () => {
+    startTransition(async () => {
+      const result = await saveRoleUpdateWebhookUrl({
+        appId,
+        url: roleUpdateWebhookUrl,
+      });
+
+      if (result.success) {
+        toast({ title: 'Saved', description: 'Role update webhook URL saved.' });
       } else {
         toast({ variant: 'destructive', title: 'Error', description: result.error });
       }
@@ -536,6 +554,43 @@ export function AppConfigForm({
             </CardContent>
             <CardFooter>
               <Button type="button" onClick={handleSaveAccountUpdateWebhook} disabled={isPending}>
+                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Webhook
+              </Button>
+            </CardFooter>
+          </Card>
+
+          {/* Role Update Webhook */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Globe className="h-4 w-4 text-muted-foreground" />
+                <CardTitle>Role Update Webhook</CardTitle>
+              </div>
+              <CardDescription>
+                Optional endpoint to receive encrypted <code className="text-xs">role.created</code>, <code className="text-xs">role.updated</code>, and <code className="text-xs">role.removed</code> events.
+                Leave empty to disable.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="space-y-1.5">
+                <label htmlFor="role-update-webhook" className="text-sm font-medium">
+                  Webhook URL
+                </label>
+                <Input
+                  id="role-update-webhook"
+                  type="url"
+                  placeholder="https://example.com/webhooks/role-updated"
+                  value={roleUpdateWebhookUrl}
+                  onChange={(e) => setRoleUpdateWebhookUrl(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Must be HTTPS. If unset, no role update events are sent to this application.
+                </p>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button type="button" onClick={handleSaveRoleUpdateWebhook} disabled={isPending}>
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Save Webhook
               </Button>

@@ -32,27 +32,6 @@ type DispatchResult = {
   error?: string;
 };
 
-function extractPermissionNames(raw: unknown): string[] {
-  if (!Array.isArray(raw)) return [];
-  const names: string[] = [];
-
-  for (const item of raw) {
-    if (typeof item === 'string') {
-      names.push(item);
-      continue;
-    }
-
-    if (item && typeof item === 'object') {
-      const maybeName = (item as Record<string, unknown>).name;
-      if (typeof maybeName === 'string' && maybeName.trim().length > 0) {
-        names.push(maybeName);
-      }
-    }
-  }
-
-  return Array.from(new Set(names));
-}
-
 async function logAccountUpdateWebhookDispatch(input: {
   appId: string;
   webhookUrl: string;
@@ -149,7 +128,6 @@ export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise
               select: {
                 id: true,
                 name: true,
-                permissions: true,
               },
             },
             application: {
@@ -182,7 +160,6 @@ export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise
           ? {
               id: connection.role.id,
               name: connection.role.name,
-              permissions: extractPermissionNames(connection.role.permissions),
             }
           : null,
         appSecret: connection.application.appSecret?.trim() ?? '',

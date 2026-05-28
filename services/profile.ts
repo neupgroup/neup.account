@@ -314,8 +314,8 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
                 changedFields: Array.from(changedFields),
             });
 
-            if (dispatchResult.sent > 0 && dispatchResult.recorded === 0) {
-                await logError('webhook', new Error('No downstream app confirmed account update recording.'), `dispatchAccountUpdatedEvent:${accountId}`);
+            if (dispatchResult.sent > 0 && dispatchResult.succeeded === 0) {
+                await logError('webhook', new Error('No downstream app returned success for account update event.'), `dispatchAccountUpdatedEvent:${accountId}`);
             }
         }
         

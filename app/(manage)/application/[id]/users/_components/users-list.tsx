@@ -5,6 +5,7 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { FlowLink } from '@/components/ui/flow-link';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,
@@ -50,7 +51,17 @@ function statusLabel(status: string | null): string {
   return status.charAt(0).toUpperCase() + status.slice(1);
 }
 
-function UserRow({ user, isFirst, isLast }: { user: AppUserEntry; isFirst: boolean; isLast: boolean }) {
+function UserRow({
+  appId,
+  user,
+  isFirst,
+  isLast,
+}: {
+  appId: string;
+  user: AppUserEntry;
+  isFirst: boolean;
+  isLast: boolean;
+}) {
   const connectedAt = new Date(user.connectedAt).toLocaleDateString(undefined, {
     year: 'numeric',
     month: 'short',
@@ -66,10 +77,12 @@ function UserRow({ user, isFirst, isLast }: { user: AppUserEntry; isFirst: boole
   const initials = user.displayName?.charAt(0).toUpperCase() ?? '?';
 
   return (
-    <div
+    <FlowLink
+      href={`/application/${appId}/users/${user.connectionId}?mode=root`}
       className={`
         flex items-center gap-4 px-4 py-3.5
         border border-border bg-card
+        transition-colors hover:bg-muted/40
         ${roundingClass}
         ${!isFirst ? '-mt-px' : ''}
       `}
@@ -98,7 +111,7 @@ function UserRow({ user, isFirst, isLast }: { user: AppUserEntry; isFirst: boole
       <Badge variant={statusVariant(user.status)} className="capitalize shrink-0">
         {statusLabel(user.status)}
       </Badge>
-    </div>
+    </FlowLink>
   );
 }
 
@@ -280,7 +293,8 @@ function UsersListInner({ appId }: { appId: string }) {
         <div>
           {users.map((user, i) => (
             <UserRow
-              key={user.accountId}
+              appId={appId}
+              key={user.connectionId}
               user={user}
               isFirst={i === 0}
               isLast={i === users.length - 1}

@@ -1602,6 +1602,7 @@ export type AppUserStatus = 'active' | 'creationRequired' | 'deactivated';
 export type AppUserSortKey = 'newest' | 'oldest' | 'name_asc' | 'name_desc';
 
 export type AppUserEntry = {
+  connectionId: string;
   accountId: string;
   displayName: string | null;
   displayImage: string | null;
@@ -1617,6 +1618,29 @@ export type AppUsersPage = {
   page: number;
   pageSize: number;
   totalPages: number;
+};
+
+export type AppUserConnectionDetails = {
+  connectionId: string;
+  appId: string;
+  accountId: string;
+  connectedAt: Date;
+  connectionStatus: string;
+  roleId: string | null;
+  displayName: string | null;
+  displayImage: string | null;
+  accountType: string;
+  isVerified: boolean;
+  accountStatus: string | null;
+  createdAt: Date;
+  neupId: string | null;
+};
+
+export type AppRoleOption = {
+  id: string;
+  name: string;
+  description: string | null;
+  scope: string | null;
 };
 
 /**
@@ -1696,6 +1720,7 @@ export async function getApplicationUsersPaginated(params: {
         skip: (page - 1) * pageSize,
         take: pageSize,
         select: {
+          id: true,
           connectedAt: true,
           account: {
             select: {
@@ -1712,6 +1737,7 @@ export async function getApplicationUsersPaginated(params: {
     ]);
 
     const users: AppUserEntry[] = rows.map((r) => ({
+      connectionId: r.id,
       accountId: r.account.id,
       displayName: r.account.displayName,
       displayImage: r.account.displayImage,
@@ -1731,6 +1757,144 @@ export async function getApplicationUsersPaginated(params: {
   } catch (error) {
     await logError('database', error, `getApplicationUsersPaginated:${appId}`);
     return { users: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
+  }
+}
+
+export async function getApplicationUserConnectionDetails(params: {
+  appId: string;
+  connectionId: string;
+}): Promise<AppUserConnectionDetails | null> {
+  const accountId = await getActiveAccountId();
+  if (!accountId) return null;
+
+  const isRootViewer = await checkPermissions(['root.application.view']);
+  const isOwner = await isApplicationOwnerForAccount(accountId, params.appId);
+  if (!isRootViewer && !isOwner) return null;
+
+  try {
+    const row = await prisma.connection.findFirst({
+      where: {
+        id: params.connectionId,
+        appId: params.appId,
+      },
+      select: {
+        id: true,
+        appId: true,
+        accountId: true,
+        connectedAt: true,
+        status: true,
+        roleId: true,
+        account: {
+          select: {
+            id: true,
+            displayName: true,
+            displayImage: true,
+            accountType: true,
+            isVerified: true,
+            status: true,
+            createdAt: true,
+            neupIds: {
+              where: { isPrimary: true },
+              take: 1,
+              select: { neupId: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!row) return null;
+
+    return {
+      connectionId: row.id,
+      appId: row.appId,
+      accountId: row.accountId,
+      connectedAt: row.connectedAt,
+      connectionStatus: row.status,
+      roleId: row.roleId,
+      displayName: row.account.displayName,
+      displayImage: row.account.displayImage,
+      accountType: row.account.accountType,
+      isVerified: row.account.isVerified,
+      accountStatus: row.account.status,
+      createdAt: row.account.createdAt,
+      neupId: row.account.neupIds[0]?.neupId ?? null,
+    };
+  } catch (error) {
+    await logError('database', error, `getApplicationUserConnectionDetails:${params.appId}:${params.connectionId}`);
+    return null;
+  }
+}
+
+export async function getApplicationRoleOptions(appId: string): Promise<AppRoleOption[]> {
+  const accountId = await getActiveAccountId();
+  if (!accountId) return [];
+
+  const isRootViewer = await checkPermissions(['root.application.view']);
+  const isOwner = await isApplicationOwnerForAccount(accountId, appId);
+  if (!isRootViewer && !isOwner) return [];
+
+  try {
+    const roles = await prisma.authzRole.findMany({
+      where: { appId },
+      orderBy: { name: 'asc' },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        scope: true,
+      },
+    });
+
+    return roles;
+  } catch (error) {
+    await logError('database', error, `getApplicationRoleOptions:${appId}`);
+    return [];
+  }
+}
+
+export async function assignApplicationConnectionRole(input: {
+  appId: string;
+  connectionId: string;
+  roleId: string;
+}): Promise<{ success: boolean; error?: string }> {
+  const accountId = await getActiveAccountId();
+  if (!accountId) return { success: false, error: 'Not signed in.' };
+
+  const isRootEditor = await checkPermissions(['root.application.edit']);
+  const isOwner = await isApplicationOwnerForAccount(accountId, input.appId);
+  if (!isRootEditor && !isOwner) {
+    return { success: false, error: 'Permission denied.' };
+  }
+
+  try {
+    const [connection, role] = await Promise.all([
+      prisma.connection.findFirst({
+        where: { id: input.connectionId, appId: input.appId },
+        select: { id: true },
+      }),
+      prisma.authzRole.findFirst({
+        where: { id: input.roleId, appId: input.appId },
+        select: { id: true },
+      }),
+    ]);
+
+    if (!connection) return { success: false, error: 'Connection not found.' };
+    if (!role) return { success: false, error: 'Role not found for this application.' };
+
+    await prisma.connection.update({
+      where: { id: input.connectionId },
+      data: { roleId: input.roleId },
+    });
+
+    revalidatePath(`/application/${input.appId}/users`);
+    revalidatePath(`/application/${input.appId}/users/${input.connectionId}`);
+    revalidatePath(`/application/${input.appId}/users/${input.connectionId}/role`);
+
+    return { success: true };
+  } catch (error) {
+    await logError('database', error, `assignApplicationConnectionRole:${input.appId}:${input.connectionId}`);
+    return { success: false, error: 'Failed to assign role.' };
   }
 }
 

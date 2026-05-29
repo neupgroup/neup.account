@@ -187,17 +187,19 @@ function DataActivityPageComponent({ after, applicationId, history }: { after?: 
             </div>
             <div className="space-y-0">
                 {loading ? (
-                    [...Array(5)].map((_, i) => (
-                        <Card key={i} className="border-dashed">
-                            <CardContent className="p-4 space-y-3">
-                                <Skeleton className="h-4 w-3/5" />
-                                <div className="flex items-center justify-between gap-3">
-                                    <Skeleton className="h-6 w-24 rounded-full" />
-                                    <Skeleton className="h-4 w-36" />
+                    <Card>
+                        <CardContent className="divide-y p-0">
+                            {[...Array(5)].map((_, i) => (
+                                <div key={i} className="p-4 animate-pulse">
+                                    <Skeleton className="h-4 w-3/5" />
+                                    <div className="mt-3 flex items-center justify-between gap-3">
+                                        <Skeleton className="h-6 w-24 rounded-full" />
+                                        <Skeleton className="h-4 w-36" />
+                                    </div>
                                 </div>
-                            </CardContent>
-                        </Card>
-                    ))
+                            ))}
+                        </CardContent>
+                    </Card>
                 ) : logs.length > 0 ? (
                     <Card>
                         <CardContent className="divide-y p-0">

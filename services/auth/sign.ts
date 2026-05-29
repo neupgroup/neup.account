@@ -6,6 +6,7 @@ import { randomBytes } from 'crypto';
 import { getUserProfile } from '@/services/user';
 import { validateExternalRequest } from '@/services/auth/validate';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
+import { applicationPartyValues, type ApplicationParty } from '@/services/applications/types';
 
 const EXTERNAL_LOGIN_PREFIX = 'external_app:';
 function externalLoginType(appId: string) {
@@ -492,6 +493,76 @@ export async function bridgeSignIntoApplication(input: { appId?: string; appType
 	} catch {
 		return { status: 500, body: { success: false, error: 'Internal server error.' } };
 	}
+}
+
+export async function bridgeConnectionSignAndGet(input: { appId?: string; appType?: string; [key: string]: any }): Promise<{ status: number; body: Record<string, any> }> {
+  try {
+    const appId = input?.appId;
+    if (!appId) {
+      return { status: 400, body: { success: false, error: 'appId is required.' } };
+    }
+
+    const validation = await validateExternalRequest(input as any);
+    if (!validation.success) {
+      return { status: validation.status ?? 401, body: { success: false, error: validation.error } };
+    }
+
+    const application = await prisma.application.findUnique({
+      where: { id: appId },
+      select: { id: true, party: true, status: true, tokenFields: true, responseFields: true },
+    });
+    if (!application) {
+      return { status: 404, body: { success: false, error: 'Invalid application ID.' } };
+    }
+
+    if (application.status === 'blocked' || application.status === 'rejected') {
+      return { status: 403, body: { success: false, error: 'Application is not active.' } };
+    }
+
+    const party = applicationPartyValues.includes(application.party as ApplicationParty)
+      ? (application.party as ApplicationParty)
+      : 1;
+    const { accountId, neupId } = validation.user;
+
+    const defaultRoleId = await getApplicationDefaultRoleId(appId);
+    const connection = await prisma.connection.upsert({
+      where: { accountId_appId: { accountId, appId } },
+      update: {},
+      create: { accountId, appId, status: 'active', roleId: defaultRoleId },
+      select: { id: true, status: true, connectedAt: true },
+    });
+
+    if (connection.status !== 'active') {
+      return {
+        status: 403,
+        body: { success: false, error: `connection_${connection.status}` },
+      };
+    }
+
+    const profile = await getUserProfile(accountId);
+    if (!profile) {
+      return { status: 404, body: { success: false, error: 'User profile not found.' } };
+    }
+
+    const response: Record<string, unknown> = {
+      success: true,
+      connectionId: connection.id,
+      connectedAt: connection.connectedAt.toISOString(),
+      displayName: profile.nameDisplay || `${profile.nameFirst || ''} ${profile.nameLast || ''}`.trim(),
+      displayImage: profile.accountPhoto || '',
+      party,
+    };
+
+    if (party === 0 || party === 1) {
+      response.accountId = accountId;
+    } else if (party === 2) {
+      response.neupId = neupId;
+    }
+
+    return { status: 200, body: response };
+  } catch {
+    return { status: 500, body: { success: false, error: 'Internal server error.' } };
+  }
 }
 
 // Looks up the display name of an application by its ID.

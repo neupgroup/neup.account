@@ -48,6 +48,7 @@ export default async function ApplicationConfigPage({ params }: Props) {
         hasSecretKey={config.hasSecretKey}
         initialAccess={config.access}
         initialTokenFields={config.tokenFields}
+        initialParty={config.party}
         initialOrigins={config.silentSsoOrigins}
         initialServerIps={config.serverIps}
         initialAccountUpdateWebhookUrl={config.accountUpdateWebhookUrl}

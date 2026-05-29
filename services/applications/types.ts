@@ -26,6 +26,8 @@ export type ApplicationAccessField = (typeof applicationAccessFields)[number];
 
 // Fields the application owner can toggle for API "response" payloads.
 export const applicationResponseFields = [
+  'accountId',
+  'neupid',
   'displayName',
   'displayImage',
   'role',
@@ -48,6 +50,28 @@ export const applicationTokenFields = [
 ] as const satisfies readonly ApplicationAccessField[];
 
 export type ApplicationTokenField = (typeof applicationTokenFields)[number];
+
+export const applicationPartyValues = [0, 1, 2, 3] as const;
+export type ApplicationParty = (typeof applicationPartyValues)[number];
+
+export const applicationPartyMeta: Record<ApplicationParty, { label: string; description: string }> = {
+  0: {
+    label: 'Internal',
+    description: 'Internal Applications by NeupGroup',
+  },
+  1: {
+    label: 'Partnerships',
+    description: 'Applications that have partnered with NeupGroup and can access account_ids and certain extra data.',
+  },
+  2: {
+    label: 'Second Party',
+    description: 'Apps made using Neup.Site. Access to controlled amount of data.',
+  },
+  3: {
+    label: 'Third Party',
+    description: 'Customs apps made by developers. Provide data and compliance documentation to get access to data.',
+  },
+};
 
 export type Application = {
   id: string;

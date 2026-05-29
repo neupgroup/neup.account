@@ -27,7 +27,7 @@ export default async function RootLayout({
   const logoUrl = await getSiteLogoUrl();
 
   return (
-    <html lang="en">
+    <html lang="en" className="[scrollbar-gutter:stable]">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

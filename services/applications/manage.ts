@@ -21,6 +21,8 @@ import {
   type ApplicationPolicyEntry,
   type ManagedApplication,
   type ApplicationDetailsV2,
+  applicationPartyValues,
+  type ApplicationParty,
 } from '@/services/applications/types';
 
 const responseAccessSet = new Set<ApplicationAccessField>(applicationResponseFields);
@@ -2035,9 +2037,24 @@ const saveAppConfigSchema = z.object({
   secretKey: z.string().min(16, 'Secret must be at least 16 characters.').optional().or(z.literal('')),
   access: z.array(z.enum(applicationAccessFields)).default([]),
   tokenFields: z.array(z.enum(applicationTokenFields)).default([]),
+  party: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]).default(1),
   allowDevMode: z.boolean().optional().default(false),
   allowDevIpMode: z.boolean().optional().default(false),
 });
+
+function enforcePartyFieldRules(
+  party: ApplicationParty,
+  fields: ApplicationAccessField[],
+): ApplicationAccessField[] {
+  const normalized = fields.filter((field, idx) => fields.indexOf(field) === idx);
+  if (party === 0 || party === 1) {
+    return normalized.filter((field) => field !== 'neupid');
+  }
+  if (party === 2) {
+    return normalized.filter((field) => field !== 'accountId');
+  }
+  return normalized.filter((field) => field !== 'accountId' && field !== 'neupid');
+}
 
 /**
  * Function saveAppConfig.
@@ -2060,9 +2077,15 @@ export async function saveAppConfig(
     return { success: false, fieldErrors };
   }
 
-  const { appId, secretKey, access, tokenFields, allowDevMode, allowDevIpMode } = parsed.data;
-  const sanitizedAccess = access.filter((field) => responseAccessSet.has(field));
-  const sanitizedTokenFields = tokenFields.filter((field) => tokenFieldSet.has(field));
+  const { appId, secretKey, access, tokenFields, party, allowDevMode, allowDevIpMode } = parsed.data;
+  const sanitizedAccess = enforcePartyFieldRules(
+    party,
+    access.filter((field) => responseAccessSet.has(field)),
+  );
+  const sanitizedTokenFields = enforcePartyFieldRules(
+    party,
+    tokenFields.filter((field) => tokenFieldSet.has(field)),
+  );
 
   const canEdit = await isApplicationOwnerForAccount(accountId, appId);
   if (!canEdit) return { success: false, error: 'Only the application owner can configure this application.' };
@@ -2081,6 +2104,7 @@ export async function saveAppConfig(
     const updateData: Record<string, unknown> = {
       responseFields: sanitizedAccess,
       tokenFields: sanitizedTokenFields,
+      party,
       // Backward-compat: keep legacy JSON in sync until all callers are migrated.
       details: {
         ...existingDetails,
@@ -2118,6 +2142,7 @@ export async function getAppConfigData(appId: string): Promise<{
   hasSecretKey: boolean;
   access: ApplicationAccessField[];
   tokenFields: ApplicationAccessField[];
+  party: ApplicationParty;
   silentSsoOrigins: Array<{ id: string; value: string }>;
   serverIps: Array<{ id: string; value: string }>;
   accountUpdateWebhookUrl: string | null;
@@ -2136,7 +2161,7 @@ export async function getAppConfigData(appId: string): Promise<{
     const [app, originRows, serverIpRows, accountUpdateWebhookRecord, roleUpdateWebhookRecord] = await Promise.all([
       prisma.application.findUnique({
         where: { id: appId },
-        select: { appSecret: true, responseFields: true, tokenFields: true, details: true, status: true },
+        select: { appSecret: true, responseFields: true, tokenFields: true, party: true, details: true, status: true },
       }),
       prisma.applicationBridge.findMany({
         where: { appId, type: 'silentSsoOrigin' },
@@ -2170,11 +2195,21 @@ export async function getAppConfigData(appId: string): Promise<{
       app.tokenFields.length > 0 ? app.tokenFields : (legacyDetails as any).token_fields ?? [];
     const allowDevMode = Boolean((legacyDetails as any).allowDevMode);
     const allowDevIpMode = Boolean((legacyDetails as any).allowDevIpMode);
+    const party = applicationPartyValues.includes(app.party as ApplicationParty)
+      ? (app.party as ApplicationParty)
+      : 1;
 
     return {
       hasSecretKey: Boolean(app.appSecret),
-      access: normalizeAccess(responseFieldSource).filter((field) => responseAccessSet.has(field)),
-      tokenFields: normalizeAccess(tokenFieldSource).filter((field) => tokenFieldSet.has(field)),
+      access: enforcePartyFieldRules(
+        party,
+        normalizeAccess(responseFieldSource).filter((field) => responseAccessSet.has(field)),
+      ),
+      tokenFields: enforcePartyFieldRules(
+        party,
+        normalizeAccess(tokenFieldSource).filter((field) => tokenFieldSet.has(field)),
+      ),
+      party,
       silentSsoOrigins: originRows,
       serverIps: serverIpRows,
       accountUpdateWebhookUrl: accountUpdateWebhookRecord?.value ?? null,

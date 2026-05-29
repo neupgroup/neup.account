@@ -8,7 +8,10 @@ import { useToast } from '@/core/hooks/use-toast';
 import { saveAppConfig, addSilentSsoOrigin, removeSilentSsoOrigin, addServerIp, removeServerIp, saveAccountUpdateWebhookUrl, saveRoleUpdateWebhookUrl } from '@/services/applications/manage';
 import {
   applicationResponseFields,
+  applicationPartyMeta,
+  applicationPartyValues,
   applicationTokenFields,
+  type ApplicationParty,
   type ApplicationAccessField,
   type ApplicationResponseField,
   type ApplicationTokenField,
@@ -18,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, Eye, EyeOff, Plus, Trash2, KeyRound, Database, Globe, Variable } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
@@ -57,6 +61,7 @@ const schema = z.object({
     .or(z.literal('')),
   access: z.array(z.enum(applicationResponseFields)).default([]),
   tokenFields: z.array(z.enum(applicationTokenFields)).default([]),
+  party: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]).default(1),
   allowDevMode: z.boolean().default(false),
   allowDevIpMode: z.boolean().default(false),
 });
@@ -78,6 +83,7 @@ type Props = {
   hasSecretKey: boolean;
   initialAccess: ApplicationAccessField[];
   initialTokenFields: ApplicationAccessField[];
+  initialParty: ApplicationParty;
   initialOrigins: Array<{ id: string; value: string }>;
   initialServerIps: Array<{ id: string; value: string }>;
   initialAccountUpdateWebhookUrl: string | null;
@@ -95,6 +101,7 @@ export function AppConfigForm({
   hasSecretKey,
   initialAccess,
   initialTokenFields,
+  initialParty,
   initialOrigins,
   initialServerIps,
   initialAccountUpdateWebhookUrl,
@@ -119,9 +126,22 @@ export function AppConfigForm({
       secretKey: '',
       access: initialAccess.filter(isResponseField),
       tokenFields: initialTokenFields.filter(isTokenField),
+      party: initialParty,
       allowDevMode: initialAllowDevMode,
       allowDevIpMode: initialAllowDevIpMode,
     },
+  });
+
+  const selectedParty = form.watch('party');
+  const visibleResponseFields = (applicationResponseFields as readonly ApplicationResponseField[]).filter((field) => {
+    if (field === 'accountId') return selectedParty === 0 || selectedParty === 1;
+    if (field === 'neupid') return selectedParty === 2;
+    return true;
+  });
+  const visibleTokenFields = (applicationTokenFields as readonly ApplicationTokenField[]).filter((field) => {
+    if (field === 'accountId') return selectedParty === 0 || selectedParty === 1;
+    if (field === 'neupid') return selectedParty === 2;
+    return true;
   });
 
   const onSubmit = (values: FormValues) => {
@@ -131,6 +151,7 @@ export function AppConfigForm({
         secretKey: values.secretKey || undefined,
         access: values.access,
         tokenFields: values.tokenFields,
+        party: values.party,
         allowDevMode: values.allowDevMode,
         allowDevIpMode: values.allowDevIpMode,
       });
@@ -293,6 +314,72 @@ export function AppConfigForm({
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Database className="h-4 w-4 text-muted-foreground" />
+                <CardTitle>Party Management</CardTitle>
+              </div>
+              <CardDescription>
+                Configure this application&apos;s party level. This controls sensitive identity fields available in API and token forms.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <FormField
+                control={form.control}
+                name="party"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Application Party</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={String(field.value)}
+                        onValueChange={(value) => {
+                          const nextParty = Number(value) as ApplicationParty;
+                          field.onChange(nextParty);
+                          const nextAccess = (form.getValues('access') ?? []).filter((entry) => {
+                            if (entry === 'accountId') return nextParty === 0 || nextParty === 1;
+                            if (entry === 'neupid') return nextParty === 2;
+                            return true;
+                          });
+                          const nextTokenFields = (form.getValues('tokenFields') ?? []).filter((entry) => {
+                            if (entry === 'accountId') return nextParty === 0 || nextParty === 1;
+                            if (entry === 'neupid') return nextParty === 2;
+                            return true;
+                          });
+                          form.setValue('access', nextAccess, { shouldDirty: true });
+                          form.setValue('tokenFields', nextTokenFields, { shouldDirty: true });
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select party level" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {applicationPartyValues.map((partyValue) => (
+                            <SelectItem key={partyValue} value={String(partyValue)}>
+                              {applicationPartyMeta[partyValue].label} ({partyValue})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <p className="text-xs text-muted-foreground">
+                      {applicationPartyMeta[selectedParty].description}
+                    </p>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+            <CardFooter>
+              <Button type="submit" disabled={isPending}>
+                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Configuration
+              </Button>
+            </CardFooter>
+          </Card>
+
+          {/* Access Fields */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Database className="h-4 w-4 text-muted-foreground" />
                 <CardTitle>API Response Fields</CardTitle>
               </div>
               <CardDescription>
@@ -306,7 +393,7 @@ export function AppConfigForm({
                 render={() => (
                   <FormItem>
                     <div className="grid gap-3 sm:grid-cols-2">
-                      {(applicationResponseFields as readonly ApplicationResponseField[]).map((field) => {
+                      {visibleResponseFields.map((field) => {
                         const meta = fieldLabels[field];
                         return (
                           <FormField
@@ -369,7 +456,7 @@ export function AppConfigForm({
                 render={() => (
                   <FormItem>
                     <div className="grid gap-3 sm:grid-cols-2">
-                      {(applicationTokenFields as readonly ApplicationTokenField[]).map((tokenField) => {
+                      {visibleTokenFields.map((tokenField) => {
                         const meta = fieldLabels[tokenField];
                         return (
                           <FormField

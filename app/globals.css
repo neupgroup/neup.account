@@ -73,9 +73,13 @@
   }
   html {
     @apply overflow-y-scroll;
+    scrollbar-gutter: stable;
   }
   body {
     @apply bg-background text-foreground;
+  }
+  body[data-scroll-locked] {
+    margin-right: 0 !important;
   }
 }
 

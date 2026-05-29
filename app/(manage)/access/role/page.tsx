@@ -242,7 +242,7 @@ async function MyDirectRolesView() {
       <PageHeader
         photo={userPhoto}
         displayName={displayName}
-        description={<>Roles assigned to <span className="font-medium text-foreground">{displayName}</span> for account of <span className="font-medium text-foreground">{data.ownerName}</span></>}
+        description={<>Roles assigned to you.</>}
       />
       {data.roles.length > 0 ? (
         <Card>
@@ -342,11 +342,15 @@ async function MemberDirectRolesView({ memberAccountId }: { memberAccountId: str
         photo={userPhoto}
         displayName={detail.displayName}
         description={
-          <>
-            Roles assigned to{' '}
-            <span className="font-medium text-foreground">{detail.displayName}</span> for account
-            of <span className="font-medium text-foreground">{ownerName}</span>
-          </>
+          isOwnerAccount ? (
+            <>Roles assigned to you.</>
+          ) : (
+            <>
+              Roles assigned to{' '}
+              <span className="font-medium text-foreground">{detail.displayName}</span> for account
+              of <span className="font-medium text-foreground">{ownerName}</span>
+            </>
+          )
         }
       />
 

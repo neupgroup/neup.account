@@ -2,19 +2,8 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import {
     Card,
     CardContent,
-    CardHeader,
-    CardTitle,
-    CardFooter,
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge"
@@ -33,6 +22,68 @@ const statusVariantMap: { [key: string]: "default" | "destructive" | "secondary"
     Failed: "destructive",
     Pending: "secondary",
     Alert: "destructive",
+}
+
+const MONTHS_FULL = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+function getOrdinal(day: number) {
+    const mod10 = day % 10;
+    const mod100 = day % 100;
+    if (mod10 === 1 && mod100 !== 11) return `${day}st`;
+    if (mod10 === 2 && mod100 !== 12) return `${day}nd`;
+    if (mod10 === 3 && mod100 !== 13) return `${day}rd`;
+    return `${day}th`;
+}
+
+function startOfWeekMonday(date: Date) {
+    const copy = new Date(date);
+    const day = copy.getDay();
+    const diff = day === 0 ? -6 : 1 - day;
+    copy.setHours(0, 0, 0, 0);
+    copy.setDate(copy.getDate() + diff);
+    return copy;
+}
+
+function formatActivityTimestamp(timestamp: string) {
+    const date = new Date(timestamp);
+    if (Number.isNaN(date.getTime())) return timestamp;
+
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    if (diffMs < 0) {
+        return `${getOrdinal(date.getDate())} ${MONTHS_FULL[date.getMonth()]}`;
+    }
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+
+    if (diffMinutes <= 0) return "Recently";
+    if (diffMinutes < 60) return `${diffMinutes} mins ago`;
+    if (diffHours < 24) return `${diffHours} hours ago`;
+
+    const thisWeekStart = startOfWeekMonday(now).getTime();
+    const nextWeekStart = thisWeekStart + 7 * 24 * 60 * 60 * 1000;
+    const isSameWeek = date.getTime() >= thisWeekStart && date.getTime() < nextWeekStart;
+
+    if (isSameWeek && diffMs >= 0) {
+        const weekday = WEEKDAYS[date.getDay()];
+        const time = new Intl.DateTimeFormat("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+        }).format(date);
+        return `${weekday} ${time}`;
+    }
+
+    const monthsDiff =
+        (now.getFullYear() - date.getFullYear()) * 12 + (now.getMonth() - date.getMonth());
+
+    if (monthsDiff < 12) {
+        const safeMonths = Math.max(1, monthsDiff);
+        return `${safeMonths} month${safeMonths === 1 ? "" : "s"} ago`;
+    }
+
+    return `On ${date.getFullYear()} ${MONTHS_FULL[date.getMonth()]} ${date.getDate()}`;
 }
 
 function DataActivityPageComponent({ after, applicationId }: { after?: string; applicationId?: string }) {
@@ -123,59 +174,61 @@ function DataActivityPageComponent({ after, applicationId }: { after?: string; a
                         : 'View a log of recent actions performed on your account.'}
                 </p>
             </div>
-            <Card>
-                <CardHeader>
-                    <CardTitle>Recent Activity</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Action</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Timestamp</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                             {loading ? (
-                                [...Array(5)].map((_, i) => (
-                                    <TableRow key={i}>
-                                        <TableCell colSpan={3}><Skeleton className="h-8 w-full" /></TableCell>
-                                    </TableRow>
-                                ))
-                             ) : logs.length > 0 ? (
-                                logs.map((log) => (
-                                    <TableRow key={log.id}>
-                                        <TableCell>{log.action}</TableCell>
-                                        <TableCell>
-                                             <Badge variant={statusVariantMap[log.status] || "secondary"} className={log.status === 'Success' ? 'bg-accent/80 text-accent-foreground' : ''}>
-                                                {log.status}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell>{log.timestamp}</TableCell>
-                                    </TableRow>
-                                ))
-                             ) : (
-                                <TableRow>
-                                    <TableCell colSpan={3} className="text-center h-24">
-                                        No activity found.
-                                    </TableCell>
-                                </TableRow>
-                             )}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-                <CardFooter className="flex justify-end space-x-2 border-t pt-4">
-                     <Button variant="outline" onClick={handlePrevPage} disabled={page === 1 || loading}>
-                        <ChevronLeft className="mr-2 h-4 w-4" />
-                        Previous
-                    </Button>
-                    <Button variant="outline" onClick={handleNextPage} disabled={!hasNextPage || loading}>
-                        Next
-                        <ChevronRight className="ml-2 h-4 w-4" />
-                    </Button>
-                </CardFooter>
-            </Card>
+            <div className="space-y-0">
+                {loading ? (
+                    [...Array(5)].map((_, i) => (
+                        <Card key={i} className="border-dashed">
+                            <CardContent className="p-4 space-y-3">
+                                <Skeleton className="h-4 w-3/5" />
+                                <div className="flex items-center justify-between gap-3">
+                                    <Skeleton className="h-6 w-24 rounded-full" />
+                                    <Skeleton className="h-4 w-36" />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))
+                ) : logs.length > 0 ? (
+                    logs.map((log, index) => (
+                        <Card
+                            key={log.id}
+                            className={`transition-colors hover:bg-muted/20 ${
+                                index === 0
+                                    ? "rounded-t-3xl rounded-b-none"
+                                    : index === logs.length - 1
+                                        ? "rounded-t-none rounded-b-3xl -mt-px"
+                                        : "rounded-none -mt-px"
+                            }`}
+                        >
+                            <CardContent className="p-4">
+                                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                                    <p className="text-sm font-medium leading-relaxed">{log.action}</p>
+                                    <Badge
+                                        variant={statusVariantMap[log.status] || "secondary"}
+                                        className={log.status === 'Success' ? 'bg-accent/80 text-accent-foreground' : ''}
+                                    >
+                                        {log.status}
+                                    </Badge>
+                                </div>
+                                <p className="mt-2 text-xs text-muted-foreground">{formatActivityTimestamp(log.timestamp)}</p>
+                            </CardContent>
+                        </Card>
+                    ))
+                ) : (
+                    <div className="flex h-24 items-center justify-center rounded-md border border-dashed text-sm text-muted-foreground">
+                        No activity found.
+                    </div>
+                )}
+            </div>
+            <div className="flex justify-end space-x-2 border-t pt-4">
+                 <Button variant="outline" onClick={handlePrevPage} disabled={page === 1 || loading}>
+                    <ChevronLeft className="mr-2 h-4 w-4" />
+                    Previous
+                </Button>
+                <Button variant="outline" onClick={handleNextPage} disabled={!hasNextPage || loading}>
+                    Next
+                    <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
+            </div>
         </div>
     )
 }

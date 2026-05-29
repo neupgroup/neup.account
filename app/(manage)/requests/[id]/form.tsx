@@ -54,7 +54,7 @@ export function RequestActionForm({ request }: Props) {
         const result = await approveNeupIdRequest(
           request.id,
           String(d.accountId ?? ''),
-          String(d.requestedId ?? ''),
+          String(d.requestedNeupId ?? d.requestedId ?? ''),
         );
         done(result.success, result.error ?? 'NeupID request approved.');
         break;

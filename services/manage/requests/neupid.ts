@@ -57,7 +57,7 @@ export async function getPendingNeupIdRequests(): Promise<PendingNeupIdRequest[]
                 return {
                     id: doc.id,
                     userFullName,
-                    requestedNeupId: String(payload.requestedId || ''),
+                    requestedNeupId: String(payload.requestedNeupId || payload.requestedId || ''),
                     requestDate: createdAt.toLocaleDateString(),
                     status: doc.status,
                     currentNeupIds: currentNeupIds,
@@ -106,7 +106,7 @@ export async function getNeupIdRequestDetails(id: string): Promise<PendingNeupId
         return {
             id: request.id,
             userFullName,
-            requestedNeupId: String(payload.requestedId || ''),
+            requestedNeupId: String(payload.requestedNeupId || payload.requestedId || ''),
             requestDate: createdAt.toLocaleDateString(),
             status: request.status,
             currentNeupIds: currentNeupIds,
@@ -129,20 +129,38 @@ export async function approveNeupIdRequest(requestId: string, accountId: string,
     }
 
     try {
-        await prisma.$transaction([
-            prisma.request.update({
+        await prisma.$transaction(async (tx) => {
+            await tx.request.update({
                 where: { id: requestId },
                 data: { status: 'approved' }
-            }),
-            prisma.neupId.create({
+            });
+            await tx.neupId.create({
                 data: {
                     id: newNeupId.toLowerCase(),
                     neupId: newNeupId.toLowerCase(),
                     accountId: accountId,
                     isPrimary: false,
                 }
-            })
-        ]);
+            });
+            const account = await tx.account.findUnique({
+                where: { id: accountId },
+                select: { details: true },
+            });
+            const details =
+                account?.details && typeof account.details === 'object'
+                    ? { ...(account.details as Record<string, unknown>) }
+                    : {};
+            const pendingRequests =
+                details.pendingRequests && typeof details.pendingRequests === 'object'
+                    ? { ...(details.pendingRequests as Record<string, unknown>) }
+                    : {};
+            delete pendingRequests.neupid;
+            details.pendingRequests = pendingRequests;
+            await tx.account.update({
+                where: { id: accountId },
+                data: { details },
+            });
+        });
 
         await logActivity(accountId, `Approved NeupID Request: ${newNeupId}`, 'Success');
 
@@ -164,14 +182,37 @@ export async function denyNeupIdRequest(requestId: string): Promise<{success: bo
     }
     
     try {
-        const request = await prisma.request.update({
-            where: { id: requestId },
-            data: { status: 'denied' }
+        const request = await prisma.request.findUnique({ where: { id: requestId } });
+        if (!request) return { success: false, error: 'Request not found.' };
+
+        await prisma.$transaction(async (tx) => {
+            await tx.request.update({
+                where: { id: requestId },
+                data: { status: 'denied' }
+            });
+            const account = await tx.account.findUnique({
+                where: { id: request.senderId },
+                select: { details: true },
+            });
+            const details =
+                account?.details && typeof account.details === 'object'
+                    ? { ...(account.details as Record<string, unknown>) }
+                    : {};
+            const pendingRequests =
+                details.pendingRequests && typeof details.pendingRequests === 'object'
+                    ? { ...(details.pendingRequests as Record<string, unknown>) }
+                    : {};
+            delete pendingRequests.neupid;
+            details.pendingRequests = pendingRequests;
+            await tx.account.update({
+                where: { id: request.senderId },
+                data: { details },
+            });
         });
         const payload = (request.data || {}) as Record<string, any>;
         
         if (request.senderId) {
-            await logActivity(request.senderId, `Denied NeupID Request: ${String(payload.requestedId || requestId)}`, 'Success');
+            await logActivity(request.senderId, `Denied NeupID Request: ${String(payload.requestedNeupId || payload.requestedId || requestId)}`, 'Success');
         }
 
         return { success: true };

@@ -36,7 +36,7 @@ function RequestDetailBody({ request }: { request: Awaited<ReturnType<typeof get
       return (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
           <DetailRow label="User" value={String(d.userFullName ?? request.submittedBy)} />
-          <DetailRow label="Requested NeupID" value={String(d.requestedId ?? '')} />
+          <DetailRow label="Requested NeupID" value={String(d.requestedNeupId ?? d.requestedId ?? '')} />
           <DetailRow label="Submitted" value={request.submittedAt} />
           <div>
             <p className="text-xs text-muted-foreground">Current NeupIDs</p>
@@ -98,11 +98,13 @@ function RequestDetailBody({ request }: { request: Awaited<ReturnType<typeof get
 
     case 'applicationChange': {
       const changes = Array.isArray(d.changes) ? d.changes as Array<{ field: string; oldValue: string | null; newValue: string | null }> : [];
+      const requestedData = (d.requestedData ?? {}) as Record<string, unknown>;
       return (
         <div className="space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <DetailRow label="Submitted by" value={request.submittedBy} />
             <DetailRow label="Application ID" value={String(d.appId ?? '')} />
+            <DetailRow label="Requested Name" value={String(requestedData.name ?? '')} />
             <DetailRow label="Submitted" value={request.submittedAt} />
           </div>
           {changes.length > 0 && (

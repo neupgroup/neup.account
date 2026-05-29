@@ -33,6 +33,44 @@ export type ApplicationChangeRequest = {
   changes: ApplicationChangeField[];
 };
 
+type AccountDetailsObject = Record<string, unknown>;
+
+function asDetailsObject(details: unknown): AccountDetailsObject {
+  return details && typeof details === 'object' ? { ...(details as AccountDetailsObject) } : {};
+}
+
+function writePendingAppChangeDetails(
+  details: unknown,
+  appId: string,
+  value: { requestId: string; status: 'pending'; requestedAt: string; requestedData: Record<string, unknown> },
+): AccountDetailsObject {
+  const next = asDetailsObject(details);
+  const pendingRequests = next.pendingRequests && typeof next.pendingRequests === 'object'
+    ? { ...(next.pendingRequests as Record<string, unknown>) }
+    : {};
+  const appChangeMap = pendingRequests.applicationChange && typeof pendingRequests.applicationChange === 'object'
+    ? { ...(pendingRequests.applicationChange as Record<string, unknown>) }
+    : {};
+  appChangeMap[appId] = value as unknown as Record<string, unknown>;
+  pendingRequests.applicationChange = appChangeMap;
+  next.pendingRequests = pendingRequests;
+  return next;
+}
+
+function clearPendingAppChangeDetails(details: unknown, appId: string): AccountDetailsObject {
+  const next = asDetailsObject(details);
+  const pendingRequests = next.pendingRequests && typeof next.pendingRequests === 'object'
+    ? { ...(next.pendingRequests as Record<string, unknown>) }
+    : {};
+  const appChangeMap = pendingRequests.applicationChange && typeof pendingRequests.applicationChange === 'object'
+    ? { ...(pendingRequests.applicationChange as Record<string, unknown>) }
+    : {};
+  delete appChangeMap[appId];
+  pendingRequests.applicationChange = appChangeMap;
+  next.pendingRequests = pendingRequests;
+  return next;
+}
+
 // ---------------------------------------------------------------------------
 // Schema
 // ---------------------------------------------------------------------------
@@ -110,35 +148,69 @@ export async function submitApplicationChangeRequest(
     return { success: false, error: 'No changes detected.' };
   }
 
-  // Check for an already-pending request for this app
-  const existing = await prisma.request.findFirst({
-    where: { action: 'applicationChange', status: 'pending', senderId: accountId },
-    select: { id: true },
-  });
-
-  if (existing) {
-    return {
-      success: false,
-      error: 'You already have a pending change request for this application. Wait for it to be reviewed.',
-    };
-  }
-
   try {
-    // Use a system account as recipient — root admins review via the requests page.
-    // We store the appId in the data payload so it can be filtered.
-    await prisma.request.create({
-      data: {
-        senderId: accountId,
-        recipientId: accountId, // self-addressed; root admins see all via permission check
-        action: 'applicationChange',
-        type: 'applicationChanges',
-        status: 'pending',
+    await prisma.$transaction(async (tx) => {
+      const pendingRows = await tx.request.findMany({
+        where: { action: 'applicationChange', status: 'pending', senderId: accountId },
+        select: { id: true, data: true },
+      });
+      const pendingForThisApp = pendingRows
+        .filter((row) => {
+          const payload = (row.data ?? {}) as Record<string, unknown>;
+          return payload.appId === appId;
+        })
+        .map((row) => row.id);
+
+      if (pendingForThisApp.length > 0) {
+        await tx.request.updateMany({
+          where: { id: { in: pendingForThisApp } },
+          data: { status: 'cancelled' },
+        });
+      }
+
+      const req = await tx.request.create({
         data: {
-          appId,
-          proposed,
-          changes,
+          senderId: accountId,
+          recipientId: accountId,
+          action: 'applicationChange',
+          type: 'applicationChanges',
+          status: 'pending',
+          data: {
+            appId,
+            requestId: '',
+            requestedData: proposed,
+            changes,
+          },
         },
-      },
+      });
+
+      await tx.request.update({
+        where: { id: req.id },
+        data: {
+          data: {
+            appId,
+            requestId: req.id,
+            requestedData: proposed,
+            changes,
+          },
+        },
+      });
+
+      const account = await tx.account.findUnique({
+        where: { id: accountId },
+        select: { details: true },
+      });
+      await tx.account.update({
+        where: { id: accountId },
+        data: {
+          details: writePendingAppChangeDetails(account?.details, appId, {
+            requestId: req.id,
+            status: 'pending',
+            requestedAt: new Date().toISOString(),
+            requestedData: proposed,
+          }),
+        },
+      });
     });
 
     await logActivity(appId, `Application change request submitted by owner`, 'Pending', undefined, accountId);
@@ -314,10 +386,10 @@ export async function approveApplicationChangeRequest(
 
     const payload = (req.data ?? {}) as Record<string, unknown>;
     const appId = typeof payload.appId === 'string' ? payload.appId : '';
-    const proposed = (payload.proposed ?? {}) as Record<string, string | null>;
+    const proposed = ((payload.requestedData ?? payload.proposed ?? {}) as Record<string, string | null>);
 
-    await prisma.$transaction([
-      prisma.application.update({
+    await prisma.$transaction(async (tx) => {
+      await tx.application.update({
         where: { id: appId },
         data: {
           name: proposed.name ?? undefined,
@@ -326,12 +398,20 @@ export async function approveApplicationChangeRequest(
           website: proposed.website ?? null,
           status: proposed.status ?? undefined,
         },
-      }),
-      prisma.request.update({
+      });
+      await tx.request.update({
         where: { id: requestId },
         data: { status: 'approved' },
-      }),
-    ]);
+      });
+      const account = await tx.account.findUnique({
+        where: { id: req.senderId },
+        select: { details: true },
+      });
+      await tx.account.update({
+        where: { id: req.senderId },
+        data: { details: clearPendingAppChangeDetails(account?.details, appId) },
+      });
+    });
 
     await logActivity(appId, `Application change request approved`, 'Success', undefined, actorAccountId);
 
@@ -372,9 +452,19 @@ export async function denyApplicationChangeRequest(
     const payload = (req.data ?? {}) as Record<string, unknown>;
     const appId = typeof payload.appId === 'string' ? payload.appId : '';
 
-    await prisma.request.update({
-      where: { id: requestId },
-      data: { status: 'denied' },
+    await prisma.$transaction(async (tx) => {
+      await tx.request.update({
+        where: { id: requestId },
+        data: { status: 'denied' },
+      });
+      const account = await tx.account.findUnique({
+        where: { id: req.senderId },
+        select: { details: true },
+      });
+      await tx.account.update({
+        where: { id: req.senderId },
+        data: { details: clearPendingAppChangeDetails(account?.details, appId) },
+      });
     });
 
     await logActivity(appId, `Application change request denied`, 'Failed', undefined, actorAccountId);

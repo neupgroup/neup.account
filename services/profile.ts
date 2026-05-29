@@ -290,15 +290,56 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
                 const requestedNeupId = data.newNeupIdRequest.toLowerCase();
                 const requesterId = await getPersonalAccountId();
 
-                await tx.authnRequest.create({
-                    data: {
-                        type: 'neupid_request',
-                        accountId,
+                await tx.request.updateMany({
+                    where: {
+                        senderId: accountId,
+                        action: 'neupid_request',
                         status: 'pending',
-                        data: { requestedNeupId, requestor: requesterId } as any,
-                        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                    },
+                    data: { status: 'cancelled' },
+                });
+
+                const neupIdRequest = await tx.request.create({
+                    data: {
+                        senderId: accountId,
+                        recipientId: accountId,
+                        action: 'neupid_request',
+                        type: 'neupid',
+                        status: 'pending',
+                        data: { requestedNeupId, requestor: requesterId, requestId: '' } as any,
                     }
                 });
+                await tx.request.update({
+                    where: { id: neupIdRequest.id },
+                    data: {
+                        data: { requestedNeupId, requestor: requesterId, requestId: neupIdRequest.id } as any,
+                    },
+                });
+
+                const currentAccount = await tx.account.findUnique({
+                    where: { id: accountId },
+                    select: { details: true },
+                });
+                const currentDetails =
+                    currentAccount?.details && typeof currentAccount.details === 'object'
+                        ? { ...(currentAccount.details as Record<string, unknown>) }
+                        : {};
+                const pendingRequests =
+                    currentDetails.pendingRequests && typeof currentDetails.pendingRequests === 'object'
+                        ? { ...(currentDetails.pendingRequests as Record<string, unknown>) }
+                        : {};
+                pendingRequests.neupid = {
+                    requestId: neupIdRequest.id,
+                    requestedNeupId,
+                    status: 'pending',
+                    requestedAt: new Date().toISOString(),
+                };
+                currentDetails.pendingRequests = pendingRequests;
+                await tx.account.update({
+                    where: { id: accountId },
+                    data: { details: currentDetails },
+                });
+
                 await logActivity(accountId, `Requested New NeupID: ${requestedNeupId}`, 'Pending', undefined, geolocation);
             }
 

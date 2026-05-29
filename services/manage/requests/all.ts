@@ -116,7 +116,7 @@ export async function getAllRequests(options: GetRequestsOptions = {}): Promise<
         let summary = '';
         switch (row.action) {
           case 'neupid_request':
-            summary = `Requesting NeupID: ${String(payload.requestedId ?? '')}`;
+            summary = `Requesting NeupID: ${String(payload.requestedNeupId ?? payload.requestedId ?? '')}`;
             break;
           case 'display_name_request':
             summary = `Requesting display name: ${String(payload.requestedDisplayName ?? '')}`;
@@ -381,6 +381,15 @@ export async function getRequestDetail(id: string): Promise<UnifiedRequest | nul
       `${sender.individualProfile?.firstName ?? ''} ${sender.individualProfile?.lastName ?? ''}`.trim()) ||
       sender.id;
 
+    const senderAccount = await prisma.account.findUnique({
+      where: { id: row.senderId },
+      select: { details: true },
+    });
+    const senderDetails =
+      senderAccount?.details && typeof senderAccount.details === 'object'
+        ? (senderAccount.details as Record<string, unknown>)
+        : {};
+
     // Enrich payload for neupid
     let enrichedData: Record<string, unknown> = { ...payload };
     if (row.action === 'neupid_request') {
@@ -388,8 +397,22 @@ export async function getRequestDetail(id: string): Promise<UnifiedRequest | nul
         getUserProfile(row.senderId),
         getUserNeupIds(row.senderId),
       ]);
+      const pendingRequests =
+        senderDetails.pendingRequests && typeof senderDetails.pendingRequests === 'object'
+          ? (senderDetails.pendingRequests as Record<string, unknown>)
+          : {};
+      const pendingNeupid =
+        pendingRequests.neupid && typeof pendingRequests.neupid === 'object'
+          ? (pendingRequests.neupid as Record<string, unknown>)
+          : {};
       enrichedData = {
         ...enrichedData,
+        requestedNeupId: String(
+          pendingNeupid.requestedNeupId ??
+          payload.requestedNeupId ??
+          payload.requestedId ??
+          ''
+        ),
         userFullName: profile ? `${profile.nameFirst ?? ''} ${profile.nameLast ?? ''}`.trim() : displayName,
         currentNeupIds: neupIds,
         accountId: row.senderId,
@@ -404,10 +427,31 @@ export async function getRequestDetail(id: string): Promise<UnifiedRequest | nul
       enrichedData = { ...enrichedData, accountId: row.senderId };
     }
 
+    if (row.action === 'applicationChange') {
+      const appId = typeof payload.appId === 'string' ? payload.appId : '';
+      const pendingRequests =
+        senderDetails.pendingRequests && typeof senderDetails.pendingRequests === 'object'
+          ? (senderDetails.pendingRequests as Record<string, unknown>)
+          : {};
+      const pendingAppChangeMap =
+        pendingRequests.applicationChange && typeof pendingRequests.applicationChange === 'object'
+          ? (pendingRequests.applicationChange as Record<string, unknown>)
+          : {};
+      const pendingAppChange =
+        pendingAppChangeMap[appId] && typeof pendingAppChangeMap[appId] === 'object'
+          ? (pendingAppChangeMap[appId] as Record<string, unknown>)
+          : {};
+      const requestedData =
+        pendingAppChange.requestedData && typeof pendingAppChange.requestedData === 'object'
+          ? (pendingAppChange.requestedData as Record<string, unknown>)
+          : ((payload.requestedData ?? payload.proposed ?? {}) as Record<string, unknown>);
+      enrichedData = { ...enrichedData, requestedData, appId };
+    }
+
     let summary = '';
     switch (row.action) {
       case 'neupid_request':
-        summary = `Requesting NeupID: ${String(payload.requestedId ?? '')}`;
+        summary = `Requesting NeupID: ${String(enrichedData.requestedNeupId ?? '')}`;
         break;
       case 'display_name_request':
         summary = `Requesting display name: ${String(payload.requestedDisplayName ?? '')}`;
@@ -417,7 +461,9 @@ export async function getRequestDetail(id: string): Promise<UnifiedRequest | nul
         break;
       case 'applicationChange': {
         const changes = Array.isArray(payload.changes) ? payload.changes : [];
-        summary = `${changes.length} field change${changes.length !== 1 ? 's' : ''}`;
+        const first = changes[0] as Record<string, unknown> | undefined;
+        const field = typeof first?.field === 'string' ? first.field : 'settings';
+        summary = `${displayName} changed their ${field}.`;
         break;
       }
       default:

@@ -33,7 +33,17 @@ export async function getPendingVerificationRequests(): Promise<VerificationRequ
     try {
         const verifications = await prisma.verification.findMany({
             where: { status: 'pending' },
-            include: { account: true }
+            select: {
+                id: true,
+                accountId: true,
+                status: true,
+                doneAt: true,
+                account: {
+                    select: {
+                        displayName: true,
+                    },
+                },
+            }
         });
 
         const requests = verifications.map(v => {
@@ -43,7 +53,7 @@ export async function getPendingVerificationRequests(): Promise<VerificationRequ
                 accountId: v.accountId,
                 fullName: profile?.displayName || 'Unknown User',
                 neupId: 'N/A',
-                requestedAt: v.createdAt.toLocaleDateString() || 'N/A',
+                requestedAt: v.doneAt?.toLocaleDateString() || 'N/A',
                 status: v.status as VerificationRequest['status'],
             };
         });
@@ -171,7 +181,11 @@ export async function getAccountVerification(accountId: string): Promise<{ verif
         }
 
         const verification = await prisma.verification.findUnique({
-            where: { id: accountId }
+            where: { id: accountId },
+            select: {
+                category: true,
+                doneAt: true,
+            },
         });
 
         return {

@@ -80,6 +80,23 @@ export async function getAllRequests(options: GetRequestsOptions = {}): Promise<
           },
         },
       });
+      const appIds = Array.from(
+        new Set(
+          rows
+            .map((row) => {
+              const payload = (row.data ?? {}) as Record<string, unknown>;
+              return typeof payload.appId === 'string' ? payload.appId : null;
+            })
+            .filter((id): id is string => !!id)
+        )
+      );
+      const applications = appIds.length
+        ? await prisma.application.findMany({
+            where: { id: { in: appIds } },
+            select: { id: true, name: true },
+          })
+        : [];
+      const appNameMap = new Map(applications.map((app) => [app.id, app.name]));
 
       for (const row of rows) {
         const payload = (row.data ?? {}) as Record<string, unknown>;
@@ -109,8 +126,15 @@ export async function getAllRequests(options: GetRequestsOptions = {}): Promise<
             break;
           case 'applicationChange': {
             const changes = Array.isArray(payload.changes) ? payload.changes : [];
-            const appName = typeof payload.appId === 'string' ? payload.appId : '';
-            summary = `${changes.length} field change${changes.length !== 1 ? 's' : ''} for app ${appName}`;
+            const appId = typeof payload.appId === 'string' ? payload.appId : '';
+            const appName = appNameMap.get(appId) || appId || displayName;
+            const firstChange = changes[0] as Record<string, unknown> | undefined;
+            const changedField =
+              (firstChange && typeof firstChange.field === 'string' && firstChange.field) ||
+              (firstChange && typeof firstChange.key === 'string' && firstChange.key) ||
+              (firstChange && typeof firstChange.name === 'string' && firstChange.name) ||
+              'settings';
+            summary = `${appName} changed their ${changedField}.`;
             break;
           }
           default:
@@ -136,15 +160,22 @@ export async function getAllRequests(options: GetRequestsOptions = {}): Promise<
     // -----------------------------------------------------------------------
     if (!type || type === 'kycVerification') {
       const verifications = await prisma.verification.findMany({
-        orderBy: { createdAt: 'desc' },
-        include: {
+        orderBy: { doneAt: 'desc' },
+        select: {
+          id: true,
+          accountId: true,
+          status: true,
+          reason: true,
+          category: true,
+          doneBy: true,
+          doneAt: true,
           account: {
             select: {
               displayName: true,
               individualProfile: { select: { firstName: true, lastName: true } },
               brandProfile: { select: { brandName: true } },
             },
-          },
+          }
         },
       });
 
@@ -162,7 +193,7 @@ export async function getAllRequests(options: GetRequestsOptions = {}): Promise<
           typeLabel: 'KYC Verification',
           summary: `Account verification${v.category ? ` — ${v.category}` : ''}`,
           submittedBy: displayName,
-          submittedAt: v.createdAt.toLocaleString(),
+          submittedAt: v.doneAt?.toLocaleString() || '',
           status: v.status,
           data: {
             accountId: v.accountId,
@@ -189,21 +220,35 @@ export async function getAllRequests(options: GetRequestsOptions = {}): Promise<
           brandProfile: { select: { brandName: true } },
         },
       });
+      const accountIds = accounts.map((a) => a.id);
+      const deletionActivityByAccount = accountIds.length
+        ? await prisma.activity.groupBy({
+            by: ['memberId'],
+            where: {
+              memberId: { in: accountIds },
+              action: { in: ['Account Deletion Requested', 'Account Deletion Requested by Admin'] },
+            },
+            _max: { timestamp: true },
+          })
+        : [];
+      const deletionAtMap = new Map(
+        deletionActivityByAccount.map((row) => [row.memberId, row._max.timestamp?.toLocaleString() || ''])
+      );
 
       for (const acc of accounts) {
         const displayName =
           (acc.brandProfile?.brandName ??
           acc.displayName ??
           `${acc.individualProfile?.firstName ?? ''} ${acc.individualProfile?.lastName ?? ''}`.trim()) ||
-          acc.id;
+          'User';
 
         results.push({
           id: `deletion:${acc.id}`,
           type: 'accountDeletion',
           typeLabel: 'Account Deletion',
-          summary: `Account deletion requested`,
+          summary: `${displayName} requested their account deletion.`,
           submittedBy: displayName,
-          submittedAt: '',
+          submittedAt: deletionAtMap.get(acc.id) || '',
           status: 'pending',
           data: { accountId: acc.id },
           memberId: acc.id,
@@ -267,7 +312,18 @@ export async function getRequestDetail(id: string): Promise<UnifiedRequest | nul
     }
 
     // Try verification table first
-    const verification = await prisma.verification.findUnique({ where: { id } });
+    const verification = await prisma.verification.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        accountId: true,
+        status: true,
+        reason: true,
+        category: true,
+        doneBy: true,
+        doneAt: true,
+      },
+    });
     if (verification) {
       const acc = await prisma.account.findUnique({
         where: { id: verification.accountId },
@@ -288,7 +344,7 @@ export async function getRequestDetail(id: string): Promise<UnifiedRequest | nul
         typeLabel: 'KYC Verification',
         summary: `Account verification${verification.category ? ` — ${verification.category}` : ''}`,
         submittedBy: displayName,
-        submittedAt: verification.createdAt.toLocaleString(),
+        submittedAt: verification.doneAt?.toLocaleString() || '',
         status: verification.status,
         data: {
           accountId: verification.accountId,

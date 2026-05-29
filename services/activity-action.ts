@@ -35,6 +35,8 @@ export const activityAction = {
     `profile.dob.changedFrom(${quote(previousDob)}).changedTo(${quote(newDob)})`,
   profileNameChanged: (previousName: string, newName: string) =>
     `profile.name.changedFrom(${quote(previousName)}).changedTo(${quote(newName)})`,
+  profileLegalNameChanged: (previousLegalName: string, newLegalName: string) =>
+    `profile.legalName.changedFrom(${quote(previousLegalName)}).changedTo(${quote(newLegalName)})`,
   verificationApplied: () => "verification.applied",
   verificationApproved: (category: string) => `verification.approved(${quote(category)})`,
   applicationCreated: (applicationId: string) => `application.create(${quote(applicationId)})`,
@@ -83,7 +85,7 @@ export function compileActivityAction(rawAction: string): CompiledActivityAction
     return {
       raw,
       title: "You changed your date of birth.",
-      details: [`From: ${previousDob || "N/A"}`, `To: ${newDob || "N/A"}`],
+      details: [`From "${previousDob || "N/A"}" to "${newDob || "N/A"}"`],
     };
   }
 
@@ -94,7 +96,18 @@ export function compileActivityAction(rawAction: string): CompiledActivityAction
     return {
       raw,
       title: "You changed your display name.",
-      details: [`From: ${previousName || "N/A"}`, `To: ${newName || "N/A"}`],
+      details: [`From "${previousName || "N/A"}" to "${newName || "N/A"}"`],
+    };
+  }
+
+  const profileLegalNameMatch = raw.match(/^profile\.legalName\.changedFrom\((.+)\)\.changedTo\((.+)\)$/);
+  if (profileLegalNameMatch) {
+    const previousLegalName = unquote(profileLegalNameMatch[1]);
+    const newLegalName = unquote(profileLegalNameMatch[2]);
+    return {
+      raw,
+      title: "You changed your legal name.",
+      details: [`From "${previousLegalName || "N/A"}" to "${newLegalName || "N/A"}"`],
     };
   }
 

@@ -218,7 +218,7 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
                     if (newMiddleName) {
                         defaultDisplayName = `${newFirstName || ''} ${newMiddleName} ${newLastName || ''}`.trim();
                     }
-                    accountData.nameDisplay = defaultDisplayName;
+                    accountData.displayName = defaultDisplayName;
                 }
 
                 if (accountData.dateBirth instanceof Date) {
@@ -243,10 +243,15 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
                         }
                      });
                     await logActivity(accountId, `Requested Custom Display Name: ${data.customDisplayNameRequest}`, 'Pending', undefined, geolocation);
+                    delete accountData.displayName;
                     delete accountData.nameDisplay;
                 }
 
                 if(Object.keys(accountData).length > 0) {
+                    if (typeof accountData.nameDisplay === 'string') {
+                        accountData.displayName = accountData.nameDisplay;
+                        delete accountData.nameDisplay;
+                    }
                     if (typeof accountData.accountPhoto === 'string') {
                         accountData.displayImage = accountData.accountPhoto.trim() || null;
                         delete accountData.accountPhoto;
@@ -435,8 +440,18 @@ export async function updateBrandProfile(accountId: string, data: z.infer<typeof
     }
 
     try {
+        const beforeAccount = await prisma.account.findUnique({
+            where: { id: accountId },
+            select: { details: true },
+        });
+        const beforeDetails =
+            beforeAccount?.details && typeof beforeAccount.details === "object"
+                ? (beforeAccount.details as Record<string, unknown>)
+                : {};
+        const beforeLegalName = typeof beforeDetails.nameLegal === "string" ? beforeDetails.nameLegal : "";
+
         const allowed: Record<string, any> = {
-            nameDisplay: validation.data.nameDisplay,
+            displayName: validation.data.nameDisplay,
             accountPhoto: validation.data.accountPhoto || undefined,
             isLegalEntity: validation.data.isLegalEntity,
             nameLegal: validation.data.nameLegal || undefined,
@@ -449,6 +464,18 @@ export async function updateBrandProfile(accountId: string, data: z.infer<typeof
             where: { id: accountId },
             data: allowed
         });
+
+        const afterLegalName = (validation.data.nameLegal || "").trim();
+        if (beforeLegalName.trim() !== afterLegalName) {
+            await logActivity(
+                accountId,
+                activityAction.profileLegalNameChanged(beforeLegalName, afterLegalName),
+                "Success",
+                undefined,
+                undefined,
+                locationString
+            );
+        }
         revalidatePath('/manage/profile');
         
         return { success: true, message: "Brand profile updated successfully." };

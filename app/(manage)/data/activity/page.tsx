@@ -99,20 +99,21 @@ function formatActivityTimestamp(timestamp: string) {
     return `On ${date.getFullYear()} ${MONTHS_FULL[date.getMonth()]} ${date.getDate()}`;
 }
 
-function DataActivityPageComponent({ after, applicationId }: { after?: string; applicationId?: string }) {
+function DataActivityPageComponent({ after, applicationId, history }: { after?: string; applicationId?: string; history: string[] }) {
     const [canView, setCanView] = useState(false);
     const [loading, setLoading] = useState(true);
     const [logs, setLogs] = useState<ActivityLog[]>([]);
-    const [page, setPage] = useState(1);
-    const [pageHistory, setPageHistory] = useState<(string | undefined)[]>([undefined]);
     const [hasNextPage, setHasNextPage] = useState(false);
 
     const router = useRouter();
 
-    const buildUrl = (startAfter?: string) => {
+    const buildUrl = (startAfter?: string, nextHistory: string[] = []) => {
         const params = new URLSearchParams();
         if (applicationId) params.set('application', applicationId);
         if (startAfter) params.set('after', startAfter);
+        for (const item of nextHistory) {
+            params.append('h', item);
+        }
         const qs = params.toString();
         return `/data/activity${qs ? `?${qs}` : ''}`;
     };
@@ -157,19 +158,16 @@ function DataActivityPageComponent({ after, applicationId }: { after?: string; a
     const handleNextPage = () => {
         if (logs.length > 0) {
             const lastId = logs[logs.length - 1].id;
-            const newHistory = [...pageHistory, lastId];
-            setPageHistory(newHistory);
-            setPage(p => p + 1);
-            redirectInApp(router, buildUrl(lastId));
+            const newHistory = [...history, after ?? ""];
+            redirectInApp(router, buildUrl(lastId, newHistory));
         }
     };
 
     const handlePrevPage = () => {
-        const prevPageHistory = pageHistory.slice(0, -1);
-        const prevAfterId = prevPageHistory[prevPageHistory.length - 1];
-        setPageHistory(prevPageHistory);
-        setPage(p => p - 1);
-        redirectInApp(router, buildUrl(prevAfterId));
+        if (history.length === 0) return;
+        const prevAfterId = history[history.length - 1] || undefined;
+        const newHistory = history.slice(0, -1);
+        redirectInApp(router, buildUrl(prevAfterId, newHistory));
     };
 
     const backHref = applicationId ? `/application/${applicationId}` : '/data';
@@ -201,77 +199,70 @@ function DataActivityPageComponent({ after, applicationId }: { after?: string; a
                         </Card>
                     ))
                 ) : logs.length > 0 ? (
-                    logs.map((log, index) => (
-                        <Card
-                            key={log.id}
-                            className={`transition-colors hover:bg-muted/20 ${
-                                index === 0
-                                    ? "rounded-t-3xl rounded-b-none"
-                                    : index === logs.length - 1
-                                        ? "rounded-t-none rounded-b-3xl -mt-px"
-                                        : "rounded-none -mt-px"
-                            }`}
-                        >
-                            <CardContent className="p-4">
-                                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                                    <div className="space-y-1">
-                                        <p className="text-sm font-medium leading-relaxed">
-                                            {log.actionRender?.kind === 'profile_display_image_changed' ? (
-                                                <>
-                                                    You{" "}
-                                                    <a
-                                                        href={log.actionRender.oldImageUrl}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="no-underline hover:underline underline-offset-4"
-                                                    >
-                                                        changed
-                                                    </a>{" "}
-                                                    your{" "}
-                                                    <a
-                                                        href={log.actionRender.newImageUrl}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="no-underline hover:underline underline-offset-4"
-                                                    >
-                                                        profile picture
-                                                    </a>
-                                                    .
-                                                </>
-                                            ) : (
-                                                log.actionText
-                                            )}
-                                        </p>
-                                        {log.actionDetails?.length ? (
-                                            <div className="text-xs text-muted-foreground space-y-0.5">
-                                                {log.actionDetails.map((detail) => (
-                                                    <p key={detail}>{detail}</p>
-                                                ))}
-                                            </div>
-                                        ) : null}
+                    <Card>
+                        <CardContent className="divide-y p-0">
+                            {logs.map((log) => (
+                                <div key={log.id} className="p-4 transition-colors hover:bg-muted/20">
+                                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                                        <div className="space-y-1">
+                                            <p className="font-medium text-foreground leading-relaxed">
+                                                {log.actionRender?.kind === 'profile_display_image_changed' ? (
+                                                    <>
+                                                        You{" "}
+                                                        <a
+                                                            href={log.actionRender.oldImageUrl}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="no-underline hover:underline underline-offset-4"
+                                                        >
+                                                            changed
+                                                        </a>{" "}
+                                                        your{" "}
+                                                        <a
+                                                            href={log.actionRender.newImageUrl}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="no-underline hover:underline underline-offset-4"
+                                                        >
+                                                            profile picture
+                                                        </a>
+                                                        .
+                                                    </>
+                                                ) : (
+                                                    log.actionText
+                                                )}
+                                            </p>
+                                            {log.actionDetails?.length ? (
+                                                <div className="text-sm text-muted-foreground">
+                                                    {log.actionDetails.map((detail) => (
+                                                        <p key={detail}>{detail}</p>
+                                                    ))}
+                                                </div>
+                                            ) : null}
+                                        </div>
+                                        {(() => {
+                                            const pill = getStatusPill(log);
+                                            if (!pill) return null;
+                                            return (
+                                                <Badge variant={pill.variant} className={pill.className}>
+                                                    {pill.label}
+                                                </Badge>
+                                            );
+                                        })()}
                                     </div>
-                                    {(() => {
-                                        const pill = getStatusPill(log);
-                                        if (!pill) return null;
-                                        return (
-                                            <Badge variant={pill.variant} className={pill.className}>
-                                                {pill.label}
-                                            </Badge>
-                                        );
-                                    })()}
+                                    <p className="mt-2 text-sm text-muted-foreground">{formatActivityTimestamp(log.timestamp)}</p>
                                 </div>
-                                <p className="mt-2 text-xs text-muted-foreground">{formatActivityTimestamp(log.timestamp)}</p>
-                            </CardContent>
-                        </Card>
-                    ))
+                            ))}
+                        </CardContent>
+                    </Card>
                 ) : (
                     <div className="flex h-24 items-center justify-center rounded-md border border-dashed text-sm text-muted-foreground">
                         No activity found.
                     </div>
                 )}
             </div>
-            <div className="flex justify-end space-x-2 pt-4">
-                 <Button variant="outline" onClick={handlePrevPage} disabled={page === 1 || loading}>
+            <div className="flex justify-start space-x-2 pt-2">
+                 <Button variant="outline" onClick={handlePrevPage} disabled={history.length === 0 || loading}>
                     <ChevronLeft className="mr-2 h-4 w-4" />
                     Previous
                 </Button>
@@ -288,5 +279,6 @@ export default function DataActivityPage() {
     const searchParams = useSearchParams();
     const after = searchParams.get('after') || undefined;
     const applicationId = searchParams.get('application') || undefined;
-    return <DataActivityPageComponent after={after} applicationId={applicationId} />;
+    const history = searchParams.getAll('h');
+    return <DataActivityPageComponent after={after} applicationId={applicationId} history={history} />;
 }

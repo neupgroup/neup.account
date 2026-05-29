@@ -444,28 +444,36 @@ export async function createManagedApplication(input: { name: string }) {
         },
       });
 
-      // Grant the creator ownership directly — no portfolio needed for applications.
-      const existingGrant = await tx.member.findFirst({
-        where: {
-          accessTo: accountId,
-          memberId: accountId,
-          roleId: 'application.owner',
-          accessFor: 'application',
-          parentApplicationId: createdApp.id,
+      // Grant the creator ownership directly in the current schema.
+      const ownerMember = await tx.member.create({
+        data: {
+          memberType: 'account',
+          memberAccountId: accountId,
+          parentType: 'account',
+          parentAccountId: accountId,
+          details: {
+            legacy_parent_application_id: createdApp.id,
+          },
         },
+        select: { id: true },
       });
 
-      if (!existingGrant) {
-        await tx.member.create({
-          data: {
-            accessTo: accountId,
-            memberId: accountId,
-            accessFor: 'application',
-            roleId: 'application.owner',
-            parentApplicationId: createdApp.id,
+      await tx.role.create({
+        data: {
+          memberId: ownerMember.id,
+          roleId: 'application.owner',
+          roleName: 'application.owner',
+          permissions: permissions.map((cap) => ({
+            id: cap.id,
+            name: cap.name,
+            description: cap.description ?? null,
+            scope: 'application',
+          })),
+          details: {
+            legacy_parent_application_id: createdApp.id,
           },
-        });
-      }
+        },
+      });
 
       return { id: createdApp.id };
     });

@@ -134,7 +134,7 @@ async function PortfolioAccountPage({ id }: { id: string }) {
                   ? 'No roles assigned'
                   : `${member.roleCount} role${member.roleCount !== 1 ? 's' : ''}`,
               status: member.status,
-              actionHref: `/access/role?portfolio=${id}&member=${member.accountId}`,
+              actionHref: `/access/role?portfolio=${id}&member_id=${member.accountId}`,
             }))}
           />
         ) : (
@@ -171,7 +171,7 @@ async function DirectAccountPage() {
                   : `${member.roleCount} role${member.roleCount !== 1 ? 's' : ''}, ${member.isPermanent ? 'permanent' : 'temporary'} account`,
               status: member.status,
               isSelf: member.accountId === accountId,
-              actionHref: `/access/role?member=${member.accountId}`,
+              actionHref: `/access/role?member_id=${member.accountId}`,
             }))}
           />
         ) : (
@@ -315,7 +315,7 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
                   ? 'No roles assigned'
                   : `${member.roleCount} role${member.roleCount !== 1 ? 's' : ''}`,
               status: member.status,
-              actionHref: `/access/role?member=${encodeURIComponent(member.accountId)}`,
+              actionHref: `/access/role?member_id=${encodeURIComponent(member.accountId)}`,
             }))}
           />
         ) : (

@@ -313,7 +313,7 @@ export async function cancelPortfolioInvitation(
 
     revalidatePath('/access');
     revalidatePath(`/access/member?portfolio=${parentPortfolioId}`);
-    revalidatePath(`/access/role?portfolio=${parentPortfolioId}&member=${recipientAccountId}`);
+    revalidatePath(`/access/role?portfolio=${parentPortfolioId}&member_id=${recipientAccountId}`);
     return { success: true };
   } catch (error) {
     await logError('database', error, `cancelPortfolioInvitation:${parentPortfolioId}:${recipientAccountId}`);
@@ -411,7 +411,7 @@ export async function inviteDirectMember(
 
     revalidatePath('/access');
     revalidatePath('/access/member');
-    revalidatePath(`/access/role?member=${recipientAccountId}`);
+    revalidatePath(`/access/role?member_id=${recipientAccountId}`);
     return { success: true };
   } catch (error) {
     await logError('database', error, `inviteDirectMember:${recipientAccountId}`);

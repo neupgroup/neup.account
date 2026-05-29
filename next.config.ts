@@ -3,6 +3,7 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   // assetPrefix: '',
   basePath: '/account',
+  assetPrefix: '/account',
   typescript: {
     ignoreBuildErrors: false,
   },

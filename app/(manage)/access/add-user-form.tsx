@@ -20,7 +20,7 @@ export function AddUserForm() {
     startTransition(async () => {
       const result = await resolveNeupId(neupIdInput);
       if (result.success) {
-        router.push(`/access/role?member=${encodeURIComponent(result.account.accountId)}`);
+        router.push(`/access/role?member_id=${encodeURIComponent(result.account.accountId)}`);
       } else {
         setLookupError(result.error);
         inputRef.current?.focus();

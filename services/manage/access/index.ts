@@ -722,14 +722,20 @@ export async function getDirectMemberDetail(
       getUserProfile(memberAccountId),
       prisma.member.findMany({
         where: {
-          accessTo,
-          memberId: memberAccountId,
-          accessFor: 'account',
-          parentApplicationId: 'neup.account',
+          memberType: 'account',
+          parentAccountId: accessTo,
+          parentType: 'account',
+          memberAccountId,
           parentPortfolioId: null,
         },
         include: {
-          role: { select: { id: true, name: true, description: true } },
+          roles: {
+            select: {
+              roleId: true,
+              roleName: true,
+              authzRole: { select: { name: true, description: true } },
+            },
+          },
         },
       }),
     ]);
@@ -745,11 +751,13 @@ export async function getDirectMemberDetail(
       accountId: memberAccountId,
       displayName,
       accountPhoto: profile.accountPhoto,
-      roles: grants.map((g) => ({
-        roleId: g.role.id,
-        roleName: g.role.name,
-        roleDescription: g.role.description ?? undefined,
-      })),
+      roles: grants.flatMap((g) =>
+        g.roles.map((r) => ({
+          roleId: r.roleId,
+          roleName: r.roleName ?? r.authzRole?.name ?? r.roleId,
+          roleDescription: r.authzRole?.description ?? undefined,
+        })),
+      ),
     };
   } catch (error) {
     await logError('database', error, `getDirectMemberDetail:${accessTo}:${memberAccountId}`);

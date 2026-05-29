@@ -27,7 +27,7 @@ import {
 import { FlowLink } from '@/components/ui/flow-link';
 
 type PageProps = {
-  searchParams: Promise<{ member?: string; portfolio?: string }>;
+  searchParams: Promise<{ member_id?: string; portfolio?: string }>;
 };
 
 const NEUPID_LOGO = 'https://neupgroup.com/assets/branding/neup.group/logo.svg';
@@ -310,7 +310,7 @@ async function MyPortfolioRolesView({ parentPortfolioId }: { parentPortfolioId: 
   );
 }
 
-// ── /access/role?member=[id] — a member's roles on my account ────────────────
+// ── /access/role?member_id=[id] — a member's roles on my account ─────────────
 
 async function MemberDirectRolesView({ memberAccountId }: { memberAccountId: string }) {
   const accountId = await getActiveAccountId();
@@ -412,7 +412,7 @@ async function MemberDirectRolesView({ memberAccountId }: { memberAccountId: str
   );
 }
 
-// ── /access/role?member=[id]&portfolio=[id] — a member's roles on a portfolio ─
+// ── /access/role?member_id=[id]&portfolio=[id] — a member's roles on a portfolio ─
 
 async function MemberPortfolioRolesView({
   memberAccountId,
@@ -465,7 +465,7 @@ async function MemberPortfolioRolesView({
             displayName={displayName}
             confirmDescription={`This will invite ${displayName} to portfolio "${portfolioName}". They will join with no roles assigned initially.`}
             action={inviteToPortfolio.bind(null, parentPortfolioId, memberAccountId)}
-            redirectTo={`/access/role?member=${memberAccountId}&portfolio=${parentPortfolioId}`}
+            redirectTo={`/access/role?member_id=${memberAccountId}&portfolio=${parentPortfolioId}`}
           />
         </div>
       </div>
@@ -521,7 +521,7 @@ async function MemberPortfolioRolesView({
                 : `This will cancel the pending invitation for ${displayName} to join portfolio "${detail.portfolioName}".`
             }
             action={cancelPortfolioInvitation.bind(null, parentPortfolioId, memberAccountId)}
-            redirectTo={`/access/role?member=${memberAccountId}&portfolio=${parentPortfolioId}`}
+            redirectTo={`/access/role?member_id=${memberAccountId}&portfolio=${parentPortfolioId}`}
             variant="outline"
           />
           {/* Re-invite if expired */}
@@ -530,7 +530,7 @@ async function MemberPortfolioRolesView({
               displayName={displayName}
               confirmDescription={`This will send a new invitation to ${displayName} to join portfolio "${detail.portfolioName}".`}
               action={inviteToPortfolio.bind(null, parentPortfolioId, memberAccountId)}
-              redirectTo={`/access/role?member=${memberAccountId}&portfolio=${parentPortfolioId}`}
+              redirectTo={`/access/role?member_id=${memberAccountId}&portfolio=${parentPortfolioId}`}
             />
           )}
         </div>
@@ -636,14 +636,14 @@ async function MemberPortfolioRolesView({
 // ── Page entry point ──────────────────────────────────────────────────────────
 
 export default async function RolePage({ searchParams }: PageProps) {
-  const { member: memberAccountId, portfolio: parentPortfolioId } = await searchParams;
+  const { member_id: memberAccountId, portfolio: parentPortfolioId } = await searchParams;
 
-  // /access/role?member=[id]&portfolio=[id]
+  // /access/role?member_id=[id]&portfolio=[id]
   if (memberAccountId && parentPortfolioId) {
     return <MemberPortfolioRolesView memberAccountId={memberAccountId} parentPortfolioId={parentPortfolioId} />;
   }
 
-  // /access/role?member=[id]
+  // /access/role?member_id=[id]
   if (memberAccountId) {
     return <MemberDirectRolesView memberAccountId={memberAccountId} />;
   }

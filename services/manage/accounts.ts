@@ -287,14 +287,14 @@ export async function getAllAccountsPaginated(params: {
         const accountIds = rows.map((r) => r.id);
         const latestActivities = accountIds.length > 0
             ? await prisma.activity.groupBy({
-                by: ['targetAccount'],
-                where: { targetAccount: { in: accountIds } },
+                by: ['memberId'],
+                where: { memberId: { in: accountIds } },
                 _max: { timestamp: true },
             })
             : [];
 
         const activityMap = new Map<string, Date | null>(
-            latestActivities.map((a) => [a.targetAccount, a._max?.timestamp ?? null]),
+            latestActivities.map((a) => [a.memberId, a._max?.timestamp ?? null]),
         );
 
         let accounts = rows.map((a) => ({

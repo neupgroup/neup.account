@@ -13,8 +13,7 @@ import { activityAction } from '@/services/activity-action';
 import { getAITextResponse } from '@/services/shared/ai';
 import { logDisplayImageResourceForAccount } from '@/services/manage/site/resources';
 import { dispatchAccountUpdatedEvent, type AccountUpdateEventField } from '@/services/applications/account-update-events';
-
-const DEFAULT_ACCOUNT_AVATAR = 'https://neupgroup.com/assets/user.png';
+import { extractGenderFromDetails, resolveDisplayImage } from '@/core/helpers/display-image';
 
 
 /**
@@ -704,6 +703,17 @@ export async function bridgeGetProfile(input: {
 
     const isSelf = memberId === authenticatedAccountId;
 
+    const gender = extractGenderFromDetails({
+      accountDetails: account.details,
+      individualDetails: account.individualProfile?.details,
+    });
+    const resolvedDisplayImage = resolveDisplayImage({
+      displayImage: account.displayImage,
+      accountType: account.accountType,
+      gender,
+      isLoggedIn: true,
+    });
+
     if (isSelf || isTempTokenAuth) {
       const emails = account.contacts.filter((c) => c.contactType === 'email').map((c) => c.value);
       const phones = account.contacts.filter((c) => c.contactType === 'phone').map((c) => c.value);
@@ -716,7 +726,7 @@ export async function bridgeGetProfile(input: {
             aid: account.id,
             neupId: account.neupIds[0]?.id,
             displayName: account.brandProfile?.brandName || account.displayName,
-            displayImage: account.displayImage || DEFAULT_ACCOUNT_AVATAR,
+            displayImage: resolvedDisplayImage,
             firstName: account.individualProfile?.firstName,
             middleName: account.individualProfile?.middleName,
             lastName: account.individualProfile?.lastName,
@@ -743,7 +753,7 @@ export async function bridgeGetProfile(input: {
           aid: account.id,
           neupId: account.neupIds[0]?.id,
           displayName: account.brandProfile?.brandName || account.displayName,
-          displayImage: account.displayImage || DEFAULT_ACCOUNT_AVATAR,
+          displayImage: resolvedDisplayImage,
           verified: account.isVerified,
           accountType: account.accountType,
         },

@@ -7,6 +7,7 @@ import { resolveWhoAmI } from '@/services/auth/whoami';
 import { resolveGuestAccount } from '@/services/auth/guestAccount';
 import { getSessionCookies } from '@/core/helpers/cookies';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
+import { extractGenderFromDetails, resolveDisplayImage } from '@/core/helpers/display-image';
 
 export const dynamic = 'force-dynamic';
 
@@ -274,7 +275,7 @@ async function handleWhoIsThis(request: NextRequest) {
         accountType: true,
         details: true,
         neupIds: { where: { isPrimary: true }, take: 1, select: { id: true } },
-        individualProfile: { select: { firstName: true, lastName: true } },
+        individualProfile: { select: { firstName: true, lastName: true, details: true } },
         brandProfile: { select: { brandName: true } },
       },
     });
@@ -301,6 +302,10 @@ async function handleWhoIsThis(request: NextRequest) {
         .filter(Boolean)
         .join(' ') ||
       null;
+    const gender = extractGenderFromDetails({
+      accountDetails: result.details,
+      individualDetails: result.individualProfile?.details,
+    });
 
     const connection = await ensureConnectionForApp(result.id, appId);
     if (!connection.ok) {
@@ -318,7 +323,11 @@ async function handleWhoIsThis(request: NextRequest) {
         accountId: result.id,
         neupId,
         displayName,
-        displayImage: result.displayImage || null,
+        displayImage: resolveDisplayImage({
+          displayImage: result.displayImage,
+          accountType: result.accountType,
+          gender,
+        }),
         accountType: result.accountType || null,
         verified: result.isVerified ?? false,
       },

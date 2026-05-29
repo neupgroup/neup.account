@@ -3,6 +3,7 @@ import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { applicationAccessFields, type ApplicationAccessField } from '@/services/applications/types';
 import { writeApplicationDevLog } from '@/services/bridge/dev-logs';
+import { resolveDisplayImage } from '@/core/helpers/display-image';
 
 export const dynamic = 'force-dynamic';
 const accessFieldSet = new Set<ApplicationAccessField>(applicationAccessFields);
@@ -296,9 +297,14 @@ export async function POST(request: NextRequest) {
       accountId: account.id,
       displayName: account.displayName ?? null,
       displayImage:
-        (typeof nestedProfile.displayImage === 'string' && nestedProfile.displayImage.trim().length > 0
-          ? nestedProfile.displayImage.trim()
-          : null) ?? account.displayImage ?? null,
+        resolveDisplayImage({
+          displayImage:
+            (typeof nestedProfile.displayImage === 'string' && nestedProfile.displayImage.trim().length > 0
+              ? nestedProfile.displayImage.trim()
+              : null) ?? account.displayImage ?? null,
+          accountType: account.accountType ?? null,
+          gender,
+        }),
       accountType: account.accountType ?? null,
       role: connection.role
         ? [

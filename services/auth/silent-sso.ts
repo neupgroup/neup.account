@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import type { Identity } from '@/prisma/generated/client';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
+import { extractGenderFromDetails, resolveDisplayImage } from '@/core/helpers/display-image';
 
 // ---------------------------------------------------------------------------
 // Rate limiting
@@ -168,7 +169,7 @@ export async function buildIdentityDetails(accountId: string): Promise<IdentityD
         displayName: true,
         accountType: true,
         isVerified: true,
-        individualProfile: { select: { firstName: true, lastName: true } },
+        individualProfile: { select: { firstName: true, lastName: true, details: true } },
         brandProfile: { select: { brandName: true } },
         contacts: { select: { contactType: true, value: true } },
       },
@@ -369,7 +370,7 @@ export async function exchangeSilentAuthCode(
         accountType: true,
         details: true,
         neupIds: { where: { isPrimary: true }, take: 1, select: { id: true } },
-        individualProfile: { select: { firstName: true, lastName: true } },
+        individualProfile: { select: { firstName: true, lastName: true, details: true } },
         brandProfile: { select: { brandName: true } },
       },
     });
@@ -386,6 +387,10 @@ export async function exchangeSilentAuthCode(
         .filter(Boolean)
         .join(' ') ||
       null;
+    const gender = extractGenderFromDetails({
+      accountDetails: account.details,
+      individualDetails: account.individualProfile?.details,
+    });
 
     // Log the exchange event (without the code value)
     await logError('auth', `silent_auth_code exchanged for appId=${appId}, outcome=success`, 'exchange_silent_auth_code');
@@ -397,7 +402,11 @@ export async function exchangeSilentAuthCode(
         accountId: account.id,
         neupId,
         displayName,
-        displayImage: account.displayImage || null,
+        displayImage: resolveDisplayImage({
+          displayImage: account.displayImage,
+          accountType: account.accountType,
+          gender,
+        }),
         accountType: account.accountType || null,
         verified: account.isVerified ?? false,
       },

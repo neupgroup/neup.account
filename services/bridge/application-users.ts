@@ -15,6 +15,7 @@
 
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
+import { extractGenderFromDetails, resolveDisplayImage } from '@/core/helpers/display-image';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -155,8 +156,14 @@ export async function getApplicationUsers(params: {
             displayName: true,
             displayImage: true,
             accountType: true,
+            details: true,
             isVerified: true,
             createdAt: true,
+            individualProfile: {
+              select: {
+                details: true,
+              },
+            },
             neupIds: {
               where: { isPrimary: true },
               select: { id: true },
@@ -181,18 +188,28 @@ export async function getApplicationUsers(params: {
       'connectionStatus',
     ];
 
-    const data = connections.map((c) => ({
+    const data = connections.map((c) => {
+      const gender = extractGenderFromDetails({
+        accountDetails: c.account.details,
+        individualDetails: c.account.individualProfile?.details,
+      });
+      return ({
       connectionId: c.id,
       accountId: c.account.id,
       neupId: c.account.neupIds[0]?.id ?? null,
       displayName: c.account.displayName,
-      displayImage: c.account.displayImage,
+      displayImage: resolveDisplayImage({
+        displayImage: c.account.displayImage,
+        accountType: c.account.accountType,
+        gender,
+      }),
       accountType: c.account.accountType,
       isVerified: c.account.isVerified,
       accountCreatedAt: c.account.createdAt.toISOString(),
       connectedAt: c.connectedAt.toISOString(),
       connectionStatus: c.status,
-    }));
+    });
+    });
 
     const startedAt = connections.length > 0 ? connections[0].id : null;
     const endedAt = connections.length > 0 ? connections[connections.length - 1].id : null;

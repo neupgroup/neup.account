@@ -6,6 +6,7 @@ import { logError } from '@/core/helpers/logger';
 import { checkPermissions } from '@/services/user';
 import { getPersonalAccountId } from '@/core/auth/verify';
 import type { StoredAccount } from '@/core/auth/session';
+import { resolveDisplayImage } from '@/core/helpers/display-image';
 
 export type UserStats = {
     totalUsers: number;
@@ -128,7 +129,10 @@ export async function getAccessibleAccounts(): Promise<AccessibleAccount[]> {
                 isDependent: ownerAccount.accountType === 'dependent',
                 accountType: ownerAccount.accountType,
                 displayName,
-                displayPhoto: ownerAccount.displayImage || undefined,
+                displayPhoto: resolveDisplayImage({
+                    displayImage: ownerAccount.displayImage,
+                    accountType: ownerAccount.accountType,
+                }),
             };
             return accessibleAccount;
         });
@@ -315,7 +319,7 @@ export async function getAllAccountsPaginated(params: {
         let accounts = rows.map((a) => ({
             id: a.id,
             displayName: a.displayName,
-            displayImage: a.displayImage,
+            displayImage: resolveDisplayImage({ displayImage: a.displayImage, accountType: a.accountType }),
             status: a.status,
             isVerified: a.isVerified,
             accountType: a.accountType,
@@ -379,7 +383,7 @@ export async function getAllAccounts(): Promise<AccountBasics[]> {
         return accounts.map((a) => ({
             id: a.id,
             displayName: a.displayName,
-            displayImage: a.displayImage,
+            displayImage: resolveDisplayImage({ displayImage: a.displayImage, accountType: a.accountType }),
             status: a.status,
             isVerified: a.isVerified,
             accountType: a.accountType,
@@ -462,7 +466,7 @@ export async function getAccessableBrandAccounts(accountId: string): Promise<Acc
             .map((a) => ({
                 id: a.id,
                 displayName: a.displayName,
-                displayImage: a.displayImage,
+                displayImage: resolveDisplayImage({ displayImage: a.displayImage, accountType: a.accountType }),
                 status: a.status,
                 isVerified: a.isVerified,
                 accountType: a.accountType,
@@ -505,7 +509,7 @@ export async function getAccountBasics(accountId: string): Promise<AccountBasics
         return {
             id: account.id,
             displayName: account.displayName,
-            displayImage: account.displayImage,
+            displayImage: resolveDisplayImage({ displayImage: account.displayImage, accountType: account.accountType }),
             status: account.status,
             isVerified: account.isVerified,
             accountType: account.accountType,
@@ -649,7 +653,7 @@ export async function getAccessableAccountsWithPermissions(
             .map((a) => ({
                 id: a.id,
                 displayName: a.displayName,
-                displayImage: a.displayImage,
+                displayImage: resolveDisplayImage({ displayImage: a.displayImage, accountType: a.accountType }),
                 status: a.status,
                 isVerified: a.isVerified,
                 accountType: a.accountType,
@@ -750,7 +754,7 @@ export async function getAccessableBrandAccountsWithPermissions(
             .map((a) => ({
                 id: a.id,
                 displayName: a.displayName,
-                displayImage: a.displayImage,
+                displayImage: resolveDisplayImage({ displayImage: a.displayImage, accountType: a.accountType }),
                 status: a.status,
                 isVerified: a.isVerified,
                 accountType: a.accountType,

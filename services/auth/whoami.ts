@@ -1,5 +1,6 @@
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
+import { extractGenderFromDetails, resolveDisplayImage } from '@/core/helpers/display-image';
 
 export type WhoAmIResult =
   | {
@@ -67,7 +68,7 @@ export async function resolveWhoAmI(input: {
         accountType: true,
         details: true,
         neupIds: { where: { isPrimary: true }, take: 1, select: { id: true } },
-        individualProfile: { select: { firstName: true, lastName: true } },
+        individualProfile: { select: { firstName: true, lastName: true, details: true } },
         brandProfile: { select: { brandName: true } },
       },
     });
@@ -101,6 +102,10 @@ export async function resolveWhoAmI(input: {
         .filter(Boolean)
         .join(' ') ||
       null;
+    const gender = extractGenderFromDetails({
+      accountDetails: account.details,
+      individualDetails: account.individualProfile?.details,
+    });
 
     return {
       status: 200,
@@ -109,7 +114,11 @@ export async function resolveWhoAmI(input: {
         accountId: account.id,
         neupId,
         displayName,
-        displayImage: account.displayImage || null,
+        displayImage: resolveDisplayImage({
+          displayImage: account.displayImage,
+          accountType: account.accountType,
+          gender,
+        }),
         accountType: account.accountType || null,
         verified: account.isVerified ?? false,
       },

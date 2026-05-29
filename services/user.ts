@@ -6,8 +6,7 @@
 import prisma from "@/core/helpers/prisma";
 import { logError } from "@/core/helpers/logger";
 import { getActiveAccountId, getPersonalAccountId } from "@/core/auth/verify";
-
-const DEFAULT_ACCOUNT_AVATAR = "https://neupgroup.com/assets/user.png";
+import { extractGenderFromDetails, resolveDisplayImage } from "@/core/helpers/display-image";
 
 // --- Types ---
 
@@ -88,10 +87,15 @@ export async function getUserProfile(
         neupIdPrimary: account.neupIds[0]?.neupId || undefined,
       };
 
-      // Fall back to the default avatar if no photo is set
-      if (!serializedData.accountPhoto) {
-        serializedData.accountPhoto = DEFAULT_ACCOUNT_AVATAR;
-      }
+      const gender = extractGenderFromDetails({
+        accountDetails: account.details,
+        individualDetails: account.individualProfile?.details,
+      });
+      serializedData.accountPhoto = resolveDisplayImage({
+        displayImage: serializedData.accountPhoto,
+        accountType: account.accountType,
+        gender,
+      });
 
       serializedData.accountType = account.accountType || "individual";
 

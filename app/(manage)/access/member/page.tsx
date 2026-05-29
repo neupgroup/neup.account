@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 import { BackButton } from '@/components/ui/back-button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Shield, ChevronRight } from '@/components/icons';
 import { getPortfolioMembers, getDirectMembers } from '@/services/manage/access';
 import { getActiveAccountId } from '@/core/auth/verify';
@@ -13,7 +12,6 @@ import { AssetMemberLookupForm } from '../_components/asset-member-lookup-form';
 import { AddUserForm } from '../add-user-form';
 import { FlowLink } from '@/components/ui/flow-link';
 import { PrimaryHeader } from '@/components/ui/primary-header';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 type PageProps = {
   searchParams: Promise<{ portfolio?: string; asset?: string; mode?: string }>;
@@ -21,75 +19,49 @@ type PageProps = {
 
 type MemberStatus = 'active' | 'invited' | 'on_hold' | 'expired';
 
-// ── Status badge ──────────────────────────────────────────────────────────────
-function StatusBadge({ status }: { status: MemberStatus }) {
-  if (status === 'active') return null;
-
-  const config: Record<string, { label: string; variant: 'outline'; className: string }> = {
-    invited:  { label: 'Invited',  variant: 'outline', className: 'text-amber-600 border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-400' },
-    on_hold:  { label: 'On Hold',  variant: 'outline', className: 'text-orange-600 border-orange-300 bg-orange-50 dark:bg-orange-950/30 dark:border-orange-800 dark:text-orange-400' },
-    expired:  { label: 'Expired',  variant: 'outline', className: 'text-muted-foreground border-border' },
-  };
-
-  const c = config[status];
-  if (!c) return null;
-
-  return (
-    <Badge variant={c.variant} className={`text-xs shrink-0 ${c.className}`}>
-      {c.label}
-    </Badge>
-  );
-}
-
-type MembersTableRow = {
+type MemberCardRow = {
   id: string;
-  member_id: string;
-  role: string;
+  name: string;
+  description: string;
   status: MemberStatus;
-  targetType: 'portfolio' | 'account';
-  targetId: string;
+  isSelf?: boolean;
   actionHref: string;
 };
 
-function MembersTable({ rows }: { rows: MembersTableRow[] }) {
+function MembersCards({ rows }: { rows: MemberCardRow[] }) {
+  const dotClassByStatus: Record<MemberStatus, string> = {
+    active: 'bg-emerald-500',
+    invited: 'bg-blue-500',
+    on_hold: 'bg-muted-foreground',
+    expired: 'bg-muted-foreground',
+  };
+
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>id</TableHead>
-          <TableHead>member_id</TableHead>
-          <TableHead>role</TableHead>
-          <TableHead>status</TableHead>
-          <TableHead>targetType</TableHead>
-          <TableHead>targetId</TableHead>
-          <TableHead className="text-right">action</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {rows.map((row) => (
-          <TableRow key={`${row.targetType}:${row.targetId}:${row.member_id}`}>
-            <TableCell className="font-mono text-xs">{row.id}</TableCell>
-            <TableCell className="font-mono text-xs">{row.member_id}</TableCell>
-            <TableCell>{row.role}</TableCell>
-            <TableCell>
-              {row.status === 'active' ? (
-                <span className="text-sm">active</span>
-              ) : (
-                <StatusBadge status={row.status} />
+    <div className="divide-y">
+      {rows.map((row) => (
+        <div key={row.id} className="flex items-center gap-3 px-4 py-3">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <p className="truncate text-sm font-medium text-foreground">
+                {row.name}
+                {row.isSelf ? ' (you)' : ''}
+              </p>
+              {!row.isSelf && (row.status === 'active' || row.status === 'invited') && (
+                <span
+                  aria-hidden="true"
+                  className={`inline-block h-2.5 w-2.5 shrink-0 rounded-full ${dotClassByStatus[row.status]}`}
+                />
               )}
-            </TableCell>
-            <TableCell>{row.targetType}</TableCell>
-            <TableCell className="font-mono text-xs">{row.targetId}</TableCell>
-            <TableCell className="text-right">
-              <FlowLink href={row.actionHref} className="inline-flex items-center gap-1 text-sm font-medium">
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">{row.description}</p>
+          </div>
+          <FlowLink href={row.actionHref} className="inline-flex items-center gap-1 text-sm font-medium">
                 Open
                 <ChevronRight className="h-4 w-4" />
-              </FlowLink>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+          </FlowLink>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -99,12 +71,12 @@ function MembersLayout({
   backHref,
   description,
   addForm,
-  table,
+  content,
 }: {
   backHref: string;
   description: string;
   addForm: React.ReactNode;
-  table: React.ReactNode;
+  content: React.ReactNode;
 }) {
   return (
     <div className="grid gap-8">
@@ -119,7 +91,7 @@ function MembersLayout({
         {addForm}
 
         <Card>
-          <CardContent className="p-2">{table}</CardContent>
+          <CardContent className="p-0">{content}</CardContent>
         </Card>
       </div>
     </div>
@@ -151,16 +123,17 @@ async function PortfolioAccountPage({ id }: { id: string }) {
       backHref={`/access?portfolio=${id}`}
       description={`Members with access to portfolio "${portfolioName}"`}
       addForm={<AddMemberForm parentPortfolioId={id} />}
-      table={
+      content={
         members.length > 0 ? (
-          <MembersTable
+          <MembersCards
             rows={members.map((member) => ({
               id: `portfolio:${id}:${member.accountId}`,
-              member_id: member.accountId,
-              role: member.roleCount === 0 ? 'No roles assigned' : `${member.roleCount} role${member.roleCount !== 1 ? 's' : ''}`,
+              name: member.displayName,
+              description:
+                member.roleCount === 0
+                  ? 'No roles assigned'
+                  : `${member.roleCount} role${member.roleCount !== 1 ? 's' : ''}`,
               status: member.status,
-              targetType: 'portfolio',
-              targetId: id,
               actionHref: `/access/role?portfolio=${id}&member=${member.accountId}`,
             }))}
           />
@@ -186,16 +159,18 @@ async function DirectAccountPage() {
       backHref="/access"
       description={`Members with access to profile "${accountName}"`}
       addForm={<AddUserForm />}
-      table={
+      content={
         members.length > 0 ? (
-          <MembersTable
+          <MembersCards
             rows={members.map((member) => ({
               id: `account:${accountId}:${member.accountId}`,
-              member_id: member.accountId,
-              role: member.roleCount === 0 ? 'No roles assigned' : `${member.roleCount} role${member.roleCount !== 1 ? 's' : ''}`,
+              name: member.displayName,
+              description:
+                member.accountId === accountId
+                  ? 'You have the full access to your account and no one can remove you from your profile.'
+                  : `${member.roleCount} role${member.roleCount !== 1 ? 's' : ''}, ${member.isPermanent ? 'permanent' : 'temporary'} account`,
               status: member.status,
-              targetType: 'account',
-              targetId: accountId,
+              isSelf: member.accountId === accountId,
               actionHref: `/access/role?member=${member.accountId}`,
             }))}
           />
@@ -264,7 +239,7 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
   if (!rootMode) {
     const canView = await prisma.member.findFirst({
       where: {
-        memberId: accountId,
+        memberAccountId: accountId,
         parentPortfolioId: { in: portfolioIds },
       },
       select: { id: true },
@@ -329,16 +304,17 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
       backHref={backHref}
       description={`Members with access to ${resolved.assetType === 'application' ? 'application' : 'asset'} "${resolvedAsset.name}"`}
       addForm={<AssetMemberLookupForm assetId={resolvedAssetId} rootMode={rootMode} />}
-      table={
+      content={
         members.length > 0 ? (
-          <MembersTable
+          <MembersCards
             rows={members.map((member) => ({
               id: `asset:${resolvedAssetId}:${member.accountId}`,
-              member_id: member.accountId,
-              role: member.roleCount === 0 ? 'No roles assigned' : `${member.roleCount} role${member.roleCount !== 1 ? 's' : ''}`,
+              name: member.displayName,
+              description:
+                member.roleCount === 0
+                  ? 'No roles assigned'
+                  : `${member.roleCount} role${member.roleCount !== 1 ? 's' : ''}`,
               status: member.status,
-              targetType: 'account',
-              targetId: accountId,
               actionHref: `/access/role?member=${encodeURIComponent(member.accountId)}`,
             }))}
           />

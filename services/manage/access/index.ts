@@ -309,6 +309,7 @@ export type DirectMember = {
   displayName: string;
   accountPhoto?: string;
   roleCount: number;
+  isPermanent: boolean;
   /** Grant status — 'active' for confirmed members, 'invited' for pending invitations. */
   status: 'active' | 'invited' | 'on_hold' | 'expired';
 };
@@ -332,8 +333,8 @@ export async function getDirectMembers(accountId: string): Promise<{ accountName
           parentPortfolioId: null,
         },
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        select: { memberAccountId: true, status: true } as any,
-      }) as unknown as Promise<Array<{ memberAccountId: string | null; status: string }>>,
+        select: { memberAccountId: true, status: true, isPermanent: true } as any,
+      }) as unknown as Promise<Array<{ memberAccountId: string | null; status: string; isPermanent: boolean }>>,
       prisma.request.findMany({
         where: {
           action: 'access_invitation',
@@ -350,7 +351,7 @@ export async function getDirectMembers(accountId: string): Promise<{ accountName
       accountId;
 
     // Build a map of confirmed grant members: accountId → { roleCount, status }
-    const grantMap = new Map<string, { roleCount: number; status: 'active' | 'invited' | 'on_hold' | 'expired' }>();
+    const grantMap = new Map<string, { roleCount: number; status: 'active' | 'invited' | 'on_hold' | 'expired'; isPermanent: boolean }>();
     for (const grant of grants) {
       if (!grant.memberAccountId) continue;
       const existing = grantMap.get(grant.memberAccountId);
@@ -361,8 +362,9 @@ export async function getDirectMembers(accountId: string): Promise<{ accountName
           : 'active';
       if (existing) {
         existing.roleCount += 1;
+        existing.isPermanent = existing.isPermanent || grant.isPermanent;
       } else {
-        grantMap.set(grant.memberAccountId, { roleCount: 1, status: grantStatus });
+        grantMap.set(grant.memberAccountId, { roleCount: 1, status: grantStatus, isPermanent: grant.isPermanent });
       }
     }
 
@@ -373,7 +375,7 @@ export async function getDirectMembers(accountId: string): Promise<{ accountName
 
     // Resolve profiles for confirmed grant members
     const confirmedMembers = await Promise.all(
-      Array.from(grantMap.entries()).map(async ([memberId, { roleCount, status }]) => {
+      Array.from(grantMap.entries()).map(async ([memberId, { roleCount, status, isPermanent }]) => {
         const profile = await getUserProfile(memberId);
         const displayName =
           profile?.nameDisplay ||
@@ -384,6 +386,7 @@ export async function getDirectMembers(accountId: string): Promise<{ accountName
           displayName,
           accountPhoto: profile?.accountPhoto,
           roleCount,
+          isPermanent,
           status,
         };
       })
@@ -402,6 +405,7 @@ export async function getDirectMembers(accountId: string): Promise<{ accountName
           displayName,
           accountPhoto: profile?.accountPhoto,
           roleCount: 0,
+          isPermanent: false,
           status: 'invited' as const,
         };
       })

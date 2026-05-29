@@ -32,8 +32,8 @@ model Account {
   parentAssets            Asset[]                  @relation("AssetParentAccount")
   childAssets             Asset[]                  @relation("AssetChildAccount")
   ownedMembers            Member[]                 @relation("MemberOwner")
-  targetAccountMembers    Member[]                 @relation("MemberTargetAccount")
   parentAccountMembers    Member[]                 @relation("MemberParentAccount")
+  denormRoles             Role[]                   @relation("RoleAccount")
   permits                 Permit[]
   permitTargets           Permit[]                 @relation("PermitTarget")
   parentOwnerships        AccountOwnership[]       @relation("ChildAccount")
@@ -116,14 +116,14 @@ model AuthnRequest {
 }
 
 model Activity {
-  id              String   @id(map: "activity_logs_pkey") @default(uuid())
-  memberId String   @map("target_account_id")
-  actorAccountId  String   @map("actor_account_id")
-  action          String
-  status          String
-  ip              String
-  timestamp       DateTime @default(now())
-  geolocation     String?
+  id             String   @id(map: "activity_logs_pkey") @default(uuid())
+  memberId       String   @map("target_account_id")
+  actorAccountId String   @map("actor_account_id")
+  action         String
+  status         String
+  ip             String
+  timestamp      DateTime @default(now())
+  geolocation    String?
 
   @@map("activity")
 }
@@ -297,11 +297,10 @@ model Application {
   connections      Connection[]
   bridge           ApplicationBridge[]
   policies         ApplicationPolicy[]
-  parentMembers    Member[]             @relation("MemberParentApplication")
   authzPermissions AuthzPermission[]
   authzRoles       AuthzRole[]
   identities       Identity[]
-  childAssets      Asset[]               @relation("AssetChildApplication")
+  childAssets      Asset[]              @relation("AssetChildApplication")
   devLogs          ApplicationDevLog[]
 
   @@map("application")
@@ -335,7 +334,7 @@ model Portfolio {
   name                    String
   description             String?
   dateCreated             DateTime                 @default(now())
-  assets                  Asset[]
+  assets                  Asset[]                  @relation("AssetParentPortfolio")
   members                 Member[]                 @relation("MemberParentPortfolio")
   authzAssetsAccessGrants AuthzAssetsAccessGrant[]
 
@@ -344,58 +343,60 @@ model Portfolio {
 
 model Asset {
   id                      String                   @id(map: "portfolio_assets_pkey") @default(uuid())
-  parentPortfolioId       String?                  @map("parent_portfolio")
   assetType               AssetType                @map("asset_type")
-  parentAccountId         String?                  @map("parent_account")
-  childAccountId          String?                  @map("child_account")
-  childApplicationId      String?                  @map("child_application")
-  childConnectionId       String?                  @map("child_connection")
+  assetAccountId          String?                  @map("asset_account_id")
+  assetApplicationId      String?                  @map("asset_application_id")
+  assetConnectionId       String?                  @map("asset_connection_id")
+  assetPortfolioId        String?                  @map("asset_portfolio_id")
+  assetOtherId            String?                  @map("asset_other_id")
+  parentAccountId         String?                  @map("parent_account_id")
+  parentPortfolioId       String?                  @map("parent_portfolio_id")
+  isMainOwner             Boolean                  @default(false) @map("is_main_owner")
+  status                  String                   @default("active")
   details                 Json?
-  portfolio               Portfolio?               @relation(fields: [parentPortfolioId], references: [id], onDelete: SetNull, map: "assets_parent_portfolio_fkey")
+  portfolio               Portfolio?               @relation("AssetParentPortfolio", fields: [parentPortfolioId], references: [id], onDelete: SetNull, map: "assets_parent_portfolio_fkey")
   parentAccount           Account?                 @relation("AssetParentAccount", fields: [parentAccountId], references: [id], map: "assets_parent_account_fkey")
-  childAccount            Account?                 @relation("AssetChildAccount", fields: [childAccountId], references: [id], map: "assets_child_account_fkey")
-  childApplication        Application?             @relation("AssetChildApplication", fields: [childApplicationId], references: [id], map: "assets_child_application_fkey")
-  childConnection         Connection?              @relation("AssetChildConnection", fields: [childConnectionId], references: [id], map: "assets_child_connection_fkey")
+  childAccount            Account?                 @relation("AssetChildAccount", fields: [assetAccountId], references: [id], map: "assets_asset_account_id_fkey")
+  childApplication        Application?             @relation("AssetChildApplication", fields: [assetApplicationId], references: [id], map: "assets_asset_application_id_fkey")
+  childConnection         Connection?              @relation("AssetChildConnection", fields: [assetConnectionId], references: [id], map: "assets_asset_connection_id_fkey")
+  roles                   Role[]
   authzAssetsAccessGrants AuthzAssetsAccessGrant[]
 
-  @@index([assetType, childAccountId], map: "assets_asset_type_child_account_idx")
-  @@index([assetType, childApplicationId], map: "assets_asset_type_child_application_idx")
-  @@index([assetType, childConnectionId], map: "assets_asset_type_child_connection_idx")
-  @@index([parentPortfolioId], map: "assets_parent_portfolio_idx")
-  @@index([parentAccountId], map: "assets_parent_account_idx")
+  @@index([assetType, assetAccountId], map: "assets_asset_type_asset_account_id_idx")
+  @@index([assetType, assetApplicationId], map: "assets_asset_type_asset_application_id_idx")
+  @@index([assetType, assetConnectionId], map: "assets_asset_type_asset_connection_id_idx")
+  @@index([assetType, assetPortfolioId], map: "assets_asset_type_asset_portfolio_id_idx")
+  @@index([parentPortfolioId], map: "assets_parent_portfolio_id_idx")
+  @@index([parentAccountId], map: "assets_parent_account_id_idx")
   @@map("assets")
 }
 
 model Member {
-  id                  String          @id @default(uuid())
-  memberId            String          @map("member_id")
-  accessTo            String          @map("access_to")
-  accessFor           MemberAccessFor @map("access_for")
-  parentAccountId     String?         @map("parent_account_id")
-  parentApplicationId String?         @map("parent_application_id")
-  parentConnectionId  String?         @map("parent_connection_id")
-  parentPortfolioId   String?         @map("parent_portfolio_id")
-  roleId              String          @map("role_id")
-  isPermanent         Boolean         @default(false)
-  hasFullAccess       Boolean         @default(false)
-  status              MemberStatus    @default(active)
+  id                 String       @id @default(uuid())
+  memberType         String       @map("member_type")
+  memberAccountId    String?      @map("member_account_id")
+  memberConnectionId String?      @map("member_connection_id")
+  parentType         String       @map("parent_type")
+  parentPortfolioId  String?      @map("parent_portfolio_id")
+  parentAccountId    String?      @map("parent_account_id")
+  isPermanent        Boolean      @default(false) @map("is_permanent")
+  accessLevel        String       @default("limited") @map("access_level")
+  status             MemberStatus @default(active)
+  details            Json?
 
-  member            Account      @relation("MemberOwner", fields: [memberId], references: [id], onDelete: Cascade, map: "member_member_id_fkey")
-  accessAccount     Account      @relation("MemberTargetAccount", fields: [accessTo], references: [id], map: "member_access_to_fkey")
-  parentAccount     Account?     @relation("MemberParentAccount", fields: [parentAccountId], references: [id], map: "member_parent_account_id_fkey")
-  parentApplication Application? @relation("MemberParentApplication", fields: [parentApplicationId], references: [id], map: "member_parent_application_id_fkey")
-  parentConnection  Connection?  @relation("MemberParentConnection", fields: [parentConnectionId], references: [id], map: "member_parent_connection_id_fkey")
-  parentPortfolio   Portfolio?   @relation("MemberParentPortfolio", fields: [parentPortfolioId], references: [id], map: "member_parent_portfolio_id_fkey")
-  role              AuthzRole    @relation("MemberRole", fields: [roleId], references: [id], map: "member_role_id_fkey")
+  memberAccount    Account?    @relation("MemberOwner", fields: [memberAccountId], references: [id], onDelete: Cascade, map: "member_member_account_id_fkey")
+  memberConnection Connection? @relation("MemberConnection", fields: [memberConnectionId], references: [id], map: "member_member_connection_id_fkey")
+  parentAccount    Account?    @relation("MemberParentAccount", fields: [parentAccountId], references: [id], map: "member_parent_account_id_fkey")
+  parentPortfolio  Portfolio?  @relation("MemberParentPortfolio", fields: [parentPortfolioId], references: [id], map: "member_parent_portfolio_id_fkey")
+  roles            Role[]
 
-  @@index([memberId], map: "member_member_id_idx")
-  @@index([accessTo], map: "member_access_to_idx")
-  @@index([accessFor], map: "member_access_for_idx")
-  @@index([parentAccountId], map: "member_parent_account_id_idx")
-  @@index([parentApplicationId], map: "member_parent_application_id_idx")
-  @@index([parentConnectionId], map: "member_parent_connection_id_idx")
+  @@index([memberType], map: "member_member_type_idx")
+  @@index([memberAccountId], map: "member_member_account_id_idx")
+  @@index([memberConnectionId], map: "member_member_connection_id_idx")
+  @@index([parentType], map: "member_parent_type_idx")
   @@index([parentPortfolioId], map: "member_parent_portfolio_id_idx")
-  @@index([roleId], map: "member_role_id_idx")
+  @@index([parentAccountId], map: "member_parent_account_id_idx")
+  @@index([accessLevel], map: "member_access_level_idx")
   @@map("member")
 }
 
@@ -415,18 +416,19 @@ model AccountOwnership {
 }
 
 model Connection {
-  id            String      @id(map: "user_app_connections_pkey") @default(uuid())
-  accountId     String      @map("account_id")
-  appId         String      @map("app_id")
-  roleId        String?     @map("role_id")
-  status        String      @default("active")
-  connectedAt   DateTime    @default(now()) @map("connected_at")
-  details       Json?
-  account       Account     @relation(fields: [accountId], references: [id], onDelete: Cascade, map: "user_app_connections_accountId_fkey")
-  application   Application @relation(fields: [appId], references: [id], map: "user_app_connections_appId_fkey")
-  role          AuthzRole?  @relation("ConnectionRole", fields: [roleId], references: [id], map: "connection_role_id_fkey")
-  parentMembers Member[]    @relation("MemberParentConnection")
-  childAssets   Asset[]     @relation("AssetChildConnection")
+  id          String      @id(map: "user_app_connections_pkey") @default(uuid())
+  accountId   String      @map("account_id")
+  appId       String      @map("app_id")
+  roleId      String?     @map("role_id")
+  status      String      @default("active")
+  connectedAt DateTime    @default(now()) @map("connected_at")
+  details     Json?
+  account     Account     @relation(fields: [accountId], references: [id], onDelete: Cascade, map: "user_app_connections_accountId_fkey")
+  application Application @relation(fields: [appId], references: [id], map: "user_app_connections_appId_fkey")
+  role        AuthzRole?  @relation("ConnectionRole", fields: [roleId], references: [id], map: "connection_role_id_fkey")
+  memberRows  Member[]    @relation("MemberConnection")
+  childAssets Asset[]     @relation("AssetChildConnection")
+  denormRoles Role[]      @relation("RoleConnection")
 
   @@unique([accountId, appId], map: "user_app_connections_accountId_appId_key")
   @@map("connection")
@@ -484,6 +486,35 @@ enum MemberStatus {
   removed
 }
 
+model Role {
+  id            String  @id @default(uuid())
+  memberId      String  @map("member_id")
+  accountId     String? @map("account_id")
+  connectionId  String? @map("connection_id")
+  assetId       String? @map("asset_id")
+  assetType     String? @map("asset_type")
+  assetIdDenorm String? @map("asset_id_denorm")
+  roleId        String  @map("role_id")
+  roleName      String? @map("role_name")
+  permissions   Json?
+  status        String  @default("active")
+  details       Json?
+
+  member     Member      @relation(fields: [memberId], references: [id], onDelete: Cascade, map: "role_member_id_fkey")
+  account    Account?    @relation("RoleAccount", fields: [accountId], references: [id], map: "role_account_id_fkey")
+  connection Connection? @relation("RoleConnection", fields: [connectionId], references: [id], map: "role_connection_id_fkey")
+  asset      Asset?      @relation(fields: [assetId], references: [id], map: "role_asset_id_fkey")
+  authzRole  AuthzRole   @relation(fields: [roleId], references: [id], map: "role_role_id_fkey")
+
+  @@index([memberId], map: "role_member_id_idx")
+  @@index([accountId], map: "role_account_id_idx")
+  @@index([connectionId], map: "role_connection_id_idx")
+  @@index([assetId], map: "role_asset_id_idx")
+  @@index([assetType], map: "role_asset_type_idx")
+  @@index([roleId], map: "role_role_id_idx")
+  @@map("role")
+}
+
 model AuthzPermission {
   id           String                   @id @default(uuid())
   name         String
@@ -497,30 +528,30 @@ model AuthzPermission {
 }
 
 model AuthzRole {
-  id           String                   @id @default(uuid())
-  name         String
-  description  String?
-  appId        String?                  @map("app_id")
-  scope        String?
-  pushed       Boolean                  @default(false)
-  permissions  Json?
-  application  Application?             @relation(fields: [appId], references: [id])
-  assetsGrants AuthzAssetsAccessGrant[]
-  permissionMappings AuthzRolePermissionMap[]
-  members      Member[]                 @relation("MemberRole")
-  connections  Connection[]             @relation("ConnectionRole")
-  defaultForApplications Application[]  @relation("ApplicationDefaultRole")
+  id                     String                   @id @default(uuid())
+  name                   String
+  description            String?
+  appId                  String?                  @map("app_id")
+  scope                  String?
+  pushed                 Boolean                  @default(false)
+  permissions            Json?
+  application            Application?             @relation(fields: [appId], references: [id])
+  assetsGrants           AuthzAssetsAccessGrant[]
+  permissionMappings     AuthzRolePermissionMap[]
+  memberRoles            Role[]
+  connections            Connection[]             @relation("ConnectionRole")
+  defaultForApplications Application[]            @relation("ApplicationDefaultRole")
 
   @@unique([name, appId], map: "authz_role_name_app_id_key")
   @@map("authz_role")
 }
 
 model AuthzRolePermissionMap {
-  id           String         @id @default(uuid())
-  roleId       String         @map("role_id")
-  permissionId String         @map("permission_id")
-  createdAt    DateTime       @default(now()) @map("created_at")
-  role         AuthzRole      @relation(fields: [roleId], references: [id], onDelete: Cascade, map: "authz_role_permission_map_role_id_fkey")
+  id           String          @id @default(uuid())
+  roleId       String          @map("role_id")
+  permissionId String          @map("permission_id")
+  createdAt    DateTime        @default(now()) @map("created_at")
+  role         AuthzRole       @relation(fields: [roleId], references: [id], onDelete: Cascade, map: "authz_role_permission_map_role_id_fkey")
   permission   AuthzPermission @relation(fields: [permissionId], references: [id], onDelete: Cascade, map: "authz_role_permission_map_permission_id_fkey")
 
   @@unique([roleId, permissionId], map: "authz_role_permission_map_role_permission_key")
@@ -553,15 +584,15 @@ model AuthzAssetsAccessGrant {
 }
 
 model Permit {
-  id              String   @id @default(uuid())
-  accountId       String   @map("account_id")
-  memberId String   @map("target_account_id")
-  forSelf         Boolean  @default(false) @map("for_self")
-  isRoot          Boolean  @default(false) @map("is_root")
-  permissions     String[] @default([])
-  restrictions    String[] @default([])
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  id           String   @id @default(uuid())
+  accountId    String   @map("account_id")
+  memberId     String   @map("target_account_id")
+  forSelf      Boolean  @default(false) @map("for_self")
+  isRoot       Boolean  @default(false) @map("is_root")
+  permissions  String[] @default([])
+  restrictions String[] @default([])
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
   account       Account @relation(fields: [accountId], references: [id], onDelete: Cascade, map: "permit_account_id_fkey")
   targetAccount Account @relation("PermitTarget", fields: [memberId], references: [id], onDelete: Cascade, map: "permit_target_account_id_fkey")

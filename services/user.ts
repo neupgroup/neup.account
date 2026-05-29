@@ -181,42 +181,40 @@ export async function getAccountPermission(
   if (!activeId) return [];
 
   try {
-    const grants = await prisma.member.findMany({
+    const roleRows = await prisma.role.findMany({
       where: {
-        memberId: activeId,
-        accessFor: 'account',
-        parentApplicationId: "neup.account",
-      },
-      select: { roleId: true },
-    });
-
-    if (!grants.length) {
-      return [];
-    }
-
-    const roleIds = Array.from(new Set(grants.map((grant) => grant.roleId)));
-
-    const roles = await prisma.authzRole.findMany({
-      where: {
-        id: { in: roleIds },
-        appId: "neup.account",
+        member: {
+          memberAccountId: activeId,
+          parentType: 'account',
+        },
+        authzRole: {
+          appId: 'neup.account',
+        },
       },
       select: {
         permissions: true,
+        authzRole: {
+          select: {
+            id: true,
+            permissions: true,
+          },
+        },
       },
     });
 
-    const permissions = [
-      ...new Set(
-        roles.flatMap((row) => {
-          if (!Array.isArray(row.permissions)) return [];
+    if (!roleRows.length) {
+      return [];
+    }
 
-          return row.permissions.filter(
-            (item): item is string => typeof item === "string",
-          );
-        }),
-      ),
-    ];
+    const readPermissionStrings = (value: unknown): string[] => {
+      if (!Array.isArray(value)) return [];
+      return value.filter((item): item is string => typeof item === 'string');
+    };
+
+    const permissions = roleRows.flatMap((row) => [
+      ...readPermissionStrings(row.permissions),
+      ...readPermissionStrings(row.authzRole.permissions),
+    ]);
 
     return Array.from(new Set(permissions));
   } catch (error) {
@@ -325,12 +323,16 @@ export async function checkNeupIdAvailability(
 export async function isRootUser(accountId: string): Promise<boolean> {
   if (!accountId) return false;
   try {
-    const count = await prisma.member.count({
+    const count = await prisma.role.count({
       where: {
-        memberId: accountId,
-        accessFor: 'account',
-        parentApplicationId: 'neup.account',
-        role: { scope: 'root' },
+        member: {
+          memberAccountId: accountId,
+          parentType: 'account',
+        },
+        authzRole: {
+          appId: 'neup.account',
+          scope: 'root',
+        },
       },
     });
     return count > 0;

@@ -340,28 +340,31 @@ exports.Prisma.PortfolioScalarFieldEnum = {
 
 exports.Prisma.AssetScalarFieldEnum = {
   id: 'id',
-  parentPortfolioId: 'parentPortfolioId',
   assetType: 'assetType',
+  assetAccountId: 'assetAccountId',
+  assetApplicationId: 'assetApplicationId',
+  assetConnectionId: 'assetConnectionId',
+  assetPortfolioId: 'assetPortfolioId',
+  assetOtherId: 'assetOtherId',
   parentAccountId: 'parentAccountId',
-  childAccountId: 'childAccountId',
-  childApplicationId: 'childApplicationId',
-  childConnectionId: 'childConnectionId',
+  parentPortfolioId: 'parentPortfolioId',
+  isMainOwner: 'isMainOwner',
+  status: 'status',
   details: 'details'
 };
 
 exports.Prisma.MemberScalarFieldEnum = {
   id: 'id',
-  memberId: 'memberId',
-  accessTo: 'accessTo',
-  accessFor: 'accessFor',
-  parentAccountId: 'parentAccountId',
-  parentApplicationId: 'parentApplicationId',
-  parentConnectionId: 'parentConnectionId',
+  memberType: 'memberType',
+  memberAccountId: 'memberAccountId',
+  memberConnectionId: 'memberConnectionId',
+  parentType: 'parentType',
   parentPortfolioId: 'parentPortfolioId',
-  roleId: 'roleId',
+  parentAccountId: 'parentAccountId',
   isPermanent: 'isPermanent',
-  hasFullAccess: 'hasFullAccess',
-  status: 'status'
+  accessLevel: 'accessLevel',
+  status: 'status',
+  details: 'details'
 };
 
 exports.Prisma.AccountOwnershipScalarFieldEnum = {
@@ -397,6 +400,21 @@ exports.Prisma.ApplicationPolicyScalarFieldEnum = {
   policyType: 'policyType',
   policyValue: 'policyValue',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.RoleScalarFieldEnum = {
+  id: 'id',
+  memberId: 'memberId',
+  accountId: 'accountId',
+  connectionId: 'connectionId',
+  assetId: 'assetId',
+  assetType: 'assetType',
+  assetIdDenorm: 'assetIdDenorm',
+  roleId: 'roleId',
+  roleName: 'roleName',
+  permissions: 'permissions',
+  status: 'status',
+  details: 'details'
 };
 
 exports.Prisma.AuthzPermissionScalarFieldEnum = {
@@ -491,13 +509,6 @@ exports.AssetType = exports.$Enums.AssetType = {
   connection: 'connection'
 };
 
-exports.MemberAccessFor = exports.$Enums.MemberAccessFor = {
-  account: 'account',
-  application: 'application',
-  connection: 'connection',
-  portfolio: 'portfolio'
-};
-
 exports.MemberStatus = exports.$Enums.MemberStatus = {
   active: 'active',
   paused: 'paused',
@@ -532,6 +543,7 @@ exports.Prisma.ModelName = {
   Connection: 'Connection',
   ApplicationBridge: 'ApplicationBridge',
   ApplicationPolicy: 'ApplicationPolicy',
+  Role: 'Role',
   AuthzPermission: 'AuthzPermission',
   AuthzRole: 'AuthzRole',
   AuthzRolePermissionMap: 'AuthzRolePermissionMap',

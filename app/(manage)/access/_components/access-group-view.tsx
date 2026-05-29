@@ -97,7 +97,7 @@ export function AccessGroupView({
             >
               <AppWindow className="h-5 w-5 text-muted-foreground flex-shrink-0" />
               <div className="flex-grow min-w-0">
-                <p className="font-medium text-foreground">AppConnection</p>
+                <p className="font-medium text-foreground">Connections</p>
                 <p className="text-sm text-muted-foreground">See all application this profile is connected to.</p>
               </div>
               <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />

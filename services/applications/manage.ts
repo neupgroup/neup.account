@@ -487,11 +487,52 @@ export async function getManagedApplications(): Promise<Array<{ id: string; name
   }
 
   try {
-    const ownedRows = await prisma.member.findMany({
-      where: { accessTo: accountId, roleId: 'application.owner', accessFor: 'application' },
+    const roleRows = await prisma.role.findMany({
+      where: {
+        member: {
+          memberAccountId: accountId,
+          parentType: 'account',
+        },
+      },
       orderBy: { id: 'desc' },
       select: {
-        parentApplication: {
+        roleId: true,
+        roleName: true,
+        details: true,
+        member: { select: { details: true } },
+      },
+    });
+
+    const getLegacyAppId = (value: unknown): string | null => {
+      if (!value || typeof value !== 'object') return null;
+      const appId = (value as Record<string, unknown>).legacy_parent_application_id;
+      return typeof appId === 'string' && appId.trim().length > 0 ? appId : null;
+    };
+
+    const ownedIds = new Set<string>();
+    const permittedViewAppIds = new Set<string>();
+
+    for (const row of roleRows) {
+      const appId = getLegacyAppId(row.details) ?? getLegacyAppId(row.member.details);
+      if (!appId) continue;
+
+      const normalizedCandidates = [row.roleId, row.roleName]
+        .filter((v): v is string => typeof v === 'string')
+        .map((v) => v.trim().toLowerCase());
+
+      const canView = normalizedCandidates.some((role) => viewRoleKeys.has(role));
+      const isOwner = normalizedCandidates.some((role) => ownerRoleKeys.has(role));
+
+      if (canView) permittedViewAppIds.add(appId);
+      if (isOwner) ownedIds.add(appId);
+    }
+
+    const ownedApplications = ownedIds.size
+      ? await prisma.application.findMany({
+          where: {
+            id: { in: Array.from(ownedIds) },
+          },
+          orderBy: { createdAt: 'desc' },
           select: {
             id: true,
             name: true,
@@ -500,27 +541,8 @@ export async function getManagedApplications(): Promise<Array<{ id: string; name
             appSecret: true,
             status: true,
           },
-        },
-      },
-    });
-
-    const ownedApplications = ownedRows
-      .map((r) => r.parentApplication)
-      .filter((app): app is NonNullable<typeof app> => Boolean(app));
-    const ownedIds = new Set(ownedApplications.map((app) => app.id));
-
-    const roleRows = await prisma.member.findMany({
-      where: { memberId: accountId, accessFor: 'application' },
-      select: { roleId: true, parentApplicationId: true },
-    });
-
-    const permittedViewAppIds = new Set<string>();
-    for (const row of roleRows) {
-      const normalizedRole = row.roleId.trim().toLowerCase();
-      if (viewRoleKeys.has(normalizedRole) && row.parentApplicationId) {
-        permittedViewAppIds.add(row.parentApplicationId);
-      }
-    }
+        })
+      : [];
 
     const permittedApplications = permittedViewAppIds.size
       ? await prisma.application.findMany({

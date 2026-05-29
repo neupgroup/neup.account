@@ -80,16 +80,23 @@ export async function getAccessibleAccounts(): Promise<AccessibleAccount[]> {
     if (!personalAccountId) return [];
 
     try {
-        // Query member: accessTo is the account being managed,
-        // memberId is the account that has been granted access (the accessor).
+        // Query member grants where current personal account is the member
+        // and the parent account is the account being managed.
         const grants = await prisma.member.findMany({
             where: {
-                memberId: personalAccountId,
-                accessFor: 'account',
-                parentApplicationId: 'neup.account',
+                memberAccountId: personalAccountId,
+                memberType: 'account',
+                parentType: 'account',
+                roles: {
+                    some: {
+                        authzRole: {
+                            appId: 'neup.account',
+                        },
+                    },
+                },
             },
             include: {
-                accessAccount: {
+                parentAccount: {
                     include: {
                         neupIds: {
                             where: { isPrimary: true },
@@ -101,7 +108,7 @@ export async function getAccessibleAccounts(): Promise<AccessibleAccount[]> {
 
         const seen = new Set<string>();
         const accounts = grants.map((grant) => {
-            const ownerAccount = grant.accessAccount;
+            const ownerAccount = grant.parentAccount;
             if (!ownerAccount) return null;
             // Skip duplicate grants for the same owner account
             if (seen.has(ownerAccount.id)) return null;
@@ -169,22 +176,30 @@ export async function getUserStats(): Promise<UserStats> {
  * Function getAccessableAccountIds.
  *
  * Returns a deduplicated array of account IDs that the given accountId
- * has access to — i.e. all unique ownerAccountIds from authz_account_access_grant
- * where memberId = accountId and app_id = 'neup.account'.
+ * has access to — i.e. all unique parent account IDs for active account grants.
  */
 export async function getAccessableAccountIds(accountId: string): Promise<string[]> {
     try {
         const grants = await prisma.member.findMany({
             where: {
-                memberId: accountId,
-                accessFor: 'account',
-                parentApplicationId: 'neup.account',
+                memberAccountId: accountId,
+                memberType: 'account',
+                parentType: 'account',
+                roles: {
+                    some: {
+                        authzRole: {
+                            appId: 'neup.account',
+                        },
+                    },
+                },
             },
-            select: { accessTo: true },
-            distinct: ['accessTo'],
+            select: { parentAccountId: true },
+            distinct: ['parentAccountId'],
         });
 
-        return grants.map((g) => g.accessTo);
+        return grants
+            .map((g) => g.parentAccountId)
+            .filter((id): id is string => typeof id === 'string' && id.length > 0);
     } catch (error) {
         await logError('database', error, `getAccessableAccountIds:${accountId}`);
         return [];

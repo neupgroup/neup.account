@@ -223,7 +223,7 @@ export async function assignAppAccessToAccount(input: {
       });
     });
 
-    revalidatePath('/access/appconnection');
+    revalidatePath('/access/connection');
     // Let the caller know if this was a fresh invite (no prior connection)
     // so the UI can show the "user doesn't have an account on <app> yet" notice.
     return {
@@ -255,7 +255,7 @@ export async function revokeAppAccessFromAccount(input: {
       },
     });
 
-    revalidatePath('/access/appconnection');
+    revalidatePath('/access/connection');
     return { success: true };
   } catch (error) {
     await logError('database', error, `revokeAppAccessFromAccount:${input.appId}:${input.memberId}`);

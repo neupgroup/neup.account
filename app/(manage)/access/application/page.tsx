@@ -3,9 +3,9 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AppWindow, ExternalLink, UserCircle, UserPlus, Users } from '@/components/icons';
 import { FlowLink } from '@/components/ui/flow-link';
-import { getApplicationAccessPageData } from '../appconnection/actions';
-import { AssignAppAccessForm } from '../appconnection/assign-app-access-form';
-import { RevokeAppAccessButton } from '../appconnection/revoke-app-access-form';
+import { getApplicationAccessPageData } from '../connection/actions';
+import { AssignAppAccessForm } from '../connection/assign-app-access-form';
+import { RevokeAppAccessButton } from '../connection/revoke-app-access-form';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 

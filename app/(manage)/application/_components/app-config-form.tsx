@@ -10,11 +10,9 @@ import {
   applicationResponseFields,
   applicationPartyMeta,
   applicationPartyValues,
-  applicationTokenFields,
   type ApplicationParty,
   type ApplicationAccessField,
   type ApplicationResponseField,
-  type ApplicationTokenField,
 } from '@/services/applications/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,7 +20,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Eye, EyeOff, Plus, Trash2, KeyRound, Database, Globe, Variable } from 'lucide-react';
+import { Loader2, Eye, EyeOff, Plus, Trash2, KeyRound, Database, Globe } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
 // Field labels
@@ -60,7 +58,6 @@ const schema = z.object({
     .optional()
     .or(z.literal('')),
   access: z.array(z.enum(applicationResponseFields)).default([]),
-  tokenFields: z.array(z.enum(applicationTokenFields)).default([]),
   party: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]).default(1),
   allowDevMode: z.boolean().default(false),
   allowDevIpMode: z.boolean().default(false),
@@ -70,9 +67,6 @@ type FormValues = z.infer<typeof schema>;
 
 const responseFieldSet = new Set<ApplicationAccessField>(applicationResponseFields);
 const isResponseField = (field: ApplicationAccessField): field is ApplicationResponseField => responseFieldSet.has(field);
-
-const tokenFieldSet = new Set<ApplicationAccessField>(applicationTokenFields);
-const isTokenField = (field: ApplicationAccessField): field is ApplicationTokenField => tokenFieldSet.has(field);
 
 // ---------------------------------------------------------------------------
 // Props
@@ -117,6 +111,7 @@ export function AppConfigForm({
   const [newServerIp, setNewServerIp] = useState('');
   const [accountUpdateWebhookUrl, setAccountUpdateWebhookUrl] = useState(initialAccountUpdateWebhookUrl ?? '');
   const [roleUpdateWebhookUrl, setRoleUpdateWebhookUrl] = useState(initialRoleUpdateWebhookUrl ?? '');
+  const [showExampleResponse, setShowExampleResponse] = useState(false);
   const [origins, setOrigins] = useState(initialOrigins);
   const [serverIps, setServerIps] = useState(initialServerIps);
 
@@ -125,7 +120,6 @@ export function AppConfigForm({
     defaultValues: {
       secretKey: '',
       access: initialAccess.filter(isResponseField),
-      tokenFields: initialTokenFields.filter(isTokenField),
       party: initialParty,
       allowDevMode: initialAllowDevMode,
       allowDevIpMode: initialAllowDevIpMode,
@@ -133,16 +127,62 @@ export function AppConfigForm({
   });
 
   const selectedParty = form.watch('party');
+  const selectedResponseFields = form.watch('access');
   const visibleResponseFields = (applicationResponseFields as readonly ApplicationResponseField[]).filter((field) => {
     if (field === 'accountId') return selectedParty === 0 || selectedParty === 1;
-    if (field === 'neupid') return selectedParty === 2;
+    if (field === 'neupid') return selectedParty !== 3;
     return true;
   });
-  const visibleTokenFields = (applicationTokenFields as readonly ApplicationTokenField[]).filter((field) => {
-    if (field === 'accountId') return selectedParty === 0 || selectedParty === 1;
-    if (field === 'neupid') return selectedParty === 2;
-    return true;
-  });
+  const exampleValueByField: Record<ApplicationAccessField, string | number | boolean> = {
+    connectionId: 'conn_01HXYZABC',
+    accountId: 'acc_01HXYZABC',
+    displayName: 'Jane Smith',
+    displayImage: 'https://cdn.example.com/avatar.jpg',
+    accountType: 'individual',
+    role: 'member',
+    lastActive: '2026-05-30T10:12:00.000Z',
+    neupid: 'janesmith',
+    firstName: 'Jane',
+    lastName: 'Smith',
+    middleName: 'K',
+    dateBirth: '1998-04-18',
+    age: 28,
+    isMinor: false,
+    gender: 'female',
+  };
+  const selectedFieldSet = new Set(selectedResponseFields);
+  const exampleAccount: Record<string, string | boolean> = {
+    connectionId: String(exampleValueByField.connectionId),
+  };
+  if (selectedFieldSet.has('accountId')) exampleAccount.id = String(exampleValueByField.accountId);
+  if (selectedFieldSet.has('isMinor')) exampleAccount.isMinor = Boolean(exampleValueByField.isMinor);
+  if (selectedFieldSet.has('neupid')) exampleAccount.neupid = String(exampleValueByField.neupid);
+
+  const exampleProfile: Record<string, string> = {};
+  if (selectedFieldSet.has('displayName')) exampleProfile.displayName = String(exampleValueByField.displayName);
+  if (selectedFieldSet.has('displayImage')) exampleProfile.displayImage = String(exampleValueByField.displayImage);
+  if (selectedFieldSet.has('gender')) exampleProfile.gender = String(exampleValueByField.gender);
+  if (selectedFieldSet.has('dateBirth')) exampleProfile.birthDate = String(exampleValueByField.dateBirth);
+  if (selectedFieldSet.has('lastActive')) exampleProfile.lastActive = String(exampleValueByField.lastActive);
+
+  const exampleRole = selectedFieldSet.has('role')
+    ? { id: 'application.member', name: 'Application Member' }
+    : null;
+
+  const exampleResponse: Record<string, unknown> = {
+    success: true,
+    appId,
+    occurredAt: '2026-05-30T10:12:00.000Z',
+    account: exampleAccount,
+    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+  };
+
+  if (Object.keys(exampleProfile).length > 0) {
+    exampleResponse.profile = exampleProfile;
+  }
+  if (exampleRole) {
+    exampleResponse.role = exampleRole;
+  }
 
   const onSubmit = (values: FormValues) => {
     startTransition(async () => {
@@ -150,7 +190,6 @@ export function AppConfigForm({
         appId,
         secretKey: values.secretKey || undefined,
         access: values.access,
-        tokenFields: values.tokenFields,
         party: values.party,
         allowDevMode: values.allowDevMode,
         allowDevIpMode: values.allowDevIpMode,
@@ -309,18 +348,18 @@ export function AppConfigForm({
             </CardContent>
           </Card>
 
-          {/* Access Fields */}
+          {/* Party + field matrix */}
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Database className="h-4 w-4 text-muted-foreground" />
-                <CardTitle>Party Management</CardTitle>
+                <CardTitle>Party & Identity Field Settings</CardTitle>
               </div>
               <CardDescription>
-                Configure this application&apos;s party level. This controls sensitive identity fields available in API and token forms.
+                Configure party, then choose which identity fields appear in API response and JWT payload in one place.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-4">
               <FormField
                 control={form.control}
                 name="party"
@@ -335,16 +374,10 @@ export function AppConfigForm({
                           field.onChange(nextParty);
                           const nextAccess = (form.getValues('access') ?? []).filter((entry) => {
                             if (entry === 'accountId') return nextParty === 0 || nextParty === 1;
-                            if (entry === 'neupid') return nextParty === 2;
-                            return true;
-                          });
-                          const nextTokenFields = (form.getValues('tokenFields') ?? []).filter((entry) => {
-                            if (entry === 'accountId') return nextParty === 0 || nextParty === 1;
-                            if (entry === 'neupid') return nextParty === 2;
+                            if (entry === 'neupid') return nextParty !== 3;
                             return true;
                           });
                           form.setValue('access', nextAccess, { shouldDirty: true });
-                          form.setValue('tokenFields', nextTokenFields, { shouldDirty: true });
                         }}
                       >
                         <SelectTrigger>
@@ -359,155 +392,57 @@ export function AppConfigForm({
                         </SelectContent>
                       </Select>
                     </FormControl>
-                    <p className="text-xs text-muted-foreground">
-                      {applicationPartyMeta[selectedParty].description}
-                    </p>
+                    <p className="text-xs text-muted-foreground">{applicationPartyMeta[selectedParty].description}</p>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </CardContent>
-            <CardFooter>
-              <Button type="submit" disabled={isPending}>
-                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save Configuration
-              </Button>
-            </CardFooter>
-          </Card>
 
-          {/* Access Fields */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Database className="h-4 w-4 text-muted-foreground" />
-                <CardTitle>API Response Fields</CardTitle>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {visibleResponseFields.map((field) => {
+                  const meta = fieldLabels[field];
+                  return (
+                    <FormField
+                      key={field}
+                      control={form.control}
+                      name="access"
+                      render={({ field: formField }) => (
+                        <FormItem className="flex items-start gap-3 rounded-lg border p-3">
+                          <FormControl>
+                            <Checkbox
+                              checked={formField.value?.includes(field)}
+                              onCheckedChange={(checked) => {
+                                const current = formField.value ?? [];
+                                formField.onChange(
+                                  checked ? [...current, field] : current.filter((v) => v !== field),
+                                );
+                              }}
+                            />
+                          </FormControl>
+                          <div className="space-y-0.5 leading-none">
+                            <FormLabel className="font-medium cursor-pointer">{meta.label}</FormLabel>
+                            <p className="text-xs text-muted-foreground">{meta.description}</p>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  );
+                })}
               </div>
-              <CardDescription>
-                Select which fields the API will include in its response. Only checked fields are returned.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <FormField
-                control={form.control}
-                name="access"
-                render={() => (
-                  <FormItem>
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      {visibleResponseFields.map((field) => {
-                        const meta = fieldLabels[field];
-                        return (
-                          <FormField
-                            key={field}
-                            control={form.control}
-                            name="access"
-                            render={({ field: formField }) => (
-                              <FormItem className="flex items-start gap-3 rounded-lg border p-3">
-                                <FormControl>
-                                  <Checkbox
-                                    checked={formField.value?.includes(field)}
-                                    onCheckedChange={(checked) => {
-                                      const current = formField.value ?? [];
-                                      formField.onChange(
-                                        checked
-                                          ? [...current, field]
-                                          : current.filter((v) => v !== field),
-                                      );
-                                    }}
-                                  />
-                                </FormControl>
-                                <div className="space-y-0.5 leading-none">
-                                  <FormLabel className="font-medium cursor-pointer">{meta.label}</FormLabel>
-                                  <p className="text-xs text-muted-foreground">{meta.description}</p>
-                                </div>
-                              </FormItem>
-                            )}
-                          />
-                        );
-                      })}
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-            <CardFooter>
-              <Button type="submit" disabled={isPending}>
-                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save Configuration
-              </Button>
-            </CardFooter>
-          </Card>
-
-          {/* Token fields (JWT only) */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Variable className="h-4 w-4 text-muted-foreground" />
-                <CardTitle>JWT Token Fields</CardTitle>
+              <div className="rounded-lg border p-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowExampleResponse((v) => !v)}
+                >
+                  Get an example response
+                </Button>
+                {showExampleResponse ? (
+                  <pre className="mt-3 overflow-auto rounded-md bg-muted/50 p-3 text-xs">
+{JSON.stringify(exampleResponse, null, 2)}
+                  </pre>
+                ) : null}
               </div>
-              <CardDescription>
-                Select which fields are embedded in the issued JWT. These fields are not included in the API response payload.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <FormField
-                control={form.control}
-                name="tokenFields"
-                render={() => (
-                  <FormItem>
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      {visibleTokenFields.map((tokenField) => {
-                        const meta = fieldLabels[tokenField];
-                        return (
-                          <FormField
-                            key={tokenField}
-                            control={form.control}
-                            name="tokenFields"
-                            render={({ field: formField }) => (
-                              <FormItem className="flex items-start gap-3 rounded-lg border p-3">
-                                <FormControl>
-                                  <Checkbox
-                                    checked={formField.value?.includes(tokenField)}
-                                    onCheckedChange={(checked) => {
-                                      const current = formField.value ?? [];
-                                      formField.onChange(
-                                        checked
-                                          ? [...current, tokenField]
-                                          : current.filter((v) => v !== tokenField),
-                                      );
-                                    }}
-                                  />
-                                </FormControl>
-                                <div className="space-y-0.5 leading-none">
-                                  <FormLabel className="font-medium cursor-pointer">{meta.label}</FormLabel>
-                                  <p className="text-xs text-muted-foreground">{meta.description}</p>
-                                </div>
-                              </FormItem>
-                            )}
-                          />
-                        );
-                      })}
-
-                      <div className="flex items-start gap-3 rounded-lg border p-3">
-                        <Checkbox checked disabled aria-label="Issued On is always included in JWT" />
-                        <div className="space-y-0.5 leading-none">
-                          <p className="text-sm font-medium">Issued On</p>
-                          <p className="text-xs text-muted-foreground">JWT issued-at timestamp (<code className="text-xs">iat</code>).</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-3 rounded-lg border p-3">
-                        <Checkbox checked disabled aria-label="Expires On is always included in JWT" />
-                        <div className="space-y-0.5 leading-none">
-                          <p className="text-sm font-medium">Expires On</p>
-                          <p className="text-xs text-muted-foreground">JWT expiry timestamp (<code className="text-xs">exp</code>).</p>
-                        </div>
-                      </div>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </CardContent>
             <CardFooter>
               <Button type="submit" disabled={isPending}>

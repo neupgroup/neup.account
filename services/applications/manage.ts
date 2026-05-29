@@ -2036,7 +2036,6 @@ const saveAppConfigSchema = z.object({
   appId: z.string().min(1),
   secretKey: z.string().min(16, 'Secret must be at least 16 characters.').optional().or(z.literal('')),
   access: z.array(z.enum(applicationAccessFields)).default([]),
-  tokenFields: z.array(z.enum(applicationTokenFields)).default([]),
   party: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]).default(1),
   allowDevMode: z.boolean().optional().default(false),
   allowDevIpMode: z.boolean().optional().default(false),
@@ -2048,7 +2047,7 @@ function enforcePartyFieldRules(
 ): ApplicationAccessField[] {
   const normalized = fields.filter((field, idx) => fields.indexOf(field) === idx);
   if (party === 0 || party === 1) {
-    return normalized.filter((field) => field !== 'neupid');
+    return normalized;
   }
   if (party === 2) {
     return normalized.filter((field) => field !== 'accountId');
@@ -2077,15 +2076,18 @@ export async function saveAppConfig(
     return { success: false, fieldErrors };
   }
 
-  const { appId, secretKey, access, tokenFields, party, allowDevMode, allowDevIpMode } = parsed.data;
+  const { appId, secretKey, access, party, allowDevMode, allowDevIpMode } = parsed.data;
   const sanitizedAccess = enforcePartyFieldRules(
     party,
     access.filter((field) => responseAccessSet.has(field)),
   );
-  const sanitizedTokenFields = enforcePartyFieldRules(
-    party,
-    tokenFields.filter((field) => tokenFieldSet.has(field)),
-  );
+  const fixedTokenFields: ApplicationAccessField[] = [
+    'accountId',
+    'connectionId',
+    'neupid',
+    'role',
+    'isMinor',
+  ].filter((field) => tokenFieldSet.has(field as ApplicationAccessField)) as ApplicationAccessField[];
 
   const canEdit = await isApplicationOwnerForAccount(accountId, appId);
   if (!canEdit) return { success: false, error: 'Only the application owner can configure this application.' };
@@ -2103,13 +2105,13 @@ export async function saveAppConfig(
 
     const updateData: Record<string, unknown> = {
       responseFields: sanitizedAccess,
-      tokenFields: sanitizedTokenFields,
+      tokenFields: fixedTokenFields,
       party,
       // Backward-compat: keep legacy JSON in sync until all callers are migrated.
       details: {
         ...existingDetails,
         access: sanitizedAccess,
-        token_fields: sanitizedTokenFields,
+        token_fields: fixedTokenFields,
         allowDevMode,
         allowDevIpMode,
       },

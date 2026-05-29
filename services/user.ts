@@ -91,6 +91,7 @@ export async function getUserProfile(
         accountDetails: account.details,
         individualDetails: account.individualProfile?.details,
       });
+      serializedData.gender = gender || undefined;
       serializedData.accountPhoto = resolveDisplayImage({
         displayImage: serializedData.accountPhoto,
         accountType: account.accountType,

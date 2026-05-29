@@ -3,6 +3,7 @@ import { getValidatedStoredAccounts } from '@/core/auth/session';
 import { getAppDisplayName, buildAuthQuery, getServerAuthContext, buildAuthPath, buildAuthCallbackWithStatus, getServerFlowParams } from '@/core/auth/callback';
 import prisma from '@/core/helpers/prisma';
 import { randomBytes } from 'crypto';
+import jwt from 'jsonwebtoken';
 import { getUserProfile } from '@/services/user';
 import { validateExternalRequest } from '@/services/auth/validate';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
@@ -509,7 +510,7 @@ export async function bridgeConnectionSignAndGet(input: { appId?: string; appTyp
 
     const application = await prisma.application.findUnique({
       where: { id: appId },
-      select: { id: true, party: true, status: true, tokenFields: true, responseFields: true },
+      select: { id: true, name: true, party: true, status: true, appSecret: true, responseFields: true },
     });
     if (!application) {
       return { status: 404, body: { success: false, error: 'Invalid application ID.' } };
@@ -517,6 +518,9 @@ export async function bridgeConnectionSignAndGet(input: { appId?: string; appTyp
 
     if (application.status === 'blocked' || application.status === 'rejected') {
       return { status: 403, body: { success: false, error: 'Application is not active.' } };
+    }
+    if (!application.appSecret) {
+      return { status: 400, body: { success: false, error: 'Application secret is not configured.' } };
     }
 
     const party = applicationPartyValues.includes(application.party as ApplicationParty)
@@ -529,7 +533,13 @@ export async function bridgeConnectionSignAndGet(input: { appId?: string; appTyp
       where: { accountId_appId: { accountId, appId } },
       update: {},
       create: { accountId, appId, status: 'active', roleId: defaultRoleId },
-      select: { id: true, status: true, connectedAt: true },
+      select: {
+        id: true,
+        status: true,
+        connectedAt: true,
+        roleId: true,
+        role: { select: { id: true, name: true } },
+      },
     });
 
     if (connection.status !== 'active') {
@@ -544,22 +554,87 @@ export async function bridgeConnectionSignAndGet(input: { appId?: string; appTyp
       return { status: 404, body: { success: false, error: 'User profile not found.' } };
     }
 
-    const response: Record<string, unknown> = {
-      success: true,
-      connectionId: connection.id,
-      connectedAt: connection.connectedAt.toISOString(),
-      displayName: profile.nameDisplay || `${profile.nameFirst || ''} ${profile.nameLast || ''}`.trim(),
-      displayImage: profile.accountPhoto || '',
-      party,
-    };
+    const selectedFields = new Set(
+      (Array.isArray(application.responseFields) ? application.responseFields : [])
+        .filter((f): f is string => typeof f === 'string')
+    );
 
-    if (party === 0 || party === 1) {
-      response.accountId = accountId;
-    } else if (party === 2) {
-      response.neupId = neupId;
+    const birthDate = profile.dateBirth ? new Date(profile.dateBirth) : null;
+    const now = new Date();
+    const isMinor = birthDate
+      ? (() => {
+          let age = now.getUTCFullYear() - birthDate.getUTCFullYear();
+          const monthDiff = now.getUTCMonth() - birthDate.getUTCMonth();
+          if (monthDiff < 0 || (monthDiff === 0 && now.getUTCDate() < birthDate.getUTCDate())) age -= 1;
+          return age < 18;
+        })()
+      : undefined;
+
+    const lastSession = await prisma.authnSession.findFirst({
+      where: { accountId },
+      orderBy: { lastLoggedIn: 'desc' },
+      select: { lastLoggedIn: true },
+    });
+
+    const accountPayload: Record<string, unknown> = {
+      connectionId: connection.id,
+    };
+    if ((party === 0 || party === 1) && selectedFields.has('accountId')) {
+      accountPayload.id = accountId;
+    }
+    if (party !== 3 && selectedFields.has('neupid') && neupId) {
+      accountPayload.neupid = neupId;
+    }
+    if (selectedFields.has('isMinor') && typeof isMinor === 'boolean') {
+      accountPayload.isMinor = isMinor;
     }
 
-    return { status: 200, body: response };
+    const profilePayload: Record<string, unknown> = {};
+    const displayName = profile.nameDisplay || `${profile.nameFirst || ''} ${profile.nameLast || ''}`.trim();
+    if (selectedFields.has('displayName') && displayName) profilePayload.displayName = displayName;
+    if (selectedFields.has('displayImage') && profile.accountPhoto) profilePayload.displayImage = profile.accountPhoto;
+    if (selectedFields.has('gender') && profile.gender) profilePayload.gender = profile.gender;
+    if (selectedFields.has('dateBirth') && profile.dateBirth) profilePayload.birthDate = profile.dateBirth;
+    if (selectedFields.has('lastActive') && lastSession?.lastLoggedIn) profilePayload.lastActive = lastSession.lastLoggedIn.toISOString();
+
+    const rolePayload =
+      selectedFields.has('role') && (connection.role?.id || connection.roleId)
+        ? {
+            id: connection.role?.id || connection.roleId,
+            name: connection.role?.name || connection.roleId || '',
+          }
+        : null;
+
+    const iat = Math.floor(Date.now() / 1000);
+    const exp = iat + (60 * 60 * 24 * 7);
+    const tokenPayload: Record<string, unknown> = {
+      appId,
+      aid: accountId,
+      cid: connection.id,
+      neupid: party !== 3 ? neupId : undefined,
+      isMinor,
+      role: connection.role?.name || connection.roleId || undefined,
+      roleId: connection.role?.id || connection.roleId || undefined,
+      iat,
+      exp,
+    };
+    const token = jwt.sign(tokenPayload, application.appSecret, { algorithm: 'HS256' });
+
+    const responseBody: Record<string, unknown> = {
+      success: true,
+      appId,
+      occurredAt: new Date().toISOString(),
+      account: accountPayload,
+      token,
+    };
+    if (Object.keys(profilePayload).length > 0) {
+      responseBody.profile = profilePayload;
+    }
+    if (rolePayload) {
+      responseBody.role = rolePayload;
+    }
+
+    return { status: 200, body: responseBody };
   } catch {
     return { status: 500, body: { success: false, error: 'Internal server error.' } };
   }

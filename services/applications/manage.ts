@@ -171,21 +171,42 @@ function normalizeEndpoints(value: unknown): ApplicationEndpointConfig {
   };
 }
 
+function getLegacyAppIdFromDetails(value: unknown): string | null {
+  if (!value || typeof value !== 'object') return null;
+  const appId = (value as Record<string, unknown>).legacy_parent_application_id;
+  return typeof appId === 'string' && appId.trim().length > 0 ? appId : null;
+}
+
+async function getApplicationRoleGrantsForAccount(accountId: string, appId: string): Promise<Array<{ roleId: string; roleName: string | null; permissions: unknown }>> {
+  const roleRows = await prisma.role.findMany({
+    where: {
+      member: {
+        memberAccountId: accountId,
+        parentType: 'account',
+      },
+    },
+    select: {
+      roleId: true,
+      roleName: true,
+      permissions: true,
+      details: true,
+      member: { select: { details: true } },
+    },
+  });
+
+  return roleRows.filter((row) => {
+    const rowAppId = getLegacyAppIdFromDetails(row.details) ?? getLegacyAppIdFromDetails(row.member.details);
+    return rowAppId === appId;
+  });
+}
+
 
 /**
  * Function resolveApplicationAccessForAccount.
  */
 async function resolveApplicationAccessForAccount(accountId: string, appId: string): Promise<{ canView: boolean; canEdit: boolean }> {
   try {
-    const roleRows = await prisma.member.findMany({
-      where: {
-        memberId: accountId,
-        parentApplicationId: appId,
-      },
-      select: {
-        roleId: true,
-      },
-    });
+    const roleRows = await getApplicationRoleGrantsForAccount(accountId, appId);
 
     if (roleRows.length === 0) {
       return { canView: false, canEdit: false };
@@ -209,20 +230,10 @@ async function hasApplicationPermission(
 ): Promise<boolean> {
   if (permissionNames.length === 0) return false;
 
-  const grants = await prisma.member.findMany({
-    where: {
-      memberId: accountId,
-      parentApplicationId: appId,
-    },
-    select: {
-      role: {
-        select: { permissions: true },
-      },
-    },
-  });
+  const grants = await getApplicationRoleGrantsForAccount(accountId, appId);
 
   const granted = new Set(
-    grants.flatMap((g) => extractPermissionNames(g.role.permissions))
+    grants.flatMap((g) => extractPermissionNames(g.permissions))
   );
 
   return permissionNames.some((permission) => granted.has(permission));
@@ -252,15 +263,7 @@ export async function isApplicationOwnerForAccount(accountId: string, appId: str
 
   if (!app) return false;
 
-  const ownerRoleRows = await prisma.member.findMany({
-    where: {
-      memberId: accountId,
-      parentApplicationId: appId,
-    },
-    select: {
-      roleId: true,
-    },
-  });
+  const ownerRoleRows = await getApplicationRoleGrantsForAccount(accountId, appId);
 
   return ownerRoleRows.some((row) => ownerRoleKeys.has(row.roleId.trim().toLowerCase()));
 }
@@ -310,10 +313,7 @@ export async function getApplicationDetailsForViewer(appId: string): Promise<App
         },
       }),
       personalAccountId
-        ? prisma.member.findMany({
-            where: { memberId: personalAccountId, parentApplicationId: appId },
-            select: { roleId: true },
-          })
+        ? getApplicationRoleGrantsForAccount(personalAccountId, appId)
         : [],
       isApplicationOwnerForAccount(activeAccountId, appId),
     ]);
@@ -1178,10 +1178,7 @@ export async function getApplicationDetailsForViewerV2(appId: string): Promise<A
 
     // Resolve accessed data from authz grants (same as original)
     const appSessions = personalAccountId
-      ? await prisma.member.findMany({
-          where: { memberId: personalAccountId, parentApplicationId: appId },
-          select: { roleId: true },
-        })
+      ? await getApplicationRoleGrantsForAccount(personalAccountId, appId)
       : [];
 
     const configuredAccess = normalizeAccess(application.responseFields).filter((field) => responseAccessSet.has(field));

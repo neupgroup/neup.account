@@ -24,6 +24,19 @@ const statusVariantMap: { [key: string]: "default" | "destructive" | "secondary"
     Alert: "destructive",
 }
 
+function getStatusPill(log: ActivityLog): { label: string; variant: "default" | "destructive" | "secondary"; className?: string } | null {
+    if (log.status === "Success") return null;
+    if (log.status === "Pending") return { label: "Pending", variant: "secondary" };
+
+    const text = `${log.actionText} ${log.actionDetails?.join(" ") || ""}`.toLowerCase();
+    if (text.includes("cancel")) return { label: "Cancelled", variant: "destructive" };
+    if (text.includes("terminat")) return { label: "Terminated", variant: "destructive" };
+    if (text.includes("deactivat")) return { label: "Deactivated", variant: "destructive" };
+    if (text.includes("reject") || text.includes("denied")) return { label: "Rejected", variant: "destructive" };
+
+    return { label: log.status, variant: statusVariantMap[log.status] || "secondary" };
+}
+
 const MONTHS_FULL = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -237,12 +250,15 @@ function DataActivityPageComponent({ after, applicationId }: { after?: string; a
                                             </div>
                                         ) : null}
                                     </div>
-                                    <Badge
-                                        variant={statusVariantMap[log.status] || "secondary"}
-                                        className={log.status === 'Success' ? 'bg-accent/80 text-accent-foreground' : ''}
-                                    >
-                                        {log.status}
-                                    </Badge>
+                                    {(() => {
+                                        const pill = getStatusPill(log);
+                                        if (!pill) return null;
+                                        return (
+                                            <Badge variant={pill.variant} className={pill.className}>
+                                                {pill.label}
+                                            </Badge>
+                                        );
+                                    })()}
                                 </div>
                                 <p className="mt-2 text-xs text-muted-foreground">{formatActivityTimestamp(log.timestamp)}</p>
                             </CardContent>
@@ -254,7 +270,7 @@ function DataActivityPageComponent({ after, applicationId }: { after?: string; a
                     </div>
                 )}
             </div>
-            <div className="flex justify-end space-x-2 border-t pt-4">
+            <div className="flex justify-end space-x-2 pt-4">
                  <Button variant="outline" onClick={handlePrevPage} disabled={page === 1 || loading}>
                     <ChevronLeft className="mr-2 h-4 w-4" />
                     Previous

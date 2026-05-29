@@ -36,6 +36,19 @@ const statusVariantMap: { [key: string]: "default" | "destructive" | "secondary"
     Alert: "destructive",
 }
 
+function getStatusPill(log: ActivityLog): { label: string; variant: "default" | "destructive" | "secondary"; className?: string } | null {
+    if (log.status === "Success") return null;
+    if (log.status === "Pending") return { label: "Pending", variant: "secondary" };
+
+    const text = `${log.actionText} ${log.actionDetails?.join(" ") || ""}`.toLowerCase();
+    if (text.includes("cancel")) return { label: "Cancelled", variant: "destructive" };
+    if (text.includes("terminat")) return { label: "Terminated", variant: "destructive" };
+    if (text.includes("deactivat")) return { label: "Deactivated", variant: "destructive" };
+    if (text.includes("reject") || text.includes("denied")) return { label: "Rejected", variant: "destructive" };
+
+    return { label: log.status, variant: statusVariantMap[log.status] || "secondary" };
+}
+
 function ActivityPageSkeleton() {
      return (
         <div className="grid gap-8">
@@ -169,9 +182,15 @@ function SecurityActivityPageComponent({ after }: { after?: string }) {
                                     <TableRow key={log.id}>
                                         <TableCell>{log.actionText}</TableCell>
                                         <TableCell>
-                                             <Badge variant={statusVariantMap[log.status] || "secondary"} className={log.status === 'Success' ? 'bg-accent/80 text-accent-foreground' : ''}>
-                                                {log.status}
-                                            </Badge>
+                                            {(() => {
+                                                const pill = getStatusPill(log);
+                                                if (!pill) return null;
+                                                return (
+                                                    <Badge variant={pill.variant} className={pill.className}>
+                                                        {pill.label}
+                                                    </Badge>
+                                                );
+                                            })()}
                                         </TableCell>
                                         <TableCell>{log.timestamp}</TableCell>
                                     </TableRow>

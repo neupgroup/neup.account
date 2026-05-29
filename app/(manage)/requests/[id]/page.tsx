@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import { getRequestDetail } from '@/services/manage/requests/all';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BackButton } from '@/components/ui/back-button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -16,6 +17,34 @@ const statusVariant: Record<string, 'default' | 'secondary' | 'destructive' | 'o
   rejected: 'destructive',
   revoked:  'destructive',
 };
+
+function formatHumanReadableTimestamp(value?: string) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  if (diffMs <= 0) return 'Recently';
+
+  const minutes = Math.floor(diffMs / (1000 * 60));
+  if (minutes < 60) return `${minutes} min${minutes === 1 ? '' : 's'} ago`;
+
+  const hours = Math.floor(diffMs / (1000 * 60 * 60));
+  if (hours < 24) return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (days < 7) return `${days} day${days === 1 ? '' : 's'} ago`;
+
+  const weeks = Math.floor(days / 7);
+  if (weeks < 5) return `${weeks} week${weeks === 1 ? '' : 's'} ago`;
+
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months} month${months === 1 ? '' : 's'} ago`;
+
+  const years = Math.floor(days / 365);
+  return `${years} year${years === 1 ? '' : 's'} ago`;
+}
 
 function DetailRow({ label, value }: { label: string; value?: string | null }) {
   if (!value) return null;
@@ -99,6 +128,11 @@ function RequestDetailBody({ request }: { request: Awaited<ReturnType<typeof get
     case 'applicationChange': {
       const changes = Array.isArray(d.changes) ? d.changes as Array<{ field: string; oldValue: string | null; newValue: string | null }> : [];
       const requestedData = (d.requestedData ?? {}) as Record<string, unknown>;
+      const fieldLabel = (field: string) =>
+        field
+          .replace(/([a-z])([A-Z])/g, '$1 $2')
+          .replace(/_/g, ' ')
+          .toLowerCase();
       return (
         <div className="space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
@@ -108,16 +142,21 @@ function RequestDetailBody({ request }: { request: Awaited<ReturnType<typeof get
             <DetailRow label="Submitted" value={request.submittedAt} />
           </div>
           {changes.length > 0 && (
-            <div className="rounded-md border divide-y mt-2">
-              <div className="grid grid-cols-3 gap-4 px-4 py-2 text-xs font-medium text-muted-foreground bg-muted/40">
-                <span>Field</span><span>Current</span><span>Proposed</span>
-              </div>
+            <div className="space-y-2 mt-2">
+              <p className="text-sm font-medium">Requested Changes</p>
               {changes.map((c) => (
-                <div key={c.field} className="grid grid-cols-3 gap-4 px-4 py-3 text-sm">
-                  <span className="font-medium capitalize">{c.field}</span>
-                  <span className="text-muted-foreground line-through truncate">{c.oldValue ?? <em>empty</em>}</span>
-                  <span className="font-medium truncate">{c.newValue ?? <em className="text-muted-foreground">empty</em>}</span>
-                </div>
+                <Card key={c.field}>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Requested change of {fieldLabel(c.field)}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <p className="text-sm text-muted-foreground">
+                      From "{c.oldValue ?? ''}" to "{c.newValue ?? ''}"
+                    </p>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           )}
@@ -149,57 +188,80 @@ export default async function RequestDetailPage({ params }: Props) {
   if (!request) notFound();
 
   const isPending = request.status === 'pending';
+  const showTakeAction = isPending || ['approved', 'cancelled', 'denied', 'rejected'].includes(request.status);
+  const isApplicationChange = request.type === 'applicationChange';
+  const appId = isApplicationChange ? String(request.data.appId ?? '') : '';
+  const appRequestedData =
+    isApplicationChange && request.data.requestedData && typeof request.data.requestedData === 'object'
+      ? (request.data.requestedData as Record<string, unknown>)
+      : {};
+  const appName = isApplicationChange
+    ? String(request.data.appName ?? appRequestedData.name ?? appId)
+    : '';
+  const requestedScope = isApplicationChange ? String(request.data.requestedScope ?? 'configuration') : '';
+  const humanSubmittedAt = formatHumanReadableTimestamp(request.submittedAt);
 
   return (
     <div className="grid gap-6">
       <BackButton href="/requests" />
 
-      <Card>
-        <CardHeader>
-          <div className="flex items-start justify-between gap-3 flex-wrap">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <Badge variant="outline" className="text-xs">{request.typeLabel}</Badge>
-              </div>
-              <CardTitle>{request.summary}</CardTitle>
-              <CardDescription>
-                Submitted by {request.submittedBy}{request.submittedAt ? ` on ${request.submittedAt}` : ''}.
-              </CardDescription>
+      <section className="space-y-2">
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Badge variant="outline" className="text-xs">{request.typeLabel}</Badge>
             </div>
-            <Badge
-              variant={statusVariant[request.status] ?? 'outline'}
-              className="capitalize"
-            >
-              {request.status}
-            </Badge>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {isApplicationChange && appId ? (
+                <>
+                  <Link
+                    href={`/application/${appId}?mode=root`}
+                    className="no-underline hover:underline underline-offset-4"
+                  >
+                    {appName}
+                  </Link>{' '}
+                  requested change of their {requestedScope}.
+                </>
+              ) : (
+                request.summary
+              )}
+            </h1>
+            <p className="text-muted-foreground">
+              Submitted by {request.submittedBy}{humanSubmittedAt ? ` ${humanSubmittedAt}` : ''}.
+            </p>
           </div>
-        </CardHeader>
-        <CardContent>
-          <RequestDetailBody request={request} />
-        </CardContent>
-      </Card>
+          <Badge
+            variant={statusVariant[request.status] ?? 'outline'}
+            className="capitalize"
+          >
+            {request.status}
+          </Badge>
+        </div>
+      </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Take Action</CardTitle>
-          <CardDescription>
-            Approve to apply this request, deny to reject it.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {!isPending ? (
+      <section className="space-y-3">
+        <h2 className="text-xl font-semibold">Requested Changes</h2>
+        <RequestDetailBody request={request} />
+      </section>
+
+      {showTakeAction ? (
+        <section className="space-y-3">
+          <h3 className="text-lg font-semibold">Take Action</h3>
+          {isPending ? (
+            <RequestActionForm request={request} />
+          ) : ['denied', 'cancelled', 'rejected'].includes(request.status) ? (
+            <RequestActionForm request={request} />
+          ) : (
             <Alert>
               <Terminal className="h-4 w-4" />
               <AlertTitle>Already processed</AlertTitle>
               <AlertDescription>
-                This request has already been <strong>{request.status}</strong>. No further action can be taken.
+                This request has already been <strong>{request.status}</strong>.
               </AlertDescription>
             </Alert>
-          ) : (
-            <RequestActionForm request={request} />
           )}
-        </CardContent>
-      </Card>
+        </section>
+      ) : null}
     </div>
   );
 }

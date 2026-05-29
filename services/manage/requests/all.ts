@@ -37,6 +37,26 @@ async function resolveDisplayName(accountId: string): Promise<string> {
   }
 }
 
+const BASIC_INFO_FIELDS = new Set(['name', 'description', 'icon', 'website']);
+const API_FIELDS = new Set(['dataDeletionApi', 'dataDeletionPage', 'accountBlockApi', 'logoutApi']);
+
+function getApplicationChangeScope(
+  changes: Array<Record<string, unknown>>
+): 'basic info' | 'configuration' | 'API fields' {
+  const fields = changes
+    .map((change) => {
+      if (typeof change.field === 'string') return change.field;
+      if (typeof change.key === 'string') return change.key;
+      if (typeof change.name === 'string') return change.name;
+      return '';
+    })
+    .filter(Boolean);
+
+  if (fields.some((field) => API_FIELDS.has(field))) return 'API fields';
+  if (fields.every((field) => BASIC_INFO_FIELDS.has(field))) return 'basic info';
+  return 'configuration';
+}
+
 // ---------------------------------------------------------------------------
 // Main fetcher
 // ---------------------------------------------------------------------------
@@ -128,13 +148,8 @@ export async function getAllRequests(options: GetRequestsOptions = {}): Promise<
             const changes = Array.isArray(payload.changes) ? payload.changes : [];
             const appId = typeof payload.appId === 'string' ? payload.appId : '';
             const appName = appNameMap.get(appId) || appId || displayName;
-            const firstChange = changes[0] as Record<string, unknown> | undefined;
-            const changedField =
-              (firstChange && typeof firstChange.field === 'string' && firstChange.field) ||
-              (firstChange && typeof firstChange.key === 'string' && firstChange.key) ||
-              (firstChange && typeof firstChange.name === 'string' && firstChange.name) ||
-              'settings';
-            summary = `${appName} changed their ${changedField}.`;
+            const scope = getApplicationChangeScope(changes as Array<Record<string, unknown>>);
+            summary = `${appName} requested change of their ${scope}.`;
             break;
           }
           default:
@@ -445,7 +460,21 @@ export async function getRequestDetail(id: string): Promise<UnifiedRequest | nul
         pendingAppChange.requestedData && typeof pendingAppChange.requestedData === 'object'
           ? (pendingAppChange.requestedData as Record<string, unknown>)
           : ((payload.requestedData ?? payload.proposed ?? {}) as Record<string, unknown>);
-      enrichedData = { ...enrichedData, requestedData, appId };
+      const app = appId
+        ? await prisma.application.findUnique({
+            where: { id: appId },
+            select: { name: true },
+          })
+        : null;
+      const changes = Array.isArray(payload.changes) ? payload.changes : [];
+      const scope = getApplicationChangeScope(changes as Array<Record<string, unknown>>);
+      enrichedData = {
+        ...enrichedData,
+        requestedData,
+        appId,
+        appName: app?.name ?? '',
+        requestedScope: scope,
+      };
     }
 
     let summary = '';
@@ -460,10 +489,9 @@ export async function getRequestDetail(id: string): Promise<UnifiedRequest | nul
         summary = `KYC document: ${String(payload.documentType ?? 'unknown')}`;
         break;
       case 'applicationChange': {
-        const changes = Array.isArray(payload.changes) ? payload.changes : [];
-        const first = changes[0] as Record<string, unknown> | undefined;
-        const field = typeof first?.field === 'string' ? first.field : 'settings';
-        summary = `${displayName} changed their ${field}.`;
+        const appName = String(enrichedData.appName ?? '');
+        const scope = String(enrichedData.requestedScope ?? 'configuration');
+        summary = `${appName || displayName} requested change of their ${scope}.`;
         break;
       }
       default:

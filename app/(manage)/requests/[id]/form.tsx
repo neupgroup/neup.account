@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,11 +27,13 @@ import { approveKycRequest, rejectKycRequest } from '@/services/manage/requests/
 import { grantVerification, revokeVerification } from '@/services/manage/verifications';
 import { approveAccountDeletion, cancelAccountDeletion } from '@/services/manage/requests/deletion';
 import { approveApplicationChangeRequest, denyApplicationChangeRequest } from '@/services/applications/change-requests';
+import { reissueRequestWithRemarks } from '@/services/manage/requests/reissue';
 
 type Props = { request: UnifiedRequest };
 
 export function RequestActionForm({ request }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [remarks, setRemarks] = useState('');
   const router = useRouter();
   const { toast } = useToast();
 
@@ -148,6 +151,31 @@ export function RequestActionForm({ request }: Props) {
         done(false, `No deny handler for type "${request.type}".`);
     }
   };
+
+  const handleReissue = async () => {
+    setIsSubmitting(true);
+    const result = await reissueRequestWithRemarks({ requestId: request.id, remarks });
+    done(result.success, result.error ?? 'Request reissued.');
+  };
+
+  if (request.status !== 'pending') {
+    const canReissue = ['denied', 'cancelled', 'rejected'].includes(request.status);
+    if (!canReissue) return null;
+    return (
+      <div className="space-y-3">
+        <Textarea
+          placeholder="Write remarks for reissuing this request..."
+          value={remarks}
+          onChange={(e) => setRemarks(e.target.value)}
+          disabled={isSubmitting}
+        />
+        <Button onClick={handleReissue} disabled={isSubmitting || remarks.trim().length < 5}>
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Reissue Request
+        </Button>
+      </div>
+    );
+  }
 
   const denyLabel = request.type === 'accountDeletion' ? 'Cancel Request' : 'Deny';
   const denyDescription =

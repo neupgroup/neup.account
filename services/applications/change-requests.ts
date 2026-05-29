@@ -150,6 +150,7 @@ export async function submitApplicationChangeRequest(
 
   try {
     await prisma.$transaction(async (tx) => {
+      const newFields = new Set(changes.map((c) => c.field));
       const pendingRows = await tx.request.findMany({
         where: { action: 'applicationChange', status: 'pending', senderId: accountId },
         select: { id: true, data: true },
@@ -158,6 +159,21 @@ export async function submitApplicationChangeRequest(
         .filter((row) => {
           const payload = (row.data ?? {}) as Record<string, unknown>;
           return payload.appId === appId;
+        })
+        .filter((row) => {
+          const payload = (row.data ?? {}) as Record<string, unknown>;
+          const rowChanges = Array.isArray(payload.changes)
+            ? (payload.changes as Array<Record<string, unknown>>)
+            : [];
+          const rowFields = new Set(
+            rowChanges
+              .map((c) => (typeof c.field === 'string' ? c.field : ''))
+              .filter((f) => f.length > 0)
+          );
+          for (const field of rowFields) {
+            if (newFields.has(field)) return true;
+          }
+          return false;
         })
         .map((row) => row.id);
 

@@ -27,7 +27,7 @@ function StatusBadge({ status }: { status: string | null }) {
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default async function ApplicationAccessPage() {
-  const apps = await getApplicationAccessPageData();
+  const apps = await getApplicationAccessPageData({ ownerOnly: true });
 
   return (
     <div className="grid gap-8">
@@ -38,7 +38,7 @@ export default async function ApplicationAccessPage() {
         <div className="min-w-0">
           <h1 className="text-2xl font-bold tracking-tight">Applications</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Your connected applications, your permissions, and who you've granted access to.
+            Applications you manage, your permissions, and who you've granted access to.
           </p>
         </div>
         {apps.length > 0 && (
@@ -203,7 +203,7 @@ export default async function ApplicationAccessPage() {
               <p className="text-xs text-muted-foreground mt-1 max-w-xs">
                 Connect to an application from the{' '}
                 <a
-                  href="/data/appconnection"
+                  href="/application"
                   className="underline underline-offset-2 hover:text-foreground transition-colors"
                 >
                   Applications

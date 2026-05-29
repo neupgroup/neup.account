@@ -36,9 +36,15 @@ export type ResolvedAccount = {
   displayName: string;
 };
 
+type ApplicationAccessPageOptions = {
+  ownerOnly?: boolean;
+};
+
 // ── Fetch page data ───────────────────────────────────────────────────────────
 
-export async function getApplicationAccessPageData(): Promise<AppWithAccess[]> {
+export async function getApplicationAccessPageData(
+  options?: ApplicationAccessPageOptions,
+): Promise<AppWithAccess[]> {
   const personalAccountId = await getPersonalAccountId();
   if (!personalAccountId) return [];
 
@@ -149,6 +155,10 @@ export async function getApplicationAccessPageData(): Promise<AppWithAccess[]> {
         } satisfies AppWithAccess;
       }),
     );
+
+    if (options?.ownerOnly) {
+      return results.filter((app) => app.isOwner);
+    }
 
     return results;
   } catch (error) {

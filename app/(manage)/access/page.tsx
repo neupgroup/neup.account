@@ -27,7 +27,7 @@ async function PortfolioDetail({ id }: { id: string }) {
       description={group.description ?? 'Portfolio access group.'}
       backHref="/access"
       membersHref={`/access/member?portfolio=${id}`}
-      accountsHref="/accounts"
+      accountsHref="/access/accounts"
       applicationsHref="/access/application"
     />
   );
@@ -58,7 +58,7 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
       name={directGroup.name}
       description="Direct access grants on this account."
       membersHref="/access/member"
-      accountsHref="/accounts"
+      accountsHref="/access/accounts"
       applicationsHref="/access/application"
     >
       {/* Section 2 — Portfolios */}

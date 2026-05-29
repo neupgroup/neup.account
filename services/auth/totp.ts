@@ -111,7 +111,7 @@ export async function addTotp(input: AddTotpInput): Promise<TotpActionResult> {
 			}),
 		]);
 
-		await logActivity(accountId, 'TOTP Enabled', 'Success');
+		await logActivity(accountId, activityAction.totpEnabled(), 'Success');
 		await createNotification({
 			recipient_id: accountId,
 			action: 'informative.security',
@@ -169,7 +169,7 @@ export async function revokeTotp(input: RevokeTotpInput): Promise<TotpActionResu
 			},
 		});
 
-		await logActivity(accountId, 'TOTP Disabled', 'Success');
+		await logActivity(accountId, activityAction.totpDisabled(), 'Success');
 		await createNotification({
 			recipient_id: accountId,
 			action: 'informative.security',

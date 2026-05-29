@@ -179,6 +179,9 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
             select: {
                 displayName: true,
                 displayImage: true,
+                individualProfile: {
+                    select: { dateOfBirth: true },
+                },
                 neupIds: {
                     where: { isPrimary: true },
                     select: { neupId: true },
@@ -307,6 +310,9 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
             select: {
                 displayName: true,
                 displayImage: true,
+                individualProfile: {
+                    select: { dateOfBirth: true },
+                },
                 neupIds: {
                     where: { isPrimary: true },
                     select: { neupId: true },
@@ -329,16 +335,53 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
         
         const beforeDisplayImage = beforeSnapshot?.displayImage ?? null;
         const afterDisplayImage = afterSnapshot?.displayImage ?? null;
-        if (beforeDisplayImage !== afterDisplayImage && afterDisplayImage) {
+        const beforeDisplayName = beforeSnapshot?.displayName ?? '';
+        const afterDisplayName = afterSnapshot?.displayName ?? '';
+        const beforeDob = beforeSnapshot?.individualProfile?.dateOfBirth
+            ? beforeSnapshot.individualProfile.dateOfBirth.toISOString().slice(0, 10)
+            : '';
+        const afterDob = afterSnapshot?.individualProfile?.dateOfBirth
+            ? afterSnapshot.individualProfile.dateOfBirth.toISOString().slice(0, 10)
+            : '';
+
+        if (beforeDisplayName !== afterDisplayName) {
             await logActivity(
                 accountId,
-                activityAction.profileDisplayImageChanged(beforeDisplayImage || '', afterDisplayImage),
+                activityAction.profileNameChanged(beforeDisplayName, afterDisplayName),
                 'Success',
                 undefined,
                 undefined,
                 geolocation
             );
-        } else {
+        }
+
+        if (beforeDob !== afterDob) {
+            await logActivity(
+                accountId,
+                activityAction.profileDobChanged(beforeDob, afterDob),
+                'Success',
+                undefined,
+                undefined,
+                geolocation
+            );
+        }
+
+        if (beforeDisplayImage !== afterDisplayImage) {
+            await logActivity(
+                accountId,
+                activityAction.profileDisplayImageChanged(beforeDisplayImage || '', afterDisplayImage || ''),
+                'Success',
+                undefined,
+                undefined,
+                geolocation
+            );
+        }
+
+        if (
+            beforeDisplayName === afterDisplayName &&
+            beforeDob === afterDob &&
+            beforeDisplayImage === afterDisplayImage
+        ) {
             await logActivity(accountId, 'Profile Update', 'Success', undefined, undefined, geolocation);
         }
 

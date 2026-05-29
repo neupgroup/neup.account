@@ -7,6 +7,7 @@ import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { getPersonalAccountId } from '@/core/auth/verify';
+import { activityAction } from '@/services/activity-action';
 
 export type VerificationRequest = {
     id: string;
@@ -104,7 +105,7 @@ export async function grantVerification(accountId: string, data: z.infer<typeof 
             })
         ]);
 
-        await logActivity(accountId, `Account Verified. Category: ${category}`, 'Success', undefined, adminId);
+        await logActivity(accountId, activityAction.verificationApproved(category), 'Success', undefined, adminId);
         revalidatePath('/manage/[id]', 'page');
         return { success: true };
     } catch (error) {

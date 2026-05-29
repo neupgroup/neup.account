@@ -7,6 +7,8 @@ import prisma from '@/core/helpers/prisma';
 import { headers } from 'next/headers';
 import { logError } from '@/core/helpers/logger';
 import { getActiveAccountId } from '@/core/auth/verify';
+import { checkPermissions } from '@/services/user';
+import { compileActivityAction } from '@/services/activity-action';
 
 // Number of activity logs returned per page
 const PAGE_SIZE = 10;
@@ -15,10 +17,37 @@ export type ActivityLog = {
     id: string;
     user: string;
     neupId: string;
-    action: string;
+    actionText: string;
+    actionDetails?: string[];
+    actionRender?: {
+        kind: 'profile_display_image_changed';
+        oldImageUrl: string;
+        newImageUrl: string;
+    };
     status: string;
     timestamp: string;
 };
+
+function unquote(value: string) {
+    const trimmed = value.trim();
+    if (
+        (trimmed.startsWith("'") && trimmed.endsWith("'")) ||
+        (trimmed.startsWith('"') && trimmed.endsWith('"'))
+    ) {
+        return trimmed.slice(1, -1).replace(/\\'/g, "'").replace(/\\"/g, '"').replace(/\\\\/g, "\\");
+    }
+    return trimmed;
+}
+
+function getProfileImageActionRender(action: string) {
+    const match = action.match(/^profile\.displayImage\.changedFrom\((.+)\)\.changedTo\((.+)\)$/);
+    if (!match) return null;
+    return {
+        kind: 'profile_display_image_changed' as const,
+        oldImageUrl: unquote(match[1]),
+        newImageUrl: unquote(match[2]),
+    };
+}
 
 // Writes a single activity entry to the database.
 // If actorAccountId is not provided, the target account is assumed to be the actor.
@@ -72,6 +101,7 @@ type GetActivitiesResponse = {
 export async function getActivities({ startAfter: startAfterDocId, forCurrentUser = false, targetId }: GetActivitiesParams): Promise<GetActivitiesResponse> {
     try {
         const currentAccountId = await getActiveAccountId();
+        const isRootUser = await checkPermissions(['root.requests.view']);
         
         const where: any = {};
         if (targetId) {
@@ -138,10 +168,18 @@ export async function getActivities({ startAfter: startAfterDocId, forCurrentUse
         };
 
         const logs: ActivityLog[] = pageDocs.map(doc => ({
+            ...(() => {
+                const compiled = compileActivityAction(doc.action);
+                const profileImageActionRender = isRootUser ? getProfileImageActionRender(doc.action) : null;
+                return {
+                    actionText: compiled.title,
+                    actionDetails: compiled.details,
+                    actionRender: profileImageActionRender || undefined,
+                };
+            })(),
             id: doc.id,
             user: getDisplayName(doc.actorAccountId),
             neupId: neupIdMap.get(doc.actorAccountId) || 'N/A',
-            action: doc.action,
             status: doc.status,
             timestamp: doc.timestamp.toLocaleString(),
         }));

@@ -5,6 +5,7 @@ import { getUserProfile, checkPermissions, getUserNeupIds } from '@/services/use
 import { logActivity } from '@/services/log-actions';
 import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
+import { activityAction } from '@/services/activity-action';
 
 export type KycRequest = {
     id: string;
@@ -88,7 +89,7 @@ export async function approveKycRequest(kycId: string, accountId: string): Promi
             })
         ]);
 
-        await logActivity(accountId, 'KYC Approved', 'Success');
+        await logActivity(accountId, activityAction.verificationApproved('KYC'), 'Success');
         revalidatePath('/manage/requests/kyc');
         return { success: true };
     } catch (error) {

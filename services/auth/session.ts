@@ -6,6 +6,8 @@ import { createAndSetSession } from '@/core/auth/session';
 import { authCookies } from '@/core/helpers/cookies';
 import { getActiveSession } from '@/core/auth/verify';
 import { makeNotification } from '@/services/notifications';
+import { logActivity } from '@/services/log-actions';
+import { activityAction } from '@/services/activity-action';
 
 /**
  * Reasons returned when auth validation fails.
@@ -282,6 +284,7 @@ export async function makeSession(input: MakeSessionInput): Promise<MakeSessionR
 		const userAgent = headersList.get('user-agent') || 'Unknown User-Agent';
 
 		await createAndSetSession(accountId, loginType, ipAddress, userAgent, input.geolocation);
+		await logActivity(accountId, activityAction.login(), 'Success', ipAddress, undefined, input.geolocation);
 		await makeNotification({
 			recipient_id: accountId,
 			action: 'informative.login',

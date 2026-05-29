@@ -21,8 +21,23 @@ function unquote(value: string) {
 
 export const activityAction = {
   login: () => "login",
+  logout: () => "logout",
+  passwordChanged: () => "security.password.changed",
+  totpEnabled: () => "security.totp.enabled",
+  totpDisabled: () => "security.totp.disabled",
+  accountDependentCreate: (dependentAccountId: string) =>
+    `account.dependent.create(${quote(dependentAccountId)})`,
+  accountBranchCreate: (branchAccountId: string) =>
+    `account.branch.create(${quote(branchAccountId)})`,
   profileDisplayImageChanged: (previousUrl: string, newUrl: string) =>
     `profile.displayImage.changedFrom(${quote(previousUrl)}).changedTo(${quote(newUrl)})`,
+  profileDobChanged: (previousDob: string, newDob: string) =>
+    `profile.dob.changedFrom(${quote(previousDob)}).changedTo(${quote(newDob)})`,
+  profileNameChanged: (previousName: string, newName: string) =>
+    `profile.name.changedFrom(${quote(previousName)}).changedTo(${quote(newName)})`,
+  verificationApplied: () => "verification.applied",
+  verificationApproved: (category: string) => `verification.approved(${quote(category)})`,
+  applicationCreated: (applicationId: string) => `application.create(${quote(applicationId)})`,
   accountBrandCreate: (brandAccountId: string) =>
     `account.brand.create(${quote(brandAccountId)})`,
   accountConnectionCreate: (connectionId: string, applicationId: string) =>
@@ -35,17 +50,51 @@ export function compileActivityAction(rawAction: string): CompiledActivityAction
   if (raw === "login") {
     return { raw, title: "Logged in." };
   }
+  if (raw === "logout") {
+    return { raw, title: "Logged out." };
+  }
+  if (raw === "security.password.changed") {
+    return { raw, title: "You changed your password." };
+  }
+  if (raw === "security.totp.enabled") {
+    return { raw, title: "Two-factor authentication was enabled." };
+  }
+  if (raw === "security.totp.disabled") {
+    return { raw, title: "Two-factor authentication was disabled." };
+  }
+  if (raw === "verification.applied") {
+    return { raw, title: "Verification was submitted." };
+  }
 
   const profileDisplayImageMatch = raw.match(
     /^profile\.displayImage\.changedFrom\((.+)\)\.changedTo\((.+)\)$/
   );
   if (profileDisplayImageMatch) {
-    const previousUrl = unquote(profileDisplayImageMatch[1]);
-    const newUrl = unquote(profileDisplayImageMatch[2]);
     return {
       raw,
       title: "You changed your profile picture.",
-      details: [`From: ${previousUrl || "N/A"}`, `To: ${newUrl || "N/A"}`],
+    };
+  }
+
+  const profileDobMatch = raw.match(/^profile\.dob\.changedFrom\((.+)\)\.changedTo\((.+)\)$/);
+  if (profileDobMatch) {
+    const previousDob = unquote(profileDobMatch[1]);
+    const newDob = unquote(profileDobMatch[2]);
+    return {
+      raw,
+      title: "You changed your date of birth.",
+      details: [`From: ${previousDob || "N/A"}`, `To: ${newDob || "N/A"}`],
+    };
+  }
+
+  const profileNameMatch = raw.match(/^profile\.name\.changedFrom\((.+)\)\.changedTo\((.+)\)$/);
+  if (profileNameMatch) {
+    const previousName = unquote(profileNameMatch[1]);
+    const newName = unquote(profileNameMatch[2]);
+    return {
+      raw,
+      title: "You changed your display name.",
+      details: [`From: ${previousName || "N/A"}`, `To: ${newName || "N/A"}`],
     };
   }
 
@@ -56,6 +105,26 @@ export function compileActivityAction(rawAction: string): CompiledActivityAction
       raw,
       title: "Created a brand account.",
       details: [`Brand Account ID: ${brandAccountId}`],
+    };
+  }
+
+  const accountDependentCreateMatch = raw.match(/^account\.dependent\.create\((.+)\)$/);
+  if (accountDependentCreateMatch) {
+    const dependentAccountId = unquote(accountDependentCreateMatch[1]);
+    return {
+      raw,
+      title: "Created a dependent account.",
+      details: [`Dependent Account ID: ${dependentAccountId}`],
+    };
+  }
+
+  const accountBranchCreateMatch = raw.match(/^account\.branch\.create\((.+)\)$/);
+  if (accountBranchCreateMatch) {
+    const branchAccountId = unquote(accountBranchCreateMatch[1]);
+    return {
+      raw,
+      title: "Created a branch account.",
+      details: [`Branch Account ID: ${branchAccountId}`],
     };
   }
 
@@ -72,6 +141,25 @@ export function compileActivityAction(rawAction: string): CompiledActivityAction
     };
   }
 
+  const verificationApprovedMatch = raw.match(/^verification\.approved\((.+)\)$/);
+  if (verificationApprovedMatch) {
+    const category = unquote(verificationApprovedMatch[1]);
+    return {
+      raw,
+      title: "Account verification was approved.",
+      details: [`Category: ${category || "N/A"}`],
+    };
+  }
+
+  const applicationCreateMatch = raw.match(/^application\.create\((.+)\)$/);
+  if (applicationCreateMatch) {
+    const applicationId = unquote(applicationCreateMatch[1]);
+    return {
+      raw,
+      title: "Created an application.",
+      details: [`Application ID: ${applicationId}`],
+    };
+  }
+
   return { raw, title: rawAction };
 }
-

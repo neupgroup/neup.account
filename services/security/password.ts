@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { getActiveAccountId } from '@/core/auth/verify';
 import { checkPermissions } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
+import { activityAction } from '@/services/activity-action';
 import { logError } from '@/core/helpers/logger';
 import { changePasswordSchema } from '@/services/security/schema';
 import { createNotification } from '../notifications';
@@ -43,7 +44,7 @@ export async function changePassword(data: z.infer<typeof changePasswordSchema>,
             return { success: false, error: changeResult.error || "The current password you entered is incorrect." };
         }
         
-        await logActivity(accountId, 'Password Change', 'Success', undefined, undefined, geolocation);
+        await logActivity(accountId, activityAction.passwordChanged(), 'Success', undefined, undefined, geolocation);
         
         await createNotification({
             recipient_id: accountId,

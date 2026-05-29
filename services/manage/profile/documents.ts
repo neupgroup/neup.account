@@ -6,6 +6,7 @@ import { checkPermissions } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
 import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
+import { activityAction } from '@/services/activity-action';
 
 /**
  * Type KycSubmissionData.
@@ -62,7 +63,7 @@ export async function submitKyc(accountId: string, data: KycSubmissionData): Pro
             },
         });
 
-        await logActivity(accountId, 'KYC Submitted', 'Pending');
+        await logActivity(accountId, activityAction.verificationApplied(), 'Pending');
         revalidatePath('/manage/profile/documents');
 
         return { success: true };

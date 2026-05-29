@@ -9,6 +9,7 @@ import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { getUserNeupIds, getUserProfile, checkPermissions } from '@/services/user';
 import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
+import { activityAction } from '@/services/activity-action';
 
 /**
  * Type BranchAccount.
@@ -141,7 +142,14 @@ export async function createBranchAccount(data: z.infer<typeof formSchema>, geol
             return branchAccountId;
         });
 
-        await logActivity(parentBrandId, `Created Branch Account: ${fullNeupId}`, 'Success', ipAddress, personalAccountId, geolocation);
+        await logActivity(
+            parentBrandId,
+            activityAction.accountBranchCreate(result),
+            'Success',
+            ipAddress,
+            personalAccountId,
+            geolocation
+        );
         revalidatePath(`/manage/brand/${parentBrandId}/branch`);
 
         return { success: true, branchId: result };

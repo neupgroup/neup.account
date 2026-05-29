@@ -7,6 +7,7 @@ import { logError } from '@/core/helpers/logger';
 import { getSessionCookies, clearSessionCookies, setStoredAccountsCookie } from '@/core/helpers/cookies';
 import { expireSession } from './session';
 import { rotateGuestAccountOnLogout } from './guestAccount';
+import { activityAction } from '@/services/activity-action';
 
 const EXTERNAL_LOGIN_PREFIX = 'external_app:';
 function externalLoginType(appId: string) {
@@ -33,7 +34,7 @@ export async function logoutActiveSession() {
                 await logError('auth', expireResult.error || 'Unknown error', 'logoutActiveSession:expireSession');
             }
 
-            await logActivity(aid, 'Signout', 'Success', ipAddress);
+            await logActivity(aid, activityAction.logout(), 'Success', ipAddress);
 
             if (allAccounts.length > 0) {
                 const updatedAccounts = allAccounts.map(acc => {

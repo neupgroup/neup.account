@@ -13,6 +13,7 @@ import crypto from 'crypto';
 import { totpEnableSchema, totpDisableSchema } from '@/services/security/schema';
 import { createNotification } from '../notifications';
 import { createHash, randomBytes } from 'crypto';
+import { activityAction } from '@/services/activity-action';
 
 // We need a consistent secret for encryption. STORE THIS IN A SECURE VAULT.
 // For this example, it's in an environment variable.
@@ -127,7 +128,7 @@ export async function verifyAndEnableTotp(data: z.infer<typeof totpEnableSchema>
             })
         ]);
 
-        await logActivity(accountId, 'TOTP Enabled', 'Success');
+        await logActivity(accountId, activityAction.totpEnabled(), 'Success');
         
         await createNotification({
             recipient_id: accountId,
@@ -186,7 +187,7 @@ export async function disableTotp(data: z.infer<typeof totpDisableSchema>): Prom
             }
         });
 
-        await logActivity(accountId, 'TOTP Disabled', 'Success');
+        await logActivity(accountId, activityAction.totpDisabled(), 'Success');
         
         await createNotification({
             recipient_id: accountId,

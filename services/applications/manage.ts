@@ -9,6 +9,8 @@ import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
 import { checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';
+import { logActivity } from '@/services/log-actions';
+import { activityAction } from '@/services/activity-action';
 import {
   applicationAccessFields,
   applicationResponseFields,
@@ -467,6 +469,8 @@ export async function createManagedApplication(input: { name: string }) {
 
       return { id: createdApp.id };
     });
+
+    await logActivity(accountId, activityAction.applicationCreated(application.id), 'Success');
 
     revalidatePath('/application');
     return { success: true, appId: application.id };

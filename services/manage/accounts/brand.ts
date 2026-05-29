@@ -108,7 +108,7 @@ export async function createBrandAccount(data: z.infer<typeof brandCreationSchem
             return { success: false, error: 'This NeupID is already taken.' };
         }
 
-        await prisma.$transaction(async (tx) => {
+        const brandAccountId = await prisma.$transaction(async (tx) => {
             // 1. Account row
             const account = await tx.account.create({
                 data: {
@@ -171,11 +171,12 @@ export async function createBrandAccount(data: z.infer<typeof brandCreationSchem
                 },
             });
 
+            return account.id;
         });
 
         await logActivity(
             creatorAccountId,
-            activityAction.accountBrandCreate(neupId),
+            activityAction.accountBrandCreate(brandAccountId),
             'Success',
             ipAddress,
             undefined,

@@ -27,7 +27,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useEffect, useState, useCallback, use } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { redirectInApp } from "@/services/navigation";
-import { compileActivityAction } from "@/services/activity-action";
 
 
 const statusVariantMap: { [key: string]: "default" | "destructive" | "secondary" } = {
@@ -168,7 +167,7 @@ function SecurityActivityPageComponent({ after }: { after?: string }) {
                              ) : logs.length > 0 ? (
                                 logs.map((log) => (
                                     <TableRow key={log.id}>
-                                        <TableCell>{compileActivityAction(log.action).title}</TableCell>
+                                        <TableCell>{log.actionText}</TableCell>
                                         <TableCell>
                                              <Badge variant={statusVariantMap[log.status] || "secondary"} className={log.status === 'Success' ? 'bg-accent/80 text-accent-foreground' : ''}>
                                                 {log.status}

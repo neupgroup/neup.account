@@ -11,6 +11,7 @@ import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
 import { dependentFormSchema } from '@/services/manage/accounts/schema';
 import { checkPermissions, getUserProfile, getUserNeupIds } from '@/services/user';
+import { activityAction } from '@/services/activity-action';
 
 
 /**
@@ -194,7 +195,14 @@ export async function createDependentAccount(data: z.infer<typeof dependentFormS
             return accountId;
         });
 
-        await logActivity(guardianAccountId, `Created Dependent Account: ${neupId}`, 'Success', ipAddress, undefined, geolocation);
+        await logActivity(
+            guardianAccountId,
+            activityAction.accountDependentCreate(dependentAccountId),
+            'Success',
+            ipAddress,
+            undefined,
+            geolocation
+        );
         revalidatePath('/accounts/dependent');
 
         return { success: true, dependentId: dependentAccountId };

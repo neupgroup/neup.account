@@ -45,7 +45,10 @@ export async function getApplicationAccessPageData(): Promise<AppWithAccess[]> {
   try {
     // All apps the user is connected to
     const connections = await prisma.connection.findMany({
-      where: { accountId: personalAccountId },
+      where: {
+        accountId: personalAccountId,
+        appId: { not: 'neup.account' },
+      },
       select: {
         connectedAt: true,
         application: {
@@ -61,26 +64,51 @@ export async function getApplicationAccessPageData(): Promise<AppWithAccess[]> {
 
         // Current user's own grants on this app
         const myGrants = await prisma.member.findMany({
-          where: { memberId: personalAccountId, parentApplicationId: app.id },
-          select: { roleId: true },
+          where: {
+            memberAccountId: personalAccountId,
+            roles: {
+              some: {
+                connection: { appId: app.id },
+              },
+            },
+          },
+          select: {
+            roles: {
+              where: { connection: { appId: app.id } },
+              select: { roleId: true },
+            },
+          },
         });
 
         // Grants the current user has issued to others on this app
         // (accessTo = current user, memberId != current user)
         const outboundGrants = await prisma.member.findMany({
           where: {
-            accessTo: personalAccountId,
-            parentApplicationId: app.id,
-            NOT: { memberId: personalAccountId },
+            parentAccountId: personalAccountId,
+            parentType: 'account',
+            memberType: 'account',
+            NOT: { memberAccountId: personalAccountId },
+            roles: {
+              some: {
+                connection: { appId: app.id },
+              },
+            },
           },
-          select: { memberId: true, roleId: true },
+          select: {
+            memberAccountId: true,
+            roles: {
+              where: { connection: { appId: app.id } },
+              select: { roleId: true },
+            },
+          },
         });
 
         // Group outbound grants by target account
         const granteeMap = new Map<string, string[]>();
         for (const g of outboundGrants) {
-          if (!granteeMap.has(g.memberId)) granteeMap.set(g.memberId, []);
-          granteeMap.get(g.memberId)!.push(g.roleId);
+          if (!g.memberAccountId) continue;
+          if (!granteeMap.has(g.memberAccountId)) granteeMap.set(g.memberAccountId, []);
+          for (const role of g.roles) granteeMap.get(g.memberAccountId)!.push(role.roleId);
         }
 
         // Resolve display names for grantees
@@ -104,7 +132,8 @@ export async function getApplicationAccessPageData(): Promise<AppWithAccess[]> {
           orderBy: { name: 'asc' },
         });
 
-        const isOwner = myGrants.some((g) => g.roleId === 'application.owner');
+        const myRoleRows = myGrants.flatMap((g) => g.roles);
+        const isOwner = myRoleRows.some((g) => g.roleId === 'application.owner');
 
         return {
           id: app.id,
@@ -113,7 +142,7 @@ export async function getApplicationAccessPageData(): Promise<AppWithAccess[]> {
           icon: app.icon,
           status: app.status,
           connectedAt: conn.connectedAt,
-          myRoles: myGrants,
+          myRoles: myRoleRows,
           grantees,
           availableRoles,
           isOwner,

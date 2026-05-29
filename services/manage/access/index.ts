@@ -251,13 +251,19 @@ export async function getDirectAccessGroup(accountId: string): Promise<DirectAcc
       getUserProfile(accountId),
       prisma.member.findMany({
         where: {
-          accessTo: accountId,
-          accessFor: 'account',
-          parentApplicationId: 'neup.account',
+          memberType: 'account',
+          parentAccountId: accountId,
+          parentType: 'account',
           parentPortfolioId: null,
         },
         include: {
-          role: { select: { id: true, name: true } },
+          roles: {
+            select: {
+              roleName: true,
+              authzRole: { select: { name: true } },
+            },
+            take: 1,
+          },
         },
       }),
     ]);
@@ -271,21 +277,23 @@ export async function getDirectAccessGroup(accountId: string): Promise<DirectAcc
 
     const members = await Promise.all(
       grants.map(async (grant) => {
-        const profile = await getUserProfile(grant.memberId);
+        if (!grant.memberAccountId) return null;
+        const profile = await getUserProfile(grant.memberAccountId);
         const displayName =
           profile?.nameDisplay ||
           `${profile?.nameFirst ?? ''} ${profile?.nameLast ?? ''}`.trim() ||
-          grant.memberId;
+          grant.memberAccountId;
+        const roleName = grant.roles?.[0]?.roleName || grant.roles?.[0]?.authzRole?.name || 'Member';
         return {
           id: grant.id,
-          accountId: grant.memberId,
+          accountId: grant.memberAccountId,
           displayName,
-          subtitle: grant.role.name,
+          subtitle: roleName,
         };
       })
     );
 
-    return { name, members };
+    return { name, members: members.filter((m): m is DirectAccessMember => m !== null) };
   } catch (error) {
     await logError('database', error, `getDirectAccessGroup for ${accountId}`);
     return null;
@@ -318,14 +326,14 @@ export async function getDirectMembers(accountId: string): Promise<{ accountName
       getUserProfile(accountId),
       prisma.member.findMany({
         where: {
-          accessTo: accountId,
-          accessFor: 'account',
-          parentApplicationId: 'neup.account',
+          memberType: 'account',
+          parentAccountId: accountId,
+          parentType: 'account',
           parentPortfolioId: null,
         },
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        select: { memberId: true, status: true } as any,
-      }) as unknown as Promise<Array<{ memberId: string; status: string }>>,
+        select: { memberAccountId: true, status: true } as any,
+      }) as unknown as Promise<Array<{ memberAccountId: string | null; status: string }>>,
       prisma.request.findMany({
         where: {
           action: 'access_invitation',
@@ -344,7 +352,8 @@ export async function getDirectMembers(accountId: string): Promise<{ accountName
     // Build a map of confirmed grant members: accountId → { roleCount, status }
     const grantMap = new Map<string, { roleCount: number; status: 'active' | 'invited' | 'on_hold' | 'expired' }>();
     for (const grant of grants) {
-      const existing = grantMap.get(grant.memberId);
+      if (!grant.memberAccountId) continue;
+      const existing = grantMap.get(grant.memberAccountId);
       const validStatuses = ['active', 'invited', 'on_hold', 'expired'] as const;
       const grantStatus: 'active' | 'invited' | 'on_hold' | 'expired' =
         validStatuses.includes(grant.status as typeof validStatuses[number])
@@ -353,7 +362,7 @@ export async function getDirectMembers(accountId: string): Promise<{ accountName
       if (existing) {
         existing.roleCount += 1;
       } else {
-        grantMap.set(grant.memberId, { roleCount: 1, status: grantStatus });
+        grantMap.set(grant.memberAccountId, { roleCount: 1, status: grantStatus });
       }
     }
 

@@ -65,7 +65,7 @@ async function canAccessGroup(groupId: string, accountId: string): Promise<boole
   const member = await prisma.member.findFirst({
     where: {
       parentPortfolioId: groupId,
-      memberId: accountId,
+      memberAccountId: accountId,
       status: 'active',
     },
     select: { id: true },
@@ -97,7 +97,8 @@ export async function getAccessAssetGroups() {
       where: {
         members: {
           some: {
-            memberId: accountId,
+            memberAccountId: accountId,
+            status: 'active',
           },
         },
       },
@@ -136,12 +137,12 @@ export async function getAccessAssetGroup(groupId: string): Promise<AccessAssetG
       include: {
         members: {
           orderBy: {
-            accountId: 'asc',
+            memberAccountId: 'asc',
           },
         },
         assets: {
           orderBy: {
-            assetId: 'asc',
+            id: 'asc',
           },
         },
       },

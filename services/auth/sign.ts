@@ -635,16 +635,27 @@ export async function bridgeConnectionSignAndGet(input: {
     const iat = Math.floor(Date.now() / 1000);
     const exp = iat + (60 * 60 * 24 * 7);
     const tokenPayload: Record<string, unknown> = {
-      appId,
-      aid: accountId,
-      cid: connection.id,
-      neupid: neupId || undefined,
-      isMinor,
-      role: connection.role?.name || connection.roleId || undefined,
-      roleId: connection.role?.id || connection.roleId || undefined,
+      connectionId: connection.id,
       iat,
       exp,
     };
+    if (selectedFields.has('accountId')) {
+      tokenPayload.accountId = accountId;
+    }
+    if (selectedFields.has('neupid') && neupId) {
+      tokenPayload.neupid = neupId;
+    }
+    if (selectedFields.has('isMinor') && typeof isMinor === 'boolean') {
+      tokenPayload.isMinor = isMinor;
+    }
+    if (selectedFields.has('role')) {
+      if (connection.role?.id || connection.roleId) {
+        tokenPayload.roleId = connection.role?.id || connection.roleId;
+      }
+      if (connection.role?.name || connection.roleId) {
+        tokenPayload.roleName = connection.role?.name || connection.roleId;
+      }
+    }
     const token = jwt.sign(tokenPayload, application.appSecret, { algorithm: 'HS256' });
 
     const responseBody: Record<string, unknown> = {

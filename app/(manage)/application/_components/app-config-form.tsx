@@ -43,6 +43,11 @@ const fieldLabels: Record<ApplicationAccessField, { label: string; description: 
   isMinor:       { label: 'Is Minor',        description: 'Whether the user is under 18.' },
   gender:        { label: 'Gender',          description: 'User\'s gender (if provided).' },
 };
+const fixedJwtFields = [
+  { id: 'connectionId', label: 'Connection ID', description: 'Always included in token.', checked: true },
+  { id: 'issuedAt', label: 'Issued At', description: 'Always included in token as iat.', checked: true },
+  { id: 'expiresAt', label: 'Expired At', description: 'Always included in token as exp.', checked: true },
+] as const;
 
 // ---------------------------------------------------------------------------
 // Schema
@@ -348,18 +353,18 @@ export function AppConfigForm({
             </CardContent>
           </Card>
 
-          {/* Party + field matrix */}
+          {/* Party */}
           <Card>
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Database className="h-4 w-4 text-muted-foreground" />
-                <CardTitle>Party & Identity Field Settings</CardTitle>
+                <CardTitle>Application Party</CardTitle>
               </div>
               <CardDescription>
-                Configure party, then choose which identity fields appear in API response and JWT payload in one place.
+                Set the party level for this application.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent>
               <FormField
                 control={form.control}
                 name="party"
@@ -397,8 +402,38 @@ export function AppConfigForm({
                   </FormItem>
                 )}
               />
+            </CardContent>
+            <CardFooter>
+              <Button type="submit" disabled={isPending}>
+                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Configuration
+              </Button>
+            </CardFooter>
+          </Card>
+
+          {/* Field Settings */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Database className="h-4 w-4 text-muted-foreground" />
+                <CardTitle>Field Settings</CardTitle>
+              </div>
+              <CardDescription>
+                Tick the fields you need. Unchecked or unavailable fields are removed automatically from the response.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
 
               <div className="grid gap-3 sm:grid-cols-2">
+                {fixedJwtFields.map((field) => (
+                  <div key={field.id} className="flex items-start gap-3 rounded-lg border p-3 opacity-90">
+                    <Checkbox checked={field.checked} disabled aria-label={`${field.label} always included`} />
+                    <div className="space-y-0.5 leading-none">
+                      <p className="text-sm font-medium">{field.label}</p>
+                      <p className="text-xs text-muted-foreground">{field.description}</p>
+                    </div>
+                  </div>
+                ))}
                 {visibleResponseFields.map((field) => {
                   const meta = fieldLabels[field];
                   return (

@@ -2081,13 +2081,7 @@ export async function saveAppConfig(
     party,
     access.filter((field) => responseAccessSet.has(field)),
   );
-  const fixedTokenFields: ApplicationAccessField[] = [
-    'accountId',
-    'connectionId',
-    'neupid',
-    'role',
-    'isMinor',
-  ].filter((field) => tokenFieldSet.has(field as ApplicationAccessField)) as ApplicationAccessField[];
+  const fixedTokenFields: ApplicationAccessField[] = [];
 
   const canEdit = await isApplicationOwnerForAccount(accountId, appId);
   if (!canEdit) return { success: false, error: 'Only the application owner can configure this application.' };

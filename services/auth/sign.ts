@@ -8,6 +8,8 @@ import { getUserProfile } from '@/services/user';
 import { validateExternalRequest } from '@/services/auth/validate';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import { applicationPartyValues, type ApplicationParty } from '@/services/applications/types';
+import { verifyAccountToken } from '@/core/auth/accountToken';
+import { validateAuthSession } from '@/services/auth/session';
 
 const EXTERNAL_LOGIN_PREFIX = 'external_app:';
 function externalLoginType(appId: string) {
@@ -496,17 +498,39 @@ export async function bridgeSignIntoApplication(input: { appId?: string; appType
 	}
 }
 
-export async function bridgeConnectionSignAndGet(input: { appId?: string; appType?: string; [key: string]: any }): Promise<{ status: number; body: Record<string, any> }> {
+export async function bridgeConnectionSignAndGet(input: {
+  appId?: string;
+  appSecret?: string;
+  authAccountToken?: string;
+  [key: string]: any;
+}): Promise<{ status: number; body: Record<string, any> }> {
   try {
     const appId = input?.appId;
+    const appSecret = input?.appSecret?.trim();
+    const authAccountToken = input?.authAccountToken?.trim();
     if (!appId) {
       return { status: 400, body: { success: false, error: 'appId is required.' } };
     }
-
-    const validation = await validateExternalRequest(input as any);
-    if (!validation.success) {
-      return { status: validation.status ?? 401, body: { success: false, error: validation.error } };
+    if (!appSecret) {
+      return { status: 400, body: { success: false, error: 'appSecret is required.' } };
     }
+    if (!authAccountToken) {
+      return { status: 401, body: { success: false, error: 'auth_account cookie is required.' } };
+    }
+
+    const cookiePayload = await verifyAccountToken(authAccountToken);
+    if (!cookiePayload?.aid || !cookiePayload?.sid || !cookiePayload?.skey) {
+      return { status: 401, body: { success: false, error: 'Invalid auth_account cookie.' } };
+    }
+    const sessionValidation = await validateAuthSession({
+      aid: cookiePayload.aid,
+      sid: cookiePayload.sid,
+      skey: cookiePayload.skey,
+    });
+    if (sessionValidation.status !== 'valid') {
+      return { status: 401, body: { success: false, error: 'Invalid or expired signin session.' } };
+    }
+    const accountId = cookiePayload.aid;
 
     const application = await prisma.application.findUnique({
       where: { id: appId },
@@ -519,14 +543,16 @@ export async function bridgeConnectionSignAndGet(input: { appId?: string; appTyp
     if (application.status === 'blocked' || application.status === 'rejected') {
       return { status: 403, body: { success: false, error: 'Application is not active.' } };
     }
-    if (!application.appSecret) {
-      return { status: 400, body: { success: false, error: 'Application secret is not configured.' } };
+    if (!application.appSecret || application.appSecret !== appSecret) {
+      return { status: 401, body: { success: false, error: 'Invalid app secret.' } };
     }
 
     const party = applicationPartyValues.includes(application.party as ApplicationParty)
       ? (application.party as ApplicationParty)
       : 1;
-    const { accountId, neupId } = validation.user;
+    if (!(party === 0 || party === 1)) {
+      return { status: 403, body: { success: false, error: 'You do not have permission to access this endpoint.' } };
+    }
 
     const defaultRoleId = await getApplicationDefaultRoleId(appId);
     const connection = await prisma.connection.upsert({
@@ -559,6 +585,7 @@ export async function bridgeConnectionSignAndGet(input: { appId?: string; appTyp
         .filter((f): f is string => typeof f === 'string')
     );
 
+    const neupId = profile.neupIdPrimary || null;
     const birthDate = profile.dateBirth ? new Date(profile.dateBirth) : null;
     const now = new Date();
     const isMinor = birthDate
@@ -579,10 +606,10 @@ export async function bridgeConnectionSignAndGet(input: { appId?: string; appTyp
     const accountPayload: Record<string, unknown> = {
       connectionId: connection.id,
     };
-    if ((party === 0 || party === 1) && selectedFields.has('accountId')) {
+    if (selectedFields.has('accountId')) {
       accountPayload.id = accountId;
     }
-    if (party !== 3 && selectedFields.has('neupid') && neupId) {
+    if (selectedFields.has('neupid') && neupId) {
       accountPayload.neupid = neupId;
     }
     if (selectedFields.has('isMinor') && typeof isMinor === 'boolean') {
@@ -611,7 +638,7 @@ export async function bridgeConnectionSignAndGet(input: { appId?: string; appTyp
       appId,
       aid: accountId,
       cid: connection.id,
-      neupid: party !== 3 ? neupId : undefined,
+      neupid: neupId || undefined,
       isMinor,
       role: connection.role?.name || connection.roleId || undefined,
       roleId: connection.role?.id || connection.roleId || undefined,

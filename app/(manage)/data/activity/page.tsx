@@ -16,6 +16,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { UserActivityLog } from '@/services/manage/users';
 import { redirectInApp } from "@/services/navigation";
+import { compileActivityAction } from "@/services/activity-action";
 
 const statusVariantMap: { [key: string]: "default" | "destructive" | "secondary" } = {
     Success: "default",
@@ -188,7 +189,9 @@ function DataActivityPageComponent({ after, applicationId }: { after?: string; a
                         </Card>
                     ))
                 ) : logs.length > 0 ? (
-                    logs.map((log, index) => (
+                    logs.map((log, index) => {
+                        const compiled = compileActivityAction(log.action);
+                        return (
                         <Card
                             key={log.id}
                             className={`transition-colors hover:bg-muted/20 ${
@@ -201,7 +204,16 @@ function DataActivityPageComponent({ after, applicationId }: { after?: string; a
                         >
                             <CardContent className="p-4">
                                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                                    <p className="text-sm font-medium leading-relaxed">{log.action}</p>
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-medium leading-relaxed">{compiled.title}</p>
+                                        {compiled.details?.length ? (
+                                            <div className="text-xs text-muted-foreground space-y-0.5">
+                                                {compiled.details.map((detail) => (
+                                                    <p key={detail}>{detail}</p>
+                                                ))}
+                                            </div>
+                                        ) : null}
+                                    </div>
                                     <Badge
                                         variant={statusVariantMap[log.status] || "secondary"}
                                         className={log.status === 'Success' ? 'bg-accent/80 text-accent-foreground' : ''}
@@ -212,7 +224,7 @@ function DataActivityPageComponent({ after, applicationId }: { after?: string; a
                                 <p className="mt-2 text-xs text-muted-foreground">{formatActivityTimestamp(log.timestamp)}</p>
                             </CardContent>
                         </Card>
-                    ))
+                    )})
                 ) : (
                     <div className="flex h-24 items-center justify-center rounded-md border border-dashed text-sm text-muted-foreground">
                         No activity found.

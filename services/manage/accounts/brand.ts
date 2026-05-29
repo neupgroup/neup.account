@@ -11,6 +11,7 @@ import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { brandCreationSchema } from '@/services/manage/accounts/schema';
 import { logActivity } from '@/services/log-actions';
+import { activityAction } from '@/services/activity-action';
 
 const BRAND_OWNER_ROLE_ID = 'brand-owner-neup-account';
 
@@ -172,7 +173,14 @@ export async function createBrandAccount(data: z.infer<typeof brandCreationSchem
 
         });
 
-        await logActivity(creatorAccountId, `Created Brand Account: ${neupId}`, 'Success', ipAddress, undefined, geolocation);
+        await logActivity(
+            creatorAccountId,
+            activityAction.accountBrandCreate(neupId),
+            'Success',
+            ipAddress,
+            undefined,
+            geolocation
+        );
         revalidatePath('/accounts/brand');
 
         return { success: true };

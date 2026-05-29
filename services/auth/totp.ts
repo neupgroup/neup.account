@@ -8,6 +8,7 @@ import { authenticator } from 'otplib';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
 import { logActivity } from '@/services/log-actions';
+import { activityAction } from '@/services/activity-action';
 import { logError } from '@/core/helpers/logger';
 import { createNotification } from '@/services/notifications';
 import { encrypt, decrypt } from '@/services/security/totp';
@@ -258,7 +259,7 @@ export async function verifyTotpFromPost(
 	const ipAddress = headersList.get('x-forwarded-for') || 'Unknown IP';
 	const userAgent = headersList.get('user-agent') || 'Unknown User-Agent';
 
-	await logActivity(accountId, 'Login', 'Success', ipAddress);
+	await logActivity(accountId, activityAction.login(), 'Success', ipAddress);
 	await createAndSetSession(accountId, 'Password + TOTP', ipAddress, userAgent);
 
 	return { success: true };

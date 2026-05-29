@@ -6,6 +6,8 @@ import prisma from '@/core/helpers/prisma';
 import { getPersonalAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
+import { logActivity } from '@/services/log-actions';
+import { activityAction } from '@/services/activity-action';
 
 const manageApplicationSchema = z.object({
   appId: z.string().min(1, 'Application ID is required.'),
@@ -92,12 +94,25 @@ export async function addUserApplicationAccess(input: { appId: string; permissio
     if (!application) return { success: false, error: 'Application not found.' };
 
     await prisma.$transaction(async (tx) => {
-      const defaultRoleId = await getApplicationDefaultRoleId(appId);
-      await tx.connection.upsert({
+      const existingConnection = await tx.connection.findUnique({
         where: { accountId_appId: { accountId, appId } },
-        update: {},
-        create: { accountId, appId, status: 'active', roleId: defaultRoleId },
+        select: { id: true },
       });
+
+      const defaultRoleId = await getApplicationDefaultRoleId(appId);
+      const connection = existingConnection
+        ? existingConnection
+        : await tx.connection.create({
+            data: { accountId, appId, status: 'active', roleId: defaultRoleId },
+          });
+
+      if (!existingConnection) {
+        await logActivity(
+          accountId,
+          activityAction.accountConnectionCreate(connection.id, appId),
+          'Success'
+        );
+      }
 
       await tx.member.deleteMany({
         where: { memberId: accountId, parentApplicationId: appId },

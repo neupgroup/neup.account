@@ -9,6 +9,7 @@ import { format, isValid, parse as parseWithFormat } from 'date-fns';
 import { brandProfileFormSchema } from '@/services/profile/schema';
 import { getUserProfile, checkPermissions, checkNeupIdAvailability, getUserNeupIds } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
+import { activityAction } from '@/services/activity-action';
 import { getAITextResponse } from '@/services/shared/ai';
 import { logDisplayImageResourceForAccount } from '@/services/manage/site/resources';
 import { dispatchAccountUpdatedEvent, type AccountUpdateEventField } from '@/services/applications/account-update-events';
@@ -326,7 +327,20 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
             changedFields.add('neupId');
         }
         
-        await logActivity(accountId, 'Profile Update', 'Success', undefined, geolocation);
+        const beforeDisplayImage = beforeSnapshot?.displayImage ?? null;
+        const afterDisplayImage = afterSnapshot?.displayImage ?? null;
+        if (beforeDisplayImage !== afterDisplayImage && afterDisplayImage) {
+            await logActivity(
+                accountId,
+                activityAction.profileDisplayImageChanged(beforeDisplayImage || '', afterDisplayImage),
+                'Success',
+                undefined,
+                undefined,
+                geolocation
+            );
+        } else {
+            await logActivity(accountId, 'Profile Update', 'Success', undefined, undefined, geolocation);
+        }
 
         if (changedFields.size > 0) {
             const dispatchResult = await dispatchAccountUpdatedEvent({

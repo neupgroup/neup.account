@@ -19,10 +19,10 @@ export async function switchToAccount(memberId: string): Promise<{ success: bool
     // Verify a grant exists giving this user access to the target account
     const grant = await prisma.member.findFirst({
       where: {
-        accessTo: memberId,
-        memberId: personalAccountId,
-        accessFor: 'application',
-        parentApplicationId: 'neup.account',
+        memberType: 'account',
+        memberAccountId: personalAccountId,
+        parentType: 'account',
+        parentAccountId: memberId,
       },
       select: { id: true },
     });
@@ -51,11 +51,16 @@ export async function switchToBrand(brandId: string): Promise<{ success: boolean
   try {
     const ownership = await prisma.member.findFirst({
       where: {
-        accessTo: brandId,
-        memberId: personalAccountId,
-        roleId: 'brand-owner-neup-account',
-        accessFor: 'application',
-        parentApplicationId: 'neup.account',
+        memberType: 'account',
+        memberAccountId: personalAccountId,
+        parentType: 'account',
+        parentAccountId: brandId,
+        roles: {
+          some: {
+            roleId: 'brand-owner-neup-account',
+            authzRole: { appId: 'neup.account' },
+          },
+        },
       },
       select: { id: true },
     });
@@ -84,11 +89,16 @@ export async function switchToDependent(dependentId: string): Promise<{ success:
   try {
     const ownership = await prisma.member.findFirst({
       where: {
-        accessTo: dependentId,
-        memberId: personalAccountId,
-        roleId: 'account.guardian',
-        accessFor: 'application',
-        parentApplicationId: 'neup.account',
+        memberType: 'account',
+        memberAccountId: personalAccountId,
+        parentType: 'account',
+        parentAccountId: dependentId,
+        roles: {
+          some: {
+            roleId: 'account.guardian',
+            authzRole: { appId: 'neup.account' },
+          },
+        },
       },
       select: { id: true },
     });

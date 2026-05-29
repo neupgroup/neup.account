@@ -111,29 +111,39 @@ export async function getApplicationAccess(params: {
     //   A) grants that were granted TO the account (memberId = accountId)
     //   B) grants that the account granted to others (accessTo = accountId)
     // This intentionally does not filter by parentPortfolioId (portfolio or non-portfolio grants are included).
-    const where: any = { parentApplicationId: appId };
+    const where: any = {
+      member: {
+        details: {
+          path: ['legacy_parent_application_id'],
+          equals: appId,
+        },
+      },
+    };
 
     if (accountId && forAccount) {
       where.OR = [
-        { memberId: accountId, accessTo: forAccount },
-        { accessTo: accountId, memberId: forAccount },
+        { member: { memberAccountId: accountId, parentAccountId: forAccount } },
+        { member: { parentAccountId: accountId, memberAccountId: forAccount } },
       ];
     } else if (accountId) {
       where.OR = [
-        { memberId: accountId },
-        { accessTo: accountId },
+        { member: { memberAccountId: accountId } },
+        { member: { parentAccountId: accountId } },
       ];
     } else if (forAccount) {
       // If only forAccount is provided, treat it as a strict owner filter.
-      where.accessTo = forAccount;
+      where.member = {
+        ...where.member,
+        parentAccountId: forAccount,
+      };
     }
 
     const { total, grants } = await prisma.$transaction(async (tx) => {
       // 3. Count total
-      const total = await tx.member.count({ where });
+      const total = await tx.role.count({ where });
 
       // 4. Fetch grants with related data
-      const grants = await tx.member.findMany({
+      const grants = await tx.role.findMany({
         where,
         ...(cursorId
           ? { cursor: { id: cursorId }, skip: 1 }
@@ -142,29 +152,36 @@ export async function getApplicationAccess(params: {
         orderBy: { id: 'asc' },
         select: {
           id: true,
-          status: true,
-          parentPortfolioId: true,
-          accessAccount: {
-            select: {
-              id: true,
-              displayName: true,
-              accountType: true,
-            },
-          },
-          member: {
-            select: {
-              id: true,
-              displayName: true,
-              accountType: true,
-            },
-          },
-          role: {
+          roleId: true,
+          roleName: true,
+          permissions: true,
+          authzRole: {
             select: {
               id: true,
               name: true,
               description: true,
               scope: true,
               permissions: true,
+            },
+          },
+          member: {
+            select: {
+              status: true,
+              parentPortfolioId: true,
+              parentAccount: {
+                select: {
+                  id: true,
+                  displayName: true,
+                  accountType: true,
+                },
+              },
+              memberAccount: {
+                select: {
+                  id: true,
+                  displayName: true,
+                  accountType: true,
+                },
+              },
             },
           },
         },
@@ -194,20 +211,20 @@ export async function getApplicationAccess(params: {
 
     const data = grants.map((g) => ({
       grantId: g.id,
-      status: g.status,
+      status: g.member.status,
       pushed: false,
-      accessTo: g.accessAccount.id,
-      ownerDisplayName: g.accessAccount.displayName,
-      ownerAccountType: g.accessAccount.accountType,
-      memberId: g.member.id,
-      targetDisplayName: g.member.displayName,
-      targetAccountType: g.member.accountType,
-      roleId: g.role.id,
-      roleName: g.role.name,
-      roleDescription: g.role.description,
-      roleScope: g.role.scope,
-      permissions: Array.isArray(g.role.permissions)
-        ? g.role.permissions
+      accessTo: g.member.parentAccount?.id ?? null,
+      ownerDisplayName: g.member.parentAccount?.displayName ?? null,
+      ownerAccountType: g.member.parentAccount?.accountType ?? null,
+      memberId: g.member.memberAccount?.id ?? null,
+      targetDisplayName: g.member.memberAccount?.displayName ?? null,
+      targetAccountType: g.member.memberAccount?.accountType ?? null,
+      roleId: g.authzRole?.id ?? g.roleId,
+      roleName: g.roleName ?? g.authzRole?.name ?? g.roleId,
+      roleDescription: g.authzRole?.description ?? null,
+      roleScope: g.authzRole?.scope ?? null,
+      permissions: Array.isArray(g.authzRole?.permissions)
+        ? g.authzRole.permissions
             .filter((p): p is { id?: string; name?: string; scope?: string | null } => Boolean(p) && typeof p === 'object')
             .map((p) => ({
               permissionId: typeof p.id === 'string' ? p.id : null,
@@ -216,7 +233,7 @@ export async function getApplicationAccess(params: {
               denormalized: typeof p.name === 'string' ? [p.name] : null,
             }))
         : [],
-      parentPortfolioId: g.parentPortfolioId,
+      parentPortfolioId: g.member.parentPortfolioId,
     }));
 
     const startedAt = grants.length > 0 ? grants[0].id : null;

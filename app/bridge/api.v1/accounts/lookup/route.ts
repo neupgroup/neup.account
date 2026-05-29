@@ -226,35 +226,53 @@ export async function POST(request: NextRequest) {
 
     const grants = await prisma.member.findMany({
       where: {
-        memberId: account.id,
-        accessFor: 'account',
+        memberType: 'account',
+        memberAccountId: account.id,
+        parentType: 'account',
         status: 'active',
-        parentApplicationId: appId,
+        roles: {
+          some: {
+            authzRole: { appId },
+          },
+        },
       },
       select: {
-        accessTo: true,
+        parentAccountId: true,
         parentPortfolioId: true,
-        role: {
+        roles: {
           select: {
-            name: true,
+            roleId: true,
+            roleName: true,
             permissions: true,
+            authzRole: {
+              select: {
+                name: true,
+                permissions: true,
+              },
+            },
           },
         },
       },
     });
 
-    const access = grants.map((grant) => {
-      const rolePermissions = Array.isArray(grant.role.permissions)
-        ? grant.role.permissions.filter((item): item is string => typeof item === 'string')
-        : [];
+    const readPermissionStrings = (value: unknown): string[] =>
+      Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
 
-      return {
-        accessOf: grant.accessTo,
-        role: grant.role.name,
-        permissions: rolePermissions,
-        ...(grant.parentPortfolioId ? { portfolio: grant.parentPortfolioId } : {}),
-      };
-    });
+    const access = grants.flatMap((grant) =>
+      grant.roles.map((role) => {
+        const rolePermissions = [
+          ...readPermissionStrings(role.permissions),
+          ...readPermissionStrings(role.authzRole?.permissions),
+        ];
+
+        return {
+          accessOf: grant.parentAccountId ?? account.id,
+          role: role.roleName ?? role.authzRole?.name ?? role.roleId,
+          permissions: Array.from(new Set(rolePermissions)),
+          ...(grant.parentPortfolioId ? { portfolio: grant.parentPortfolioId } : {}),
+        };
+      }),
+    );
 
     const selfAccess = access.filter((entry) => entry.accessOf === account.id);
     const topRole = selfAccess[0]?.role ?? null;

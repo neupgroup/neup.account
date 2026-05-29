@@ -44,10 +44,18 @@ export async function getUserApplicationAccess(appId: string): Promise<UserAppli
         },
         select: { connectedAt: true },
       }),
-      prisma.member.findMany({
+      prisma.role.findMany({
         where: {
-          memberId: accountId,
-          parentApplicationId: appId,
+          member: {
+            memberType: 'account',
+            memberAccountId: accountId,
+            parentType: 'account',
+            parentAccountId: accountId,
+            details: {
+              path: ['legacy_parent_application_id'],
+              equals: appId,
+            },
+          },
         },
         select: { roleId: true },
       }),
@@ -114,17 +122,40 @@ export async function addUserApplicationAccess(input: { appId: string; permissio
         );
       }
 
-      await tx.member.deleteMany({
-        where: { memberId: accountId, parentApplicationId: appId },
+      const existingMembers = await tx.member.findMany({
+        where: {
+          memberType: 'account',
+          memberAccountId: accountId,
+          parentType: 'account',
+          parentAccountId: accountId,
+          details: {
+            path: ['legacy_parent_application_id'],
+            equals: appId,
+          },
+        },
+        select: { id: true },
       });
+      if (existingMembers.length > 0) {
+        await tx.member.deleteMany({ where: { id: { in: existingMembers.map((m) => m.id) } } });
+      }
 
       if (permissions.length > 0) {
-        await tx.member.createMany({
+        const member = await tx.member.create({
+          data: {
+            memberType: 'account',
+            memberAccountId: accountId,
+            parentType: 'account',
+            parentAccountId: accountId,
+            details: { legacy_parent_application_id: appId },
+          },
+          select: { id: true },
+        });
+
+        await tx.role.createMany({
           data: permissions.map((roleId) => ({
-            accessTo: accountId,
-            memberId: accountId,
-            accessFor: 'application',
-            parentApplicationId: appId,
+            memberId: member.id,
+            accountId,
+            connectionId: connection.id,
             roleId,
           })),
           skipDuplicates: true,
@@ -158,17 +189,44 @@ export async function updateUserApplicationPermissions(input: { appId: string; p
 
   try {
     await prisma.$transaction(async (tx) => {
-      await tx.member.deleteMany({
-        where: { memberId: accountId, parentApplicationId: appId },
+      const existingMembers = await tx.member.findMany({
+        where: {
+          memberType: 'account',
+          memberAccountId: accountId,
+          parentType: 'account',
+          parentAccountId: accountId,
+          details: {
+            path: ['legacy_parent_application_id'],
+            equals: appId,
+          },
+        },
+        select: { id: true },
       });
+      if (existingMembers.length > 0) {
+        await tx.member.deleteMany({ where: { id: { in: existingMembers.map((m) => m.id) } } });
+      }
 
       if (permissions.length > 0) {
-        await tx.member.createMany({
+        const connection = await tx.connection.findUnique({
+          where: { accountId_appId: { accountId, appId } },
+          select: { id: true },
+        });
+        const member = await tx.member.create({
+          data: {
+            memberType: 'account',
+            memberAccountId: accountId,
+            parentType: 'account',
+            parentAccountId: accountId,
+            details: { legacy_parent_application_id: appId },
+          },
+          select: { id: true },
+        });
+
+        await tx.role.createMany({
           data: permissions.map((roleId) => ({
-            accessTo: accountId,
-            memberId: accountId,
-            accessFor: 'application',
-            parentApplicationId: appId,
+            memberId: member.id,
+            accountId,
+            connectionId: connection?.id,
             roleId,
           })),
           skipDuplicates: true,

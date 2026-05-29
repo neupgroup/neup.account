@@ -1,6 +1,7 @@
 'use server';
 
 import prisma from '@/core/helpers/prisma';
+import { Prisma } from '@/prisma/generated/client';
 import { getUserProfile, getUserNeupIds, checkPermissions } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
 import { logError } from '@/core/helpers/logger';
@@ -158,7 +159,7 @@ export async function approveNeupIdRequest(requestId: string, accountId: string,
             details.pendingRequests = pendingRequests;
             await tx.account.update({
                 where: { id: accountId },
-                data: { details },
+                data: { details: details as Prisma.InputJsonValue },
             });
         });
 
@@ -206,7 +207,7 @@ export async function denyNeupIdRequest(requestId: string): Promise<{success: bo
             details.pendingRequests = pendingRequests;
             await tx.account.update({
                 where: { id: request.senderId },
-                data: { details },
+                data: { details: details as Prisma.InputJsonValue },
             });
         });
         const payload = (request.data || {}) as Record<string, any>;

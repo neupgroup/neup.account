@@ -447,25 +447,43 @@ async function createMasterAccount(): Promise<{ skipped: boolean; reason?: strin
 // =============================================================================
 
 async function assignRolesToAccount(accountId: string): Promise<void> {
+  let selfMember = await prisma.member.findFirst({
+    where: {
+      memberType: 'account',
+      memberAccountId: accountId,
+      parentType: 'account',
+      parentAccountId: accountId,
+    },
+    select: { id: true },
+  });
+
+  if (!selfMember) {
+    selfMember = await prisma.member.create({
+      data: {
+        memberType: 'account',
+        memberAccountId: accountId,
+        parentType: 'account',
+        parentAccountId: accountId,
+        details: { legacy_parent_application_id: APP_ID } as Prisma.InputJsonValue,
+      },
+      select: { id: true },
+    });
+  }
+
   for (const roleId of [ROLE_INDIV_DEFAULT, ROLE_INDIV_ROOT]) {
-    const existing = await prisma.member.findFirst({
+    const existing = await prisma.role.findFirst({
       where: {
-        accessTo: accountId,
-        memberId: accountId,
-        accessFor: 'application',
-        parentApplicationId: APP_ID,
         roleId,
+        memberId: selfMember.id,
       },
       select: { id: true },
     });
 
     if (!existing) {
-      await prisma.member.create({
+      await prisma.role.create({
         data: {
-          accessTo: accountId,
-          memberId: accountId,
-          accessFor: 'application',
-          parentApplicationId: APP_ID,
+          memberId: selfMember.id,
+          accountId,
           roleId,
         },
       });

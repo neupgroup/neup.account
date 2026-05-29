@@ -191,25 +191,25 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
 
   const toLogicalAssetId = (row: {
     id: string;
-    childAccountId: string | null;
-    childApplicationId: string | null;
-    childConnectionId: string | null;
-  }) => row.childAccountId ?? row.childApplicationId ?? row.childConnectionId ?? row.id;
+    assetAccountId: string | null;
+    assetApplicationId: string | null;
+    assetConnectionId: string | null;
+  }) => row.assetAccountId ?? row.assetApplicationId ?? row.assetConnectionId ?? row.id;
 
   const resolved = await prisma.asset.findFirst({
     where: {
       OR: [
         { id: assetRef },
-        { childAccountId: assetRef },
-        { childApplicationId: assetRef },
-        { childConnectionId: assetRef },
+        { assetAccountId: assetRef },
+        { assetApplicationId: assetRef },
+        { assetConnectionId: assetRef },
       ],
     },
     select: {
       id: true,
-      childAccountId: true,
-      childApplicationId: true,
-      childConnectionId: true,
+      assetAccountId: true,
+      assetApplicationId: true,
+      assetConnectionId: true,
       assetType: true,
     },
   });
@@ -220,9 +220,9 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
   const allRows = await prisma.asset.findMany({
     where: {
       OR: [
-        { childAccountId: resolvedAssetId },
-        { childApplicationId: resolvedAssetId },
-        { childConnectionId: resolvedAssetId },
+        { assetAccountId: resolvedAssetId },
+        { assetApplicationId: resolvedAssetId },
+        { assetConnectionId: resolvedAssetId },
       ],
       assetType: resolved.assetType,
     },

@@ -7,6 +7,7 @@
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import prisma from '@/core/helpers/prisma';
+import { Prisma } from '@/prisma/generated/client';
 import { getActiveAccountId } from '@/core/auth/verify';
 import { checkPermissions } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
@@ -224,7 +225,7 @@ export async function submitApplicationChangeRequest(
             status: 'pending',
             requestedAt: new Date().toISOString(),
             requestedData: proposed,
-          }),
+          }) as Prisma.InputJsonValue,
         },
       });
     });
@@ -425,7 +426,7 @@ export async function approveApplicationChangeRequest(
       });
       await tx.account.update({
         where: { id: req.senderId },
-        data: { details: clearPendingAppChangeDetails(account?.details, appId) },
+        data: { details: clearPendingAppChangeDetails(account?.details, appId) as Prisma.InputJsonValue },
       });
     });
 
@@ -479,7 +480,7 @@ export async function denyApplicationChangeRequest(
       });
       await tx.account.update({
         where: { id: req.senderId },
-        data: { details: clearPendingAppChangeDetails(account?.details, appId) },
+        data: { details: clearPendingAppChangeDetails(account?.details, appId) as Prisma.InputJsonValue },
       });
     });
 

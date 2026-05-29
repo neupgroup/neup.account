@@ -47,10 +47,16 @@ export async function bridgeGetAuthAccess(input: {
 
     const resolvedAppId = appId || 'neup.account';
 
-    const roleRows = await prisma.member.findMany({
+    const roleRows = await prisma.role.findMany({
       where: {
-        memberId: aid,
-        parentApplicationId: resolvedAppId,
+        member: {
+          memberType: 'account',
+          memberAccountId: aid,
+          details: {
+            path: ['legacy_parent_application_id'],
+            equals: resolvedAppId,
+          },
+        },
       },
       select: { roleId: true },
     });
@@ -100,25 +106,42 @@ export async function bridgeCreateAuthAccess(input: Record<string, any>): Promis
     });
 
     // Grant access directly without a portfolio
-    const existing = await prisma.member.findFirst({
+    const existing = await prisma.role.findFirst({
       where: {
-        accessTo: aid,
-        memberId: recipientId,
-        accessFor: 'application',
-        parentApplicationId: appId,
         roleId: 'access.member',
+        member: {
+          memberType: 'account',
+          memberAccountId: recipientId,
+          parentType: 'account',
+          parentAccountId: aid,
+          details: {
+            path: ['legacy_parent_application_id'],
+            equals: appId,
+          },
+        },
       },
+      select: { id: true },
     });
 
     if (!existing) {
-      await prisma.member.create({
-        data: {
-          accessTo: aid,
-          memberId: recipientId,
-          accessFor: 'application',
-          parentApplicationId: appId,
-          roleId: 'access.member',
-        },
+      await prisma.$transaction(async (tx) => {
+        const member = await tx.member.create({
+          data: {
+            memberType: 'account',
+            memberAccountId: recipientId,
+            parentType: 'account',
+            parentAccountId: aid,
+            details: { legacy_parent_application_id: appId },
+          },
+          select: { id: true },
+        });
+        await tx.role.create({
+          data: {
+            memberId: member.id,
+            accountId: aid,
+            roleId: 'access.member',
+          },
+        });
       });
     }
 
@@ -144,26 +167,72 @@ export async function bridgeUpdateAuthAccess(input: Record<string, any>): Promis
 
     await prisma.$transaction(async (tx) => {
       if (removeRoles.length > 0) {
-        await tx.member.deleteMany({
+        await tx.role.deleteMany({
           where: {
-            memberId: recipientId,
-            parentApplicationId: appId,
             roleId: { in: removeRoles },
+            member: {
+              memberType: 'account',
+              memberAccountId: recipientId,
+              parentType: 'account',
+              parentAccountId: aid,
+              details: {
+                path: ['legacy_parent_application_id'],
+                equals: appId,
+              },
+            },
           },
         });
       }
 
+      let memberForAddRoles = await tx.member.findFirst({
+        where: {
+          memberType: 'account',
+          memberAccountId: recipientId,
+          parentType: 'account',
+          parentAccountId: aid,
+          details: {
+            path: ['legacy_parent_application_id'],
+            equals: appId,
+          },
+        },
+        select: { id: true },
+      });
+
+      if (!memberForAddRoles) {
+        memberForAddRoles = await tx.member.create({
+          data: {
+            memberType: 'account',
+            memberAccountId: recipientId,
+            parentType: 'account',
+            parentAccountId: aid,
+            details: { legacy_parent_application_id: appId },
+          },
+          select: { id: true },
+        });
+      }
+
       for (const roleId of addRoles) {
-        const exists = await tx.member.findFirst({
-          where: { accessTo: aid, memberId: recipientId, parentApplicationId: appId, roleId },
+        const exists = await tx.role.findFirst({
+          where: {
+            roleId,
+            member: {
+              memberType: 'account',
+              memberAccountId: recipientId,
+              parentType: 'account',
+              parentAccountId: aid,
+              details: {
+                path: ['legacy_parent_application_id'],
+                equals: appId,
+              },
+            },
+          },
+          select: { id: true },
         });
         if (!exists) {
-          await tx.member.create({
+          await tx.role.create({
             data: {
-              accessTo: aid,
-              memberId: recipientId,
-              accessFor: 'application',
-              parentApplicationId: appId,
+              memberId: memberForAddRoles.id,
+              accountId: aid,
               roleId,
             },
           });

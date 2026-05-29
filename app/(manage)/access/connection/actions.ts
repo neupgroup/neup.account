@@ -246,16 +246,46 @@ export async function assignAppAccessToAccount(input: {
 
     // Remove existing grants from this owner to this target on this app, then re-create
     await prisma.$transaction(async (tx) => {
-      await tx.member.deleteMany({
-        where: { accessTo, memberId, parentApplicationId: appId },
+      const targetConnection = await tx.connection.findUnique({
+        where: { accountId_appId: { accountId: memberId, appId } },
+        select: { id: true },
+      });
+      if (!targetConnection) {
+        throw new Error('Target connection not found after ensure step.');
+      }
+
+      const existingMemberRows = await tx.member.findMany({
+        where: {
+          memberType: 'account',
+          memberAccountId: memberId,
+          parentType: 'account',
+          parentAccountId: accessTo,
+          roles: { some: { connection: { appId } } },
+        },
+        select: { id: true },
       });
 
-      await tx.member.createMany({
+      await tx.member.deleteMany({
+        where: { id: { in: existingMemberRows.map((m) => m.id) } },
+      });
+
+      const member = await tx.member.create({
+        data: {
+          memberType: 'account',
+          memberAccountId: memberId,
+          parentType: 'account',
+          parentAccountId: accessTo,
+          details: {
+            legacy_parent_application_id: appId,
+          },
+        },
+        select: { id: true },
+      });
+
+      await tx.role.createMany({
         data: roleIds.map((roleId) => ({
-          accessTo,
-          memberId,
-          accessFor: 'application',
-          parentApplicationId: appId,
+          memberId: member.id,
+          connectionId: targetConnection.id,
           roleId,
         })),
         skipDuplicates: true,
@@ -286,12 +316,21 @@ export async function revokeAppAccessFromAccount(input: {
   if (!accessTo) return { success: false, error: 'Not authenticated.' };
 
   try {
-    await prisma.member.deleteMany({
-      where: {
-        accessTo,
-        memberId: input.memberId,
-        parentApplicationId: input.appId,
-      },
+    await prisma.$transaction(async (tx) => {
+      const existingMemberRows = await tx.member.findMany({
+        where: {
+          memberType: 'account',
+          memberAccountId: input.memberId,
+          parentType: 'account',
+          parentAccountId: accessTo,
+          roles: { some: { connection: { appId: input.appId } } },
+        },
+        select: { id: true },
+      });
+
+      await tx.member.deleteMany({
+        where: { id: { in: existingMemberRows.map((m) => m.id) } },
+      });
     });
 
     revalidatePath('/access/connection');

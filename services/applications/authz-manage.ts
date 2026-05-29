@@ -163,11 +163,17 @@ async function assertCanManageAuthz(appId: string): Promise<{ accountId: string 
   const isRootManager = await checkPermissions(ROOT_ROLE_MANAGE_PERMISSIONS, accountId);
   if (isRootManager) return { accountId };
 
-  const grant = await prisma.member.findFirst({
+  const grant = await prisma.role.findFirst({
     where: {
-      memberId: accountId,
-      parentApplicationId: appId,
       roleId: { in: ['application.owner', 'application.manage', 'application.edit', 'app.manage', 'app.edit'] },
+      member: {
+        memberType: 'account',
+        memberAccountId: accountId,
+        details: {
+          path: ['legacy_parent_application_id'],
+          equals: appId,
+        },
+      },
     },
     select: { id: true },
   });

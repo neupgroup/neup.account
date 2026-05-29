@@ -243,7 +243,7 @@ async function resolvePermissionSet(input: {
 					{
 						assets: {
 							some: {
-								childApplicationId: input.app,
+								assetApplicationId: input.app,
 								assetType: 'application',
 							},
 						},
@@ -255,23 +255,32 @@ async function resolvePermissionSet(input: {
 				assets: {
 					select: {
 						id: true,
-						childAccountId: true,
-						childApplicationId: true,
-						childConnectionId: true,
+						assetAccountId: true,
+						assetApplicationId: true,
+						assetConnectionId: true,
 						assetType: true,
 					},
 				},
 				members: {
-					where: { memberId: input.accountId },
+					where: { memberType: 'account', memberAccountId: input.accountId },
 					select: {
 						isPermanent: true,
-						hasFullAccess: true,
+						accessLevel: true,
 					},
 				},
 			},
 		}),
-		prisma.member.findMany({
-			where: { memberId: input.accountId, parentApplicationId: input.app },
+		prisma.role.findMany({
+			where: {
+				member: {
+					memberType: 'account',
+					memberAccountId: input.accountId,
+					details: {
+						path: ['legacy_parent_application_id'],
+						equals: input.app,
+					},
+				},
+			},
 			select: { roleId: true },
 		}),
 	]);
@@ -294,7 +303,7 @@ async function resolvePermissionSet(input: {
 		const apiMatches = !input.api
 			? true
 			: portfolio.assets.some((asset) =>
-				(asset.childAccountId ?? asset.childApplicationId ?? asset.childConnectionId ?? asset.id) === input.api ||
+				(asset.assetAccountId ?? asset.assetApplicationId ?? asset.assetConnectionId ?? asset.id) === input.api ||
 				asset.assetType === input.api
 			);
 
@@ -304,7 +313,7 @@ async function resolvePermissionSet(input: {
 
 		const hasFullAccess = portfolio.members.some((member) => {
 			const stillValid = member.isPermanent;
-			return stillValid && member.hasFullAccess;
+			return stillValid && member.accessLevel === 'full';
 		});
 
 		if (hasFullAccess) {
@@ -313,8 +322,17 @@ async function resolvePermissionSet(input: {
 
 	}
 
-	for (const grant of await prisma.member.findMany({
-		where: { memberId: input.accountId, parentApplicationId: input.app },
+	for (const grant of await prisma.role.findMany({
+		where: {
+			member: {
+				memberType: 'account',
+				memberAccountId: input.accountId,
+				details: {
+					path: ['legacy_parent_application_id'],
+					equals: input.app,
+				},
+			},
+		},
 		select: { roleId: true },
 	})) {
 		resolvedPermissions.add(normalizePermission(grant.roleId));

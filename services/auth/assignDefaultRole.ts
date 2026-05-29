@@ -9,8 +9,8 @@ const DEFAULT_ROLE_NAME = 'individual.default';
 /**
  * Assigns the `individual.default` role to a newly created account.
  *
- * Looks up the role by name + appId, then creates a self-grant
- * (accessTo = memberId = accountId). Safe to call inside or
+ * Looks up the role by name + appId, then creates self member+role rows.
+ * Safe to call inside or
  * outside a transaction — silently no-ops if the role doesn't exist yet.
  */
 export async function assignDefaultRole(accountId: string): Promise<void> {
@@ -31,25 +31,39 @@ export async function assignDefaultRole(accountId: string): Promise<void> {
         }
 
         // Upsert-style: only create if the grant doesn't already exist
-        const existing = await prisma.member.findFirst({
+        const existing = await prisma.role.findFirst({
             where: {
-                accessTo: accountId,
-                memberId: accountId,
-                accessFor: 'application',
                 roleId: role.id,
-                parentApplicationId: APP_ID,
+                member: {
+                    memberType: 'account',
+                    memberAccountId: accountId,
+                    parentType: 'account',
+                    parentAccountId: accountId,
+                    details: {
+                        path: ['legacy_parent_application_id'],
+                        equals: APP_ID,
+                    },
+                },
             },
             select: { id: true },
         });
 
         if (!existing) {
-            await prisma.member.create({
+            const member = await prisma.member.create({
                 data: {
-                    accessTo: accountId,
-                    memberId: accountId,
-                    accessFor: 'application',
+                    memberType: 'account',
+                    memberAccountId: accountId,
+                    parentType: 'account',
+                    parentAccountId: accountId,
+                    details: { legacy_parent_application_id: APP_ID },
+                },
+                select: { id: true },
+            });
+            await prisma.role.create({
+                data: {
+                    memberId: member.id,
+                    accountId,
                     roleId: role.id,
-                    parentApplicationId: APP_ID,
                 },
             });
         }

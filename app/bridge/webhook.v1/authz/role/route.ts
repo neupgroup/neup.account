@@ -139,43 +139,100 @@ async function handleAccountAccessGrant(operation: Operation, body: WebhookBody)
       const d = body.data;
       if (!d.accessTo || !d.memberId || !d.roleId || !d.appId)
         return err('Missing required fields: `accessTo`, `memberId`, `roleId`, `appId`.', 400);
-      const record = await prisma.member.create({
-        data: {
-          accessTo: d.accessTo as string,
-          memberId: d.memberId as string,
-          accessFor: 'application',
-          roleId: d.roleId as string,
-          parentApplicationId: d.appId as string,
-          parentPortfolioId: (d.parentPortfolioId as string) ?? null,
-        },
-        select: { id: true },
+      const role = await prisma.authzRole.findFirst({
+        where: { id: d.roleId as string, appId: d.appId as string },
+        select: { id: true, name: true, permissions: true },
+      });
+      if (!role) return err('Role not found for app.', 404);
+
+      const record = await prisma.$transaction(async (tx) => {
+        const member = await tx.member.create({
+          data: {
+            memberType: 'account',
+            memberAccountId: d.memberId as string,
+            parentType: 'account',
+            parentAccountId: d.accessTo as string,
+            parentPortfolioId: (d.parentPortfolioId as string) ?? null,
+            details: { legacy_parent_application_id: d.appId as string },
+          },
+          select: { id: true },
+        });
+
+        await tx.role.create({
+          data: {
+            memberId: member.id,
+            accountId: d.accessTo as string,
+            roleId: role.id,
+            roleName: role.name ?? null,
+            permissions: role.permissions ?? undefined,
+          },
+        });
+
+        return member;
       });
       return ok({ id: record.id }, 201);
     }
 
     case 'updateOne': {
       if (typeof body.id !== 'string') return err('Missing required field: `id` (string).', 400);
+      const memberId = body.id;
       if (!body.data || Array.isArray(body.data)) return err('Missing required field: `data` (object).', 400);
       const d = body.data;
-      await prisma.member.update({
-        where: { id: body.id },
-        data: {
-          ...(d.roleId !== undefined && { roleId: d.roleId as string }),
-          ...(d.parentPortfolioId !== undefined && { parentPortfolioId: d.parentPortfolioId as string | null }),
-        },
+      await prisma.$transaction(async (tx) => {
+        if (d.parentPortfolioId !== undefined) {
+          await tx.member.update({
+            where: { id: memberId },
+            data: { parentPortfolioId: d.parentPortfolioId as string | null },
+          });
+        }
+
+        if (d.roleId !== undefined) {
+          const member = await tx.member.findUnique({
+            where: { id: memberId },
+            select: { id: true, parentAccountId: true, details: true },
+          });
+          if (!member) return;
+          const appId =
+            member.details &&
+            typeof member.details === 'object' &&
+            typeof (member.details as Record<string, unknown>).legacy_parent_application_id === 'string'
+              ? ((member.details as Record<string, unknown>).legacy_parent_application_id as string)
+              : null;
+          const role = await tx.authzRole.findFirst({
+            where: {
+              id: d.roleId as string,
+              ...(appId ? { appId } : {}),
+            },
+            select: { id: true, name: true, permissions: true },
+          });
+          if (!role) return;
+          await tx.role.deleteMany({ where: { memberId: member.id } });
+          await tx.role.create({
+            data: {
+              memberId: member.id,
+              accountId: member.parentAccountId ?? undefined,
+              roleId: role.id,
+              roleName: role.name ?? null,
+              permissions: role.permissions ?? undefined,
+            },
+          });
+        }
       });
       return ok({ ok: true });
     }
 
     case 'update': {
       if (!Array.isArray(body.data)) return err('Missing required field: `data` (array).', 400);
-      await Promise.all(
-        body.data.map((item) => {
-          const { id, ...rest } = item;
-          if (!id) return Promise.resolve();
-          return prisma.member.update({ where: { id: id as string }, data: rest });
-        })
-      );
+      await Promise.all(body.data.map(async (item) => {
+        const { id, roleId, parentPortfolioId } = item as Record<string, unknown>;
+        if (!id || typeof id !== 'string') return;
+        await handleAccountAccessGrant('updateOne', {
+          table: body.table,
+          operation: 'updateOne',
+          id,
+          data: { roleId, parentPortfolioId },
+        });
+      }));
       return ok({ ok: true, count: body.data.length });
     }
 

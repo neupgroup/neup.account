@@ -1468,22 +1468,32 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
 
   try {
     // All access grants for this app
-    const grants = await prisma.member.findMany({
-      where: { parentApplicationId: appId },
+    const grants = await prisma.role.findMany({
+      where: {
+        member: {
+          details: {
+            path: ['legacy_parent_application_id'],
+            equals: appId,
+          },
+        },
+      },
       select: {
-        memberId: true,
         roleId: true,
-        parentPortfolioId: true,
-        parentPortfolio: { select: { id: true, name: true } },
-        accessAccount: {
+        member: {
           select: {
-            id: true,
-            displayName: true,
-            accountType: true,
-            isVerified: true,
-            neupIds: { where: { isPrimary: true }, select: { neupId: true }, take: 1 },
-            individualProfile: { select: { firstName: true, lastName: true } },
-            brandProfile: { select: { brandName: true } },
+            parentPortfolioId: true,
+            parentPortfolio: { select: { id: true, name: true } },
+            parentAccount: {
+              select: {
+                id: true,
+                displayName: true,
+                accountType: true,
+                isVerified: true,
+                neupIds: { where: { isPrimary: true }, select: { neupId: true }, take: 1 },
+                individualProfile: { select: { firstName: true, lastName: true } },
+                brandProfile: { select: { brandName: true } },
+              },
+            },
           },
         },
       },
@@ -1491,7 +1501,13 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
 
     // Portfolios this app belongs to (via AuthzAppAccessGrant)
     const appPortfolioGrants = await prisma.member.findMany({
-      where: { parentApplicationId: appId, parentPortfolioId: { not: null } },
+      where: {
+        parentPortfolioId: { not: null },
+        details: {
+          path: ['legacy_parent_application_id'],
+          equals: appId,
+        },
+      },
       select: {
         parentPortfolioId: true,
         parentPortfolio: { select: { id: true, name: true } },
@@ -1504,9 +1520,9 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
     const portfolioMap = new Map<string, string>();
 
     for (const g of grants) {
-      if (g.parentPortfolioId && g.parentPortfolio) {
-        portfolioIds.add(g.parentPortfolioId);
-        portfolioMap.set(g.parentPortfolioId, g.parentPortfolio.name);
+      if (g.member.parentPortfolioId && g.member.parentPortfolio) {
+        portfolioIds.add(g.member.parentPortfolioId);
+        portfolioMap.set(g.member.parentPortfolioId, g.member.parentPortfolio.name);
       }
     }
     for (const g of appPortfolioGrants) {
@@ -1540,7 +1556,7 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
     const accessMap = new Map<string, AppAccessEntry>();
 
     for (const g of grants) {
-      const t = g.accessAccount;
+      const t = g.member.parentAccount;
       if (!t) continue;
       const displayName = resolveDisplayName(t);
       const neupId = t.neupIds[0]?.neupId;
@@ -1565,7 +1581,7 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
             neupId,
             isVerified: t.isVerified,
             roles: [],
-            via: g.parentPortfolioId && g.parentPortfolio ? g.parentPortfolio.name : null,
+            via: g.member.parentPortfolioId && g.member.parentPortfolio ? g.member.parentPortfolio.name : null,
           });
         }
         const entry = accessMap.get(t.id)!;
@@ -1573,8 +1589,8 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
           entry.roles.push(g.roleId);
         }
         // If any grant for this account came via a portfolio, mark it
-        if (g.parentPortfolioId && g.parentPortfolio && entry.via === null) {
-          entry.via = g.parentPortfolio.name;
+        if (g.member.parentPortfolioId && g.member.parentPortfolio && entry.via === null) {
+          entry.via = g.member.parentPortfolio.name;
         }
       }
     }

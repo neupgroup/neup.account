@@ -21,21 +21,23 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
   const activeMembers = group.members.filter((m) => m.status === 'active');
   const members = await Promise.all(
     activeMembers.map(async (m) => {
-      const profile = await getUserProfile(m.memberId);
+      const accountId = m.memberAccountId ?? '';
+      const profile = accountId ? await getUserProfile(accountId) : null;
       const displayName =
         profile?.nameDisplay ||
         (profile?.nameFirst || profile?.nameLast
           ? `${profile.nameFirst ?? ''} ${profile.nameLast ?? ''}`.trim()
           : null) ||
-        m.memberId;
-      return { id: m.id, accountId: m.memberId, displayName };
+        accountId ||
+        m.id;
+      return { id: m.id, accountId, displayName };
     })
   );
 
   const action = bulkAssignPermissionsFromForm.bind(null, portfolio);
   const existingAssetIds = Array.from(
     new Set(
-      group.assets.map((a) => a.childAccountId ?? a.childApplicationId ?? a.childConnectionId ?? a.id),
+      group.assets.map((a) => a.assetAccountId ?? a.assetApplicationId ?? a.assetConnectionId ?? a.id),
     ),
   );
 

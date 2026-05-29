@@ -74,10 +74,19 @@ async function getPortfolioMemberFlags(
   memberAccountId: string,
 ): Promise<PortfolioMemberFlags | null> {
   const member = await prisma.member.findFirst({
-    where: { parentPortfolioId, memberId: memberAccountId, status: 'active' },
-    select: { hasFullAccess: true, isPermanent: true },
+    where: {
+      parentPortfolioId,
+      memberType: 'account',
+      memberAccountId,
+      status: 'active',
+    },
+    select: { accessLevel: true, isPermanent: true },
   });
-  return member ?? null;
+  if (!member) return null;
+  return {
+    hasFullAccess: member.accessLevel === 'full',
+    isPermanent: member.isPermanent,
+  };
 }
 
 /**
@@ -91,10 +100,11 @@ async function hasOtherPermanentOwner(
   const count = await prisma.member.count({
     where: {
       parentPortfolioId,
-      hasFullAccess: true,
+      accessLevel: 'full',
       isPermanent: true,
       status: 'active',
-      memberId: { not: excludeAccountId },
+      memberType: 'account',
+      memberAccountId: { not: excludeAccountId },
     },
   });
   return count > 0;

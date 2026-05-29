@@ -25,8 +25,8 @@ async function findPersonalPortfolio(accountId: string): Promise<string | null> 
   const existing = await prisma.portfolio.findFirst({
     where: {
       members: {
-        every: { memberId: accountId },
-        some: { memberId: accountId },
+        every: { memberType: 'account', memberAccountId: accountId },
+        some: { memberType: 'account', memberAccountId: accountId },
       },
     },
     select: { id: true },
@@ -57,30 +57,42 @@ async function backfillAccounts() {
     if (account.accountType === 'brand' || account.accountType === 'branch') {
       const ownerGrant = await prisma.member.findFirst({
         where: {
-          accessTo: account.id,
-          roleId: 'brand-owner-neup-account',
-          parentApplicationId: 'neup.account',
+          memberType: 'account',
+          parentType: 'account',
+          parentAccountId: account.id,
+          roles: {
+            some: {
+              roleId: 'brand-owner-neup-account',
+              authzRole: { appId: 'neup.account' },
+            },
+          },
         },
-        select: { memberId: true },
+        select: { memberAccountId: true },
       });
-      if (ownerGrant) portfolioOwnerId = ownerGrant.memberId;
+      if (ownerGrant?.memberAccountId) portfolioOwnerId = ownerGrant.memberAccountId;
     }
 
     if (account.accountType === 'dependent') {
       const guardianGrant = await prisma.member.findFirst({
         where: {
-          accessTo: account.id,
-          roleId: 'account.guardian',
-          parentApplicationId: 'neup.account',
+          memberType: 'account',
+          parentType: 'account',
+          parentAccountId: account.id,
+          roles: {
+            some: {
+              roleId: 'account.guardian',
+              authzRole: { appId: 'neup.account' },
+            },
+          },
         },
-        select: { memberId: true },
+        select: { memberAccountId: true },
       });
-      if (guardianGrant) portfolioOwnerId = guardianGrant.memberId;
+      if (guardianGrant?.memberAccountId) portfolioOwnerId = guardianGrant.memberAccountId;
     }
 
     // Check if an asset entry already exists for this account
     const existingAsset = await prisma.asset.findFirst({
-      where: { childAccountId: account.id, assetType: ACCOUNT_ASSET_TYPE },
+      where: { assetAccountId: account.id, assetType: ACCOUNT_ASSET_TYPE },
     });
 
     if (existingAsset) { skipped++; continue; }
@@ -94,7 +106,7 @@ async function backfillAccounts() {
     await prisma.asset.create({
       data: {
         parentPortfolioId,
-        childAccountId: account.id,
+        assetAccountId: account.id,
         assetType: ACCOUNT_ASSET_TYPE,
       },
     });
@@ -121,28 +133,34 @@ async function backfillApplications() {
   for (const app of applications) {
     // Check if an asset entry already exists for this app
     const existingAsset = await prisma.asset.findFirst({
-      where: { childApplicationId: app.id, assetType: 'application' },
+      where: { assetApplicationId: app.id, assetType: 'application' },
     });
 
     if (existingAsset) { skipped++; continue; }
 
     // Find the owner of this application via member grants.
-    const ownerGrant = await prisma.member.findFirst({
+    const ownerGrant = await prisma.role.findFirst({
       where: {
-        parentApplicationId: app.id,
         roleId: 'application.owner',
+        member: {
+          details: {
+            path: ['legacy_parent_application_id'],
+            equals: app.id,
+          },
+        },
       },
-      select: { accessTo: true },
+      select: { member: { select: { parentAccountId: true } } },
     });
 
     // If no owner found, skip — can't determine which portfolio to use
-    if (!ownerGrant) {
+    const ownerAccountId = ownerGrant?.member.parentAccountId ?? null;
+    if (!ownerAccountId) {
       console.warn(`  Skipping app ${app.id}: no owner grant found.`);
       skipped++;
       continue;
     }
 
-    const parentPortfolioId = await findPersonalPortfolio(ownerGrant.accessTo);
+    const parentPortfolioId = await findPersonalPortfolio(ownerAccountId);
     if (!parentPortfolioId) {
       skipped++;
       continue;
@@ -151,7 +169,7 @@ async function backfillApplications() {
     await prisma.asset.create({
       data: {
         parentPortfolioId,
-        childApplicationId: app.id,
+        assetApplicationId: app.id,
         assetType: 'application',
       },
     });

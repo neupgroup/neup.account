@@ -67,14 +67,24 @@ async function getBrandAssets(): Promise<SelectableAsset[]> {
 
     const grants = await prisma.member.findMany({
       where: {
-        memberId: personalAccountId,
-        roleId: 'brand-owner-neup-account',
-        parentApplicationId: 'neup.account',
+        memberType: 'account',
+        memberAccountId: personalAccountId,
+        parentType: 'account',
+        roles: {
+          some: {
+            roleId: 'brand-owner-neup-account',
+            authzRole: {
+              appId: 'neup.account',
+            },
+          },
+        },
       },
-      select: { accessTo: true },
+      select: { parentAccountId: true },
     });
 
-    const ids = grants.map((g) => g.accessTo);
+    const ids = grants
+      .map((g) => g.parentAccountId)
+      .filter((id): id is string => typeof id === 'string' && id.length > 0);
     if (ids.length === 0) return [];
 
     const accounts = await prisma.account.findMany({
@@ -133,25 +143,48 @@ async function getApplicationAssets(): Promise<SelectableAsset[]> {
     const accountId = await getActiveAccountId();
     if (!accountId) return [];
 
-    const grants = await prisma.member.findMany({
-      where: { accessTo: accountId, roleId: 'application.owner' },
+    const grants = await prisma.role.findMany({
+      where: {
+        roleId: 'application.owner',
+        member: {
+          memberType: 'account',
+          memberAccountId: accountId,
+          parentType: 'account',
+          parentAccountId: accountId,
+        },
+      },
       select: {
-        parentApplication: { select: { id: true, name: true, status: true } },
+        details: true,
+        member: { select: { details: true } },
       },
     });
 
-    return grants
-      .filter(
-        (
-          g,
-        ): g is typeof g & { parentApplication: NonNullable<typeof g.parentApplication> } =>
-          Boolean(g.parentApplication),
-      )
-      .map((g) => ({
-        assetId: g.parentApplication.id,
-        name: g.parentApplication.name,
+    const getLegacyAppId = (value: unknown): string | null => {
+      if (!value || typeof value !== 'object') return null;
+      const appId = (value as Record<string, unknown>).legacy_parent_application_id;
+      return typeof appId === 'string' && appId.trim().length > 0 ? appId : null;
+    };
+
+    const appIds = Array.from(
+      new Set(
+        grants
+          .map((g) => getLegacyAppId(g.details) ?? getLegacyAppId(g.member.details))
+          .filter((id): id is string => Boolean(id)),
+      ),
+    );
+
+    if (appIds.length === 0) return [];
+
+    const apps = await prisma.application.findMany({
+      where: { id: { in: appIds } },
+      select: { id: true, name: true, status: true },
+    });
+
+    return apps.map((app) => ({
+        assetId: app.id,
+        name: app.name,
         assetType: 'application',
-        subtitle: g.parentApplication.status ?? undefined,
+        subtitle: app.status ?? undefined,
       }));
   } catch (error) {
     await logError('database', error, 'getApplicationAssets');
@@ -218,9 +251,10 @@ export async function removeDirectMember(
   try {
     await prisma.member.deleteMany({
       where: {
-        accessTo,
-        memberId: memberAccountId,
-        parentApplicationId: 'neup.account',
+        memberType: 'account',
+        memberAccountId,
+        parentType: 'account',
+        parentAccountId: accessTo,
         parentPortfolioId: null,
       },
     });
@@ -273,7 +307,7 @@ export async function removePortfolioMember(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const member = await prisma.member.findFirst({
-      where: { parentPortfolioId, memberId: memberAccountId },
+      where: { parentPortfolioId, memberAccountId: memberAccountId, memberType: 'account' },
       select: { id: true },
     });
 
@@ -301,7 +335,8 @@ export async function cancelPortfolioInvitation(
     const member = await prisma.member.findFirst({
       where: {
         parentPortfolioId,
-        memberId: recipientAccountId,
+        memberAccountId: recipientAccountId,
+        memberType: 'account',
         status: { in: ['paused', 'removed'] },
       },
       select: { id: true },
@@ -352,9 +387,10 @@ export async function inviteDirectMember(
     // Check for existing grants
     const existingGrant = await prisma.member.findFirst({
       where: {
-        accessTo: senderAccountId,
-        memberId: recipientAccountId,
-        parentApplicationId: 'neup.account',
+        memberType: 'account',
+        memberAccountId: recipientAccountId,
+        parentType: 'account',
+        parentAccountId: senderAccountId,
         parentPortfolioId: null,
       },
       select: { id: true },
@@ -429,19 +465,19 @@ async function resolvePortfolioAssetRow(assetRef: string): Promise<{
 } | null> {
   const toLogicalAssetId = (row: {
     id: string;
-    childAccountId: string | null;
-    childApplicationId: string | null;
-    childConnectionId: string | null;
-  }): string => row.childAccountId ?? row.childApplicationId ?? row.childConnectionId ?? row.id;
+    assetAccountId: string | null;
+    assetApplicationId: string | null;
+    assetConnectionId: string | null;
+  }): string => row.assetAccountId ?? row.assetApplicationId ?? row.assetConnectionId ?? row.id;
 
   const byRow = await prisma.asset.findUnique({
     where: { id: assetRef },
     select: {
       id: true,
       assetType: true,
-      childAccountId: true,
-      childApplicationId: true,
-      childConnectionId: true,
+      assetAccountId: true,
+      assetApplicationId: true,
+      assetConnectionId: true,
     },
   });
   if (byRow) {
@@ -455,17 +491,17 @@ async function resolvePortfolioAssetRow(assetRef: string): Promise<{
   const byLogical = await prisma.asset.findFirst({
     where: {
       OR: [
-        { childAccountId: assetRef },
-        { childApplicationId: assetRef },
-        { childConnectionId: assetRef },
+        { assetAccountId: assetRef },
+        { assetApplicationId: assetRef },
+        { assetConnectionId: assetRef },
       ],
     },
     select: {
       id: true,
       assetType: true,
-      childAccountId: true,
-      childApplicationId: true,
-      childConnectionId: true,
+      assetAccountId: true,
+      assetApplicationId: true,
+      assetConnectionId: true,
     },
     orderBy: { id: 'asc' },
   });

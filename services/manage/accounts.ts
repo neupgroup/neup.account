@@ -527,7 +527,7 @@ export async function getAccountBasics(accountId: string): Promise<AccountBasics
  * Function getPermissionsForAccountPair.
  *
  * Returns the deduplicated list of permissions that `accessorId` holds
- * on `accessTo`, by joining member → authzRolePermission.
+ * on `accessTo`, by joining member → role permission mappings.
  */
 async function getPermissionsForAccountPair(
     accessorId: string,
@@ -536,31 +536,52 @@ async function getPermissionsForAccountPair(
     try {
         const grants = await prisma.member.findMany({
             where: {
-                memberId: accessorId,
-                accessTo,
-                accessFor: 'account',
-                parentApplicationId: 'neup.account',
+                memberAccountId: accessorId,
+                memberType: 'account',
+                parentAccountId: accessTo,
+                parentType: 'account',
+                roles: {
+                    some: {
+                        authzRole: {
+                            appId: 'neup.account',
+                        },
+                    },
+                },
             },
-            select: { roleId: true },
+            select: {
+                roles: {
+                    where: {
+                        authzRole: {
+                            appId: 'neup.account',
+                        },
+                    },
+                    select: { roleId: true },
+                },
+            },
         });
 
         if (grants.length === 0) return [];
 
-        const roleIds = Array.from(new Set(grants.map((g) => g.roleId)));
+        const roleIds = Array.from(
+            new Set(grants.flatMap((grant) => grant.roles.map((role) => role.roleId))),
+        );
 
-        const rolePermissions = await prisma.authzRolePermission.findMany({
+        const rolePermissions = await prisma.authzRolePermissionMap.findMany({
             where: {
                 roleId: { in: roleIds },
-                appId: 'neup.account',
+                permission: {
+                    appId: 'neup.account',
+                },
             },
-            select: { denormalizedPermission: true },
+            select: {
+                permission: {
+                    select: { name: true },
+                },
+            },
         });
 
         const permissions = rolePermissions.flatMap((row) => {
-            if (!Array.isArray(row.denormalizedPermission)) return [];
-            return row.denormalizedPermission.filter(
-                (item): item is string => typeof item === 'string',
-            );
+            return typeof row.permission?.name === 'string' ? [row.permission.name] : [];
         });
 
         return Array.from(new Set(permissions));
@@ -599,47 +620,76 @@ export async function getAccessableAccountsWithPermissions(
             // Fetch all grants for this accessor across all owner accounts in one query
             prisma.member.findMany({
                 where: {
-                    memberId: accountId,
-                    accessTo: { in: ids },
-                    accessFor: 'account',
-                    parentApplicationId: 'neup.account',
+                    memberAccountId: accountId,
+                    memberType: 'account',
+                    parentAccountId: { in: ids },
+                    parentType: 'account',
+                    roles: {
+                        some: {
+                            authzRole: {
+                                appId: 'neup.account',
+                            },
+                        },
+                    },
                 },
-                select: { accessTo: true, roleId: true },
+                select: {
+                    parentAccountId: true,
+                    roles: {
+                        where: {
+                            authzRole: {
+                                appId: 'neup.account',
+                            },
+                        },
+                        select: { roleId: true },
+                    },
+                },
             }),
         ]);
 
         // Collect all unique roleIds so we can batch-fetch permissions
-        const allRoleIds = Array.from(new Set(allGrants.map((g) => g.roleId)));
+        const allRoleIds = Array.from(
+            new Set(allGrants.flatMap((grant) => grant.roles.map((role) => role.roleId))),
+        );
 
         const rolePermissionRows = allRoleIds.length > 0
-            ? await prisma.authzRolePermission.findMany({
+            ? await prisma.authzRolePermissionMap.findMany({
                 where: {
                     roleId: { in: allRoleIds },
-                    appId: 'neup.account',
+                    permission: {
+                        appId: 'neup.account',
+                    },
                 },
-                select: { roleId: true, denormalizedPermission: true },
+                select: {
+                    roleId: true,
+                    permission: {
+                        select: { name: true },
+                    },
+                },
             })
             : [];
 
         // Build roleId → permissions map
         const roleCapMap = new Map<string, string[]>();
         for (const row of rolePermissionRows) {
-            if (!Array.isArray(row.denormalizedPermission)) continue;
-            const caps = row.denormalizedPermission.filter(
-                (c): c is string => typeof c === 'string',
-            );
-            roleCapMap.set(row.roleId, caps);
+            const permissionName = row.permission?.name;
+            if (typeof permissionName !== 'string') continue;
+            const existing = roleCapMap.get(row.roleId) ?? [];
+            existing.push(permissionName);
+            roleCapMap.set(row.roleId, existing);
         }
 
         // Build accessTo → permissions map
         const ownerCapMap = new Map<string, Set<string>>();
         for (const grant of allGrants) {
-            if (!ownerCapMap.has(grant.accessTo)) {
-                ownerCapMap.set(grant.accessTo, new Set());
+            if (!grant.parentAccountId) continue;
+            if (!ownerCapMap.has(grant.parentAccountId)) {
+                ownerCapMap.set(grant.parentAccountId, new Set());
             }
-            const caps = roleCapMap.get(grant.roleId) ?? [];
-            for (const cap of caps) {
-                ownerCapMap.get(grant.accessTo)!.add(cap);
+            for (const role of grant.roles) {
+                const caps = roleCapMap.get(role.roleId) ?? [];
+                for (const cap of caps) {
+                    ownerCapMap.get(grant.parentAccountId)!.add(cap);
+                }
             }
         }
 
@@ -698,49 +748,80 @@ export async function getAccessableBrandAccountsWithPermissions(
             }),
             prisma.member.findMany({
                 where: {
-                    memberId: accountId,
-                    accessTo: { in: ids },
-                    accessFor: 'account',
-                    parentApplicationId: 'neup.account',
+                    memberAccountId: accountId,
+                    memberType: 'account',
+                    parentAccountId: { in: ids },
+                    parentType: 'account',
+                    roles: {
+                        some: {
+                            authzRole: {
+                                appId: 'neup.account',
+                            },
+                        },
+                    },
                 },
-                select: { accessTo: true, roleId: true },
+                select: {
+                    parentAccountId: true,
+                    roles: {
+                        where: {
+                            authzRole: {
+                                appId: 'neup.account',
+                            },
+                        },
+                        select: { roleId: true },
+                    },
+                },
             }),
         ]);
 
         const brandIds = new Set(brandRows.map((b) => b.id));
 
         // Only keep grants for brand/branch accounts
-        const relevantGrants = allGrants.filter((g) => brandIds.has(g.accessTo));
+        const relevantGrants = allGrants.filter(
+            (g) => typeof g.parentAccountId === 'string' && brandIds.has(g.parentAccountId),
+        );
 
-        const allRoleIds = Array.from(new Set(relevantGrants.map((g) => g.roleId)));
+        const allRoleIds = Array.from(
+            new Set(relevantGrants.flatMap((grant) => grant.roles.map((role) => role.roleId))),
+        );
 
         const rolePermissionRows = allRoleIds.length > 0
-            ? await prisma.authzRolePermission.findMany({
+            ? await prisma.authzRolePermissionMap.findMany({
                 where: {
                     roleId: { in: allRoleIds },
-                    appId: 'neup.account',
+                    permission: {
+                        appId: 'neup.account',
+                    },
                 },
-                select: { roleId: true, denormalizedPermission: true },
+                select: {
+                    roleId: true,
+                    permission: {
+                        select: { name: true },
+                    },
+                },
             })
             : [];
 
         const roleCapMap = new Map<string, string[]>();
         for (const row of rolePermissionRows) {
-            if (!Array.isArray(row.denormalizedPermission)) continue;
-            const caps = row.denormalizedPermission.filter(
-                (c): c is string => typeof c === 'string',
-            );
-            roleCapMap.set(row.roleId, caps);
+            const permissionName = row.permission?.name;
+            if (typeof permissionName !== 'string') continue;
+            const existing = roleCapMap.get(row.roleId) ?? [];
+            existing.push(permissionName);
+            roleCapMap.set(row.roleId, existing);
         }
 
         const ownerCapMap = new Map<string, Set<string>>();
         for (const grant of relevantGrants) {
-            if (!ownerCapMap.has(grant.accessTo)) {
-                ownerCapMap.set(grant.accessTo, new Set());
+            if (!grant.parentAccountId) continue;
+            if (!ownerCapMap.has(grant.parentAccountId)) {
+                ownerCapMap.set(grant.parentAccountId, new Set());
             }
-            const caps = roleCapMap.get(grant.roleId) ?? [];
-            for (const cap of caps) {
-                ownerCapMap.get(grant.accessTo)!.add(cap);
+            for (const role of grant.roles) {
+                const caps = roleCapMap.get(role.roleId) ?? [];
+                for (const cap of caps) {
+                    ownerCapMap.get(grant.parentAccountId)!.add(cap);
+                }
             }
         }
 

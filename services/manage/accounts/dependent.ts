@@ -173,22 +173,54 @@ export async function createDependentAccount(data: z.infer<typeof dependentFormS
             });
 
             // Grant guardian access to manage the dependent account
-            await tx.member.create({
+            const guardianMember = await tx.member.create({
                 data: {
-                    accessTo: accountId,
-                    memberId: guardianAccountId,
+                    memberType: 'account',
+                    memberAccountId: guardianAccountId,
+                    parentType: 'account',
+                    parentAccountId: accountId,
+                    details: {
+                        legacy_parent_application_id: 'neup.account',
+                    },
+                },
+                select: { id: true },
+            });
+
+            await tx.role.create({
+                data: {
+                    memberId: guardianMember.id,
+                    accountId: accountId,
                     roleId: 'account.guardian',
-                    appId: 'neup.account',
+                    roleName: 'account.guardian',
+                    details: {
+                        legacy_parent_application_id: 'neup.account',
+                    },
                 },
             });
 
             // Grant the dependent account access to itself
-            await tx.member.create({
+            const dependentMember = await tx.member.create({
                 data: {
-                    accessTo: accountId,
-                    memberId: accountId,
+                    memberType: 'account',
+                    memberAccountId: accountId,
+                    parentType: 'account',
+                    parentAccountId: accountId,
+                    details: {
+                        legacy_parent_application_id: 'neup.account',
+                    },
+                },
+                select: { id: true },
+            });
+
+            await tx.role.create({
+                data: {
+                    memberId: dependentMember.id,
+                    accountId: accountId,
                     roleId: 'account.dependent',
-                    appId: 'neup.account',
+                    roleName: 'account.dependent',
+                    details: {
+                        legacy_parent_application_id: 'neup.account',
+                    },
                 },
             });
 

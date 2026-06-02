@@ -111,12 +111,28 @@ export async function createBranchAccount(data: z.infer<typeof formSchema>, geol
                 update: { name: 'brand.owner', scope: 'brand', appId: 'neup.account' },
                 create: { id: 'brand-owner-neup-account', name: 'brand.owner', scope: 'brand', appId: 'neup.account' },
             });
-            await tx.member.create({
+            const branchOwnerMember = await tx.member.create({
                 data: {
-                    accessTo: branchAccountId,
-                    memberId: personalAccountId,
+                    memberType: 'account',
+                    memberAccountId: personalAccountId,
+                    parentType: 'account',
+                    parentAccountId: branchAccountId,
+                    details: {
+                        legacy_parent_application_id: 'neup.account',
+                    },
+                },
+                select: { id: true },
+            });
+
+            await tx.role.create({
+                data: {
+                    memberId: branchOwnerMember.id,
+                    accountId: branchAccountId,
                     roleId: 'brand-owner-neup-account',
-                    appId: 'neup.account',
+                    roleName: 'brand.owner',
+                    details: {
+                        legacy_parent_application_id: 'neup.account',
+                    },
                 },
             });
 

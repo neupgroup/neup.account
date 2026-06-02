@@ -162,12 +162,28 @@ export async function createBrandAccount(data: z.infer<typeof brandCreationSchem
                 create: { id: BRAND_OWNER_ROLE_ID, name: 'brand.owner', scope: 'brand', appId: 'neup.account' },
             });
 
-            await tx.member.create({
+            const brandOwnerMember = await tx.member.create({
                 data: {
-                    accessTo: account.id,
-                    memberId: creatorAccountId,
+                    memberType: 'account',
+                    memberAccountId: creatorAccountId,
+                    parentType: 'account',
+                    parentAccountId: account.id,
+                    details: {
+                        legacy_parent_application_id: 'neup.account',
+                    },
+                },
+                select: { id: true },
+            });
+
+            await tx.role.create({
+                data: {
+                    memberId: brandOwnerMember.id,
+                    accountId: account.id,
                     roleId: BRAND_OWNER_ROLE_ID,
-                    appId: 'neup.account',
+                    roleName: 'brand.owner',
+                    details: {
+                        legacy_parent_application_id: 'neup.account',
+                    },
                 },
             });
 

@@ -36,6 +36,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Loader2, Check } from "@/components/icons";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -609,7 +610,7 @@ function ContactStep() {
                 <FormField control={form.control} name="phone" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Phone Number</FormLabel>
-                        <FormControl><Input type="tel" {...field} /></FormControl>
+                        <FormControl><PhoneInput {...field} value={field.value ?? ""} /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />

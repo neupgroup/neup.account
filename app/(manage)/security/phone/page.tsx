@@ -17,7 +17,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -26,6 +25,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Loader2, Plus, Trash2 } from "@/components/icons";
 import { BackButton } from "@/components/ui/back-button";
@@ -117,7 +117,7 @@ export default function RecoveryPhonePage() {
                                             <FormItem className="flex-grow">
                                                 <FormLabel className="sr-only">Phone Number</FormLabel>
                                                 <FormControl>
-                                                    <Input type="tel" placeholder="Enter new recovery phone" {...field} />
+                                                    <PhoneInput placeholder="Enter new recovery phone" {...field} value={field.value ?? ""} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>

@@ -18,6 +18,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { PhoneInput } from "@/components/ui/phone-input"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -382,8 +383,8 @@ export function IndividualProfileForm({ accountId }: { accountId: string }) {
                     <CardHeader><CardTitle>Contact Information</CardTitle></CardHeader>
                     <CardContent className="space-y-6">
                         <div className="grid md:grid-cols-2 gap-6">
-                             <FormField control={form.control} name="primaryPhone" render={({ field }) => ( <FormItem><FormLabel>Primary Phone</FormLabel><FormControl><Input value={field.value ?? ''} onChange={field.onChange} /></FormControl><FormMessage /></FormItem> )} />
-                             <FormField control={form.control} name="secondaryPhone" render={({ field }) => ( <FormItem><FormLabel>Secondary Phone</FormLabel><FormControl><Input value={field.value ?? ''} onChange={field.onChange} /></FormControl><FormMessage /></FormItem> )} />
+                             <FormField control={form.control} name="primaryPhone" render={({ field }) => ( <FormItem><FormLabel>Primary Phone</FormLabel><FormControl><PhoneInput value={field.value ?? ''} onChange={field.onChange} /></FormControl><FormMessage /></FormItem> )} />
+                             <FormField control={form.control} name="secondaryPhone" render={({ field }) => ( <FormItem><FormLabel>Secondary Phone</FormLabel><FormControl><PhoneInput value={field.value ?? ''} onChange={field.onChange} /></FormControl><FormMessage /></FormItem> )} />
                         </div>
                         <div className="grid md:grid-cols-2 gap-6">
                             <FormField control={form.control} name="permanentLocation" render={({ field }) => ( <FormItem><FormLabel>Permanent Location</FormLabel><FormControl><Input value={field.value ?? ''} onChange={field.onChange} /></FormControl><FormMessage /></FormItem> )} />

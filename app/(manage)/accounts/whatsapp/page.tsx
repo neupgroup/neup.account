@@ -27,6 +27,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Loader2, MessageSquareText, Link2 } from "@/components/icons";
 import { cn } from "@/core/helpers/utils";
 import { BackButton } from "@/components/ui/back-button";
@@ -108,12 +109,12 @@ export default function LinkWhatsAppPage() {
                                                 <FormLabel>WhatsApp Number</FormLabel>
                                                 <div className="relative">
                                                     <FormControl>
-                                                        <Input 
+                                                        <PhoneInput
                                                             {...field}
-                                                            type="tel" 
                                                             placeholder="e.g. +1234567890" 
                                                             className={cn("pr-28", form.formState.errors.whatsappNumber && "border-destructive focus-visible:ring-destructive")}
                                                             aria-invalid={!!form.formState.errors.whatsappNumber}
+                                                            value={field.value ?? ""}
                                                         />
                                                     </FormControl>
                                                     <Button type="submit" className="absolute right-1 top-1/2 h-8 -translate-y-1/2 w-24" disabled={isSubmitting}>

@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { PhoneInput } from "@/components/ui/phone-input"
 import { useSession } from '@/core/providers/session'
 import { BackButton } from '@/components/ui/back-button'
 import { Separator } from '@/components/ui/separator'
@@ -102,9 +103,9 @@ export default function ContactPage() {
                         <CardContent className="space-y-6">
                             <div className="space-y-2">
                                 <FormLabel>Phone</FormLabel>
-                                <FormField control={form.control} name="primaryPhone" render={({ field }) => ( <FormItem className="space-y-0"><FormControl><Input placeholder="Primary Phone" value={field.value ?? ''} onChange={field.onChange} className="border-b rounded-none border-x-0 border-t-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-1" /></FormControl><FormMessage /></FormItem> )} />
+                                <FormField control={form.control} name="primaryPhone" render={({ field }) => ( <FormItem className="space-y-0"><FormControl><PhoneInput placeholder="Primary Phone" value={field.value ?? ''} onChange={field.onChange} className="border-b rounded-none border-x-0 border-t-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-1" /></FormControl><FormMessage /></FormItem> )} />
                                 {!!watchPrimaryPhone && (
-                                    <FormField control={form.control} name="secondaryPhone" render={({ field }) => ( <FormItem className="space-y-0"><FormControl><Input placeholder="Secondary Phone" value={field.value ?? ''} onChange={field.onChange} className="border-b rounded-none border-x-0 border-t-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-1" /></FormControl><FormMessage /></FormItem> )} />
+                                    <FormField control={form.control} name="secondaryPhone" render={({ field }) => ( <FormItem className="space-y-0"><FormControl><PhoneInput placeholder="Secondary Phone" value={field.value ?? ''} onChange={field.onChange} className="border-b rounded-none border-x-0 border-t-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-1" /></FormControl><FormMessage /></FormItem> )} />
                                 )}
                             </div>
                             

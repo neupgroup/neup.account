@@ -59,7 +59,7 @@ export function DashboardNav() {
         if (isManaging) {
             config.push({ title: title || "Brand", items: [
                 { href: "/home", label: "Dashboard", description: "Your central account management hub." },
-                { href: "/profile", label: "Brand Info", description: "Manage brand profile." },
+                { href: "/profile", label: "Profile", description: "Manage profile details." },
                 { href: "/accounts/branches", label: "Branches", description: "Manage brand branches." },
             ]});
             config.push({ title: "Account", items: visibleAccountNav });

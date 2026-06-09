@@ -247,6 +247,76 @@ export async function getAccountPermission(
   }
 }
 
+// Resolves permissions granted by a personal/member account to a selected/managed account.
+// This is used when the personal account is viewing or managing another account in context.
+export async function getGrantedAccountPermission(
+  memberAccountId: string,
+  parentAccountId: string,
+): Promise<string[]> {
+  if (!memberAccountId || !parentAccountId) return [];
+
+  try {
+    const roleRows = await prisma.role.findMany({
+      where: {
+        member: {
+          memberAccountId,
+          parentType: 'account',
+          parentAccountId,
+        },
+        authzRole: {
+          appId: 'neup.account',
+        },
+      },
+      select: {
+        permissions: true,
+        authzRole: {
+          select: {
+            id: true,
+            permissions: true,
+          },
+        },
+      },
+    });
+
+    if (!roleRows.length) {
+      return [];
+    }
+
+    const readPermissionStrings = (value: unknown): string[] => {
+      if (!Array.isArray(value)) return [];
+      return value.filter((item): item is string => typeof item === 'string');
+    };
+
+    const permissions = roleRows.flatMap((row) => [
+      ...readPermissionStrings(row.permissions),
+      ...readPermissionStrings(row.authzRole.permissions),
+    ]);
+
+    return Array.from(new Set(permissions));
+  } catch (error) {
+    await logError(
+      "database",
+      error,
+      `getGrantedAccountPermission — grant/permission query failed for ${memberAccountId}:${parentAccountId}`,
+    );
+    return [];
+  }
+}
+
+// Returns true when a member account has all required permissions granted on a selected account.
+export async function checkGrantedPermissions(
+  requiredPermissions: string[],
+  memberAccountId: string,
+  parentAccountId: string,
+): Promise<boolean> {
+  if (!requiredPermissions || requiredPermissions.length === 0) return true;
+
+  const userPermissions = await getGrantedAccountPermission(memberAccountId, parentAccountId);
+  const permissionsSet = new Set(userPermissions);
+
+  return requiredPermissions.every((p) => permissionsSet.has(p));
+}
+
 // Returns true if the active account has all of the required permissions.
 export async function checkPermissions(
   requiredPermissions: string[],

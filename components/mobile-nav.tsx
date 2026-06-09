@@ -53,6 +53,7 @@ const iconMap: { [key: string]: LucideIcon | React.ElementType } = {
     "SystemErrors": AlertTriangle,
     "PaymentDetails": Wallet,
     "BrandInfo": UserCircle,
+    Profile: UserCircle,
 };
 
 export function MobileNav() {
@@ -103,7 +104,7 @@ export function MobileNav() {
         if (isManaging) {
             config.push({ title: profile?.nameDisplay || "Brand", items: [
                 { href: "/home", label: "Dashboard", description: "Your central account management hub.", icon: Home },
-                { href: "/profile", label: "Brand Info", description: "Manage brand profile.", icon: iconMap['BrandInfo'] },
+                { href: "/profile", label: "Profile", description: "Manage profile details.", icon: iconMap['Profile'] },
                 { href: "/accounts/branches", label: "Branches", description: "Manage brand branches.", icon: iconMap['LinkedAccounts'] },
             ]});
              config.push({ title: "Account", items: visibleAccountNav });

@@ -9,6 +9,7 @@ import { getActiveAccountId } from '@/core/auth/verify';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
+import prisma from '@/core/helpers/prisma';
 
 type LogType = 'ai' | 'database' | 'validation' | 'auth' | 'unknown' | 'webhook';
 type ReportType = 'auto' | 'submitted';
@@ -70,5 +71,31 @@ export async function logError(
     } catch (fileError) {
         // eslint-disable-next-line no-console
         console.error("CRITICAL: Could not write to error log file.", fileError);
+    }
+}
+
+/**
+ * Writes a lightweight system error record to the database.
+ * Used for permission denial/debug logging when we want a persisted trace.
+ */
+export async function logSystemError(
+    message: string,
+    context: string = 'No context',
+) {
+    const ip = (await headers()).get('x-forwarded-for') || 'Unknown IP';
+    const accountId = await getActiveAccountId();
+
+    try {
+        await prisma.systemError.create({
+            data: {
+                message,
+                context,
+                accountId,
+                ipAddress: ip,
+            },
+        });
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("CRITICAL: Could not write system error record.", error);
     }
 }

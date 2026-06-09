@@ -176,10 +176,18 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
         const beforeSnapshot = await prisma.account.findUnique({
             where: { id: accountId },
             select: {
+                details: true,
                 displayName: true,
                 displayImage: true,
                 individualProfile: {
-                    select: { dateOfBirth: true },
+                    select: {
+                        dateOfBirth: true,
+                        firstName: true,
+                        middleName: true,
+                        lastName: true,
+                        details: true,
+                        countryOfResidence: true,
+                    },
                 },
                 neupIds: {
                     where: { isPrimary: true },
@@ -188,6 +196,15 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
                 },
             },
         });
+
+        const currentAccountDetails =
+            beforeSnapshot?.details && typeof beforeSnapshot.details === 'object'
+                ? { ...(beforeSnapshot.details as Record<string, unknown>) }
+                : {};
+        const currentIndividualDetails =
+            beforeSnapshot?.individualProfile?.details && typeof beforeSnapshot.individualProfile.details === 'object'
+                ? { ...(beforeSnapshot.individualProfile.details as Record<string, unknown>) }
+                : {};
 
         if (data.gender !== undefined) changedFields.add('gender');
         if (data.dateBirth !== undefined) changedFields.add('dateOfBirth');
@@ -199,29 +216,54 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
 
             if (canModifyProfile) {
                 const accountData: Record<string, any> = {};
-                const validAccountFields = ['nameFirst', 'nameMiddle', 'nameLast', 'gender', 'customGender', 'dateBirth', 'nameDisplay', 'accountPhoto'];
-                for(const key of validAccountFields) {
-                    if(data[key] !== undefined) {
-                        accountData[key] = data[key];
-                    }
+                const individualProfileData: Record<string, any> = {};
+                const nextAccountDetails = { ...currentAccountDetails };
+                const nextIndividualDetails = { ...currentIndividualDetails };
+
+                if (data.gender !== undefined) {
+                    nextAccountDetails.gender = data.gender;
+                }
+                if (data.customGender !== undefined) {
+                    nextAccountDetails.customGender = data.customGender?.trim() ? data.customGender.trim() : null;
+                }
+                if (data.isMinor !== undefined) {
+                    nextAccountDetails.isMinor = data.isMinor;
+                }
+
+                if (data.nameFirst !== undefined) {
+                    individualProfileData.firstName = data.nameFirst;
+                }
+                if (data.nameMiddle !== undefined) {
+                    individualProfileData.middleName = data.nameMiddle;
+                }
+                if (data.nameLast !== undefined) {
+                    individualProfileData.lastName = data.nameLast;
+                }
+                if (data.dateBirth !== undefined) {
+                    individualProfileData.dateOfBirth = data.dateBirth;
+                }
+                if (data.nationality !== undefined) {
+                    individualProfileData.countryOfResidence = data.nationality;
+                }
+
+                if (Object.keys(nextAccountDetails).length > 0) {
+                    accountData.details = nextAccountDetails;
+                }
+                if (Object.keys(nextIndividualDetails).length > 0) {
+                    individualProfileData.details = nextIndividualDetails;
                 }
 
                 const hasNameChange = ['nameFirst', 'nameMiddle', 'nameLast'].some(key => data[key] !== undefined);
                 if (hasNameChange) {
-                    const currentProfile = await getUserProfile(accountId);
-                    const newFirstName = data.nameFirst ?? currentProfile?.nameFirst;
-                    const newMiddleName = data.nameMiddle ?? currentProfile?.nameMiddle;
-                    const newLastName = data.nameLast ?? currentProfile?.nameLast;
+                    const newFirstName = data.nameFirst ?? beforeSnapshot?.individualProfile?.firstName;
+                    const newMiddleName = data.nameMiddle ?? beforeSnapshot?.individualProfile?.middleName;
+                    const newLastName = data.nameLast ?? beforeSnapshot?.individualProfile?.lastName;
                     
                     let defaultDisplayName = `${newFirstName || ''} ${newLastName || ''}`.trim();
                     if (newMiddleName) {
                         defaultDisplayName = `${newFirstName || ''} ${newMiddleName} ${newLastName || ''}`.trim();
                     }
                     accountData.displayName = defaultDisplayName;
-                }
-
-                if (accountData.dateBirth instanceof Date) {
-                  accountData.dateBirth = accountData.dateBirth;
                 }
                 
                 if (data.customDisplayNameRequest) {
@@ -240,25 +282,32 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
                             data: { requestedDisplayName: data.customDisplayNameRequest, requestor: requesterId } as any,
                             expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
                         }
-                     });
+                    });
                     await logActivity(accountId, `Requested Custom Display Name: ${data.customDisplayNameRequest}`, 'Pending', undefined, geolocation);
                     delete accountData.displayName;
-                    delete accountData.nameDisplay;
                 }
 
-                if(Object.keys(accountData).length > 0) {
-                    if (typeof accountData.nameDisplay === 'string') {
-                        accountData.displayName = accountData.nameDisplay;
-                        delete accountData.nameDisplay;
-                    }
-                    if (typeof accountData.accountPhoto === 'string') {
-                        accountData.displayImage = accountData.accountPhoto.trim() || null;
-                        delete accountData.accountPhoto;
-                    }
+                if (typeof data.nameDisplay === 'string' && !data.customDisplayNameRequest) {
+                    accountData.displayName = data.nameDisplay;
+                }
+                if (typeof data.accountPhoto === 'string') {
+                    accountData.displayImage = data.accountPhoto.trim() || null;
+                }
 
+                const updateData: Record<string, any> = { ...accountData };
+                if (Object.keys(individualProfileData).length > 0) {
+                    updateData.individualProfile = {
+                        upsert: {
+                            create: individualProfileData,
+                            update: individualProfileData,
+                        },
+                    };
+                }
+
+                if (Object.keys(updateData).length > 0) {
                     await tx.account.update({
                         where: { id: accountId },
-                        data: accountData
+                        data: updateData,
                     });
 
                     if (typeof accountData.displayImage === 'string' && accountData.displayImage.trim().length > 0 && actorAccountId) {
@@ -482,28 +531,69 @@ export async function updateBrandProfile(accountId: string, data: z.infer<typeof
     try {
         const beforeAccount = await prisma.account.findUnique({
             where: { id: accountId },
-            select: { details: true },
+            select: {
+                displayName: true,
+                displayImage: true,
+                brandProfile: {
+                    select: {
+                        isLegalEntity: true,
+                        originCountry: true,
+                        details: true,
+                    },
+                },
+            },
         });
         const beforeDetails =
-            beforeAccount?.details && typeof beforeAccount.details === "object"
-                ? (beforeAccount.details as Record<string, unknown>)
+            beforeAccount?.brandProfile?.details && typeof beforeAccount.brandProfile.details === "object"
+                ? (beforeAccount.brandProfile.details as Record<string, unknown>)
                 : {};
         const beforeLegalName = typeof beforeDetails.nameLegal === "string" ? beforeDetails.nameLegal : "";
 
-        const allowed: Record<string, any> = {
-            displayName: validation.data.nameDisplay,
-            accountPhoto: validation.data.accountPhoto || undefined,
-            isLegalEntity: validation.data.isLegalEntity,
-            nameLegal: validation.data.nameLegal || undefined,
-            registrationId: validation.data.registrationId || undefined,
-            countryOfOrigin: validation.data.countryOfOrigin || undefined,
-            dateEstablished: validation.data.dateEstablished || undefined,
-        };
+        const accountData: Record<string, any> = {};
+        const brandProfileData: Record<string, any> = {};
+        const nextBrandDetails = { ...beforeDetails };
 
-        await prisma.account.update({
-            where: { id: accountId },
-            data: allowed
-        });
+        if (validation.data.nameDisplay !== undefined) {
+            accountData.displayName = validation.data.nameDisplay;
+        }
+        if (validation.data.accountPhoto !== undefined) {
+            accountData.displayImage = validation.data.accountPhoto.trim() || null;
+        }
+        if (validation.data.isLegalEntity !== undefined) {
+            brandProfileData.isLegalEntity = validation.data.isLegalEntity;
+        }
+        if (validation.data.nameLegal !== undefined) {
+            nextBrandDetails.nameLegal = validation.data.nameLegal.trim() || null;
+        }
+        if (validation.data.registrationId !== undefined) {
+            nextBrandDetails.registrationId = validation.data.registrationId.trim() || null;
+        }
+        if (validation.data.countryOfOrigin !== undefined) {
+            brandProfileData.originCountry = validation.data.countryOfOrigin.trim() || null;
+        }
+        if (validation.data.dateEstablished !== undefined) {
+            nextBrandDetails.dateEstablished = validation.data.dateEstablished.toISOString();
+        }
+        if (Object.keys(nextBrandDetails).length > 0) {
+            brandProfileData.details = nextBrandDetails;
+        }
+
+        const updateData: Record<string, any> = { ...accountData };
+        if (Object.keys(brandProfileData).length > 0) {
+            updateData.brandProfile = {
+                upsert: {
+                    create: brandProfileData,
+                    update: brandProfileData,
+                },
+            };
+        }
+
+        if (Object.keys(updateData).length > 0) {
+            await prisma.account.update({
+                where: { id: accountId },
+                data: updateData,
+            });
+        }
 
         const afterLegalName = (validation.data.nameLegal || "").trim();
         if (beforeLegalName.trim() !== afterLegalName) {

@@ -81,7 +81,7 @@ model AccountTypeIndividual {
   roleId             String?   @map("roleId")
   account            Account   @relation(fields: [accountId], references: [id], onDelete: Cascade, map: "account_type__individual_accountId_fkey")
 
-  @@map("account_meta__individual")
+  @@map("account_individual")
 }
 
 model AccountTypeBrand {
@@ -92,7 +92,7 @@ model AccountTypeBrand {
   details       Json?
   account       Account @relation(fields: [accountId], references: [id], onDelete: Cascade, map: "account_type__brand_accountId_fkey")
 
-  @@map("account_meta__brand")
+  @@map("account_brand")
 }
 
 model SystemConfig {

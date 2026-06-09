@@ -66,6 +66,11 @@ export async function getUserProfile(
     });
 
     if (account) {
+      const brandDetails =
+        account.brandProfile?.details && typeof account.brandProfile.details === 'object'
+          ? (account.brandProfile.details as Record<string, unknown>)
+          : {};
+
       const serializedData: UserProfile = {
         nameFirst: account.individualProfile?.firstName || undefined,
         nameMiddle: account.individualProfile?.middleName || undefined,
@@ -79,7 +84,17 @@ export async function getUserProfile(
         dateCreated: account.createdAt?.toISOString() || undefined,
         nationality: account.individualProfile?.countryOfResidence || undefined,
         isLegalEntity: account.brandProfile?.isLegalEntity || undefined,
+        nameLegal:
+          typeof brandDetails.nameLegal === 'string' ? brandDetails.nameLegal : undefined,
+        registrationId:
+          typeof brandDetails.registrationId === 'string' ? brandDetails.registrationId : undefined,
         countryOfOrigin: account.brandProfile?.originCountry || undefined,
+        dateEstablished:
+          typeof brandDetails.dateEstablished === 'string'
+            ? brandDetails.dateEstablished
+            : account.brandProfile
+              ? account.createdAt.toISOString()
+              : undefined,
         verified: account.isVerified || undefined,
         accountType: account.accountType || undefined,
         permit: "default",

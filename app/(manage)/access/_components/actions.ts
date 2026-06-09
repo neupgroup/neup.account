@@ -261,7 +261,7 @@ export async function removeDirectMember(
 
     await logActivity(accessTo, `Removed all direct access for ${memberAccountId}`, 'Success');
     revalidatePath('/access');
-    revalidatePath('/access/member');
+    revalidatePath('/access/team');
     return { success: true };
   } catch (error) {
     await logError('database', error, `removeDirectMember:${memberAccountId}`);
@@ -289,7 +289,7 @@ export async function cancelDirectInvitation(
     });
 
     revalidatePath('/access');
-    revalidatePath('/access/member');
+    revalidatePath('/access/team');
     return { success: true };
   } catch (error) {
     await logError('database', error, `cancelDirectInvitation:${recipientAccountId}`);
@@ -347,7 +347,7 @@ export async function cancelPortfolioInvitation(
     }
 
     revalidatePath('/access');
-    revalidatePath(`/access/member?portfolio=${parentPortfolioId}`);
+    revalidatePath(`/access/team?portfolio=${parentPortfolioId}`);
     revalidatePath(`/access/role?portfolio=${parentPortfolioId}&member_id=${recipientAccountId}`);
     return { success: true };
   } catch (error) {
@@ -446,7 +446,7 @@ export async function inviteDirectMember(
     });
 
     revalidatePath('/access');
-    revalidatePath('/access/member');
+    revalidatePath('/access/team');
     revalidatePath(`/access/role?member_id=${recipientAccountId}`);
     return { success: true };
   } catch (error) {
@@ -561,7 +561,7 @@ export async function assignOrInviteAssetMember(input: {
       }
 
       revalidatePath('/access');
-      revalidatePath(`/access/member?asset=${encodeURIComponent(asset.assetId)}&mode=root`);
+      revalidatePath(`/access/team?asset=${encodeURIComponent(asset.assetId)}&mode=root`);
       revalidatePath(`/access/asset?asset=${encodeURIComponent(asset.assetId)}&mode=root`);
       return { success: true, mode: 'assigned' };
     }
@@ -601,7 +601,7 @@ export async function assignOrInviteAssetMember(input: {
     });
 
     revalidatePath('/access');
-    revalidatePath(`/access/member?asset=${encodeURIComponent(asset.assetId)}`);
+      revalidatePath(`/access/team?asset=${encodeURIComponent(asset.assetId)}`);
     revalidatePath(`/access/asset?asset=${encodeURIComponent(asset.assetId)}`);
     return { success: true, mode: 'invited' };
   } catch (error) {

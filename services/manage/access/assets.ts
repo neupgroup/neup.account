@@ -289,7 +289,7 @@ export async function addAssetGroupMember(input: {
     });
 
     revalidatePath('/access');
-    revalidatePath(`/access/member?portfolio=${input.groupId}`);
+    revalidatePath(`/access/team?portfolio=${input.groupId}`);
     revalidatePath(`/access/role?portfolio=${input.groupId}&member_id=${normalizedMemberId}`);
     return { success: true };
   } catch (error) {
@@ -385,7 +385,7 @@ export async function updatePortfolioMemberFlags(input: {
     });
 
     revalidatePath('/access');
-    revalidatePath(`/access/member?portfolio=${input.groupId}`);
+    revalidatePath(`/access/team?portfolio=${input.groupId}`);
     revalidatePath(`/access/role?portfolio=${input.groupId}&member_id=${member.accountId}`);
     return { success: true };
   } catch (error) {
@@ -770,7 +770,7 @@ export async function removeAssetGroupMember(input: {
     if (member.status === 'invited') {
       await prisma.member.delete({ where: { id: member.id } });
       revalidatePath('/access');
-      revalidatePath(`/access/member?portfolio=${input.groupId}`);
+      revalidatePath(`/access/team?portfolio=${input.groupId}`);
       revalidatePath(`/access/role?portfolio=${input.groupId}&member_id=${member.accountId}`);
       return { success: true };
     }

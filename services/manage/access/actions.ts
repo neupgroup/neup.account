@@ -24,7 +24,7 @@ export async function addMemberToAssetGroupFromForm(groupId: string, formData: F
     member: String(formData.get('member') || ''),
   });
 
-  redirect(`/access/member?portfolio=${groupId}`);
+  redirect(`/access/team?portfolio=${groupId}`);
 }
 
 
@@ -37,7 +37,7 @@ export async function removeMemberFromAssetGroupFromForm(groupId: string, formDa
     memberId: String(formData.get('memberId') || ''),
   });
 
-  redirect(`/access/member?portfolio=${groupId}`);
+  redirect(`/access/team?portfolio=${groupId}`);
 }
 
 

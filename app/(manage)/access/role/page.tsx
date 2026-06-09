@@ -346,7 +346,7 @@ async function MemberDirectRolesView({ memberAccountId }: { memberAccountId: str
 
   return (
     <div className="grid gap-6">
-      <BackButton href="/access/member" />
+      <BackButton href="/access/team" />
 
       <PageHeader
         photo={userPhoto}
@@ -400,7 +400,7 @@ async function MemberDirectRolesView({ memberAccountId }: { memberAccountId: str
               displayName={detail.displayName}
               confirmDescription={`This will send an access invitation to ${detail.displayName}. They will be able to accept or decline it.`}
               action={inviteDirectMember.bind(null, memberAccountId)}
-              redirectTo="/access/member"
+              redirectTo="/access/team"
             />
           ) : isPendingInvitation ? (
             <RemoveMemberButton
@@ -408,7 +408,7 @@ async function MemberDirectRolesView({ memberAccountId }: { memberAccountId: str
               confirmTitle="Cancel invitation?"
               confirmDescription={`This will cancel the pending access invitation sent to ${detail.displayName}. They will no longer be able to accept it.`}
               action={cancelDirectInvitation.bind(null, memberAccountId)}
-              redirectTo="/access/member"
+              redirectTo="/access/team"
               variant="outline"
             />
           ) : (
@@ -417,7 +417,7 @@ async function MemberDirectRolesView({ memberAccountId }: { memberAccountId: str
               confirmTitle="Remove all access?"
               confirmDescription={`This will remove all roles ${detail.displayName} holds on your account. This cannot be undone.`}
               action={removeDirectMember.bind(null, memberAccountId)}
-              redirectTo="/access/member"
+              redirectTo="/access/team"
             />
           )}
         </div>
@@ -459,7 +459,7 @@ async function MemberPortfolioRolesView({
   if (!detail) {
     return (
       <div className="grid gap-6">
-        <BackButton href={`/access/member?portfolio=${parentPortfolioId}`} />
+        <BackButton href={`/access/team?portfolio=${parentPortfolioId}`} />
 
         <PageHeader
           photo={userPhoto}
@@ -498,7 +498,7 @@ async function MemberPortfolioRolesView({
 
     return (
       <div className="grid gap-6">
-        <BackButton href={`/access/member?portfolio=${parentPortfolioId}`} />
+        <BackButton href={`/access/team?portfolio=${parentPortfolioId}`} />
 
         <PageHeader
           photo={userPhoto}
@@ -582,7 +582,7 @@ async function MemberPortfolioRolesView({
 
   return (
     <div className="grid gap-6">
-      <BackButton href={`/access/member?portfolio=${parentPortfolioId}`} />
+      <BackButton href={`/access/team?portfolio=${parentPortfolioId}`} />
 
       <PageHeader
         photo={userPhoto}
@@ -635,7 +635,7 @@ async function MemberPortfolioRolesView({
                 : `This will remove ${displayName} from portfolio "${detail.portfolioName}" and revoke all their asset roles within it.`
             }
             action={removePortfolioMember.bind(null, parentPortfolioId, memberAccountId)}
-            redirectTo={isSelfView ? '/access' : `/access/member?portfolio=${parentPortfolioId}`}
+            redirectTo={isSelfView ? '/access' : `/access/team?portfolio=${parentPortfolioId}`}
           />
         </div>
       )}

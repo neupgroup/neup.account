@@ -31,6 +31,7 @@ export type AccessGroupViewProps = {
   description?: string;
   membersHref: string;
   accountsHref: string;
+  connectionsHref: string;
   applicationsHref: string;
   /** href for the back button — omit to hide (root /access page) */
   backHref?: string;
@@ -45,6 +46,7 @@ export function AccessGroupView({
   description,
   membersHref,
   accountsHref,
+  connectionsHref,
   applicationsHref,
   backHref,
   children,
@@ -71,7 +73,7 @@ export function AccessGroupView({
             >
               <Users className="h-5 w-5 text-muted-foreground flex-shrink-0" />
               <div className="flex-grow min-w-0">
-                <p className="font-medium text-foreground">Members</p>
+                <p className="font-medium text-foreground">Team</p>
                 <p className="text-sm text-muted-foreground">See people who have access to this profile.</p>
               </div>
               <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
@@ -92,7 +94,7 @@ export function AccessGroupView({
 
             {/* Applications */}
             <FlowLink
-              href={applicationsHref}
+              href={connectionsHref}
               className="flex items-center gap-4 py-4 px-4 hover:bg-muted/50 transition-colors"
             >
               <AppWindow className="h-5 w-5 text-muted-foreground flex-shrink-0" />

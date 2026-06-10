@@ -102,7 +102,7 @@ async function main() {
       [APP_ID],
     );
 
-    // 3) Normalize existing permissions arrays (string-only, distinct, sorted).
+    // 3) Normalize existing permissions arrays to permission-name strings only.
     await pool.query(
       `
       UPDATE authz_role r
@@ -113,7 +113,6 @@ async function main() {
             SELECT DISTINCT
               CASE
                 WHEN jsonb_typeof(elem) = 'object' AND elem ? 'name' THEN elem->>'name'
-                WHEN jsonb_typeof(elem) = 'string' AND (elem #>> '{}') LIKE '{%' THEN COALESCE(((elem #>> '{}')::jsonb)->>'name', elem #>> '{}')
                 WHEN jsonb_typeof(elem) = 'string' THEN elem #>> '{}'
                 ELSE NULL
               END AS value

@@ -74,18 +74,24 @@ async function syncRolePermissionsDenormalized(tx: any, roleId: string): Promise
   });
 
   const permissions = mappedPermissions
-    .map((row: { permission: { id: string; name: string; description: string | null; scope: string | null } }) => row.permission)
-    .map((permission: { id: string; name: string; description: string | null; scope: string | null }) => ({
-    id: permission.id,
-    name: permission.name,
-    description: permission.description ?? null,
-    scope: permission.scope ?? null,
-  }));
+    .map((row: { permission: { name: string } }) => row.permission?.name)
+    .filter((name): name is string => typeof name === 'string' && name.length > 0);
 
   await tx.authzRole.update({
     where: { id: roleId },
     data: { permissions },
   });
+}
+
+async function syncAllRolePermissionsDenormalized(tx: any, appId: string): Promise<void> {
+  const roles = await tx.authzRole.findMany({
+    where: { appId },
+    select: { id: true },
+  });
+
+  for (const role of roles) {
+    await syncRolePermissionsDenormalized(tx, role.id);
+  }
 }
 
 async function ensureApplicationManagementRoles(): Promise<void> {
@@ -251,14 +257,19 @@ export async function updateAppPermission(input: {
   }
 
   try {
-    const record = await prisma.authzPermission.update({
-      where: { id: input.permissionId },
-      data: {
-        name,
-        description: input.description?.trim() || null,
-        scope: input.scope?.trim() || null,
-      },
-      select: { id: true, name: true, description: true, scope: true },
+    const record = await prisma.$transaction(async (tx) => {
+      const updated = await tx.authzPermission.update({
+        where: { id: input.permissionId },
+        data: {
+          name,
+          description: input.description?.trim() || null,
+          scope: input.scope?.trim() || null,
+        },
+        select: { id: true, name: true, description: true, scope: true },
+      });
+
+      await syncAllRolePermissionsDenormalized(tx, input.appId);
+      return updated;
     });
 
     revalidatePath(`/data/appconnection/${input.appId}`);
@@ -277,7 +288,10 @@ export async function deleteAppPermission(input: {
   if ('error' in auth) return { success: false, error: auth.error };
 
   try {
-    await prisma.authzPermission.delete({ where: { id: input.permissionId } });
+    await prisma.$transaction(async (tx) => {
+      await tx.authzPermission.delete({ where: { id: input.permissionId } });
+      await syncAllRolePermissionsDenormalized(tx, input.appId);
+    });
     revalidatePath(`/data/appconnection/${input.appId}`);
     return { success: true };
   } catch (error) {

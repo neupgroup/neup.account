@@ -431,7 +431,7 @@ export async function createManagedApplication(input: { name: string }) {
       await tx.authzRole.update({
         where: { id: 'application.owner' },
         data: {
-          permissions: permissions.map((cap) => ({ id: cap.id, name: cap.name, description: cap.description ?? null, scope: 'application' })),
+          permissions: permissions.map((cap) => cap.name),
         },
       });
       const createdApp = await tx.application.create({

@@ -50,12 +50,7 @@ export function RoleDetailEditor({ appId, role, permissions }: Props) {
       return haystack.includes(q);
     });
 
-    return filtered.sort((a, b) => {
-      const aSelected = selectedSet.has(a.id);
-      const bSelected = selectedSet.has(b.id);
-      if (aSelected !== bSelected) return aSelected ? -1 : 1;
-      return a.name.localeCompare(b.name);
-    });
+    return filtered.sort((a, b) => a.name.localeCompare(b.name));
   }, [permissions, search, selectedSet]);
 
   const selectedCount = permissionIds.length;

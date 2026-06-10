@@ -221,8 +221,8 @@ export async function createAppPermission(input: {
 
   const name = input.name.trim();
   if (!name) return { success: false, error: 'Permission name is required.' };
-  if (!/^[a-z0-9._-]+$/.test(name)) {
-    return { success: false, error: 'Permission name may only contain lowercase letters, numbers, dots (.), underscores (_), and hyphens (-).' };
+  if (!/^[a-zA-Z0-9._]+$/.test(name)) {
+    return { success: false, error: 'Permission name may only contain letters, numbers, dots (.), and underscores (_).' };
   }
 
   try {
@@ -256,8 +256,8 @@ export async function updateAppPermission(input: {
 
   const name = input.name.trim();
   if (!name) return { success: false, error: 'Permission name is required.' };
-  if (!/^[a-z0-9._-]+$/.test(name)) {
-    return { success: false, error: 'Permission name may only contain lowercase letters, numbers, dots (.), underscores (_), and hyphens (-).' };
+  if (!/^[a-zA-Z0-9._]+$/.test(name)) {
+    return { success: false, error: 'Permission name may only contain letters, numbers, dots (.), and underscores (_).' };
   }
 
   try {

@@ -59,7 +59,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   const [removeTarget, setRemoveTarget] = useState<AppPermission | null>(null);
   const [removePending, setRemovePending] = useState(false);
 
-  const isValidName = (value: string) => /^[a-z0-9._-]+$/.test(value.trim());
+  const isValidName = (value: string) => /^[a-zA-Z0-9._]+$/.test(value.trim());
 
   const openEdit = (cap: AppPermission) => {
     setEditTarget(cap);
@@ -82,7 +82,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
       toast({
         variant: 'destructive',
         title: 'Invalid name',
-        description: 'Permission name may only contain lowercase letters, numbers, dots (.), underscores (_), and hyphens (-).',
+        description: 'Permission name may only contain letters, numbers, dots (.), and underscores (_).',
       });
       return;
     }
@@ -114,7 +114,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
       toast({
         variant: 'destructive',
         title: 'Invalid name',
-        description: 'Permission name may only contain lowercase letters, numbers, dots (.), underscores (_), and hyphens (-).',
+        description: 'Permission name may only contain letters, numbers, dots (.), and underscores (_).',
       });
       return;
     }
@@ -221,8 +221,9 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
           <DialogHeader>
             <DialogTitle>New Permission</DialogTitle>
             <DialogDescription>
-              Use lowercase letters, numbers, dots, underscores, or hyphens — e.g.{' '}
-              <code className="rounded bg-muted px-1 py-0.5 text-xs">orders.read</code>.
+              Use letters, numbers, dots, or underscores — e.g.{' '}
+              <code className="rounded bg-muted px-1 py-0.5 text-xs">orders.read</code> or{' '}
+              <code className="rounded bg-muted px-1 py-0.5 text-xs">Orders_Read</code>.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">

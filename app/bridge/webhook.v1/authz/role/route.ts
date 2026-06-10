@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/core/helpers/prisma';
-import { Prisma } from '../../../../../prisma/generated/client/client';
 import { logError } from '@/core/helpers/logger';
 
 export const dynamic = 'force-dynamic';
@@ -20,6 +19,7 @@ function verifySecret(request: NextRequest): boolean {
 // ---------------------------------------------------------------------------
 
 type Table =
+  | 'authz_role_permission_map'
   | 'authz_role_capability'
   | 'authz_account_access_grant'
   | 'authz_assets_access_grant';
@@ -40,6 +40,7 @@ type WebhookBody = {
 };
 
 const VALID_TABLES: Table[] = [
+  'authz_role_permission_map',
   'authz_role_capability',
   'authz_account_access_grant',
   'authz_assets_access_grant',
@@ -66,11 +67,41 @@ function ok(data: Record<string, unknown>, status = 200) {
   return NextResponse.json(data, { status });
 }
 
-function parseRolePermissions(value: Prisma.JsonValue | null): Prisma.JsonObject[] {
-  if (!Array.isArray(value)) return [];
-  return value.filter(
-    (item): item is Prisma.JsonObject => Boolean(item) && typeof item === 'object' && !Array.isArray(item),
+async function syncRolePermissionSnapshots(tx: any, roleId: string): Promise<void> {
+  const mappedPermissions = await tx.authzRolePermissionMap.findMany({
+    where: { roleId },
+    select: {
+      permission: {
+        select: { name: true },
+      },
+    },
+    orderBy: { createdAt: 'asc' },
+  });
+
+  const permissions = Array.from(
+    new Set(
+      mappedPermissions
+        .map((row: { permission?: { name?: string } }) => row.permission?.name)
+        .filter((name: unknown): name is string => typeof name === 'string' && name.trim().length > 0),
+    ),
   );
+
+  await tx.authzRole.update({
+    where: { id: roleId },
+    data: { permissions },
+  });
+
+  await tx.role.updateMany({
+    where: { roleId },
+    data: { permissions },
+  });
+}
+
+async function syncAffectedRoleSnapshots(tx: any, roleIds: string[]): Promise<void> {
+  const uniqueRoleIds = Array.from(new Set(roleIds.filter((roleId) => typeof roleId === 'string' && roleId.length > 0)));
+  for (const roleId of uniqueRoleIds) {
+    await syncRolePermissionSnapshots(tx, roleId);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -81,53 +112,171 @@ async function handleRolePermission(operation: Operation, body: WebhookBody): Pr
   switch (operation) {
     case 'insert': {
       if (!body.data || Array.isArray(body.data)) return err('Missing required field: `data` (object).', 400);
-      const d = body.data;
+      const d = body.data as Record<string, any>;
       if (!d.roleId || !d.permissionId) return err('Missing required fields: `roleId`, `permissionId`.', 400);
       const role = await prisma.authzRole.findUnique({
         where: { id: d.roleId as string },
-        select: { permissions: true },
+        select: { id: true },
       });
       if (!role) return err('Role not found.', 404);
 
+      const permission = await prisma.authzPermission.findUnique({
+        where: { id: d.permissionId as string },
+        select: { id: true },
+      });
+      if (!permission) return err('Permission not found.', 404);
+
       const id = crypto.randomUUID();
-      const permissions = parseRolePermissions(role.permissions);
-      permissions.push({
-        id,
-        permissionId: d.permissionId as string,
-        scope: (d.scope as string) ?? null,
-        denormalizedPermission: d.denormalizedPermission ?? null,
-        roleName: (d.roleName as string) ?? null,
+      await prisma.$transaction(async (tx) => {
+        await tx.authzRolePermissionMap.deleteMany({
+          where: {
+            roleId: d.roleId as string,
+            permissionId: d.permissionId as string,
+          },
+        });
+
+        await tx.authzRolePermissionMap.create({
+          data: {
+            id,
+            roleId: d.roleId as string,
+            permissionId: d.permissionId as string,
+          },
+        });
+
+        await syncRolePermissionSnapshots(tx, d.roleId as string);
       });
 
-      await prisma.authzRole.update({
-        where: { id: d.roleId as string },
-        data: { permissions: permissions as Prisma.InputJsonValue },
-      });
       return ok({ id }, 201);
     }
 
     case 'updateOne': {
-      // Legacy row-level updates are no longer supported after permissions
-      // were consolidated into authz_role.permissions JSON.
-      return ok({ ok: true, skipped: true });
+      if (typeof body.id !== 'string') return err('Missing required field: `id` (string).', 400);
+      if (!body.data || Array.isArray(body.data)) return err('Missing required field: `data` (object).', 400);
+      const d = body.data as Record<string, any>;
+
+      await prisma.$transaction(async (tx) => {
+        const existing = await tx.authzRolePermissionMap.findUnique({
+          where: { id: body.id as string },
+          select: { roleId: true, permissionId: true },
+        });
+        if (!existing) return;
+
+        const nextRoleId = typeof d.roleId === 'string' && d.roleId.trim() ? d.roleId.trim() : existing.roleId;
+        const nextPermissionId =
+          typeof d.permissionId === 'string' && d.permissionId.trim() ? d.permissionId.trim() : existing.permissionId;
+
+        if (nextRoleId !== existing.roleId || nextPermissionId !== existing.permissionId) {
+          await tx.authzRolePermissionMap.update({
+            where: { id: body.id as string },
+            data: {
+              roleId: nextRoleId,
+              permissionId: nextPermissionId,
+            },
+          });
+          await syncAffectedRoleSnapshots(tx, [existing.roleId, nextRoleId]);
+        }
+      });
+
+      return ok({ ok: true });
     }
 
     case 'update': {
-      return ok({ ok: true, skipped: true });
+      if (!Array.isArray(body.data)) return err('Missing required field: `data` (array).', 400);
+      const touchedRoles: string[] = [];
+
+      await prisma.$transaction(async (tx) => {
+        for (const item of body.data as Record<string, any>[]) {
+          if (!item || typeof item !== 'object' || Array.isArray(item)) continue;
+          const record = item as Record<string, unknown>;
+          const id = typeof record.id === 'string' ? record.id.trim() : '';
+          const roleId = typeof record.roleId === 'string' ? record.roleId.trim() : '';
+          const permissionId = typeof record.permissionId === 'string' ? record.permissionId.trim() : '';
+
+          if (id) {
+            const existing = await tx.authzRolePermissionMap.findUnique({
+              where: { id },
+              select: { roleId: true, permissionId: true },
+            });
+            if (!existing) continue;
+
+            const nextRoleId = roleId || existing.roleId;
+            const nextPermissionId = permissionId || existing.permissionId;
+            if (nextRoleId !== existing.roleId || nextPermissionId !== existing.permissionId) {
+              await tx.authzRolePermissionMap.update({
+                where: { id },
+                data: {
+                  ...(roleId ? { roleId } : {}),
+                  ...(permissionId ? { permissionId } : {}),
+                },
+              });
+              touchedRoles.push(existing.roleId, nextRoleId);
+            }
+            continue;
+          }
+
+          if (!roleId || !permissionId) continue;
+          await tx.authzRolePermissionMap.deleteMany({
+            where: { roleId, permissionId },
+          });
+          await tx.authzRolePermissionMap.create({
+            data: {
+              id: crypto.randomUUID(),
+              roleId,
+              permissionId,
+            },
+          });
+          touchedRoles.push(roleId);
+        }
+
+        await syncAffectedRoleSnapshots(tx, touchedRoles);
+      });
+
+      return ok({ ok: true });
     }
 
     case 'deleteOne': {
       if (typeof body.id !== 'string') return err('Missing required field: `id` (string).', 400);
-      return ok({ ok: true, skipped: true });
+      await prisma.$transaction(async (tx) => {
+        const existing = await tx.authzRolePermissionMap.findUnique({
+          where: { id: body.id as string },
+          select: { roleId: true },
+        });
+        if (!existing) return;
+        await tx.authzRolePermissionMap.delete({ where: { id: body.id as string } });
+        await syncRolePermissionSnapshots(tx, existing.roleId);
+      });
+      return ok({ ok: true });
     }
 
     case 'delete': {
       if (!Array.isArray(body.id)) return err('Missing required field: `id` (array of strings).', 400);
-      return ok({ ok: true, skipped: true, count: body.id.length });
+      await prisma.$transaction(async (tx) => {
+        const rows = await tx.authzRolePermissionMap.findMany({
+          where: { id: { in: body.id as string[] } },
+          select: { roleId: true },
+        });
+        if (rows.length === 0) return;
+        await tx.authzRolePermissionMap.deleteMany({
+          where: { id: { in: body.id as string[] } },
+        });
+        await syncAffectedRoleSnapshots(tx, rows.map((row) => row.roleId));
+      });
+      return ok({ ok: true, count: body.id.length });
     }
 
     case 'deleteAll': {
-      return ok({ ok: true, skipped: true });
+      await prisma.$transaction(async (tx) => {
+        const rows = await tx.authzRolePermissionMap.findMany({
+          select: { roleId: true },
+        });
+        if (rows.length === 0) {
+          await tx.authzRolePermissionMap.deleteMany();
+          return;
+        }
+        await tx.authzRolePermissionMap.deleteMany();
+        await syncAffectedRoleSnapshots(tx, rows.map((row) => row.roleId));
+      });
+      return ok({ ok: true, skipped: false });
     }
   }
 }
@@ -370,4 +519,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     await logError('webhook', error, `authz/role:${body.table}:${body.operation}`);
     return err('Database or service error.', 500);
   }
+
+  return err('Invalid table or operation.', 400);
 }

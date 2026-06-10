@@ -40,32 +40,85 @@ function extractPermissionNames(value: unknown): string[] {
 
 async function main() {
   const roles = await prisma.authzRole.findMany({
-    select: { id: true, name: true, permissions: true },
+    select: { id: true, name: true, appId: true, permissions: true },
     orderBy: { name: 'asc' },
   });
 
-  const updates: Array<{ id: string; name: string; before: number; after: number }> = [];
+  const updates: Array<{ id: string; name: string; mapCount: number; snapshotCount: number }> = [];
 
   for (const role of roles) {
-    const normalized = extractPermissionNames(role.permissions);
-    const currentSerialized = JSON.stringify(role.permissions ?? []);
-    const nextSerialized = JSON.stringify(normalized);
+    const [mapRows, legacyRows] = await Promise.all([
+      prisma.authzRolePermissionMap.findMany({
+        where: { roleId: role.id },
+        select: {
+          permission: {
+            select: { name: true },
+          },
+        },
+      }),
+      prisma.role.findMany({
+        where: { roleId: role.id },
+        select: { id: true, permissions: true },
+      }),
+    ]);
 
-    if (currentSerialized !== nextSerialized) {
-      await prisma.authzRole.update({
+    const permissionNames = Array.from(
+      new Set([
+        ...extractPermissionNames(role.permissions),
+        ...legacyRows.flatMap((row) => extractPermissionNames(row.permissions)),
+        ...mapRows
+          .map((row) => row.permission?.name)
+          .filter((name): name is string => typeof name === 'string' && name.trim().length > 0),
+      ]),
+    ).sort();
+
+    const appId = typeof role.appId === 'string' && role.appId.trim().length > 0 ? role.appId.trim() : null;
+    const resolvedPermissions = appId
+      ? await prisma.authzPermission.findMany({
+          where: {
+            appId,
+            name: { in: permissionNames },
+          },
+          select: { id: true, name: true },
+        })
+      : [];
+
+    const permissionIds = resolvedPermissions.map((permission) => permission.id);
+
+    await prisma.$transaction(async (tx) => {
+      if (appId) {
+        await tx.authzRolePermissionMap.deleteMany({ where: { roleId: role.id } });
+        if (permissionIds.length > 0) {
+          await tx.authzRolePermissionMap.createMany({
+            data: permissionIds.map((permissionId) => ({
+              roleId: role.id,
+              permissionId,
+            })),
+            skipDuplicates: true,
+          });
+        }
+      }
+
+      await tx.authzRole.update({
         where: { id: role.id },
-        data: { permissions: normalized },
+        data: { permissions: permissionNames },
       });
-      updates.push({
-        id: role.id,
-        name: role.name,
-        before: Array.isArray(role.permissions) ? role.permissions.length : 0,
-        after: normalized.length,
+
+      await tx.role.updateMany({
+        where: { roleId: role.id },
+        data: { permissions: permissionNames },
       });
-    }
+    });
+
+    updates.push({
+      id: role.id,
+      name: role.name,
+      mapCount: permissionIds.length,
+      snapshotCount: permissionNames.length,
+    });
   }
 
-  console.log(`Normalized ${updates.length} authz_role permission rows.`);
+  console.log(`Normalized ${updates.length} authz roles and legacy role rows.`);
   if (updates.length > 0) {
     console.table(updates);
   }

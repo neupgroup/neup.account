@@ -224,14 +224,31 @@ export async function getApplicationAccess(params: {
       roleDescription: g.authzRole?.description ?? null,
       roleScope: g.authzRole?.scope ?? null,
       permissions: Array.isArray(g.authzRole?.permissions)
-        ? g.authzRole.permissions
-            .filter((p): p is { id?: string; name?: string; scope?: string | null } => Boolean(p) && typeof p === 'object')
-            .map((p) => ({
-              permissionId: typeof p.id === 'string' ? p.id : null,
-              permissionName: typeof p.name === 'string' ? p.name : null,
-              permissionScope: typeof p.scope === 'string' ? p.scope : null,
-              denormalized: typeof p.name === 'string' ? [p.name] : null,
-            }))
+        ? g.authzRole.permissions.flatMap((p) => {
+            if (typeof p === 'string') {
+              const name = p.trim();
+              return name
+                ? [{
+                    permissionId: null,
+                    permissionName: name,
+                    permissionScope: g.authzRole?.scope ?? null,
+                    denormalized: [name],
+                  }]
+                : [];
+            }
+
+            if (!p || typeof p !== 'object' || Array.isArray(p)) return [];
+            const obj = p as { id?: string; name?: string; scope?: string | null };
+            const name = typeof obj.name === 'string' ? obj.name.trim() : '';
+            if (!name) return [];
+
+            return [{
+              permissionId: typeof obj.id === 'string' ? obj.id : null,
+              permissionName: name,
+              permissionScope: typeof obj.scope === 'string' ? obj.scope : null,
+              denormalized: [name],
+            }];
+          })
         : [],
       parentPortfolioId: g.member.parentPortfolioId,
     }));

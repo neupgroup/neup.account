@@ -62,23 +62,27 @@ async function syncRolePermissionsDenormalized(tx: any, roleId: string): Promise
     where: { roleId },
     select: {
       permission: {
-        select: {
-          id: true,
-          name: true,
-          description: true,
-          scope: true,
-        },
+        select: { name: true },
       },
     },
     orderBy: { createdAt: 'asc' },
   });
 
-  const permissions = mappedPermissions
-    .map((row: { permission: { name: string } }) => row.permission?.name)
-    .filter((name): name is string => typeof name === 'string' && name.length > 0);
+  const permissions = Array.from(
+    new Set(
+      mappedPermissions
+        .map((row: { permission: { name: string } }) => row.permission?.name)
+        .filter((permissionName: unknown): permissionName is string => typeof permissionName === 'string' && permissionName.length > 0),
+    ),
+  );
 
   await tx.authzRole.update({
     where: { id: roleId },
+    data: { permissions },
+  });
+
+  await tx.role.updateMany({
+    where: { roleId },
     data: { permissions },
   });
 }
@@ -559,47 +563,56 @@ export async function pushAuthzToWebhook(appId: string): Promise<{
 
   try {
     const roles = await prisma.authzRole.findMany({
-      where: { appId },
+      where: { appId, pushed: false },
       select: {
         id: true,
-        scope: true,
         name: true,
-        permissions: true,
+        scope: true,
       },
     });
 
-    const roleMaps = roles.flatMap((role) => {
-      if (!Array.isArray(role.permissions)) return [];
-      return role.permissions
-        .filter((p): p is { id?: string; name?: string } => Boolean(p) && typeof p === 'object')
-        .map((p) => ({
-          roleId: role.id,
-          permissionId: typeof p.id === 'string' ? p.id : '',
-          scope: role.scope,
-          denormalizedPermission: typeof p.name === 'string' ? [p.name] : [],
-          roleName: role.name,
-        }))
-        .filter((m) => m.permissionId);
-    });
-
-    if (roleMaps.length === 0) {
+    if (roles.length === 0) {
       return { success: true, pushed: 0 };
     }
 
+    const roleIds = roles.map((role) => role.id);
+    const roleMaps = await prisma.authzRolePermissionMap.findMany({
+      where: {
+        roleId: { in: roleIds },
+      },
+      select: {
+        roleId: true,
+        permissionId: true,
+        permission: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
     // Push each role-permission mapping as an insert
     for (const map of roleMaps) {
+      const role = roles.find((candidate) => candidate.id === map.roleId);
+      if (!role) continue;
+
       await dispatchAuthzWebhook(appId, {
         table: 'authz_role_permission_map',
         operation: 'insert',
         data: {
           roleId: map.roleId,
           permissionId: map.permissionId,
-          scope: map.scope,
-          denormalizedPermission: map.denormalizedPermission,
-          roleName: map.roleName,
+          scope: role.scope ?? null,
+          denormalizedPermission: map.permission?.name ? [map.permission.name] : [],
+          roleName: role.name ?? null,
         },
       });
     }
+
+    await prisma.authzRole.updateMany({
+      where: { id: { in: roleIds } },
+      data: { pushed: true },
+    });
 
     return { success: true, pushed: roleMaps.length };
   } catch (error) {

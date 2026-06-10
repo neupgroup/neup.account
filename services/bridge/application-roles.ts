@@ -192,16 +192,35 @@ export async function getApplicationRoles(params: {
       roleScope: r.scope,
       pushed: true,
       permissions: Array.isArray(r.permissions)
-        ? r.permissions
-            .filter((p): p is { id?: string; name?: string; description?: string | null; scope?: string | null } => Boolean(p) && typeof p === 'object')
-            .map((p) => ({
-              rolePermissionId: typeof p.id === 'string' ? `${r.id}::${p.id}` : null,
-              permissionId: typeof p.id === 'string' ? p.id : null,
-              permissionName: typeof p.name === 'string' ? p.name : null,
-              permissionDescription: typeof p.description === 'string' ? p.description : null,
-              permissionScope: typeof p.scope === 'string' ? p.scope : r.scope,
-              denormalized: typeof p.name === 'string' ? [p.name] : null,
-            }))
+        ? r.permissions.flatMap((p) => {
+            if (typeof p === 'string') {
+              const name = p.trim();
+              return name
+                ? [{
+                    rolePermissionId: null,
+                    permissionId: null,
+                    permissionName: name,
+                    permissionDescription: null,
+                    permissionScope: r.scope,
+                    denormalized: [name],
+                  }]
+                : [];
+            }
+
+            if (!p || typeof p !== 'object' || Array.isArray(p)) return [];
+            const obj = p as { id?: string; name?: string; description?: string | null; scope?: string | null };
+            const name = typeof obj.name === 'string' ? obj.name.trim() : '';
+            if (!name) return [];
+
+            return [{
+              rolePermissionId: typeof obj.id === 'string' ? `${r.id}::${obj.id}` : null,
+              permissionId: typeof obj.id === 'string' ? obj.id : null,
+              permissionName: name,
+              permissionDescription: typeof obj.description === 'string' ? obj.description : null,
+              permissionScope: typeof obj.scope === 'string' ? obj.scope : r.scope,
+              denormalized: [name],
+            }];
+          })
         : [],
     }));
 

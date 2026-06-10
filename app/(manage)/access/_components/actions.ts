@@ -433,16 +433,33 @@ export async function inviteDirectMember(
     const expiresOn = new Date();
     expiresOn.setDate(expiresOn.getDate() + 7);
 
-    await prisma.request.create({
-      data: {
-        action: 'access_invitation',
-        senderId: senderAccountId,
-        recipientId: recipientAccountId,
-        status: 'pending',
+    await prisma.$transaction(async (tx) => {
+      const request = await tx.request.create({
         data: {
-          expiresOn: expiresOn.toISOString(),
+          action: 'access_invitation',
+          senderId: senderAccountId,
+          recipientId: recipientAccountId,
+          status: 'pending',
+          data: {
+            expiresOn: expiresOn.toISOString(),
+          },
         },
-      },
+      });
+
+      await tx.notification.create({
+        data: {
+          accountId: recipientAccountId,
+          action: 'access_invitation',
+          title: 'Access Invitation',
+          message: 'You have received an access invitation.',
+          type: 'info',
+          read: false,
+          deletableOn: expiresOn,
+          detail: {
+            requestId: request.id,
+          },
+        },
+      });
     });
 
     revalidatePath('/access');

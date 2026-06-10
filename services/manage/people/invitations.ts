@@ -25,35 +25,44 @@ export async function getInvitations(): Promise<Invitation[]> {
     if (!accountId) return [];
 
     try {
+        const invitations: Invitation[] = [];
+        const pendingRequests = await prisma.request.findMany({
+            where: {
+                recipientId: accountId,
+                status: 'pending',
+                action: {
+                    in: ['family_invitation', 'access_invitation'],
+                },
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+
         const notifications = await prisma.notification.findMany({
             where: { accountId }
         });
-
-        const invitations: Invitation[] = [];
+        const notificationByRequestId = new Map<string, (typeof notifications)[number]>();
         for (const notif of notifications) {
-            const detail = notif.detail as any || {};
-            const requestId = detail.requestId;
-            if (!requestId) continue;
+            const detail = (notif.detail as { requestId?: string } | null) || {};
+            if (detail.requestId && pendingRequests.some((request) => request.id === detail.requestId)) {
+                notificationByRequestId.set(detail.requestId, notif);
+            }
+        }
 
-            const request = await prisma.request.findUnique({
-                where: { id: requestId }
-            });
-            
-            if (!request || request.status !== 'pending') continue;
-
+        for (const request of pendingRequests) {
+            const notif = notificationByRequestId.get(request.id);
             const senderProfile = await getUserProfile(request.senderId);
             const senderNeupIds = await prisma.neupId.findMany({
                 where: { accountId: request.senderId }
             });
 
             invitations.push({
-                notificationId: notif.id,
+                notificationId: notif?.id ?? request.id,
                 requestId: request.id,
                 action: request.action,
                 senderId: request.senderId,
                 senderName: senderProfile?.nameDisplay || `${senderProfile?.nameFirst || ''} ${senderProfile?.nameLast || ''}`.trim() || 'A user',
                 senderNeupId: senderNeupIds[0]?.id || 'N/A',
-                createdAt: notif.createdAt.toISOString(),
+                createdAt: (notif?.createdAt ?? request.createdAt).toISOString(),
             });
         }
 
@@ -122,19 +131,30 @@ export async function acceptRequest(requestId: string, notificationId: string): 
                 }
 
             } else if (request.action === 'access_invitation') {
-                // Ensure the account.delegate role exists
+                // Ensure the direct-access role exists
                 await tx.authzRole.upsert({
-                    where: { id: 'account.delegate' },
-                    update: { name: 'account.delegate', scope: 'account', appId: 'neup.account' },
-                    create: { id: 'account.delegate', name: 'account.delegate', scope: 'account', appId: 'neup.account' },
+                    where: { id: 'access.member' },
+                    update: { name: 'access.member', scope: 'account', appId: 'neup.account' },
+                    create: { id: 'access.member', name: 'access.member', scope: 'account', appId: 'neup.account' },
                 });
-                await tx.member.create({
+                const member = await tx.member.create({
                     data: {
-                        accessTo: request.senderId,
-                        memberId: inviteeId,
-                        roleId: 'account.delegate',
-                        appId: 'neup.account',
-                    }
+                        memberType: 'account',
+                        parentType: 'account',
+                        memberAccountId: inviteeId,
+                        parentAccountId: request.senderId,
+                        details: {
+                            legacy_parent_application_id: 'neup.account',
+                        },
+                    },
+                    select: { id: true },
+                });
+                await tx.role.create({
+                    data: {
+                        memberId: member.id,
+                        accountId: request.senderId,
+                        roleId: 'access.member',
+                    },
                 });
             }
 
@@ -143,8 +163,18 @@ export async function acceptRequest(requestId: string, notificationId: string): 
                 data: { status: 'approved' }
             });
 
-            await tx.notification.delete({
-                where: { id: notificationId }
+            await tx.notification.deleteMany({
+                where: {
+                    OR: [
+                        { id: notificationId },
+                        {
+                            detail: {
+                                path: ['requestId'],
+                                equals: requestId,
+                            },
+                        },
+                    ],
+                },
             });
         });
 
@@ -181,8 +211,18 @@ export async function rejectRequest(requestId: string, notificationId: string): 
                 where: { id: requestId },
                 data: { status: 'rejected' }
             }),
-            prisma.notification.delete({
-                where: { id: notificationId }
+            prisma.notification.deleteMany({
+                where: {
+                    OR: [
+                        { id: notificationId },
+                        {
+                            detail: {
+                                path: ['requestId'],
+                                equals: requestId,
+                            },
+                        },
+                    ],
+                },
             })
         ]);
 

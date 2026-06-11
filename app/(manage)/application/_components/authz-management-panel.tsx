@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type KeyboardEvent } from 'react';
 import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { X } from '@/components/icons';
 import {
   createAppPermission,
   createAppRole,
@@ -30,6 +31,66 @@ type Props = {
 
 type PermissionTagInput = Parameters<typeof createAppPermission>[0]['tag'];
 
+function PermissionTagEditor({
+  tags,
+  draft,
+  onDraftChange,
+  onTagsChange,
+}: {
+  tags: string[];
+  draft: string;
+  onDraftChange: (value: string) => void;
+  onTagsChange: (tags: string[]) => void;
+}) {
+  const addDraftTag = () => {
+    const nextTag = draft.trim();
+    if (!nextTag) return;
+    onTagsChange(Array.from(new Set([...tags, nextTag])));
+    onDraftChange('');
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter' || event.key === ',') {
+      event.preventDefault();
+      addDraftTag();
+      return;
+    }
+
+    if (event.key === 'Backspace' && !draft && tags.length > 0) {
+      onTagsChange(tags.slice(0, -1));
+    }
+  };
+
+  return (
+    <div className="flex min-h-10 w-full flex-wrap items-center gap-2 rounded-md border border-input bg-background px-3 py-2 ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+      {tags.map((tag) => (
+        <span
+          key={tag}
+          className="inline-flex h-7 items-center gap-1 rounded-full border bg-muted px-2.5 text-xs leading-none text-foreground"
+        >
+          {tag}
+          <button
+            type="button"
+            className="ml-1 rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+            onClick={() => onTagsChange(tags.filter((candidate) => candidate !== tag))}
+            aria-label={`Remove ${tag}`}
+          >
+            <X className="h-3 w-3" />
+          </button>
+        </span>
+      ))}
+      <input
+        value={draft}
+        onChange={(event) => onDraftChange(event.target.value)}
+        onKeyDown={handleKeyDown}
+        onBlur={addDraftTag}
+        className="min-w-28 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+        placeholder={tags.length === 0 ? 'Add tag and press Enter' : 'Add tag'}
+      />
+    </div>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -41,7 +102,8 @@ export function AuthzManagementPanel({ appId, initialPermissions, initialRoles, 
   const [permissions, setPermissions] = useState<AppPermission[]>(initialPermissions);
   const [newCapName, setNewCapName] = useState('');
   const [newCapDesc, setNewCapDesc] = useState('');
-  const [newCapTag, setNewCapTag] = useState('');
+  const [newCapTags, setNewCapTags] = useState<string[]>([]);
+  const [newCapTagDraft, setNewCapTagDraft] = useState('');
   const [capPending, setCapPending] = useState(false);
 
   // ---- Roles state ----
@@ -64,32 +126,28 @@ export function AuthzManagementPanel({ appId, initialPermissions, initialRoles, 
   // Permission handlers
   // ---------------------------------------------------------------------------
 
-  const formatTag = (value: AppPermission['tag']) => value === null ? '' : JSON.stringify(value);
-  const parseTag = (value: string) => {
-    const trimmed = value.trim();
-    if (!trimmed) return { ok: true as const, tag: undefined };
-    try {
-      return { ok: true as const, tag: JSON.parse(trimmed) as PermissionTagInput };
-    } catch {
-      return { ok: false as const };
-    }
+  const getTagLabels = (value: AppPermission['tag']): string[] => {
+    if (typeof value === 'string') return [value];
+    if (Array.isArray(value)) return value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0);
+    if (value === null) return [];
+    return [JSON.stringify(value)];
+  };
+  const serializeTags = (tags: string[]): PermissionTagInput | undefined => {
+    const cleaned = Array.from(new Set(tags.map((tag) => tag.trim()).filter(Boolean)));
+    return cleaned.length > 0 ? cleaned : undefined;
   };
 
   const handleAddPermission = async () => {
     const name = newCapName.trim();
     if (!name) return;
-    const parsedTag = parseTag(newCapTag);
-    if (!parsedTag.ok) {
-      toast({ variant: 'destructive', title: 'Invalid tag', description: 'Permission tag must be valid JSON.' });
-      return;
-    }
+    const nextTags = newCapTagDraft.trim() ? Array.from(new Set([...newCapTags, newCapTagDraft.trim()])) : newCapTags;
 
     setCapPending(true);
     const result = await createAppPermission({
       appId,
       name,
       description: newCapDesc || undefined,
-      tag: parsedTag.tag,
+      tag: serializeTags(nextTags),
     });
     setCapPending(false);
 
@@ -101,7 +159,8 @@ export function AuthzManagementPanel({ appId, initialPermissions, initialRoles, 
     setPermissions((prev) => [...prev, result.permission!]);
     setNewCapName('');
     setNewCapDesc('');
-    setNewCapTag('');
+    setNewCapTags([]);
+    setNewCapTagDraft('');
     toast({ title: 'Permission created' });
   };
 
@@ -241,8 +300,12 @@ export function AuthzManagementPanel({ appId, initialPermissions, initialRoles, 
                     {cap.description && (
                       <p className="text-xs text-muted-foreground truncate">{cap.description}</p>
                     )}
-                    {cap.tag !== null && (
-                      <Badge variant="outline" className="mt-1 text-xs">{formatTag(cap.tag)}</Badge>
+                    {getTagLabels(cap.tag).length > 0 && (
+                      <div className="mt-1 flex flex-wrap gap-1">
+                        {getTagLabels(cap.tag).map((tag) => (
+                          <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
+                        ))}
+                      </div>
                     )}
                   </div>
                   <Button
@@ -273,10 +336,11 @@ export function AuthzManagementPanel({ appId, initialPermissions, initialRoles, 
               onChange={(e) => setNewCapDesc(e.target.value)}
               placeholder="Description (optional)"
             />
-            <Input
-              value={newCapTag}
-              onChange={(e) => setNewCapTag(e.target.value)}
-              placeholder='Tag JSON (optional), e.g. ["portfolio"]'
+            <PermissionTagEditor
+              tags={newCapTags}
+              draft={newCapTagDraft}
+              onDraftChange={setNewCapTagDraft}
+              onTagsChange={setNewCapTags}
             />
             <div className="flex justify-end">
               <Button

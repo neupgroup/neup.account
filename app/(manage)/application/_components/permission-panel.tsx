@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type KeyboardEvent } from 'react';
 import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Plus, ChevronRight } from '@/components/icons';
+import { Plus, ChevronRight, X } from '@/components/icons';
 import {
   Dialog,
   DialogContent,
@@ -39,6 +39,66 @@ type Props = {
 
 type PermissionTagInput = Parameters<typeof createAppPermission>[0]['tag'];
 
+function PermissionTagEditor({
+  tags,
+  draft,
+  onDraftChange,
+  onTagsChange,
+}: {
+  tags: string[];
+  draft: string;
+  onDraftChange: (value: string) => void;
+  onTagsChange: (tags: string[]) => void;
+}) {
+  const addDraftTag = () => {
+    const nextTag = draft.trim();
+    if (!nextTag) return;
+    onTagsChange(Array.from(new Set([...tags, nextTag])));
+    onDraftChange('');
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter' || event.key === ',') {
+      event.preventDefault();
+      addDraftTag();
+      return;
+    }
+
+    if (event.key === 'Backspace' && !draft && tags.length > 0) {
+      onTagsChange(tags.slice(0, -1));
+    }
+  };
+
+  return (
+    <div className="flex min-h-12 w-full flex-wrap items-center gap-2 rounded-md border border-input bg-background px-3 py-2 ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+      {tags.map((tag) => (
+        <span
+          key={tag}
+          className="inline-flex h-8 items-center gap-1 rounded-full border bg-muted px-3 text-sm leading-none text-foreground"
+        >
+          {tag}
+          <button
+            type="button"
+            className="ml-1 rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+            onClick={() => onTagsChange(tags.filter((candidate) => candidate !== tag))}
+            aria-label={`Remove ${tag}`}
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </span>
+      ))}
+      <input
+        value={draft}
+        onChange={(event) => onDraftChange(event.target.value)}
+        onKeyDown={handleKeyDown}
+        onBlur={addDraftTag}
+        className="min-w-32 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+        placeholder={tags.length === 0 ? 'Add tag and press Enter' : 'Add tag'}
+      />
+    </div>
+  );
+}
+
 export function PermissionPanel({ appId, initialPermissions }: Props) {
   const { toast } = useToast();
   const [permissions, setPermissions] = useState<AppPermission[]>(initialPermissions);
@@ -47,13 +107,15 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   const [addOpen, setAddOpen] = useState(false);
   const [addName, setAddName] = useState('');
   const [addDesc, setAddDesc] = useState('');
-  const [addTag, setAddTag] = useState('');
+  const [addTags, setAddTags] = useState<string[]>([]);
+  const [addTagDraft, setAddTagDraft] = useState('');
   const [addPending, setAddPending] = useState(false);
 
   // Edit dialog
   const [editTarget, setEditTarget] = useState<AppPermission | null>(null);
   const [editDesc, setEditDesc] = useState('');
-  const [editTag, setEditTag] = useState('');
+  const [editTags, setEditTags] = useState<string[]>([]);
+  const [editTagDraft, setEditTagDraft] = useState('');
   const [editPending, setEditPending] = useState(false);
 
   // Remove dialog
@@ -61,27 +123,29 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   const [removePending, setRemovePending] = useState(false);
 
   const isValidName = (value: string) => /^[a-zA-Z0-9._]+$/.test(value.trim());
-  const formatTag = (value: AppPermission['tag']) => value === null ? '' : JSON.stringify(value);
-  const parseTag = (value: string) => {
-    const trimmed = value.trim();
-    if (!trimmed) return { ok: true as const, tag: undefined };
-    try {
-      return { ok: true as const, tag: JSON.parse(trimmed) as PermissionTagInput };
-    } catch {
-      return { ok: false as const };
-    }
+  const getTagLabels = (value: AppPermission['tag']): string[] => {
+    if (typeof value === 'string') return [value];
+    if (Array.isArray(value)) return value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0);
+    if (value === null) return [];
+    return [JSON.stringify(value)];
+  };
+  const serializeTags = (tags: string[]): PermissionTagInput | undefined => {
+    const cleaned = Array.from(new Set(tags.map((tag) => tag.trim()).filter(Boolean)));
+    return cleaned.length > 0 ? cleaned : undefined;
   };
 
   const openEdit = (cap: AppPermission) => {
     setEditTarget(cap);
     setEditDesc(cap.description ?? '');
-    setEditTag(formatTag(cap.tag));
+    setEditTags(getTagLabels(cap.tag));
+    setEditTagDraft('');
   };
 
   const closeEdit = () => {
     setEditTarget(null);
     setEditDesc('');
-    setEditTag('');
+    setEditTags([]);
+    setEditTagDraft('');
   };
 
   const handleAdd = async () => {
@@ -95,21 +159,13 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
       });
       return;
     }
-    const parsedTag = parseTag(addTag);
-    if (!parsedTag.ok) {
-      toast({
-        variant: 'destructive',
-        title: 'Invalid tag',
-        description: 'Permission tag must be valid JSON.',
-      });
-      return;
-    }
+    const nextTags = addTagDraft.trim() ? Array.from(new Set([...addTags, addTagDraft.trim()])) : addTags;
     setAddPending(true);
     const result = await createAppPermission({
       appId,
       name: trimmed,
       description: addDesc || undefined,
-      tag: parsedTag.tag,
+      tag: serializeTags(nextTags),
     });
     setAddPending(false);
     if (!result.success || !result.permission) {
@@ -119,28 +175,21 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
     setPermissions((prev) => [...prev, result.permission!]);
     setAddName('');
     setAddDesc('');
-    setAddTag('');
+    setAddTags([]);
+    setAddTagDraft('');
     setAddOpen(false);
     toast({ title: 'Permission created' });
   };
 
   const handleEdit = async () => {
     if (!editTarget) return;
-    const parsedTag = parseTag(editTag);
-    if (!parsedTag.ok) {
-      toast({
-        variant: 'destructive',
-        title: 'Invalid tag',
-        description: 'Permission tag must be valid JSON.',
-      });
-      return;
-    }
+    const nextTags = editTagDraft.trim() ? Array.from(new Set([...editTags, editTagDraft.trim()])) : editTags;
     setEditPending(true);
     const result = await updateAppPermission({
       appId,
       permissionId: editTarget.id,
       description: editDesc || undefined,
-      tag: parsedTag.tag,
+      tag: serializeTags(nextTags),
     });
     setEditPending(false);
     if (!result.success || !result.permission) {
@@ -203,8 +252,12 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
                 {cap.description && (
                   <p className="truncate text-sm text-muted-foreground">{cap.description}</p>
                 )}
-                {cap.tag !== null && (
-                  <Badge variant="outline" className="mt-1 text-xs">{formatTag(cap.tag)}</Badge>
+                {getTagLabels(cap.tag).length > 0 && (
+                  <div className="mt-1 flex flex-wrap gap-1">
+                    {getTagLabels(cap.tag).map((tag) => (
+                      <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
+                    ))}
+                  </div>
                 )}
               </button>
               <Button
@@ -230,7 +283,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
         open={addOpen}
         onOpenChange={(open) => {
           setAddOpen(open);
-          if (!open) { setAddName(''); setAddDesc(''); setAddTag(''); }
+          if (!open) { setAddName(''); setAddDesc(''); setAddTags([]); setAddTagDraft(''); }
         }}
       >
         <DialogContent>
@@ -254,10 +307,11 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
               onChange={(e) => setAddDesc(e.target.value)}
               placeholder="Description (optional)"
             />
-            <Input
-              value={addTag}
-              onChange={(e) => setAddTag(e.target.value)}
-              placeholder='Tag JSON (optional), e.g. ["portfolio"]'
+            <PermissionTagEditor
+              tags={addTags}
+              draft={addTagDraft}
+              onDraftChange={setAddTagDraft}
+              onTagsChange={setAddTags}
             />
           </div>
           <DialogFooter>
@@ -296,10 +350,11 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
               placeholder="Description (optional)"
               autoFocus
             />
-            <Input
-              value={editTag}
-              onChange={(e) => setEditTag(e.target.value)}
-              placeholder='Tag JSON (optional), e.g. ["portfolio"]'
+            <PermissionTagEditor
+              tags={editTags}
+              draft={editTagDraft}
+              onDraftChange={setEditTagDraft}
+              onTagsChange={setEditTags}
             />
           </div>
           <DialogFooter>

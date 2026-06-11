@@ -231,21 +231,21 @@ export async function getApplicationAccess(params: {
                 ? [{
                     permissionId: null,
                     permissionName: name,
-                    permissionScope: g.authzRole?.scope ?? null,
+                    permissionTag: null,
                     denormalized: [name],
                   }]
                 : [];
             }
 
             if (!p || typeof p !== 'object' || Array.isArray(p)) return [];
-            const obj = p as { id?: string; name?: string; scope?: string | null };
+            const obj = p as { id?: string; name?: string; tag?: unknown };
             const name = typeof obj.name === 'string' ? obj.name.trim() : '';
             if (!name) return [];
 
             return [{
               permissionId: typeof obj.id === 'string' ? obj.id : null,
               permissionName: name,
-              permissionScope: typeof obj.scope === 'string' ? obj.scope : null,
+              permissionTag: obj.tag ?? null,
               denormalized: [name],
             }];
           })

@@ -26,7 +26,7 @@ export const dynamic = 'force-dynamic';
  *       roleId, roleName, roleDescription, roleScope,
  *       permissions: [
  *         { rolePermissionId, permissionId, permissionName,
- *           permissionDescription, permissionScope, denormalized }
+ *           permissionDescription, permissionTag, denormalized }
  *       ]
  *     },
  *     ...

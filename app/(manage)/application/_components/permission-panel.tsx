@@ -37,6 +37,8 @@ type Props = {
   initialPermissions: AppPermission[];
 };
 
+type PermissionTagInput = Parameters<typeof createAppPermission>[0]['tag'];
+
 export function PermissionPanel({ appId, initialPermissions }: Props) {
   const { toast } = useToast();
   const [permissions, setPermissions] = useState<AppPermission[]>(initialPermissions);
@@ -45,14 +47,13 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   const [addOpen, setAddOpen] = useState(false);
   const [addName, setAddName] = useState('');
   const [addDesc, setAddDesc] = useState('');
-  const [addScope, setAddScope] = useState('');
+  const [addTag, setAddTag] = useState('');
   const [addPending, setAddPending] = useState(false);
 
   // Edit dialog
   const [editTarget, setEditTarget] = useState<AppPermission | null>(null);
-  const [editName, setEditName] = useState('');
   const [editDesc, setEditDesc] = useState('');
-  const [editScope, setEditScope] = useState('');
+  const [editTag, setEditTag] = useState('');
   const [editPending, setEditPending] = useState(false);
 
   // Remove dialog
@@ -60,19 +61,27 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   const [removePending, setRemovePending] = useState(false);
 
   const isValidName = (value: string) => /^[a-zA-Z0-9._]+$/.test(value.trim());
+  const formatTag = (value: AppPermission['tag']) => value === null ? '' : JSON.stringify(value);
+  const parseTag = (value: string) => {
+    const trimmed = value.trim();
+    if (!trimmed) return { ok: true as const, tag: undefined };
+    try {
+      return { ok: true as const, tag: JSON.parse(trimmed) as PermissionTagInput };
+    } catch {
+      return { ok: false as const };
+    }
+  };
 
   const openEdit = (cap: AppPermission) => {
     setEditTarget(cap);
-    setEditName(cap.name);
     setEditDesc(cap.description ?? '');
-    setEditScope(cap.scope ?? '');
+    setEditTag(formatTag(cap.tag));
   };
 
   const closeEdit = () => {
     setEditTarget(null);
-    setEditName('');
     setEditDesc('');
-    setEditScope('');
+    setEditTag('');
   };
 
   const handleAdd = async () => {
@@ -86,12 +95,21 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
       });
       return;
     }
+    const parsedTag = parseTag(addTag);
+    if (!parsedTag.ok) {
+      toast({
+        variant: 'destructive',
+        title: 'Invalid tag',
+        description: 'Permission tag must be valid JSON.',
+      });
+      return;
+    }
     setAddPending(true);
     const result = await createAppPermission({
       appId,
       name: trimmed,
       description: addDesc || undefined,
-      scope: addScope || undefined,
+      tag: parsedTag.tag,
     });
     setAddPending(false);
     if (!result.success || !result.permission) {
@@ -101,20 +119,19 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
     setPermissions((prev) => [...prev, result.permission!]);
     setAddName('');
     setAddDesc('');
-    setAddScope('');
+    setAddTag('');
     setAddOpen(false);
     toast({ title: 'Permission created' });
   };
 
   const handleEdit = async () => {
     if (!editTarget) return;
-    const trimmed = editName.trim();
-    if (!trimmed) return;
-    if (!isValidName(trimmed)) {
+    const parsedTag = parseTag(editTag);
+    if (!parsedTag.ok) {
       toast({
         variant: 'destructive',
-        title: 'Invalid name',
-        description: 'Permission name may only contain letters, numbers, dots (.), and underscores (_).',
+        title: 'Invalid tag',
+        description: 'Permission tag must be valid JSON.',
       });
       return;
     }
@@ -122,9 +139,8 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
     const result = await updateAppPermission({
       appId,
       permissionId: editTarget.id,
-      name: trimmed,
       description: editDesc || undefined,
-      scope: editScope || undefined,
+      tag: parsedTag.tag,
     });
     setEditPending(false);
     if (!result.success || !result.permission) {
@@ -187,8 +203,8 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
                 {cap.description && (
                   <p className="truncate text-sm text-muted-foreground">{cap.description}</p>
                 )}
-                {cap.scope && (
-                  <Badge variant="outline" className="mt-1 text-xs">{cap.scope}</Badge>
+                {cap.tag !== null && (
+                  <Badge variant="outline" className="mt-1 text-xs">{formatTag(cap.tag)}</Badge>
                 )}
               </button>
               <Button
@@ -214,7 +230,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
         open={addOpen}
         onOpenChange={(open) => {
           setAddOpen(open);
-          if (!open) { setAddName(''); setAddDesc(''); setAddScope(''); }
+          if (!open) { setAddName(''); setAddDesc(''); setAddTag(''); }
         }}
       >
         <DialogContent>
@@ -239,9 +255,9 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
               placeholder="Description (optional)"
             />
             <Input
-              value={addScope}
-              onChange={(e) => setAddScope(e.target.value)}
-              placeholder="Scope (optional), e.g. portfolio"
+              value={addTag}
+              onChange={(e) => setAddTag(e.target.value)}
+              placeholder='Tag JSON (optional), e.g. ["portfolio"]'
             />
           </div>
           <DialogFooter>
@@ -265,25 +281,25 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
           <DialogHeader>
             <DialogTitle>Edit Permission</DialogTitle>
             <DialogDescription>
-              Update the name, description, or scope of this permission.
+              Update the description or tag of this permission. Permission names cannot be changed after creation.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
             <Input
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
-              placeholder="Name, e.g. orders.read"
-              autoFocus
+              value={editTarget?.name ?? ''}
+              disabled
+              aria-label="Permission name"
             />
             <Input
               value={editDesc}
               onChange={(e) => setEditDesc(e.target.value)}
               placeholder="Description (optional)"
+              autoFocus
             />
             <Input
-              value={editScope}
-              onChange={(e) => setEditScope(e.target.value)}
-              placeholder="Scope (optional), e.g. portfolio"
+              value={editTag}
+              onChange={(e) => setEditTag(e.target.value)}
+              placeholder='Tag JSON (optional), e.g. ["portfolio"]'
             />
           </div>
           <DialogFooter>
@@ -293,7 +309,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
             <Button
               type="button"
               onClick={handleEdit}
-              disabled={editPending || !editName.trim() || !isValidName(editName)}
+              disabled={editPending}
             >
               {editPending ? 'Saving...' : 'Save'}
             </Button>

@@ -520,10 +520,11 @@ model AuthzPermission {
   name         String
   description  String?
   appId        String?                  @map("app_id")
-  scope        String?
+  tag          Json?
   application  Application?             @relation(fields: [appId], references: [id])
   roleMappings AuthzRolePermissionMap[]
 
+  @@unique([name, appId], map: "authz_permission_name_app_id_key")
   @@map("authz_permission")
 }
 

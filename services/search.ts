@@ -86,7 +86,7 @@ export async function searchAll(query: string): Promise<SearchResult[]> {
                     appId: 'neup.account',
                     name: { contains: lowercasedQuery, mode: 'insensitive' },
                 },
-                select: { name: true, scope: true },
+                select: { name: true, tag: true },
                 take: 50,
             });
 
@@ -95,7 +95,7 @@ export async function searchAll(query: string): Promise<SearchResult[]> {
                     id: `permission-${cap.name}`,
                     type: 'permission',
                     title: cap.name,
-                    description: cap.scope ?? '',
+                    description: cap.tag === null ? '' : JSON.stringify(cap.tag),
                     url: `/manage/access/${cap.name}`,
                 });
             }

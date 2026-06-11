@@ -31,31 +31,31 @@ const CAPABILITIES = [
     id: 'cap-appowner-application-view',
     name: 'application.view',
     description: 'View application details and settings.',
-    scope: 'application',
+    tag: 'application',
   },
   {
     id: 'cap-appowner-application-edit',
     name: 'application.edit',
     description: 'Edit application details, secrets, access fields, policies, and endpoints.',
-    scope: 'application',
+    tag: 'application',
   },
   {
     id: 'cap-appowner-application-delete',
     name: 'application.delete',
     description: 'Delete or deactivate an application.',
-    scope: 'application',
+    tag: 'application',
   },
   {
     id: 'cap-appowner-application-logs-view',
     name: 'application.logs.view',
     description: 'View application activity logs.',
-    scope: 'application',
+    tag: 'application',
   },
   {
     id: 'cap-appowner-application-devlogs-view',
     name: 'application.devlogs.view',
     description: 'View development API request/response logs for the application.',
-    scope: 'application',
+    tag: 'application',
   },
 ] as const;
 
@@ -83,14 +83,14 @@ async function main() {
         name: cap.name,
         description: cap.description,
         appId: APP_ID,
-        scope: cap.scope,
+        tag: cap.tag,
       },
       create: {
         id: cap.id,
         name: cap.name,
         description: cap.description,
         appId: APP_ID,
-        scope: cap.scope,
+        tag: cap.tag,
       },
     });
     console.log(`  ✓ Permission upserted: ${cap.id}`);

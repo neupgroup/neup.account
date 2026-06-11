@@ -201,14 +201,14 @@ export async function getApplicationRoles(params: {
                     permissionId: null,
                     permissionName: name,
                     permissionDescription: null,
-                    permissionScope: r.scope,
+                    permissionTag: null,
                     denormalized: [name],
                   }]
                 : [];
             }
 
             if (!p || typeof p !== 'object' || Array.isArray(p)) return [];
-            const obj = p as { id?: string; name?: string; description?: string | null; scope?: string | null };
+            const obj = p as { id?: string; name?: string; description?: string | null; tag?: unknown };
             const name = typeof obj.name === 'string' ? obj.name.trim() : '';
             if (!name) return [];
 
@@ -217,7 +217,7 @@ export async function getApplicationRoles(params: {
               permissionId: typeof obj.id === 'string' ? obj.id : null,
               permissionName: name,
               permissionDescription: typeof obj.description === 'string' ? obj.description : null,
-              permissionScope: typeof obj.scope === 'string' ? obj.scope : r.scope,
+              permissionTag: obj.tag ?? null,
               denormalized: [name],
             }];
           })

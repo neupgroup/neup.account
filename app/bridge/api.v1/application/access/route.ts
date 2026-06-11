@@ -29,7 +29,7 @@ export const dynamic = 'force-dynamic';
  *       memberId, targetDisplayName, targetAccountType,
  *       roleId, roleName, roleDescription, roleScope,
  *       permissions: [
- *         { permissionId, permissionName, permissionScope, denormalized }
+ *         { permissionId, permissionName, permissionTag, denormalized }
  *       ],
  *       parentPortfolioId
  *     },

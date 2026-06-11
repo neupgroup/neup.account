@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { Prisma } from '@/prisma/generated/client/client';
 import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
@@ -16,7 +17,7 @@ export type AppPermission = {
   id: string;
   name: string;
   description: string | null;
-  scope: string | null;
+  tag: Prisma.JsonValue | null;
 };
 
 export type AppRole = {
@@ -117,14 +118,14 @@ async function ensureApplicationManagementRoles(): Promise<void> {
           name: cap.name,
           description: cap.description,
           appId: GLOBAL_AUTHZ_APP_ID,
-          scope: 'application',
+          tag: 'application',
         },
         create: {
           id: cap.id,
           name: cap.name,
           description: cap.description,
           appId: GLOBAL_AUTHZ_APP_ID,
-          scope: 'application',
+          tag: 'application',
         },
       });
     }
@@ -201,7 +202,7 @@ export async function getAppPermissions(appId: string): Promise<AppPermission[]>
     const records = await prisma.authzPermission.findMany({
       where: { appId },
       orderBy: { name: 'asc' },
-      select: { id: true, name: true, description: true, scope: true },
+      select: { id: true, name: true, description: true, tag: true },
     });
     return records;
   } catch (error) {
@@ -214,7 +215,7 @@ export async function createAppPermission(input: {
   appId: string;
   name: string;
   description?: string;
-  scope?: string;
+  tag?: Prisma.InputJsonValue;
 }): Promise<{ success: boolean; permission?: AppPermission; error?: string }> {
   const auth = await assertCanManageAuthz(input.appId);
   if ('error' in auth) return { success: false, error: auth.error };
@@ -225,15 +226,23 @@ export async function createAppPermission(input: {
     return { success: false, error: 'Permission name may only contain letters, numbers, dots (.), and underscores (_).' };
   }
 
+  const existing = await prisma.authzPermission.findFirst({
+    where: { appId: input.appId, name },
+    select: { id: true },
+  });
+  if (existing) {
+    return { success: false, error: `A permission named "${name}" already exists for this application.` };
+  }
+
   try {
     const record = await prisma.authzPermission.create({
       data: {
         name,
         description: input.description?.trim() || null,
-        scope: input.scope?.trim() || null,
+        tag: input.tag ?? Prisma.JsonNull,
         appId: input.appId,
       },
-      select: { id: true, name: true, description: true, scope: true },
+      select: { id: true, name: true, description: true, tag: true },
     });
 
     revalidatePath(`/data/appconnection/${input.appId}`);
@@ -247,29 +256,27 @@ export async function createAppPermission(input: {
 export async function updateAppPermission(input: {
   appId: string;
   permissionId: string;
-  name: string;
   description?: string;
-  scope?: string;
+  tag?: Prisma.InputJsonValue;
 }): Promise<{ success: boolean; permission?: AppPermission; error?: string }> {
   const auth = await assertCanManageAuthz(input.appId);
   if ('error' in auth) return { success: false, error: auth.error };
 
-  const name = input.name.trim();
-  if (!name) return { success: false, error: 'Permission name is required.' };
-  if (!/^[a-zA-Z0-9._]+$/.test(name)) {
-    return { success: false, error: 'Permission name may only contain letters, numbers, dots (.), and underscores (_).' };
-  }
-
   try {
     const record = await prisma.$transaction(async (tx) => {
+      const existing = await tx.authzPermission.findFirst({
+        where: { id: input.permissionId, appId: input.appId },
+        select: { id: true },
+      });
+      if (!existing) throw new Error('Permission not found.');
+
       const updated = await tx.authzPermission.update({
         where: { id: input.permissionId },
         data: {
-          name,
           description: input.description?.trim() || null,
-          scope: input.scope?.trim() || null,
+          tag: input.tag ?? Prisma.JsonNull,
         },
-        select: { id: true, name: true, description: true, scope: true },
+        select: { id: true, name: true, description: true, tag: true },
       });
 
       await syncAllRolePermissionsDenormalized(tx, input.appId);
@@ -335,17 +342,17 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
                   id: '',
                   name: p,
                   description: null,
-                  scope: null,
+                  tag: null,
                 }];
               }
 
               if (!p || typeof p !== 'object') return [];
 
               const obj = p as {
-                id?: string;
-                name?: string;
-                description?: string | null;
-                scope?: string | null;
+                  id?: string;
+                  name?: string;
+                  description?: string | null;
+                  tag?: Prisma.JsonValue | null;
               };
 
               const name = typeof obj.name === 'string' ? obj.name : '';
@@ -356,7 +363,7 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
                 id,
                 name,
                 description: typeof obj.description === 'string' ? obj.description : null,
-                scope: typeof obj.scope === 'string' ? obj.scope : null,
+                tag: obj.tag ?? null,
               }];
             })
         : [],

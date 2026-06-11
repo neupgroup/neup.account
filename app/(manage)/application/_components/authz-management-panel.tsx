@@ -28,6 +28,8 @@ type Props = {
   hasWebhook: boolean;
 };
 
+type PermissionTagInput = Parameters<typeof createAppPermission>[0]['tag'];
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -39,7 +41,7 @@ export function AuthzManagementPanel({ appId, initialPermissions, initialRoles, 
   const [permissions, setPermissions] = useState<AppPermission[]>(initialPermissions);
   const [newCapName, setNewCapName] = useState('');
   const [newCapDesc, setNewCapDesc] = useState('');
-  const [newCapScope, setNewCapScope] = useState('');
+  const [newCapTag, setNewCapTag] = useState('');
   const [capPending, setCapPending] = useState(false);
 
   // ---- Roles state ----
@@ -62,16 +64,32 @@ export function AuthzManagementPanel({ appId, initialPermissions, initialRoles, 
   // Permission handlers
   // ---------------------------------------------------------------------------
 
+  const formatTag = (value: AppPermission['tag']) => value === null ? '' : JSON.stringify(value);
+  const parseTag = (value: string) => {
+    const trimmed = value.trim();
+    if (!trimmed) return { ok: true as const, tag: undefined };
+    try {
+      return { ok: true as const, tag: JSON.parse(trimmed) as PermissionTagInput };
+    } catch {
+      return { ok: false as const };
+    }
+  };
+
   const handleAddPermission = async () => {
     const name = newCapName.trim();
     if (!name) return;
+    const parsedTag = parseTag(newCapTag);
+    if (!parsedTag.ok) {
+      toast({ variant: 'destructive', title: 'Invalid tag', description: 'Permission tag must be valid JSON.' });
+      return;
+    }
 
     setCapPending(true);
     const result = await createAppPermission({
       appId,
       name,
       description: newCapDesc || undefined,
-      scope: newCapScope || undefined,
+      tag: parsedTag.tag,
     });
     setCapPending(false);
 
@@ -83,7 +101,7 @@ export function AuthzManagementPanel({ appId, initialPermissions, initialRoles, 
     setPermissions((prev) => [...prev, result.permission!]);
     setNewCapName('');
     setNewCapDesc('');
-    setNewCapScope('');
+    setNewCapTag('');
     toast({ title: 'Permission created' });
   };
 
@@ -223,8 +241,8 @@ export function AuthzManagementPanel({ appId, initialPermissions, initialRoles, 
                     {cap.description && (
                       <p className="text-xs text-muted-foreground truncate">{cap.description}</p>
                     )}
-                    {cap.scope && (
-                      <Badge variant="outline" className="mt-1 text-xs">{cap.scope}</Badge>
+                    {cap.tag !== null && (
+                      <Badge variant="outline" className="mt-1 text-xs">{formatTag(cap.tag)}</Badge>
                     )}
                   </div>
                   <Button
@@ -256,9 +274,9 @@ export function AuthzManagementPanel({ appId, initialPermissions, initialRoles, 
               placeholder="Description (optional)"
             />
             <Input
-              value={newCapScope}
-              onChange={(e) => setNewCapScope(e.target.value)}
-              placeholder="Scope (optional), e.g. portfolio"
+              value={newCapTag}
+              onChange={(e) => setNewCapTag(e.target.value)}
+              placeholder='Tag JSON (optional), e.g. ["portfolio"]'
             />
             <div className="flex justify-end">
               <Button

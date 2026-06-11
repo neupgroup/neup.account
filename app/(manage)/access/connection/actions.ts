@@ -31,6 +31,48 @@ export type AppWithAccess = {
   isOwner: boolean;
 };
 
+export type ConnectionPageItem = {
+  id: string;
+  appId: string;
+  appName: string;
+  appDescription: string | null;
+  appIcon: string | null;
+  appStatus: string | null;
+  connectedAt: Date;
+  connectionStatus: string;
+  roleId: string | null;
+  roleName: string | null;
+  roleDescription: string | null;
+  accessCount: number;
+};
+
+export type ConnectionAccessMember = {
+  accountId: string;
+  displayName: string;
+  accountPhoto?: string;
+  roles: Array<{
+    roleId: string;
+    roleName: string;
+    roleDescription: string | null;
+  }>;
+};
+
+export type ConnectionDetail = {
+  id: string;
+  appId: string;
+  appName: string;
+  appDescription: string | null;
+  appIcon: string | null;
+  appStatus: string | null;
+  connectedAt: Date;
+  connectionStatus: string;
+  roleId: string | null;
+  roleName: string | null;
+  roleDescription: string | null;
+  accessCount: number;
+  members: ConnectionAccessMember[];
+};
+
 export type ResolvedAccount = {
   accountId: string;
   displayName: string;
@@ -164,6 +206,184 @@ export async function getApplicationAccessPageData(
   } catch (error) {
     await logError('database', error, 'getApplicationAccessPageData');
     return [];
+  }
+}
+
+export async function getConnectionPageData(): Promise<ConnectionPageItem[]> {
+  const accountId = await getActiveAccountId();
+  if (!accountId) return [];
+
+  try {
+    const connections = await prisma.connection.findMany({
+      where: {
+        accountId,
+        appId: { not: 'neup.account' },
+      },
+      select: {
+        id: true,
+        connectedAt: true,
+        status: true,
+        role: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+          },
+        },
+        application: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            icon: true,
+            status: true,
+          },
+        },
+        _count: {
+          select: { memberRows: true },
+        },
+      },
+      orderBy: { connectedAt: 'desc' },
+    });
+
+    return connections.map((connection) => ({
+      id: connection.id,
+      appId: connection.application.id,
+      appName: connection.application.name,
+      appDescription: connection.application.description,
+      appIcon: connection.application.icon,
+      appStatus: connection.application.status,
+      connectedAt: connection.connectedAt,
+      connectionStatus: connection.status,
+      roleId: connection.role?.id ?? null,
+      roleName: connection.role?.name ?? null,
+      roleDescription: connection.role?.description ?? null,
+      accessCount: connection._count.memberRows,
+    }));
+  } catch (error) {
+    await logError('database', error, 'getConnectionPageData');
+    return [];
+  }
+}
+
+export async function getConnectionDetail(connectionId: string): Promise<ConnectionDetail | null> {
+  const accountId = await getActiveAccountId();
+  if (!accountId) return null;
+
+  try {
+    const connection = await prisma.connection.findFirst({
+      where: {
+        id: connectionId,
+        accountId,
+        appId: { not: 'neup.account' },
+      },
+      select: {
+        id: true,
+        connectedAt: true,
+        status: true,
+        role: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+          },
+        },
+        application: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            icon: true,
+            status: true,
+          },
+        },
+        _count: {
+          select: { memberRows: true },
+        },
+      },
+    });
+
+    if (!connection) return null;
+
+    const accessRows = await prisma.member.findMany({
+      where: {
+        memberConnectionId: connection.id,
+        memberType: 'account',
+      },
+      select: {
+        memberAccountId: true,
+        memberAccount: {
+          select: {
+            id: true,
+            displayName: true,
+            displayImage: true,
+          },
+        },
+        roles: {
+          where: { connectionId: connection.id },
+          select: {
+            roleId: true,
+            roleName: true,
+            authzRole: {
+              select: {
+                name: true,
+                description: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { memberAccountId: 'asc' },
+    });
+
+    const memberMap = new Map<string, ConnectionAccessMember>();
+    for (const row of accessRows) {
+      const memberAccountId = row.memberAccountId;
+      if (!memberAccountId) continue;
+
+      const displayName =
+        row.memberAccount?.displayName ||
+        memberAccountId;
+
+      const existing = memberMap.get(memberAccountId);
+      const roles = row.roles.map((role) => ({
+        roleId: role.roleId,
+        roleName: role.roleName ?? role.authzRole?.name ?? role.roleId,
+        roleDescription: role.authzRole?.description ?? null,
+      }));
+
+      if (existing) {
+        const merged = new Map(existing.roles.map((role) => [role.roleId, role]));
+        for (const role of roles) merged.set(role.roleId, role);
+        existing.roles = Array.from(merged.values());
+      } else {
+        memberMap.set(memberAccountId, {
+          accountId: memberAccountId,
+          displayName,
+          accountPhoto: row.memberAccount?.displayImage ?? undefined,
+          roles,
+        });
+      }
+    }
+
+    return {
+      id: connection.id,
+      appId: connection.application.id,
+      appName: connection.application.name,
+      appDescription: connection.application.description,
+      appIcon: connection.application.icon,
+      appStatus: connection.application.status,
+      connectedAt: connection.connectedAt,
+      connectionStatus: connection.status,
+      roleId: connection.role?.id ?? null,
+      roleName: connection.role?.name ?? null,
+      roleDescription: connection.role?.description ?? null,
+      accessCount: connection._count.memberRows,
+      members: Array.from(memberMap.values()),
+    };
+  } catch (error) {
+    await logError('database', error, `getConnectionDetail:${connectionId}`);
+    return null;
   }
 }
 

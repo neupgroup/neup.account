@@ -30,6 +30,36 @@ type Props = {
 };
 
 type PermissionTagInput = Parameters<typeof createAppPermission>[0]['tag'];
+const RECOMMENDED_PERMISSION_TAGS = ['private', 'public', 'protected', 'manageable'] as const;
+const CUSTOM_TAG_LIMIT = 4;
+const TAG_NAME_PATTERN = /^[a-zA-Z0-9._]+$/;
+
+function isRecommendedTag(tag: string) {
+  return RECOMMENDED_PERMISSION_TAGS.includes(tag as (typeof RECOMMENDED_PERMISSION_TAGS)[number]);
+}
+
+function normalizePermissionTags(tags: string[]) {
+  const seen = new Set<string>();
+  let recommendedTag: string | null = null;
+  const customTags: string[] = [];
+
+  for (const rawTag of tags) {
+    const tag = rawTag.trim();
+    if (!tag || seen.has(tag) || !TAG_NAME_PATTERN.test(tag)) continue;
+    seen.add(tag);
+
+    if (isRecommendedTag(tag)) {
+      recommendedTag = recommendedTag ?? tag;
+      continue;
+    }
+
+    if (customTags.length < CUSTOM_TAG_LIMIT) {
+      customTags.push(tag);
+    }
+  }
+
+  return recommendedTag ? [recommendedTag, ...customTags] : customTags;
+}
 
 function PermissionTagEditor({
   tags,
@@ -42,51 +72,119 @@ function PermissionTagEditor({
   onDraftChange: (value: string) => void;
   onTagsChange: (tags: string[]) => void;
 }) {
-  const addDraftTag = () => {
-    const nextTag = draft.trim();
+  const [error, setError] = useState('');
+  const normalizedTags = normalizePermissionTags(tags);
+  const selectedRecommendedTag = normalizedTags.find(isRecommendedTag) ?? null;
+  const customTags = normalizedTags.filter((tag) => !isRecommendedTag(tag));
+
+  const updateTags = (nextTags: string[]) => {
+    onTagsChange(normalizePermissionTags(nextTags));
+  };
+
+  const addTag = (rawTag: string) => {
+    const nextTag = rawTag.trim();
     if (!nextTag) return;
-    onTagsChange(Array.from(new Set([...tags, nextTag])));
+
+    if (!TAG_NAME_PATTERN.test(nextTag)) {
+      setError('Tags may only contain letters, numbers, dots (.), and underscores (_).');
+      return;
+    }
+
+    if (!isRecommendedTag(nextTag) && customTags.length >= CUSTOM_TAG_LIMIT && !customTags.includes(nextTag)) {
+      setError('You can add up to 4 custom tags.');
+      return;
+    }
+
+    setError('');
+    if (isRecommendedTag(nextTag)) {
+      updateTags([nextTag, ...customTags]);
+    } else {
+      updateTags([...(selectedRecommendedTag ? [selectedRecommendedTag] : []), ...customTags, nextTag]);
+    }
     onDraftChange('');
   };
 
+  const addDraftTag = () => {
+    addTag(draft);
+  };
+
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter' || event.key === ',') {
+    if (event.key === 'Enter') {
       event.preventDefault();
       addDraftTag();
       return;
     }
 
     if (event.key === 'Backspace' && !draft && tags.length > 0) {
-      onTagsChange(tags.slice(0, -1));
+      updateTags(normalizedTags.slice(0, -1));
     }
   };
 
   return (
-    <div className="flex min-h-10 w-full flex-wrap items-center gap-2 rounded-md border border-input bg-background px-3 py-2 ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
-      {tags.map((tag) => (
-        <span
-          key={tag}
-          className="inline-flex h-7 items-center gap-1 rounded-full border bg-muted px-2.5 text-xs leading-none text-foreground"
-        >
-          {tag}
-          <button
-            type="button"
-            className="ml-1 rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
-            onClick={() => onTagsChange(tags.filter((candidate) => candidate !== tag))}
-            aria-label={`Remove ${tag}`}
-          >
-            <X className="h-3 w-3" />
-          </button>
-        </span>
-      ))}
+    <div className="space-y-2">
       <input
         value={draft}
-        onChange={(event) => onDraftChange(event.target.value)}
+        onChange={(event) => {
+          onDraftChange(event.target.value);
+          if (error) setError('');
+        }}
         onKeyDown={handleKeyDown}
         onBlur={addDraftTag}
-        className="min-w-28 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-        placeholder={tags.length === 0 ? 'Add tag and press Enter' : 'Add tag'}
+        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        placeholder="Add custom tag and press Enter"
       />
+
+      <div className="flex flex-wrap gap-2">
+        {RECOMMENDED_PERMISSION_TAGS.map((tag) => {
+          const selected = selectedRecommendedTag === tag;
+          return (
+            <button
+              key={tag}
+              type="button"
+              className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+                selected
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'bg-background text-muted-foreground hover:bg-muted'
+              }`}
+              onClick={() => {
+                setError('');
+                updateTags(selected ? customTags : [tag, ...customTags]);
+              }}
+            >
+              {tag}
+            </button>
+          );
+        })}
+      </div>
+
+      {normalizedTags.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {normalizedTags.map((tag) => (
+            <span
+              key={tag}
+              className="inline-flex h-7 items-center gap-1 rounded-full border bg-muted px-2.5 text-xs leading-none text-foreground"
+            >
+              {tag}
+              <button
+                type="button"
+                className="ml-1 rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+                onClick={() => updateTags(normalizedTags.filter((candidate) => candidate !== tag))}
+                aria-label={`Remove ${tag}`}
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {error && (
+        <p className="text-xs text-destructive">{error}</p>
+      )}
+
+      <p className="text-xs text-muted-foreground">
+        Select one recommended tag, plus up to 4 custom tags using letters, numbers, dots, or underscores.
+      </p>
     </div>
   );
 }
@@ -133,14 +231,32 @@ export function AuthzManagementPanel({ appId, initialPermissions, initialRoles, 
     return [JSON.stringify(value)];
   };
   const serializeTags = (tags: string[]): PermissionTagInput | undefined => {
-    const cleaned = Array.from(new Set(tags.map((tag) => tag.trim()).filter(Boolean)));
+    const cleaned = normalizePermissionTags(tags);
     return cleaned.length > 0 ? cleaned : undefined;
+  };
+  const validateDraftTag = (currentTags: string[], draft: string) => {
+    const nextTag = draft.trim();
+    if (!nextTag) return null;
+    if (!TAG_NAME_PATTERN.test(nextTag)) {
+      return 'Tags may only contain letters, numbers, dots (.), and underscores (_).';
+    }
+    const normalizedTags = normalizePermissionTags(currentTags);
+    const customTags = normalizedTags.filter((tag) => !isRecommendedTag(tag));
+    if (!isRecommendedTag(nextTag) && customTags.length >= CUSTOM_TAG_LIMIT && !customTags.includes(nextTag)) {
+      return 'You can add up to 4 custom tags.';
+    }
+    return null;
   };
 
   const handleAddPermission = async () => {
     const name = newCapName.trim();
     if (!name) return;
-    const nextTags = newCapTagDraft.trim() ? Array.from(new Set([...newCapTags, newCapTagDraft.trim()])) : newCapTags;
+    const tagError = validateDraftTag(newCapTags, newCapTagDraft);
+    if (tagError) {
+      toast({ variant: 'destructive', title: 'Invalid tag', description: tagError });
+      return;
+    }
+    const nextTags = newCapTagDraft.trim() ? normalizePermissionTags([...newCapTags, newCapTagDraft.trim()]) : normalizePermissionTags(newCapTags);
 
     setCapPending(true);
     const result = await createAppPermission({

@@ -4450,12 +4450,14 @@ export namespace Prisma {
 
   export type ConnectionCountOutputType = {
     memberRows: number
+    parentMemberRows: number
     childAssets: number
     denormRoles: number
   }
 
   export type ConnectionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     memberRows?: boolean | ConnectionCountOutputTypeCountMemberRowsArgs
+    parentMemberRows?: boolean | ConnectionCountOutputTypeCountParentMemberRowsArgs
     childAssets?: boolean | ConnectionCountOutputTypeCountChildAssetsArgs
     denormRoles?: boolean | ConnectionCountOutputTypeCountDenormRolesArgs
   }
@@ -4475,6 +4477,13 @@ export namespace Prisma {
    * ConnectionCountOutputType without action
    */
   export type ConnectionCountOutputTypeCountMemberRowsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MemberWhereInput
+  }
+
+  /**
+   * ConnectionCountOutputType without action
+   */
+  export type ConnectionCountOutputTypeCountParentMemberRowsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MemberWhereInput
   }
 
@@ -29842,6 +29851,7 @@ export namespace Prisma {
     parentType: string | null
     parentPortfolioId: string | null
     parentAccountId: string | null
+    parentConnectionId: string | null
     isPermanent: boolean | null
     accessLevel: string | null
     status: $Enums.MemberStatus | null
@@ -29855,6 +29865,7 @@ export namespace Prisma {
     parentType: string | null
     parentPortfolioId: string | null
     parentAccountId: string | null
+    parentConnectionId: string | null
     isPermanent: boolean | null
     accessLevel: string | null
     status: $Enums.MemberStatus | null
@@ -29868,6 +29879,7 @@ export namespace Prisma {
     parentType: number
     parentPortfolioId: number
     parentAccountId: number
+    parentConnectionId: number
     isPermanent: number
     accessLevel: number
     status: number
@@ -29884,6 +29896,7 @@ export namespace Prisma {
     parentType?: true
     parentPortfolioId?: true
     parentAccountId?: true
+    parentConnectionId?: true
     isPermanent?: true
     accessLevel?: true
     status?: true
@@ -29897,6 +29910,7 @@ export namespace Prisma {
     parentType?: true
     parentPortfolioId?: true
     parentAccountId?: true
+    parentConnectionId?: true
     isPermanent?: true
     accessLevel?: true
     status?: true
@@ -29910,6 +29924,7 @@ export namespace Prisma {
     parentType?: true
     parentPortfolioId?: true
     parentAccountId?: true
+    parentConnectionId?: true
     isPermanent?: true
     accessLevel?: true
     status?: true
@@ -29997,6 +30012,7 @@ export namespace Prisma {
     parentType: string
     parentPortfolioId: string | null
     parentAccountId: string | null
+    parentConnectionId: string | null
     isPermanent: boolean
     accessLevel: string
     status: $Enums.MemberStatus
@@ -30028,6 +30044,7 @@ export namespace Prisma {
     parentType?: boolean
     parentPortfolioId?: boolean
     parentAccountId?: boolean
+    parentConnectionId?: boolean
     isPermanent?: boolean
     accessLevel?: boolean
     status?: boolean
@@ -30035,6 +30052,7 @@ export namespace Prisma {
     memberAccount?: boolean | Member$memberAccountArgs<ExtArgs>
     memberConnection?: boolean | Member$memberConnectionArgs<ExtArgs>
     parentAccount?: boolean | Member$parentAccountArgs<ExtArgs>
+    parentConnection?: boolean | Member$parentConnectionArgs<ExtArgs>
     parentPortfolio?: boolean | Member$parentPortfolioArgs<ExtArgs>
     roles?: boolean | Member$rolesArgs<ExtArgs>
     _count?: boolean | MemberCountOutputTypeDefaultArgs<ExtArgs>
@@ -30048,6 +30066,7 @@ export namespace Prisma {
     parentType?: boolean
     parentPortfolioId?: boolean
     parentAccountId?: boolean
+    parentConnectionId?: boolean
     isPermanent?: boolean
     accessLevel?: boolean
     status?: boolean
@@ -30055,6 +30074,7 @@ export namespace Prisma {
     memberAccount?: boolean | Member$memberAccountArgs<ExtArgs>
     memberConnection?: boolean | Member$memberConnectionArgs<ExtArgs>
     parentAccount?: boolean | Member$parentAccountArgs<ExtArgs>
+    parentConnection?: boolean | Member$parentConnectionArgs<ExtArgs>
     parentPortfolio?: boolean | Member$parentPortfolioArgs<ExtArgs>
   }, ExtArgs["result"]["member"]>
 
@@ -30066,6 +30086,7 @@ export namespace Prisma {
     parentType?: boolean
     parentPortfolioId?: boolean
     parentAccountId?: boolean
+    parentConnectionId?: boolean
     isPermanent?: boolean
     accessLevel?: boolean
     status?: boolean
@@ -30073,6 +30094,7 @@ export namespace Prisma {
     memberAccount?: boolean | Member$memberAccountArgs<ExtArgs>
     memberConnection?: boolean | Member$memberConnectionArgs<ExtArgs>
     parentAccount?: boolean | Member$parentAccountArgs<ExtArgs>
+    parentConnection?: boolean | Member$parentConnectionArgs<ExtArgs>
     parentPortfolio?: boolean | Member$parentPortfolioArgs<ExtArgs>
   }, ExtArgs["result"]["member"]>
 
@@ -30084,17 +30106,19 @@ export namespace Prisma {
     parentType?: boolean
     parentPortfolioId?: boolean
     parentAccountId?: boolean
+    parentConnectionId?: boolean
     isPermanent?: boolean
     accessLevel?: boolean
     status?: boolean
     details?: boolean
   }
 
-  export type MemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "memberType" | "memberAccountId" | "memberConnectionId" | "parentType" | "parentPortfolioId" | "parentAccountId" | "isPermanent" | "accessLevel" | "status" | "details", ExtArgs["result"]["member"]>
+  export type MemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "memberType" | "memberAccountId" | "memberConnectionId" | "parentType" | "parentPortfolioId" | "parentAccountId" | "parentConnectionId" | "isPermanent" | "accessLevel" | "status" | "details", ExtArgs["result"]["member"]>
   export type MemberInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     memberAccount?: boolean | Member$memberAccountArgs<ExtArgs>
     memberConnection?: boolean | Member$memberConnectionArgs<ExtArgs>
     parentAccount?: boolean | Member$parentAccountArgs<ExtArgs>
+    parentConnection?: boolean | Member$parentConnectionArgs<ExtArgs>
     parentPortfolio?: boolean | Member$parentPortfolioArgs<ExtArgs>
     roles?: boolean | Member$rolesArgs<ExtArgs>
     _count?: boolean | MemberCountOutputTypeDefaultArgs<ExtArgs>
@@ -30103,12 +30127,14 @@ export namespace Prisma {
     memberAccount?: boolean | Member$memberAccountArgs<ExtArgs>
     memberConnection?: boolean | Member$memberConnectionArgs<ExtArgs>
     parentAccount?: boolean | Member$parentAccountArgs<ExtArgs>
+    parentConnection?: boolean | Member$parentConnectionArgs<ExtArgs>
     parentPortfolio?: boolean | Member$parentPortfolioArgs<ExtArgs>
   }
   export type MemberIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     memberAccount?: boolean | Member$memberAccountArgs<ExtArgs>
     memberConnection?: boolean | Member$memberConnectionArgs<ExtArgs>
     parentAccount?: boolean | Member$parentAccountArgs<ExtArgs>
+    parentConnection?: boolean | Member$parentConnectionArgs<ExtArgs>
     parentPortfolio?: boolean | Member$parentPortfolioArgs<ExtArgs>
   }
 
@@ -30118,6 +30144,7 @@ export namespace Prisma {
       memberAccount: Prisma.$AccountPayload<ExtArgs> | null
       memberConnection: Prisma.$ConnectionPayload<ExtArgs> | null
       parentAccount: Prisma.$AccountPayload<ExtArgs> | null
+      parentConnection: Prisma.$ConnectionPayload<ExtArgs> | null
       parentPortfolio: Prisma.$PortfolioPayload<ExtArgs> | null
       roles: Prisma.$RolePayload<ExtArgs>[]
     }
@@ -30129,6 +30156,7 @@ export namespace Prisma {
       parentType: string
       parentPortfolioId: string | null
       parentAccountId: string | null
+      parentConnectionId: string | null
       isPermanent: boolean
       accessLevel: string
       status: $Enums.MemberStatus
@@ -30530,6 +30558,7 @@ export namespace Prisma {
     memberAccount<T extends Member$memberAccountArgs<ExtArgs> = {}>(args?: Subset<T, Member$memberAccountArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     memberConnection<T extends Member$memberConnectionArgs<ExtArgs> = {}>(args?: Subset<T, Member$memberConnectionArgs<ExtArgs>>): Prisma__ConnectionClient<$Result.GetResult<Prisma.$ConnectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     parentAccount<T extends Member$parentAccountArgs<ExtArgs> = {}>(args?: Subset<T, Member$parentAccountArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    parentConnection<T extends Member$parentConnectionArgs<ExtArgs> = {}>(args?: Subset<T, Member$parentConnectionArgs<ExtArgs>>): Prisma__ConnectionClient<$Result.GetResult<Prisma.$ConnectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     parentPortfolio<T extends Member$parentPortfolioArgs<ExtArgs> = {}>(args?: Subset<T, Member$parentPortfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     roles<T extends Member$rolesArgs<ExtArgs> = {}>(args?: Subset<T, Member$rolesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -30568,6 +30597,7 @@ export namespace Prisma {
     readonly parentType: FieldRef<"Member", 'String'>
     readonly parentPortfolioId: FieldRef<"Member", 'String'>
     readonly parentAccountId: FieldRef<"Member", 'String'>
+    readonly parentConnectionId: FieldRef<"Member", 'String'>
     readonly isPermanent: FieldRef<"Member", 'Boolean'>
     readonly accessLevel: FieldRef<"Member", 'String'>
     readonly status: FieldRef<"Member", 'MemberStatus'>
@@ -31022,6 +31052,25 @@ export namespace Prisma {
      */
     include?: AccountInclude<ExtArgs> | null
     where?: AccountWhereInput
+  }
+
+  /**
+   * Member.parentConnection
+   */
+  export type Member$parentConnectionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Connection
+     */
+    select?: ConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Connection
+     */
+    omit?: ConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConnectionInclude<ExtArgs> | null
+    where?: ConnectionWhereInput
   }
 
   /**
@@ -32332,6 +32381,7 @@ export namespace Prisma {
     application?: boolean | ApplicationDefaultArgs<ExtArgs>
     role?: boolean | Connection$roleArgs<ExtArgs>
     memberRows?: boolean | Connection$memberRowsArgs<ExtArgs>
+    parentMemberRows?: boolean | Connection$parentMemberRowsArgs<ExtArgs>
     childAssets?: boolean | Connection$childAssetsArgs<ExtArgs>
     denormRoles?: boolean | Connection$denormRolesArgs<ExtArgs>
     _count?: boolean | ConnectionCountOutputTypeDefaultArgs<ExtArgs>
@@ -32379,6 +32429,7 @@ export namespace Prisma {
     application?: boolean | ApplicationDefaultArgs<ExtArgs>
     role?: boolean | Connection$roleArgs<ExtArgs>
     memberRows?: boolean | Connection$memberRowsArgs<ExtArgs>
+    parentMemberRows?: boolean | Connection$parentMemberRowsArgs<ExtArgs>
     childAssets?: boolean | Connection$childAssetsArgs<ExtArgs>
     denormRoles?: boolean | Connection$denormRolesArgs<ExtArgs>
     _count?: boolean | ConnectionCountOutputTypeDefaultArgs<ExtArgs>
@@ -32401,6 +32452,7 @@ export namespace Prisma {
       application: Prisma.$ApplicationPayload<ExtArgs>
       role: Prisma.$AuthzRolePayload<ExtArgs> | null
       memberRows: Prisma.$MemberPayload<ExtArgs>[]
+      parentMemberRows: Prisma.$MemberPayload<ExtArgs>[]
       childAssets: Prisma.$AssetPayload<ExtArgs>[]
       denormRoles: Prisma.$RolePayload<ExtArgs>[]
     }
@@ -32810,6 +32862,7 @@ export namespace Prisma {
     application<T extends ApplicationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ApplicationDefaultArgs<ExtArgs>>): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     role<T extends Connection$roleArgs<ExtArgs> = {}>(args?: Subset<T, Connection$roleArgs<ExtArgs>>): Prisma__AuthzRoleClient<$Result.GetResult<Prisma.$AuthzRolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     memberRows<T extends Connection$memberRowsArgs<ExtArgs> = {}>(args?: Subset<T, Connection$memberRowsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    parentMemberRows<T extends Connection$parentMemberRowsArgs<ExtArgs> = {}>(args?: Subset<T, Connection$parentMemberRowsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     childAssets<T extends Connection$childAssetsArgs<ExtArgs> = {}>(args?: Subset<T, Connection$childAssetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     denormRoles<T extends Connection$denormRolesArgs<ExtArgs> = {}>(args?: Subset<T, Connection$denormRolesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -33266,6 +33319,30 @@ export namespace Prisma {
    * Connection.memberRows
    */
   export type Connection$memberRowsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Member
+     */
+    select?: MemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Member
+     */
+    omit?: MemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberInclude<ExtArgs> | null
+    where?: MemberWhereInput
+    orderBy?: MemberOrderByWithRelationInput | MemberOrderByWithRelationInput[]
+    cursor?: MemberWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MemberScalarFieldEnum | MemberScalarFieldEnum[]
+  }
+
+  /**
+   * Connection.parentMemberRows
+   */
+  export type Connection$parentMemberRowsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Member
      */
@@ -43739,6 +43816,7 @@ export namespace Prisma {
     parentType: 'parentType',
     parentPortfolioId: 'parentPortfolioId',
     parentAccountId: 'parentAccountId',
+    parentConnectionId: 'parentConnectionId',
     isPermanent: 'isPermanent',
     accessLevel: 'accessLevel',
     status: 'status',
@@ -45696,6 +45774,7 @@ export namespace Prisma {
     parentType?: StringFilter<"Member"> | string
     parentPortfolioId?: StringNullableFilter<"Member"> | string | null
     parentAccountId?: StringNullableFilter<"Member"> | string | null
+    parentConnectionId?: StringNullableFilter<"Member"> | string | null
     isPermanent?: BoolFilter<"Member"> | boolean
     accessLevel?: StringFilter<"Member"> | string
     status?: EnumMemberStatusFilter<"Member"> | $Enums.MemberStatus
@@ -45703,6 +45782,7 @@ export namespace Prisma {
     memberAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
     memberConnection?: XOR<ConnectionNullableScalarRelationFilter, ConnectionWhereInput> | null
     parentAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
+    parentConnection?: XOR<ConnectionNullableScalarRelationFilter, ConnectionWhereInput> | null
     parentPortfolio?: XOR<PortfolioNullableScalarRelationFilter, PortfolioWhereInput> | null
     roles?: RoleListRelationFilter
   }
@@ -45715,6 +45795,7 @@ export namespace Prisma {
     parentType?: SortOrder
     parentPortfolioId?: SortOrderInput | SortOrder
     parentAccountId?: SortOrderInput | SortOrder
+    parentConnectionId?: SortOrderInput | SortOrder
     isPermanent?: SortOrder
     accessLevel?: SortOrder
     status?: SortOrder
@@ -45722,6 +45803,7 @@ export namespace Prisma {
     memberAccount?: AccountOrderByWithRelationInput
     memberConnection?: ConnectionOrderByWithRelationInput
     parentAccount?: AccountOrderByWithRelationInput
+    parentConnection?: ConnectionOrderByWithRelationInput
     parentPortfolio?: PortfolioOrderByWithRelationInput
     roles?: RoleOrderByRelationAggregateInput
   }
@@ -45737,6 +45819,7 @@ export namespace Prisma {
     parentType?: StringFilter<"Member"> | string
     parentPortfolioId?: StringNullableFilter<"Member"> | string | null
     parentAccountId?: StringNullableFilter<"Member"> | string | null
+    parentConnectionId?: StringNullableFilter<"Member"> | string | null
     isPermanent?: BoolFilter<"Member"> | boolean
     accessLevel?: StringFilter<"Member"> | string
     status?: EnumMemberStatusFilter<"Member"> | $Enums.MemberStatus
@@ -45744,6 +45827,7 @@ export namespace Prisma {
     memberAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
     memberConnection?: XOR<ConnectionNullableScalarRelationFilter, ConnectionWhereInput> | null
     parentAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
+    parentConnection?: XOR<ConnectionNullableScalarRelationFilter, ConnectionWhereInput> | null
     parentPortfolio?: XOR<PortfolioNullableScalarRelationFilter, PortfolioWhereInput> | null
     roles?: RoleListRelationFilter
   }, "id">
@@ -45756,6 +45840,7 @@ export namespace Prisma {
     parentType?: SortOrder
     parentPortfolioId?: SortOrderInput | SortOrder
     parentAccountId?: SortOrderInput | SortOrder
+    parentConnectionId?: SortOrderInput | SortOrder
     isPermanent?: SortOrder
     accessLevel?: SortOrder
     status?: SortOrder
@@ -45776,6 +45861,7 @@ export namespace Prisma {
     parentType?: StringWithAggregatesFilter<"Member"> | string
     parentPortfolioId?: StringNullableWithAggregatesFilter<"Member"> | string | null
     parentAccountId?: StringNullableWithAggregatesFilter<"Member"> | string | null
+    parentConnectionId?: StringNullableWithAggregatesFilter<"Member"> | string | null
     isPermanent?: BoolWithAggregatesFilter<"Member"> | boolean
     accessLevel?: StringWithAggregatesFilter<"Member"> | string
     status?: EnumMemberStatusWithAggregatesFilter<"Member"> | $Enums.MemberStatus
@@ -45855,6 +45941,7 @@ export namespace Prisma {
     application?: XOR<ApplicationScalarRelationFilter, ApplicationWhereInput>
     role?: XOR<AuthzRoleNullableScalarRelationFilter, AuthzRoleWhereInput> | null
     memberRows?: MemberListRelationFilter
+    parentMemberRows?: MemberListRelationFilter
     childAssets?: AssetListRelationFilter
     denormRoles?: RoleListRelationFilter
   }
@@ -45871,6 +45958,7 @@ export namespace Prisma {
     application?: ApplicationOrderByWithRelationInput
     role?: AuthzRoleOrderByWithRelationInput
     memberRows?: MemberOrderByRelationAggregateInput
+    parentMemberRows?: MemberOrderByRelationAggregateInput
     childAssets?: AssetOrderByRelationAggregateInput
     denormRoles?: RoleOrderByRelationAggregateInput
   }
@@ -45891,6 +45979,7 @@ export namespace Prisma {
     application?: XOR<ApplicationScalarRelationFilter, ApplicationWhereInput>
     role?: XOR<AuthzRoleNullableScalarRelationFilter, AuthzRoleWhereInput> | null
     memberRows?: MemberListRelationFilter
+    parentMemberRows?: MemberListRelationFilter
     childAssets?: AssetListRelationFilter
     denormRoles?: RoleListRelationFilter
   }, "id" | "accountId_appId">
@@ -48335,6 +48424,7 @@ export namespace Prisma {
     memberAccount?: AccountCreateNestedOneWithoutOwnedMembersInput
     memberConnection?: ConnectionCreateNestedOneWithoutMemberRowsInput
     parentAccount?: AccountCreateNestedOneWithoutParentAccountMembersInput
+    parentConnection?: ConnectionCreateNestedOneWithoutParentMemberRowsInput
     parentPortfolio?: PortfolioCreateNestedOneWithoutMembersInput
     roles?: RoleCreateNestedManyWithoutMemberInput
   }
@@ -48347,6 +48437,7 @@ export namespace Prisma {
     parentType: string
     parentPortfolioId?: string | null
     parentAccountId?: string | null
+    parentConnectionId?: string | null
     isPermanent?: boolean
     accessLevel?: string
     status?: $Enums.MemberStatus
@@ -48365,6 +48456,7 @@ export namespace Prisma {
     memberAccount?: AccountUpdateOneWithoutOwnedMembersNestedInput
     memberConnection?: ConnectionUpdateOneWithoutMemberRowsNestedInput
     parentAccount?: AccountUpdateOneWithoutParentAccountMembersNestedInput
+    parentConnection?: ConnectionUpdateOneWithoutParentMemberRowsNestedInput
     parentPortfolio?: PortfolioUpdateOneWithoutMembersNestedInput
     roles?: RoleUpdateManyWithoutMemberNestedInput
   }
@@ -48377,6 +48469,7 @@ export namespace Prisma {
     parentType?: StringFieldUpdateOperationsInput | string
     parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     accessLevel?: StringFieldUpdateOperationsInput | string
     status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
@@ -48392,6 +48485,7 @@ export namespace Prisma {
     parentType: string
     parentPortfolioId?: string | null
     parentAccountId?: string | null
+    parentConnectionId?: string | null
     isPermanent?: boolean
     accessLevel?: string
     status?: $Enums.MemberStatus
@@ -48416,6 +48510,7 @@ export namespace Prisma {
     parentType?: StringFieldUpdateOperationsInput | string
     parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     accessLevel?: StringFieldUpdateOperationsInput | string
     status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
@@ -48485,6 +48580,7 @@ export namespace Prisma {
     application: ApplicationCreateNestedOneWithoutConnectionsInput
     role?: AuthzRoleCreateNestedOneWithoutConnectionsInput
     memberRows?: MemberCreateNestedManyWithoutMemberConnectionInput
+    parentMemberRows?: MemberCreateNestedManyWithoutParentConnectionInput
     childAssets?: AssetCreateNestedManyWithoutChildConnectionInput
     denormRoles?: RoleCreateNestedManyWithoutConnectionInput
   }
@@ -48498,6 +48594,7 @@ export namespace Prisma {
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     memberRows?: MemberUncheckedCreateNestedManyWithoutMemberConnectionInput
+    parentMemberRows?: MemberUncheckedCreateNestedManyWithoutParentConnectionInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildConnectionInput
     denormRoles?: RoleUncheckedCreateNestedManyWithoutConnectionInput
   }
@@ -48511,6 +48608,7 @@ export namespace Prisma {
     application?: ApplicationUpdateOneRequiredWithoutConnectionsNestedInput
     role?: AuthzRoleUpdateOneWithoutConnectionsNestedInput
     memberRows?: MemberUpdateManyWithoutMemberConnectionNestedInput
+    parentMemberRows?: MemberUpdateManyWithoutParentConnectionNestedInput
     childAssets?: AssetUpdateManyWithoutChildConnectionNestedInput
     denormRoles?: RoleUpdateManyWithoutConnectionNestedInput
   }
@@ -48524,6 +48622,7 @@ export namespace Prisma {
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     memberRows?: MemberUncheckedUpdateManyWithoutMemberConnectionNestedInput
+    parentMemberRows?: MemberUncheckedUpdateManyWithoutParentConnectionNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildConnectionNestedInput
     denormRoles?: RoleUncheckedUpdateManyWithoutConnectionNestedInput
   }
@@ -50478,6 +50577,7 @@ export namespace Prisma {
     parentType?: SortOrder
     parentPortfolioId?: SortOrder
     parentAccountId?: SortOrder
+    parentConnectionId?: SortOrder
     isPermanent?: SortOrder
     accessLevel?: SortOrder
     status?: SortOrder
@@ -50492,6 +50592,7 @@ export namespace Prisma {
     parentType?: SortOrder
     parentPortfolioId?: SortOrder
     parentAccountId?: SortOrder
+    parentConnectionId?: SortOrder
     isPermanent?: SortOrder
     accessLevel?: SortOrder
     status?: SortOrder
@@ -50505,6 +50606,7 @@ export namespace Prisma {
     parentType?: SortOrder
     parentPortfolioId?: SortOrder
     parentAccountId?: SortOrder
+    parentConnectionId?: SortOrder
     isPermanent?: SortOrder
     accessLevel?: SortOrder
     status?: SortOrder
@@ -53065,6 +53167,12 @@ export namespace Prisma {
     connect?: AccountWhereUniqueInput
   }
 
+  export type ConnectionCreateNestedOneWithoutParentMemberRowsInput = {
+    create?: XOR<ConnectionCreateWithoutParentMemberRowsInput, ConnectionUncheckedCreateWithoutParentMemberRowsInput>
+    connectOrCreate?: ConnectionCreateOrConnectWithoutParentMemberRowsInput
+    connect?: ConnectionWhereUniqueInput
+  }
+
   export type PortfolioCreateNestedOneWithoutMembersInput = {
     create?: XOR<PortfolioCreateWithoutMembersInput, PortfolioUncheckedCreateWithoutMembersInput>
     connectOrCreate?: PortfolioCreateOrConnectWithoutMembersInput
@@ -53117,6 +53225,16 @@ export namespace Prisma {
     delete?: AccountWhereInput | boolean
     connect?: AccountWhereUniqueInput
     update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutParentAccountMembersInput, AccountUpdateWithoutParentAccountMembersInput>, AccountUncheckedUpdateWithoutParentAccountMembersInput>
+  }
+
+  export type ConnectionUpdateOneWithoutParentMemberRowsNestedInput = {
+    create?: XOR<ConnectionCreateWithoutParentMemberRowsInput, ConnectionUncheckedCreateWithoutParentMemberRowsInput>
+    connectOrCreate?: ConnectionCreateOrConnectWithoutParentMemberRowsInput
+    upsert?: ConnectionUpsertWithoutParentMemberRowsInput
+    disconnect?: ConnectionWhereInput | boolean
+    delete?: ConnectionWhereInput | boolean
+    connect?: ConnectionWhereUniqueInput
+    update?: XOR<XOR<ConnectionUpdateToOneWithWhereWithoutParentMemberRowsInput, ConnectionUpdateWithoutParentMemberRowsInput>, ConnectionUncheckedUpdateWithoutParentMemberRowsInput>
   }
 
   export type PortfolioUpdateOneWithoutMembersNestedInput = {
@@ -53210,6 +53328,13 @@ export namespace Prisma {
     connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
   }
 
+  export type MemberCreateNestedManyWithoutParentConnectionInput = {
+    create?: XOR<MemberCreateWithoutParentConnectionInput, MemberUncheckedCreateWithoutParentConnectionInput> | MemberCreateWithoutParentConnectionInput[] | MemberUncheckedCreateWithoutParentConnectionInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutParentConnectionInput | MemberCreateOrConnectWithoutParentConnectionInput[]
+    createMany?: MemberCreateManyParentConnectionInputEnvelope
+    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+  }
+
   export type AssetCreateNestedManyWithoutChildConnectionInput = {
     create?: XOR<AssetCreateWithoutChildConnectionInput, AssetUncheckedCreateWithoutChildConnectionInput> | AssetCreateWithoutChildConnectionInput[] | AssetUncheckedCreateWithoutChildConnectionInput[]
     connectOrCreate?: AssetCreateOrConnectWithoutChildConnectionInput | AssetCreateOrConnectWithoutChildConnectionInput[]
@@ -53228,6 +53353,13 @@ export namespace Prisma {
     create?: XOR<MemberCreateWithoutMemberConnectionInput, MemberUncheckedCreateWithoutMemberConnectionInput> | MemberCreateWithoutMemberConnectionInput[] | MemberUncheckedCreateWithoutMemberConnectionInput[]
     connectOrCreate?: MemberCreateOrConnectWithoutMemberConnectionInput | MemberCreateOrConnectWithoutMemberConnectionInput[]
     createMany?: MemberCreateManyMemberConnectionInputEnvelope
+    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+  }
+
+  export type MemberUncheckedCreateNestedManyWithoutParentConnectionInput = {
+    create?: XOR<MemberCreateWithoutParentConnectionInput, MemberUncheckedCreateWithoutParentConnectionInput> | MemberCreateWithoutParentConnectionInput[] | MemberUncheckedCreateWithoutParentConnectionInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutParentConnectionInput | MemberCreateOrConnectWithoutParentConnectionInput[]
+    createMany?: MemberCreateManyParentConnectionInputEnvelope
     connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
   }
 
@@ -53285,6 +53417,20 @@ export namespace Prisma {
     deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
   }
 
+  export type MemberUpdateManyWithoutParentConnectionNestedInput = {
+    create?: XOR<MemberCreateWithoutParentConnectionInput, MemberUncheckedCreateWithoutParentConnectionInput> | MemberCreateWithoutParentConnectionInput[] | MemberUncheckedCreateWithoutParentConnectionInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutParentConnectionInput | MemberCreateOrConnectWithoutParentConnectionInput[]
+    upsert?: MemberUpsertWithWhereUniqueWithoutParentConnectionInput | MemberUpsertWithWhereUniqueWithoutParentConnectionInput[]
+    createMany?: MemberCreateManyParentConnectionInputEnvelope
+    set?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    disconnect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    delete?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    update?: MemberUpdateWithWhereUniqueWithoutParentConnectionInput | MemberUpdateWithWhereUniqueWithoutParentConnectionInput[]
+    updateMany?: MemberUpdateManyWithWhereWithoutParentConnectionInput | MemberUpdateManyWithWhereWithoutParentConnectionInput[]
+    deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
+  }
+
   export type AssetUpdateManyWithoutChildConnectionNestedInput = {
     create?: XOR<AssetCreateWithoutChildConnectionInput, AssetUncheckedCreateWithoutChildConnectionInput> | AssetCreateWithoutChildConnectionInput[] | AssetUncheckedCreateWithoutChildConnectionInput[]
     connectOrCreate?: AssetCreateOrConnectWithoutChildConnectionInput | AssetCreateOrConnectWithoutChildConnectionInput[]
@@ -53324,6 +53470,20 @@ export namespace Prisma {
     connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
     update?: MemberUpdateWithWhereUniqueWithoutMemberConnectionInput | MemberUpdateWithWhereUniqueWithoutMemberConnectionInput[]
     updateMany?: MemberUpdateManyWithWhereWithoutMemberConnectionInput | MemberUpdateManyWithWhereWithoutMemberConnectionInput[]
+    deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
+  }
+
+  export type MemberUncheckedUpdateManyWithoutParentConnectionNestedInput = {
+    create?: XOR<MemberCreateWithoutParentConnectionInput, MemberUncheckedCreateWithoutParentConnectionInput> | MemberCreateWithoutParentConnectionInput[] | MemberUncheckedCreateWithoutParentConnectionInput[]
+    connectOrCreate?: MemberCreateOrConnectWithoutParentConnectionInput | MemberCreateOrConnectWithoutParentConnectionInput[]
+    upsert?: MemberUpsertWithWhereUniqueWithoutParentConnectionInput | MemberUpsertWithWhereUniqueWithoutParentConnectionInput[]
+    createMany?: MemberCreateManyParentConnectionInputEnvelope
+    set?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    disconnect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    delete?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
+    update?: MemberUpdateWithWhereUniqueWithoutParentConnectionInput | MemberUpdateWithWhereUniqueWithoutParentConnectionInput[]
+    updateMany?: MemberUpdateManyWithWhereWithoutParentConnectionInput | MemberUpdateManyWithWhereWithoutParentConnectionInput[]
     deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
   }
 
@@ -54195,6 +54355,7 @@ export namespace Prisma {
     application: ApplicationCreateNestedOneWithoutConnectionsInput
     role?: AuthzRoleCreateNestedOneWithoutConnectionsInput
     memberRows?: MemberCreateNestedManyWithoutMemberConnectionInput
+    parentMemberRows?: MemberCreateNestedManyWithoutParentConnectionInput
     childAssets?: AssetCreateNestedManyWithoutChildConnectionInput
     denormRoles?: RoleCreateNestedManyWithoutConnectionInput
   }
@@ -54207,6 +54368,7 @@ export namespace Prisma {
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     memberRows?: MemberUncheckedCreateNestedManyWithoutMemberConnectionInput
+    parentMemberRows?: MemberUncheckedCreateNestedManyWithoutParentConnectionInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildConnectionInput
     denormRoles?: RoleUncheckedCreateNestedManyWithoutConnectionInput
   }
@@ -54541,6 +54703,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     memberConnection?: ConnectionCreateNestedOneWithoutMemberRowsInput
     parentAccount?: AccountCreateNestedOneWithoutParentAccountMembersInput
+    parentConnection?: ConnectionCreateNestedOneWithoutParentMemberRowsInput
     parentPortfolio?: PortfolioCreateNestedOneWithoutMembersInput
     roles?: RoleCreateNestedManyWithoutMemberInput
   }
@@ -54552,6 +54715,7 @@ export namespace Prisma {
     parentType: string
     parentPortfolioId?: string | null
     parentAccountId?: string | null
+    parentConnectionId?: string | null
     isPermanent?: boolean
     accessLevel?: string
     status?: $Enums.MemberStatus
@@ -54579,6 +54743,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     memberAccount?: AccountCreateNestedOneWithoutOwnedMembersInput
     memberConnection?: ConnectionCreateNestedOneWithoutMemberRowsInput
+    parentConnection?: ConnectionCreateNestedOneWithoutParentMemberRowsInput
     parentPortfolio?: PortfolioCreateNestedOneWithoutMembersInput
     roles?: RoleCreateNestedManyWithoutMemberInput
   }
@@ -54590,6 +54755,7 @@ export namespace Prisma {
     memberConnectionId?: string | null
     parentType: string
     parentPortfolioId?: string | null
+    parentConnectionId?: string | null
     isPermanent?: boolean
     accessLevel?: string
     status?: $Enums.MemberStatus
@@ -55499,6 +55665,7 @@ export namespace Prisma {
     parentType?: StringFilter<"Member"> | string
     parentPortfolioId?: StringNullableFilter<"Member"> | string | null
     parentAccountId?: StringNullableFilter<"Member"> | string | null
+    parentConnectionId?: StringNullableFilter<"Member"> | string | null
     isPermanent?: BoolFilter<"Member"> | boolean
     accessLevel?: StringFilter<"Member"> | string
     status?: EnumMemberStatusFilter<"Member"> | $Enums.MemberStatus
@@ -58658,6 +58825,7 @@ export namespace Prisma {
     account: AccountCreateNestedOneWithoutConnectionsInput
     role?: AuthzRoleCreateNestedOneWithoutConnectionsInput
     memberRows?: MemberCreateNestedManyWithoutMemberConnectionInput
+    parentMemberRows?: MemberCreateNestedManyWithoutParentConnectionInput
     childAssets?: AssetCreateNestedManyWithoutChildConnectionInput
     denormRoles?: RoleCreateNestedManyWithoutConnectionInput
   }
@@ -58670,6 +58838,7 @@ export namespace Prisma {
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     memberRows?: MemberUncheckedCreateNestedManyWithoutMemberConnectionInput
+    parentMemberRows?: MemberUncheckedCreateNestedManyWithoutParentConnectionInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildConnectionInput
     denormRoles?: RoleUncheckedCreateNestedManyWithoutConnectionInput
   }
@@ -59358,6 +59527,7 @@ export namespace Prisma {
     memberAccount?: AccountCreateNestedOneWithoutOwnedMembersInput
     memberConnection?: ConnectionCreateNestedOneWithoutMemberRowsInput
     parentAccount?: AccountCreateNestedOneWithoutParentAccountMembersInput
+    parentConnection?: ConnectionCreateNestedOneWithoutParentMemberRowsInput
     roles?: RoleCreateNestedManyWithoutMemberInput
   }
 
@@ -59368,6 +59538,7 @@ export namespace Prisma {
     memberConnectionId?: string | null
     parentType: string
     parentAccountId?: string | null
+    parentConnectionId?: string | null
     isPermanent?: boolean
     accessLevel?: string
     status?: $Enums.MemberStatus
@@ -59712,6 +59883,7 @@ export namespace Prisma {
     application: ApplicationCreateNestedOneWithoutConnectionsInput
     role?: AuthzRoleCreateNestedOneWithoutConnectionsInput
     memberRows?: MemberCreateNestedManyWithoutMemberConnectionInput
+    parentMemberRows?: MemberCreateNestedManyWithoutParentConnectionInput
     denormRoles?: RoleCreateNestedManyWithoutConnectionInput
   }
 
@@ -59724,6 +59896,7 @@ export namespace Prisma {
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     memberRows?: MemberUncheckedCreateNestedManyWithoutMemberConnectionInput
+    parentMemberRows?: MemberUncheckedCreateNestedManyWithoutParentConnectionInput
     denormRoles?: RoleUncheckedCreateNestedManyWithoutConnectionInput
   }
 
@@ -60084,6 +60257,7 @@ export namespace Prisma {
     application?: ApplicationUpdateOneRequiredWithoutConnectionsNestedInput
     role?: AuthzRoleUpdateOneWithoutConnectionsNestedInput
     memberRows?: MemberUpdateManyWithoutMemberConnectionNestedInput
+    parentMemberRows?: MemberUpdateManyWithoutParentConnectionNestedInput
     denormRoles?: RoleUpdateManyWithoutConnectionNestedInput
   }
 
@@ -60096,6 +60270,7 @@ export namespace Prisma {
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     memberRows?: MemberUncheckedUpdateManyWithoutMemberConnectionNestedInput
+    parentMemberRows?: MemberUncheckedUpdateManyWithoutParentConnectionNestedInput
     denormRoles?: RoleUncheckedUpdateManyWithoutConnectionNestedInput
   }
 
@@ -60220,6 +60395,7 @@ export namespace Prisma {
     account: AccountCreateNestedOneWithoutConnectionsInput
     application: ApplicationCreateNestedOneWithoutConnectionsInput
     role?: AuthzRoleCreateNestedOneWithoutConnectionsInput
+    parentMemberRows?: MemberCreateNestedManyWithoutParentConnectionInput
     childAssets?: AssetCreateNestedManyWithoutChildConnectionInput
     denormRoles?: RoleCreateNestedManyWithoutConnectionInput
   }
@@ -60232,6 +60408,7 @@ export namespace Prisma {
     status?: string
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
+    parentMemberRows?: MemberUncheckedCreateNestedManyWithoutParentConnectionInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildConnectionInput
     denormRoles?: RoleUncheckedCreateNestedManyWithoutConnectionInput
   }
@@ -60320,6 +60497,37 @@ export namespace Prisma {
   export type AccountCreateOrConnectWithoutParentAccountMembersInput = {
     where: AccountWhereUniqueInput
     create: XOR<AccountCreateWithoutParentAccountMembersInput, AccountUncheckedCreateWithoutParentAccountMembersInput>
+  }
+
+  export type ConnectionCreateWithoutParentMemberRowsInput = {
+    id?: string
+    status?: string
+    connectedAt?: Date | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    account: AccountCreateNestedOneWithoutConnectionsInput
+    application: ApplicationCreateNestedOneWithoutConnectionsInput
+    role?: AuthzRoleCreateNestedOneWithoutConnectionsInput
+    memberRows?: MemberCreateNestedManyWithoutMemberConnectionInput
+    childAssets?: AssetCreateNestedManyWithoutChildConnectionInput
+    denormRoles?: RoleCreateNestedManyWithoutConnectionInput
+  }
+
+  export type ConnectionUncheckedCreateWithoutParentMemberRowsInput = {
+    id?: string
+    accountId: string
+    appId: string
+    roleId?: string | null
+    status?: string
+    connectedAt?: Date | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    memberRows?: MemberUncheckedCreateNestedManyWithoutMemberConnectionInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildConnectionInput
+    denormRoles?: RoleUncheckedCreateNestedManyWithoutConnectionInput
+  }
+
+  export type ConnectionCreateOrConnectWithoutParentMemberRowsInput = {
+    where: ConnectionWhereUniqueInput
+    create: XOR<ConnectionCreateWithoutParentMemberRowsInput, ConnectionUncheckedCreateWithoutParentMemberRowsInput>
   }
 
   export type PortfolioCreateWithoutMembersInput = {
@@ -60489,6 +60697,7 @@ export namespace Prisma {
     account?: AccountUpdateOneRequiredWithoutConnectionsNestedInput
     application?: ApplicationUpdateOneRequiredWithoutConnectionsNestedInput
     role?: AuthzRoleUpdateOneWithoutConnectionsNestedInput
+    parentMemberRows?: MemberUpdateManyWithoutParentConnectionNestedInput
     childAssets?: AssetUpdateManyWithoutChildConnectionNestedInput
     denormRoles?: RoleUpdateManyWithoutConnectionNestedInput
   }
@@ -60501,6 +60710,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
+    parentMemberRows?: MemberUncheckedUpdateManyWithoutParentConnectionNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildConnectionNestedInput
     denormRoles?: RoleUncheckedUpdateManyWithoutConnectionNestedInput
   }
@@ -60590,6 +60800,43 @@ export namespace Prisma {
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
     verifications?: VerificationUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
+  export type ConnectionUpsertWithoutParentMemberRowsInput = {
+    update: XOR<ConnectionUpdateWithoutParentMemberRowsInput, ConnectionUncheckedUpdateWithoutParentMemberRowsInput>
+    create: XOR<ConnectionCreateWithoutParentMemberRowsInput, ConnectionUncheckedCreateWithoutParentMemberRowsInput>
+    where?: ConnectionWhereInput
+  }
+
+  export type ConnectionUpdateToOneWithWhereWithoutParentMemberRowsInput = {
+    where?: ConnectionWhereInput
+    data: XOR<ConnectionUpdateWithoutParentMemberRowsInput, ConnectionUncheckedUpdateWithoutParentMemberRowsInput>
+  }
+
+  export type ConnectionUpdateWithoutParentMemberRowsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    account?: AccountUpdateOneRequiredWithoutConnectionsNestedInput
+    application?: ApplicationUpdateOneRequiredWithoutConnectionsNestedInput
+    role?: AuthzRoleUpdateOneWithoutConnectionsNestedInput
+    memberRows?: MemberUpdateManyWithoutMemberConnectionNestedInput
+    childAssets?: AssetUpdateManyWithoutChildConnectionNestedInput
+    denormRoles?: RoleUpdateManyWithoutConnectionNestedInput
+  }
+
+  export type ConnectionUncheckedUpdateWithoutParentMemberRowsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    appId?: StringFieldUpdateOperationsInput | string
+    roleId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    details?: NullableJsonNullValueInput | InputJsonValue
+    memberRows?: MemberUncheckedUpdateManyWithoutMemberConnectionNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildConnectionNestedInput
+    denormRoles?: RoleUncheckedUpdateManyWithoutConnectionNestedInput
   }
 
   export type PortfolioUpsertWithoutMembersInput = {
@@ -61154,6 +61401,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     memberAccount?: AccountCreateNestedOneWithoutOwnedMembersInput
     parentAccount?: AccountCreateNestedOneWithoutParentAccountMembersInput
+    parentConnection?: ConnectionCreateNestedOneWithoutParentMemberRowsInput
     parentPortfolio?: PortfolioCreateNestedOneWithoutMembersInput
     roles?: RoleCreateNestedManyWithoutMemberInput
   }
@@ -61165,6 +61413,7 @@ export namespace Prisma {
     parentType: string
     parentPortfolioId?: string | null
     parentAccountId?: string | null
+    parentConnectionId?: string | null
     isPermanent?: boolean
     accessLevel?: string
     status?: $Enums.MemberStatus
@@ -61179,6 +61428,46 @@ export namespace Prisma {
 
   export type MemberCreateManyMemberConnectionInputEnvelope = {
     data: MemberCreateManyMemberConnectionInput | MemberCreateManyMemberConnectionInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type MemberCreateWithoutParentConnectionInput = {
+    id?: string
+    memberType: string
+    parentType: string
+    isPermanent?: boolean
+    accessLevel?: string
+    status?: $Enums.MemberStatus
+    details?: NullableJsonNullValueInput | InputJsonValue
+    memberAccount?: AccountCreateNestedOneWithoutOwnedMembersInput
+    memberConnection?: ConnectionCreateNestedOneWithoutMemberRowsInput
+    parentAccount?: AccountCreateNestedOneWithoutParentAccountMembersInput
+    parentPortfolio?: PortfolioCreateNestedOneWithoutMembersInput
+    roles?: RoleCreateNestedManyWithoutMemberInput
+  }
+
+  export type MemberUncheckedCreateWithoutParentConnectionInput = {
+    id?: string
+    memberType: string
+    memberAccountId?: string | null
+    memberConnectionId?: string | null
+    parentType: string
+    parentPortfolioId?: string | null
+    parentAccountId?: string | null
+    isPermanent?: boolean
+    accessLevel?: string
+    status?: $Enums.MemberStatus
+    details?: NullableJsonNullValueInput | InputJsonValue
+    roles?: RoleUncheckedCreateNestedManyWithoutMemberInput
+  }
+
+  export type MemberCreateOrConnectWithoutParentConnectionInput = {
+    where: MemberWhereUniqueInput
+    create: XOR<MemberCreateWithoutParentConnectionInput, MemberUncheckedCreateWithoutParentConnectionInput>
+  }
+
+  export type MemberCreateManyParentConnectionInputEnvelope = {
+    data: MemberCreateManyParentConnectionInput | MemberCreateManyParentConnectionInput[]
     skipDuplicates?: boolean
   }
 
@@ -61467,6 +61756,22 @@ export namespace Prisma {
     data: XOR<MemberUpdateManyMutationInput, MemberUncheckedUpdateManyWithoutMemberConnectionInput>
   }
 
+  export type MemberUpsertWithWhereUniqueWithoutParentConnectionInput = {
+    where: MemberWhereUniqueInput
+    update: XOR<MemberUpdateWithoutParentConnectionInput, MemberUncheckedUpdateWithoutParentConnectionInput>
+    create: XOR<MemberCreateWithoutParentConnectionInput, MemberUncheckedCreateWithoutParentConnectionInput>
+  }
+
+  export type MemberUpdateWithWhereUniqueWithoutParentConnectionInput = {
+    where: MemberWhereUniqueInput
+    data: XOR<MemberUpdateWithoutParentConnectionInput, MemberUncheckedUpdateWithoutParentConnectionInput>
+  }
+
+  export type MemberUpdateManyWithWhereWithoutParentConnectionInput = {
+    where: MemberScalarWhereInput
+    data: XOR<MemberUpdateManyMutationInput, MemberUncheckedUpdateManyWithoutParentConnectionInput>
+  }
+
   export type AssetUpsertWithWhereUniqueWithoutChildConnectionInput = {
     where: AssetWhereUniqueInput
     update: XOR<AssetUpdateWithoutChildConnectionInput, AssetUncheckedUpdateWithoutChildConnectionInput>
@@ -61750,6 +62055,7 @@ export namespace Prisma {
     memberAccount?: AccountCreateNestedOneWithoutOwnedMembersInput
     memberConnection?: ConnectionCreateNestedOneWithoutMemberRowsInput
     parentAccount?: AccountCreateNestedOneWithoutParentAccountMembersInput
+    parentConnection?: ConnectionCreateNestedOneWithoutParentMemberRowsInput
     parentPortfolio?: PortfolioCreateNestedOneWithoutMembersInput
   }
 
@@ -61761,6 +62067,7 @@ export namespace Prisma {
     parentType: string
     parentPortfolioId?: string | null
     parentAccountId?: string | null
+    parentConnectionId?: string | null
     isPermanent?: boolean
     accessLevel?: string
     status?: $Enums.MemberStatus
@@ -61862,6 +62169,7 @@ export namespace Prisma {
     application: ApplicationCreateNestedOneWithoutConnectionsInput
     role?: AuthzRoleCreateNestedOneWithoutConnectionsInput
     memberRows?: MemberCreateNestedManyWithoutMemberConnectionInput
+    parentMemberRows?: MemberCreateNestedManyWithoutParentConnectionInput
     childAssets?: AssetCreateNestedManyWithoutChildConnectionInput
   }
 
@@ -61874,6 +62182,7 @@ export namespace Prisma {
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     memberRows?: MemberUncheckedCreateNestedManyWithoutMemberConnectionInput
+    parentMemberRows?: MemberUncheckedCreateNestedManyWithoutParentConnectionInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildConnectionInput
   }
 
@@ -61974,6 +62283,7 @@ export namespace Prisma {
     memberAccount?: AccountUpdateOneWithoutOwnedMembersNestedInput
     memberConnection?: ConnectionUpdateOneWithoutMemberRowsNestedInput
     parentAccount?: AccountUpdateOneWithoutParentAccountMembersNestedInput
+    parentConnection?: ConnectionUpdateOneWithoutParentMemberRowsNestedInput
     parentPortfolio?: PortfolioUpdateOneWithoutMembersNestedInput
   }
 
@@ -61985,6 +62295,7 @@ export namespace Prisma {
     parentType?: StringFieldUpdateOperationsInput | string
     parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     accessLevel?: StringFieldUpdateOperationsInput | string
     status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
@@ -62098,6 +62409,7 @@ export namespace Prisma {
     application?: ApplicationUpdateOneRequiredWithoutConnectionsNestedInput
     role?: AuthzRoleUpdateOneWithoutConnectionsNestedInput
     memberRows?: MemberUpdateManyWithoutMemberConnectionNestedInput
+    parentMemberRows?: MemberUpdateManyWithoutParentConnectionNestedInput
     childAssets?: AssetUpdateManyWithoutChildConnectionNestedInput
   }
 
@@ -62110,6 +62422,7 @@ export namespace Prisma {
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     memberRows?: MemberUncheckedUpdateManyWithoutMemberConnectionNestedInput
+    parentMemberRows?: MemberUncheckedUpdateManyWithoutParentConnectionNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildConnectionNestedInput
   }
 
@@ -62516,6 +62829,7 @@ export namespace Prisma {
     account: AccountCreateNestedOneWithoutConnectionsInput
     application: ApplicationCreateNestedOneWithoutConnectionsInput
     memberRows?: MemberCreateNestedManyWithoutMemberConnectionInput
+    parentMemberRows?: MemberCreateNestedManyWithoutParentConnectionInput
     childAssets?: AssetCreateNestedManyWithoutChildConnectionInput
     denormRoles?: RoleCreateNestedManyWithoutConnectionInput
   }
@@ -62528,6 +62842,7 @@ export namespace Prisma {
     connectedAt?: Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     memberRows?: MemberUncheckedCreateNestedManyWithoutMemberConnectionInput
+    parentMemberRows?: MemberUncheckedCreateNestedManyWithoutParentConnectionInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildConnectionInput
     denormRoles?: RoleUncheckedCreateNestedManyWithoutConnectionInput
   }
@@ -63812,6 +64127,7 @@ export namespace Prisma {
     parentType: string
     parentPortfolioId?: string | null
     parentAccountId?: string | null
+    parentConnectionId?: string | null
     isPermanent?: boolean
     accessLevel?: string
     status?: $Enums.MemberStatus
@@ -63825,6 +64141,7 @@ export namespace Prisma {
     memberConnectionId?: string | null
     parentType: string
     parentPortfolioId?: string | null
+    parentConnectionId?: string | null
     isPermanent?: boolean
     accessLevel?: string
     status?: $Enums.MemberStatus
@@ -63960,6 +64277,7 @@ export namespace Prisma {
     application?: ApplicationUpdateOneRequiredWithoutConnectionsNestedInput
     role?: AuthzRoleUpdateOneWithoutConnectionsNestedInput
     memberRows?: MemberUpdateManyWithoutMemberConnectionNestedInput
+    parentMemberRows?: MemberUpdateManyWithoutParentConnectionNestedInput
     childAssets?: AssetUpdateManyWithoutChildConnectionNestedInput
     denormRoles?: RoleUpdateManyWithoutConnectionNestedInput
   }
@@ -63972,6 +64290,7 @@ export namespace Prisma {
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     memberRows?: MemberUncheckedUpdateManyWithoutMemberConnectionNestedInput
+    parentMemberRows?: MemberUncheckedUpdateManyWithoutParentConnectionNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildConnectionNestedInput
     denormRoles?: RoleUncheckedUpdateManyWithoutConnectionNestedInput
   }
@@ -64306,6 +64625,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     memberConnection?: ConnectionUpdateOneWithoutMemberRowsNestedInput
     parentAccount?: AccountUpdateOneWithoutParentAccountMembersNestedInput
+    parentConnection?: ConnectionUpdateOneWithoutParentMemberRowsNestedInput
     parentPortfolio?: PortfolioUpdateOneWithoutMembersNestedInput
     roles?: RoleUpdateManyWithoutMemberNestedInput
   }
@@ -64317,6 +64637,7 @@ export namespace Prisma {
     parentType?: StringFieldUpdateOperationsInput | string
     parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     accessLevel?: StringFieldUpdateOperationsInput | string
     status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
@@ -64331,6 +64652,7 @@ export namespace Prisma {
     parentType?: StringFieldUpdateOperationsInput | string
     parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     accessLevel?: StringFieldUpdateOperationsInput | string
     status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
@@ -64347,6 +64669,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     memberAccount?: AccountUpdateOneWithoutOwnedMembersNestedInput
     memberConnection?: ConnectionUpdateOneWithoutMemberRowsNestedInput
+    parentConnection?: ConnectionUpdateOneWithoutParentMemberRowsNestedInput
     parentPortfolio?: PortfolioUpdateOneWithoutMembersNestedInput
     roles?: RoleUpdateManyWithoutMemberNestedInput
   }
@@ -64358,6 +64681,7 @@ export namespace Prisma {
     memberConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     parentType?: StringFieldUpdateOperationsInput | string
     parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     accessLevel?: StringFieldUpdateOperationsInput | string
     status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
@@ -64372,6 +64696,7 @@ export namespace Prisma {
     memberConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     parentType?: StringFieldUpdateOperationsInput | string
     parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     accessLevel?: StringFieldUpdateOperationsInput | string
     status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
@@ -64995,6 +65320,7 @@ export namespace Prisma {
     account?: AccountUpdateOneRequiredWithoutConnectionsNestedInput
     role?: AuthzRoleUpdateOneWithoutConnectionsNestedInput
     memberRows?: MemberUpdateManyWithoutMemberConnectionNestedInput
+    parentMemberRows?: MemberUpdateManyWithoutParentConnectionNestedInput
     childAssets?: AssetUpdateManyWithoutChildConnectionNestedInput
     denormRoles?: RoleUpdateManyWithoutConnectionNestedInput
   }
@@ -65007,6 +65333,7 @@ export namespace Prisma {
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     memberRows?: MemberUncheckedUpdateManyWithoutMemberConnectionNestedInput
+    parentMemberRows?: MemberUncheckedUpdateManyWithoutParentConnectionNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildConnectionNestedInput
     denormRoles?: RoleUncheckedUpdateManyWithoutConnectionNestedInput
   }
@@ -65270,6 +65597,7 @@ export namespace Prisma {
     memberConnectionId?: string | null
     parentType: string
     parentAccountId?: string | null
+    parentConnectionId?: string | null
     isPermanent?: boolean
     accessLevel?: string
     status?: $Enums.MemberStatus
@@ -65342,6 +65670,7 @@ export namespace Prisma {
     memberAccount?: AccountUpdateOneWithoutOwnedMembersNestedInput
     memberConnection?: ConnectionUpdateOneWithoutMemberRowsNestedInput
     parentAccount?: AccountUpdateOneWithoutParentAccountMembersNestedInput
+    parentConnection?: ConnectionUpdateOneWithoutParentMemberRowsNestedInput
     roles?: RoleUpdateManyWithoutMemberNestedInput
   }
 
@@ -65352,6 +65681,7 @@ export namespace Prisma {
     memberConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     parentType?: StringFieldUpdateOperationsInput | string
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     accessLevel?: StringFieldUpdateOperationsInput | string
     status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
@@ -65366,6 +65696,7 @@ export namespace Prisma {
     memberConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     parentType?: StringFieldUpdateOperationsInput | string
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     accessLevel?: StringFieldUpdateOperationsInput | string
     status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
@@ -65554,6 +65885,21 @@ export namespace Prisma {
     parentType: string
     parentPortfolioId?: string | null
     parentAccountId?: string | null
+    parentConnectionId?: string | null
+    isPermanent?: boolean
+    accessLevel?: string
+    status?: $Enums.MemberStatus
+    details?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type MemberCreateManyParentConnectionInput = {
+    id?: string
+    memberType: string
+    memberAccountId?: string | null
+    memberConnectionId?: string | null
+    parentType: string
+    parentPortfolioId?: string | null
+    parentAccountId?: string | null
     isPermanent?: boolean
     accessLevel?: string
     status?: $Enums.MemberStatus
@@ -65598,6 +65944,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     memberAccount?: AccountUpdateOneWithoutOwnedMembersNestedInput
     parentAccount?: AccountUpdateOneWithoutParentAccountMembersNestedInput
+    parentConnection?: ConnectionUpdateOneWithoutParentMemberRowsNestedInput
     parentPortfolio?: PortfolioUpdateOneWithoutMembersNestedInput
     roles?: RoleUpdateManyWithoutMemberNestedInput
   }
@@ -65609,6 +65956,7 @@ export namespace Prisma {
     parentType?: StringFieldUpdateOperationsInput | string
     parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     isPermanent?: BoolFieldUpdateOperationsInput | boolean
     accessLevel?: StringFieldUpdateOperationsInput | string
     status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
@@ -65620,6 +65968,51 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     memberType?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentType?: StringFieldUpdateOperationsInput | string
+    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    isPermanent?: BoolFieldUpdateOperationsInput | boolean
+    accessLevel?: StringFieldUpdateOperationsInput | string
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
+    details?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type MemberUpdateWithoutParentConnectionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    memberType?: StringFieldUpdateOperationsInput | string
+    parentType?: StringFieldUpdateOperationsInput | string
+    isPermanent?: BoolFieldUpdateOperationsInput | boolean
+    accessLevel?: StringFieldUpdateOperationsInput | string
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
+    details?: NullableJsonNullValueInput | InputJsonValue
+    memberAccount?: AccountUpdateOneWithoutOwnedMembersNestedInput
+    memberConnection?: ConnectionUpdateOneWithoutMemberRowsNestedInput
+    parentAccount?: AccountUpdateOneWithoutParentAccountMembersNestedInput
+    parentPortfolio?: PortfolioUpdateOneWithoutMembersNestedInput
+    roles?: RoleUpdateManyWithoutMemberNestedInput
+  }
+
+  export type MemberUncheckedUpdateWithoutParentConnectionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    memberType?: StringFieldUpdateOperationsInput | string
+    memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    memberConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentType?: StringFieldUpdateOperationsInput | string
+    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    isPermanent?: BoolFieldUpdateOperationsInput | boolean
+    accessLevel?: StringFieldUpdateOperationsInput | string
+    status?: EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
+    details?: NullableJsonNullValueInput | InputJsonValue
+    roles?: RoleUncheckedUpdateManyWithoutMemberNestedInput
+  }
+
+  export type MemberUncheckedUpdateManyWithoutParentConnectionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    memberType?: StringFieldUpdateOperationsInput | string
+    memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    memberConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
     parentType?: StringFieldUpdateOperationsInput | string
     parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -65892,6 +66285,7 @@ export namespace Prisma {
     account?: AccountUpdateOneRequiredWithoutConnectionsNestedInput
     application?: ApplicationUpdateOneRequiredWithoutConnectionsNestedInput
     memberRows?: MemberUpdateManyWithoutMemberConnectionNestedInput
+    parentMemberRows?: MemberUpdateManyWithoutParentConnectionNestedInput
     childAssets?: AssetUpdateManyWithoutChildConnectionNestedInput
     denormRoles?: RoleUpdateManyWithoutConnectionNestedInput
   }
@@ -65904,6 +66298,7 @@ export namespace Prisma {
     connectedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: NullableJsonNullValueInput | InputJsonValue
     memberRows?: MemberUncheckedUpdateManyWithoutMemberConnectionNestedInput
+    parentMemberRows?: MemberUncheckedUpdateManyWithoutParentConnectionNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildConnectionNestedInput
     denormRoles?: RoleUncheckedUpdateManyWithoutConnectionNestedInput
   }

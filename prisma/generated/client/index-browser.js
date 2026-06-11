@@ -361,6 +361,7 @@ exports.Prisma.MemberScalarFieldEnum = {
   parentType: 'parentType',
   parentPortfolioId: 'parentPortfolioId',
   parentAccountId: 'parentAccountId',
+  parentConnectionId: 'parentConnectionId',
   isPermanent: 'isPermanent',
   accessLevel: 'accessLevel',
   status: 'status',

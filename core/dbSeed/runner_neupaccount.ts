@@ -108,10 +108,10 @@ INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-def-security-recovery-email-add',     'security.recovery_email.add.self',        '${APP_ID}', 'default'),
   ('cap-def-security-recovery-email-remove',  'security.recovery_email.remove.self',     '${APP_ID}', 'default'),
   ('cap-def-security-devices-view',           'security.login_devices.view.self',        '${APP_ID}', 'default'),
-  ('cap-def-linked-brand-create',             'linked_accounts.brand.create',       '${APP_ID}', 'default'),
-  ('cap-def-linked-brand-view',               'linked_accounts.brand.view',         '${APP_ID}', 'default'),
-  ('cap-def-linked-dependent-create',         'linked_accounts.dependent.create',   '${APP_ID}', 'default'),
-  ('cap-def-linked-dependent-view',           'linked_accounts.dependent.view',     '${APP_ID}', 'default'),
+  ('cap-def-linked-brand-create',             'linked_accounts.brand.create.self',       '${APP_ID}', 'default'),
+  ('cap-def-linked-brand-view',               'linked_accounts.brand.view.self',         '${APP_ID}', 'default'),
+  ('cap-def-linked-dependent-create',         'linked_accounts.dependent.create.self',   '${APP_ID}', 'default'),
+  ('cap-def-linked-dependent-view',           'linked_accounts.dependent.view.self',     '${APP_ID}', 'default'),
   ('cap-def-data-terms-view',                 'data.agreed_terms.view',             '${APP_ID}', 'default'),
   ('cap-def-data-delete-start',               'data.delete_account.start',          '${APP_ID}', 'default'),
   ('cap-def-data-deactivate-start',           'data.deactivate_account.start',      '${APP_ID}', 'default'),
@@ -132,7 +132,7 @@ INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-def-payment-transactions-show',       'payment.transactions.show',          '${APP_ID}', 'default'),
   ('cap-def-payment-subscriptions-show',      'payment.subscriptions.show',         '${APP_ID}', 'default'),
   ('cap-def-payment-neup-pro-view',           'payment.purchase_neup_pro.view',     '${APP_ID}', 'default'),
-  ('cap-def-linked-brand-manager',            'linked_accounts.brand.manager',      '${APP_ID}', 'default')
+  ('cap-def-linked-brand-manager',            'linked_accounts.brand.manager.self',      '${APP_ID}', 'default')
 ON CONFLICT ("id") DO NOTHING;
 
 INSERT INTO "authz_role_capability" (
@@ -145,7 +145,7 @@ SELECT
   'default',
   '${APP_ID}',
   'individual.default',
-  '["self.profile.display.view","self.profile.display.update","self.profile.legal.view","self.profile.legal.update","self.profile.demographics.view","self.profile.demographics.update","self.profile.neupid.view","self.profile.neupid.request","self.profile.neupid.remove","self.profile.contact.view","self.profile.contact.update","self.profile.kyc.view","self.profile.kyc.update","self.notification.read","self.notification.delete","security.pass.modify.self","security.totp.add.self","security.totp.remove.self","security.backup_codes.view.self","security.backup_codes.create.self","security.recovery_accounts.view.self","security.recovery_accounts.add.self","security.recovery_accounts.remove.self","security.recovery_phone.view.self","security.recovery_phone.add.self","security.recovery_phone.remove.self","security.recovery_email.view.self","security.recovery_email.add.self","security.recovery_email.remove.self","security.login_devices.view.self","linked_accounts.brand.create","linked_accounts.brand.view","linked_accounts.dependent.create","linked_accounts.dependent.view","data.agreed_terms.view","data.delete_account.start","data.deactivate_account.start","data.materialization.view","data.materialization.modify","security.third_party.view.self","security.recent_activities.view.self","security.third_party.add.self","security.third_party.remove.self","people.family.view","people.family.add","people.family.remove","people.family.partner.add","people.family.partner.remove","people.block_list.view","people.restrict_list.view","payment.method.show","payment.transactions.show","payment.subscriptions.show","payment.purchase_neup_pro.view","linked_accounts.brand.manager"]'::jsonb
+  '["self.profile.display.view","self.profile.display.update","self.profile.legal.view","self.profile.legal.update","self.profile.demographics.view","self.profile.demographics.update","self.profile.neupid.view","self.profile.neupid.request","self.profile.neupid.remove","self.profile.contact.view","self.profile.contact.update","self.profile.kyc.view","self.profile.kyc.update","self.notification.read","self.notification.delete","security.pass.modify.self","security.totp.add.self","security.totp.remove.self","security.backup_codes.view.self","security.backup_codes.create.self","security.recovery_accounts.view.self","security.recovery_accounts.add.self","security.recovery_accounts.remove.self","security.recovery_phone.view.self","security.recovery_phone.add.self","security.recovery_phone.remove.self","security.recovery_email.view.self","security.recovery_email.add.self","security.recovery_email.remove.self","security.login_devices.view.self","linked_accounts.brand.create.self","linked_accounts.brand.view.self","linked_accounts.dependent.create.self","linked_accounts.dependent.view.self","data.agreed_terms.view","data.delete_account.start","data.deactivate_account.start","data.materialization.view","data.materialization.modify","security.third_party.view.self","security.recent_activities.view.self","security.third_party.add.self","security.third_party.remove.self","people.family.view","people.family.add","people.family.remove","people.family.partner.add","people.family.partner.remove","people.block_list.view","people.restrict_list.view","payment.method.show","payment.transactions.show","payment.subscriptions.show","payment.purchase_neup_pro.view","linked_accounts.brand.manage.self","linked_accounts.brand.manager.self"]'::jsonb
 FROM "authz_capability" c
 WHERE c."app_id" = '${APP_ID}'
   AND c."scope"  = 'default'
@@ -227,9 +227,9 @@ INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-brand-settings-edit',     'brand.settings.edit',           '${APP_ID}', 'brand'),
   ('cap-brand-members-view',      'brand.members.view',            '${APP_ID}', 'brand'),
   ('cap-brand-members-manage',    'brand.members.manage',          '${APP_ID}', 'brand'),
-  ('cap-brand-branches-view',     'linked_accounts.brand.view',    '${APP_ID}', 'brand'),
-  ('cap-brand-branches-manage',   'linked_accounts.brand.manage',  '${APP_ID}', 'brand'),
-  ('cap-brand-branches-manager',  'linked_accounts.brand.manager', '${APP_ID}', 'brand'),
+  ('cap-brand-branches-view',     'linked_accounts.brand.view.self',    '${APP_ID}', 'brand'),
+  ('cap-brand-branches-manage',   'linked_accounts.brand.manage.self',  '${APP_ID}', 'brand'),
+  ('cap-brand-branches-manager',  'linked_accounts.brand.manager.self', '${APP_ID}', 'brand'),
   ('cap-brand-kyc-view',          'brand.kyc.view',                '${APP_ID}', 'brand'),
   ('cap-brand-kyc-submit',        'brand.kyc.submit',              '${APP_ID}', 'brand'),
   ('cap-brand-platforms-view',    'brand.platforms.view',          '${APP_ID}', 'brand'),
@@ -247,7 +247,7 @@ SELECT
   'brand',
   '${APP_ID}',
   'brand.owner',
-  '["brand.profile.view","brand.profile.edit","brand.settings.view","brand.settings.edit","brand.members.view","brand.members.manage","linked_accounts.brand.view","linked_accounts.brand.manage","linked_accounts.brand.manager","brand.kyc.view","brand.kyc.submit","brand.platforms.view","brand.platforms.manage","brand.delete"]'::jsonb
+  '["brand.profile.view","brand.profile.edit","brand.settings.view","brand.settings.edit","brand.members.view","brand.members.manage","linked_accounts.brand.view.self","linked_accounts.brand.manage.self","linked_accounts.brand.manager.self","brand.kyc.view","brand.kyc.submit","brand.platforms.view","brand.platforms.manage","brand.delete"]'::jsonb
 FROM "authz_capability" c
 WHERE c."app_id" = '${APP_ID}'
   AND c."scope"  = 'brand'

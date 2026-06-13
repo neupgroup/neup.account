@@ -55,7 +55,7 @@ export function DashboardNav() {
             const managedItems = [
                 { href: "/home", label: "Dashboard", description: "Your central account management hub.", requiredPermissions: [] as string[] },
                 { href: "/profile", label: "Profile", description: "Manage profile details.", requiredPermissions: PROFILE_NAV_PERMISSIONS },
-                { href: "/accounts/branches", label: "Branches", description: "Manage brand branches.", requiredPermissions: ['linked_accounts.brand.manage'] },
+                { href: "/accounts/branches", label: "Branches", description: "Manage brand branches.", requiredPermissions: ['linked_accounts.brand.manage.self'] },
             ].filter((item) => hasAnyPermission(permissions, item.requiredPermissions));
 
             if (managedItems.length > 0) {

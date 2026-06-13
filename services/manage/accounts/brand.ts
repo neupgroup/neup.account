@@ -12,6 +12,7 @@ import { revalidatePath } from 'next/cache';
 import { brandCreationSchema } from '@/services/manage/accounts/schema';
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 
 const BRAND_OWNER_ROLE_ID = 'brand-owner-neup-account';
 
@@ -27,7 +28,8 @@ export type BrandAccount = {
  * Returns all brand accounts where the personal account holds the brand.owner role.
  */
 export async function getBrandAccounts(): Promise<BrandAccount[]> {
-    const canView = await checkPermissions(['linked_accounts.brand.view']);
+    await requireAnyPermission404(['linked_accounts.brand.view.self']);
+    const canView = await checkPermissions(['linked_accounts.brand.view.self']);
     if (!canView) return [];
 
     const personalAccountId = await getPersonalAccountId();
@@ -83,7 +85,8 @@ export async function getBrandAccounts(): Promise<BrandAccount[]> {
  * Creates the account, neupId, brand profile, optional contact, then grants brand.owner to the creator.
  */
 export async function createBrandAccount(data: z.infer<typeof brandCreationSchema>, geolocation?: string) {
-    const canCreate = await checkPermissions(['linked_accounts.brand.create']);
+    await requireAnyPermission404(['linked_accounts.brand.create.self']);
+    const canCreate = await checkPermissions(['linked_accounts.brand.create.self']);
     if (!canCreate) {
         return { success: false, error: 'You do not have permission to create a brand account.' };
     }

@@ -8,6 +8,7 @@ import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
 import { checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
@@ -867,8 +868,9 @@ export async function updateManagedApplicationStatus(input: { appId: string; sta
     return { success: false, error: 'Invalid application status.' };
   }
 
+  await requireAnyPermission404(['root.application.view', 'linked_accounts.brand.manager.self']);
   const isRootAppManager = await checkPermissions(['root.application.view']);
-  const isBrandManager = await checkPermissions(['linked_accounts.brand.manager']);
+  const isBrandManager = await checkPermissions(['linked_accounts.brand.manager.self']);
   if (!isRootAppManager && !isBrandManager) {
     return { success: false, error: 'Permission denied.' };
   }

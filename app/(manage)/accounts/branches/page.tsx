@@ -20,9 +20,12 @@ import {
 } from "@/components/ui/table"
 import { Building, Plus } from "lucide-react";
 import { notFound } from "next/navigation";
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { LINKED_ACCOUNT_PERMISSION_GROUPS } from '@/core/auth/linked-account-permissions';
 
 
 export default async function BrandBranchPage() {
+    await requireAnyPermission404(LINKED_ACCOUNT_PERMISSION_GROUPS.brand);
     const brandId = await getActiveAccountId();
 
     if (!brandId) {

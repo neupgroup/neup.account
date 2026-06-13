@@ -1,5 +1,6 @@
 import { PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
 import { SECURITY_HUB_PERMISSIONS } from "@/core/auth/security-permissions";
+import { LINKED_ACCOUNT_NAV_PERMISSIONS } from "@/core/auth/linked-account-permissions";
 
 export type NavItem = {
     href: string;
@@ -86,7 +87,7 @@ export const allPermissionsMap: Record<string, string[]> = {
     "Profile": [...PROFILE_NAV_PERMISSIONS],
     "Notifications": ['self.notification.read', 'self.notification.delete'],
     "Password & Security": [...SECURITY_HUB_PERMISSIONS],
-    "Linked Accounts": ['linked_accounts.brand.create', 'linked_accounts.brand.view', 'linked_accounts.dependent.create', 'linked_accounts.dependent.view'],
+    "Linked Accounts": [...LINKED_ACCOUNT_NAV_PERMISSIONS],
     "Data & Privacy": [
         'data.agreed_terms.view', 'data.delete_account.start', 'data.deactivate_account.start', 
         'data.materialization.view', 'data.materialization.modify', 'security.third_party.view.self', 'security.recent_activities.view.self'
@@ -111,7 +112,7 @@ export const allPermissionsMap: Record<string, string[]> = {
         "root.errors.view",
         "root.display_images.view"
     ],
-    "Branches": ['linked_accounts.brand.manage'],
+    "Branches": ['linked_accounts.brand.manage.self'],
     "Blocked Users": ['people.block_list.view', 'people.restrict_list.view'],
     // Management nav — "Dashboard" is the admin home, distinct from user "Home"
     "Dashboard": ["root.dashboard.view"],

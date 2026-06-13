@@ -12,6 +12,7 @@ import bcrypt from 'bcryptjs';
 import { dependentFormSchema } from '@/services/manage/accounts/schema';
 import { checkPermissions, getUserProfile, getUserNeupIds } from '@/services/user';
 import { activityAction } from '@/services/activity-action';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 
 
 /**
@@ -29,7 +30,8 @@ export type DependentAccount = {
  * Function getDependentAccounts.
  */
 export async function getDependentAccounts(): Promise<DependentAccount[]> {
-    const canView = await checkPermissions(['linked_accounts.dependent.view']);
+    await requireAnyPermission404(['linked_accounts.dependent.view.self']);
+    const canView = await checkPermissions(['linked_accounts.dependent.view.self']);
     if (!canView) return [];
     
     const personalAccountId = await getPersonalAccountId();
@@ -90,7 +92,8 @@ export async function getDependentAccounts(): Promise<DependentAccount[]> {
  * Function createDependentAccount.
  */
 export async function createDependentAccount(data: z.infer<typeof dependentFormSchema>, geolocation?: string) {
-    const canCreate = await checkPermissions(['linked_accounts.dependent.create']);
+    await requireAnyPermission404(['linked_accounts.dependent.create.self']);
+    const canCreate = await checkPermissions(['linked_accounts.dependent.create.self']);
     if (!canCreate) {
         return { success: false, error: "You do not have permission to create a dependent account." };
     }

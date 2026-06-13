@@ -40,10 +40,10 @@ const DEFAULT_CAPABILITIES = [
   'security.recovery_email.add.self',
   'security.recovery_email.remove.self',
   'security.login_devices.view.self',
-  'linked_accounts.brand.create',
-  'linked_accounts.brand.view',
-  'linked_accounts.dependent.create',
-  'linked_accounts.dependent.view',
+  'linked_accounts.brand.create.self',
+  'linked_accounts.brand.view.self',
+  'linked_accounts.dependent.create.self',
+  'linked_accounts.dependent.view.self',
   'data.agreed_terms.view',
   'data.delete_account.start',
   'data.deactivate_account.start',
@@ -64,7 +64,8 @@ const DEFAULT_CAPABILITIES = [
   'payment.transactions.show',
   'payment.subscriptions.show',
   'payment.purchase_neup_pro.view',
-  'linked_accounts.brand.manager',
+  'linked_accounts.brand.manage.self',
+  'linked_accounts.brand.manager.self',
 ] as const;
 
 const ROOT_CAPABILITIES = [

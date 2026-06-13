@@ -10,6 +10,7 @@ import { revalidatePath } from 'next/cache';
 import { getUserNeupIds, getUserProfile, checkPermissions } from '@/services/user';
 import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
 import { activityAction } from '@/services/activity-action';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 
 /**
  * Type BranchAccount.
@@ -35,7 +36,8 @@ const formSchema = z.object({
  * Function createBranchAccount.
  */
 export async function createBranchAccount(data: z.infer<typeof formSchema>, geolocation?: string) {
-    const canManage = await checkPermissions(['linked_accounts.brand.manage']);
+    await requireAnyPermission404(['linked_accounts.brand.manage.self']);
+    const canManage = await checkPermissions(['linked_accounts.brand.manage.self']);
     if (!canManage) {
         return { success: false, error: 'You do not have permission to create branch accounts.' };
     }
@@ -215,7 +217,8 @@ export async function checkBranchNeupIdAvailability(neupIdSubdomain: string): Pr
 export async function getBranches(brandId: string): Promise<BranchAccount[]> {
     if (!brandId) return [];
 
-    const canManage = await checkPermissions(['linked_accounts.brand.manage']);
+    await requireAnyPermission404(['linked_accounts.brand.manage.self']);
+    const canManage = await checkPermissions(['linked_accounts.brand.manage.self']);
     if (!canManage) return [];
 
     try {

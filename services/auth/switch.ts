@@ -6,6 +6,7 @@ import { checkPermissions } from '@/services/user';
 import { getPersonalAccountId } from '@/core/auth/verify';
 import { setManagingCookie, clearManagingCookie } from '@/core/helpers/cookies';
 import { revalidatePath } from 'next/cache';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 
 /**
  * Switch into any account the current user has been granted access to.
@@ -42,7 +43,8 @@ export async function switchToAccount(memberId: string): Promise<{ success: bool
  * Sets auth_account_switch = brandId.
  */
 export async function switchToBrand(brandId: string): Promise<{ success: boolean; error?: string }> {
-  const canSwitch = await checkPermissions(['linked_accounts.brand.view']);
+  await requireAnyPermission404(['linked_accounts.brand.view.self']);
+  const canSwitch = await checkPermissions(['linked_accounts.brand.view.self']);
   if (!canSwitch) return { success: false, error: 'Permission denied.' };
 
   const personalAccountId = await getPersonalAccountId();
@@ -80,7 +82,8 @@ export async function switchToBrand(brandId: string): Promise<{ success: boolean
  * Sets auth_account_switch = dependentId.
  */
 export async function switchToDependent(dependentId: string): Promise<{ success: boolean; error?: string }> {
-  const canSwitch = await checkPermissions(['linked_accounts.dependent.view']);
+  await requireAnyPermission404(['linked_accounts.dependent.view.self']);
+  const canSwitch = await checkPermissions(['linked_accounts.dependent.view.self']);
   if (!canSwitch) return { success: false, error: 'Permission denied.' };
 
   const personalAccountId = await getPersonalAccountId();

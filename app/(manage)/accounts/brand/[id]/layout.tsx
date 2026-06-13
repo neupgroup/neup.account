@@ -3,6 +3,7 @@ import { getUserProfile, checkPermissions } from '@/services/user';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { BrandNav } from './brand-nav';
 import { BackButton } from '@/components/ui/back-button';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 
 export default async function BrandManagementLayout({
   children,
@@ -12,8 +13,9 @@ export default async function BrandManagementLayout({
   params: Promise<{ id: string }>;
 }) {
   const resolvedParams = await params;
+  await requireAnyPermission404(['linked_accounts.brand.manage.self']);
   const [canManageBrand, brandProfile] = await Promise.all([
-    checkPermissions(['linked_accounts.brand.manage']),
+    checkPermissions(['linked_accounts.brand.manage.self']),
     getUserProfile(resolvedParams.id)
   ]);
   

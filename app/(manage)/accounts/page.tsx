@@ -9,9 +9,12 @@ import { SecondaryHeader } from '@/components/ui/secondary-header';
 import { Bot, Building, UserPlus, FolderGit2 } from '@/components/icons';
 import { PrimaryHeader } from '@/components/ui/primary-header';
 import { AccountListItem } from '@/components/elements/account-item';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/core/auth/linked-account-permissions';
+import { getAccountPermission } from '@/services/user';
 
 
-const LinkAndCreateFeatures = () => (
+const LinkAndCreateFeatures = ({ canCreateBrand, canCreateDependent }: { canCreateBrand: boolean; canCreateDependent: boolean }) => (
   <>
     <ListItem
       icon={FolderGit2}
@@ -19,27 +22,36 @@ const LinkAndCreateFeatures = () => (
       description="Connect third-party platforms like WhatsApp."
       href="/accounts/link"
     />
-    <ListItem
-      icon={Building}
-      title="Create Brand Account"
-      description="Set up a new profile for a business or organization."
-      href="/accounts/create?type=brand"
-    />
-    <ListItem
-      icon={UserPlus}
-      title="Create Dependent Account"
-      description="Create and manage an account for a family member."
-      href="/accounts/dependent/create"
-    />
+    {canCreateBrand && (
+      <ListItem
+        icon={Building}
+        title="Create Brand Account"
+        description="Set up a new profile for a business or organization."
+        href="/accounts/create?type=brand"
+      />
+    )}
+    {canCreateDependent && (
+      <ListItem
+        icon={UserPlus}
+        title="Create Dependent Account"
+        description="Create and manage an account for a family member."
+        href="/accounts/dependent/create"
+      />
+    )}
   </>
 );
 
 
 export default async function AccountsPage() {
+  await requireAnyPermission404(LINKED_ACCOUNT_NAV_PERMISSIONS);
   const accountId = await getActiveAccountId();
   if (!accountId) {
     notFound();
   }
+
+  const permissions = await getAccountPermission(accountId);
+  const canCreateBrand = permissions.includes('linked_accounts.brand.create.self');
+  const canCreateDependent = permissions.includes('linked_accounts.dependent.create.self');
 
   const isManaging = Boolean(await authCookies.get('auth_account_switch'));
 
@@ -65,7 +77,7 @@ export default async function AccountsPage() {
         />
         <Card>
           <CardContent className="divide-y p-0">
-            <LinkAndCreateFeatures />
+            <LinkAndCreateFeatures canCreateBrand={canCreateBrand} canCreateDependent={canCreateDependent} />
           </CardContent>
         </Card>
       </div>

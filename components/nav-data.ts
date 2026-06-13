@@ -83,7 +83,7 @@ export const allPermissionsMap: Record<string, string[]> = {
     "Home": [],
     "Personal Info": [...PROFILE_NAV_PERMISSIONS],
     "Profile": [...PROFILE_NAV_PERMISSIONS],
-    "Notifications": ['notification.read', 'notification.delete'],
+    "Notifications": ['self.notification.read', 'self.notification.delete'],
     "Password & Security": [
         'security.pass.modify', 'security.totp.add', 'security.totp.remove', 'security.backup_codes.view', 
         'security.backup_codes.create', 'security.recovery_accounts.view', 'security.recovery_accounts.add', 

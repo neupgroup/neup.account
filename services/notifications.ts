@@ -5,6 +5,7 @@ import { getPersonalAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { checkPermissions, getUserProfile } from '@/services/user';
+import { notFound } from 'next/navigation';
 
 /**
  * Type Notification.
@@ -100,6 +101,11 @@ export async function getNotifications(): Promise<AllNotifications> {
     const accountId = await getPersonalAccountId();
     if (!accountId) return { sticky: [], requests: [], other: [] };
 
+    const canView = await checkPermissions(['self.notification.read']);
+    if (!canView) {
+        notFound();
+    }
+
     const notifications = await prisma.notification.findMany({
         where: { accountId },
         orderBy: { createdAt: 'desc' }
@@ -167,7 +173,7 @@ export async function getNotifications(): Promise<AllNotifications> {
  * Function markNotificationAsRead.
  */
 export async function markNotificationAsRead(notificationId: string): Promise<{ success: boolean }> {
-    const canMarkAsRead = await checkPermissions(['notification.read']);
+    const canMarkAsRead = await checkPermissions(['self.notification.read']);
     if (!canMarkAsRead) return { success: false };
 
     try {
@@ -188,7 +194,7 @@ export async function markNotificationAsRead(notificationId: string): Promise<{ 
  * Function deleteNotification.
  */
 export async function deleteNotification(notificationId: string): Promise<{ success: boolean; error?: string; }> {
-    const canDelete = await checkPermissions(['notification.delete']);
+    const canDelete = await checkPermissions(['self.notification.delete']);
     if (!canDelete) return { success: false, error: "Permission denied." };
     
     try {

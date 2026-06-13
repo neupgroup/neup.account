@@ -14,6 +14,11 @@ export const PROFILE_NAV_PERMISSIONS = Array.from(
   new Set(Object.values(PROFILE_SECTION_PERMISSIONS).flat()),
 );
 
+export const NOTIFICATION_PERMISSIONS = [
+  'self.notification.read',
+  'self.notification.delete',
+] as const;
+
 export function hasAnyPermission(
   grantedPermissions: string[] | null | undefined,
   requiredPermissions: readonly string[],

@@ -20,7 +20,7 @@ export default async function HomePage() {
     }
 
     const [canViewNotifications, canViewBilling, canFindUser] = await Promise.all([
-        checkPermissions(['notification.read']),
+        checkPermissions(['self.notification.read']),
         checkPermissions(['payment.subscriptions.show']),
         checkPermissions(['root.account.view']),
     ]);

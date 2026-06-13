@@ -8,6 +8,7 @@ import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { logActivity } from '@/services/log-actions';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 
 function isMissingAssetsGrantTableError(error: unknown): boolean {
   const candidate = error as { code?: string };
@@ -522,6 +523,7 @@ export async function removeAccess(permitId: string, geolocation?: string): Prom
  * Function getDelegatablePermissions.
  */
 export async function getDelegatablePermissions(): Promise<Permission[]> {
+    await requireAnyPermission404(['security.third_party.view.self']);
     const managedAccountId = await getActiveAccountId();
     if (!managedAccountId) return [];
 
@@ -545,7 +547,8 @@ export async function updatePermissions(permitId: string, newPermissionIds: stri
         return { success: false, error: "Not authenticated." };
     }
 
-    const canAdd = await checkPermissions(['security.third_party.add']);
+    await requireAnyPermission404(['security.third_party.add.self']);
+    const canAdd = await checkPermissions(['security.third_party.add.self']);
     if (!canAdd) {
         return { success: false, error: 'Permission denied.' };
     }
@@ -602,7 +605,8 @@ export async function grantAccessByNeupId(formData: FormData, geolocation?: stri
         return { success: false, error: "Not authenticated." };
     }
 
-    const canAdd = await checkPermissions(['security.third_party.add']);
+    await requireAnyPermission404(['security.third_party.add.self']);
+    const canAdd = await checkPermissions(['security.third_party.add.self']);
     if (!canAdd) {
         return { success: false, error: 'Permission denied.' };
     }

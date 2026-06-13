@@ -7,6 +7,7 @@ import { getPersonalAccountId } from '@/core/auth/verify';
 import { checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import type { Application } from '@/services/applications/types';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 
 type ConnectedApplications = {
     firstParty: Application[];
@@ -34,7 +35,8 @@ function isInternalApp(appId: string): boolean {
 
 // Returns applications the user is connected to, split by first/third party.
 export async function getConnectedApplications(): Promise<ConnectedApplications> {
-    const canView = await checkPermissions(['security.third_party.view']);
+    await requireAnyPermission404(['security.third_party.view.self']);
+    const canView = await checkPermissions(['security.third_party.view.self']);
     if (!canView) return { firstParty: [], thirdParty: [] };
 
     const accountId = await getPersonalAccountId();
@@ -79,7 +81,8 @@ export async function getConnectedApplications(): Promise<ConnectedApplications>
 
 // Returns details for a single application by ID.
 export async function getApplicationDetails(appId: string): Promise<Application | null> {
-    const canView = await checkPermissions(['security.third_party.view']);
+    await requireAnyPermission404(['security.third_party.view.self']);
+    const canView = await checkPermissions(['security.third_party.view.self']);
     if (!canView) return null;
 
     try {

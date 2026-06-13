@@ -9,6 +9,7 @@ import { revalidatePath } from 'next/cache';
 import { getPersonalAccountId } from '@/core/auth/verify';
 import { checkPermissions } from '@/services/user';
 import { createNotification } from '../notifications';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 
 const CONTACT_TYPE = 'recoveryPhone';
 
@@ -16,7 +17,8 @@ const CONTACT_TYPE = 'recoveryPhone';
  * Function getRecoveryPhone.
  */
 export async function getRecoveryPhone(): Promise<string | null> {
-    const canView = await checkPermissions(['security.recovery_phone.view']);
+    await requireAnyPermission404(['security.recovery_phone.view.self']);
+    const canView = await checkPermissions(['security.recovery_phone.view.self']);
     if (!canView) return null;
     
     const accountId = await getPersonalAccountId();
@@ -42,7 +44,8 @@ export async function getRecoveryPhone(): Promise<string | null> {
  * Function addRecoveryPhone.
  */
 export async function addRecoveryPhone(data: z.infer<typeof phoneFormSchema>): Promise<{ success: boolean; error?: string; }> {
-    const canAdd = await checkPermissions(['security.recovery_phone.add']);
+    await requireAnyPermission404(['security.recovery_phone.add.self']);
+    const canAdd = await checkPermissions(['security.recovery_phone.add.self']);
     if (!canAdd) return { success: false, error: "Permission denied." };
     
     const accountId = await getPersonalAccountId();
@@ -99,7 +102,8 @@ export async function addRecoveryPhone(data: z.infer<typeof phoneFormSchema>): P
  * Function removeRecoveryPhone.
  */
 export async function removeRecoveryPhone(): Promise<{ success: boolean; error?: string; }> {
-    const canRemove = await checkPermissions(['security.recovery_phone.remove']);
+    await requireAnyPermission404(['security.recovery_phone.remove.self']);
+    const canRemove = await checkPermissions(['security.recovery_phone.remove.self']);
     if (!canRemove) return { success: false, error: "Permission denied." };
 
     const accountId = await getPersonalAccountId();

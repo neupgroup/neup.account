@@ -14,6 +14,7 @@ import { createNotification } from '@/services/notifications';
 import { encrypt, decrypt } from '@/services/security/totp';
 import { createAndSetSession } from '@/core/auth/session';
 import { getAuthRequest } from './auth-request';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 
 /**
  * Result returned by TOTP helpers.
@@ -72,7 +73,8 @@ const AUTH_METHOD_TOTP_TYPE = 'totpToken';
  * Adds (enables) TOTP after verifying the token against the provided secret.
  */
 export async function addTotp(input: AddTotpInput): Promise<TotpActionResult> {
-	const canAdd = await checkPermissions(['security.totp.add']);
+	await requireAnyPermission404(['security.totp.add.self']);
+	const canAdd = await checkPermissions(['security.totp.add.self']);
 	if (!canAdd) return { success: false, error: 'Permission denied.' };
 
 	const accountId = await getActiveAccountId();
@@ -130,7 +132,8 @@ export async function addTotp(input: AddTotpInput): Promise<TotpActionResult> {
  * Revokes (disables) TOTP after verifying the current password.
  */
 export async function revokeTotp(input: RevokeTotpInput): Promise<TotpActionResult> {
-	const canRemove = await checkPermissions(['security.totp.remove']);
+	await requireAnyPermission404(['security.totp.remove.self']);
+	const canRemove = await checkPermissions(['security.totp.remove.self']);
 	if (!canRemove) return { success: false, error: 'Permission denied.' };
 
 	const accountId = await getActiveAccountId();

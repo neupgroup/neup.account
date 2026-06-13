@@ -4,6 +4,7 @@ import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId, getActiveSession } from '@/core/auth/verify';
 import { logActivity } from '@/services/log-actions';
 import { logError } from '@/core/helpers/logger';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 
 export type ManagedSession = {
     id: string;
@@ -18,6 +19,7 @@ export type ManagedSession = {
  * Function getUserSessions.
  */
 export async function getUserSessions(): Promise<ManagedSession[]> {
+    await requireAnyPermission404(['security.login_devices.view.self']);
     try {
         const accountId = await getActiveAccountId();
         if (!accountId) {
@@ -58,6 +60,7 @@ export async function getUserSessions(): Promise<ManagedSession[]> {
  * Function logoutSessionById.
  */
 export async function logoutSessionById(sessionId: string): Promise<{ success: boolean, error?: string }> {
+    await requireAnyPermission404(['security.login_devices.view.self']);
     if (!sessionId) {
         return { success: false, error: "Session ID is required." };
     }
@@ -86,6 +89,7 @@ export async function logoutSessionById(sessionId: string): Promise<{ success: b
  * Function logoutAllOtherSessions.
  */
 export async function logoutAllOtherSessions(): Promise<{ success: boolean, error?: string }> {
+    await requireAnyPermission404(['security.login_devices.view.self']);
     try {
         const currentSession = await getActiveSession();
         if (!currentSession) {

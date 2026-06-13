@@ -4,8 +4,11 @@ import { getRecoveryAccounts } from "@/services/security/account";
 import { RecoveryAccountManager } from "./recovery-account-manager";
 import { BackButton } from "@/components/ui/back-button";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { SECURITY_PERMISSION_GROUPS } from '@/core/auth/security-permissions';
 
 export default async function RecoveryAccountPage() {
+    await requireAnyPermission404(SECURITY_PERMISSION_GROUPS.recoveryAccounts);
     const initialAccounts = await getRecoveryAccounts();
 
     return (

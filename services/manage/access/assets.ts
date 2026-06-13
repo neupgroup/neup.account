@@ -9,6 +9,7 @@ import { getActiveAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
 import { checkPermissions, getAccountType, isRootUser } from '@/services/user';
 import { resolveAssetName } from '@/services/manage/access/asset-resolvers';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 
 const memberPattern = /^(account:)?[^\s:]+$/;
 
@@ -86,7 +87,8 @@ async function canUseRootMode(rootMode?: boolean): Promise<boolean> {
  * Function getAccessAssetGroups.
  */
 export async function getAccessAssetGroups() {
-  const canView = await checkPermissions(['security.third_party.view']);
+  await requireAnyPermission404(['security.third_party.view.self']);
+  const canView = await checkPermissions(['security.third_party.view.self']);
   if (!canView) return [];
 
   const accountId = await getActiveAccountId();
@@ -125,6 +127,7 @@ export async function getAccessAssetGroups() {
  * Function getAccessAssetGroup.
  */
 export async function getAccessAssetGroup(groupId: string): Promise<AccessAssetGroup | null> {
+  await requireAnyPermission404(['security.third_party.view.self']);
   const accountId = await getActiveAccountId();
   if (!accountId) return null;
 
@@ -158,7 +161,8 @@ export async function getAccessAssetGroup(groupId: string): Promise<AccessAssetG
  * Function createAssetGroup.
  */
 export async function createAssetGroup(input: { name: string; details?: string }) {
-  const canAdd = await checkPermissions(['security.third_party.add']);
+  await requireAnyPermission404(['security.third_party.add.self']);
+  const canAdd = await checkPermissions(['security.third_party.add.self']);
   if (!canAdd) {
     return { success: false, error: 'Permission denied.' };
   }

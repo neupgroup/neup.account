@@ -8,6 +8,7 @@ import { revalidatePath } from 'next/cache';
 import crypto from 'crypto';
 import { checkPermissions } from '@/services/user';
 import { createNotification } from '../notifications';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 
 /**
  * Type BackupCode.
@@ -55,7 +56,8 @@ function writeBackupCodes(codes: BackupCode[]) {
  * Function getBackupCodes.
  */
 export async function getBackupCodes(): Promise<BackupCode[]> {
-    const canView = await checkPermissions(['security.backup_codes.view']);
+    await requireAnyPermission404(['security.backup_codes.view.self']);
+    const canView = await checkPermissions(['security.backup_codes.view.self']);
     if (!canView) return [];
 
     const accountId = await getPersonalAccountId();
@@ -85,7 +87,8 @@ export async function getBackupCodes(): Promise<BackupCode[]> {
  * Function generateBackupCodes.
  */
 export async function generateBackupCodes(): Promise<BackupCode[]> {
-    const canCreate = await checkPermissions(['security.backup_codes.create']);
+    await requireAnyPermission404(['security.backup_codes.create.self']);
+    const canCreate = await checkPermissions(['security.backup_codes.create.self']);
     if (!canCreate) throw new Error("Permission denied.");
 
     const accountId = await getPersonalAccountId();

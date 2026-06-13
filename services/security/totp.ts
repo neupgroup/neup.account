@@ -14,6 +14,7 @@ import { totpEnableSchema, totpDisableSchema } from '@/services/security/schema'
 import { createNotification } from '../notifications';
 import { createHash, randomBytes } from 'crypto';
 import { activityAction } from '@/services/activity-action';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 
 // We need a consistent secret for encryption. STORE THIS IN A SECURE VAULT.
 // For this example, it's in an environment variable.
@@ -55,6 +56,7 @@ export async function decrypt(encryptedText: string): Promise<string> {
 
 // Check if TOTP is enabled for the current user
 export async function getTotpStatus(): Promise<{ isEnabled: boolean }> {
+    await requireAnyPermission404(['security.totp.add.self', 'security.totp.remove.self']);
     const accountId = await getActiveAccountId();
     if (!accountId) return { isEnabled: false };
 
@@ -72,6 +74,7 @@ export async function getTotpStatus(): Promise<{ isEnabled: boolean }> {
 
 // Generate a new secret and QR code for setup
 export async function generateTotpSecret(): Promise<{ secret: string; qrCodeUrl: string }> {
+    await requireAnyPermission404(['security.totp.add.self']);
     const accountId = await getActiveAccountId();
     if (!accountId) throw new Error('User not authenticated');
 
@@ -89,7 +92,8 @@ export async function generateTotpSecret(): Promise<{ secret: string; qrCodeUrl:
 
 // Verify the token and enable TOTP
 export async function verifyAndEnableTotp(data: z.infer<typeof totpEnableSchema>): Promise<{ success: boolean; error?: string }> {
-    const canAdd = await checkPermissions(['security.totp.add']);
+    await requireAnyPermission404(['security.totp.add.self']);
+    const canAdd = await checkPermissions(['security.totp.add.self']);
     if (!canAdd) return { success: false, error: 'Permission denied.' };
 
     const validation = totpEnableSchema.safeParse(data);
@@ -146,7 +150,8 @@ export async function verifyAndEnableTotp(data: z.infer<typeof totpEnableSchema>
 
 // Disable TOTP for the user
 export async function disableTotp(data: z.infer<typeof totpDisableSchema>): Promise<{ success: boolean; error?: string }> {
-    const canRemove = await checkPermissions(['security.totp.remove']);
+    await requireAnyPermission404(['security.totp.remove.self']);
+    const canRemove = await checkPermissions(['security.totp.remove.self']);
     if (!canRemove) return { success: false, error: 'Permission denied.' };
     
     const validation = totpDisableSchema.safeParse(data);

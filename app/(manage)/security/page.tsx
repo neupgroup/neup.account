@@ -13,8 +13,11 @@ import {
     Laptop,
     Globe,
 } from '@/components/icons';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { SECURITY_HUB_PERMISSIONS } from '@/core/auth/security-permissions';
 
 export default async function SecurityPage() {
+    await requireAnyPermission404(SECURITY_HUB_PERMISSIONS);
 
     const signInMethods = [
         {

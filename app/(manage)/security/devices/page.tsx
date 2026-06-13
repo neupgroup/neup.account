@@ -6,21 +6,15 @@ import { getUserSessions } from "@/services/security/sessions";
 import { SessionManager } from "@/app/(manage)/security/session-manager";
 import { getActiveSession } from '@/core/auth/verify';
 import { BackButton } from "@/components/ui/back-button";
-import { checkPermissions } from '@/services/user';
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { Ban } from "lucide-react";
 import { PrimaryHeader } from "@/components/ui/primary-header";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
-import { notFound } from "next/navigation";
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { SECURITY_PERMISSION_GROUPS } from '@/core/auth/security-permissions';
 
 export const dynamic = 'force-dynamic';
 
 export default async function DevicesPage() {
-    const hasPermission = await checkPermissions(['security.login_devices.view']);
-
-    if (!hasPermission) {
-        return notFound();
-    }
+    await requireAnyPermission404(SECURITY_PERMISSION_GROUPS.devices);
 
     const [sessions, activeSession] = await Promise.all([
         getUserSessions(),

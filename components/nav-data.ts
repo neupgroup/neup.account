@@ -1,4 +1,5 @@
 import { PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
+import { SECURITY_HUB_PERMISSIONS } from "@/core/auth/security-permissions";
 
 export type NavItem = {
     href: string;
@@ -84,19 +85,13 @@ export const allPermissionsMap: Record<string, string[]> = {
     "Personal Info": [...PROFILE_NAV_PERMISSIONS],
     "Profile": [...PROFILE_NAV_PERMISSIONS],
     "Notifications": ['self.notification.read', 'self.notification.delete'],
-    "Password & Security": [
-        'security.pass.modify', 'security.totp.add', 'security.totp.remove', 'security.backup_codes.view', 
-        'security.backup_codes.create', 'security.recovery_accounts.view', 'security.recovery_accounts.add', 
-        'security.recovery_accounts.remove', 'security.recovery_phone.view', 'security.recovery_phone.add', 
-        'security.recovery_phone.remove', 'security.recovery_email.view', 'security.recovery_email.add', 
-        'security.recovery_email.remove', 'security.login_devices.view'
-    ],
+    "Password & Security": [...SECURITY_HUB_PERMISSIONS],
     "Linked Accounts": ['linked_accounts.brand.create', 'linked_accounts.brand.view', 'linked_accounts.dependent.create', 'linked_accounts.dependent.view'],
     "Data & Privacy": [
         'data.agreed_terms.view', 'data.delete_account.start', 'data.deactivate_account.start', 
-        'data.materialization.view', 'data.materialization.modify', 'security.third_party.view', 'security.recent_activities.view'
+        'data.materialization.view', 'data.materialization.modify', 'security.third_party.view.self', 'security.recent_activities.view.self'
     ],
-    "Access & Control": ['security.third_party.view', 'security.third_party.add', 'security.third_party.remove'],
+    "Access & Control": ['security.third_party.view.self', 'security.third_party.add.self', 'security.third_party.remove.self'],
     "People & Sharing": ['people.family.view', 'people.family.add', 'people.family.remove', 'people.family.partner.add', 'people.family.partner.remove', 'people.block_list.view', 'people.restrict_list.view'],
     "Payment & Subscription": ['payment.method.show', 'payment.transactions.show', 'payment.subscriptions.show', 'payment.purchase_neup_pro.view'],
     "Account": ["root.account.view", "root.account.search", "root.account.create_individual"],

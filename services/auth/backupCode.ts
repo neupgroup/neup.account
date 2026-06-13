@@ -7,6 +7,7 @@ import { checkPermissions } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
 import { logError } from '@/core/helpers/logger';
 import { createNotification } from '@/services/notifications';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 
 /**
  * Public backup code shape.
@@ -127,7 +128,8 @@ export async function verifyBackupCode(input: VerifyBackupCodeInput): Promise<Ba
  * Generates and stores a new set of backup codes for the active account.
  */
 export async function generateBackupCode(): Promise<BackupCodeActionResult> {
-	const canCreate = await checkPermissions(['security.backup_codes.create']);
+	await requireAnyPermission404(['security.backup_codes.create.self']);
+	const canCreate = await checkPermissions(['security.backup_codes.create.self']);
 	if (!canCreate) return { success: false, error: 'Permission denied.' };
 
 	const accountId = await getPersonalAccountId();
@@ -181,7 +183,8 @@ export async function generateBackupCode(): Promise<BackupCodeActionResult> {
  * Returns backup codes for the active account.
  */
 export async function getBackupCode(): Promise<BackupCodeActionResult> {
-	const canView = await checkPermissions(['security.backup_codes.view']);
+	await requireAnyPermission404(['security.backup_codes.view.self']);
+	const canView = await checkPermissions(['security.backup_codes.view.self']);
 	if (!canView) return { success: false, error: 'Permission denied.' };
 
 	const accountId = await getPersonalAccountId();

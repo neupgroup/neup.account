@@ -1,11 +1,12 @@
  'use server';
  
  import prisma from '@/core/helpers/prisma';
- import { getPersonalAccountId } from '@/core/auth/verify';
- import { logError } from '@/core/helpers/logger';
- import { getUserProfile, checkPermissions } from '@/services/user';
- import { revalidatePath } from 'next/cache';
- import { z } from 'zod';
+import { getPersonalAccountId } from '@/core/auth/verify';
+import { logError } from '@/core/helpers/logger';
+import { getUserProfile, checkPermissions } from '@/services/user';
+import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
  
  /**
   * Type RecoveryAccount.
@@ -35,8 +36,9 @@ const statusOrder: Record<RecoveryAccount['status'], number> = {
  /**
   * Function getRecoveryAccounts.
   */
- export async function getRecoveryAccounts(): Promise<RecoveryAccount[]> {
-   const canView = await checkPermissions(['security.recovery_accounts.view']);
+export async function getRecoveryAccounts(): Promise<RecoveryAccount[]> {
+   await requireAnyPermission404(['security.recovery_accounts.view.self']);
+   const canView = await checkPermissions(['security.recovery_accounts.view.self']);
    if (!canView) return [];
  
    const accessTo = await getPersonalAccountId();
@@ -88,8 +90,9 @@ const statusOrder: Record<RecoveryAccount['status'], number> = {
  /**
   * Function addRecoveryAccount.
   */
- export async function addRecoveryAccount(formData: FormData): Promise<{ success: boolean; error?: string; newAccount?: RecoveryAccount }> {
-   const canAdd = await checkPermissions(['security.recovery_accounts.add']);
+export async function addRecoveryAccount(formData: FormData): Promise<{ success: boolean; error?: string; newAccount?: RecoveryAccount }> {
+   await requireAnyPermission404(['security.recovery_accounts.add.self']);
+   const canAdd = await checkPermissions(['security.recovery_accounts.add.self']);
    if (!canAdd) return { success: false, error: 'Permission denied.' };
  
    const accessTo = await getPersonalAccountId();
@@ -169,8 +172,9 @@ const statusOrder: Record<RecoveryAccount['status'], number> = {
  /**
   * Function removeRecoveryAccount.
   */
- export async function removeRecoveryAccount(id: string): Promise<{ success: boolean; error?: string }> {
-   const canRemove = await checkPermissions(['security.recovery_accounts.remove']);
+export async function removeRecoveryAccount(id: string): Promise<{ success: boolean; error?: string }> {
+   await requireAnyPermission404(['security.recovery_accounts.remove.self']);
+   const canRemove = await checkPermissions(['security.recovery_accounts.remove.self']);
    if (!canRemove) return { success: false, error: 'Permission denied.' };
  
    const accessTo = await getPersonalAccountId();

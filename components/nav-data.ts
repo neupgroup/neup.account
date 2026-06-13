@@ -1,3 +1,5 @@
+import { PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
+
 export type NavItem = {
     href: string;
     label: string;
@@ -79,7 +81,8 @@ export const navItems = {
 
 export const allPermissionsMap: Record<string, string[]> = {
     "Home": [],
-    "Personal Info": ['profile.view', 'profile.modify', 'contact.view', 'contact.add', 'contact.modify', 'contact.remove'],
+    "Personal Info": [...PROFILE_NAV_PERMISSIONS],
+    "Profile": [...PROFILE_NAV_PERMISSIONS],
     "Notifications": ['notification.read', 'notification.delete'],
     "Password & Security": [
         'security.pass.modify', 'security.totp.add', 'security.totp.remove', 'security.backup_codes.view', 
@@ -107,7 +110,7 @@ export const allPermissionsMap: Record<string, string[]> = {
         "root.display_images.delete"
     ],
     "Permissions": ["root.permission.view", "root.permission.edit"],
-    "Applications": ["root.app.view", "root.app.create"],
+    "Applications": ["root.application.view", "root.application.create"],
     "Site Config": [
         "root.payment_config.view",
         "root.errors.view",

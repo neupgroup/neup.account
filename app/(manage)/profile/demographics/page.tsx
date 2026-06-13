@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from 'react'
+import { notFound } from 'next/navigation'
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -22,6 +23,7 @@ import { Label } from '@/components/ui/label'
 import { Loader2 } from "@/components/icons"
 import { useSession } from '@/core/providers/session'
 import { BackButton } from '@/components/ui/back-button'
+import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/auth/profile-permissions'
 
 
 const demographicsFormSchema = z.object({
@@ -35,7 +37,11 @@ type DemographicsFormValues = z.infer<typeof demographicsFormSchema>;
 export default function DemographicsPage() {
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
-    const { profile, accountId } = useSession();
+    const { profile, accountId, permissions, loading: sessionLoading } = useSession();
+
+    if (!sessionLoading && !hasAnyPermission(permissions, PROFILE_SECTION_PERMISSIONS.demographics)) {
+        notFound();
+    }
 
     const [dateInput, setDateInput] = useState<string>('');
     const [isParsingDate, setIsParsingDate] = useState(false);

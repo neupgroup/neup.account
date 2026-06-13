@@ -2,12 +2,12 @@
 "use client"
 
 import { useEffect, useState } from 'react'
+import { notFound } from 'next/navigation'
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 
-import { getUserContacts } from '@/services/user'
-import { updateUserProfile } from "@/services/profile"
+import { getProfileContacts, updateUserProfile } from "@/services/profile"
 import { useToast } from "@/core/hooks/use-toast"
 
 import { Skeleton } from '@/components/ui/skeleton'
@@ -19,6 +19,7 @@ import { PhoneInput } from "@/components/ui/phone-input"
 import { useSession } from '@/core/providers/session'
 import { BackButton } from '@/components/ui/back-button'
 import { Separator } from '@/components/ui/separator'
+import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/auth/profile-permissions'
 
 const contactFormSchema = z.object({
   primaryPhone: z.string().optional(),
@@ -34,7 +35,11 @@ type ContactFormValues = z.infer<typeof contactFormSchema>;
 export default function ContactPage() {
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
-    const { accountId } = useSession();
+    const { accountId, permissions, loading: sessionLoading } = useSession();
+
+    if (!sessionLoading && !hasAnyPermission(permissions, PROFILE_SECTION_PERMISSIONS.contact)) {
+        notFound();
+    }
 
     const form = useForm<ContactFormValues>({
         resolver: zodResolver(contactFormSchema),
@@ -56,7 +61,7 @@ export default function ContactPage() {
     useEffect(() => {
         if (accountId) {
             const fetchData = async () => {
-                const contactsData = await getUserContacts(accountId);
+                const contactsData = await getProfileContacts(accountId);
                 form.reset({
                     primaryPhone: contactsData.primaryPhone || "",
                     secondaryPhone: contactsData.secondaryPhone || "",

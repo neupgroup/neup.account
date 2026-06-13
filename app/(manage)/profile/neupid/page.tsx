@@ -2,12 +2,12 @@
 "use client"
 
 import { useEffect, useState } from 'react'
+import { notFound } from 'next/navigation'
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 
-import { getUserNeupIds, getUserProfile } from '@/services/user'
-import { updateUserProfile } from "@/services/profile"
+import { getProfileNeupIds, updateUserProfile } from "@/services/profile"
 import { useToast } from "@/core/hooks/use-toast"
 
 import { Skeleton } from '@/components/ui/skeleton'
@@ -19,6 +19,7 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { useSession } from '@/core/providers/session'
 import { BackButton } from '@/components/ui/back-button'
+import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/auth/profile-permissions'
 
 
 const neupidFormSchema = z.object({
@@ -31,8 +32,12 @@ export default function NeupidPage() {
     const [neupIds, setNeupIds] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
-    const { accountId } = useSession();
+    const { accountId, permissions, loading: sessionLoading } = useSession();
     const [isPro, setIsPro] = useState(false);
+
+    if (!sessionLoading && !hasAnyPermission(permissions, PROFILE_SECTION_PERMISSIONS.neupid)) {
+        notFound();
+    }
 
     const form = useForm<NeupidFormValues>({
         resolver: zodResolver(neupidFormSchema),
@@ -43,15 +48,11 @@ export default function NeupidPage() {
         if (!accountId) return;
 
         const fetchData = async () => {
-            const [neupIdsData, profile] = await Promise.all([
-                getUserNeupIds(accountId),
-                getUserProfile(accountId),
+            const [neupIdsData] = await Promise.all([
+                getProfileNeupIds(accountId),
             ]);
 
-            setNeupIds(neupIdsData);
-            if (profile) {
-                setIsPro(profile.pro === true);
-            }
+            setNeupIds(neupIdsData.map((row) => row.id));
             setLoading(false);
         }
 

@@ -78,12 +78,19 @@ ON CONFLICT ("id") DO NOTHING;
 
 -- 3a. Permissions — individual.default
 INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
-  ('cap-def-profile-view',                    'profile.view',                       '${APP_ID}', 'default'),
-  ('cap-def-profile-modify',                  'profile.modify',                     '${APP_ID}', 'default'),
-  ('cap-def-contact-view',                    'contact.view',                       '${APP_ID}', 'default'),
-  ('cap-def-contact-add',                     'contact.add',                        '${APP_ID}', 'default'),
-  ('cap-def-contact-modify',                  'contact.modify',                     '${APP_ID}', 'default'),
-  ('cap-def-contact-remove',                  'contact.remove',                     '${APP_ID}', 'default'),
+  ('cap-def-profile-display-view',            'self.profile.display.view',          '${APP_ID}', 'default'),
+  ('cap-def-profile-display-update',          'self.profile.display.update',        '${APP_ID}', 'default'),
+  ('cap-def-profile-legal-view',              'self.profile.legal.view',            '${APP_ID}', 'default'),
+  ('cap-def-profile-legal-update',            'self.profile.legal.update',          '${APP_ID}', 'default'),
+  ('cap-def-profile-demographics-view',       'self.profile.demographics.view',     '${APP_ID}', 'default'),
+  ('cap-def-profile-demographics-update',     'self.profile.demographics.update',   '${APP_ID}', 'default'),
+  ('cap-def-profile-neupid-view',             'self.profile.neupid.view',           '${APP_ID}', 'default'),
+  ('cap-def-profile-neupid-request',          'self.profile.neupid.request',        '${APP_ID}', 'default'),
+  ('cap-def-profile-neupid-remove',           'self.profile.neupid.remove',         '${APP_ID}', 'default'),
+  ('cap-def-profile-contact-view',            'self.profile.contact.view',          '${APP_ID}', 'default'),
+  ('cap-def-profile-contact-update',          'self.profile.contact.update',        '${APP_ID}', 'default'),
+  ('cap-def-profile-kyc-view',                'self.profile.kyc.view',              '${APP_ID}', 'default'),
+  ('cap-def-profile-kyc-update',              'self.profile.kyc.update',            '${APP_ID}', 'default'),
   ('cap-def-notification-read',               'notification.read',                  '${APP_ID}', 'default'),
   ('cap-def-notification-delete',             'notification.delete',                '${APP_ID}', 'default'),
   ('cap-def-security-pass-modify',            'security.pass.modify',               '${APP_ID}', 'default'),
@@ -138,7 +145,7 @@ SELECT
   'default',
   '${APP_ID}',
   'individual.default',
-  '["profile.view","profile.modify","contact.view","contact.add","contact.modify","contact.remove","notification.read","notification.delete","security.pass.modify","security.totp.add","security.totp.remove","security.backup_codes.view","security.backup_codes.create","security.recovery_accounts.view","security.recovery_accounts.add","security.recovery_accounts.remove","security.recovery_phone.view","security.recovery_phone.add","security.recovery_phone.remove","security.recovery_email.view","security.recovery_email.add","security.recovery_email.remove","security.login_devices.view","linked_accounts.brand.create","linked_accounts.brand.view","linked_accounts.dependent.create","linked_accounts.dependent.view","data.agreed_terms.view","data.delete_account.start","data.deactivate_account.start","data.materialization.view","data.materialization.modify","security.third_party.view","security.recent_activities.view","security.third_party.add","security.third_party.remove","people.family.view","people.family.add","people.family.remove","people.family.partner.add","people.family.partner.remove","people.block_list.view","people.restrict_list.view","payment.method.show","payment.transactions.show","payment.subscriptions.show","payment.purchase_neup_pro.view","linked_accounts.brand.manager"]'::jsonb
+  '["self.profile.display.view","self.profile.display.update","self.profile.legal.view","self.profile.legal.update","self.profile.demographics.view","self.profile.demographics.update","self.profile.neupid.view","self.profile.neupid.request","self.profile.neupid.remove","self.profile.contact.view","self.profile.contact.update","self.profile.kyc.view","self.profile.kyc.update","notification.read","notification.delete","security.pass.modify","security.totp.add","security.totp.remove","security.backup_codes.view","security.backup_codes.create","security.recovery_accounts.view","security.recovery_accounts.add","security.recovery_accounts.remove","security.recovery_phone.view","security.recovery_phone.add","security.recovery_phone.remove","security.recovery_email.view","security.recovery_email.add","security.recovery_email.remove","security.login_devices.view","linked_accounts.brand.create","linked_accounts.brand.view","linked_accounts.dependent.create","linked_accounts.dependent.view","data.agreed_terms.view","data.delete_account.start","data.deactivate_account.start","data.materialization.view","data.materialization.modify","security.third_party.view","security.recent_activities.view","security.third_party.add","security.third_party.remove","people.family.view","people.family.add","people.family.remove","people.family.partner.add","people.family.partner.remove","people.block_list.view","people.restrict_list.view","payment.method.show","payment.transactions.show","payment.subscriptions.show","payment.purchase_neup_pro.view","linked_accounts.brand.manager"]'::jsonb
 FROM "authz_capability" c
 WHERE c."app_id" = '${APP_ID}'
   AND c."scope"  = 'default'

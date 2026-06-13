@@ -31,6 +31,7 @@ import { ListItem } from "./ui/list-item";
 import { useSession } from "@/core/providers/session";
 import { Skeleton } from "./ui/skeleton";
 import { switchToPersonal } from "@/services/auth/switch";
+import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
 
 const iconMap: { [key: string]: LucideIcon | React.ElementType } = {
     Home: Home,
@@ -73,18 +74,12 @@ export function MobileNav() {
     const navConfig: NavSection[] | null = useMemo(() => {
         if (loading || !permissions) return null;
 
-        const permissionsSet = new Set(permissions);
-        const hasAnyPermissionFor = (requiredPermissions: string[]) => {
-            if (requiredPermissions.length === 0) return true;
-            return requiredPermissions.some(p => permissionsSet.has(p));
-        };
-
         const navItemsWithPerms = (items: Omit<any, 'requiredPermissions' | 'icon'>[]): any[] => {
             return items.map(item => ({
                 ...item,
                 icon: iconMap[item.label.replace(/\s/g, '')] || UserCircle,
                 requiredPermissions: allPermissionsMap[item.label] || []
-            })).filter(item => hasAnyPermissionFor(item.requiredPermissions));
+            })).filter(item => hasAnyPermission(permissions, item.requiredPermissions));
         };
         
         // When managing, replace "Switch Account" with a "Switch Back" action item
@@ -102,11 +97,15 @@ export function MobileNav() {
         const config: NavSection[] = [];
         
         if (isManaging) {
-            config.push({ title: profile?.nameDisplay || "Brand", items: [
-                { href: "/home", label: "Dashboard", description: "Your central account management hub.", icon: Home },
-                { href: "/profile", label: "Profile", description: "Manage profile details.", icon: iconMap['Profile'] },
-                { href: "/accounts/branches", label: "Branches", description: "Manage brand branches.", icon: iconMap['LinkedAccounts'] },
-            ]});
+            const managedItems = [
+                { href: "/home", label: "Dashboard", description: "Your central account management hub.", icon: Home, requiredPermissions: [] as string[] },
+                { href: "/profile", label: "Profile", description: "Manage profile details.", icon: iconMap['Profile'], requiredPermissions: PROFILE_NAV_PERMISSIONS },
+                { href: "/accounts/branches", label: "Branches", description: "Manage brand branches.", icon: iconMap['LinkedAccounts'], requiredPermissions: ['linked_accounts.brand.manage'] },
+            ].filter((item) => hasAnyPermission(permissions, item.requiredPermissions));
+
+            if (managedItems.length > 0) {
+                config.push({ title: profile?.nameDisplay || "Brand", items: managedItems });
+            }
              config.push({ title: "Account", items: visibleAccountNav });
         } else {
             if (visibleNeupIdNav.length > 0) {

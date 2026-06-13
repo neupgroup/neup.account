@@ -25,7 +25,7 @@ export type KycSubmissionData = {
  * Function submitKyc.
  */
 export async function submitKyc(accountId: string, data: KycSubmissionData): Promise<{ success: boolean; error?: string }> {
-    const canSubmit = await checkPermissions(['profile.kyc.submit']);
+    const canSubmit = await checkPermissions(['self.profile.kyc.update']);
     if (!canSubmit) {
         return { success: false, error: 'Permission denied.' };
     }

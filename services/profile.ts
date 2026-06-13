@@ -14,12 +14,14 @@ import { getAITextResponse } from '@/services/shared/ai';
 import { logDisplayImageResourceForAccount } from '@/services/manage/site/resources';
 import { dispatchAccountUpdatedEvent, type AccountUpdateEventField } from '@/services/applications/account-update-events';
 import { extractGenderFromDetails, resolveDisplayImage } from '@/core/helpers/display-image';
+import { assertHasAnyPermission } from '@/core/auth/profile-permissions';
 
 
 /**
  * Function getDisplayNameSuggestions.
  */
 export async function getDisplayNameSuggestions(accountId: string): Promise<string[]> {
+    await assertHasAnyPermission(['self.profile.display.view', 'self.profile.display.update']);
     const profile = await getUserProfile(accountId);
     if (!profile) return [];
 
@@ -49,6 +51,7 @@ export async function getDisplayNameSuggestions(accountId: string): Promise<stri
  * Function getPastProfilePhotos.
  */
 export async function getPastProfilePhotos(accountId: string): Promise<string[]> {
+    await assertHasAnyPermission(['self.profile.display.view', 'self.profile.display.update']);
     try {
         const rows = await prisma.resource.findMany({
             where: {
@@ -81,6 +84,7 @@ export type PublicDisplayImage = {
 };
 
 export async function getPublicDisplayImages(): Promise<PublicDisplayImage[]> {
+    await assertHasAnyPermission(['self.profile.display.view', 'self.profile.display.update']);
     try {
         const rows = await prisma.resource.findMany({
             where: {
@@ -120,6 +124,27 @@ export async function getPublicDisplayImages(): Promise<PublicDisplayImage[]> {
     }
 }
 
+export async function getProfileContacts(accountId: string) {
+    await assertHasAnyPermission(['self.profile.contact.view', 'self.profile.contact.update']);
+    const rows = await prisma.contact.findMany({
+        where: { accountId },
+    });
+
+    return rows.reduce<Record<string, string>>((acc, row) => {
+        if (row.contactType) {
+            acc[row.contactType] = row.value;
+        }
+        return acc;
+    }, {});
+}
+
+export async function getProfileNeupIds(accountId: string) {
+    await assertHasAnyPermission(['self.profile.neupid.view', 'self.profile.neupid.request', 'self.profile.neupid.remove']);
+    return prisma.neupId.findMany({
+        where: { accountId },
+    });
+}
+
 
 /**
  * Function updateOrCreateContact.
@@ -157,13 +182,27 @@ async function updateOrCreateContact(tx: any, accountId: string, type: string, v
  */
 export async function updateUserProfile(accountId: string, data: Record<string, any>, geolocation?: string) {
     const actorAccountId = await getPersonalAccountId();
-    const [canModifyProfile, canModifyContact, canModifyNeupId] = await Promise.all([
-        checkPermissions(['profile.modify']),
-        checkPermissions(['contact.modify', 'contact.add', 'contact.remove']),
-        checkPermissions(['profile.neupid.add']),
+    const wantsDisplayUpdate = data.accountPhoto !== undefined || data.nameDisplay !== undefined || data.customDisplayNameRequest !== undefined;
+    const wantsLegalUpdate = data.nameFirst !== undefined || data.nameMiddle !== undefined || data.nameLast !== undefined;
+    const wantsDemographicsUpdate = data.gender !== undefined || data.customGender !== undefined || data.dateBirth !== undefined || data.nationality !== undefined || data.isMinor !== undefined;
+    const wantsContactUpdate = data.primaryPhone !== undefined || data.secondaryPhone !== undefined || data.permanentLocation !== undefined || data.currentLocation !== undefined || data.workLocation !== undefined || data.otherLocation !== undefined;
+    const wantsNeupIdRequest = typeof data.newNeupIdRequest === 'string' && data.newNeupIdRequest.trim().length > 0;
+
+    const [canUpdateDisplay, canUpdateLegal, canUpdateDemographics, canUpdateContact, canRequestNeupId] = await Promise.all([
+        checkPermissions(['self.profile.display.update']),
+        checkPermissions(['self.profile.legal.update']),
+        checkPermissions(['self.profile.demographics.update']),
+        checkPermissions(['self.profile.contact.update']),
+        checkPermissions(['self.profile.neupid.request']),
     ]);
 
-    if (!canModifyProfile && !canModifyContact && !canModifyNeupId) {
+    if (
+        (wantsDisplayUpdate && !canUpdateDisplay) ||
+        (wantsLegalUpdate && !canUpdateLegal) ||
+        (wantsDemographicsUpdate && !canUpdateDemographics) ||
+        (wantsContactUpdate && !canUpdateContact) ||
+        (wantsNeupIdRequest && !canRequestNeupId)
+    ) {
          return { success: false, error: "You do not have permission to update this profile." }
     }
 
@@ -214,35 +253,35 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
 
         await prisma.$transaction(async (tx: any) => {
 
-            if (canModifyProfile) {
+            if (canUpdateDisplay || canUpdateLegal || canUpdateDemographics) {
                 const accountData: Record<string, any> = {};
                 const individualProfileData: Record<string, any> = {};
                 const nextAccountDetails = { ...currentAccountDetails };
                 const nextIndividualDetails = { ...currentIndividualDetails };
 
-                if (data.gender !== undefined) {
+                if (canUpdateDemographics && data.gender !== undefined) {
                     nextAccountDetails.gender = data.gender;
                 }
-                if (data.customGender !== undefined) {
+                if (canUpdateDemographics && data.customGender !== undefined) {
                     nextAccountDetails.customGender = data.customGender?.trim() ? data.customGender.trim() : null;
                 }
-                if (data.isMinor !== undefined) {
+                if (canUpdateDemographics && data.isMinor !== undefined) {
                     nextAccountDetails.isMinor = data.isMinor;
                 }
 
-                if (data.nameFirst !== undefined) {
+                if (canUpdateLegal && data.nameFirst !== undefined) {
                     individualProfileData.firstName = data.nameFirst;
                 }
-                if (data.nameMiddle !== undefined) {
+                if (canUpdateLegal && data.nameMiddle !== undefined) {
                     individualProfileData.middleName = data.nameMiddle;
                 }
-                if (data.nameLast !== undefined) {
+                if (canUpdateLegal && data.nameLast !== undefined) {
                     individualProfileData.lastName = data.nameLast;
                 }
-                if (data.dateBirth !== undefined) {
+                if (canUpdateDemographics && data.dateBirth !== undefined) {
                     individualProfileData.dateOfBirth = data.dateBirth;
                 }
-                if (data.nationality !== undefined) {
+                if (canUpdateDemographics && data.nationality !== undefined) {
                     individualProfileData.countryOfResidence = data.nationality;
                 }
 
@@ -266,7 +305,7 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
                     accountData.displayName = defaultDisplayName;
                 }
                 
-                if (data.customDisplayNameRequest) {
+                if (canUpdateDisplay && data.customDisplayNameRequest) {
                      const requesterId = await getPersonalAccountId();
 
                      await tx.authnRequest.updateMany({
@@ -287,10 +326,10 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
                     delete accountData.displayName;
                 }
 
-                if (typeof data.nameDisplay === 'string' && !data.customDisplayNameRequest) {
+                if (canUpdateDisplay && typeof data.nameDisplay === 'string' && !data.customDisplayNameRequest) {
                     accountData.displayName = data.nameDisplay;
                 }
-                if (typeof data.accountPhoto === 'string') {
+                if (canUpdateDisplay && typeof data.accountPhoto === 'string') {
                     accountData.displayImage = data.accountPhoto.trim() || null;
                 }
 
@@ -321,7 +360,7 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
                 }
             }
             
-            if (canModifyNeupId && data.newNeupIdRequest && data.newNeupIdRequest.trim().length > 0) {
+            if (canRequestNeupId && wantsNeupIdRequest) {
                 const { available } = await checkNeupIdAvailability(data.newNeupIdRequest);
                 if (!available) {
                     throw new Error("neupid_taken");
@@ -391,12 +430,12 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
                 await logActivity(accountId, `Requested New NeupID: ${requestedNeupId}`, 'Pending', undefined, geolocation);
             }
 
-            await updateOrCreateContact(tx, accountId, 'primaryPhone', data.primaryPhone, canModifyContact);
-            await updateOrCreateContact(tx, accountId, 'secondaryPhone', data.secondaryPhone, canModifyContact);
-            await updateOrCreateContact(tx, accountId, 'permanentLocation', data.permanentLocation, canModifyContact);
-            await updateOrCreateContact(tx, accountId, 'currentLocation', data.currentLocation, canModifyContact);
-            await updateOrCreateContact(tx, accountId, 'workLocation', data.workLocation, canModifyContact);
-            await updateOrCreateContact(tx, accountId, 'otherLocation', data.otherLocation, canModifyContact);
+            await updateOrCreateContact(tx, accountId, 'primaryPhone', data.primaryPhone, canUpdateContact);
+            await updateOrCreateContact(tx, accountId, 'secondaryPhone', data.secondaryPhone, canUpdateContact);
+            await updateOrCreateContact(tx, accountId, 'permanentLocation', data.permanentLocation, canUpdateContact);
+            await updateOrCreateContact(tx, accountId, 'currentLocation', data.currentLocation, canUpdateContact);
+            await updateOrCreateContact(tx, accountId, 'workLocation', data.workLocation, canUpdateContact);
+            await updateOrCreateContact(tx, accountId, 'otherLocation', data.otherLocation, canUpdateContact);
         });
 
         const afterSnapshot = await prisma.account.findUnique({

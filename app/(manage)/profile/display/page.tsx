@@ -3,6 +3,7 @@
 "use client"
 
 import { useEffect, useState, useTransition, useRef } from 'react'
+import { notFound } from 'next/navigation'
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -24,6 +25,7 @@ import { cn } from '@/core/helpers/utils'
 import { Check, Loader2, UploadCloud } from '@/components/icons'
 import { SecondaryHeader } from '@/components/ui/secondary-header'
 import { Separator } from '@/components/ui/separator'
+import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/auth/profile-permissions'
 
 const photoFormSchema = z.object({
   accountPhoto: z.string().url("Please enter a valid URL.").optional().or(z.literal('')),
@@ -48,7 +50,7 @@ type NameFormValues = z.infer<typeof nameFormSchema>;
 export default function DisplayInfoPage() {
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
-    const { profile, accountId, refetch: refetchSession } = useSession();
+    const { profile, accountId, permissions, loading: sessionLoading, refetch: refetchSession } = useSession();
     const [nameSuggestions, setNameSuggestions] = useState<string[]>([]);
     const [pastPhotos, setPastPhotos] = useState<string[]>([]);
     const [isPhotoPending, startPhotoTransition] = useTransition();
@@ -56,6 +58,10 @@ export default function DisplayInfoPage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [photoView, setPhotoView] = useState<'uploader' | 'carousel' | 'public'>('uploader');
     const [publicPhotos, setPublicPhotos] = useState<PublicDisplayImage[]>([]);
+
+    if (!sessionLoading && !hasAnyPermission(permissions, PROFILE_SECTION_PERMISSIONS.display)) {
+        notFound();
+    }
 
     const photoForm = useForm<PhotoFormValues>({
         resolver: zodResolver(photoFormSchema),

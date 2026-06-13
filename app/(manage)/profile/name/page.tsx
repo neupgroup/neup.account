@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from 'react'
+import { notFound } from 'next/navigation'
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -15,6 +16,7 @@ import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { useSession } from '@/core/providers/session'
 import { BackButton } from '@/components/ui/back-button'
+import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/auth/profile-permissions'
 
 const nameFormSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -27,7 +29,11 @@ type NameFormValues = z.infer<typeof nameFormSchema>;
 export default function NamePage() {
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
-    const { profile, accountId } = useSession();
+    const { profile, accountId, permissions, loading: sessionLoading } = useSession();
+
+    if (!sessionLoading && !hasAnyPermission(permissions, PROFILE_SECTION_PERMISSIONS.legal)) {
+        notFound();
+    }
 
     const form = useForm<NameFormValues>({
         resolver: zodResolver(nameFormSchema),

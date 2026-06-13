@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useTransition, useEffect, useRef } from 'react';
+import { notFound } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,6 +20,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { BackButton } from '@/components/ui/back-button';
 import { Loader2, Camera, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { useSession } from '@/core/providers/session';
+import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/auth/profile-permissions';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -120,6 +123,11 @@ export default function KycPage() {
     const { toast } = useToast();
     const [accountId, setAccountId] = useState<string | null>(null);
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const { permissions, loading: sessionLoading } = useSession();
+
+    if (!sessionLoading && !hasAnyPermission(permissions, PROFILE_SECTION_PERMISSIONS.kyc)) {
+        notFound();
+    }
 
     const form = useForm<KycFormValues>({
         resolver: zodResolver(kycFormSchema),

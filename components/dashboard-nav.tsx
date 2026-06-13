@@ -9,6 +9,7 @@ import { type NavSection, navItems, allPermissionsMap } from "./nav-data"
 import { Skeleton } from "./ui/skeleton";
 import { useSession } from "@/core/providers/session";
 import { switchToPersonal } from "@/services/auth/switch";
+import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
 
 export function DashboardNav() {
     const pathname = usePathname();
@@ -28,17 +29,11 @@ export function DashboardNav() {
     const navConfig: NavSection[] | null = useMemo(() => {
         if (loading || !permissions) return null;
 
-        const permissionsSet = new Set(permissions);
-        const hasAnyPermissionFor = (requiredPermissions: string[]) => {
-            if (requiredPermissions.length === 0) return true;
-            return requiredPermissions.some(p => permissionsSet.has(p));
-        };
-
         const navItemsWithPerms = (items: Omit<any, 'requiredPermissions' | 'iconName'>[]): any[] => {
             return items.map(item => ({
                 ...item,
                 requiredPermissions: allPermissionsMap[item.label] || []
-            })).filter(item => hasAnyPermissionFor(item.requiredPermissions));
+            })).filter(item => hasAnyPermission(permissions, item.requiredPermissions));
         };
 
         // When managing, replace "Switch Account" with a "Switch Back" action item
@@ -57,11 +52,15 @@ export function DashboardNav() {
         const config: NavSection[] = [];
 
         if (isManaging) {
-            config.push({ title: title || "Brand", items: [
-                { href: "/home", label: "Dashboard", description: "Your central account management hub." },
-                { href: "/profile", label: "Profile", description: "Manage profile details." },
-                { href: "/accounts/branches", label: "Branches", description: "Manage brand branches." },
-            ]});
+            const managedItems = [
+                { href: "/home", label: "Dashboard", description: "Your central account management hub.", requiredPermissions: [] as string[] },
+                { href: "/profile", label: "Profile", description: "Manage profile details.", requiredPermissions: PROFILE_NAV_PERMISSIONS },
+                { href: "/accounts/branches", label: "Branches", description: "Manage brand branches.", requiredPermissions: ['linked_accounts.brand.manage'] },
+            ].filter((item) => hasAnyPermission(permissions, item.requiredPermissions));
+
+            if (managedItems.length > 0) {
+                config.push({ title: title || "Brand", items: managedItems });
+            }
             config.push({ title: "Account", items: visibleAccountNav });
         } else {
             if (visibleNeupIdNav.length > 0) {

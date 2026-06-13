@@ -1,7 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { getUserProfile, getUserContacts, getUserNeupIds } from '@/services/user';
+import { getUserProfile } from '@/services/user';
 import { getActiveSession } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
+import { notFound } from 'next/navigation';
+import { getAccountPermission } from '@/services/user';
+import { getProfileContacts, getProfileNeupIds } from '@/services/profile';
+import { PROFILE_NAV_PERMISSIONS, hasAnyPermission } from '@/core/auth/profile-permissions';
 
 export async function POST(request: NextRequest) {
     const session = await getActiveSession();
@@ -10,11 +14,17 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: false, error: 'Unauthenticated.' }, { status: 401 });
     }
 
+    const permissions = await getAccountPermission();
+    const canAccess = hasAnyPermission(permissions, PROFILE_NAV_PERMISSIONS);
+    if (!canAccess) {
+        notFound();
+    }
+
     try {
         const [profile, contacts, neupIds] = await Promise.all([
             getUserProfile(session.accountId),
-            getUserContacts(session.accountId),
-            getUserNeupIds(session.accountId)
+            getProfileContacts(session.accountId),
+            getProfileNeupIds(session.accountId)
         ]);
 
         if (!profile) {

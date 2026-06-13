@@ -5,9 +5,10 @@ import { logActivity } from "@/services/log-actions";
 import { logError } from "@/core/helpers/logger";
 import prisma from "@/core/helpers/prisma";
 import bcrypt from "bcryptjs";
-import { checkPermissions } from "@/services/user";
 import { getActiveAccountId } from "@/core/auth/verify";
 import { logoutActiveSession } from "../auth/signout";
+import { requireAnyPermission404 } from "@/core/auth/permission-guards";
+import { DATA_PRIVACY_PERMISSION_GROUPS } from "@/core/auth/data-permissions";
 
 const formSchema = z.object({
     password: z.string().min(1, "Password is required to deactivate your account."),
@@ -18,10 +19,7 @@ const formSchema = z.object({
  * Function deactivateAccount.
  */
 export async function deactivateAccount(data: z.infer<typeof formSchema>, geolocation?: string): Promise<{ success: boolean; error?: string; }> {
-  const canDeactivate = await checkPermissions(['data.deactivate_account.start']);
-  if (!canDeactivate) {
-    return { success: false, error: "You do not have permission to deactivate this account." };
-  }
+  await requireAnyPermission404(DATA_PRIVACY_PERMISSION_GROUPS.deactivateAccount);
 
   const accountId = await getActiveAccountId();
   if (!accountId) {

@@ -12,6 +12,7 @@ import { getSignedApplications } from '@/services/applications/connected';
 import { getPersonalAccountId } from '@/core/auth/verify';
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import type { ApplicationSection, FlatAppItem } from '@/services/applications/types';
 
 export type { FlatAppItem } from '@/services/applications/types';
@@ -283,6 +284,7 @@ export async function getConnectedApplicationsPageData(): Promise<{
   apps: FlatAppItem[];
   error: boolean;
 }> {
+  await requireAnyPermission404(['security.third_party.view.self']);
   const personalAccountId = await getPersonalAccountId();
   if (!personalAccountId) return { apps: [], error: false };
 

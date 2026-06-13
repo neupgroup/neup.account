@@ -305,7 +305,7 @@ export async function getGrantedAccountPermission(
 
 // Returns true when a member account has all required permissions granted on a selected account.
 export async function checkGrantedPermissions(
-  requiredPermissions: string[],
+  requiredPermissions: readonly string[],
   memberAccountId: string,
   parentAccountId: string,
 ): Promise<boolean> {
@@ -319,7 +319,7 @@ export async function checkGrantedPermissions(
 
 // Returns true if the active account has all of the required permissions.
 export async function checkPermissions(
-  requiredPermissions: string[],
+  requiredPermissions: readonly string[],
   accountId?: string,
 ): Promise<boolean> {
   if (!requiredPermissions || requiredPermissions.length === 0) return true;

@@ -85,7 +85,7 @@ export default function DisplayInfoPage() {
                     ]);
                     setNameSuggestions(suggestions);
                     setPastPhotos(photos);
-                    const publicResources = await getPublicDisplayImages();
+                    const publicResources = await getPublicDisplayImages(accountId);
                     setPublicPhotos(publicResources);
 
                     const currentName = profile.nameDisplay || '';

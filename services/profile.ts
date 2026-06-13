@@ -14,14 +14,14 @@ import { getAITextResponse } from '@/services/shared/ai';
 import { logDisplayImageResourceForAccount } from '@/services/manage/site/resources';
 import { dispatchAccountUpdatedEvent, type AccountUpdateEventField } from '@/services/applications/account-update-events';
 import { extractGenderFromDetails, resolveDisplayImage } from '@/core/helpers/display-image';
-import { assertHasAnyPermission } from '@/core/auth/profile-permissions';
+import { assertHasAnyPermission, assertHasProfileDisplayPermission } from '@/core/auth/profile-permissions';
 
 
 /**
  * Function getDisplayNameSuggestions.
  */
 export async function getDisplayNameSuggestions(accountId: string): Promise<string[]> {
-    await assertHasAnyPermission(['self.profile.display.view', 'self.profile.display.update']);
+    await assertHasProfileDisplayPermission(accountId, 'view');
     const profile = await getUserProfile(accountId);
     if (!profile) return [];
 
@@ -51,7 +51,7 @@ export async function getDisplayNameSuggestions(accountId: string): Promise<stri
  * Function getPastProfilePhotos.
  */
 export async function getPastProfilePhotos(accountId: string): Promise<string[]> {
-    await assertHasAnyPermission(['self.profile.display.view', 'self.profile.display.update']);
+    await assertHasProfileDisplayPermission(accountId, 'view');
     try {
         const rows = await prisma.resource.findMany({
             where: {
@@ -83,8 +83,8 @@ export type PublicDisplayImage = {
     title: string | null;
 };
 
-export async function getPublicDisplayImages(): Promise<PublicDisplayImage[]> {
-    await assertHasAnyPermission(['self.profile.display.view', 'self.profile.display.update']);
+export async function getPublicDisplayImages(accountId: string): Promise<PublicDisplayImage[]> {
+    await assertHasProfileDisplayPermission(accountId, 'view');
     try {
         const rows = await prisma.resource.findMany({
             where: {
@@ -189,7 +189,7 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
     const wantsNeupIdRequest = typeof data.newNeupIdRequest === 'string' && data.newNeupIdRequest.trim().length > 0;
 
     const [canUpdateDisplay, canUpdateLegal, canUpdateDemographics, canUpdateContact, canRequestNeupId] = await Promise.all([
-        checkPermissions(['self.profile.display.update']),
+        assertHasProfileDisplayPermission(accountId, 'update').then(() => true).catch(() => false),
         checkPermissions(['self.profile.legal.update']),
         checkPermissions(['self.profile.demographics.update']),
         checkPermissions(['self.profile.contact.update']),

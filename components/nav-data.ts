@@ -1,6 +1,7 @@
 import { PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
 import { SECURITY_HUB_PERMISSIONS } from "@/core/auth/security-permissions";
 import { LINKED_ACCOUNT_NAV_PERMISSIONS } from "@/core/auth/linked-account-permissions";
+import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/core/auth/data-permissions";
 
 export type NavItem = {
     href: string;
@@ -88,10 +89,7 @@ export const allPermissionsMap: Record<string, string[]> = {
     "Notifications": ['self.notification.read', 'self.notification.delete'],
     "Password & Security": [...SECURITY_HUB_PERMISSIONS],
     "Linked Accounts": [...LINKED_ACCOUNT_NAV_PERMISSIONS],
-    "Data & Privacy": [
-        'data.agreed_terms.view', 'data.delete_account.start', 'data.deactivate_account.start', 
-        'data.materialization.view', 'data.materialization.modify', 'security.third_party.view.self', 'security.recent_activities.view.self'
-    ],
+    "Data & Privacy": [...DATA_PRIVACY_NAV_PERMISSIONS],
     "Access & Control": ['security.third_party.view.self', 'security.third_party.add.self', 'security.third_party.remove.self'],
     "People & Sharing": ['people.family.view', 'people.family.add', 'people.family.remove', 'people.family.partner.add', 'people.family.partner.remove', 'people.block_list.view', 'people.restrict_list.view'],
     "Payment & Subscription": ['payment.method.show', 'payment.transactions.show', 'payment.subscriptions.show', 'payment.purchase_neup_pro.view'],

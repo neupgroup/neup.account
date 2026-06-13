@@ -6,7 +6,8 @@ import { logActivity } from "@/services/log-actions";
 import { logError } from "@/core/helpers/logger";
 import prisma from "@/core/helpers/prisma";
 import bcrypt from "bcryptjs";
-import { checkPermissions } from "@/services/user";
+import { requireAnyPermission404 } from "@/core/auth/permission-guards";
+import { DATA_PRIVACY_PERMISSION_GROUPS } from "@/core/auth/data-permissions";
 
 const formSchema = z.object({
     inactivityDays: z.string().min(1, "Please select a time period."),
@@ -18,10 +19,7 @@ const formSchema = z.object({
  * Function scheduleMaterialization.
  */
 export async function scheduleMaterialization(data: z.infer<typeof formSchema>, geolocation?: string): Promise<{ success: boolean; error?: string; }> {
-    const canModify = await checkPermissions(['data.materialization.modify']);
-    if (!canModify) {
-        return { success: false, error: "Permission denied." };
-    }
+    await requireAnyPermission404(DATA_PRIVACY_PERMISSION_GROUPS.materialization);
 
     const accountId = await getActiveAccountId();
     if (!accountId) {

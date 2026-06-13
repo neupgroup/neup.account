@@ -7,8 +7,9 @@ import { logActivity } from "@/services/log-actions";
 import { logError } from "@/core/helpers/logger";
 import prisma from "@/core/helpers/prisma";
 import bcrypt from "bcryptjs";
-import { checkPermissions } from "@/services/user";
 import { logoutActiveSession } from "../auth/signout";
+import { requireAnyPermission404 } from "@/core/auth/permission-guards";
+import { DATA_PRIVACY_PERMISSION_GROUPS } from "@/core/auth/data-permissions";
 
 const formSchema = z.object({
     password: z.string().min(1, "Password is required to request deletion."),
@@ -18,10 +19,7 @@ const formSchema = z.object({
  * Function requestAccountDeletion.
  */
 export async function requestAccountDeletion(data: z.infer<typeof formSchema>, geolocation?: string): Promise<{ success: boolean; error?: string; }> {
-  const canDelete = await checkPermissions(['data.delete_account.start']);
-  if (!canDelete) {
-    return { success: false, error: "You do not have permission to delete this account." };
-  }
+  await requireAnyPermission404(DATA_PRIVACY_PERMISSION_GROUPS.deleteAccount);
 
   const accountId = await getActiveAccountId();
   if (!accountId) {

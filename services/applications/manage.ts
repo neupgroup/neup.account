@@ -1136,6 +1136,7 @@ export async function removeServerIp(input: {
  * ApplicationConnection to. appSecret is never returned.
  */
 export async function getApplicationDetailsForViewerV2(appId: string): Promise<ApplicationDetailsV2 | null> {
+  await requireAnyPermission404(['security.third_party.view.self']);
   const activeAccountId = await getActiveAccountId();
   if (!activeAccountId) return null;
 

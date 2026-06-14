@@ -51,7 +51,7 @@ export type SelectableAsset = {
   assetId: string;
   /** Human-readable name */
   name: string;
-  /** The assetType string stored in portfolioAsset.assetType */
+  /** The assetType string stored in portfolioAsset.asset_type */
   assetType: string;
   /** Optional secondary label */
   subtitle?: string;
@@ -482,43 +482,47 @@ async function resolvePortfolioAssetRow(assetRef: string): Promise<{
 } | null> {
   const toLogicalAssetId = (row: {
     id: string;
-    assetAccountId: string | null;
-    assetApplicationId: string | null;
-    assetConnectionId: string | null;
-  }): string => row.assetAccountId ?? row.assetApplicationId ?? row.assetConnectionId ?? row.id;
+    asset_account_id: string | null;
+    asset_application_id: string | null;
+    asset_connection_id: string | null;
+    asset_portfolio_id: string | null;
+  }): string => row.asset_account_id ?? row.asset_application_id ?? row.asset_connection_id ?? row.asset_portfolio_id ?? row.id;
 
   const byRow = await prisma.asset.findUnique({
     where: { id: assetRef },
     select: {
       id: true,
-      assetType: true,
-      assetAccountId: true,
-      assetApplicationId: true,
-      assetConnectionId: true,
+      asset_type: true,
+      asset_account_id: true,
+      asset_application_id: true,
+      asset_connection_id: true,
+      asset_portfolio_id: true,
     },
   });
   if (byRow) {
     return {
       rowId: byRow.id,
       assetId: toLogicalAssetId(byRow),
-      assetType: byRow.assetType,
+      assetType: byRow.asset_type,
     };
   }
 
   const byLogical = await prisma.asset.findFirst({
     where: {
       OR: [
-        { assetAccountId: assetRef },
-        { assetApplicationId: assetRef },
-        { assetConnectionId: assetRef },
+        { asset_account_id: assetRef },
+        { asset_application_id: assetRef },
+        { asset_connection_id: assetRef },
+        { asset_portfolio_id: assetRef },
       ],
     },
     select: {
       id: true,
-      assetType: true,
-      assetAccountId: true,
-      assetApplicationId: true,
-      assetConnectionId: true,
+      asset_type: true,
+      asset_account_id: true,
+      asset_application_id: true,
+      asset_connection_id: true,
+      asset_portfolio_id: true,
     },
     orderBy: { id: 'asc' },
   });
@@ -526,7 +530,7 @@ async function resolvePortfolioAssetRow(assetRef: string): Promise<{
   return {
     rowId: byLogical.id,
     assetId: toLogicalAssetId(byLogical),
-    assetType: byLogical.assetType,
+    assetType: byLogical.asset_type,
   };
 }
 

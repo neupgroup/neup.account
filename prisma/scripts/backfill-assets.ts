@@ -13,8 +13,9 @@ import { PrismaClient } from '../generated/client/client';
 
 const prisma = new PrismaClient();
 
-// Current schema uses enum AssetType: account | application | connection.
-const ACCOUNT_ASSET_TYPE = 'account' as const;
+// Current schema uses enum AssetType: acc_in_port | acc_in_acc | app_in_port | app_in_acc | port_in_acc | conn_in_acc | conn_in_port.
+const ACCOUNT_ASSET_TYPE = 'acc_in_port' as const;
+const APPLICATION_ASSET_TYPE = 'app_in_port' as const;
 
 /**
  * Finds a personal portfolio for the given account.
@@ -92,7 +93,7 @@ async function backfillAccounts() {
 
     // Check if an asset entry already exists for this account
     const existingAsset = await prisma.asset.findFirst({
-      where: { assetAccountId: account.id, assetType: ACCOUNT_ASSET_TYPE },
+      where: { asset_account_id: account.id, asset_type: ACCOUNT_ASSET_TYPE },
     });
 
     if (existingAsset) { skipped++; continue; }
@@ -105,9 +106,9 @@ async function backfillAccounts() {
 
     await prisma.asset.create({
       data: {
-        parentPortfolioId,
-        assetAccountId: account.id,
-        assetType: ACCOUNT_ASSET_TYPE,
+        parent_portfolio_id: parentPortfolioId,
+        asset_account_id: account.id,
+        asset_type: ACCOUNT_ASSET_TYPE,
       },
     });
 
@@ -133,7 +134,7 @@ async function backfillApplications() {
   for (const app of applications) {
     // Check if an asset entry already exists for this app
     const existingAsset = await prisma.asset.findFirst({
-      where: { assetApplicationId: app.id, assetType: 'application' },
+      where: { asset_application_id: app.id, asset_type: APPLICATION_ASSET_TYPE },
     });
 
     if (existingAsset) { skipped++; continue; }
@@ -168,9 +169,9 @@ async function backfillApplications() {
 
     await prisma.asset.create({
       data: {
-        parentPortfolioId,
-        assetApplicationId: app.id,
-        assetType: 'application',
+        parent_portfolio_id: parentPortfolioId,
+        asset_application_id: app.id,
+        asset_type: APPLICATION_ASSET_TYPE,
       },
     });
 

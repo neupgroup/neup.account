@@ -340,15 +340,15 @@ exports.Prisma.PortfolioScalarFieldEnum = {
 
 exports.Prisma.AssetScalarFieldEnum = {
   id: 'id',
-  assetType: 'assetType',
-  assetAccountId: 'assetAccountId',
-  assetApplicationId: 'assetApplicationId',
-  assetConnectionId: 'assetConnectionId',
-  assetPortfolioId: 'assetPortfolioId',
-  assetOtherId: 'assetOtherId',
-  parentAccountId: 'parentAccountId',
-  parentPortfolioId: 'parentPortfolioId',
-  isMainOwner: 'isMainOwner',
+  asset_type: 'asset_type',
+  asset_account_id: 'asset_account_id',
+  asset_application_id: 'asset_application_id',
+  asset_connection_id: 'asset_connection_id',
+  asset_portfolio_id: 'asset_portfolio_id',
+  parent_account_id: 'parent_account_id',
+  parent_portfolio_id: 'parent_portfolio_id',
+  is_main_owner: 'is_main_owner',
+  is_temporary: 'is_temporary',
   status: 'status',
   details: 'details'
 };
@@ -505,9 +505,13 @@ exports.Prisma.NullsOrder = {
   last: 'last'
 };
 exports.AssetType = exports.$Enums.AssetType = {
-  account: 'account',
-  application: 'application',
-  connection: 'connection'
+  acc_in_port: 'acc_in_port',
+  acc_in_acc: 'acc_in_acc',
+  app_in_port: 'app_in_port',
+  app_in_acc: 'app_in_acc',
+  port_in_acc: 'port_in_acc',
+  conn_in_acc: 'conn_in_acc',
+  conn_in_port: 'conn_in_port'
 };
 
 exports.MemberStatus = exports.$Enums.MemberStatus = {

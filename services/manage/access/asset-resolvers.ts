@@ -30,6 +30,23 @@ async function resolveApplicationAsset(assetId: string): Promise<ResolvedAsset |
   }
 }
 
+async function resolvePortfolioAsset(assetId: string): Promise<ResolvedAsset | null> {
+  try {
+    const portfolio = await prisma.portfolio.findUnique({
+      where: { id: assetId },
+      select: { name: true, description: true },
+    });
+    if (!portfolio) return null;
+    return {
+      name: portfolio.name,
+      subtitle: portfolio.description ?? undefined,
+    };
+  } catch (error) {
+    await logError('database', error, `resolvePortfolioAsset:${assetId}`);
+    return null;
+  }
+}
+
 /**
  * Resolves an account asset (individual, brand, branch, dependent) by account ID.
  */
@@ -56,16 +73,19 @@ async function resolveAccountAsset(assetId: string, assetType: string): Promise<
 
 // ── Dispatcher ────────────────────────────────────────────────────────────────
 
-const APPLICATION_TYPES = new Set(['application', 'app']);
+const APPLICATION_TYPES = new Set(['app_in_port', 'app_in_acc', 'application', 'app']);
 const ACCOUNT_TYPES = new Set([
+  'acc_in_port',
+  'acc_in_acc',
   'account.individual',
   'account.brand',
   'account.branch',
   'account.dependent',
-  // legacy aliases
   'brand_account',
   'branch_account',
 ]);
+const CONNECTION_TYPES = new Set(['conn_in_port', 'conn_in_acc', 'connection']);
+const PORTFOLIO_TYPES = new Set(['port_in_acc', 'portfolio']);
 
 /**
  * Resolves a human-readable name for any asset.
@@ -84,6 +104,29 @@ export async function resolveAssetName(
 
   if (ACCOUNT_TYPES.has(type)) {
     const result = await resolveAccountAsset(assetId, assetType);
+    if (result) return result;
+  }
+
+  if (CONNECTION_TYPES.has(type)) {
+    const result = await prisma.connection.findUnique({
+      where: { id: assetId },
+      select: { application: { select: { name: true } }, status: true },
+    }).then((connection) => {
+      if (!connection) return null;
+      return {
+        name: connection.application.name,
+        subtitle: connection.status,
+      } satisfies ResolvedAsset;
+    }).catch(async (error) => {
+      await logError('database', error, `resolveConnectionAsset:${assetId}`);
+      return null;
+    });
+
+    if (result) return result;
+  }
+
+  if (PORTFOLIO_TYPES.has(type)) {
+    const result = await resolvePortfolioAsset(assetId);
     if (result) return result;
   }
 

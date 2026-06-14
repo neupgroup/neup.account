@@ -343,31 +343,31 @@ model Portfolio {
 
 model Asset {
   id                      String                   @id(map: "portfolio_assets_pkey") @default(uuid())
-  assetType               AssetType                @map("asset_type")
-  assetAccountId          String?                  @map("asset_account_id")
-  assetApplicationId      String?                  @map("asset_application_id")
-  assetConnectionId       String?                  @map("asset_connection_id")
-  assetPortfolioId        String?                  @map("asset_portfolio_id")
-  assetOtherId            String?                  @map("asset_other_id")
-  parentAccountId         String?                  @map("parent_account_id")
-  parentPortfolioId       String?                  @map("parent_portfolio_id")
-  isMainOwner             Boolean                  @default(false) @map("is_main_owner")
+  asset_type              AssetType
+  asset_account_id        String?
+  asset_application_id    String?
+  asset_connection_id     String?
+  asset_portfolio_id      String?
+  parent_account_id       String?
+  parent_portfolio_id     String?
+  is_main_owner           Boolean                  @default(false)
+  is_temporary            DateTime?
   status                  String                   @default("active")
   details                 Json?
-  portfolio               Portfolio?               @relation("AssetParentPortfolio", fields: [parentPortfolioId], references: [id], onDelete: SetNull, map: "assets_parent_portfolio_fkey")
-  parentAccount           Account?                 @relation("AssetParentAccount", fields: [parentAccountId], references: [id], map: "assets_parent_account_fkey")
-  childAccount            Account?                 @relation("AssetChildAccount", fields: [assetAccountId], references: [id], map: "assets_asset_account_id_fkey")
-  childApplication        Application?             @relation("AssetChildApplication", fields: [assetApplicationId], references: [id], map: "assets_asset_application_id_fkey")
-  childConnection         Connection?              @relation("AssetChildConnection", fields: [assetConnectionId], references: [id], map: "assets_asset_connection_id_fkey")
+  portfolio               Portfolio?               @relation("AssetParentPortfolio", fields: [parent_portfolio_id], references: [id], onDelete: SetNull, map: "assets_parent_portfolio_fkey")
+  parentAccount           Account?                 @relation("AssetParentAccount", fields: [parent_account_id], references: [id], map: "assets_parent_account_fkey")
+  childAccount            Account?                 @relation("AssetChildAccount", fields: [asset_account_id], references: [id], map: "assets_asset_account_id_fkey")
+  childApplication        Application?             @relation("AssetChildApplication", fields: [asset_application_id], references: [id], map: "assets_asset_application_id_fkey")
+  childConnection         Connection?              @relation("AssetChildConnection", fields: [asset_connection_id], references: [id], map: "assets_asset_connection_id_fkey")
   roles                   Role[]
   authzAssetsAccessGrants AuthzAssetsAccessGrant[]
 
-  @@index([assetType, assetAccountId], map: "assets_asset_type_asset_account_id_idx")
-  @@index([assetType, assetApplicationId], map: "assets_asset_type_asset_application_id_idx")
-  @@index([assetType, assetConnectionId], map: "assets_asset_type_asset_connection_id_idx")
-  @@index([assetType, assetPortfolioId], map: "assets_asset_type_asset_portfolio_id_idx")
-  @@index([parentPortfolioId], map: "assets_parent_portfolio_id_idx")
-  @@index([parentAccountId], map: "assets_parent_account_id_idx")
+  @@index([asset_type, asset_account_id], map: "assets_asset_type_asset_account_id_idx")
+  @@index([asset_type, asset_application_id], map: "assets_asset_type_asset_application_id_idx")
+  @@index([asset_type, asset_connection_id], map: "assets_asset_type_asset_connection_id_idx")
+  @@index([asset_type, asset_portfolio_id], map: "assets_asset_type_asset_portfolio_id_idx")
+  @@index([parent_portfolio_id], map: "assets_parent_portfolio_id_idx")
+  @@index([parent_account_id], map: "assets_parent_account_id_idx")
   @@map("assets")
 }
 
@@ -472,9 +472,13 @@ enum AuthzGrantStatus {
 }
 
 enum AssetType {
-  account
-  application
-  connection
+  acc_in_port
+  acc_in_acc
+  app_in_port
+  app_in_acc
+  port_in_acc
+  conn_in_acc
+  conn_in_port
 }
 
 enum MemberAccessFor {

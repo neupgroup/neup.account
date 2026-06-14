@@ -181,26 +181,29 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
 
   const toLogicalAssetId = (row: {
     id: string;
-    assetAccountId: string | null;
-    assetApplicationId: string | null;
-    assetConnectionId: string | null;
-  }) => row.assetAccountId ?? row.assetApplicationId ?? row.assetConnectionId ?? row.id;
+    asset_account_id: string | null;
+    asset_application_id: string | null;
+    asset_connection_id: string | null;
+    asset_portfolio_id: string | null;
+  }) => row.asset_account_id ?? row.asset_application_id ?? row.asset_connection_id ?? row.asset_portfolio_id ?? row.id;
 
   const resolved = await prisma.asset.findFirst({
     where: {
       OR: [
         { id: assetRef },
-        { assetAccountId: assetRef },
-        { assetApplicationId: assetRef },
-        { assetConnectionId: assetRef },
+        { asset_account_id: assetRef },
+        { asset_application_id: assetRef },
+        { asset_connection_id: assetRef },
+        { asset_portfolio_id: assetRef },
       ],
     },
     select: {
       id: true,
-      assetAccountId: true,
-      assetApplicationId: true,
-      assetConnectionId: true,
-      assetType: true,
+      asset_account_id: true,
+      asset_application_id: true,
+      asset_connection_id: true,
+      asset_portfolio_id: true,
+      asset_type: true,
     },
   });
 
@@ -210,20 +213,21 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
   const allRows = await prisma.asset.findMany({
     where: {
       OR: [
-        { assetAccountId: resolvedAssetId },
-        { assetApplicationId: resolvedAssetId },
-        { assetConnectionId: resolvedAssetId },
+        { asset_account_id: resolvedAssetId },
+        { asset_application_id: resolvedAssetId },
+        { asset_connection_id: resolvedAssetId },
+        { asset_portfolio_id: resolvedAssetId },
       ],
-      assetType: resolved.assetType,
+      asset_type: resolved.asset_type,
     },
-    select: { id: true, parentPortfolioId: true },
+    select: { id: true, parent_portfolio_id: true },
   });
 
   if (allRows.length === 0) notFound();
 
   const rowIds = allRows.map((r) => r.id);
   const portfolioIds = Array.from(
-    new Set(allRows.map((r) => r.parentPortfolioId).filter((id): id is string => Boolean(id))),
+    new Set(allRows.map((r) => r.parent_portfolio_id).filter((id): id is string => Boolean(id))),
   );
 
   if (!rootMode) {
@@ -234,7 +238,7 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
     if (!canView) notFound();
   }
 
-  const asset = await resolveAssetName(resolvedAssetId, resolved.assetType);
+  const asset = await resolveAssetName(resolvedAssetId, resolved.asset_type);
   const assetName = asset.name;
   const rootAssetLabel = rootMode ? 'Root asset' : 'Asset members';
 
@@ -249,7 +253,7 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
             rows={allRows.map((row) => ({
               id: row.id,
               name: assetName,
-              description: row.parentPortfolioId ?? 'Direct asset access',
+              description: row.parent_portfolio_id ?? 'Direct asset access',
               status: 'active',
               actionHref: `/access/team?asset=${encodeURIComponent(row.id)}`,
             }))}

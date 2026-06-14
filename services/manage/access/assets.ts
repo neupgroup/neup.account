@@ -41,6 +41,31 @@ const assignRoleSchema = z.object({
 });
 
 const ACCESS_APP_ID = 'neup.account';
+const PORTFOLIO_ASSET_TYPE_MAP: Record<string, string> = {
+  brand_account: 'acc_in_port',
+  branch_account: 'acc_in_port',
+  application: 'app_in_port',
+};
+
+function toPortfolioAssetType(type: string): string {
+  return PORTFOLIO_ASSET_TYPE_MAP[type.trim().toLowerCase()] ?? type.trim().toLowerCase();
+}
+
+function toLogicalAssetId(row: {
+  id: string;
+  asset_account_id: string | null;
+  asset_application_id: string | null;
+  asset_connection_id: string | null;
+  asset_portfolio_id: string | null;
+}): string {
+  return (
+    row.asset_account_id ??
+    row.asset_application_id ??
+    row.asset_connection_id ??
+    row.asset_portfolio_id ??
+    row.id
+  );
+}
 
 type AccessAssetGroup = Prisma.PortfolioGetPayload<{
   include: {
@@ -422,8 +447,13 @@ export async function addAssetToGroup(input: { groupId: string; asset: string; t
     // Prevent duplicate assets in the same portfolio
     const existing = await prisma.asset.findFirst({
       where: {
-        parentPortfolioId: parsed.data.groupId,
-        assetId: parsed.data.asset,
+        parent_portfolio_id: parsed.data.groupId,
+        OR: [
+          { asset_account_id: parsed.data.asset },
+          { asset_application_id: parsed.data.asset },
+          { asset_connection_id: parsed.data.asset },
+          { asset_portfolio_id: parsed.data.asset },
+        ],
       },
       select: { id: true },
     });
@@ -434,9 +464,12 @@ export async function addAssetToGroup(input: { groupId: string; asset: string; t
 
     await prisma.asset.create({
       data: {
-        parentPortfolioId: parsed.data.groupId,
-        assetId: parsed.data.asset,
-        assetType: parsed.data.type,
+        parent_portfolio_id: parsed.data.groupId,
+        asset_account_id: parsed.data.type === 'application' ? null : parsed.data.asset,
+        asset_application_id: parsed.data.type === 'application' ? parsed.data.asset : null,
+        asset_connection_id: null,
+        asset_portfolio_id: null,
+        asset_type: toPortfolioAssetType(parsed.data.type),
         details: {
           note: normalizeDetails(parsed.data.details),
         },
@@ -475,8 +508,13 @@ export async function addAssetToGroupWithMode(
 
     const existing = await prisma.asset.findFirst({
       where: {
-        parentPortfolioId: parsed.data.groupId,
-        assetId: parsed.data.asset,
+        parent_portfolio_id: parsed.data.groupId,
+        OR: [
+          { asset_account_id: parsed.data.asset },
+          { asset_application_id: parsed.data.asset },
+          { asset_connection_id: parsed.data.asset },
+          { asset_portfolio_id: parsed.data.asset },
+        ],
       },
       select: { id: true },
     });
@@ -487,9 +525,12 @@ export async function addAssetToGroupWithMode(
 
     await prisma.asset.create({
       data: {
-        parentPortfolioId: parsed.data.groupId,
-        assetId: parsed.data.asset,
-        assetType: parsed.data.type,
+        parent_portfolio_id: parsed.data.groupId,
+        asset_account_id: parsed.data.type === 'application' ? null : parsed.data.asset,
+        asset_application_id: parsed.data.type === 'application' ? parsed.data.asset : null,
+        asset_connection_id: null,
+        asset_portfolio_id: null,
+        asset_type: toPortfolioAssetType(parsed.data.type),
         details: {
           note: normalizeDetails(parsed.data.details),
         },
@@ -533,9 +574,9 @@ export async function removeAssetFromGroup(input: { groupId: string; portfolioAs
     const assetRow = await prisma.asset.findFirst({
       where: {
         id: input.portfolioAssetId,
-        parentPortfolioId: input.groupId,
+        parent_portfolio_id: input.groupId,
       },
-      select: { id: true, assetId: true, assetType: true },
+      select: { id: true, asset_account_id: true, asset_application_id: true, asset_connection_id: true, asset_portfolio_id: true, asset_type: true },
     });
 
     if (!assetRow) {
@@ -592,8 +633,13 @@ export async function removeAssetFromGroup(input: { groupId: string; portfolioAs
       // Only add if not already present in the personal portfolio
       const alreadyInPersonal = await tx.asset.findFirst({
         where: {
-          parentPortfolioId: personalPortfolio.id,
-          assetId: assetRow.assetId,
+          parent_portfolio_id: personalPortfolio.id,
+          OR: [
+            { asset_account_id: toLogicalAssetId(assetRow) },
+            { asset_application_id: toLogicalAssetId(assetRow) },
+            { asset_connection_id: toLogicalAssetId(assetRow) },
+            { asset_portfolio_id: toLogicalAssetId(assetRow) },
+          ],
         },
         select: { id: true },
       });
@@ -601,9 +647,12 @@ export async function removeAssetFromGroup(input: { groupId: string; portfolioAs
       if (!alreadyInPersonal) {
         await tx.asset.create({
           data: {
-            parentPortfolioId: personalPortfolio.id,
-            assetId: assetRow.assetId,
-            assetType: assetRow.assetType,
+            parent_portfolio_id: personalPortfolio.id,
+            asset_account_id: assetRow.asset_account_id,
+            asset_application_id: assetRow.asset_application_id,
+            asset_connection_id: assetRow.asset_connection_id,
+            asset_portfolio_id: assetRow.asset_portfolio_id,
+            asset_type: assetRow.asset_type,
           },
         });
       }
@@ -641,9 +690,9 @@ export async function removeAssetFromGroupWithMode(
     const assetRow = await prisma.asset.findFirst({
       where: {
         id: input.portfolioAssetId,
-        parentPortfolioId: input.groupId,
+        parent_portfolio_id: input.groupId,
       },
-      select: { id: true, assetId: true, assetType: true },
+      select: { id: true, asset_account_id: true, asset_application_id: true, asset_connection_id: true, asset_portfolio_id: true, asset_type: true },
     });
 
     if (!assetRow) {
@@ -695,8 +744,13 @@ export async function removeAssetFromGroupWithMode(
 
       const alreadyInPersonal = await tx.asset.findFirst({
         where: {
-          parentPortfolioId: personalPortfolio.id,
-          assetId: assetRow.assetId,
+          parent_portfolio_id: personalPortfolio.id,
+          OR: [
+            { asset_account_id: toLogicalAssetId(assetRow) },
+            { asset_application_id: toLogicalAssetId(assetRow) },
+            { asset_connection_id: toLogicalAssetId(assetRow) },
+            { asset_portfolio_id: toLogicalAssetId(assetRow) },
+          ],
         },
         select: { id: true },
       });
@@ -704,9 +758,12 @@ export async function removeAssetFromGroupWithMode(
       if (!alreadyInPersonal) {
         await tx.asset.create({
           data: {
-            parentPortfolioId: personalPortfolio.id,
-            assetId: assetRow.assetId,
-            assetType: assetRow.assetType,
+            parent_portfolio_id: personalPortfolio.id,
+            asset_account_id: assetRow.asset_account_id,
+            asset_application_id: assetRow.asset_application_id,
+            asset_connection_id: assetRow.asset_connection_id,
+            asset_portfolio_id: assetRow.asset_portfolio_id,
+            asset_type: assetRow.asset_type,
           },
         });
       }
@@ -895,7 +952,7 @@ export async function assignAssetMemberRole(input: {
       // any portfolio that includes accounts other than the current actor.
       const directAsset = await prisma.asset.findUnique({
         where: { id: input.asset },
-        select: { assetId: true, assetType: true },
+        select: { id: true, asset_account_id: true, asset_application_id: true, asset_connection_id: true, asset_portfolio_id: true, asset_type: true },
       });
       if (!directAsset) {
         return { success: false, error: 'Asset not found.' };
@@ -903,8 +960,13 @@ export async function assignAssetMemberRole(input: {
 
       const sharedAsset = await prisma.asset.findFirst({
         where: {
-          assetId: directAsset.assetId,
-          assetType: directAsset.assetType,
+          OR: [
+            { asset_account_id: toLogicalAssetId(directAsset) },
+            { asset_application_id: toLogicalAssetId(directAsset) },
+            { asset_connection_id: toLogicalAssetId(directAsset) },
+            { asset_portfolio_id: toLogicalAssetId(directAsset) },
+          ],
+          asset_type: directAsset.asset_type,
           portfolio: {
             members: {
               some: {
@@ -971,15 +1033,22 @@ export type AssetRole = {
 
 // Maps asset.assetType values to the authzRole.scope used in the seeder.
 const ASSET_TYPE_TO_ROLE_SCOPE: Record<string, string> = {
+  app_in_port:          'application',
+  app_in_acc:           'application',
+  acc_in_port:          'account',
+  acc_in_acc:           'account',
+  conn_in_port:         'connection',
+  conn_in_acc:          'connection',
+  port_in_acc:          'portfolio',
+  // legacy aliases
   application:          'application',
   app:                  'application',
   'account.individual': 'account',
-  'account.brand':      'brand',
-  'account.branch':     'brand',
+  'account.brand':      'account',
+  'account.branch':     'account',
   'account.dependent':  'account',
-  // legacy aliases
-  brand_account:        'brand',
-  branch_account:       'brand',
+  brand_account:        'account',
+  branch_account:       'account',
 };
 
 /**
@@ -997,12 +1066,12 @@ export async function getRolesForAsset(portfolioAssetId: string): Promise<AssetR
   try {
     const assetRow = await prisma.asset.findUnique({
       where: { id: portfolioAssetId },
-      select: { assetType: true },
+      select: { asset_type: true },
     });
 
     if (!assetRow) return [];
 
-    const type = assetRow.assetType.trim().toLowerCase();
+    const type = assetRow.asset_type.trim().toLowerCase();
     const roleScope = ASSET_TYPE_TO_ROLE_SCOPE[type];
 
     if (!roleScope) return [];
@@ -1118,7 +1187,7 @@ export async function bulkAssignAssetRoles(input: {
     if (!groupId) {
       const directAssets = await prisma.asset.findMany({
         where: { id: { in: input.assetIds } },
-        select: { id: true, assetId: true, assetType: true },
+        select: { id: true, asset_account_id: true, asset_application_id: true, asset_connection_id: true, asset_portfolio_id: true, asset_type: true },
       });
 
       if (directAssets.length !== input.assetIds.length) {
@@ -1128,8 +1197,13 @@ export async function bulkAssignAssetRoles(input: {
       for (const asset of directAssets) {
         const sharedAsset = await prisma.asset.findFirst({
           where: {
-            assetId: asset.assetId,
-            assetType: asset.assetType,
+            OR: [
+              { asset_account_id: toLogicalAssetId(asset) },
+              { asset_application_id: toLogicalAssetId(asset) },
+              { asset_connection_id: toLogicalAssetId(asset) },
+              { asset_portfolio_id: toLogicalAssetId(asset) },
+            ],
+            asset_type: asset.asset_type,
             portfolio: {
               members: {
                 some: {
@@ -1154,21 +1228,31 @@ export async function bulkAssignAssetRoles(input: {
     const existingAssets = groupId
       ? await prisma.asset.findMany({
           where: {
-            parentPortfolioId: groupId,
-            assetId: { in: input.assetIds },
+            parent_portfolio_id: groupId,
+            OR: [
+              { asset_account_id: { in: input.assetIds } },
+              { asset_application_id: { in: input.assetIds } },
+              { asset_connection_id: { in: input.assetIds } },
+              { asset_portfolio_id: { in: input.assetIds } },
+            ],
           },
-          select: { id: true, assetId: true },
+          select: { id: true, asset_account_id: true, asset_application_id: true, asset_connection_id: true, asset_portfolio_id: true, asset_type: true },
         })
       : await prisma.asset.findMany({
           where: {
-            assetId: { in: input.assetIds },
-            assetType: input.assetType,
+            OR: [
+              { asset_account_id: { in: input.assetIds } },
+              { asset_application_id: { in: input.assetIds } },
+              { asset_connection_id: { in: input.assetIds } },
+              { asset_portfolio_id: { in: input.assetIds } },
+            ],
+            asset_type: toPortfolioAssetType(input.assetType),
           },
-          select: { id: true, assetId: true },
+          select: { id: true, asset_account_id: true, asset_application_id: true, asset_connection_id: true, asset_portfolio_id: true, asset_type: true },
           orderBy: { id: 'asc' },
         });
 
-    const existingAssetIdMap = new Map(existingAssets.map((a) => [a.assetId, a.id]));
+    const existingAssetIdMap = new Map(existingAssets.map((a) => [toLogicalAssetId(a), a.id]));
     const portfolioAssetIds: string[] = [];
 
     await prisma.$transaction(async (tx) => {
@@ -1179,9 +1263,12 @@ export async function bulkAssignAssetRoles(input: {
         } else if (groupId) {
           const created = await tx.asset.create({
             data: {
-              parentPortfolioId: groupId,
-              assetId: rawAssetId,
-              assetType: input.assetType,
+              parent_portfolio_id: groupId,
+              asset_account_id: input.assetType === 'application' ? null : rawAssetId,
+              asset_application_id: input.assetType === 'application' ? rawAssetId : null,
+              asset_connection_id: null,
+              asset_portfolio_id: null,
+              asset_type: toPortfolioAssetType(input.assetType),
             },
             select: { id: true },
           });
@@ -1283,8 +1370,11 @@ export async function getMemberAssetGrants(
         asset: {
           select: {
             id: true,
-            assetId: true,
-            assetType: true,
+            asset_account_id: true,
+            asset_application_id: true,
+            asset_connection_id: true,
+            asset_portfolio_id: true,
+            asset_type: true,
           },
         },
       },
@@ -1296,10 +1386,11 @@ export async function getMemberAssetGrants(
     for (const grant of grants) {
       const key = grant.asset_id;
       if (!assetMap.has(key)) {
+        const assetId = toLogicalAssetId(grant.asset);
         assetMap.set(key, {
           portfolioAssetId: grant.asset.id,
-          assetId: grant.asset.assetId,
-          assetType: grant.asset.assetType,
+          assetId,
+          assetType: grant.asset.asset_type,
           roleIds: [],
         });
       }

@@ -201,9 +201,13 @@ export type AuthzGrantStatus = (typeof AuthzGrantStatus)[keyof typeof AuthzGrant
 
 
 export const AssetType: {
-  account: 'account',
-  application: 'application',
-  connection: 'connection'
+  acc_in_port: 'acc_in_port',
+  acc_in_acc: 'acc_in_acc',
+  app_in_port: 'app_in_port',
+  app_in_acc: 'app_in_acc',
+  port_in_acc: 'port_in_acc',
+  conn_in_acc: 'conn_in_acc',
+  conn_in_port: 'conn_in_port'
 };
 
 export type AssetType = (typeof AssetType)[keyof typeof AssetType]
@@ -28515,43 +28519,43 @@ export namespace Prisma {
 
   export type AssetMinAggregateOutputType = {
     id: string | null
-    assetType: $Enums.AssetType | null
-    assetAccountId: string | null
-    assetApplicationId: string | null
-    assetConnectionId: string | null
-    assetPortfolioId: string | null
-    assetOtherId: string | null
-    parentAccountId: string | null
-    parentPortfolioId: string | null
-    isMainOwner: boolean | null
+    asset_type: $Enums.AssetType | null
+    asset_account_id: string | null
+    asset_application_id: string | null
+    asset_connection_id: string | null
+    asset_portfolio_id: string | null
+    parent_account_id: string | null
+    parent_portfolio_id: string | null
+    is_main_owner: boolean | null
+    is_temporary: Date | null
     status: string | null
   }
 
   export type AssetMaxAggregateOutputType = {
     id: string | null
-    assetType: $Enums.AssetType | null
-    assetAccountId: string | null
-    assetApplicationId: string | null
-    assetConnectionId: string | null
-    assetPortfolioId: string | null
-    assetOtherId: string | null
-    parentAccountId: string | null
-    parentPortfolioId: string | null
-    isMainOwner: boolean | null
+    asset_type: $Enums.AssetType | null
+    asset_account_id: string | null
+    asset_application_id: string | null
+    asset_connection_id: string | null
+    asset_portfolio_id: string | null
+    parent_account_id: string | null
+    parent_portfolio_id: string | null
+    is_main_owner: boolean | null
+    is_temporary: Date | null
     status: string | null
   }
 
   export type AssetCountAggregateOutputType = {
     id: number
-    assetType: number
-    assetAccountId: number
-    assetApplicationId: number
-    assetConnectionId: number
-    assetPortfolioId: number
-    assetOtherId: number
-    parentAccountId: number
-    parentPortfolioId: number
-    isMainOwner: number
+    asset_type: number
+    asset_account_id: number
+    asset_application_id: number
+    asset_connection_id: number
+    asset_portfolio_id: number
+    parent_account_id: number
+    parent_portfolio_id: number
+    is_main_owner: number
+    is_temporary: number
     status: number
     details: number
     _all: number
@@ -28560,43 +28564,43 @@ export namespace Prisma {
 
   export type AssetMinAggregateInputType = {
     id?: true
-    assetType?: true
-    assetAccountId?: true
-    assetApplicationId?: true
-    assetConnectionId?: true
-    assetPortfolioId?: true
-    assetOtherId?: true
-    parentAccountId?: true
-    parentPortfolioId?: true
-    isMainOwner?: true
+    asset_type?: true
+    asset_account_id?: true
+    asset_application_id?: true
+    asset_connection_id?: true
+    asset_portfolio_id?: true
+    parent_account_id?: true
+    parent_portfolio_id?: true
+    is_main_owner?: true
+    is_temporary?: true
     status?: true
   }
 
   export type AssetMaxAggregateInputType = {
     id?: true
-    assetType?: true
-    assetAccountId?: true
-    assetApplicationId?: true
-    assetConnectionId?: true
-    assetPortfolioId?: true
-    assetOtherId?: true
-    parentAccountId?: true
-    parentPortfolioId?: true
-    isMainOwner?: true
+    asset_type?: true
+    asset_account_id?: true
+    asset_application_id?: true
+    asset_connection_id?: true
+    asset_portfolio_id?: true
+    parent_account_id?: true
+    parent_portfolio_id?: true
+    is_main_owner?: true
+    is_temporary?: true
     status?: true
   }
 
   export type AssetCountAggregateInputType = {
     id?: true
-    assetType?: true
-    assetAccountId?: true
-    assetApplicationId?: true
-    assetConnectionId?: true
-    assetPortfolioId?: true
-    assetOtherId?: true
-    parentAccountId?: true
-    parentPortfolioId?: true
-    isMainOwner?: true
+    asset_type?: true
+    asset_account_id?: true
+    asset_application_id?: true
+    asset_connection_id?: true
+    asset_portfolio_id?: true
+    parent_account_id?: true
+    parent_portfolio_id?: true
+    is_main_owner?: true
+    is_temporary?: true
     status?: true
     details?: true
     _all?: true
@@ -28676,15 +28680,15 @@ export namespace Prisma {
 
   export type AssetGroupByOutputType = {
     id: string
-    assetType: $Enums.AssetType
-    assetAccountId: string | null
-    assetApplicationId: string | null
-    assetConnectionId: string | null
-    assetPortfolioId: string | null
-    assetOtherId: string | null
-    parentAccountId: string | null
-    parentPortfolioId: string | null
-    isMainOwner: boolean
+    asset_type: $Enums.AssetType
+    asset_account_id: string | null
+    asset_application_id: string | null
+    asset_connection_id: string | null
+    asset_portfolio_id: string | null
+    parent_account_id: string | null
+    parent_portfolio_id: string | null
+    is_main_owner: boolean
+    is_temporary: Date | null
     status: string
     details: JsonValue | null
     _count: AssetCountAggregateOutputType | null
@@ -28708,15 +28712,15 @@ export namespace Prisma {
 
   export type AssetSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    assetType?: boolean
-    assetAccountId?: boolean
-    assetApplicationId?: boolean
-    assetConnectionId?: boolean
-    assetPortfolioId?: boolean
-    assetOtherId?: boolean
-    parentAccountId?: boolean
-    parentPortfolioId?: boolean
-    isMainOwner?: boolean
+    asset_type?: boolean
+    asset_account_id?: boolean
+    asset_application_id?: boolean
+    asset_connection_id?: boolean
+    asset_portfolio_id?: boolean
+    parent_account_id?: boolean
+    parent_portfolio_id?: boolean
+    is_main_owner?: boolean
+    is_temporary?: boolean
     status?: boolean
     details?: boolean
     portfolio?: boolean | Asset$portfolioArgs<ExtArgs>
@@ -28731,15 +28735,15 @@ export namespace Prisma {
 
   export type AssetSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    assetType?: boolean
-    assetAccountId?: boolean
-    assetApplicationId?: boolean
-    assetConnectionId?: boolean
-    assetPortfolioId?: boolean
-    assetOtherId?: boolean
-    parentAccountId?: boolean
-    parentPortfolioId?: boolean
-    isMainOwner?: boolean
+    asset_type?: boolean
+    asset_account_id?: boolean
+    asset_application_id?: boolean
+    asset_connection_id?: boolean
+    asset_portfolio_id?: boolean
+    parent_account_id?: boolean
+    parent_portfolio_id?: boolean
+    is_main_owner?: boolean
+    is_temporary?: boolean
     status?: boolean
     details?: boolean
     portfolio?: boolean | Asset$portfolioArgs<ExtArgs>
@@ -28751,15 +28755,15 @@ export namespace Prisma {
 
   export type AssetSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    assetType?: boolean
-    assetAccountId?: boolean
-    assetApplicationId?: boolean
-    assetConnectionId?: boolean
-    assetPortfolioId?: boolean
-    assetOtherId?: boolean
-    parentAccountId?: boolean
-    parentPortfolioId?: boolean
-    isMainOwner?: boolean
+    asset_type?: boolean
+    asset_account_id?: boolean
+    asset_application_id?: boolean
+    asset_connection_id?: boolean
+    asset_portfolio_id?: boolean
+    parent_account_id?: boolean
+    parent_portfolio_id?: boolean
+    is_main_owner?: boolean
+    is_temporary?: boolean
     status?: boolean
     details?: boolean
     portfolio?: boolean | Asset$portfolioArgs<ExtArgs>
@@ -28771,20 +28775,20 @@ export namespace Prisma {
 
   export type AssetSelectScalar = {
     id?: boolean
-    assetType?: boolean
-    assetAccountId?: boolean
-    assetApplicationId?: boolean
-    assetConnectionId?: boolean
-    assetPortfolioId?: boolean
-    assetOtherId?: boolean
-    parentAccountId?: boolean
-    parentPortfolioId?: boolean
-    isMainOwner?: boolean
+    asset_type?: boolean
+    asset_account_id?: boolean
+    asset_application_id?: boolean
+    asset_connection_id?: boolean
+    asset_portfolio_id?: boolean
+    parent_account_id?: boolean
+    parent_portfolio_id?: boolean
+    is_main_owner?: boolean
+    is_temporary?: boolean
     status?: boolean
     details?: boolean
   }
 
-  export type AssetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "assetType" | "assetAccountId" | "assetApplicationId" | "assetConnectionId" | "assetPortfolioId" | "assetOtherId" | "parentAccountId" | "parentPortfolioId" | "isMainOwner" | "status" | "details", ExtArgs["result"]["asset"]>
+  export type AssetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "asset_type" | "asset_account_id" | "asset_application_id" | "asset_connection_id" | "asset_portfolio_id" | "parent_account_id" | "parent_portfolio_id" | "is_main_owner" | "is_temporary" | "status" | "details", ExtArgs["result"]["asset"]>
   export type AssetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     portfolio?: boolean | Asset$portfolioArgs<ExtArgs>
     parentAccount?: boolean | Asset$parentAccountArgs<ExtArgs>
@@ -28823,15 +28827,15 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      assetType: $Enums.AssetType
-      assetAccountId: string | null
-      assetApplicationId: string | null
-      assetConnectionId: string | null
-      assetPortfolioId: string | null
-      assetOtherId: string | null
-      parentAccountId: string | null
-      parentPortfolioId: string | null
-      isMainOwner: boolean
+      asset_type: $Enums.AssetType
+      asset_account_id: string | null
+      asset_application_id: string | null
+      asset_connection_id: string | null
+      asset_portfolio_id: string | null
+      parent_account_id: string | null
+      parent_portfolio_id: string | null
+      is_main_owner: boolean
+      is_temporary: Date | null
       status: string
       details: Prisma.JsonValue | null
     }, ExtArgs["result"]["asset"]>
@@ -29265,15 +29269,15 @@ export namespace Prisma {
    */
   interface AssetFieldRefs {
     readonly id: FieldRef<"Asset", 'String'>
-    readonly assetType: FieldRef<"Asset", 'AssetType'>
-    readonly assetAccountId: FieldRef<"Asset", 'String'>
-    readonly assetApplicationId: FieldRef<"Asset", 'String'>
-    readonly assetConnectionId: FieldRef<"Asset", 'String'>
-    readonly assetPortfolioId: FieldRef<"Asset", 'String'>
-    readonly assetOtherId: FieldRef<"Asset", 'String'>
-    readonly parentAccountId: FieldRef<"Asset", 'String'>
-    readonly parentPortfolioId: FieldRef<"Asset", 'String'>
-    readonly isMainOwner: FieldRef<"Asset", 'Boolean'>
+    readonly asset_type: FieldRef<"Asset", 'AssetType'>
+    readonly asset_account_id: FieldRef<"Asset", 'String'>
+    readonly asset_application_id: FieldRef<"Asset", 'String'>
+    readonly asset_connection_id: FieldRef<"Asset", 'String'>
+    readonly asset_portfolio_id: FieldRef<"Asset", 'String'>
+    readonly parent_account_id: FieldRef<"Asset", 'String'>
+    readonly parent_portfolio_id: FieldRef<"Asset", 'String'>
+    readonly is_main_owner: FieldRef<"Asset", 'Boolean'>
+    readonly is_temporary: FieldRef<"Asset", 'DateTime'>
     readonly status: FieldRef<"Asset", 'String'>
     readonly details: FieldRef<"Asset", 'Json'>
   }
@@ -43792,15 +43796,15 @@ export namespace Prisma {
 
   export const AssetScalarFieldEnum: {
     id: 'id',
-    assetType: 'assetType',
-    assetAccountId: 'assetAccountId',
-    assetApplicationId: 'assetApplicationId',
-    assetConnectionId: 'assetConnectionId',
-    assetPortfolioId: 'assetPortfolioId',
-    assetOtherId: 'assetOtherId',
-    parentAccountId: 'parentAccountId',
-    parentPortfolioId: 'parentPortfolioId',
-    isMainOwner: 'isMainOwner',
+    asset_type: 'asset_type',
+    asset_account_id: 'asset_account_id',
+    asset_application_id: 'asset_application_id',
+    asset_connection_id: 'asset_connection_id',
+    asset_portfolio_id: 'asset_portfolio_id',
+    parent_account_id: 'parent_account_id',
+    parent_portfolio_id: 'parent_portfolio_id',
+    is_main_owner: 'is_main_owner',
+    is_temporary: 'is_temporary',
     status: 'status',
     details: 'details'
   };
@@ -45660,15 +45664,15 @@ export namespace Prisma {
     OR?: AssetWhereInput[]
     NOT?: AssetWhereInput | AssetWhereInput[]
     id?: StringFilter<"Asset"> | string
-    assetType?: EnumAssetTypeFilter<"Asset"> | $Enums.AssetType
-    assetAccountId?: StringNullableFilter<"Asset"> | string | null
-    assetApplicationId?: StringNullableFilter<"Asset"> | string | null
-    assetConnectionId?: StringNullableFilter<"Asset"> | string | null
-    assetPortfolioId?: StringNullableFilter<"Asset"> | string | null
-    assetOtherId?: StringNullableFilter<"Asset"> | string | null
-    parentAccountId?: StringNullableFilter<"Asset"> | string | null
-    parentPortfolioId?: StringNullableFilter<"Asset"> | string | null
-    isMainOwner?: BoolFilter<"Asset"> | boolean
+    asset_type?: EnumAssetTypeFilter<"Asset"> | $Enums.AssetType
+    asset_account_id?: StringNullableFilter<"Asset"> | string | null
+    asset_application_id?: StringNullableFilter<"Asset"> | string | null
+    asset_connection_id?: StringNullableFilter<"Asset"> | string | null
+    asset_portfolio_id?: StringNullableFilter<"Asset"> | string | null
+    parent_account_id?: StringNullableFilter<"Asset"> | string | null
+    parent_portfolio_id?: StringNullableFilter<"Asset"> | string | null
+    is_main_owner?: BoolFilter<"Asset"> | boolean
+    is_temporary?: DateTimeNullableFilter<"Asset"> | Date | string | null
     status?: StringFilter<"Asset"> | string
     details?: JsonNullableFilter<"Asset">
     portfolio?: XOR<PortfolioNullableScalarRelationFilter, PortfolioWhereInput> | null
@@ -45682,15 +45686,15 @@ export namespace Prisma {
 
   export type AssetOrderByWithRelationInput = {
     id?: SortOrder
-    assetType?: SortOrder
-    assetAccountId?: SortOrderInput | SortOrder
-    assetApplicationId?: SortOrderInput | SortOrder
-    assetConnectionId?: SortOrderInput | SortOrder
-    assetPortfolioId?: SortOrderInput | SortOrder
-    assetOtherId?: SortOrderInput | SortOrder
-    parentAccountId?: SortOrderInput | SortOrder
-    parentPortfolioId?: SortOrderInput | SortOrder
-    isMainOwner?: SortOrder
+    asset_type?: SortOrder
+    asset_account_id?: SortOrderInput | SortOrder
+    asset_application_id?: SortOrderInput | SortOrder
+    asset_connection_id?: SortOrderInput | SortOrder
+    asset_portfolio_id?: SortOrderInput | SortOrder
+    parent_account_id?: SortOrderInput | SortOrder
+    parent_portfolio_id?: SortOrderInput | SortOrder
+    is_main_owner?: SortOrder
+    is_temporary?: SortOrderInput | SortOrder
     status?: SortOrder
     details?: SortOrderInput | SortOrder
     portfolio?: PortfolioOrderByWithRelationInput
@@ -45707,15 +45711,15 @@ export namespace Prisma {
     AND?: AssetWhereInput | AssetWhereInput[]
     OR?: AssetWhereInput[]
     NOT?: AssetWhereInput | AssetWhereInput[]
-    assetType?: EnumAssetTypeFilter<"Asset"> | $Enums.AssetType
-    assetAccountId?: StringNullableFilter<"Asset"> | string | null
-    assetApplicationId?: StringNullableFilter<"Asset"> | string | null
-    assetConnectionId?: StringNullableFilter<"Asset"> | string | null
-    assetPortfolioId?: StringNullableFilter<"Asset"> | string | null
-    assetOtherId?: StringNullableFilter<"Asset"> | string | null
-    parentAccountId?: StringNullableFilter<"Asset"> | string | null
-    parentPortfolioId?: StringNullableFilter<"Asset"> | string | null
-    isMainOwner?: BoolFilter<"Asset"> | boolean
+    asset_type?: EnumAssetTypeFilter<"Asset"> | $Enums.AssetType
+    asset_account_id?: StringNullableFilter<"Asset"> | string | null
+    asset_application_id?: StringNullableFilter<"Asset"> | string | null
+    asset_connection_id?: StringNullableFilter<"Asset"> | string | null
+    asset_portfolio_id?: StringNullableFilter<"Asset"> | string | null
+    parent_account_id?: StringNullableFilter<"Asset"> | string | null
+    parent_portfolio_id?: StringNullableFilter<"Asset"> | string | null
+    is_main_owner?: BoolFilter<"Asset"> | boolean
+    is_temporary?: DateTimeNullableFilter<"Asset"> | Date | string | null
     status?: StringFilter<"Asset"> | string
     details?: JsonNullableFilter<"Asset">
     portfolio?: XOR<PortfolioNullableScalarRelationFilter, PortfolioWhereInput> | null
@@ -45729,15 +45733,15 @@ export namespace Prisma {
 
   export type AssetOrderByWithAggregationInput = {
     id?: SortOrder
-    assetType?: SortOrder
-    assetAccountId?: SortOrderInput | SortOrder
-    assetApplicationId?: SortOrderInput | SortOrder
-    assetConnectionId?: SortOrderInput | SortOrder
-    assetPortfolioId?: SortOrderInput | SortOrder
-    assetOtherId?: SortOrderInput | SortOrder
-    parentAccountId?: SortOrderInput | SortOrder
-    parentPortfolioId?: SortOrderInput | SortOrder
-    isMainOwner?: SortOrder
+    asset_type?: SortOrder
+    asset_account_id?: SortOrderInput | SortOrder
+    asset_application_id?: SortOrderInput | SortOrder
+    asset_connection_id?: SortOrderInput | SortOrder
+    asset_portfolio_id?: SortOrderInput | SortOrder
+    parent_account_id?: SortOrderInput | SortOrder
+    parent_portfolio_id?: SortOrderInput | SortOrder
+    is_main_owner?: SortOrder
+    is_temporary?: SortOrderInput | SortOrder
     status?: SortOrder
     details?: SortOrderInput | SortOrder
     _count?: AssetCountOrderByAggregateInput
@@ -45750,15 +45754,15 @@ export namespace Prisma {
     OR?: AssetScalarWhereWithAggregatesInput[]
     NOT?: AssetScalarWhereWithAggregatesInput | AssetScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Asset"> | string
-    assetType?: EnumAssetTypeWithAggregatesFilter<"Asset"> | $Enums.AssetType
-    assetAccountId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
-    assetApplicationId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
-    assetConnectionId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
-    assetPortfolioId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
-    assetOtherId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
-    parentAccountId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
-    parentPortfolioId?: StringNullableWithAggregatesFilter<"Asset"> | string | null
-    isMainOwner?: BoolWithAggregatesFilter<"Asset"> | boolean
+    asset_type?: EnumAssetTypeWithAggregatesFilter<"Asset"> | $Enums.AssetType
+    asset_account_id?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    asset_application_id?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    asset_connection_id?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    asset_portfolio_id?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    parent_account_id?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    parent_portfolio_id?: StringNullableWithAggregatesFilter<"Asset"> | string | null
+    is_main_owner?: BoolWithAggregatesFilter<"Asset"> | boolean
+    is_temporary?: DateTimeNullableWithAggregatesFilter<"Asset"> | Date | string | null
     status?: StringWithAggregatesFilter<"Asset"> | string
     details?: JsonNullableWithAggregatesFilter<"Asset">
   }
@@ -48307,10 +48311,10 @@ export namespace Prisma {
 
   export type AssetCreateInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_portfolio_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
     portfolio?: PortfolioCreateNestedOneWithoutAssetsInput
@@ -48324,15 +48328,15 @@ export namespace Prisma {
 
   export type AssetUncheckedCreateInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetAccountId?: string | null
-    assetApplicationId?: string | null
-    assetConnectionId?: string | null
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    parentAccountId?: string | null
-    parentPortfolioId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_account_id?: string | null
+    asset_application_id?: string | null
+    asset_connection_id?: string | null
+    asset_portfolio_id?: string | null
+    parent_account_id?: string | null
+    parent_portfolio_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
@@ -48341,10 +48345,10 @@ export namespace Prisma {
 
   export type AssetUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
     portfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
@@ -48358,15 +48362,15 @@ export namespace Prisma {
 
   export type AssetUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_application_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
@@ -48375,40 +48379,40 @@ export namespace Prisma {
 
   export type AssetCreateManyInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetAccountId?: string | null
-    assetApplicationId?: string | null
-    assetConnectionId?: string | null
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    parentAccountId?: string | null
-    parentPortfolioId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_account_id?: string | null
+    asset_application_id?: string | null
+    asset_connection_id?: string | null
+    asset_portfolio_id?: string | null
+    parent_account_id?: string | null
+    parent_portfolio_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type AssetUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type AssetUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_application_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
   }
@@ -50511,44 +50515,44 @@ export namespace Prisma {
 
   export type AssetCountOrderByAggregateInput = {
     id?: SortOrder
-    assetType?: SortOrder
-    assetAccountId?: SortOrder
-    assetApplicationId?: SortOrder
-    assetConnectionId?: SortOrder
-    assetPortfolioId?: SortOrder
-    assetOtherId?: SortOrder
-    parentAccountId?: SortOrder
-    parentPortfolioId?: SortOrder
-    isMainOwner?: SortOrder
+    asset_type?: SortOrder
+    asset_account_id?: SortOrder
+    asset_application_id?: SortOrder
+    asset_connection_id?: SortOrder
+    asset_portfolio_id?: SortOrder
+    parent_account_id?: SortOrder
+    parent_portfolio_id?: SortOrder
+    is_main_owner?: SortOrder
+    is_temporary?: SortOrder
     status?: SortOrder
     details?: SortOrder
   }
 
   export type AssetMaxOrderByAggregateInput = {
     id?: SortOrder
-    assetType?: SortOrder
-    assetAccountId?: SortOrder
-    assetApplicationId?: SortOrder
-    assetConnectionId?: SortOrder
-    assetPortfolioId?: SortOrder
-    assetOtherId?: SortOrder
-    parentAccountId?: SortOrder
-    parentPortfolioId?: SortOrder
-    isMainOwner?: SortOrder
+    asset_type?: SortOrder
+    asset_account_id?: SortOrder
+    asset_application_id?: SortOrder
+    asset_connection_id?: SortOrder
+    asset_portfolio_id?: SortOrder
+    parent_account_id?: SortOrder
+    parent_portfolio_id?: SortOrder
+    is_main_owner?: SortOrder
+    is_temporary?: SortOrder
     status?: SortOrder
   }
 
   export type AssetMinOrderByAggregateInput = {
     id?: SortOrder
-    assetType?: SortOrder
-    assetAccountId?: SortOrder
-    assetApplicationId?: SortOrder
-    assetConnectionId?: SortOrder
-    assetPortfolioId?: SortOrder
-    assetOtherId?: SortOrder
-    parentAccountId?: SortOrder
-    parentPortfolioId?: SortOrder
-    isMainOwner?: SortOrder
+    asset_type?: SortOrder
+    asset_account_id?: SortOrder
+    asset_application_id?: SortOrder
+    asset_connection_id?: SortOrder
+    asset_portfolio_id?: SortOrder
+    parent_account_id?: SortOrder
+    parent_portfolio_id?: SortOrder
+    is_main_owner?: SortOrder
+    is_temporary?: SortOrder
     status?: SortOrder
   }
 
@@ -54611,10 +54615,10 @@ export namespace Prisma {
 
   export type AssetCreateWithoutParentAccountInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_portfolio_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
     portfolio?: PortfolioCreateNestedOneWithoutAssetsInput
@@ -54627,14 +54631,14 @@ export namespace Prisma {
 
   export type AssetUncheckedCreateWithoutParentAccountInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetAccountId?: string | null
-    assetApplicationId?: string | null
-    assetConnectionId?: string | null
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    parentPortfolioId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_account_id?: string | null
+    asset_application_id?: string | null
+    asset_connection_id?: string | null
+    asset_portfolio_id?: string | null
+    parent_portfolio_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
@@ -54653,10 +54657,10 @@ export namespace Prisma {
 
   export type AssetCreateWithoutChildAccountInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_portfolio_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
     portfolio?: PortfolioCreateNestedOneWithoutAssetsInput
@@ -54669,14 +54673,14 @@ export namespace Prisma {
 
   export type AssetUncheckedCreateWithoutChildAccountInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetApplicationId?: string | null
-    assetConnectionId?: string | null
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    parentAccountId?: string | null
-    parentPortfolioId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_application_id?: string | null
+    asset_connection_id?: string | null
+    asset_portfolio_id?: string | null
+    parent_account_id?: string | null
+    parent_portfolio_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
@@ -55609,15 +55613,15 @@ export namespace Prisma {
     OR?: AssetScalarWhereInput[]
     NOT?: AssetScalarWhereInput | AssetScalarWhereInput[]
     id?: StringFilter<"Asset"> | string
-    assetType?: EnumAssetTypeFilter<"Asset"> | $Enums.AssetType
-    assetAccountId?: StringNullableFilter<"Asset"> | string | null
-    assetApplicationId?: StringNullableFilter<"Asset"> | string | null
-    assetConnectionId?: StringNullableFilter<"Asset"> | string | null
-    assetPortfolioId?: StringNullableFilter<"Asset"> | string | null
-    assetOtherId?: StringNullableFilter<"Asset"> | string | null
-    parentAccountId?: StringNullableFilter<"Asset"> | string | null
-    parentPortfolioId?: StringNullableFilter<"Asset"> | string | null
-    isMainOwner?: BoolFilter<"Asset"> | boolean
+    asset_type?: EnumAssetTypeFilter<"Asset"> | $Enums.AssetType
+    asset_account_id?: StringNullableFilter<"Asset"> | string | null
+    asset_application_id?: StringNullableFilter<"Asset"> | string | null
+    asset_connection_id?: StringNullableFilter<"Asset"> | string | null
+    asset_portfolio_id?: StringNullableFilter<"Asset"> | string | null
+    parent_account_id?: StringNullableFilter<"Asset"> | string | null
+    parent_portfolio_id?: StringNullableFilter<"Asset"> | string | null
+    is_main_owner?: BoolFilter<"Asset"> | boolean
+    is_temporary?: DateTimeNullableFilter<"Asset"> | Date | string | null
     status?: StringFilter<"Asset"> | string
     details?: JsonNullableFilter<"Asset">
   }
@@ -58997,10 +59001,10 @@ export namespace Prisma {
 
   export type AssetCreateWithoutChildApplicationInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_portfolio_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
     portfolio?: PortfolioCreateNestedOneWithoutAssetsInput
@@ -59013,14 +59017,14 @@ export namespace Prisma {
 
   export type AssetUncheckedCreateWithoutChildApplicationInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetAccountId?: string | null
-    assetConnectionId?: string | null
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    parentAccountId?: string | null
-    parentPortfolioId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_account_id?: string | null
+    asset_connection_id?: string | null
+    asset_portfolio_id?: string | null
+    parent_account_id?: string | null
+    parent_portfolio_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
@@ -59476,10 +59480,10 @@ export namespace Prisma {
 
   export type AssetCreateWithoutPortfolioInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_portfolio_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
     parentAccount?: AccountCreateNestedOneWithoutParentAssetsInput
@@ -59492,14 +59496,14 @@ export namespace Prisma {
 
   export type AssetUncheckedCreateWithoutPortfolioInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetAccountId?: string | null
-    assetApplicationId?: string | null
-    assetConnectionId?: string | null
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    parentAccountId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_account_id?: string | null
+    asset_application_id?: string | null
+    asset_connection_id?: string | null
+    asset_portfolio_id?: string | null
+    parent_account_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
@@ -61473,10 +61477,10 @@ export namespace Prisma {
 
   export type AssetCreateWithoutChildConnectionInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_portfolio_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
     portfolio?: PortfolioCreateNestedOneWithoutAssetsInput
@@ -61489,14 +61493,14 @@ export namespace Prisma {
 
   export type AssetUncheckedCreateWithoutChildConnectionInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetAccountId?: string | null
-    assetApplicationId?: string | null
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    parentAccountId?: string | null
-    parentPortfolioId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_account_id?: string | null
+    asset_application_id?: string | null
+    asset_portfolio_id?: string | null
+    parent_account_id?: string | null
+    parent_portfolio_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
@@ -62193,10 +62197,10 @@ export namespace Prisma {
 
   export type AssetCreateWithoutRolesInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_portfolio_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
     portfolio?: PortfolioCreateNestedOneWithoutAssetsInput
@@ -62209,15 +62213,15 @@ export namespace Prisma {
 
   export type AssetUncheckedCreateWithoutRolesInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetAccountId?: string | null
-    assetApplicationId?: string | null
-    assetConnectionId?: string | null
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    parentAccountId?: string | null
-    parentPortfolioId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_account_id?: string | null
+    asset_application_id?: string | null
+    asset_connection_id?: string | null
+    asset_portfolio_id?: string | null
+    parent_account_id?: string | null
+    parent_portfolio_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAssetInput
@@ -62439,10 +62443,10 @@ export namespace Prisma {
 
   export type AssetUpdateWithoutRolesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
     portfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
@@ -62455,15 +62459,15 @@ export namespace Prisma {
 
   export type AssetUncheckedUpdateWithoutRolesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_application_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAssetNestedInput
@@ -63184,10 +63188,10 @@ export namespace Prisma {
 
   export type AssetCreateWithoutAuthzAssetsAccessGrantsInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_portfolio_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
     portfolio?: PortfolioCreateNestedOneWithoutAssetsInput
@@ -63200,15 +63204,15 @@ export namespace Prisma {
 
   export type AssetUncheckedCreateWithoutAuthzAssetsAccessGrantsInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetAccountId?: string | null
-    assetApplicationId?: string | null
-    assetConnectionId?: string | null
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    parentAccountId?: string | null
-    parentPortfolioId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_account_id?: string | null
+    asset_application_id?: string | null
+    asset_connection_id?: string | null
+    asset_portfolio_id?: string | null
+    parent_account_id?: string | null
+    parent_portfolio_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
     roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
@@ -63369,10 +63373,10 @@ export namespace Prisma {
 
   export type AssetUpdateWithoutAuthzAssetsAccessGrantsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
     portfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
@@ -63385,15 +63389,15 @@ export namespace Prisma {
 
   export type AssetUncheckedUpdateWithoutAuthzAssetsAccessGrantsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_application_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
@@ -64094,28 +64098,28 @@ export namespace Prisma {
 
   export type AssetCreateManyParentAccountInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetAccountId?: string | null
-    assetApplicationId?: string | null
-    assetConnectionId?: string | null
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    parentPortfolioId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_account_id?: string | null
+    asset_application_id?: string | null
+    asset_connection_id?: string | null
+    asset_portfolio_id?: string | null
+    parent_portfolio_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type AssetCreateManyChildAccountInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetApplicationId?: string | null
-    assetConnectionId?: string | null
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    parentAccountId?: string | null
-    parentPortfolioId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_application_id?: string | null
+    asset_connection_id?: string | null
+    asset_portfolio_id?: string | null
+    parent_account_id?: string | null
+    parent_portfolio_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
   }
@@ -64525,10 +64529,10 @@ export namespace Prisma {
 
   export type AssetUpdateWithoutParentAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
     portfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
@@ -64541,14 +64545,14 @@ export namespace Prisma {
 
   export type AssetUncheckedUpdateWithoutParentAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_application_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
@@ -64557,24 +64561,24 @@ export namespace Prisma {
 
   export type AssetUncheckedUpdateManyWithoutParentAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_application_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type AssetUpdateWithoutChildAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
     portfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
@@ -64587,14 +64591,14 @@ export namespace Prisma {
 
   export type AssetUncheckedUpdateWithoutChildAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_application_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
@@ -64603,14 +64607,14 @@ export namespace Prisma {
 
   export type AssetUncheckedUpdateManyWithoutChildAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_application_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
   }
@@ -65283,14 +65287,14 @@ export namespace Prisma {
 
   export type AssetCreateManyChildApplicationInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetAccountId?: string | null
-    assetConnectionId?: string | null
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    parentAccountId?: string | null
-    parentPortfolioId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_account_id?: string | null
+    asset_connection_id?: string | null
+    asset_portfolio_id?: string | null
+    parent_account_id?: string | null
+    parent_portfolio_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
   }
@@ -65481,10 +65485,10 @@ export namespace Prisma {
 
   export type AssetUpdateWithoutChildApplicationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
     portfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
@@ -65497,14 +65501,14 @@ export namespace Prisma {
 
   export type AssetUncheckedUpdateWithoutChildApplicationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
@@ -65513,14 +65517,14 @@ export namespace Prisma {
 
   export type AssetUncheckedUpdateManyWithoutChildApplicationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
   }
@@ -65578,14 +65582,14 @@ export namespace Prisma {
 
   export type AssetCreateManyPortfolioInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetAccountId?: string | null
-    assetApplicationId?: string | null
-    assetConnectionId?: string | null
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    parentAccountId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_account_id?: string | null
+    asset_application_id?: string | null
+    asset_connection_id?: string | null
+    asset_portfolio_id?: string | null
+    parent_account_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
   }
@@ -65615,10 +65619,10 @@ export namespace Prisma {
 
   export type AssetUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
     parentAccount?: AccountUpdateOneWithoutParentAssetsNestedInput
@@ -65631,14 +65635,14 @@ export namespace Prisma {
 
   export type AssetUncheckedUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_application_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
@@ -65647,14 +65651,14 @@ export namespace Prisma {
 
   export type AssetUncheckedUpdateManyWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_application_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
   }
@@ -65908,14 +65912,14 @@ export namespace Prisma {
 
   export type AssetCreateManyChildConnectionInput = {
     id?: string
-    assetType: $Enums.AssetType
-    assetAccountId?: string | null
-    assetApplicationId?: string | null
-    assetPortfolioId?: string | null
-    assetOtherId?: string | null
-    parentAccountId?: string | null
-    parentPortfolioId?: string | null
-    isMainOwner?: boolean
+    asset_type: $Enums.AssetType
+    asset_account_id?: string | null
+    asset_application_id?: string | null
+    asset_portfolio_id?: string | null
+    parent_account_id?: string | null
+    parent_portfolio_id?: string | null
+    is_main_owner?: boolean
+    is_temporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
   }
@@ -66024,10 +66028,10 @@ export namespace Prisma {
 
   export type AssetUpdateWithoutChildConnectionInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
     portfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
@@ -66040,14 +66044,14 @@ export namespace Prisma {
 
   export type AssetUncheckedUpdateWithoutChildConnectionInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_application_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
     roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
@@ -66056,14 +66060,14 @@ export namespace Prisma {
 
   export type AssetUncheckedUpdateManyWithoutChildConnectionInput = {
     id?: StringFieldUpdateOperationsInput | string
-    assetType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetOtherId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    isMainOwner?: BoolFieldUpdateOperationsInput | boolean
+    asset_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    asset_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_application_id?: NullableStringFieldUpdateOperationsInput | string | null
+    asset_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_main_owner?: BoolFieldUpdateOperationsInput | boolean
+    is_temporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
   }

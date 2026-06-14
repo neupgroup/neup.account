@@ -964,7 +964,14 @@ export async function getPortfolioMemberDetail(
     let grants: Array<{
       role_id: string;
       role: { id: string; name: string; description: string | null };
-      asset: { id: string; assetId: string; assetType: string };
+      asset: {
+        id: string;
+        asset_account_id: string | null;
+        asset_application_id: string | null;
+        asset_connection_id: string | null;
+        asset_portfolio_id: string | null;
+        asset_type: string;
+      };
     }> = [];
     try {
       grants = await prisma.authzAssetsAccessGrant.findMany({
@@ -979,8 +986,11 @@ export async function getPortfolioMemberDetail(
           asset: {
             select: {
               id: true,
-              assetId: true,
-              assetType: true,
+              asset_account_id: true,
+              asset_application_id: true,
+              asset_connection_id: true,
+              asset_portfolio_id: true,
+              asset_type: true,
             },
           },
         },
@@ -996,14 +1006,20 @@ export async function getPortfolioMemberDetail(
 
     const roles = await Promise.all(
       grants.map(async (grant) => {
-        const resolved = await resolveAssetName(grant.asset.assetId, grant.asset.assetType);
+        const assetId =
+          grant.asset.asset_account_id ??
+          grant.asset.asset_application_id ??
+          grant.asset.asset_connection_id ??
+          grant.asset.asset_portfolio_id ??
+          grant.asset.id;
+        const resolved = await resolveAssetName(assetId, grant.asset.asset_type);
         return {
           roleId: grant.role.id,
           roleName: grant.role.name,
           roleDescription: grant.role.description ?? undefined,
-          assetId: grant.asset.assetId,
+          assetId,
           assetName: resolved.name,
-          assetType: grant.asset.assetType,
+          assetType: grant.asset.asset_type,
         };
       })
     );
@@ -1136,7 +1152,16 @@ export async function getMyPortfolioRoles(
         select: {
           role_id: true,
           role: { select: { id: true, name: true, description: true } },
-          asset: { select: { id: true, assetId: true, assetType: true } },
+          asset: {
+            select: {
+              id: true,
+              asset_account_id: true,
+              asset_application_id: true,
+              asset_connection_id: true,
+              asset_portfolio_id: true,
+              asset_type: true,
+            },
+          },
         },
       }),
     ]);
@@ -1152,14 +1177,20 @@ export async function getMyPortfolioRoles(
 
     const roles = await Promise.all(
       grants.map(async (grant) => {
-        const resolved = await resolveAssetName(grant.asset.assetId, grant.asset.assetType);
+        const assetId =
+          grant.asset.asset_account_id ??
+          grant.asset.asset_application_id ??
+          grant.asset.asset_connection_id ??
+          grant.asset.asset_portfolio_id ??
+          grant.asset.id;
+        const resolved = await resolveAssetName(assetId, grant.asset.asset_type);
         return {
           roleId: grant.role.id,
           roleName: grant.role.name,
           roleDescription: grant.role.description ?? undefined,
-          assetId: grant.asset.assetId,
+          assetId,
           assetName: resolved.name,
-          assetType: grant.asset.assetType,
+          assetType: grant.asset.asset_type,
         };
       })
     );

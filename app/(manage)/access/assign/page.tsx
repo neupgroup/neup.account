@@ -37,7 +37,7 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
   const action = bulkAssignPermissionsFromForm.bind(null, portfolio);
   const existingAssetIds = Array.from(
     new Set(
-      group.assets.map((a) => a.asset_account_id ?? a.asset_application_id ?? a.asset_connection_id ?? a.asset_portfolio_id ?? a.id),
+      group.assets.map((a) => a.member_account_id ?? a.access_application_id ?? a.member_connection_id ?? a.member_portfolio_id ?? a.id),
     ),
   );
 

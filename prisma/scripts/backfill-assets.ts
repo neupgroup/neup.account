@@ -93,7 +93,7 @@ async function backfillAccounts() {
 
     // Check if an asset entry already exists for this account
     const existingAsset = await prisma.asset.findFirst({
-      where: { asset_account_id: account.id, asset_type: ACCOUNT_ASSET_TYPE },
+      where: { member_account_id: account.id, access_type: ACCOUNT_ASSET_TYPE },
     });
 
     if (existingAsset) { skipped++; continue; }
@@ -107,8 +107,9 @@ async function backfillAccounts() {
     await prisma.asset.create({
       data: {
         parent_portfolio_id: parentPortfolioId,
-        asset_account_id: account.id,
-        asset_type: ACCOUNT_ASSET_TYPE,
+        member_id: account.id,
+        member_account_id: account.id,
+        access_type: ACCOUNT_ASSET_TYPE,
       },
     });
 
@@ -134,7 +135,7 @@ async function backfillApplications() {
   for (const app of applications) {
     // Check if an asset entry already exists for this app
     const existingAsset = await prisma.asset.findFirst({
-      where: { asset_application_id: app.id, asset_type: APPLICATION_ASSET_TYPE },
+      where: { access_application_id: app.id, access_type: APPLICATION_ASSET_TYPE },
     });
 
     if (existingAsset) { skipped++; continue; }
@@ -170,8 +171,9 @@ async function backfillApplications() {
     await prisma.asset.create({
       data: {
         parent_portfolio_id: parentPortfolioId,
-        asset_application_id: app.id,
-        asset_type: APPLICATION_ASSET_TYPE,
+        member_id: app.id,
+        access_application_id: app.id,
+        access_type: APPLICATION_ASSET_TYPE,
       },
     });
 

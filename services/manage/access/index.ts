@@ -966,11 +966,11 @@ export async function getPortfolioMemberDetail(
       role: { id: string; name: string; description: string | null };
       asset: {
         id: string;
-        asset_account_id: string | null;
-        asset_application_id: string | null;
-        asset_connection_id: string | null;
-        asset_portfolio_id: string | null;
-        asset_type: string;
+        member_account_id: string | null;
+        access_application_id: string | null;
+        member_connection_id: string | null;
+        member_portfolio_id: string | null;
+        access_type: string;
       };
     }> = [];
     try {
@@ -986,11 +986,11 @@ export async function getPortfolioMemberDetail(
           asset: {
             select: {
               id: true,
-              asset_account_id: true,
-              asset_application_id: true,
-              asset_connection_id: true,
-              asset_portfolio_id: true,
-              asset_type: true,
+              member_account_id: true,
+              access_application_id: true,
+              member_connection_id: true,
+              member_portfolio_id: true,
+              access_type: true,
             },
           },
         },
@@ -1007,19 +1007,19 @@ export async function getPortfolioMemberDetail(
     const roles = await Promise.all(
       grants.map(async (grant) => {
         const assetId =
-          grant.asset.asset_account_id ??
-          grant.asset.asset_application_id ??
-          grant.asset.asset_connection_id ??
-          grant.asset.asset_portfolio_id ??
+          grant.asset.member_account_id ??
+          grant.asset.access_application_id ??
+          grant.asset.member_connection_id ??
+          grant.asset.member_portfolio_id ??
           grant.asset.id;
-        const resolved = await resolveAssetName(assetId, grant.asset.asset_type);
+        const resolved = await resolveAssetName(assetId, grant.asset.access_type);
         return {
           roleId: grant.role.id,
           roleName: grant.role.name,
           roleDescription: grant.role.description ?? undefined,
           assetId,
           assetName: resolved.name,
-          assetType: grant.asset.asset_type,
+          assetType: grant.asset.access_type,
         };
       })
     );
@@ -1155,11 +1155,11 @@ export async function getMyPortfolioRoles(
           asset: {
             select: {
               id: true,
-              asset_account_id: true,
-              asset_application_id: true,
-              asset_connection_id: true,
-              asset_portfolio_id: true,
-              asset_type: true,
+              member_account_id: true,
+              access_application_id: true,
+              member_connection_id: true,
+              member_portfolio_id: true,
+              access_type: true,
             },
           },
         },
@@ -1178,19 +1178,19 @@ export async function getMyPortfolioRoles(
     const roles = await Promise.all(
       grants.map(async (grant) => {
         const assetId =
-          grant.asset.asset_account_id ??
-          grant.asset.asset_application_id ??
-          grant.asset.asset_connection_id ??
-          grant.asset.asset_portfolio_id ??
+          grant.asset.member_account_id ??
+          grant.asset.access_application_id ??
+          grant.asset.member_connection_id ??
+          grant.asset.member_portfolio_id ??
           grant.asset.id;
-        const resolved = await resolveAssetName(assetId, grant.asset.asset_type);
+        const resolved = await resolveAssetName(assetId, grant.asset.access_type);
         return {
           roleId: grant.role.id,
           roleName: grant.role.name,
           roleDescription: grant.role.description ?? undefined,
           assetId,
           assetName: resolved.name,
-          assetType: grant.asset.asset_type,
+          assetType: grant.asset.access_type,
         };
       })
     );

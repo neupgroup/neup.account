@@ -243,8 +243,8 @@ async function resolvePermissionSet(input: {
 					{
 						assets: {
 							some: {
-								asset_application_id: input.app,
-								asset_type: 'app_in_port',
+								access_application_id: input.app,
+								access_type: 'app_in_port',
 							},
 						},
 					},
@@ -255,11 +255,11 @@ async function resolvePermissionSet(input: {
 				assets: {
 					select: {
 						id: true,
-						asset_account_id: true,
-						asset_application_id: true,
-						asset_connection_id: true,
-						asset_portfolio_id: true,
-						asset_type: true,
+						member_account_id: true,
+						access_application_id: true,
+						member_connection_id: true,
+						member_portfolio_id: true,
+						access_type: true,
 					},
 				},
 				members: {
@@ -304,8 +304,8 @@ async function resolvePermissionSet(input: {
 		const apiMatches = !input.api
 			? true
 			: portfolio.assets.some((asset) =>
-				(asset.asset_account_id ?? asset.asset_application_id ?? asset.asset_connection_id ?? asset.asset_portfolio_id ?? asset.id) === input.api ||
-				asset.asset_type === input.api
+				(asset.member_account_id ?? asset.access_application_id ?? asset.member_connection_id ?? asset.member_portfolio_id ?? asset.id) === input.api ||
+				asset.access_type === input.api
 			);
 
 		if (!apiMatches) {

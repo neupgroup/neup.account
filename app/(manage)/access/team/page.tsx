@@ -181,29 +181,31 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
 
   const toLogicalAssetId = (row: {
     id: string;
-    asset_account_id: string | null;
-    asset_application_id: string | null;
-    asset_connection_id: string | null;
-    asset_portfolio_id: string | null;
-  }) => row.asset_account_id ?? row.asset_application_id ?? row.asset_connection_id ?? row.asset_portfolio_id ?? row.id;
+    member_id: string | null;
+    member_account_id: string | null;
+    access_application_id: string | null;
+    member_connection_id: string | null;
+    member_portfolio_id: string | null;
+  }) => row.member_id ?? row.member_account_id ?? row.access_application_id ?? row.member_connection_id ?? row.member_portfolio_id ?? row.id;
 
   const resolved = await prisma.asset.findFirst({
     where: {
       OR: [
         { id: assetRef },
-        { asset_account_id: assetRef },
-        { asset_application_id: assetRef },
-        { asset_connection_id: assetRef },
-        { asset_portfolio_id: assetRef },
+        { member_account_id: assetRef },
+        { access_application_id: assetRef },
+        { member_connection_id: assetRef },
+        { member_portfolio_id: assetRef },
       ],
     },
-    select: {
-      id: true,
-      asset_account_id: true,
-      asset_application_id: true,
-      asset_connection_id: true,
-      asset_portfolio_id: true,
-      asset_type: true,
+      select: {
+        id: true,
+        member_id: true,
+        member_account_id: true,
+        access_application_id: true,
+        member_connection_id: true,
+      member_portfolio_id: true,
+      access_type: true,
     },
   });
 
@@ -213,12 +215,12 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
   const allRows = await prisma.asset.findMany({
     where: {
       OR: [
-        { asset_account_id: resolvedAssetId },
-        { asset_application_id: resolvedAssetId },
-        { asset_connection_id: resolvedAssetId },
-        { asset_portfolio_id: resolvedAssetId },
+        { member_account_id: resolvedAssetId },
+        { access_application_id: resolvedAssetId },
+        { member_connection_id: resolvedAssetId },
+        { member_portfolio_id: resolvedAssetId },
       ],
-      asset_type: resolved.asset_type,
+      access_type: resolved.access_type,
     },
     select: { id: true, parent_portfolio_id: true },
   });
@@ -238,7 +240,7 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
     if (!canView) notFound();
   }
 
-  const asset = await resolveAssetName(resolvedAssetId, resolved.asset_type);
+  const asset = await resolveAssetName(resolvedAssetId, resolved.access_type);
   const assetName = asset.name;
   const rootAssetLabel = rootMode ? 'Root asset' : 'Asset members';
 

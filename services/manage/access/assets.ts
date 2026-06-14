@@ -53,16 +53,18 @@ function toPortfolioAssetType(type: string): string {
 
 function toLogicalAssetId(row: {
   id: string;
-  asset_account_id: string | null;
-  asset_application_id: string | null;
-  asset_connection_id: string | null;
-  asset_portfolio_id: string | null;
+  member_id: string | null;
+  member_account_id: string | null;
+  access_application_id: string | null;
+  member_connection_id: string | null;
+  member_portfolio_id: string | null;
 }): string {
   return (
-    row.asset_account_id ??
-    row.asset_application_id ??
-    row.asset_connection_id ??
-    row.asset_portfolio_id ??
+    row.member_id ??
+    row.member_account_id ??
+    row.access_application_id ??
+    row.member_connection_id ??
+    row.member_portfolio_id ??
     row.id
   );
 }
@@ -449,10 +451,10 @@ export async function addAssetToGroup(input: { groupId: string; asset: string; t
       where: {
         parent_portfolio_id: parsed.data.groupId,
         OR: [
-          { asset_account_id: parsed.data.asset },
-          { asset_application_id: parsed.data.asset },
-          { asset_connection_id: parsed.data.asset },
-          { asset_portfolio_id: parsed.data.asset },
+          { member_account_id: parsed.data.asset },
+          { access_application_id: parsed.data.asset },
+          { member_connection_id: parsed.data.asset },
+          { member_portfolio_id: parsed.data.asset },
         ],
       },
       select: { id: true },
@@ -465,11 +467,12 @@ export async function addAssetToGroup(input: { groupId: string; asset: string; t
     await prisma.asset.create({
       data: {
         parent_portfolio_id: parsed.data.groupId,
-        asset_account_id: parsed.data.type === 'application' ? null : parsed.data.asset,
-        asset_application_id: parsed.data.type === 'application' ? parsed.data.asset : null,
-        asset_connection_id: null,
-        asset_portfolio_id: null,
-        asset_type: toPortfolioAssetType(parsed.data.type),
+        member_id: parsed.data.asset,
+        member_account_id: parsed.data.type === 'application' ? null : parsed.data.asset,
+        access_application_id: parsed.data.type === 'application' ? parsed.data.asset : null,
+        member_connection_id: null,
+        member_portfolio_id: null,
+        access_type: toPortfolioAssetType(parsed.data.type),
         details: {
           note: normalizeDetails(parsed.data.details),
         },
@@ -510,10 +513,10 @@ export async function addAssetToGroupWithMode(
       where: {
         parent_portfolio_id: parsed.data.groupId,
         OR: [
-          { asset_account_id: parsed.data.asset },
-          { asset_application_id: parsed.data.asset },
-          { asset_connection_id: parsed.data.asset },
-          { asset_portfolio_id: parsed.data.asset },
+          { member_account_id: parsed.data.asset },
+          { access_application_id: parsed.data.asset },
+          { member_connection_id: parsed.data.asset },
+          { member_portfolio_id: parsed.data.asset },
         ],
       },
       select: { id: true },
@@ -526,11 +529,12 @@ export async function addAssetToGroupWithMode(
     await prisma.asset.create({
       data: {
         parent_portfolio_id: parsed.data.groupId,
-        asset_account_id: parsed.data.type === 'application' ? null : parsed.data.asset,
-        asset_application_id: parsed.data.type === 'application' ? parsed.data.asset : null,
-        asset_connection_id: null,
-        asset_portfolio_id: null,
-        asset_type: toPortfolioAssetType(parsed.data.type),
+        member_id: parsed.data.asset,
+        member_account_id: parsed.data.type === 'application' ? null : parsed.data.asset,
+        access_application_id: parsed.data.type === 'application' ? parsed.data.asset : null,
+        member_connection_id: null,
+        member_portfolio_id: null,
+        access_type: toPortfolioAssetType(parsed.data.type),
         details: {
           note: normalizeDetails(parsed.data.details),
         },
@@ -576,7 +580,7 @@ export async function removeAssetFromGroup(input: { groupId: string; portfolioAs
         id: input.portfolioAssetId,
         parent_portfolio_id: input.groupId,
       },
-      select: { id: true, asset_account_id: true, asset_application_id: true, asset_connection_id: true, asset_portfolio_id: true, asset_type: true },
+      select: { id: true, member_account_id: true, access_application_id: true, member_connection_id: true, member_portfolio_id: true, access_type: true },
     });
 
     if (!assetRow) {
@@ -635,10 +639,10 @@ export async function removeAssetFromGroup(input: { groupId: string; portfolioAs
         where: {
           parent_portfolio_id: personalPortfolio.id,
           OR: [
-            { asset_account_id: toLogicalAssetId(assetRow) },
-            { asset_application_id: toLogicalAssetId(assetRow) },
-            { asset_connection_id: toLogicalAssetId(assetRow) },
-            { asset_portfolio_id: toLogicalAssetId(assetRow) },
+            { member_account_id: toLogicalAssetId(assetRow) },
+            { access_application_id: toLogicalAssetId(assetRow) },
+            { member_connection_id: toLogicalAssetId(assetRow) },
+            { member_portfolio_id: toLogicalAssetId(assetRow) },
           ],
         },
         select: { id: true },
@@ -648,11 +652,12 @@ export async function removeAssetFromGroup(input: { groupId: string; portfolioAs
         await tx.asset.create({
           data: {
             parent_portfolio_id: personalPortfolio.id,
-            asset_account_id: assetRow.asset_account_id,
-            asset_application_id: assetRow.asset_application_id,
-            asset_connection_id: assetRow.asset_connection_id,
-            asset_portfolio_id: assetRow.asset_portfolio_id,
-            asset_type: assetRow.asset_type,
+            member_id: toLogicalAssetId(assetRow),
+            member_account_id: assetRow.member_account_id,
+            access_application_id: assetRow.access_application_id,
+            member_connection_id: assetRow.member_connection_id,
+            member_portfolio_id: assetRow.member_portfolio_id,
+            access_type: assetRow.access_type,
           },
         });
       }
@@ -692,7 +697,7 @@ export async function removeAssetFromGroupWithMode(
         id: input.portfolioAssetId,
         parent_portfolio_id: input.groupId,
       },
-      select: { id: true, asset_account_id: true, asset_application_id: true, asset_connection_id: true, asset_portfolio_id: true, asset_type: true },
+      select: { id: true, member_account_id: true, access_application_id: true, member_connection_id: true, member_portfolio_id: true, access_type: true },
     });
 
     if (!assetRow) {
@@ -746,10 +751,10 @@ export async function removeAssetFromGroupWithMode(
         where: {
           parent_portfolio_id: personalPortfolio.id,
           OR: [
-            { asset_account_id: toLogicalAssetId(assetRow) },
-            { asset_application_id: toLogicalAssetId(assetRow) },
-            { asset_connection_id: toLogicalAssetId(assetRow) },
-            { asset_portfolio_id: toLogicalAssetId(assetRow) },
+            { member_account_id: toLogicalAssetId(assetRow) },
+            { access_application_id: toLogicalAssetId(assetRow) },
+            { member_connection_id: toLogicalAssetId(assetRow) },
+            { member_portfolio_id: toLogicalAssetId(assetRow) },
           ],
         },
         select: { id: true },
@@ -759,11 +764,12 @@ export async function removeAssetFromGroupWithMode(
         await tx.asset.create({
           data: {
             parent_portfolio_id: personalPortfolio.id,
-            asset_account_id: assetRow.asset_account_id,
-            asset_application_id: assetRow.asset_application_id,
-            asset_connection_id: assetRow.asset_connection_id,
-            asset_portfolio_id: assetRow.asset_portfolio_id,
-            asset_type: assetRow.asset_type,
+            member_id: toLogicalAssetId(assetRow),
+            member_account_id: assetRow.member_account_id,
+            access_application_id: assetRow.access_application_id,
+            member_connection_id: assetRow.member_connection_id,
+            member_portfolio_id: assetRow.member_portfolio_id,
+            access_type: assetRow.access_type,
           },
         });
       }
@@ -950,10 +956,10 @@ export async function assignAssetMemberRole(input: {
     if (!groupId) {
       // Direct assignment is allowed only when this asset is not shared via
       // any portfolio that includes accounts other than the current actor.
-      const directAsset = await prisma.asset.findUnique({
-        where: { id: input.asset },
-        select: { id: true, asset_account_id: true, asset_application_id: true, asset_connection_id: true, asset_portfolio_id: true, asset_type: true },
-      });
+    const directAsset = await prisma.asset.findUnique({
+      where: { id: input.asset },
+      select: { id: true, member_id: true, member_account_id: true, access_application_id: true, member_connection_id: true, member_portfolio_id: true, access_type: true },
+    });
       if (!directAsset) {
         return { success: false, error: 'Asset not found.' };
       }
@@ -961,12 +967,12 @@ export async function assignAssetMemberRole(input: {
       const sharedAsset = await prisma.asset.findFirst({
         where: {
           OR: [
-            { asset_account_id: toLogicalAssetId(directAsset) },
-            { asset_application_id: toLogicalAssetId(directAsset) },
-            { asset_connection_id: toLogicalAssetId(directAsset) },
-            { asset_portfolio_id: toLogicalAssetId(directAsset) },
+            { member_account_id: toLogicalAssetId(directAsset) },
+            { access_application_id: toLogicalAssetId(directAsset) },
+            { member_connection_id: toLogicalAssetId(directAsset) },
+            { member_portfolio_id: toLogicalAssetId(directAsset) },
           ],
-          asset_type: directAsset.asset_type,
+          access_type: directAsset.access_type,
           portfolio: {
             members: {
               some: {
@@ -1066,12 +1072,12 @@ export async function getRolesForAsset(portfolioAssetId: string): Promise<AssetR
   try {
     const assetRow = await prisma.asset.findUnique({
       where: { id: portfolioAssetId },
-      select: { asset_type: true },
+      select: { access_type: true },
     });
 
     if (!assetRow) return [];
 
-    const type = assetRow.asset_type.trim().toLowerCase();
+    const type = assetRow.access_type.trim().toLowerCase();
     const roleScope = ASSET_TYPE_TO_ROLE_SCOPE[type];
 
     if (!roleScope) return [];
@@ -1187,7 +1193,7 @@ export async function bulkAssignAssetRoles(input: {
     if (!groupId) {
       const directAssets = await prisma.asset.findMany({
         where: { id: { in: input.assetIds } },
-        select: { id: true, asset_account_id: true, asset_application_id: true, asset_connection_id: true, asset_portfolio_id: true, asset_type: true },
+        select: { id: true, member_id: true, member_account_id: true, access_application_id: true, member_connection_id: true, member_portfolio_id: true, access_type: true },
       });
 
       if (directAssets.length !== input.assetIds.length) {
@@ -1198,12 +1204,12 @@ export async function bulkAssignAssetRoles(input: {
         const sharedAsset = await prisma.asset.findFirst({
           where: {
             OR: [
-              { asset_account_id: toLogicalAssetId(asset) },
-              { asset_application_id: toLogicalAssetId(asset) },
-              { asset_connection_id: toLogicalAssetId(asset) },
-              { asset_portfolio_id: toLogicalAssetId(asset) },
+              { member_account_id: toLogicalAssetId(asset) },
+              { access_application_id: toLogicalAssetId(asset) },
+              { member_connection_id: toLogicalAssetId(asset) },
+              { member_portfolio_id: toLogicalAssetId(asset) },
             ],
-            asset_type: asset.asset_type,
+            access_type: asset.access_type,
             portfolio: {
               members: {
                 some: {
@@ -1230,25 +1236,25 @@ export async function bulkAssignAssetRoles(input: {
           where: {
             parent_portfolio_id: groupId,
             OR: [
-              { asset_account_id: { in: input.assetIds } },
-              { asset_application_id: { in: input.assetIds } },
-              { asset_connection_id: { in: input.assetIds } },
-              { asset_portfolio_id: { in: input.assetIds } },
+              { member_account_id: { in: input.assetIds } },
+              { access_application_id: { in: input.assetIds } },
+              { member_connection_id: { in: input.assetIds } },
+              { member_portfolio_id: { in: input.assetIds } },
             ],
           },
-          select: { id: true, asset_account_id: true, asset_application_id: true, asset_connection_id: true, asset_portfolio_id: true, asset_type: true },
+          select: { id: true, member_account_id: true, access_application_id: true, member_connection_id: true, member_portfolio_id: true, access_type: true },
         })
       : await prisma.asset.findMany({
           where: {
             OR: [
-              { asset_account_id: { in: input.assetIds } },
-              { asset_application_id: { in: input.assetIds } },
-              { asset_connection_id: { in: input.assetIds } },
-              { asset_portfolio_id: { in: input.assetIds } },
+              { member_account_id: { in: input.assetIds } },
+              { access_application_id: { in: input.assetIds } },
+              { member_connection_id: { in: input.assetIds } },
+              { member_portfolio_id: { in: input.assetIds } },
             ],
-            asset_type: toPortfolioAssetType(input.assetType),
+            access_type: toPortfolioAssetType(input.assetType),
           },
-          select: { id: true, asset_account_id: true, asset_application_id: true, asset_connection_id: true, asset_portfolio_id: true, asset_type: true },
+          select: { id: true, member_account_id: true, access_application_id: true, member_connection_id: true, member_portfolio_id: true, access_type: true },
           orderBy: { id: 'asc' },
         });
 
@@ -1264,11 +1270,12 @@ export async function bulkAssignAssetRoles(input: {
           const created = await tx.asset.create({
             data: {
               parent_portfolio_id: groupId,
-              asset_account_id: input.assetType === 'application' ? null : rawAssetId,
-              asset_application_id: input.assetType === 'application' ? rawAssetId : null,
-              asset_connection_id: null,
-              asset_portfolio_id: null,
-              asset_type: toPortfolioAssetType(input.assetType),
+              member_id: rawAssetId,
+              member_account_id: input.assetType === 'application' ? null : rawAssetId,
+              access_application_id: input.assetType === 'application' ? rawAssetId : null,
+              member_connection_id: null,
+              member_portfolio_id: null,
+              access_type: toPortfolioAssetType(input.assetType),
             },
             select: { id: true },
           });
@@ -1370,11 +1377,11 @@ export async function getMemberAssetGrants(
         asset: {
           select: {
             id: true,
-            asset_account_id: true,
-            asset_application_id: true,
-            asset_connection_id: true,
-            asset_portfolio_id: true,
-            asset_type: true,
+            member_account_id: true,
+            access_application_id: true,
+            member_connection_id: true,
+            member_portfolio_id: true,
+            access_type: true,
           },
         },
       },
@@ -1390,7 +1397,7 @@ export async function getMemberAssetGrants(
         assetMap.set(key, {
           portfolioAssetId: grant.asset.id,
           assetId,
-          assetType: grant.asset.asset_type,
+          assetType: grant.asset.access_type,
           roleIds: [],
         });
       }

@@ -10,12 +10,12 @@ import { z } from 'zod';
 import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { brandCreationSchema } from '@/services/manage/accounts/schema';
-import { activeAccessWhere, ensureAccessGrant } from '@/services/access-model';
+import { activeAccessWhere, ensureAccessAsset, ensureAccessMember } from '@/services/access-model';
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
-
-const BRAND_OWNER_ROLE_ID = 'brand-owner-neup-account';
+import { BRAND_OWNER_PERMISSION_NAMES, BRAND_OWNER_ROLE_ID, BRAND_OWNER_ROLE_NAME } from '@/core/auth/brand-roles';
+import { assetTypeForRefs } from '@/services/access-model';
 
 export type BrandAccount = {
     id: string;
@@ -87,7 +87,7 @@ export async function getBrandAccounts(): Promise<BrandAccount[]> {
 
 /**
  * Function createBrandAccount.
- * Creates the account, neupId, brand profile, optional contact, then grants brand.owner to the creator.
+ * Creates the account, neupId, brand profile, optional contact, then grants brand ownership to the creator.
  */
 export async function createBrandAccount(data: z.infer<typeof brandCreationSchema>, geolocation?: string) {
     await requireAnyPermission404(['linked_accounts.brand.create']);
@@ -163,19 +163,51 @@ export async function createBrandAccount(data: z.infer<typeof brandCreationSchem
                 });
             }
 
-            // 5. Grant brand.owner to the creator
+            // 5. Ensure the brand owner role exists and seed its permissions
             await tx.authzRole.upsert({
                 where: { id: BRAND_OWNER_ROLE_ID },
-                update: { name: 'brand.owner', scope: 'brand', appId: 'neup.account' },
-                create: { id: BRAND_OWNER_ROLE_ID, name: 'brand.owner', scope: 'brand', appId: 'neup.account' },
+                update: {
+                    name: BRAND_OWNER_ROLE_NAME,
+                    description: 'Brand ownership role for brand accounts.',
+                    scope: 'brand',
+                    appId: 'neup.account',
+                    permissions: BRAND_OWNER_PERMISSION_NAMES,
+                },
+                create: {
+                    id: BRAND_OWNER_ROLE_ID,
+                    name: BRAND_OWNER_ROLE_NAME,
+                    description: 'Brand ownership role for brand accounts.',
+                    scope: 'brand',
+                    appId: 'neup.account',
+                    permissions: BRAND_OWNER_PERMISSION_NAMES,
+                },
             });
 
-            await ensureAccessGrant(tx, {
-                memberAccountId: creatorAccountId,
+            const member = await ensureAccessMember(tx, {
+                childAccountId: creatorAccountId,
+                parentAccountId: account.id,
+            });
+
+            const asset = await ensureAccessAsset(tx, {
                 parentAccountId: account.id,
                 childAccountId: account.id,
-                accessApplicationId: 'neup.account',
-                roleId: BRAND_OWNER_ROLE_ID,
+            });
+
+            await tx.access.create({
+                data: {
+                    accessType: assetTypeForRefs(
+                        { parentAccountId: account.id },
+                        { childAccountId: account.id },
+                    ),
+                    memberId: member.id,
+                    memberAccountId: creatorAccountId,
+                    parentAccountId: account.id,
+                    assetId: asset.id,
+                    assetAccountId: account.id,
+                    accessApplicationId: 'neup.account',
+                    roleId: BRAND_OWNER_ROLE_ID,
+                    status: 'active',
+                },
             });
 
             return account.id;

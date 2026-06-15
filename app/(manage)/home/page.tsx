@@ -10,6 +10,7 @@ import { NotificationsCard } from '@/components/dashboard/notifications-card';
 import { ManageStatsCard } from '@/components/dashboard/manage-stats-card';
 import { FindUserCard } from '@/components/dashboard/find-user-card';
 import { SystemToolsCard } from '@/components/dashboard/system-tools-card';
+import { getAccountType } from '@/services/user';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,6 +19,9 @@ export default async function HomePage() {
     if (!accountId) {
       notFound();
     }
+
+    const accountType = await getAccountType(accountId);
+    const showPersonalSettings = accountType === 'individual';
 
     const [canViewNotifications, canViewBilling, canFindUser] = await Promise.all([
         checkPermissions(['notification.read']),
@@ -30,7 +34,7 @@ export default async function HomePage() {
             <WarningDisplay />
             <DashboardHeader />
             {canViewNotifications && <NotificationsCard />}
-            <SettingsCard />
+            {showPersonalSettings && <SettingsCard />}
             {canViewBilling && <BillingCard />}
             <ManageStatsCard />
             {canFindUser && <FindUserCard />}

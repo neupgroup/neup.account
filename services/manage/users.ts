@@ -15,6 +15,8 @@ import { createNotification } from '../notifications';
 import { setSessionCookies } from '@/core/helpers/cookies';
 import { warningReasons } from '@/app/(manage)/manage/[id]/forms';
 import type { UserProfile } from '@/services/user';
+import { extractRolePermissionNames, ensureAccessGrant } from '@/services/access-model';
+import { ACCOUNT_ACCESS_PERMISSION_GROUPS } from '@/core/auth/account-access-permissions';
 
 
 // --- Types ---
@@ -177,6 +179,344 @@ export async function getAvailableRoles(): Promise<{ id: string; name: string; d
         await logError('database', error, 'getAvailableRoles');
         return [];
     }
+}
+
+export type ManagedAccountAccessPermission = {
+  id: string;
+  name: string;
+  description: string | null;
+};
+
+export type ManagedAccountAccessMember = {
+  accountId: string;
+  displayName: string;
+  neupId: string;
+  accountPhoto?: string;
+  roleId: string;
+  roleName: string;
+  roleDescription?: string | null;
+  permissions: string[];
+  grantCount: number;
+};
+
+const MANAGED_ACCESS_ROLE_PREFIX = 'account.access.';
+
+function normalizePermissionNames(permissionIds: string[]): string[] {
+  return Array.from(
+    new Set(
+      permissionIds
+        .map((permissionId) => permissionId.trim())
+        .filter((permissionId) => permissionId.length > 0),
+    ),
+  );
+}
+
+function managedAccessRoleId(accountId: string, memberId: string) {
+  return `${MANAGED_ACCESS_ROLE_PREFIX}${accountId}.${memberId}`;
+}
+
+export async function getManagedAccountAccessPermissions(): Promise<ManagedAccountAccessPermission[]> {
+  try {
+    const permissions = await prisma.authzPermission.findMany({
+      where: {
+        appId: 'neup.account',
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+
+    return permissions.map((permission) => ({
+      id: permission.id,
+      name: permission.name,
+      description: permission.description ?? null,
+    }));
+  } catch (error) {
+    await logError('database', error, 'getManagedAccountAccessPermissions');
+    return [];
+  }
+}
+
+export async function getManagedAccountAccessMembers(accountId: string): Promise<ManagedAccountAccessMember[]> {
+  try {
+    await cleanupExpiredAccessModel();
+
+    const accessRows = await prisma.access.findMany({
+      where: {
+        parentAccountId: accountId,
+        status: 'active',
+        role: {
+          appId: 'neup.account',
+          name: { startsWith: MANAGED_ACCESS_ROLE_PREFIX },
+        },
+      },
+      include: {
+        role: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            permissions: true,
+          },
+        },
+      },
+    });
+
+    const grouped = new Map<string, typeof accessRows>();
+    for (const row of accessRows) {
+      if (!row.memberAccountId) continue;
+      const existing = grouped.get(row.memberAccountId);
+      if (existing) existing.push(row);
+      else grouped.set(row.memberAccountId, [row]);
+    }
+
+    const entries = await Promise.all(
+      Array.from(grouped.entries()).map(async ([memberAccountId, rows]) => {
+        const profile = await fetchUserProfile(memberAccountId);
+        const neupIds = await getUserNeupIds(memberAccountId);
+        const permissionNames = Array.from(
+          new Set(rows.flatMap((row) => extractRolePermissionNames(row.role.permissions))),
+        );
+        const first = rows[0];
+        return {
+          accountId: memberAccountId,
+          displayName:
+            profile?.nameDisplay ||
+            `${profile?.nameFirst ?? ''} ${profile?.nameLast ?? ''}`.trim() ||
+            memberAccountId,
+          neupId: neupIds[0]?.id || 'N/A',
+          accountPhoto: profile?.accountPhoto,
+          roleId: first.role.id,
+          roleName: first.role.name,
+          roleDescription: first.role.description ?? null,
+          permissions: permissionNames,
+          grantCount: rows.length,
+        };
+      }),
+    );
+
+    return entries.sort((a, b) => a.displayName.localeCompare(b.displayName));
+  } catch (error) {
+    await logError('database', error, `getManagedAccountAccessMembers:${accountId}`);
+    return [];
+  }
+}
+
+export async function getAccountByNeupId(neupId: string): Promise<{ accountId: string; displayName: string; accountPhoto?: string } | null> {
+  const normalized = neupId.trim().toLowerCase();
+  if (!normalized) return null;
+
+  try {
+    const record = await prisma.neupId.findUnique({
+      where: { id: normalized },
+      select: { accountId: true },
+    });
+    if (!record) return null;
+
+    const profile = await fetchUserProfile(record.accountId);
+    if (!profile) return null;
+
+    return {
+      accountId: record.accountId,
+      displayName:
+        profile.nameDisplay ||
+        `${profile.nameFirst ?? ''} ${profile.nameLast ?? ''}`.trim() ||
+        normalized,
+      accountPhoto: profile.accountPhoto,
+    };
+  } catch (error) {
+    await logError('database', error, `getAccountByNeupId:${normalized}`);
+    return null;
+  }
+}
+
+export async function grantManagedAccountAccess(input: {
+  accountId: string;
+  memberId: string;
+  permissions: string[];
+}): Promise<{ success: boolean; error?: string }> {
+  const canEdit = await checkPermissions(ACCOUNT_ACCESS_PERMISSION_GROUPS.edit);
+  if (!canEdit) {
+    return { success: false, error: 'Permission denied.' };
+  }
+
+  const adminId = await getPersonalAccountId();
+  if (!adminId) {
+    return { success: false, error: 'Administrator not authenticated.' };
+  }
+
+  const permissions = normalizePermissionNames(input.permissions);
+  if (permissions.length === 0) {
+    return { success: false, error: 'Select at least one permission.' };
+  }
+
+  if (!input.accountId || !input.memberId) {
+    return { success: false, error: 'Missing account or member.' };
+  }
+
+  if (input.accountId === input.memberId) {
+    return { success: false, error: 'Use direct self-permissions for the account owner.' };
+  }
+
+  const [targetAccount, targetMember, permissionRows] = await Promise.all([
+    prisma.account.findUnique({
+      where: { id: input.accountId },
+      select: { id: true },
+    }),
+    fetchUserProfile(input.memberId),
+    prisma.authzPermission.findMany({
+      where: {
+        appId: 'neup.account',
+        name: { in: permissions },
+      },
+      select: { id: true, name: true },
+    }),
+  ]);
+
+  if (!targetAccount) {
+    return { success: false, error: 'Target account not found.' };
+  }
+
+  if (!targetMember) {
+    return { success: false, error: 'Member account not found.' };
+  }
+
+  if (permissionRows.length !== permissions.length) {
+    return { success: false, error: 'One or more permissions are invalid.' };
+  }
+
+  const roleId = managedAccessRoleId(input.accountId, input.memberId);
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.access.deleteMany({
+        where: {
+          parentAccountId: input.accountId,
+          memberAccountId: input.memberId,
+          roleId,
+        },
+      });
+
+      await tx.authzRole.upsert({
+        where: { id: roleId },
+        update: {
+          name: roleId,
+          description: `Direct access permissions for ${input.memberId} on ${input.accountId}.`,
+          scope: 'account',
+          appId: 'neup.account',
+          permissions,
+        },
+        create: {
+          id: roleId,
+          name: roleId,
+          description: `Direct access permissions for ${input.memberId} on ${input.accountId}.`,
+          scope: 'account',
+          appId: 'neup.account',
+          permissions,
+        },
+      });
+
+      await tx.authzRolePermissionMap.deleteMany({
+        where: { roleId },
+      });
+
+      if (permissionRows.length > 0) {
+        await tx.authzRolePermissionMap.createMany({
+          data: permissionRows.map((permission) => ({
+            roleId,
+            permissionId: permission.id,
+          })),
+        });
+      }
+
+      await ensureAccessGrant(tx, {
+        memberAccountId: input.memberId,
+        parentAccountId: input.accountId,
+        childAccountId: input.accountId,
+        accessApplicationId: 'neup.account',
+        roleId,
+      });
+    });
+
+    await logActivity(
+      input.accountId,
+      `Granted direct access to ${input.memberId}: [${permissions.join(', ')}]`,
+      'Success',
+      undefined,
+      adminId,
+    );
+    await createNotification({
+      recipient_id: input.memberId,
+      sender_id: adminId,
+      action: 'informative.access.granted',
+      message: `You were granted direct access to account ${input.accountId}.`,
+      noticeType: 'success',
+      persistence: 'dismissable',
+    });
+
+    revalidatePath(`/manage/${input.accountId}`);
+    revalidatePath(`/manage/${input.accountId}/access`);
+    return { success: true };
+  } catch (error) {
+    await logError('database', error, `grantManagedAccountAccess:${input.accountId}:${input.memberId}`);
+    return { success: false, error: 'Failed to grant direct access.' };
+  }
+}
+
+export async function revokeManagedAccountAccess(input: {
+  accountId: string;
+  memberId: string;
+}): Promise<{ success: boolean; error?: string }> {
+  const canEdit = await checkPermissions(ACCOUNT_ACCESS_PERMISSION_GROUPS.edit);
+  if (!canEdit) {
+    return { success: false, error: 'Permission denied.' };
+  }
+
+  const adminId = await getPersonalAccountId();
+  if (!adminId) {
+    return { success: false, error: 'Administrator not authenticated.' };
+  }
+
+  const roleId = managedAccessRoleId(input.accountId, input.memberId);
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.access.deleteMany({
+        where: {
+          parentAccountId: input.accountId,
+          memberAccountId: input.memberId,
+          roleId,
+        },
+      });
+
+      await tx.authzRolePermissionMap.deleteMany({
+        where: { roleId },
+      });
+
+      await tx.authzRole.deleteMany({
+        where: { id: roleId },
+      });
+    });
+
+    await logActivity(
+      input.accountId,
+      `Revoked direct access for ${input.memberId}`,
+      'Success',
+      undefined,
+      adminId,
+    );
+    revalidatePath(`/manage/${input.accountId}`);
+    revalidatePath(`/manage/${input.accountId}/access`);
+    return { success: true };
+  } catch (error) {
+    await logError('database', error, `revokeManagedAccountAccess:${input.accountId}:${input.memberId}`);
+    return { success: false, error: 'Failed to revoke direct access.' };
+  }
 }
 
 // Replaces the role assignments for an account with the given set of role IDs.

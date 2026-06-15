@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { BackButton } from '@/components/ui/back-button';
 import { VerifiedBadge } from '@/components/verified-badge';
 import { UserCircle, ShieldCheck, History, Ban, Trash2, Gem } from '@/components/icons';
+import { ACCOUNT_ACCESS_PERMISSION_GROUPS } from '@/core/auth/account-access-permissions';
 
 const accountManagementFeatures = (accountId: string) => [
   {
@@ -22,6 +23,12 @@ const accountManagementFeatures = (accountId: string) => [
     title: 'Permissions',
     description: 'Assign or restrict permission sets for this user.',
     href: `/manage/${accountId}/permissions`,
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Access',
+    description: 'Grant direct access to other accounts without invitations.',
+    href: `/manage/${accountId}/access`,
   },
   {
     icon: History,
@@ -60,7 +67,10 @@ const adminActions = (accountId: string) => [
 
 export default async function AccountDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const canView = await checkPermissions(['root.account.view']);
+  const [canView, canViewAccess] = await Promise.all([
+    checkPermissions(['root.account.view']),
+    checkPermissions(ACCOUNT_ACCESS_PERMISSION_GROUPS.view),
+  ]);
   if (!canView) {
     notFound();
   }
@@ -71,7 +81,9 @@ export default async function AccountDetailsPage({ params }: { params: Promise<{
     notFound();
   }
 
-  const features = accountManagementFeatures(id);
+  const features = accountManagementFeatures(id).filter((feature) =>
+    feature.title !== 'Access' || canViewAccess,
+  );
   const adminFeatures = adminActions(id);
 
   return (

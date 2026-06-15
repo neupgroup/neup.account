@@ -19,6 +19,7 @@ import bcrypt from 'bcryptjs';
 import { Prisma } from '@/prisma/generated/client';
 import prisma from '@/core/helpers/prisma';
 import { ensureAccessGrant } from '@/services/access-model';
+import { BRAND_OWNER_PERMISSION_NAMES, BRAND_OWNER_ROLE_ID, BRAND_OWNER_ROLE_NAME } from '@/core/auth/brand-roles';
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not set.');
@@ -36,7 +37,7 @@ const APP_ID = 'neup.account';
 const ROLE_INDIV_DEFAULT = 'individual-default-neup-account';
 const ROLE_INDIV_ROOT    = 'root-full-neup-account';
 const ROLE_APP_OWNER     = 'application.owner';
-const ROLE_BRAND_OWNER   = 'brand-owner-neup-account';
+const ROLE_BRAND_OWNER   = BRAND_OWNER_ROLE_ID;
 
 // Fill in an existing account ID to skip account creation and grant roles
 // directly to that account. Leave empty to create a new master account
@@ -220,9 +221,9 @@ WHERE c."app_id" = '${APP_ID}'
   AND c."scope"  = 'application'
 ON CONFLICT ("id") DO NOTHING;
 
--- 3d. Role — brand.owner
+-- 3d. Role — neup_account.brand_owner
 INSERT INTO "authz_role" ("id", "name", "description", "app_id", "scope") VALUES
-  ('brand-owner-neup-account', 'brand.owner', 'Full ownership role for brand accounts.', '${APP_ID}', 'brand')
+  ('${ROLE_BRAND_OWNER}', '${BRAND_OWNER_ROLE_NAME}', 'Full ownership role for brand accounts.', '${APP_ID}', 'brand')
 ON CONFLICT ("id") DO NOTHING;
 
 INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
@@ -247,12 +248,12 @@ INSERT INTO "authz_role_capability" (
 )
 SELECT
   'rcp-brandowner-' || c."id",
-  'brand-owner-neup-account',
+  '${ROLE_BRAND_OWNER}',
   c."id",
   'brand',
   '${APP_ID}',
-  'brand.owner',
-  '["brand.profile.view","brand.profile.edit","brand.settings.view","brand.settings.edit","brand.members.view","brand.members.manage","linked_accounts.brand.view","linked_accounts.brand.manage","linked_accounts.brand.manager","brand.kyc.view","brand.kyc.submit","brand.platforms.view","brand.platforms.manage","brand.delete"]'::jsonb
+  '${BRAND_OWNER_ROLE_NAME}',
+  '${JSON.stringify(BRAND_OWNER_PERMISSION_NAMES)}'::jsonb
 FROM "authz_capability" c
 WHERE c."app_id" = '${APP_ID}'
   AND c."scope"  = 'brand'

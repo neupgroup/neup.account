@@ -10,6 +10,7 @@
  */
 
 import { PrismaClient } from '../generated/client/client';
+import { BRAND_OWNER_ROLE_ID } from '../../core/auth/brand-roles';
 
 const prisma = new PrismaClient();
 
@@ -55,7 +56,20 @@ async function backfillAccounts() {
     // - For brand/branch/dependent: look up grants from access rows
     let portfolioOwnerId = account.id;
 
-    if (account.accountType === 'brand' || account.accountType === 'branch') {
+    if (account.accountType === 'brand') {
+      const ownerGrant = await prisma.access.findFirst({
+        where: {
+          parentAccountId: account.id,
+          roleId: BRAND_OWNER_ROLE_ID,
+          role: { appId: 'neup.account' },
+          status: 'active',
+        },
+        select: { memberAccountId: true },
+      });
+      if (ownerGrant?.memberAccountId) portfolioOwnerId = ownerGrant.memberAccountId;
+    }
+
+    if (account.accountType === 'branch') {
       const ownerGrant = await prisma.access.findFirst({
         where: {
           parentAccountId: account.id,

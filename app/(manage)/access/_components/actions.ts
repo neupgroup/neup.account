@@ -7,6 +7,7 @@ import { getPersonalAccountId, getActiveAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
 import { assignAssetMemberRole, getRolesForAsset } from '@/services/manage/access/assets';
 import { isRootUser } from '@/services/user';
+import { BRAND_OWNER_ROLE_ID } from '@/core/auth/brand-roles';
 
 export type ResolvedAccount = {
   accountId: string;
@@ -68,7 +69,7 @@ async function getBrandAssets(): Promise<SelectableAsset[]> {
     const grants = await prisma.access.findMany({
       where: {
         memberAccountId: personalAccountId,
-        roleId: 'brand-owner-neup-account',
+        roleId: BRAND_OWNER_ROLE_ID,
         status: 'active',
         OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
         role: { appId: 'neup.account' },

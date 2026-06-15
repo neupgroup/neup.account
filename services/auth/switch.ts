@@ -8,6 +8,7 @@ import { setManagingCookie, clearManagingCookie } from '@/core/helpers/cookies';
 import { revalidatePath } from 'next/cache';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { cleanupExpiredAccessModel } from '@/services/access-model';
+import { BRAND_OWNER_ROLE_ID } from '@/core/auth/brand-roles';
 
 /**
  * Switch into any account the current user has been granted access to.
@@ -60,7 +61,7 @@ export async function switchToBrand(brandId: string): Promise<{ success: boolean
       where: {
         memberAccountId: personalAccountId,
         parentAccountId: brandId,
-        roleId: 'brand-owner-neup-account',
+        roleId: BRAND_OWNER_ROLE_ID,
         status: 'active',
         OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
         role: { appId: 'neup.account' },

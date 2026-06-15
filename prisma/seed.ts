@@ -79,6 +79,8 @@ const ROOT_CAPABILITIES = [
   'root.account.delete',
   'root.account.search',
   'root.account.create_individual',
+  'root.account.access.view',
+  'root.account.access.edit',
   'root.account.send_warning',
   'root.account.give_block_account',
   'root.account.remove_block_account',

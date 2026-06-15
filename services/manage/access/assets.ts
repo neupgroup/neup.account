@@ -10,6 +10,7 @@ import { logError } from '@/core/helpers/logger';
 import { checkPermissions, getAccountType, isRootUser } from '@/services/user';
 import { resolveAssetName } from '@/services/manage/access/asset-resolvers';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
 
 const memberPattern = /^(account:)?[^\s:]+$/;
 
@@ -51,22 +52,53 @@ function toPortfolioAssetType(type: string): string {
   return PORTFOLIO_ASSET_TYPE_MAP[type.trim().toLowerCase()] ?? type.trim().toLowerCase();
 }
 
+function portfolioAssetChildData(type: string, assetId: string) {
+  const normalized = type.trim().toLowerCase();
+  return {
+    member_account_id: normalized === 'application' ? null : assetId,
+    access_application_id: normalized === 'application' ? assetId : null,
+    member_connection_id: null,
+    member_portfolio_id: null,
+  };
+}
+
 function toLogicalAssetId(row: {
   id: string;
-  member_id: string | null;
-  member_account_id: string | null;
-  access_application_id: string | null;
-  member_connection_id: string | null;
-  member_portfolio_id: string | null;
+  member_account_id?: string | null;
+  access_application_id?: string | null;
+  member_connection_id?: string | null;
+  member_portfolio_id?: string | null;
 }): string {
   return (
-    row.member_id ??
     row.member_account_id ??
     row.access_application_id ??
     row.member_connection_id ??
     row.member_portfolio_id ??
     row.id
   );
+}
+
+function assetChildRef(row: {
+  member_account_id?: string | null;
+  access_application_id?: string | null;
+  member_connection_id?: string | null;
+  member_portfolio_id?: string | null;
+}) {
+  if (row.member_account_id) return { childAccountId: row.member_account_id };
+  if (row.access_application_id) return { childApplicationId: row.access_application_id };
+  if (row.member_connection_id) return { childConnectionId: row.member_connection_id };
+  if (row.member_portfolio_id) return { childPortfolioId: row.member_portfolio_id };
+  return null;
+}
+
+function memberFlags(member: { details?: unknown; isTemporary?: Date | null }) {
+  const details = member.details && typeof member.details === 'object' && !Array.isArray(member.details)
+    ? member.details as Record<string, unknown>
+    : {};
+  return {
+    isPermanent: member.isTemporary == null || details.isPermanent === true,
+    hasFullAccess: details.hasFullAccess === true || details.accessLevel === 'full',
+  };
 }
 
 type AccessAssetGroup = Prisma.PortfolioGetPayload<{
@@ -95,6 +127,7 @@ async function canAccessGroup(groupId: string, accountId: string): Promise<boole
       parentPortfolioId: groupId,
       memberAccountId: accountId,
       status: 'active',
+      OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
     },
     select: { id: true },
   });
@@ -122,12 +155,15 @@ export async function getAccessAssetGroups() {
   if (!accountId) return [];
 
   try {
+    await cleanupExpiredAccessModel();
+
     return await prisma.portfolio.findMany({
       where: {
         members: {
           some: {
             memberAccountId: accountId,
             status: 'active',
+            OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
           },
         },
       },
@@ -221,10 +257,11 @@ export async function createAssetGroup(input: { name: string; details?: string }
 
       await tx.member.create({
         data: {
+          memberType: 'acc_in_port',
           parentPortfolioId: group.id,
-          accountId,
-          isPermanent: true,
-          hasFullAccess: true,
+          memberAccountId: accountId,
+          status: 'active',
+          isTemporary: null,
           details: {
             isPermanent: true,
             hasFullAccess: true,
@@ -286,7 +323,7 @@ export async function addAssetGroupMember(input: {
 
     // Prevent duplicate — any existing row (active, invited, or expired)
     const existing = await prisma.member.findFirst({
-      where: { parentPortfolioId: input.groupId, accountId: normalizedMemberId },
+      where: { parentPortfolioId: input.groupId, memberAccountId: normalizedMemberId },
       select: { id: true, status: true },
     });
     if (existing) {
@@ -306,11 +343,11 @@ export async function addAssetGroupMember(input: {
 
     await prisma.member.create({
       data: {
+        memberType: 'acc_in_port',
         parentPortfolioId: input.groupId,
-        accountId: normalizedMemberId,
+        memberAccountId: normalizedMemberId,
         status: 'invited',
-        isPermanent: false,
-        hasFullAccess: false,
+        isTemporary: expiresOn,
         details: {
           isPermanent: false,
           hasFullAccess: false,
@@ -359,11 +396,12 @@ export async function updatePortfolioMemberFlags(input: {
   try {
     // Caller must be a permanent full-access member
     const callerMember = await prisma.member.findFirst({
-      where: { parentPortfolioId: input.groupId, accountId },
-      select: { hasFullAccess: true, isPermanent: true },
+      where: { parentPortfolioId: input.groupId, memberAccountId: accountId },
+      select: { details: true, isTemporary: true },
     });
 
-    if (!callerMember?.hasFullAccess || !callerMember?.isPermanent) {
+    const callerFlags = callerMember ? memberFlags(callerMember) : null;
+    if (!callerFlags?.hasFullAccess || !callerFlags?.isPermanent) {
       return {
         success: false,
         error: 'Only a permanent full-access member can update member flags.',
@@ -373,7 +411,7 @@ export async function updatePortfolioMemberFlags(input: {
     // Load the target member
     const member = await prisma.member.findFirst({
       where: { id: input.memberId, parentPortfolioId: input.groupId },
-      select: { id: true, accountId: true, status: true, details: true },
+      select: { id: true, memberAccountId: true, status: true, details: true },
     });
 
     if (!member) {
@@ -405,8 +443,7 @@ export async function updatePortfolioMemberFlags(input: {
     await prisma.member.update({
       where: { id: member.id },
       data: {
-        isPermanent: input.isPermanent,
-        hasFullAccess: input.hasFullAccess,
+        isTemporary: input.isPermanent ? null : undefined,
         details: {
           ...(details ?? {}),
           isPermanent: input.isPermanent,
@@ -417,7 +454,7 @@ export async function updatePortfolioMemberFlags(input: {
 
     revalidatePath('/access');
     revalidatePath(`/access/team?portfolio=${input.groupId}`);
-    revalidatePath(`/access/role?portfolio=${input.groupId}&member_id=${member.accountId}`);
+    revalidatePath(`/access/role?portfolio=${input.groupId}&member_id=${member.memberAccountId}`);
     return { success: true };
   } catch (error) {
     await logError('database', error, `updatePortfolioMemberFlags:${input.groupId}:${input.memberId}`);
@@ -467,11 +504,7 @@ export async function addAssetToGroup(input: { groupId: string; asset: string; t
     await prisma.asset.create({
       data: {
         parent_portfolio_id: parsed.data.groupId,
-        member_id: parsed.data.asset,
-        member_account_id: parsed.data.type === 'application' ? null : parsed.data.asset,
-        access_application_id: parsed.data.type === 'application' ? parsed.data.asset : null,
-        member_connection_id: null,
-        member_portfolio_id: null,
+        ...portfolioAssetChildData(parsed.data.type, parsed.data.asset),
         access_type: toPortfolioAssetType(parsed.data.type),
         details: {
           note: normalizeDetails(parsed.data.details),
@@ -529,11 +562,7 @@ export async function addAssetToGroupWithMode(
     await prisma.asset.create({
       data: {
         parent_portfolio_id: parsed.data.groupId,
-        member_id: parsed.data.asset,
-        member_account_id: parsed.data.type === 'application' ? null : parsed.data.asset,
-        access_application_id: parsed.data.type === 'application' ? parsed.data.asset : null,
-        member_connection_id: null,
-        member_portfolio_id: null,
+        ...portfolioAssetChildData(parsed.data.type, parsed.data.asset),
         access_type: toPortfolioAssetType(parsed.data.type),
         details: {
           note: normalizeDetails(parsed.data.details),
@@ -589,10 +618,10 @@ export async function removeAssetFromGroup(input: { groupId: string; portfolioAs
 
     await prisma.$transaction(async (tx) => {
       // 1. Remove all access grants scoped to this asset in this portfolio
-      await tx.authzAssetsAccessGrant.deleteMany({
+      await tx.access.deleteMany({
         where: {
-          asset_id: assetRow.id,
-          portfolio_id: input.groupId,
+          assetId: assetRow.id,
+          parentPortfolioId: input.groupId,
         },
       });
 
@@ -606,8 +635,8 @@ export async function removeAssetFromGroup(input: { groupId: string; portfolioAs
       let personalPortfolio = await tx.portfolio.findFirst({
         where: {
           members: {
-            every: { accountId },
-            some: { accountId },
+            every: { memberAccountId: accountId },
+            some: { memberAccountId: accountId },
           },
         },
         select: { id: true },
@@ -620,9 +649,8 @@ export async function removeAssetFromGroup(input: { groupId: string; portfolioAs
             description: 'Personal asset portfolio.',
             members: {
               create: {
-                accountId,
-                isPermanent: true,
-                hasFullAccess: true,
+                memberType: 'acc_in_port',
+                memberAccountId: accountId,
                 details: {
                   isPermanent: true,
                   hasFullAccess: true,
@@ -652,7 +680,6 @@ export async function removeAssetFromGroup(input: { groupId: string; portfolioAs
         await tx.asset.create({
           data: {
             parent_portfolio_id: personalPortfolio.id,
-            member_id: toLogicalAssetId(assetRow),
             member_account_id: assetRow.member_account_id,
             access_application_id: assetRow.access_application_id,
             member_connection_id: assetRow.member_connection_id,
@@ -705,10 +732,10 @@ export async function removeAssetFromGroupWithMode(
     }
 
     await prisma.$transaction(async (tx) => {
-      await tx.authzAssetsAccessGrant.deleteMany({
+      await tx.access.deleteMany({
         where: {
-          asset_id: assetRow.id,
-          portfolio_id: input.groupId,
+          assetId: assetRow.id,
+          parentPortfolioId: input.groupId,
         },
       });
 
@@ -719,8 +746,8 @@ export async function removeAssetFromGroupWithMode(
       let personalPortfolio = await tx.portfolio.findFirst({
         where: {
           members: {
-            every: { accountId },
-            some: { accountId },
+            every: { memberAccountId: accountId },
+            some: { memberAccountId: accountId },
           },
         },
         select: { id: true },
@@ -733,9 +760,8 @@ export async function removeAssetFromGroupWithMode(
             description: 'Personal asset portfolio.',
             members: {
               create: {
-                accountId,
-                isPermanent: true,
-                hasFullAccess: true,
+                memberType: 'acc_in_port',
+                memberAccountId: accountId,
                 details: {
                   isPermanent: true,
                   hasFullAccess: true,
@@ -764,7 +790,6 @@ export async function removeAssetFromGroupWithMode(
         await tx.asset.create({
           data: {
             parent_portfolio_id: personalPortfolio.id,
-            member_id: toLogicalAssetId(assetRow),
             member_account_id: assetRow.member_account_id,
             access_application_id: assetRow.access_application_id,
             member_connection_id: assetRow.member_connection_id,
@@ -821,11 +846,11 @@ export async function removeAssetGroupMember(input: {
     const [member, callerMember] = await Promise.all([
       prisma.member.findFirst({
         where: { id: input.memberId, parentPortfolioId: input.groupId },
-        select: { id: true, accountId: true, hasFullAccess: true, isPermanent: true, status: true },
+        select: { id: true, memberAccountId: true, details: true, isTemporary: true, status: true },
       }),
       prisma.member.findFirst({
-        where: { parentPortfolioId: input.groupId, accountId, status: 'active' },
-        select: { hasFullAccess: true, isPermanent: true },
+        where: { parentPortfolioId: input.groupId, memberAccountId: accountId, status: 'active' },
+        select: { details: true, isTemporary: true },
       }),
     ]);
 
@@ -838,17 +863,19 @@ export async function removeAssetGroupMember(input: {
       await prisma.member.delete({ where: { id: member.id } });
       revalidatePath('/access');
       revalidatePath(`/access/team?portfolio=${input.groupId}`);
-      revalidatePath(`/access/role?portfolio=${input.groupId}&member_id=${member.accountId}`);
+      revalidatePath(`/access/role?portfolio=${input.groupId}&member_id=${member.memberAccountId}`);
       return { success: true };
     }
 
-    const targetIsPermanentOwner = member.hasFullAccess && member.isPermanent;
-    const isSelfRemoval = member.accountId === accountId;
+    const targetFlags = memberFlags(member);
+    const callerFlags = callerMember ? memberFlags(callerMember) : null;
+    const targetIsPermanentOwner = targetFlags.hasFullAccess && targetFlags.isPermanent;
+    const isSelfRemoval = member.memberAccountId === accountId;
 
     // Rule 1: removing a permanent full-access member requires the caller to
     // also be a permanent full-access member.
     if (targetIsPermanentOwner) {
-      const callerIsPermanentOwner = callerMember?.hasFullAccess && callerMember?.isPermanent;
+      const callerIsPermanentOwner = callerFlags?.hasFullAccess && callerFlags?.isPermanent;
       if (!callerIsPermanentOwner) {
         return {
           success: false,
@@ -863,10 +890,13 @@ export async function removeAssetGroupMember(input: {
       const otherPermanentOwnerCount = await prisma.member.count({
         where: {
           parentPortfolioId: input.groupId,
-          hasFullAccess: true,
-          isPermanent: true,
           status: 'active',
-          accountId: { not: accountId },
+          memberAccountId: { not: accountId },
+          OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
+          details: {
+            path: ['hasFullAccess'],
+            equals: true,
+          },
         },
       });
 
@@ -881,11 +911,10 @@ export async function removeAssetGroupMember(input: {
 
     await prisma.$transaction(async (tx) => {
       // Remove all access grants for this member in this portfolio
-      await tx.authzAssetsAccessGrant.deleteMany({
+      await tx.access.deleteMany({
         where: {
-          account_id: member.accountId,
-          portfolio_id: input.groupId,
-          app_id: ACCESS_APP_ID,
+          memberAccountId: member.memberAccountId,
+          parentPortfolioId: input.groupId,
         },
       });
 
@@ -942,41 +971,41 @@ export async function assignAssetMemberRole(input: {
             id: input.assetMember,
             parentPortfolioId: groupId,
           },
-          select: { id: true, accountId: true },
+          select: { id: true, memberAccountId: true },
         })
       : await prisma.account.findUnique({
           where: { id: input.assetMember },
           select: { id: true },
-        }).then((a) => (a ? { id: a.id, accountId: a.id } : null));
+        }).then((a) => (a ? { id: a.id, memberAccountId: a.id } : null));
 
     if (!member) {
       return { success: false, error: groupId ? 'Member not found in this group.' : 'Account not found.' };
     }
 
+    const assetRow = await prisma.asset.findUnique({
+      where: { id: input.asset },
+      select: { id: true, member_account_id: true, access_application_id: true, member_connection_id: true, member_portfolio_id: true, access_type: true },
+    });
+    if (!assetRow) {
+      return { success: false, error: 'Asset not found.' };
+    }
+
     if (!groupId) {
       // Direct assignment is allowed only when this asset is not shared via
       // any portfolio that includes accounts other than the current actor.
-    const directAsset = await prisma.asset.findUnique({
-      where: { id: input.asset },
-      select: { id: true, member_id: true, member_account_id: true, access_application_id: true, member_connection_id: true, member_portfolio_id: true, access_type: true },
-    });
-      if (!directAsset) {
-        return { success: false, error: 'Asset not found.' };
-      }
-
       const sharedAsset = await prisma.asset.findFirst({
         where: {
           OR: [
-            { member_account_id: toLogicalAssetId(directAsset) },
-            { access_application_id: toLogicalAssetId(directAsset) },
-            { member_connection_id: toLogicalAssetId(directAsset) },
-            { member_portfolio_id: toLogicalAssetId(directAsset) },
+            { member_account_id: toLogicalAssetId(assetRow) },
+            { access_application_id: toLogicalAssetId(assetRow) },
+            { member_connection_id: toLogicalAssetId(assetRow) },
+            { member_portfolio_id: toLogicalAssetId(assetRow) },
           ],
-          access_type: directAsset.access_type,
-          portfolio: {
+          access_type: assetRow.access_type,
+          parentPortfolio: {
             members: {
               some: {
-                accountId: { not: accountId },
+                memberAccountId: { not: accountId },
                 status: 'active',
               },
             },
@@ -993,28 +1022,17 @@ export async function assignAssetMemberRole(input: {
       }
     }
 
-    // Find or create the asset access grant
-    const existing = await prisma.authzAssetsAccessGrant.findFirst({
-      where: {
-        asset_id: input.asset,
-        account_id: member.accountId,
-        role_id: input.role,
-        portfolio_id: groupId,
-        app_id: ACCESS_APP_ID,
-      },
-    });
-
-    if (!existing) {
-      await prisma.authzAssetsAccessGrant.create({
-        data: {
-          asset_id: input.asset,
-          account_id: member.accountId,
-          role_id: input.role,
-          portfolio_id: groupId,
-          app_id: ACCESS_APP_ID,
-        },
-      });
+    const childRef = assetChildRef(assetRow);
+    if (!childRef) {
+      return { success: false, error: 'Asset does not have a valid child reference.' };
     }
+    await ensureAccessGrant(prisma, {
+      memberAccountId: member.memberAccountId,
+      ...(groupId ? { parentPortfolioId: groupId } : { parentAccountId: accountId }),
+      ...childRef,
+      accessApplicationId: ACCESS_APP_ID,
+      roleId: input.role,
+    } as Parameters<typeof ensureAccessGrant>[1]);
 
     if (groupId) {
       revalidatePath(`/access/${groupId}`);
@@ -1179,12 +1197,12 @@ export async function bulkAssignAssetRoles(input: {
             id: input.memberId,
             parentPortfolioId: groupId,
           },
-          select: { id: true, accountId: true },
+          select: { id: true, memberAccountId: true },
         })
       : await prisma.account.findUnique({
           where: { id: input.memberId },
           select: { id: true },
-        }).then((a) => (a ? { id: a.id, accountId: a.id } : null));
+        }).then((a) => (a ? { id: a.id, memberAccountId: a.id } : null));
 
     if (!member) {
       return { success: false, error: groupId ? 'Member not found in this group.' : 'Account not found.' };
@@ -1193,7 +1211,7 @@ export async function bulkAssignAssetRoles(input: {
     if (!groupId) {
       const directAssets = await prisma.asset.findMany({
         where: { id: { in: input.assetIds } },
-        select: { id: true, member_id: true, member_account_id: true, access_application_id: true, member_connection_id: true, member_portfolio_id: true, access_type: true },
+        select: { id: true, member_account_id: true, access_application_id: true, member_connection_id: true, member_portfolio_id: true, access_type: true },
       });
 
       if (directAssets.length !== input.assetIds.length) {
@@ -1210,10 +1228,10 @@ export async function bulkAssignAssetRoles(input: {
               { member_portfolio_id: toLogicalAssetId(asset) },
             ],
             access_type: asset.access_type,
-            portfolio: {
+            parentPortfolio: {
               members: {
                 some: {
-                  accountId: { not: accountId },
+                  memberAccountId: { not: accountId },
                   status: 'active',
                 },
               },
@@ -1258,61 +1276,67 @@ export async function bulkAssignAssetRoles(input: {
           orderBy: { id: 'asc' },
         });
 
-    const existingAssetIdMap = new Map(existingAssets.map((a) => [toLogicalAssetId(a), a.id]));
-    const portfolioAssetIds: string[] = [];
+    const existingAssetMap = new Map(existingAssets.map((a) => [toLogicalAssetId(a), a]));
+    const portfolioAssets: Array<{
+      id: string;
+      member_account_id: string | null;
+      access_application_id: string | null;
+      member_connection_id: string | null;
+      member_portfolio_id: string | null;
+      access_type: string;
+    }> = [];
 
     await prisma.$transaction(async (tx) => {
       // Add missing assets to the portfolio only in portfolio mode.
       for (const rawAssetId of input.assetIds) {
-        if (existingAssetIdMap.has(rawAssetId)) {
-          portfolioAssetIds.push(existingAssetIdMap.get(rawAssetId)!);
+        if (existingAssetMap.has(rawAssetId)) {
+          portfolioAssets.push(existingAssetMap.get(rawAssetId)!);
         } else if (groupId) {
           const created = await tx.asset.create({
             data: {
               parent_portfolio_id: groupId,
-              member_id: rawAssetId,
               member_account_id: input.assetType === 'application' ? null : rawAssetId,
               access_application_id: input.assetType === 'application' ? rawAssetId : null,
               member_connection_id: null,
               member_portfolio_id: null,
               access_type: toPortfolioAssetType(input.assetType),
             },
-            select: { id: true },
+            select: { id: true, member_account_id: true, access_application_id: true, member_connection_id: true, member_portfolio_id: true, access_type: true },
           });
-          portfolioAssetIds.push(created.id);
+          portfolioAssets.push(created);
         } else {
           return;
         }
       }
 
       // For each asset, update the grants: remove old roles, add new roles
-      for (const portfolioAssetId of portfolioAssetIds) {
+      for (const asset of portfolioAssets) {
         // Remove all existing grants for this member on this asset in this portfolio
-        await tx.authzAssetsAccessGrant.deleteMany({
+        await tx.access.deleteMany({
           where: {
-            asset_id: portfolioAssetId,
-            account_id: member.accountId,
-            portfolio_id: groupId,
-            app_id: ACCESS_APP_ID,
+            assetId: asset.id,
+            memberAccountId: member.memberAccountId,
+            parentPortfolioId: groupId,
           },
         });
 
+        const childRef = assetChildRef(asset);
+        if (!childRef) continue;
+
         // Add the new role grants
         for (const roleId of input.roleIds) {
-          await tx.authzAssetsAccessGrant.create({
-            data: {
-              asset_id: portfolioAssetId,
-              account_id: member.accountId,
-              role_id: roleId,
-              portfolio_id: groupId,
-              app_id: ACCESS_APP_ID,
-            },
-          });
+          await ensureAccessGrant(tx, {
+            memberAccountId: member.memberAccountId,
+            ...(groupId ? { parentPortfolioId: groupId } : { parentAccountId: accountId }),
+            ...childRef,
+            accessApplicationId: ACCESS_APP_ID,
+            roleId,
+          } as Parameters<typeof ensureAccessGrant>[1]);
         }
       }
     });
 
-    const totalAssigned = portfolioAssetIds.length * input.roleIds.length;
+    const totalAssigned = portfolioAssets.length * input.roleIds.length;
 
     revalidatePath('/access');
     if (groupId) {
@@ -1359,21 +1383,21 @@ export async function getMemberAssetGrants(
         id: memberId,
         parentPortfolioId: groupId,
       },
-      select: { id: true, accountId: true },
+      select: { id: true, memberAccountId: true },
     });
 
     if (!member) return [];
 
     // Get all grants for this member in this portfolio
-    const grants = await prisma.authzAssetsAccessGrant.findMany({
+    const grants = await prisma.access.findMany({
       where: {
-        account_id: member.accountId,
-        portfolio_id: groupId,
-        app_id: ACCESS_APP_ID,
+        memberAccountId: member.memberAccountId,
+        parentPortfolioId: groupId,
+        ...activeAccessWhere(),
       },
       select: {
-        asset_id: true,
-        role_id: true,
+        assetId: true,
+        roleId: true,
         asset: {
           select: {
             id: true,
@@ -1391,7 +1415,7 @@ export async function getMemberAssetGrants(
     const assetMap = new Map<string, { portfolioAssetId: string; assetId: string; assetType: string; roleIds: string[] }>();
 
     for (const grant of grants) {
-      const key = grant.asset_id;
+      const key = grant.assetId;
       if (!assetMap.has(key)) {
         const assetId = toLogicalAssetId(grant.asset);
         assetMap.set(key, {
@@ -1401,7 +1425,7 @@ export async function getMemberAssetGrants(
           roleIds: [],
         });
       }
-      assetMap.get(key)!.roleIds.push(grant.role_id);
+      assetMap.get(key)!.roleIds.push(grant.roleId);
     }
 
     // Resolve asset names

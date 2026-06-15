@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
+import { ensureAccessGrant } from '@/services/access-model';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,6 +39,19 @@ type WebhookBody = {
   data?: Record<string, unknown> | Record<string, unknown>[];
   id?: string | string[];
 };
+
+function assetChildRef(asset: {
+  member_account_id?: string | null;
+  access_application_id?: string | null;
+  member_connection_id?: string | null;
+  member_portfolio_id?: string | null;
+}) {
+  if (asset.member_account_id) return { childAccountId: asset.member_account_id };
+  if (asset.access_application_id) return { childApplicationId: asset.access_application_id };
+  if (asset.member_connection_id) return { childConnectionId: asset.member_connection_id };
+  if (asset.member_portfolio_id) return { childPortfolioId: asset.member_portfolio_id };
+  return null;
+}
 
 const VALID_TABLES: Table[] = [
   'authz_role_permission_map',
@@ -295,77 +309,31 @@ async function handleAccountAccessGrant(operation: Operation, body: WebhookBody)
       if (!role) return err('Role not found for app.', 404);
 
       const record = await prisma.$transaction(async (tx) => {
-        const member = await tx.member.create({
-          data: {
-            memberType: 'account',
-            memberAccountId: d.memberId as string,
-            parentType: 'account',
-            parentAccountId: d.accessTo as string,
-            parentPortfolioId: (d.parentPortfolioId as string) ?? null,
-            details: { legacy_parent_application_id: d.appId as string },
-          },
-          select: { id: true },
+        const grant = await ensureAccessGrant(tx, {
+          memberAccountId: d.memberId as string,
+          ...(d.parentPortfolioId
+            ? { parentPortfolioId: d.parentPortfolioId as string }
+            : { parentAccountId: d.accessTo as string }),
+          childApplicationId: d.appId as string,
+          accessApplicationId: d.appId as string,
+          roleId: role.id,
         });
 
-        await tx.role.create({
-          data: {
-            memberId: member.id,
-            accountId: d.accessTo as string,
-            roleId: role.id,
-            roleName: role.name ?? null,
-            permissions: role.permissions ?? undefined,
-          },
-        });
-
-        return member;
+        return grant;
       });
       return ok({ id: record.id }, 201);
     }
 
     case 'updateOne': {
       if (typeof body.id !== 'string') return err('Missing required field: `id` (string).', 400);
-      const memberId = body.id;
       if (!body.data || Array.isArray(body.data)) return err('Missing required field: `data` (object).', 400);
       const d = body.data;
-      await prisma.$transaction(async (tx) => {
-        if (d.parentPortfolioId !== undefined) {
-          await tx.member.update({
-            where: { id: memberId },
-            data: { parentPortfolioId: d.parentPortfolioId as string | null },
-          });
-        }
-
-        if (d.roleId !== undefined) {
-          const member = await tx.member.findUnique({
-            where: { id: memberId },
-            select: { id: true, parentAccountId: true, details: true },
-          });
-          if (!member) return;
-          const appId =
-            member.details &&
-            typeof member.details === 'object' &&
-            typeof (member.details as Record<string, unknown>).legacy_parent_application_id === 'string'
-              ? ((member.details as Record<string, unknown>).legacy_parent_application_id as string)
-              : null;
-          const role = await tx.authzRole.findFirst({
-            where: {
-              id: d.roleId as string,
-              ...(appId ? { appId } : {}),
-            },
-            select: { id: true, name: true, permissions: true },
-          });
-          if (!role) return;
-          await tx.role.deleteMany({ where: { memberId: member.id } });
-          await tx.role.create({
-            data: {
-              memberId: member.id,
-              accountId: member.parentAccountId ?? undefined,
-              roleId: role.id,
-              roleName: role.name ?? null,
-              permissions: role.permissions ?? undefined,
-            },
-          });
-        }
+      await prisma.access.update({
+        where: { id: body.id },
+        data: {
+          ...(d.parentPortfolioId !== undefined && { parentPortfolioId: d.parentPortfolioId as string | null }),
+          ...(d.roleId !== undefined && { roleId: d.roleId as string }),
+        },
       });
       return ok({ ok: true });
     }
@@ -387,18 +355,18 @@ async function handleAccountAccessGrant(operation: Operation, body: WebhookBody)
 
     case 'deleteOne': {
       if (typeof body.id !== 'string') return err('Missing required field: `id` (string).', 400);
-      await prisma.member.delete({ where: { id: body.id } });
+      await prisma.access.delete({ where: { id: body.id } });
       return ok({ ok: true });
     }
 
     case 'delete': {
       if (!Array.isArray(body.id)) return err('Missing required field: `id` (array of strings).', 400);
-      const result = await prisma.member.deleteMany({ where: { id: { in: body.id as string[] } } });
+      const result = await prisma.access.deleteMany({ where: { id: { in: body.id as string[] } } });
       return ok({ ok: true, count: result.count });
     }
 
     case 'deleteAll': {
-      const result = await prisma.member.deleteMany();
+      const result = await prisma.access.deleteMany();
       return ok({ ok: true, count: result.count });
     }
   }
@@ -411,17 +379,29 @@ async function handleAssetsAccessGrant(operation: Operation, body: WebhookBody):
       const d = body.data;
       if (!d.assetId || !d.accountId || !d.roleId || !d.appId)
         return err('Missing required fields: `assetId`, `accountId`, `roleId`, `appId`.', 400);
-      const record = await prisma.authzAssetsAccessGrant.create({
-        data: {
-          asset_id: d.assetId as string,
-          account_id: d.accountId as string,
-          role_id: d.roleId as string,
-          app_id: d.appId as string,
-          portfolio_id: (d.parentPortfolioId as string) ?? null,
-          asset_type: (d.assetType as string) ?? null,
+      const asset = await prisma.asset.findUnique({
+        where: { id: d.assetId as string },
+        select: {
+          id: true,
+          member_account_id: true,
+          access_application_id: true,
+          member_connection_id: true,
+          member_portfolio_id: true,
         },
-        select: { id: true },
       });
+      if (!asset) return err('Asset not found.', 404);
+      const childRef = assetChildRef(asset);
+      if (!childRef) return err('Asset has no child reference.', 400);
+
+      const record = await ensureAccessGrant(prisma, {
+        memberAccountId: d.accountId as string,
+        ...(d.parentPortfolioId
+          ? { parentPortfolioId: d.parentPortfolioId as string }
+          : { parentAccountId: (d.accessTo as string) || (d.accountId as string) }),
+        ...childRef,
+        accessApplicationId: d.appId as string,
+        roleId: d.roleId as string,
+      } as Parameters<typeof ensureAccessGrant>[1]);
       return ok({ id: record.id }, 201);
     }
 
@@ -429,12 +409,11 @@ async function handleAssetsAccessGrant(operation: Operation, body: WebhookBody):
       if (typeof body.id !== 'string') return err('Missing required field: `id` (string).', 400);
       if (!body.data || Array.isArray(body.data)) return err('Missing required field: `data` (object).', 400);
       const d = body.data;
-      await prisma.authzAssetsAccessGrant.update({
+      await prisma.access.update({
         where: { id: body.id },
         data: {
-          ...(d.roleId !== undefined && { role_id: d.roleId as string }),
-          ...(d.parentPortfolioId !== undefined && { portfolio_id: d.parentPortfolioId as string | null }),
-          ...(d.assetType !== undefined && { asset_type: d.assetType as string | null }),
+          ...(d.roleId !== undefined && { roleId: d.roleId as string }),
+          ...(d.parentPortfolioId !== undefined && { parentPortfolioId: d.parentPortfolioId as string | null }),
         },
       });
       return ok({ ok: true });
@@ -444,15 +423,13 @@ async function handleAssetsAccessGrant(operation: Operation, body: WebhookBody):
       if (!Array.isArray(body.data)) return err('Missing required field: `data` (array).', 400);
       await Promise.all(
         body.data.map((item) => {
-          const { id, roleId, parentPortfolioId, assetType, ...rest } = item;
+          const { id, roleId, parentPortfolioId } = item;
           if (!id) return Promise.resolve();
-          return prisma.authzAssetsAccessGrant.update({
+          return prisma.access.update({
             where: { id: id as string },
             data: {
-              ...(roleId !== undefined && { role_id: roleId as string }),
-              ...(parentPortfolioId !== undefined && { portfolio_id: parentPortfolioId as string | null }),
-              ...(assetType !== undefined && { asset_type: assetType as string | null }),
-              ...rest,
+              ...(roleId !== undefined && { roleId: roleId as string }),
+              ...(parentPortfolioId !== undefined && { parentPortfolioId: parentPortfolioId as string | null }),
             },
           });
         })
@@ -462,18 +439,18 @@ async function handleAssetsAccessGrant(operation: Operation, body: WebhookBody):
 
     case 'deleteOne': {
       if (typeof body.id !== 'string') return err('Missing required field: `id` (string).', 400);
-      await prisma.authzAssetsAccessGrant.delete({ where: { id: body.id } });
+      await prisma.access.delete({ where: { id: body.id } });
       return ok({ ok: true });
     }
 
     case 'delete': {
       if (!Array.isArray(body.id)) return err('Missing required field: `id` (array of strings).', 400);
-      const result = await prisma.authzAssetsAccessGrant.deleteMany({ where: { id: { in: body.id as string[] } } });
+      const result = await prisma.access.deleteMany({ where: { id: { in: body.id as string[] } } });
       return ok({ ok: true, count: result.count });
     }
 
     case 'deleteAll': {
-      const result = await prisma.authzAssetsAccessGrant.deleteMany();
+      const result = await prisma.access.deleteMany();
       return ok({ ok: true, count: result.count });
     }
   }

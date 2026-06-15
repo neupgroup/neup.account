@@ -8,6 +8,7 @@ import { logError } from '@/core/helpers/logger';
 import { dispatchAuthzWebhook } from './authz-webhook';
 import { checkPermissions } from '@/services/user';
 import { dispatchRoleUpdateWebhook, getRolePayload } from './role-update-events';
+import { activeAccessWhere } from '@/services/access-model';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -174,17 +175,12 @@ async function assertCanManageAuthz(appId: string): Promise<{ accountId: string 
   const isRootManager = await checkPermissions(ROOT_ROLE_MANAGE_PERMISSIONS, accountId);
   if (isRootManager) return { accountId };
 
-  const grant = await prisma.role.findFirst({
+  const grant = await prisma.access.findFirst({
     where: {
       roleId: { in: ['application.owner', 'application.manage', 'application.edit', 'app.manage', 'app.edit'] },
-      member: {
-        memberType: 'account',
-        memberAccountId: accountId,
-        details: {
-          path: ['legacy_parent_application_id'],
-          equals: appId,
-        },
-      },
+      memberAccountId: accountId,
+      accessApplicationId: appId,
+      ...activeAccessWhere(),
     },
     select: { id: true },
   });

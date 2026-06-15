@@ -7,6 +7,7 @@ import prisma from "@/core/helpers/prisma";
 import { logError } from "@/core/helpers/logger";
 import { getActiveAccountId, getPersonalAccountId } from "@/core/auth/verify";
 import { extractGenderFromDetails, resolveDisplayImage } from "@/core/helpers/display-image";
+import { cleanupExpiredAccessModel, extractRolePermissionNames } from "@/services/access-model";
 
 // --- Types ---
 
@@ -191,9 +192,7 @@ export async function getUserNeupIdDetails(
 
 // --- Permissions ---
 
-// Resolves account permissions by:
-// 1) finding role grants in member for active account + app scope,
-// 2) loading denormalized permissions from authz_role.permissions for those roleIds.
+// Resolves account permissions by active access rows and their role catalog.
 export async function getAccountPermission(
   accountId?: string,
 ): Promise<string[]> {
@@ -201,40 +200,27 @@ export async function getAccountPermission(
   if (!activeId) return [];
 
   try {
-    const roleRows = await prisma.role.findMany({
+    await cleanupExpiredAccessModel();
+
+    const accessRows = await prisma.access.findMany({
       where: {
-        member: {
-          memberAccountId: activeId,
-          parentType: 'account',
-        },
-        authzRole: {
+        memberAccountId: activeId,
+        status: 'active',
+        OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
+        role: {
           appId: 'neup.account',
         },
       },
       select: {
-        permissions: true,
-        authzRole: {
+        role: {
           select: {
-            id: true,
             permissions: true,
           },
         },
       },
     });
 
-    if (!roleRows.length) {
-      return [];
-    }
-
-    const readPermissionStrings = (value: unknown): string[] => {
-      if (!Array.isArray(value)) return [];
-      return value.filter((item): item is string => typeof item === 'string');
-    };
-
-    const permissions = roleRows.flatMap((row) => [
-      ...readPermissionStrings(row.permissions),
-      ...readPermissionStrings(row.authzRole.permissions),
-    ]);
+    const permissions = accessRows.flatMap((row) => extractRolePermissionNames(row.role.permissions));
 
     return Array.from(new Set(permissions));
   } catch (error) {
@@ -256,41 +242,28 @@ export async function getGrantedAccountPermission(
   if (!memberAccountId || !parentAccountId) return [];
 
   try {
-    const roleRows = await prisma.role.findMany({
+    await cleanupExpiredAccessModel();
+
+    const accessRows = await prisma.access.findMany({
       where: {
-        member: {
-          memberAccountId,
-          parentType: 'account',
-          parentAccountId,
-        },
-        authzRole: {
+        memberAccountId,
+        parentAccountId,
+        status: 'active',
+        OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
+        role: {
           appId: 'neup.account',
         },
       },
       select: {
-        permissions: true,
-        authzRole: {
+        role: {
           select: {
-            id: true,
             permissions: true,
           },
         },
       },
     });
 
-    if (!roleRows.length) {
-      return [];
-    }
-
-    const readPermissionStrings = (value: unknown): string[] => {
-      if (!Array.isArray(value)) return [];
-      return value.filter((item): item is string => typeof item === 'string');
-    };
-
-    const permissions = roleRows.flatMap((row) => [
-      ...readPermissionStrings(row.permissions),
-      ...readPermissionStrings(row.authzRole.permissions),
-    ]);
+    const permissions = accessRows.flatMap((row) => extractRolePermissionNames(row.role.permissions));
 
     return Array.from(new Set(permissions));
   } catch (error) {
@@ -413,13 +386,14 @@ export async function checkNeupIdAvailability(
 export async function isRootUser(accountId: string): Promise<boolean> {
   if (!accountId) return false;
   try {
-    const count = await prisma.role.count({
+    await cleanupExpiredAccessModel();
+
+    const count = await prisma.access.count({
       where: {
-        member: {
-          memberAccountId: accountId,
-          parentType: 'account',
-        },
-        authzRole: {
+        memberAccountId: accountId,
+        status: 'active',
+        OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
+        role: {
           appId: 'neup.account',
           scope: 'root',
         },

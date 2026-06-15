@@ -2,6 +2,7 @@
 
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
+import { activeAccessWhere, extractRolePermissionNames } from '@/services/access-model';
 
 /**
  * Reasons returned when permission lookup fails.
@@ -262,29 +263,16 @@ async function resolvePermissionSet(input: {
 						access_type: true,
 					},
 				},
-				members: {
-					where: { memberType: 'account', memberAccountId: input.accountId },
-					select: {
-						isPermanent: true,
-						accessLevel: true,
+					members: {
+						where: { memberType: 'account', memberAccountId: input.accountId },
+						select: {
+							isTemporary: true,
+							details: true,
+						},
 					},
 				},
-			},
-		}),
-		prisma.role.findMany({
-			where: {
-				member: {
-					memberType: 'account',
-					memberAccountId: input.accountId,
-					details: {
-						path: ['legacy_parent_application_id'],
-						equals: input.app,
-					},
-				},
-			},
-			select: { roleId: true },
-		}),
-	]);
+			}),
+		]);
 
 	if (!appRecord) {
 		return { permissions: [], matched: [] };
@@ -313,8 +301,11 @@ async function resolvePermissionSet(input: {
 		}
 
 		const hasFullAccess = portfolio.members.some((member) => {
-			const stillValid = member.isPermanent;
-			return stillValid && member.accessLevel === 'full';
+			const stillValid = !member.isTemporary || member.isTemporary > now;
+			const details = member.details && typeof member.details === 'object' && !Array.isArray(member.details)
+				? member.details as Record<string, unknown>
+				: {};
+			return stillValid && details.accessLevel === 'full';
 		});
 
 		if (hasFullAccess) {
@@ -323,20 +314,18 @@ async function resolvePermissionSet(input: {
 
 	}
 
-	for (const grant of await prisma.role.findMany({
+	for (const grant of await prisma.access.findMany({
 		where: {
-			member: {
-				memberType: 'account',
-				memberAccountId: input.accountId,
-				details: {
-					path: ['legacy_parent_application_id'],
-					equals: input.app,
-				},
-			},
+			memberAccountId: input.accountId,
+			accessApplicationId: input.app,
+			...activeAccessWhere(),
 		},
-		select: { roleId: true },
+		select: { roleId: true, role: { select: { permissions: true } } },
 	})) {
 		resolvedPermissions.add(normalizePermission(grant.roleId));
+		for (const permission of extractRolePermissionNames(grant.role.permissions)) {
+			resolvedPermissions.add(normalizePermission(permission));
+		}
 	}
 
 	const matched = input.checkFor.filter((permission) => hasPermission(resolvedPermissions, permission));

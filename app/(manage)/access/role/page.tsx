@@ -80,12 +80,15 @@ async function getPortfolioMemberFlags(
       memberAccountId,
       status: 'active',
     },
-    select: { accessLevel: true, isPermanent: true },
+    select: { details: true, isTemporary: true },
   });
   if (!member) return null;
+  const details = member.details && typeof member.details === 'object' && !Array.isArray(member.details)
+    ? member.details as Record<string, unknown>
+    : {};
   return {
-    hasFullAccess: member.accessLevel === 'full',
-    isPermanent: member.isPermanent,
+    hasFullAccess: details.hasFullAccess === true || details.accessLevel === 'full',
+    isPermanent: member.isTemporary == null || details.isPermanent === true,
   };
 }
 
@@ -97,17 +100,22 @@ async function hasOtherPermanentOwner(
   parentPortfolioId: string,
   excludeAccountId: string,
 ): Promise<boolean> {
-  const count = await prisma.member.count({
+  const members = await prisma.member.findMany({
     where: {
       parentPortfolioId,
-      accessLevel: 'full',
-      isPermanent: true,
       status: 'active',
       memberType: 'account',
       memberAccountId: { not: excludeAccountId },
     },
+    select: { details: true, isTemporary: true },
   });
-  return count > 0;
+  return members.some((member) => {
+    const details = member.details && typeof member.details === 'object' && !Array.isArray(member.details)
+      ? member.details as Record<string, unknown>
+      : {};
+    return (member.isTemporary == null || details.isPermanent === true)
+      && (details.hasFullAccess === true || details.accessLevel === 'full');
+  });
 }
 
 // ── Platform avatar ───────────────────────────────────────────────────────────

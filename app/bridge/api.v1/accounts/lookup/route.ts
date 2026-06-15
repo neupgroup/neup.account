@@ -4,6 +4,7 @@ import { logError } from '@/core/helpers/logger';
 import { applicationAccessFields, type ApplicationAccessField } from '@/services/applications/types';
 import { writeApplicationDevLog } from '@/services/bridge/dev-logs';
 import { resolveDisplayImage } from '@/core/helpers/display-image';
+import { cleanupExpiredAccessModel, extractRolePermissionNames } from '@/services/access-model';
 
 export const dynamic = 'force-dynamic';
 const accessFieldSet = new Set<ApplicationAccessField>(applicationAccessFields);
@@ -224,55 +225,34 @@ export async function POST(request: NextRequest) {
       select: { lastLoggedIn: true },
     });
 
-    const grants = await prisma.member.findMany({
+    await cleanupExpiredAccessModel();
+
+    const grants = await prisma.access.findMany({
       where: {
-        memberType: 'account',
         memberAccountId: account.id,
-        parentType: 'account',
         status: 'active',
-        roles: {
-          some: {
-            authzRole: { appId },
-          },
-        },
+        OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
+        role: { appId },
       },
       select: {
         parentAccountId: true,
         parentPortfolioId: true,
-        roles: {
+        role: {
           select: {
-            roleId: true,
-            roleName: true,
             permissions: true,
-            authzRole: {
-              select: {
-                name: true,
-                permissions: true,
-              },
-            },
+            name: true,
+            id: true,
           },
         },
       },
     });
 
-    const readPermissionStrings = (value: unknown): string[] =>
-      Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
-
-    const access = grants.flatMap((grant) =>
-      grant.roles.map((role) => {
-        const rolePermissions = [
-          ...readPermissionStrings(role.permissions),
-          ...readPermissionStrings(role.authzRole?.permissions),
-        ];
-
-        return {
-          accessOf: grant.parentAccountId ?? account.id,
-          role: role.roleName ?? role.authzRole?.name ?? role.roleId,
-          permissions: Array.from(new Set(rolePermissions)),
-          ...(grant.parentPortfolioId ? { portfolio: grant.parentPortfolioId } : {}),
-        };
-      }),
-    );
+    const access = grants.map((grant) => ({
+      accessOf: grant.parentAccountId ?? account.id,
+      role: grant.role.name ?? grant.role.id,
+      permissions: extractRolePermissionNames(grant.role.permissions),
+      ...(grant.parentPortfolioId ? { portfolio: grant.parentPortfolioId } : {}),
+    }));
 
     const selfAccess = access.filter((entry) => entry.accessOf === account.id);
     const topRole = selfAccess[0]?.role ?? null;

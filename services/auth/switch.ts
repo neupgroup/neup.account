@@ -7,6 +7,7 @@ import { getPersonalAccountId } from '@/core/auth/verify';
 import { setManagingCookie, clearManagingCookie } from '@/core/helpers/cookies';
 import { revalidatePath } from 'next/cache';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { cleanupExpiredAccessModel } from '@/services/access-model';
 
 /**
  * Switch into any account the current user has been granted access to.
@@ -17,13 +18,15 @@ export async function switchToAccount(memberId: string): Promise<{ success: bool
   if (!personalAccountId) return { success: false, error: 'Not authenticated.' };
 
   try {
+    await cleanupExpiredAccessModel();
+
     // Verify a grant exists giving this user access to the target account
-    const grant = await prisma.member.findFirst({
+    const grant = await prisma.access.findFirst({
       where: {
-        memberType: 'account',
         memberAccountId: personalAccountId,
-        parentType: 'account',
         parentAccountId: memberId,
+        status: 'active',
+        OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
       },
       select: { id: true },
     });
@@ -51,18 +54,16 @@ export async function switchToBrand(brandId: string): Promise<{ success: boolean
   if (!personalAccountId) return { success: false, error: 'Not authenticated.' };
 
   try {
-    const ownership = await prisma.member.findFirst({
+    await cleanupExpiredAccessModel();
+
+    const ownership = await prisma.access.findFirst({
       where: {
-        memberType: 'account',
         memberAccountId: personalAccountId,
-        parentType: 'account',
         parentAccountId: brandId,
-        roles: {
-          some: {
-            roleId: 'brand-owner-neup-account',
-            authzRole: { appId: 'neup.account' },
-          },
-        },
+        roleId: 'brand-owner-neup-account',
+        status: 'active',
+        OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
+        role: { appId: 'neup.account' },
       },
       select: { id: true },
     });
@@ -90,18 +91,16 @@ export async function switchToDependent(dependentId: string): Promise<{ success:
   if (!personalAccountId) return { success: false, error: 'Not authenticated.' };
 
   try {
-    const ownership = await prisma.member.findFirst({
+    await cleanupExpiredAccessModel();
+
+    const ownership = await prisma.access.findFirst({
       where: {
-        memberType: 'account',
         memberAccountId: personalAccountId,
-        parentType: 'account',
         parentAccountId: dependentId,
-        roles: {
-          some: {
-            roleId: 'account.guardian',
-            authzRole: { appId: 'neup.account' },
-          },
-        },
+        roleId: 'account.guardian',
+        status: 'active',
+        OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
+        role: { appId: 'neup.account' },
       },
       select: { id: true },
     });

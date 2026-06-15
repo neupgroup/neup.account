@@ -8,6 +8,7 @@ import { logError } from '@/core/helpers/logger';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
+import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
 
 const manageApplicationSchema = z.object({
   appId: z.string().min(1, 'Application ID is required.'),
@@ -44,18 +45,13 @@ export async function getUserApplicationAccess(appId: string): Promise<UserAppli
         },
         select: { connectedAt: true },
       }),
-      prisma.role.findMany({
+      prisma.access.findMany({
         where: {
-          member: {
-            memberType: 'account',
-            memberAccountId: accountId,
-            parentType: 'account',
-            parentAccountId: accountId,
-            details: {
-              path: ['legacy_parent_application_id'],
-              equals: appId,
-            },
-          },
+          memberAccountId: accountId,
+          parentAccountId: accountId,
+          assetApplicationId: appId,
+          status: 'active',
+          OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
         },
         select: { roleId: true },
       }),
@@ -102,6 +98,8 @@ export async function addUserApplicationAccess(input: { appId: string; permissio
     if (!application) return { success: false, error: 'Application not found.' };
 
     await prisma.$transaction(async (tx) => {
+      await cleanupExpiredAccessModel(tx);
+
       const existingConnection = await tx.connection.findUnique({
         where: { accountId_appId: { accountId, appId } },
         select: { id: true },
@@ -122,44 +120,27 @@ export async function addUserApplicationAccess(input: { appId: string; permissio
         );
       }
 
-      const existingMembers = await tx.member.findMany({
+      await tx.access.deleteMany({
         where: {
-          memberType: 'account',
           memberAccountId: accountId,
-          parentType: 'account',
           parentAccountId: accountId,
-          details: {
-            path: ['legacy_parent_application_id'],
-            equals: appId,
-          },
+          assetApplicationId: appId,
         },
-        select: { id: true },
       });
-      if (existingMembers.length > 0) {
-        await tx.member.deleteMany({ where: { id: { in: existingMembers.map((m) => m.id) } } });
-      }
 
       if (permissions.length > 0) {
-        const member = await tx.member.create({
-          data: {
-            memberType: 'account',
+        for (const roleId of permissions) {
+          await ensureAccessGrant(tx, {
             memberAccountId: accountId,
-            parentType: 'account',
             parentAccountId: accountId,
-            details: { legacy_parent_application_id: appId },
-          },
-          select: { id: true },
-        });
-
-        await tx.role.createMany({
-          data: permissions.map((roleId) => ({
-            memberId: member.id,
-            accountId,
-            connectionId: connection.id,
+            childApplicationId: appId,
+            accessApplicationId: appId,
             roleId,
-          })),
-          skipDuplicates: true,
-        });
+            details: {
+              connectionId: connection.id,
+            },
+          });
+        }
       }
     });
 
@@ -189,48 +170,34 @@ export async function updateUserApplicationPermissions(input: { appId: string; p
 
   try {
     await prisma.$transaction(async (tx) => {
-      const existingMembers = await tx.member.findMany({
+      await cleanupExpiredAccessModel(tx);
+
+      await tx.access.deleteMany({
         where: {
-          memberType: 'account',
           memberAccountId: accountId,
-          parentType: 'account',
           parentAccountId: accountId,
-          details: {
-            path: ['legacy_parent_application_id'],
-            equals: appId,
-          },
+          assetApplicationId: appId,
         },
-        select: { id: true },
       });
-      if (existingMembers.length > 0) {
-        await tx.member.deleteMany({ where: { id: { in: existingMembers.map((m) => m.id) } } });
-      }
 
       if (permissions.length > 0) {
         const connection = await tx.connection.findUnique({
           where: { accountId_appId: { accountId, appId } },
           select: { id: true },
         });
-        const member = await tx.member.create({
-          data: {
-            memberType: 'account',
-            memberAccountId: accountId,
-            parentType: 'account',
-            parentAccountId: accountId,
-            details: { legacy_parent_application_id: appId },
-          },
-          select: { id: true },
-        });
 
-        await tx.role.createMany({
-          data: permissions.map((roleId) => ({
-            memberId: member.id,
-            accountId,
-            connectionId: connection?.id,
+        for (const roleId of permissions) {
+          await ensureAccessGrant(tx, {
+            memberAccountId: accountId,
+            parentAccountId: accountId,
+            childApplicationId: appId,
+            accessApplicationId: appId,
             roleId,
-          })),
-          skipDuplicates: true,
-        });
+            details: {
+              connectionId: connection?.id ?? null,
+            },
+          });
+        }
       }
     });
 

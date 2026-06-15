@@ -181,12 +181,11 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
 
   const toLogicalAssetId = (row: {
     id: string;
-    member_id: string | null;
     member_account_id: string | null;
     access_application_id: string | null;
     member_connection_id: string | null;
     member_portfolio_id: string | null;
-  }) => row.member_id ?? row.member_account_id ?? row.access_application_id ?? row.member_connection_id ?? row.member_portfolio_id ?? row.id;
+  }) => row.member_account_id ?? row.access_application_id ?? row.member_connection_id ?? row.member_portfolio_id ?? row.id;
 
   const resolved = await prisma.asset.findFirst({
     where: {
@@ -200,7 +199,6 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
     },
       select: {
         id: true,
-        member_id: true,
         member_account_id: true,
         access_application_id: true,
         member_connection_id: true,

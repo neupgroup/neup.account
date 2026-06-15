@@ -52,21 +52,16 @@ async function backfillAccounts() {
   for (const account of accounts) {
     // Determine the "owner" of the personal portfolio:
     // - For individual/dependent: the account itself
-    // - For brand/branch/dependent: look up grants from member rows
+    // - For brand/branch/dependent: look up grants from access rows
     let portfolioOwnerId = account.id;
 
     if (account.accountType === 'brand' || account.accountType === 'branch') {
-      const ownerGrant = await prisma.member.findFirst({
+      const ownerGrant = await prisma.access.findFirst({
         where: {
-          memberType: 'account',
-          parentType: 'account',
           parentAccountId: account.id,
-          roles: {
-            some: {
-              roleId: 'brand-owner-neup-account',
-              authzRole: { appId: 'neup.account' },
-            },
-          },
+          roleId: 'brand-owner-neup-account',
+          role: { appId: 'neup.account' },
+          status: 'active',
         },
         select: { memberAccountId: true },
       });
@@ -74,17 +69,12 @@ async function backfillAccounts() {
     }
 
     if (account.accountType === 'dependent') {
-      const guardianGrant = await prisma.member.findFirst({
+      const guardianGrant = await prisma.access.findFirst({
         where: {
-          memberType: 'account',
-          parentType: 'account',
           parentAccountId: account.id,
-          roles: {
-            some: {
-              roleId: 'account.guardian',
-              authzRole: { appId: 'neup.account' },
-            },
-          },
+          roleId: 'account.guardian',
+          role: { appId: 'neup.account' },
+          status: 'active',
         },
         select: { memberAccountId: true },
       });
@@ -107,7 +97,6 @@ async function backfillAccounts() {
     await prisma.asset.create({
       data: {
         parent_portfolio_id: parentPortfolioId,
-        member_id: account.id,
         member_account_id: account.id,
         access_type: ACCOUNT_ASSET_TYPE,
       },
@@ -140,22 +129,18 @@ async function backfillApplications() {
 
     if (existingAsset) { skipped++; continue; }
 
-    // Find the owner of this application via member grants.
-    const ownerGrant = await prisma.role.findFirst({
+    // Find the owner of this application via access grants.
+    const ownerGrant = await prisma.access.findFirst({
       where: {
         roleId: 'application.owner',
-        member: {
-          details: {
-            path: ['legacy_parent_application_id'],
-            equals: app.id,
-          },
-        },
+        accessApplicationId: app.id,
+        status: 'active',
       },
-      select: { member: { select: { parentAccountId: true } } },
+      select: { parentAccountId: true, memberAccountId: true },
     });
 
     // If no owner found, skip — can't determine which portfolio to use
-    const ownerAccountId = ownerGrant?.member.parentAccountId ?? null;
+    const ownerAccountId = ownerGrant?.parentAccountId ?? ownerGrant?.memberAccountId ?? null;
     if (!ownerAccountId) {
       console.warn(`  Skipping app ${app.id}: no owner grant found.`);
       skipped++;
@@ -171,7 +156,6 @@ async function backfillApplications() {
     await prisma.asset.create({
       data: {
         parent_portfolio_id: parentPortfolioId,
-        member_id: app.id,
         access_application_id: app.id,
         access_type: APPLICATION_ASSET_TYPE,
       },

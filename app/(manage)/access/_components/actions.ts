@@ -65,19 +65,13 @@ async function getBrandAssets(): Promise<SelectableAsset[]> {
     const personalAccountId = await getPersonalAccountId();
     if (!personalAccountId) return [];
 
-    const grants = await prisma.member.findMany({
+    const grants = await prisma.access.findMany({
       where: {
-        memberType: 'account',
         memberAccountId: personalAccountId,
-        parentType: 'account',
-        roles: {
-          some: {
-            roleId: 'brand-owner-neup-account',
-            authzRole: {
-              appId: 'neup.account',
-            },
-          },
-        },
+        roleId: 'brand-owner-neup-account',
+        status: 'active',
+        OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
+        role: { appId: 'neup.account' },
       },
       select: { parentAccountId: true },
     });
@@ -143,32 +137,24 @@ async function getApplicationAssets(): Promise<SelectableAsset[]> {
     const accountId = await getActiveAccountId();
     if (!accountId) return [];
 
-    const grants = await prisma.role.findMany({
+    const grants = await prisma.access.findMany({
       where: {
         roleId: 'application.owner',
-        member: {
-          memberType: 'account',
-          memberAccountId: accountId,
-          parentType: 'account',
-          parentAccountId: accountId,
-        },
+        memberAccountId: accountId,
+        parentAccountId: accountId,
+        assetApplicationId: { not: null },
+        status: 'active',
+        OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
       },
       select: {
-        details: true,
-        member: { select: { details: true } },
+        assetApplicationId: true,
       },
     });
-
-    const getLegacyAppId = (value: unknown): string | null => {
-      if (!value || typeof value !== 'object') return null;
-      const appId = (value as Record<string, unknown>).legacy_parent_application_id;
-      return typeof appId === 'string' && appId.trim().length > 0 ? appId : null;
-    };
 
     const appIds = Array.from(
       new Set(
         grants
-          .map((g) => getLegacyAppId(g.details) ?? getLegacyAppId(g.member.details))
+          .map((g) => g.assetApplicationId)
           .filter((id): id is string => Boolean(id)),
       ),
     );
@@ -253,7 +239,13 @@ export async function removeDirectMember(
       where: {
         memberType: 'account',
         memberAccountId,
-        parentType: 'account',
+        parentAccountId: accessTo,
+        parentPortfolioId: null,
+      },
+    });
+    await prisma.access.deleteMany({
+      where: {
+        memberAccountId,
         parentAccountId: accessTo,
         parentPortfolioId: null,
       },
@@ -389,7 +381,6 @@ export async function inviteDirectMember(
       where: {
         memberType: 'account',
         memberAccountId: recipientAccountId,
-        parentType: 'account',
         parentAccountId: senderAccountId,
         parentPortfolioId: null,
       },
@@ -482,18 +473,16 @@ async function resolvePortfolioAssetRow(assetRef: string): Promise<{
 } | null> {
   const toLogicalAssetId = (row: {
     id: string;
-    member_id: string | null;
     member_account_id: string | null;
     access_application_id: string | null;
     member_connection_id: string | null;
     member_portfolio_id: string | null;
-  }): string => row.member_id ?? row.member_account_id ?? row.access_application_id ?? row.member_connection_id ?? row.member_portfolio_id ?? row.id;
+  }): string => row.member_account_id ?? row.access_application_id ?? row.member_connection_id ?? row.member_portfolio_id ?? row.id;
 
   const byRow = await prisma.asset.findUnique({
     where: { id: assetRef },
     select: {
       id: true,
-      member_id: true,
       access_type: true,
       member_account_id: true,
       access_application_id: true,
@@ -520,7 +509,6 @@ async function resolvePortfolioAssetRow(assetRef: string): Promise<{
     },
     select: {
       id: true,
-      member_id: true,
       access_type: true,
       member_account_id: true,
       access_application_id: true,

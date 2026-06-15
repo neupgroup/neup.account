@@ -10,6 +10,7 @@ import { revalidatePath } from 'next/cache';
 import { getUserNeupIds, getUserProfile, checkPermissions } from '@/services/user';
 import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
 import { activityAction } from '@/services/activity-action';
+import { ensureAccessGrant } from '@/services/access-model';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 
 /**
@@ -113,29 +114,12 @@ export async function createBranchAccount(data: z.infer<typeof formSchema>, geol
                 update: { name: 'brand.owner', scope: 'brand', appId: 'neup.account' },
                 create: { id: 'brand-owner-neup-account', name: 'brand.owner', scope: 'brand', appId: 'neup.account' },
             });
-            const branchOwnerMember = await tx.member.create({
-                data: {
-                    memberType: 'account',
-                    memberAccountId: personalAccountId,
-                    parentType: 'account',
-                    parentAccountId: branchAccountId,
-                    details: {
-                        legacy_parent_application_id: 'neup.account',
-                    },
-                },
-                select: { id: true },
-            });
-
-            await tx.role.create({
-                data: {
-                    memberId: branchOwnerMember.id,
-                    accountId: branchAccountId,
-                    roleId: 'brand-owner-neup-account',
-                    roleName: 'brand.owner',
-                    details: {
-                        legacy_parent_application_id: 'neup.account',
-                    },
-                },
+            await ensureAccessGrant(tx, {
+                memberAccountId: personalAccountId,
+                parentAccountId: branchAccountId,
+                childAccountId: branchAccountId,
+                accessApplicationId: 'neup.account',
+                roleId: 'brand-owner-neup-account',
             });
 
             await tx.neupId.create({

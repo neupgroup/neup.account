@@ -1,5 +1,6 @@
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
+import { cleanupExpiredAccessModel, ensureAccessGrant, extractRolePermissionNames } from '@/services/access-model';
 
 const INTERNAL_APP_PREFIX = 'neup.';
 
@@ -47,21 +48,27 @@ export async function bridgeGetAuthAccess(input: {
 
     const resolvedAppId = appId || 'neup.account';
 
-    const roleRows = await prisma.role.findMany({
+    await cleanupExpiredAccessModel();
+
+    const accessRows = await prisma.access.findMany({
       where: {
-        member: {
-          memberType: 'account',
-          memberAccountId: aid,
-          details: {
-            path: ['legacy_parent_application_id'],
-            equals: resolvedAppId,
+        memberAccountId: aid,
+        assetApplicationId: resolvedAppId,
+        status: 'active',
+        OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
+      },
+      select: {
+        roleId: true,
+        role: {
+          select: {
+            permissions: true,
           },
         },
       },
-      select: { roleId: true },
     });
 
-    const permissions = Array.from(new Set(roleRows.map((row) => row.roleId)));
+    const roles = Array.from(new Set(accessRows.map((row) => row.roleId)));
+    const permissions = Array.from(new Set(accessRows.flatMap((row) => extractRolePermissionNames(row.role.permissions))));
 
     return {
       status: 200,
@@ -71,6 +78,7 @@ export async function bridgeGetAuthAccess(input: {
         appId: resolvedAppId,
         isInternal: isInternalApp(resolvedAppId),
         role: 'user',
+        roles,
         teams: [],
         permissions,
         assetPermissions: [],
@@ -105,45 +113,16 @@ export async function bridgeCreateAuthAccess(input: Record<string, any>): Promis
       create: { id: 'access.member', name: 'access.member', scope: 'account', appId: 'neup.account' },
     });
 
-    // Grant access directly without a portfolio
-    const existing = await prisma.role.findFirst({
-      where: {
+    await prisma.$transaction(async (tx) => {
+      await cleanupExpiredAccessModel(tx);
+      await ensureAccessGrant(tx, {
+        memberAccountId: recipientId,
+        parentAccountId: aid,
+        childApplicationId: appId,
+        accessApplicationId: appId,
         roleId: 'access.member',
-        member: {
-          memberType: 'account',
-          memberAccountId: recipientId,
-          parentType: 'account',
-          parentAccountId: aid,
-          details: {
-            path: ['legacy_parent_application_id'],
-            equals: appId,
-          },
-        },
-      },
-      select: { id: true },
-    });
-
-    if (!existing) {
-      await prisma.$transaction(async (tx) => {
-        const member = await tx.member.create({
-          data: {
-            memberType: 'account',
-            memberAccountId: recipientId,
-            parentType: 'account',
-            parentAccountId: aid,
-            details: { legacy_parent_application_id: appId },
-          },
-          select: { id: true },
-        });
-        await tx.role.create({
-          data: {
-            memberId: member.id,
-            accountId: aid,
-            roleId: 'access.member',
-          },
-        });
       });
-    }
+    });
 
     return { status: 200, body: { success: true, message: 'Access granted.' } };
   } catch (error) {
@@ -166,77 +145,27 @@ export async function bridgeUpdateAuthAccess(input: Record<string, any>): Promis
     const removeRoles = Array.isArray(remove) ? remove : remove ? [remove] : [];
 
     await prisma.$transaction(async (tx) => {
+      await cleanupExpiredAccessModel(tx);
+
       if (removeRoles.length > 0) {
-        await tx.role.deleteMany({
+        await tx.access.deleteMany({
           where: {
             roleId: { in: removeRoles },
-            member: {
-              memberType: 'account',
-              memberAccountId: recipientId,
-              parentType: 'account',
-              parentAccountId: aid,
-              details: {
-                path: ['legacy_parent_application_id'],
-                equals: appId,
-              },
-            },
-          },
-        });
-      }
-
-      let memberForAddRoles = await tx.member.findFirst({
-        where: {
-          memberType: 'account',
-          memberAccountId: recipientId,
-          parentType: 'account',
-          parentAccountId: aid,
-          details: {
-            path: ['legacy_parent_application_id'],
-            equals: appId,
-          },
-        },
-        select: { id: true },
-      });
-
-      if (!memberForAddRoles) {
-        memberForAddRoles = await tx.member.create({
-          data: {
-            memberType: 'account',
             memberAccountId: recipientId,
-            parentType: 'account',
             parentAccountId: aid,
-            details: { legacy_parent_application_id: appId },
+            assetApplicationId: appId,
           },
-          select: { id: true },
         });
       }
 
       for (const roleId of addRoles) {
-        const exists = await tx.role.findFirst({
-          where: {
-            roleId,
-            member: {
-              memberType: 'account',
-              memberAccountId: recipientId,
-              parentType: 'account',
-              parentAccountId: aid,
-              details: {
-                path: ['legacy_parent_application_id'],
-                equals: appId,
-              },
-            },
-          },
-          select: { id: true },
+        await ensureAccessGrant(tx, {
+          memberAccountId: recipientId,
+          parentAccountId: aid,
+          childApplicationId: appId,
+          accessApplicationId: appId,
+          roleId,
         });
-        if (!exists) {
-          await tx.role.create({
-            data: {
-              memberId: memberForAddRoles.id,
-              accountId: aid,
-              roleId,
-            },
-          });
-        }
       }
     });
 

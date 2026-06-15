@@ -10,6 +10,7 @@ import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
 import { dependentFormSchema } from '@/services/manage/accounts/schema';
+import { ensureAccessGrant } from '@/services/access-model';
 import { checkPermissions, getUserProfile, getUserNeupIds } from '@/services/user';
 import { activityAction } from '@/services/activity-action';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
@@ -175,56 +176,20 @@ export async function createDependentAccount(data: z.infer<typeof dependentFormS
                 create: { id: 'account.dependent', name: 'account.dependent', scope: 'account', appId: 'neup.account' },
             });
 
-            // Grant guardian access to manage the dependent account
-            const guardianMember = await tx.member.create({
-                data: {
-                    memberType: 'account',
-                    memberAccountId: guardianAccountId,
-                    parentType: 'account',
-                    parentAccountId: accountId,
-                    details: {
-                        legacy_parent_application_id: 'neup.account',
-                    },
-                },
-                select: { id: true },
+            await ensureAccessGrant(tx, {
+                memberAccountId: guardianAccountId,
+                parentAccountId: accountId,
+                childAccountId: accountId,
+                accessApplicationId: 'neup.account',
+                roleId: 'account.guardian',
             });
 
-            await tx.role.create({
-                data: {
-                    memberId: guardianMember.id,
-                    accountId: accountId,
-                    roleId: 'account.guardian',
-                    roleName: 'account.guardian',
-                    details: {
-                        legacy_parent_application_id: 'neup.account',
-                    },
-                },
-            });
-
-            // Grant the dependent account access to itself
-            const dependentMember = await tx.member.create({
-                data: {
-                    memberType: 'account',
-                    memberAccountId: accountId,
-                    parentType: 'account',
-                    parentAccountId: accountId,
-                    details: {
-                        legacy_parent_application_id: 'neup.account',
-                    },
-                },
-                select: { id: true },
-            });
-
-            await tx.role.create({
-                data: {
-                    memberId: dependentMember.id,
-                    accountId: accountId,
-                    roleId: 'account.dependent',
-                    roleName: 'account.dependent',
-                    details: {
-                        legacy_parent_application_id: 'neup.account',
-                    },
-                },
+            await ensureAccessGrant(tx, {
+                memberAccountId: accountId,
+                parentAccountId: accountId,
+                childAccountId: accountId,
+                accessApplicationId: 'neup.account',
+                roleId: 'account.dependent',
             });
 
             return accountId;

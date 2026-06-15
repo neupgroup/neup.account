@@ -6,6 +6,7 @@ import { getUserProfile, checkPermissions, getUserNeupIds } from '@/services/use
 import { getPersonalAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
+import { ensureAccessGrant } from '@/services/access-model';
 
 export type Invitation = {
     notificationId: string;
@@ -137,24 +138,12 @@ export async function acceptRequest(requestId: string, notificationId: string): 
                     update: { name: 'access.member', scope: 'account', appId: 'neup.account' },
                     create: { id: 'access.member', name: 'access.member', scope: 'account', appId: 'neup.account' },
                 });
-                const member = await tx.member.create({
-                    data: {
-                        memberType: 'account',
-                        parentType: 'account',
-                        memberAccountId: inviteeId,
-                        parentAccountId: request.senderId,
-                        details: {
-                            legacy_parent_application_id: 'neup.account',
-                        },
-                    },
-                    select: { id: true },
-                });
-                await tx.role.create({
-                    data: {
-                        memberId: member.id,
-                        accountId: request.senderId,
-                        roleId: 'access.member',
-                    },
+                await ensureAccessGrant(tx, {
+                    memberAccountId: inviteeId,
+                    parentAccountId: request.senderId,
+                    childAccountId: request.senderId,
+                    accessApplicationId: 'neup.account',
+                    roleId: 'access.member',
                 });
             }
 

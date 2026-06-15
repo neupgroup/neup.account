@@ -341,15 +341,13 @@ exports.Prisma.PortfolioScalarFieldEnum = {
 exports.Prisma.AssetScalarFieldEnum = {
   id: 'id',
   access_type: 'access_type',
-  member_id: 'member_id',
   member_account_id: 'member_account_id',
-  member_connection_id: 'member_connection_id',
   member_portfolio_id: 'member_portfolio_id',
-  parent_account_id: 'parent_account_id',
-  parent_connection_id: 'parent_connection_id',
-  parent_portfolio_id: 'parent_portfolio_id',
+  member_connection_id: 'member_connection_id',
   access_application_id: 'access_application_id',
-  is_temporary: 'is_temporary',
+  parent_account_id: 'parent_account_id',
+  parent_portfolio_id: 'parent_portfolio_id',
+  isTemporary: 'isTemporary',
   status: 'status',
   details: 'details'
 };
@@ -358,13 +356,28 @@ exports.Prisma.MemberScalarFieldEnum = {
   id: 'id',
   memberType: 'memberType',
   memberAccountId: 'memberAccountId',
-  memberConnectionId: 'memberConnectionId',
-  parentType: 'parentType',
-  parentPortfolioId: 'parentPortfolioId',
   parentAccountId: 'parentAccountId',
-  parentConnectionId: 'parentConnectionId',
-  isPermanent: 'isPermanent',
-  accessLevel: 'accessLevel',
+  parentPortfolioId: 'parentPortfolioId',
+  status: 'status',
+  isTemporary: 'isTemporary',
+  details: 'details'
+};
+
+exports.Prisma.AccessScalarFieldEnum = {
+  id: 'id',
+  accessType: 'accessType',
+  memberId: 'memberId',
+  memberAccountId: 'memberAccountId',
+  parentAccountId: 'parentAccountId',
+  parentPortfolioId: 'parentPortfolioId',
+  assetId: 'assetId',
+  assetAccountId: 'assetAccountId',
+  assetConnectionId: 'assetConnectionId',
+  assetPortfolioId: 'assetPortfolioId',
+  assetApplicationId: 'assetApplicationId',
+  accessApplicationId: 'accessApplicationId',
+  isTemporary: 'isTemporary',
+  roleId: 'roleId',
   status: 'status',
   details: 'details'
 };
@@ -515,12 +528,6 @@ exports.AssetType = exports.$Enums.AssetType = {
   conn_in_port: 'conn_in_port'
 };
 
-exports.MemberStatus = exports.$Enums.MemberStatus = {
-  active: 'active',
-  paused: 'paused',
-  removed: 'removed'
-};
-
 exports.Prisma.ModelName = {
   Account: 'Account',
   Resource: 'Resource',
@@ -545,6 +552,7 @@ exports.Prisma.ModelName = {
   Portfolio: 'Portfolio',
   Asset: 'Asset',
   Member: 'Member',
+  Access: 'Access',
   AccountOwnership: 'AccountOwnership',
   Connection: 'Connection',
   ApplicationBridge: 'ApplicationBridge',

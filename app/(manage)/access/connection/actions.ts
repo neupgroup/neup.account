@@ -7,6 +7,7 @@ import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
 import { getUserProfile } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
+import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -111,43 +112,31 @@ export async function getApplicationAccessPageData(
         const app = conn.application;
 
         // Current user's own grants on this app
-        const myGrants = await prisma.member.findMany({
+        const myGrants = await prisma.access.findMany({
           where: {
             memberAccountId: personalAccountId,
-            roles: {
-              some: {
-                connection: { appId: app.id },
-              },
-            },
+            accessApplicationId: app.id,
+            status: 'active',
+            OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
           },
           select: {
-            roles: {
-              where: { connection: { appId: app.id } },
-              select: { roleId: true },
-            },
+            roleId: true,
           },
         });
 
         // Grants the current user has issued to others on this app
         // (accessTo = current user, memberId != current user)
-        const outboundGrants = await prisma.member.findMany({
+        const outboundGrants = await prisma.access.findMany({
           where: {
             parentAccountId: personalAccountId,
-            parentType: 'account',
-            memberType: 'account',
             NOT: { memberAccountId: personalAccountId },
-            roles: {
-              some: {
-                connection: { appId: app.id },
-              },
-            },
+            accessApplicationId: app.id,
+            status: 'active',
+            OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
           },
           select: {
             memberAccountId: true,
-            roles: {
-              where: { connection: { appId: app.id } },
-              select: { roleId: true },
-            },
+            roleId: true,
           },
         });
 
@@ -156,7 +145,7 @@ export async function getApplicationAccessPageData(
         for (const g of outboundGrants) {
           if (!g.memberAccountId) continue;
           if (!granteeMap.has(g.memberAccountId)) granteeMap.set(g.memberAccountId, []);
-          for (const role of g.roles) granteeMap.get(g.memberAccountId)!.push(role.roleId);
+          granteeMap.get(g.memberAccountId)!.push(g.roleId);
         }
 
         // Resolve display names for grantees
@@ -180,7 +169,7 @@ export async function getApplicationAccessPageData(
           orderBy: { name: 'asc' },
         });
 
-        const myRoleRows = myGrants.flatMap((g) => g.roles);
+        const myRoleRows = myGrants.map((g) => ({ roleId: g.roleId }));
         const isOwner = myRoleRows.some((g) => g.roleId === 'application.owner');
 
         return {
@@ -239,26 +228,33 @@ export async function getConnectionPageData(): Promise<ConnectionPageItem[]> {
             status: true,
           },
         },
-        _count: {
-          select: { memberRows: true },
-        },
       },
       orderBy: { connectedAt: 'desc' },
-    });
+    }) as any[];
 
-    return connections.map((connection) => ({
-      id: connection.id,
-      appId: connection.application.id,
-      appName: connection.application.name,
-      appDescription: connection.application.description,
-      appIcon: connection.application.icon,
-      appStatus: connection.application.status,
-      connectedAt: connection.connectedAt,
-      connectionStatus: connection.status,
-      roleId: connection.role?.id ?? null,
-      roleName: connection.role?.name ?? null,
-      roleDescription: connection.role?.description ?? null,
-      accessCount: connection._count.memberRows,
+    return Promise.all(connections.map(async (connection) => {
+      const accessCount = await prisma.access.count({
+        where: {
+          parentAccountId: accountId,
+          accessApplicationId: connection.application.id,
+          status: 'active',
+          OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
+        },
+      });
+      return {
+        id: connection.id,
+        appId: connection.application.id,
+        appName: connection.application.name,
+        appDescription: connection.application.description,
+        appIcon: connection.application.icon,
+        appStatus: connection.application.status,
+        connectedAt: connection.connectedAt,
+        connectionStatus: connection.status,
+        roleId: connection.role?.id ?? null,
+        roleName: connection.role?.name ?? null,
+        roleDescription: connection.role?.description ?? null,
+        accessCount,
+      };
     }));
   } catch (error) {
     await logError('database', error, 'getConnectionPageData');
@@ -297,18 +293,17 @@ export async function getConnectionDetail(connectionId: string): Promise<Connect
             status: true,
           },
         },
-        _count: {
-          select: { memberRows: true },
-        },
       },
-    });
+    }) as any;
 
     if (!connection) return null;
 
-    const accessRows = await prisma.member.findMany({
+    const accessRows = await prisma.access.findMany({
       where: {
-        memberConnectionId: connection.id,
-        memberType: 'account',
+        parentAccountId: accountId,
+        accessApplicationId: connection.appId,
+        status: 'active',
+        OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
       },
       select: {
         memberAccountId: true,
@@ -319,17 +314,11 @@ export async function getConnectionDetail(connectionId: string): Promise<Connect
             displayImage: true,
           },
         },
-        roles: {
-          where: { connectionId: connection.id },
+        role: {
           select: {
-            roleId: true,
-            roleName: true,
-            authzRole: {
-              select: {
-                name: true,
-                description: true,
-              },
-            },
+            id: true,
+            name: true,
+            description: true,
           },
         },
       },
@@ -346,11 +335,11 @@ export async function getConnectionDetail(connectionId: string): Promise<Connect
         memberAccountId;
 
       const existing = memberMap.get(memberAccountId);
-      const roles = row.roles.map((role) => ({
-        roleId: role.roleId,
-        roleName: role.roleName ?? role.authzRole?.name ?? role.roleId,
-        roleDescription: role.authzRole?.description ?? null,
-      }));
+      const roles = [{
+        roleId: row.role.id,
+        roleName: row.role.name ?? row.role.id,
+        roleDescription: row.role.description ?? null,
+      }];
 
       if (existing) {
         const merged = new Map(existing.roles.map((role) => [role.roleId, role]));
@@ -378,7 +367,7 @@ export async function getConnectionDetail(connectionId: string): Promise<Connect
       roleId: connection.role?.id ?? null,
       roleName: connection.role?.name ?? null,
       roleDescription: connection.role?.description ?? null,
-      accessCount: connection._count.memberRows,
+      accessCount: accessRows.length,
       members: Array.from(memberMap.values()),
     };
   } catch (error) {
@@ -466,6 +455,7 @@ export async function assignAppAccessToAccount(input: {
 
     // Remove existing grants from this owner to this target on this app, then re-create
     await prisma.$transaction(async (tx) => {
+      await cleanupExpiredAccessModel(tx);
       const targetConnection = await tx.connection.findUnique({
         where: { accountId_appId: { accountId: memberId, appId } },
         select: { id: true },
@@ -474,42 +464,26 @@ export async function assignAppAccessToAccount(input: {
         throw new Error('Target connection not found after ensure step.');
       }
 
-      const existingMemberRows = await tx.member.findMany({
+      await tx.access.deleteMany({
         where: {
-          memberType: 'account',
           memberAccountId: memberId,
-          parentType: 'account',
           parentAccountId: accessTo,
-          roles: { some: { connection: { appId } } },
+          accessApplicationId: appId,
         },
-        select: { id: true },
       });
 
-      await tx.member.deleteMany({
-        where: { id: { in: existingMemberRows.map((m) => m.id) } },
-      });
-
-      const member = await tx.member.create({
-        data: {
-          memberType: 'account',
+      for (const roleId of roleIds) {
+        await ensureAccessGrant(tx, {
           memberAccountId: memberId,
-          parentType: 'account',
           parentAccountId: accessTo,
-          details: {
-            legacy_parent_application_id: appId,
-          },
-        },
-        select: { id: true },
-      });
-
-      await tx.role.createMany({
-        data: roleIds.map((roleId) => ({
-          memberId: member.id,
-          connectionId: targetConnection.id,
+          childConnectionId: targetConnection.id,
+          accessApplicationId: appId,
           roleId,
-        })),
-        skipDuplicates: true,
-      });
+          details: {
+            connectionId: targetConnection.id,
+          },
+        });
+      }
     });
 
     revalidatePath('/access/connection');
@@ -535,21 +509,14 @@ export async function revokeAppAccessFromAccount(input: {
   const accessTo = await getActiveAccountId();
   if (!accessTo) return { success: false, error: 'Not authenticated.' };
 
-  try {
+    try {
     await prisma.$transaction(async (tx) => {
-      const existingMemberRows = await tx.member.findMany({
+      await tx.access.deleteMany({
         where: {
-          memberType: 'account',
           memberAccountId: input.memberId,
-          parentType: 'account',
           parentAccountId: accessTo,
-          roles: { some: { connection: { appId: input.appId } } },
+          accessApplicationId: input.appId,
         },
-        select: { id: true },
-      });
-
-      await tx.member.deleteMany({
-        where: { id: { in: existingMemberRows.map((m) => m.id) } },
       });
     });
 

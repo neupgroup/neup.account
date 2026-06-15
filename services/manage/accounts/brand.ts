@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { brandCreationSchema } from '@/services/manage/accounts/schema';
+import { ensureAccessGrant } from '@/services/access-model';
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
@@ -165,29 +166,12 @@ export async function createBrandAccount(data: z.infer<typeof brandCreationSchem
                 create: { id: BRAND_OWNER_ROLE_ID, name: 'brand.owner', scope: 'brand', appId: 'neup.account' },
             });
 
-            const brandOwnerMember = await tx.member.create({
-                data: {
-                    memberType: 'account',
-                    memberAccountId: creatorAccountId,
-                    parentType: 'account',
-                    parentAccountId: account.id,
-                    details: {
-                        legacy_parent_application_id: 'neup.account',
-                    },
-                },
-                select: { id: true },
-            });
-
-            await tx.role.create({
-                data: {
-                    memberId: brandOwnerMember.id,
-                    accountId: account.id,
-                    roleId: BRAND_OWNER_ROLE_ID,
-                    roleName: 'brand.owner',
-                    details: {
-                        legacy_parent_application_id: 'neup.account',
-                    },
-                },
+            await ensureAccessGrant(tx, {
+                memberAccountId: creatorAccountId,
+                parentAccountId: account.id,
+                childAccountId: account.id,
+                accessApplicationId: 'neup.account',
+                roleId: BRAND_OWNER_ROLE_ID,
             });
 
             return account.id;

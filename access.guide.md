@@ -68,5 +68,25 @@ The access table will have the fields like the following. Look at the table to u
 | asset_application_id  | (denorm, references Asset.child_application_id, not nullable) -> if the user is getting access to an application.                                                       |
 | access_application_id | (denorm, references Application.id, nullable, only set in case of connection, the connection_id is for what application, this helps in finding the data at a fast pace) |
 | is_temporary          | datetime (nullable) -> if null means its permanent, if date is set means the permission will be void automatically later on.                                            |
+| role_id               | references role.id                                                                                                                                                      |
 | status                | active, expired, hold                                                                                                                                                   |
 | details               | for more details: []                                                                                                                                                    |
+
+## ++Role Table++
+
+How role table works at thsi phase.
+
+| Field Name     | Field Value                                                                                   |
+| -------------- | --------------------------------------------------------------------------------------------- |
+| id             | uuid, pk                                                                                      |
+| name           | string                                                                                        |
+| application_id | references application.id                                                                     |
+| description    | description of the role                                                                       |
+| permissions    | denormalized permssion json with just permission names ['permission1', 'permission2'] format. |
+| tags           | jsonb []                                                                                      |
+| details        | jsonb []                                                                                      |
+
+there are also more tables like:
+
+1. RolePermissionMap table.
+2. Permission Table

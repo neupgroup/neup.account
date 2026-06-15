@@ -16,6 +16,7 @@
 
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
+import { cleanupExpiredAccessModel, extractRolePermissionNames } from '@/services/access-model';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -106,44 +107,38 @@ export async function getApplicationAccess(params: {
       take = Number.isFinite(endIdx) && endIdx > skip ? Math.min(endIdx - skip, PAGE_LIMIT) : PAGE_LIMIT;
     }
 
-    // Filtering semantics (when accountId is provided):
-    // - include BOTH directions:
-    //   A) grants that were granted TO the account (memberId = accountId)
-    //   B) grants that the account granted to others (accessTo = accountId)
-    // This intentionally does not filter by parentPortfolioId (portfolio or non-portfolio grants are included).
     const where: any = {
-      member: {
-        details: {
-          path: ['legacy_parent_application_id'],
-          equals: appId,
-        },
-      },
+      accessApplicationId: appId,
+      status: 'active',
+      AND: [{ OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }] }],
     };
 
     if (accountId && forAccount) {
-      where.OR = [
-        { member: { memberAccountId: accountId, parentAccountId: forAccount } },
-        { member: { parentAccountId: accountId, memberAccountId: forAccount } },
-      ];
+      where.AND.push({
+        OR: [
+          { memberAccountId: accountId, parentAccountId: forAccount },
+          { parentAccountId: accountId, memberAccountId: forAccount },
+        ],
+      });
     } else if (accountId) {
-      where.OR = [
-        { member: { memberAccountId: accountId } },
-        { member: { parentAccountId: accountId } },
-      ];
+      where.AND.push({
+        OR: [
+          { memberAccountId: accountId },
+          { parentAccountId: accountId },
+        ],
+      });
     } else if (forAccount) {
-      // If only forAccount is provided, treat it as a strict owner filter.
-      where.member = {
-        ...where.member,
-        parentAccountId: forAccount,
-      };
+      where.parentAccountId = forAccount;
     }
 
     const { total, grants } = await prisma.$transaction(async (tx) => {
+      await cleanupExpiredAccessModel(tx);
+
       // 3. Count total
-      const total = await tx.role.count({ where });
+      const total = await tx.access.count({ where });
 
       // 4. Fetch grants with related data
-      const grants = await tx.role.findMany({
+      const grants = await tx.access.findMany({
         where,
         ...(cursorId
           ? { cursor: { id: cursorId }, skip: 1 }
@@ -153,35 +148,29 @@ export async function getApplicationAccess(params: {
         select: {
           id: true,
           roleId: true,
-          roleName: true,
-          permissions: true,
-          authzRole: {
+          status: true,
+          parentPortfolioId: true,
+          parentAccount: {
+            select: {
+              id: true,
+              displayName: true,
+              accountType: true,
+            },
+          },
+          memberAccount: {
+            select: {
+              id: true,
+              displayName: true,
+              accountType: true,
+            },
+          },
+          role: {
             select: {
               id: true,
               name: true,
               description: true,
               scope: true,
               permissions: true,
-            },
-          },
-          member: {
-            select: {
-              status: true,
-              parentPortfolioId: true,
-              parentAccount: {
-                select: {
-                  id: true,
-                  displayName: true,
-                  accountType: true,
-                },
-              },
-              memberAccount: {
-                select: {
-                  id: true,
-                  displayName: true,
-                  accountType: true,
-                },
-              },
             },
           },
         },
@@ -211,46 +200,25 @@ export async function getApplicationAccess(params: {
 
     const data = grants.map((g) => ({
       grantId: g.id,
-      status: g.member.status,
+      status: g.status,
       pushed: false,
-      accessTo: g.member.parentAccount?.id ?? null,
-      ownerDisplayName: g.member.parentAccount?.displayName ?? null,
-      ownerAccountType: g.member.parentAccount?.accountType ?? null,
-      memberId: g.member.memberAccount?.id ?? null,
-      targetDisplayName: g.member.memberAccount?.displayName ?? null,
-      targetAccountType: g.member.memberAccount?.accountType ?? null,
-      roleId: g.authzRole?.id ?? g.roleId,
-      roleName: g.roleName ?? g.authzRole?.name ?? g.roleId,
-      roleDescription: g.authzRole?.description ?? null,
-      roleScope: g.authzRole?.scope ?? null,
-      permissions: Array.isArray(g.authzRole?.permissions)
-        ? g.authzRole.permissions.flatMap((p) => {
-            if (typeof p === 'string') {
-              const name = p.trim();
-              return name
-                ? [{
-                    permissionId: null,
-                    permissionName: name,
-                    permissionTag: null,
-                    denormalized: [name],
-                  }]
-                : [];
-            }
-
-            if (!p || typeof p !== 'object' || Array.isArray(p)) return [];
-            const obj = p as { id?: string; name?: string; tag?: unknown };
-            const name = typeof obj.name === 'string' ? obj.name.trim() : '';
-            if (!name) return [];
-
-            return [{
-              permissionId: typeof obj.id === 'string' ? obj.id : null,
-              permissionName: name,
-              permissionTag: obj.tag ?? null,
-              denormalized: [name],
-            }];
-          })
-        : [],
-      parentPortfolioId: g.member.parentPortfolioId,
+      accessTo: g.parentAccount?.id ?? null,
+      ownerDisplayName: g.parentAccount?.displayName ?? null,
+      ownerAccountType: g.parentAccount?.accountType ?? null,
+      memberId: g.memberAccount?.id ?? null,
+      targetDisplayName: g.memberAccount?.displayName ?? null,
+      targetAccountType: g.memberAccount?.accountType ?? null,
+      roleId: g.role?.id ?? g.roleId,
+      roleName: g.role?.name ?? g.roleId,
+      roleDescription: g.role?.description ?? null,
+      roleScope: g.role?.scope ?? null,
+      permissions: extractRolePermissionNames(g.role?.permissions).map((name) => ({
+        permissionId: null,
+        permissionName: name,
+        permissionTag: null,
+        denormalized: [name],
+      })),
+      parentPortfolioId: g.parentPortfolioId,
     }));
 
     const startedAt = grants.length > 0 ? grants[0].id : null;

@@ -30,9 +30,12 @@ model Account {
   verificationActions     Verification[]           @relation("VerificationDoneBy")
   authzAssetsAccessGrants AuthzAssetsAccessGrant[]
   parentAssets            Asset[]                  @relation("AssetParentAccount")
-  childAssets             Asset[]                  @relation("AssetMemberAccount")
-  ownedMembers            Member[]                 @relation("MemberOwner")
+  childAssets             Asset[]                  @relation("AssetChildAccount")
+  accessMembers           Member[]                 @relation("MemberChildAccount")
   parentAccountMembers    Member[]                 @relation("MemberParentAccount")
+  accessMemberRows        Access[]                 @relation("AccessMemberAccount")
+  accessParentRows        Access[]                 @relation("AccessParentAccount")
+  accessAssetAccountRows  Access[]                 @relation("AccessAssetAccount")
   denormRoles             Role[]                   @relation("RoleAccount")
   permits                 Permit[]
   permitTargets           Permit[]                 @relation("PermitTarget")
@@ -300,7 +303,9 @@ model Application {
   authzPermissions AuthzPermission[]
   authzRoles       AuthzRole[]
   identities       Identity[]
-  childAssets      Asset[]              @relation("AssetAccessApplication")
+  childAssets      Asset[]              @relation("AssetChildApplication")
+  assetAccessRows  Access[]             @relation("AccessAssetApplication")
+  accessRows       Access[]             @relation("AccessApplication")
   devLogs          ApplicationDevLog[]
 
   @@map("application")
@@ -335,8 +340,10 @@ model Portfolio {
   description             String?
   dateCreated             DateTime                 @default(now())
   assets                  Asset[]                  @relation("AssetParentPortfolio")
-  memberAssets            Asset[]                  @relation("AssetMemberPortfolio")
+  childAssets             Asset[]                  @relation("AssetChildPortfolio")
   members                 Member[]                 @relation("MemberParentPortfolio")
+  accessParentRows        Access[]                 @relation("AccessParentPortfolio")
+  accessAssetRows         Access[]                 @relation("AccessAssetPortfolio")
   authzAssetsAccessGrants AuthzAssetsAccessGrant[]
 
   @@map("portfolio")
@@ -344,67 +351,104 @@ model Portfolio {
 
 model Asset {
   id                      String                   @id(map: "portfolio_assets_pkey") @default(uuid())
-  access_type             AssetType
-  member_id               String?
-  member_account_id       String?
-  member_connection_id    String?
-  member_portfolio_id     String?
-  parent_account_id       String?
-  parent_connection_id    String?
-  parent_portfolio_id     String?
-  access_application_id   String?
-  is_temporary            DateTime?
+  access_type             AssetType                @map("type")
+  member_account_id       String?                  @map("child_account_id")
+  member_portfolio_id     String?                  @map("child_portfolio_id")
+  member_connection_id    String?                  @map("child_connection_id")
+  access_application_id   String?                  @map("child_application_id")
+  parent_account_id       String?                  @map("parent_account_id")
+  parent_portfolio_id     String?                  @map("parent_portfolio_id")
+  isTemporary             DateTime?                @map("is_temporary")
   status                  String                   @default("active")
   details                 Json?
-  portfolio               Portfolio?               @relation("AssetParentPortfolio", fields: [parent_portfolio_id], references: [id], onDelete: SetNull, map: "assets_parent_portfolio_fkey")
-  parentAccount           Account?                 @relation("AssetParentAccount", fields: [parent_account_id], references: [id], map: "assets_parent_account_fkey")
-  parentConnection        Connection?              @relation("AssetParentConnection", fields: [parent_connection_id], references: [id], map: "assets_parent_connection_id_fkey")
-  memberAccount           Account?                 @relation("AssetMemberAccount", fields: [member_account_id], references: [id], map: "assets_member_account_id_fkey")
-  memberConnection        Connection?              @relation("AssetMemberConnection", fields: [member_connection_id], references: [id], map: "assets_member_connection_id_fkey")
-  memberPortfolio         Portfolio?               @relation("AssetMemberPortfolio", fields: [member_portfolio_id], references: [id], map: "assets_member_portfolio_id_fkey")
-  accessApplication       Application?             @relation("AssetAccessApplication", fields: [access_application_id], references: [id], map: "assets_access_application_id_fkey")
+  parentPortfolio         Portfolio?               @relation("AssetParentPortfolio", fields: [parent_portfolio_id], references: [id], onDelete: Cascade, map: "assets_parent_portfolio_id_fkey")
+  parentAccount           Account?                 @relation("AssetParentAccount", fields: [parent_account_id], references: [id], onDelete: Cascade, map: "assets_parent_account_id_fkey")
+  childAccount            Account?                 @relation("AssetChildAccount", fields: [member_account_id], references: [id], onDelete: Cascade, map: "assets_child_account_id_fkey")
+  childConnection         Connection?              @relation("AssetChildConnection", fields: [member_connection_id], references: [id], onDelete: Cascade, map: "assets_child_connection_id_fkey")
+  childPortfolio          Portfolio?               @relation("AssetChildPortfolio", fields: [member_portfolio_id], references: [id], onDelete: Cascade, map: "assets_child_portfolio_id_fkey")
+  childApplication        Application?             @relation("AssetChildApplication", fields: [access_application_id], references: [id], onDelete: Cascade, map: "assets_child_application_id_fkey")
+  accessRows              Access[]
   roles                   Role[]
   authzAssetsAccessGrants AuthzAssetsAccessGrant[]
 
-  @@index([access_type, member_account_id], map: "assets_asset_type_asset_account_id_idx")
-  @@index([access_type, access_application_id], map: "assets_asset_type_asset_application_id_idx")
-  @@index([access_type, member_connection_id], map: "assets_asset_type_asset_connection_id_idx")
-  @@index([access_type, member_portfolio_id], map: "assets_asset_type_asset_portfolio_id_idx")
+  @@index([access_type, member_account_id], map: "assets_type_child_account_id_idx")
+  @@index([access_type, access_application_id], map: "assets_type_child_application_id_idx")
+  @@index([access_type, member_connection_id], map: "assets_type_child_connection_id_idx")
+  @@index([access_type, member_portfolio_id], map: "assets_type_child_portfolio_id_idx")
   @@index([parent_portfolio_id], map: "assets_parent_portfolio_id_idx")
   @@index([parent_account_id], map: "assets_parent_account_id_idx")
-  @@map("access")
+  @@index([isTemporary], map: "assets_is_temporary_idx")
+  @@map("assets")
 }
 
 model Member {
-  id                 String       @id @default(uuid())
-  memberType         String       @map("member_type")
-  memberAccountId    String?      @map("member_account_id")
-  memberConnectionId String?      @map("member_connection_id")
-  parentType         String       @map("parent_type")
-  parentPortfolioId  String?      @map("parent_portfolio_id")
-  parentAccountId    String?      @map("parent_account_id")
-  parentConnectionId String?      @map("parent_connection_id")
-  isPermanent        Boolean      @default(false) @map("is_permanent")
-  accessLevel        String       @default("limited") @map("access_level")
-  status             MemberStatus @default(active)
-  details            Json?
+  id                String    @id @default(uuid())
+  memberType        String    @map("member_type")
+  memberAccountId   String?   @map("child_account_id")
+  parentAccountId   String?   @map("parent_account_id")
+  parentPortfolioId String?   @map("parent_portfolio_id")
+  status            String    @default("active")
+  isTemporary       DateTime? @map("is_temporary")
+  details           Json?
 
-  memberAccount    Account?    @relation("MemberOwner", fields: [memberAccountId], references: [id], onDelete: Cascade, map: "member_member_account_id_fkey")
-  memberConnection Connection? @relation("MemberConnection", fields: [memberConnectionId], references: [id], map: "member_member_connection_id_fkey")
-  parentAccount    Account?    @relation("MemberParentAccount", fields: [parentAccountId], references: [id], map: "member_parent_account_id_fkey")
-  parentConnection Connection? @relation("MemberParentConnection", fields: [parentConnectionId], references: [id], onDelete: SetNull, map: "member_parent_connection_id_fkey")
-  parentPortfolio  Portfolio?  @relation("MemberParentPortfolio", fields: [parentPortfolioId], references: [id], map: "member_parent_portfolio_id_fkey")
-  roles            Role[]
+  memberAccount   Account?   @relation("MemberChildAccount", fields: [memberAccountId], references: [id], onDelete: Cascade, map: "member_child_account_id_fkey")
+  parentAccount   Account?   @relation("MemberParentAccount", fields: [parentAccountId], references: [id], onDelete: Cascade, map: "member_parent_account_id_fkey")
+  parentPortfolio Portfolio? @relation("MemberParentPortfolio", fields: [parentPortfolioId], references: [id], onDelete: Cascade, map: "member_parent_portfolio_id_fkey")
+  accessRows      Access[]
+  roles           Role[]
 
   @@index([memberType], map: "member_member_type_idx")
-  @@index([memberAccountId], map: "member_member_account_id_idx")
-  @@index([memberConnectionId], map: "member_member_connection_id_idx")
-  @@index([parentType], map: "member_parent_type_idx")
+  @@index([memberAccountId], map: "member_child_account_id_idx")
   @@index([parentPortfolioId], map: "member_parent_portfolio_id_idx")
   @@index([parentAccountId], map: "member_parent_account_id_idx")
-  @@index([parentConnectionId], map: "member_parent_connection_id_idx")
-  @@index([accessLevel], map: "member_access_level_idx")
+  @@index([isTemporary], map: "member_is_temporary_idx")
   @@map("member")
+}
+
+model Access {
+  id                  String    @id @default(uuid())
+  accessType          AssetType @map("access_type")
+  memberId            String    @map("member_id")
+  memberAccountId     String?   @map("member_account_id")
+  parentAccountId     String?   @map("parent_account_id")
+  parentPortfolioId   String?   @map("parent_portfolio_id")
+  assetId             String    @map("asset_id")
+  assetAccountId      String?   @map("asset_account_id")
+  assetConnectionId   String?   @map("asset_connection_id")
+  assetPortfolioId    String?   @map("asset_portfolio_id")
+  assetApplicationId  String?   @map("asset_application_id")
+  accessApplicationId String?   @map("access_application_id")
+  isTemporary         DateTime? @map("is_temporary")
+  roleId              String    @map("role_id")
+  status              String    @default("active")
+  details             Json?
+
+  member            Member       @relation(fields: [memberId], references: [id], onDelete: Cascade, map: "access_member_id_fkey")
+  memberAccount     Account?     @relation("AccessMemberAccount", fields: [memberAccountId], references: [id], onDelete: Cascade, map: "access_member_account_id_fkey")
+  parentAccount     Account?     @relation("AccessParentAccount", fields: [parentAccountId], references: [id], onDelete: Cascade, map: "access_parent_account_id_fkey")
+  parentPortfolio   Portfolio?   @relation("AccessParentPortfolio", fields: [parentPortfolioId], references: [id], onDelete: Cascade, map: "access_parent_portfolio_id_fkey")
+  asset             Asset        @relation(fields: [assetId], references: [id], onDelete: Cascade, map: "access_asset_id_fkey")
+  assetAccount      Account?     @relation("AccessAssetAccount", fields: [assetAccountId], references: [id], onDelete: Cascade, map: "access_asset_account_id_fkey")
+  assetConnection   Connection?  @relation("AccessAssetConnection", fields: [assetConnectionId], references: [id], onDelete: Cascade, map: "access_asset_connection_id_fkey")
+  assetPortfolio    Portfolio?   @relation("AccessAssetPortfolio", fields: [assetPortfolioId], references: [id], onDelete: Cascade, map: "access_asset_portfolio_id_fkey")
+  assetApplication  Application? @relation("AccessAssetApplication", fields: [assetApplicationId], references: [id], onDelete: Cascade, map: "access_asset_application_id_fkey")
+  accessApplication Application? @relation("AccessApplication", fields: [accessApplicationId], references: [id], onDelete: SetNull, map: "access_access_application_id_fkey")
+  role              AuthzRole    @relation(fields: [roleId], references: [id], map: "access_role_id_fkey")
+
+  @@index([memberId], map: "access_member_id_idx")
+  @@index([memberAccountId], map: "access_member_account_id_idx")
+  @@index([parentAccountId], map: "access_parent_account_id_idx")
+  @@index([parentPortfolioId], map: "access_parent_portfolio_id_idx")
+  @@index([assetId], map: "access_asset_id_idx")
+  @@index([assetAccountId], map: "access_asset_account_id_idx")
+  @@index([assetConnectionId], map: "access_asset_connection_id_idx")
+  @@index([assetPortfolioId], map: "access_asset_portfolio_id_idx")
+  @@index([assetApplicationId], map: "access_asset_application_id_idx")
+  @@index([accessApplicationId], map: "access_access_application_id_idx")
+  @@index([roleId], map: "access_role_id_idx")
+  @@index([status], map: "access_status_idx")
+  @@index([isTemporary], map: "access_is_temporary_idx")
+  @@map("access")
 }
 
 model AccountOwnership {
@@ -423,21 +467,19 @@ model AccountOwnership {
 }
 
 model Connection {
-  id               String      @id(map: "user_app_connections_pkey") @default(uuid())
-  accountId        String      @map("account_id")
-  appId            String      @map("app_id")
-  roleId           String?     @map("role_id")
-  status           String      @default("active")
-  connectedAt      DateTime    @default(now()) @map("connected_at")
-  details          Json?
-  account          Account     @relation(fields: [accountId], references: [id], onDelete: Cascade, map: "user_app_connections_accountId_fkey")
-  application      Application @relation(fields: [appId], references: [id], map: "user_app_connections_appId_fkey")
-  role             AuthzRole?  @relation("ConnectionRole", fields: [roleId], references: [id], map: "connection_role_id_fkey")
-  memberRows       Member[]    @relation("MemberConnection")
-  parentMemberRows Member[]    @relation("MemberParentConnection")
-  parentAssets     Asset[]     @relation("AssetParentConnection")
-  childAssets      Asset[]     @relation("AssetMemberConnection")
-  denormRoles      Role[]      @relation("RoleConnection")
+  id              String      @id(map: "user_app_connections_pkey") @default(uuid())
+  accountId       String      @map("account_id")
+  appId           String      @map("app_id")
+  roleId          String?     @map("role_id")
+  status          String      @default("active")
+  connectedAt     DateTime    @default(now()) @map("connected_at")
+  details         Json?
+  account         Account     @relation(fields: [accountId], references: [id], onDelete: Cascade, map: "user_app_connections_accountId_fkey")
+  application     Application @relation(fields: [appId], references: [id], map: "user_app_connections_appId_fkey")
+  role            AuthzRole?  @relation("ConnectionRole", fields: [roleId], references: [id], map: "connection_role_id_fkey")
+  childAssets     Asset[]     @relation("AssetChildConnection")
+  assetAccessRows Access[]    @relation("AccessAssetConnection")
+  denormRoles     Role[]      @relation("RoleConnection")
 
   @@unique([accountId, appId], map: "user_app_connections_accountId_appId_key")
   @@map("connection")
@@ -551,6 +593,7 @@ model AuthzRole {
   permissions            Json?
   application            Application?             @relation(fields: [appId], references: [id])
   assetsGrants           AuthzAssetsAccessGrant[]
+  accessRows             Access[]
   permissionMappings     AuthzRolePermissionMap[]
   memberRoles            Role[]
   connections            Connection[]             @relation("ConnectionRole")

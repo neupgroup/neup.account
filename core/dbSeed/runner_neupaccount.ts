@@ -18,6 +18,7 @@ import { Pool } from 'pg';
 import bcrypt from 'bcryptjs';
 import { Prisma } from '@/prisma/generated/client';
 import prisma from '@/core/helpers/prisma';
+import { ensureAccessGrant } from '@/services/access-model';
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not set.');
@@ -458,47 +459,14 @@ async function createMasterAccount(): Promise<{ skipped: boolean; reason?: strin
 // =============================================================================
 
 async function assignRolesToAccount(accountId: string): Promise<void> {
-  let selfMember = await prisma.member.findFirst({
-    where: {
-      memberType: 'account',
-      memberAccountId: accountId,
-      parentType: 'account',
-      parentAccountId: accountId,
-    },
-    select: { id: true },
-  });
-
-  if (!selfMember) {
-    selfMember = await prisma.member.create({
-      data: {
-        memberType: 'account',
-        memberAccountId: accountId,
-        parentType: 'account',
-        parentAccountId: accountId,
-        details: { legacy_parent_application_id: APP_ID } as Prisma.InputJsonValue,
-      },
-      select: { id: true },
-    });
-  }
-
   for (const roleId of [ROLE_INDIV_DEFAULT, ROLE_INDIV_ROOT]) {
-    const existing = await prisma.role.findFirst({
-      where: {
-        roleId,
-        memberId: selfMember.id,
-      },
-      select: { id: true },
+    await ensureAccessGrant(prisma, {
+      memberAccountId: accountId,
+      parentAccountId: accountId,
+      childAccountId: accountId,
+      accessApplicationId: APP_ID,
+      roleId,
     });
-
-    if (!existing) {
-      await prisma.role.create({
-        data: {
-          memberId: selfMember.id,
-          accountId,
-          roleId,
-        },
-      });
-    }
   }
 }
 

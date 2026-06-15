@@ -15,6 +15,7 @@
 
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
+import { activeAccessWhere } from '@/services/access-model';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -107,16 +108,11 @@ export async function getApplicationRoles(params: {
     // 3. If account filter is provided, restrict roles to those granted to that account in this app.
     let allowedRoleIds: string[] | null = null;
     if (account) {
-      const grantRoleRows = await prisma.role.findMany({
+      const grantRoleRows = await prisma.access.findMany({
         where: {
-          member: {
-            memberType: 'account',
-            memberAccountId: account,
-            details: {
-              path: ['legacy_parent_application_id'],
-              equals: appId,
-            },
-          },
+          memberAccountId: account,
+          accessApplicationId: appId,
+          ...activeAccessWhere(),
         },
         select: { roleId: true },
         distinct: ['roleId'],

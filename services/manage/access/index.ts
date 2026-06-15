@@ -9,6 +9,7 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { logActivity } from '@/services/log-actions';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { activeAccessWhere, getLogicalAssetId } from '@/services/access-model';
 
 function isMissingAssetsGrantTableError(error: unknown): boolean {
   const candidate = error as { code?: string };
@@ -250,21 +251,16 @@ export async function getDirectAccessGroup(accountId: string): Promise<DirectAcc
   try {
     const [accountProfile, grants] = await Promise.all([
       getUserProfile(accountId),
-      prisma.member.findMany({
+      prisma.access.findMany({
         where: {
-          memberType: 'account',
           parentAccountId: accountId,
-          parentType: 'account',
           parentPortfolioId: null,
+          ...activeAccessWhere(),
         },
-        include: {
-          roles: {
-            select: {
-              roleName: true,
-              authzRole: { select: { name: true } },
-            },
-            take: 1,
-          },
+        select: {
+          id: true,
+          memberAccountId: true,
+          role: { select: { name: true } },
         },
       }),
     ]);
@@ -284,12 +280,11 @@ export async function getDirectAccessGroup(accountId: string): Promise<DirectAcc
           profile?.nameDisplay ||
           `${profile?.nameFirst ?? ''} ${profile?.nameLast ?? ''}`.trim() ||
           grant.memberAccountId;
-        const roleName = grant.roles?.[0]?.roleName || grant.roles?.[0]?.authzRole?.name || 'Member';
         return {
           id: grant.id,
           accountId: grant.memberAccountId,
           displayName,
-          subtitle: roleName,
+          subtitle: grant.role?.name || 'Member',
         };
       })
     );
@@ -326,16 +321,14 @@ export async function getDirectMembers(accountId: string): Promise<{ accountName
   try {
     const [accountProfile, grants, pendingInvitations] = await Promise.all([
       getUserProfile(accountId),
-      prisma.member.findMany({
+      prisma.access.findMany({
         where: {
-          memberType: 'account',
           parentAccountId: accountId,
-          parentType: 'account',
           parentPortfolioId: null,
+          ...activeAccessWhere(),
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        select: { memberAccountId: true, status: true, isPermanent: true } as any,
-      }) as unknown as Promise<Array<{ memberAccountId: string | null; status: string; isPermanent: boolean }>>,
+        select: { memberAccountId: true, status: true, isTemporary: true },
+      }),
       prisma.request.findMany({
         where: {
           action: 'access_invitation',
@@ -363,9 +356,9 @@ export async function getDirectMembers(accountId: string): Promise<{ accountName
           : 'active';
       if (existing) {
         existing.roleCount += 1;
-        existing.isPermanent = existing.isPermanent || grant.isPermanent;
+        existing.isPermanent = existing.isPermanent || grant.isTemporary == null;
       } else {
-        grantMap.set(grant.memberAccountId, { roleCount: 1, status: grantStatus, isPermanent: grant.isPermanent });
+        grantMap.set(grant.memberAccountId, { roleCount: 1, status: grantStatus, isPermanent: grant.isTemporary == null });
       }
     }
 
@@ -724,22 +717,16 @@ export async function getDirectMemberDetail(
   try {
     const [profile, grants] = await Promise.all([
       getUserProfile(memberAccountId),
-      prisma.member.findMany({
+      prisma.access.findMany({
         where: {
-          memberType: 'account',
           parentAccountId: accessTo,
-          parentType: 'account',
           memberAccountId,
           parentPortfolioId: null,
+          ...activeAccessWhere(),
         },
-        include: {
-          roles: {
-            select: {
-              roleId: true,
-              roleName: true,
-              authzRole: { select: { name: true, description: true } },
-            },
-          },
+        select: {
+          roleId: true,
+          role: { select: { name: true, description: true } },
         },
       }),
     ]);
@@ -755,13 +742,11 @@ export async function getDirectMemberDetail(
       accountId: memberAccountId,
       displayName,
       accountPhoto: profile.accountPhoto,
-      roles: grants.flatMap((g) =>
-        g.roles.map((r) => ({
-          roleId: r.roleId,
-          roleName: r.roleName ?? r.authzRole?.name ?? r.roleId,
-          roleDescription: r.authzRole?.description ?? undefined,
-        })),
-      ),
+      roles: grants.map((grant) => ({
+        roleId: grant.roleId,
+        roleName: grant.role?.name ?? grant.roleId,
+        roleDescription: grant.role?.description ?? undefined,
+      })),
     };
   } catch (error) {
     await logError('database', error, `getDirectMemberDetail:${accessTo}:${memberAccountId}`);
@@ -825,7 +810,7 @@ export async function getPortfolioMembers(
         name: true,
         members: {
           select: {
-            accountId: true,
+            memberAccountId: true,
             status: true,
             details: true,
           },
@@ -837,7 +822,8 @@ export async function getPortfolioMembers(
 
     let supportsAssetsGrantTable = true;
     const members = await Promise.all(
-      portfolio.members.map(async ({ accountId: memberAccountId, status, details }) => {
+      portfolio.members.map(async ({ memberAccountId, status, details }) => {
+        if (!memberAccountId) return null;
         const profile = await getUserProfile(memberAccountId);
         const displayName =
           profile?.nameDisplay ||
@@ -846,23 +832,14 @@ export async function getPortfolioMembers(
 
         // For active members, count their asset grants
         let roleCount = 0;
-        if (status === 'active' && supportsAssetsGrantTable) {
-          try {
-            roleCount = await prisma.authzAssetsAccessGrant.count({
-              where: {
-                account_id: memberAccountId,
-                portfolio_id: parentPortfolioId,
-                app_id: 'neup.account',
-              },
-            });
-          } catch (error) {
-            if (isMissingAssetsGrantTableError(error)) {
-              supportsAssetsGrantTable = false;
-              roleCount = 0;
-            } else {
-              throw error;
-            }
-          }
+        if (status === 'active') {
+          roleCount = await prisma.access.count({
+            where: {
+              memberAccountId,
+              parentPortfolioId,
+              ...activeAccessWhere(),
+            },
+          });
         }
 
         // Resolve invitation expiry for invited members
@@ -892,7 +869,7 @@ export async function getPortfolioMembers(
       })
     );
 
-    return { portfolioName: portfolio.name, members };
+    return { portfolioName: portfolio.name, members: members.filter((member): member is PortfolioMemberSummary => member !== null) };
   } catch (error) {
     await logError('database', error, `getPortfolioMembers:${parentPortfolioId}`);
     return { portfolioName: '', members: [] };
@@ -920,7 +897,7 @@ export async function getPortfolioMemberDetail(
       }),
       getUserProfile(memberAccountId),
       prisma.member.findFirst({
-        where: { parentPortfolioId, accountId: memberAccountId },
+        where: { parentPortfolioId, memberAccountId },
         select: { status: true, details: true },
       }),
     ]);
@@ -961,8 +938,8 @@ export async function getPortfolioMemberDetail(
     }
 
     // Fetch all asset grants for active members
-    let grants: Array<{
-      role_id: string;
+    const grants: Array<{
+      roleId: string;
       role: { id: string; name: string; description: string | null };
       asset: {
         id: string;
@@ -972,34 +949,27 @@ export async function getPortfolioMemberDetail(
         member_portfolio_id: string | null;
         access_type: string;
       };
-    }> = [];
-    try {
-      grants = await prisma.authzAssetsAccessGrant.findMany({
-        where: {
-          account_id: memberAccountId,
-          portfolio_id: parentPortfolioId,
-          app_id: 'neup.account',
-        },
-        select: {
-          role_id: true,
-          role: { select: { id: true, name: true, description: true } },
-          asset: {
-            select: {
-              id: true,
-              member_account_id: true,
-              access_application_id: true,
-              member_connection_id: true,
-              member_portfolio_id: true,
-              access_type: true,
-            },
+    }> = await prisma.access.findMany({
+      where: {
+        memberAccountId,
+        parentPortfolioId,
+        ...activeAccessWhere(),
+      },
+      select: {
+        roleId: true,
+        role: { select: { id: true, name: true, description: true } },
+        asset: {
+          select: {
+            id: true,
+            member_account_id: true,
+            access_application_id: true,
+            member_connection_id: true,
+            member_portfolio_id: true,
+            access_type: true,
           },
         },
-      });
-    } catch (error) {
-      if (!isMissingAssetsGrantTableError(error)) {
-        throw error;
-      }
-    }
+      },
+    });
 
     // Resolve asset names
     const { resolveAssetName } = await import('@/services/manage/access/asset-resolvers');
@@ -1014,7 +984,7 @@ export async function getPortfolioMemberDetail(
           grant.asset.id;
         const resolved = await resolveAssetName(assetId, grant.asset.access_type);
         return {
-          roleId: grant.role.id,
+          roleId: grant.roleId,
           roleName: grant.role.name,
           roleDescription: grant.role.description ?? undefined,
           assetId,
@@ -1064,22 +1034,16 @@ export async function getMyDirectRoles(
     const [ownerProfile, myProfile, grants] = await Promise.all([
       getUserProfile(accessTo),
       getUserProfile(myAccountId),
-      prisma.member.findMany({
+      prisma.access.findMany({
         where: {
-          memberType: 'account',
           parentAccountId: accessTo,
-          parentType: 'account',
           memberAccountId: myAccountId,
           parentPortfolioId: null,
+          ...activeAccessWhere(),
         },
-        include: {
-          roles: {
-            select: {
-              roleId: true,
-              roleName: true,
-              authzRole: { select: { name: true, description: true } },
-            },
-          },
+        select: {
+          roleId: true,
+          role: { select: { name: true, description: true } },
         },
       }),
     ]);
@@ -1099,13 +1063,13 @@ export async function getMyDirectRoles(
     return {
       ownerName,
       myName,
-      roles: grants.flatMap((g) => g.roles.map((r) => ({
-        roleId: r.roleId,
-        roleName: r.roleName ?? r.authzRole?.name ?? r.roleId,
-        roleDescription: r.authzRole?.description ?? undefined,
+      roles: grants.map((grant) => ({
+        roleId: grant.roleId,
+        roleName: grant.role?.name ?? grant.roleId,
+        roleDescription: grant.role?.description ?? undefined,
         accessTo,
         ownerName,
-      }))),
+      })),
     };
   } catch (error) {
     await logError('database', error, `getMyDirectRoles:${accessTo}`);
@@ -1143,14 +1107,14 @@ export async function getMyPortfolioRoles(
         select: { name: true },
       }),
       getUserProfile(myAccountId),
-      prisma.authzAssetsAccessGrant.findMany({
+      prisma.access.findMany({
         where: {
-          account_id: myAccountId,
-          portfolio_id: parentPortfolioId,
-          app_id: 'neup.account',
+          memberAccountId: myAccountId,
+          parentPortfolioId,
+          ...activeAccessWhere(),
         },
         select: {
-          role_id: true,
+          roleId: true,
           role: { select: { id: true, name: true, description: true } },
           asset: {
             select: {
@@ -1185,7 +1149,7 @@ export async function getMyPortfolioRoles(
           grant.asset.id;
         const resolved = await resolveAssetName(assetId, grant.asset.access_type);
         return {
-          roleId: grant.role.id,
+          roleId: grant.roleId,
           roleName: grant.role.name,
           roleDescription: grant.role.description ?? undefined,
           assetId,

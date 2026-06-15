@@ -85,7 +85,7 @@ BEGIN
 END $$;
 
 ALTER TABLE "assets"
-  ADD COLUMN IF NOT EXISTS "type" "AssetType",
+  ADD COLUMN IF NOT EXISTS "type" "asset_type",
   ADD COLUMN IF NOT EXISTS "child_account_id" TEXT,
   ADD COLUMN IF NOT EXISTS "child_portfolio_id" TEXT,
   ADD COLUMN IF NOT EXISTS "child_connection_id" TEXT,
@@ -97,14 +97,14 @@ ALTER TABLE "assets"
 
 UPDATE "assets"
 SET "type" = CASE
-  WHEN "parent_portfolio_id" IS NOT NULL AND "child_account_id" IS NOT NULL THEN 'acc_in_port'::"AssetType"
-  WHEN "parent_portfolio_id" IS NOT NULL AND "child_connection_id" IS NOT NULL THEN 'conn_in_port'::"AssetType"
-  WHEN "parent_portfolio_id" IS NOT NULL AND "child_application_id" IS NOT NULL THEN 'app_in_port'::"AssetType"
-  WHEN "parent_account_id" IS NOT NULL AND "child_account_id" IS NOT NULL THEN 'acc_in_acc'::"AssetType"
-  WHEN "parent_account_id" IS NOT NULL AND "child_connection_id" IS NOT NULL THEN 'conn_in_acc'::"AssetType"
-  WHEN "parent_account_id" IS NOT NULL AND "child_application_id" IS NOT NULL THEN 'app_in_acc'::"AssetType"
-  WHEN "parent_account_id" IS NOT NULL AND "child_portfolio_id" IS NOT NULL THEN 'port_in_acc'::"AssetType"
-  ELSE 'app_in_acc'::"AssetType"
+  WHEN "parent_portfolio_id" IS NOT NULL AND "child_account_id" IS NOT NULL THEN 'acc_in_port'::"asset_type"
+  WHEN "parent_portfolio_id" IS NOT NULL AND "child_connection_id" IS NOT NULL THEN 'conn_in_port'::"asset_type"
+  WHEN "parent_portfolio_id" IS NOT NULL AND "child_application_id" IS NOT NULL THEN 'app_in_port'::"asset_type"
+  WHEN "parent_account_id" IS NOT NULL AND "child_account_id" IS NOT NULL THEN 'acc_in_acc'::"asset_type"
+  WHEN "parent_account_id" IS NOT NULL AND "child_connection_id" IS NOT NULL THEN 'conn_in_acc'::"asset_type"
+  WHEN "parent_account_id" IS NOT NULL AND "child_application_id" IS NOT NULL THEN 'app_in_acc'::"asset_type"
+  WHEN "parent_account_id" IS NOT NULL AND "child_portfolio_id" IS NOT NULL THEN 'port_in_acc'::"asset_type"
+  ELSE 'app_in_acc'::"asset_type"
 END
 WHERE "type" IS NULL;
 
@@ -163,7 +163,7 @@ CREATE INDEX IF NOT EXISTS "assets_is_temporary_idx" ON "assets"("is_temporary")
 
 CREATE TABLE IF NOT EXISTS "access" (
   "id" TEXT NOT NULL DEFAULT gen_random_uuid()::TEXT,
-  "access_type" "AssetType" NOT NULL,
+  "access_type" "asset_type" NOT NULL,
   "member_id" TEXT NOT NULL,
   "member_account_id" TEXT,
   "parent_account_id" TEXT,
@@ -249,7 +249,7 @@ INSERT INTO "access" (
   "details"
 )
 SELECT
-  COALESCE(a."type", 'app_in_acc'::"AssetType"),
+  COALESCE(a."type", 'app_in_acc'::"asset_type"),
   m."id",
   m."child_account_id",
   m."parent_account_id",

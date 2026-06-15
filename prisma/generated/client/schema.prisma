@@ -526,6 +526,8 @@ enum AssetType {
   port_in_acc
   conn_in_acc
   conn_in_port
+
+  @@map("asset_type")
 }
 
 enum MemberAccessFor {

@@ -1,5 +1,3 @@
-'use server';
-
 import prisma from '@/core/helpers/prisma';
 import type { Prisma } from '@/prisma/generated/client/client';
 import type { AssetType } from '@/prisma/generated/client';

@@ -5,6 +5,7 @@ import { FlowLink } from '@/components/ui/flow-link';
 import { Badge } from '@/components/ui/badge';
 import { AppWindow, Building, BarChart, Share2, ChevronRight, Plus, type LucideIcon } from '@/components/icons';
 import type { FlatAppItem, ApplicationSection } from '@/services/applications/types';
+import { redirectInApp } from '@/services/navigation';
 
 const TAB_PARAM: Record<ApplicationSection['label'], string> = {
   Using: 'using',
@@ -119,7 +120,7 @@ export function ApplicationsPillView({ sections, canCreateApplication }: Props) 
   const setActive = (label: ApplicationSection['label']) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('mode', TAB_PARAM[label]);
-    router.replace(`?${params.toString()}`, { scroll: false });
+    redirectInApp(router, `?${params.toString()}`, { replace: true, scroll: false });
   };
 
   const currentSection = sections.find((s) => s.label === active);

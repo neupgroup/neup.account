@@ -25,19 +25,38 @@ type BrowserRedirectOptions = {
   preserveFlowParams?: boolean; // Whether to preserve backsTo and steps params (default: true)
 };
 
+const STICKY_QUERY_KEYS = ['selectedAccount'] as const;
+
+export function appendStickyQueryParams(targetHref: string, currentParams: URLSearchParams) {
+  const [basePath, existingQuery = ''] = targetHref.split('?');
+  const nextParams = new URLSearchParams(existingQuery);
+
+  for (const key of STICKY_QUERY_KEYS) {
+    const value = currentParams.get(key);
+    if (value && !nextParams.has(key)) {
+      nextParams.set(key, value);
+    }
+  }
+
+  const query = nextParams.toString();
+  return query ? `${basePath}?${query}` : basePath;
+}
+
 // Performs a hard browser navigation using window.location.
 function navigateInBrowser(targetUrl: string, options: BrowserRedirectOptions = {}) {
   if (typeof window === 'undefined') return;
 
   let finalUrl = targetUrl;
+  const currentParams = new URLSearchParams(window.location.search);
 
   // Preserve backsTo and steps params if requested (default: true)
   const shouldPreserve = options.preserveFlowParams !== false;
   if (shouldPreserve) {
-    const currentParams = new URLSearchParams(window.location.search);
     const flowParams = getFlowParams(currentParams);
     finalUrl = appendFlowParamsObject(targetUrl, flowParams);
   }
+
+  finalUrl = appendStickyQueryParams(finalUrl, currentParams);
 
   if (options.replace) {
     window.location.replace(finalUrl);
@@ -69,15 +88,19 @@ export function redirectInApp(router: AppRouterLike, href: string, options: AppR
   const navigationOptions = scroll === undefined ? undefined : { scroll };
 
   let finalHref = href;
+  const currentParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
 
   // Preserve backsTo and steps params if requested (default: true)
-  if (preserveFlowParams && typeof window !== 'undefined') {
-    const currentParams = new URLSearchParams(window.location.search);
+  if (preserveFlowParams && currentParams) {
     const flowParams = getFlowParams(currentParams);
     finalHref = appendApplicationRootMode(
       appendFlowParamsObject(href, flowParams),
       currentParams.get('mode'),
     );
+  }
+
+  if (currentParams) {
+    finalHref = appendStickyQueryParams(finalHref, currentParams);
   }
 
   if (replace) {

@@ -32,6 +32,7 @@ import { useSession } from "@/core/providers/session";
 import { Skeleton } from "./ui/skeleton";
 import { switchToPersonal } from "@/services/auth/switch";
 import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
+import { redirectInApp } from "@/services/navigation";
 
 const iconMap: { [key: string]: LucideIcon | React.ElementType } = {
     Home: Home,
@@ -66,7 +67,7 @@ export function MobileNav() {
         startSwitchTransition(async () => {
             await switchToPersonal();
             refetch();
-            router.push('/home');
+            redirectInApp(router, '/home');
             router.refresh();
         });
     };

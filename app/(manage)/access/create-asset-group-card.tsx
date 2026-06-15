@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/dialog';
 import { Plus, Loader2 } from '@/components/icons';
 import { createAssetGroup } from '@/services/manage/access/assets';
+import { redirectInApp } from '@/services/navigation';
 
 export function CreateAssetGroupCard({ variant = 'card' }: { variant?: 'card' | 'row' }) {
   const router = useRouter();
@@ -45,7 +46,7 @@ export function CreateAssetGroupCard({ variant = 'card' }: { variant?: 'card' | 
       setOpen(false);
       setName('');
       setDetails('');
-      router.push(`/access?portfolio=${result.id}`);
+      redirectInApp(router, `/access?portfolio=${result.id}`);
       router.refresh();
     });
   };

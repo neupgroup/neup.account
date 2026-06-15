@@ -5,13 +5,9 @@ import { useEffect, useState, useTransition } from 'react';
 import { getUserProfile } from '@/services/user';
 import type { StoredAccount } from '@/core/auth/session';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ChevronRight } from '@/components/icons';
 import { AccountActions } from '@/app/auth/start/start-page-component';
-import { switchToBrand, switchToDependent, switchToAccount } from '@/services/auth/switch';
-import { appendAuthCallbackContext, appendRedirect } from '@/core/auth/callback';
-import { redirectInApp } from '@/services/navigation';
 import { cn } from '@/core/helpers/utils';
 
 type CombinedAccount = StoredAccount & {
@@ -32,17 +28,9 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
     const [loading, setLoading] = useState(true);
     const [isSwitching, startSwitchTransition] = useTransition();
     const router = useRouter();
+    const pathname = usePathname();
     const searchParams = useSearchParams();
-    const redirects = searchParams.get('redirects');
-
-    const getSigninUrl = (neupId?: string) => {
-        const params = new URLSearchParams();
-        params.set('step', 'password');
-        if (neupId) params.set('neupId', neupId);
-        const baseUrl = `/auth/signin?${params.toString()}`;
-        const withContext = appendAuthCallbackContext(baseUrl, searchParams);
-        return appendRedirect(withContext, redirects);
-    };
+    const selectedAccountId = searchParams.get('selectedAccount');
 
     useEffect(() => {
         let isMounted = true;
@@ -95,22 +83,17 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
 
         startSwitchTransition(async () => {
             const targetAccountId = finalAccount.aid || finalAccount.accountId || '';
+            if (!targetAccountId) return;
 
-            if (finalAccount.isBrand) {
-                const res = await switchToBrand(targetAccountId);
-                if (res.success) redirectInApp(router, redirects || '/');
-                return;
+            const params = new URLSearchParams(searchParams.toString());
+            if (finalAccount.def === 1) {
+                params.delete('selectedAccount');
+            } else {
+                params.set('selectedAccount', targetAccountId);
             }
 
-            if (finalAccount.isDependent) {
-                const res = await switchToDependent(targetAccountId);
-                if (res.success) redirectInApp(router, redirects || '/');
-                return;
-            }
-
-            // Delegated / any other accessible account
-            const res = await switchToAccount(targetAccountId);
-            if (res.success) redirectInApp(router, redirects || '/');
+            const query = params.toString();
+            router.push(query ? `${pathname}?${query}` : pathname);
         });
     };
 
@@ -128,12 +111,18 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
         );
     }
 
+    const currentAccountId = finalAccount.aid || finalAccount.accountId || '';
+    const isSelected =
+        Boolean(currentAccountId && selectedAccountId === currentAccountId) ||
+        Boolean(finalAccount.def === 1 && !selectedAccountId) ||
+        Boolean(isActive);
+
     return (
         <div
             onClick={handleClick}
             className={cn(
                 "w-full flex items-center justify-between p-4 border rounded-lg transition-colors cursor-pointer",
-                isActive
+                isSelected
                     ? "bg-accent/10 border-accent hover:bg-accent/20"
                     : "hover:bg-muted/50"
             )}
@@ -148,7 +137,7 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
         >
             <div className="flex items-center gap-4">
                 <div>
-                    <h3 className={cn("font-semibold", isActive && "text-accent")}>{finalAccount.displayName}</h3>
+                    <h3 className={cn("font-semibold", isSelected && "text-accent")}>{finalAccount.displayName}</h3>
                     <div className="flex items-center gap-2">
                         <p className="text-sm text-muted-foreground">
                             @{finalAccount.neupId}
@@ -157,7 +146,7 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
                     </div>
                 </div>
             </div>
-            <ChevronRight className={cn("h-5 w-5", isActive ? "text-accent" : "text-muted-foreground")} />
+            <ChevronRight className={cn("h-5 w-5", isSelected ? "text-accent" : "text-muted-foreground")} />
         </div>
     );
 }

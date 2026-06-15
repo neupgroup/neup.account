@@ -15,6 +15,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Loader2 } from '@/components/icons';
+import { redirectInApp } from '@/services/navigation';
 
 type Props = {
   label: string;
@@ -43,7 +44,7 @@ export function RemoveMemberButton({
     startTransition(async () => {
       const result = await action();
       if (result.success) {
-        router.push(redirectTo);
+        redirectInApp(router, redirectTo);
       } else {
         setError(result.error ?? 'Something went wrong.');
       }

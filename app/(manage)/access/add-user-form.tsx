@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, UserPlus } from "@/components/icons";
 import { resolveNeupId } from "./_components/actions";
+import { redirectInApp } from "@/services/navigation";
 
 export function AddUserForm() {
   const [neupIdInput, setNeupIdInput] = useState("");
@@ -20,7 +21,7 @@ export function AddUserForm() {
     startTransition(async () => {
       const result = await resolveNeupId(neupIdInput);
       if (result.success) {
-        router.push(`/access/role?member_id=${encodeURIComponent(result.account.accountId)}`);
+        redirectInApp(router, `/access/role?member_id=${encodeURIComponent(result.account.accountId)}`);
       } else {
         setLookupError(result.error);
         inputRef.current?.focus();

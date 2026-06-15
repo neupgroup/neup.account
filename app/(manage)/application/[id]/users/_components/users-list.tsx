@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FlowLink } from '@/components/ui/flow-link';
+import { redirectInApp } from '@/services/navigation';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,
@@ -171,7 +172,7 @@ function UsersListInner({ appId }: { appId: string }) {
     if (status !== 'all') params.set('status', status);
     if (since !== 'all') params.set('activeSince', since);
     const qs = params.toString();
-    router.replace(`${pathname}${qs ? `?${qs}` : ''}`, { scroll: false });
+    redirectInApp(router, `${pathname}${qs ? `?${qs}` : ''}`, { replace: true, scroll: false });
   }, [router, pathname]);
 
   // Debounce search

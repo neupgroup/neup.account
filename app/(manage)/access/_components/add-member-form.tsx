@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, UserPlus } from "@/components/icons";
 import { resolveNeupId } from "./actions";
+import { redirectInApp } from "@/services/navigation";
 
 export function AddMemberForm({
   parentPortfolioId,
@@ -37,7 +38,7 @@ export function AddMemberForm({
         if (parentPortfolioId) params.set("portfolio", parentPortfolioId);
         if (assetId) params.set("asset", assetId);
         if (mode === "root") params.set("mode", "root");
-        router.push(`/access/role?${params.toString()}`);
+        redirectInApp(router, `/access/role?${params.toString()}`);
       } else {
         setLookupError(result.error);
         inputRef.current?.focus();

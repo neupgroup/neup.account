@@ -14,6 +14,23 @@ type RedirectOptions = {
     preserveFlowParams?: boolean; // Whether to preserve backsTo and steps params (default: true)
 };
 
+const STICKY_QUERY_KEYS = ['selectedAccount'] as const;
+
+function appendStickyQueryParams(path: string, currentParams: URLSearchParams): string {
+    const [basePath, existingQuery = ''] = path.split('?');
+    const nextParams = new URLSearchParams(existingQuery);
+
+    for (const key of STICKY_QUERY_KEYS) {
+        const value = currentParams.get(key);
+        if (value && !nextParams.has(key)) {
+            nextParams.set(key, value);
+        }
+    }
+
+    const query = nextParams.toString();
+    return query ? `${basePath}?${query}` : basePath;
+}
+
 /**
  * Resolves a path to include the base path for hard (window.location) navigation.
  * Paths that are already absolute URLs are returned as-is.
@@ -57,6 +74,9 @@ export function redirectInApp(
             appendFlowParamsObject(path, flowParams),
             currentParams.get('mode'),
         );
+        finalPath = appendStickyQueryParams(finalPath, currentParams);
+    } else if (typeof window !== 'undefined') {
+        finalPath = appendStickyQueryParams(finalPath, new URLSearchParams(window.location.search));
     }
 
     if (router && !hard) {

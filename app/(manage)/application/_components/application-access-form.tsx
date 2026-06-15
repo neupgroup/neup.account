@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2 } from '@/components/icons';
 import { addUserApplicationAccess, updateUserApplicationPermissions } from '@/services/applications/access';
+import { redirectInApp } from '@/services/navigation';
 
 type ApplicationAccessFormProps = {
   mode: 'add' | 'edit';
@@ -66,7 +67,7 @@ export function ApplicationAccessForm({ mode, initialAppId = '', initialPermissi
         description: mode === 'add' ? 'Application access is now connected.' : 'Application permissions were updated.',
       });
 
-      router.push(`/data/appconnection/${normalizedAppId}`);
+      redirectInApp(router, `/data/appconnection/${normalizedAppId}`);
       router.refresh();
     });
   };

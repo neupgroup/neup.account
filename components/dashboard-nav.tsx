@@ -10,6 +10,7 @@ import { Skeleton } from "./ui/skeleton";
 import { useSession } from "@/core/providers/session";
 import { switchToPersonal } from "@/services/auth/switch";
 import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
+import { redirectInApp } from "@/services/navigation";
 
 export function DashboardNav() {
     const pathname = usePathname();
@@ -21,7 +22,7 @@ export function DashboardNav() {
         startSwitchTransition(async () => {
             await switchToPersonal();
             refetch();
-            router.push('/home');
+            redirectInApp(router, '/home');
             router.refresh();
         });
     };

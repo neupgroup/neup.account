@@ -11,6 +11,7 @@ import {
   type AppPermission,
   type AppRole,
 } from '@/services/applications/authz-manage';
+import { redirectInApp } from '@/services/navigation';
 
 type Props = {
   appId: string;
@@ -114,7 +115,7 @@ export function RoleDetailEditor({ appId, role, permissions }: Props) {
       </div>
 
       <div className="flex justify-end gap-2">
-        <Button variant="outline" onClick={() => router.push(`/application/${appId}/roles?mode=root`)}>
+        <Button variant="outline" onClick={() => redirectInApp(router, `/application/${appId}/roles?mode=root`)}>
           Back
         </Button>
         <Button onClick={handleSave} disabled={savePending}>

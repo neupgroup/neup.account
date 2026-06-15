@@ -6,6 +6,7 @@ import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { createAppRole, type AppPermission } from '@/services/applications/authz-manage';
+import { redirectInApp } from '@/services/navigation';
 
 type Props = {
   appId: string;
@@ -40,7 +41,7 @@ export function RoleCreateForm({ appId, permissions }: Props) {
     }
 
     toast({ title: 'Role created' });
-    router.push(`/application/${appId}/roles/${result.role.id}?mode=root`);
+    redirectInApp(router, `/application/${appId}/roles/${result.role.id}?mode=root`);
     router.refresh();
   };
 
@@ -77,7 +78,7 @@ export function RoleCreateForm({ appId, permissions }: Props) {
       </div>
 
       <div className="flex gap-2 justify-end">
-        <Button variant="outline" onClick={() => router.push(`/application/${appId}/roles?mode=root`)}>
+        <Button variant="outline" onClick={() => redirectInApp(router, `/application/${appId}/roles?mode=root`)}>
           Cancel
         </Button>
         <Button onClick={handleSubmit} disabled={pending || !name.trim()}>
@@ -87,4 +88,3 @@ export function RoleCreateForm({ appId, permissions }: Props) {
     </div>
   );
 }
-

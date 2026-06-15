@@ -6,6 +6,7 @@ import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { createManagedApplication } from '@/services/applications/manage';
+import { redirectInApp } from '@/services/navigation';
 
 export function ApplicationCreateForm() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export function ApplicationCreateForm() {
       return;
     }
 
-    router.push(`/application/${result.appId}`);
+    redirectInApp(router, `/application/${result.appId}`);
     router.refresh();
   };
 

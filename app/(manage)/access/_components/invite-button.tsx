@@ -15,6 +15,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Loader2, UserPlus } from '@/components/icons';
+import { redirectInApp } from '@/services/navigation';
 
 type Props = {
   displayName: string;
@@ -33,7 +34,7 @@ export function InviteButton({ displayName, confirmDescription, action, redirect
     startTransition(async () => {
       const result = await action();
       if (result.success) {
-        router.push(redirectTo);
+        redirectInApp(router, redirectTo);
         router.refresh();
       } else {
         setError(result.error ?? 'Something went wrong.');

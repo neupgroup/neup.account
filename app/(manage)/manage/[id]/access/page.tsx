@@ -7,13 +7,18 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { UserCircle } from '@/components/icons';
 import { getUserDetails, getManagedAccountAccessMembers, getManagedAccountAccessPermissions } from '@/services/manage/users';
-import { checkPermissions } from '@/services/user';
+import { getGrantedAccountPermission } from '@/services/user';
+import { getPersonalAccountId } from '@/core/auth/verify';
+import { hasAnyPermission } from '@/core/auth/profile-permissions';
 import { ManagedAccountAccessForm } from './form';
 import { RemoveMemberButton } from '@/app/(manage)/access/_components/remove-member-button';
 import { revokeManagedAccountAccess } from '@/services/manage/users';
 import { ACCOUNT_ACCESS_PERMISSION_GROUPS } from '@/core/auth/account-access-permissions';
 
-type Props = { params: Promise<{ id: string }> };
+type Props = {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ selectedId?: string }>;
+};
 
 function PermissionBadges({ permissions }: { permissions: string[] }) {
   const visible = permissions.slice(0, 3);
@@ -51,23 +56,32 @@ function EmptyState() {
   );
 }
 
-export default async function ManagedAccountAccessPage({ params }: Props) {
+export default async function ManagedAccountAccessPage({ params, searchParams }: Props) {
   const { id } = await params;
+  const { selectedId } = await searchParams;
+  const targetAccountId = selectedId?.trim() || id;
 
-  const [canViewAccount, canViewAccess, canEditAccess, userDetails] = await Promise.all([
-    checkPermissions(['root.account.view']),
-    checkPermissions(ACCOUNT_ACCESS_PERMISSION_GROUPS.view),
-    checkPermissions(ACCOUNT_ACCESS_PERMISSION_GROUPS.edit),
-    getUserDetails(id),
+  const viewerAccountId = await getPersonalAccountId();
+  if (!viewerAccountId) {
+    notFound();
+  }
+
+  const [grantedPermissions, userDetails] = await Promise.all([
+    getGrantedAccountPermission(viewerAccountId, targetAccountId),
+    getUserDetails(targetAccountId),
   ]);
 
-  if (!canViewAccount || !canViewAccess || !userDetails) {
+  const canViewAccess = hasAnyPermission(grantedPermissions, ACCOUNT_ACCESS_PERMISSION_GROUPS.view)
+    || hasAnyPermission(grantedPermissions, ACCOUNT_ACCESS_PERMISSION_GROUPS.edit);
+  const canEditAccess = hasAnyPermission(grantedPermissions, ACCOUNT_ACCESS_PERMISSION_GROUPS.edit);
+
+  if (!canViewAccess || !userDetails) {
     notFound();
   }
 
   const [permissions, members] = await Promise.all([
     getManagedAccountAccessPermissions(),
-    getManagedAccountAccessMembers(id),
+    getManagedAccountAccessMembers(targetAccountId),
   ]);
 
   return (
@@ -85,7 +99,7 @@ export default async function ManagedAccountAccessPage({ params }: Props) {
       </div>
 
       <ManagedAccountAccessForm
-        accountId={id}
+        accountId={targetAccountId}
         permissions={permissions}
         canEdit={canEditAccess}
       />
@@ -132,8 +146,8 @@ export default async function ManagedAccountAccessPage({ params }: Props) {
                       label="Revoke"
                       confirmTitle="Revoke direct access?"
                       confirmDescription={`This will remove ${member.displayName}'s direct access to this account.`}
-                      action={revokeManagedAccountAccess.bind(null, { accountId: id, memberId: member.accountId })}
-                      redirectTo={`/manage/${id}/access`}
+                      action={revokeManagedAccountAccess.bind(null, { accountId: targetAccountId, memberId: member.accountId })}
+                      redirectTo={`/manage/${targetAccountId}/access${selectedId ? `?selectedId=${encodeURIComponent(selectedId)}` : ''}`}
                     />
                   </div>
                 </div>

@@ -139,11 +139,15 @@ export async function getPermissions(accountId: string): Promise<UserPermissions
 // Returns the roles currently assigned to an account (self-grants).
 export async function getAccountRoles(accountId: string): Promise<{ id: string; name: string; description: string | null }[]> {
     try {
-        const grants = await prisma.authzAccountAccessGrant.findMany({
+        const grants = await prisma.access.findMany({
             where: {
-                accessTo: accountId,
                 memberId: accountId,
-                appId: 'neup.account',
+                memberAccountId: accountId,
+                parentAccountId: accountId,
+                parentPortfolioId: null,
+                accessApplicationId: 'neup.account',
+                status: 'active',
+                role: { appId: 'neup.account' },
             },
             select: {
                 role: { select: { id: true, name: true, description: true } },
@@ -531,24 +535,26 @@ export async function updateAccountRoles(accountId: string, roleIds: string[]): 
     try {
         await prisma.$transaction(async (tx) => {
             // Remove all existing self-grants for this account
-            await tx.authzAccountAccessGrant.deleteMany({
+            await tx.access.deleteMany({
                 where: {
-                    accessTo: accountId,
-                    memberId: accountId,
-                    appId: 'neup.account',
+                    memberAccountId: accountId,
+                    parentAccountId: accountId,
+                    parentPortfolioId: null,
+                    accessApplicationId: 'neup.account',
                 },
             });
 
             // Create new grants for each selected role
             if (roleIds.length > 0) {
-                await tx.authzAccountAccessGrant.createMany({
-                    data: roleIds.map((roleId) => ({
-                        accessTo: accountId,
-                        memberId: accountId,
+                for (const roleId of roleIds) {
+                    await ensureAccessGrant(tx, {
+                        memberAccountId: accountId,
+                        parentAccountId: accountId,
+                        childAccountId: accountId,
+                        accessApplicationId: 'neup.account',
                         roleId,
-                        appId: 'neup.account',
-                    })),
-                });
+                    });
+                }
             }
         });
 
@@ -582,26 +588,28 @@ export async function updateUserPermissions(accountId: string, newPermissionIds:
 
         // Effective permissions = assigned minus restricted
         const effectivePermissions = newPermissionIds.filter(p => !newRestrictionIds.includes(p));
-
-        // Upsert the role-permission map with the denormalized permission array
-        const mapId = `${roleId}::permissions`;
-        if (effectivePermissions.length > 0) {
-            await prisma.authzRolePermission.upsert({
-                where: { id: mapId },
-                update: { roleId, appId: 'neup.account', roleName: roleId, denormalizedPermission: effectivePermissions },
-                create: { id: mapId, roleId, permissionId: effectivePermissions[0], appId: 'neup.account', roleName: roleId, denormalizedPermission: effectivePermissions },
-            });
-        } else {
-            await prisma.authzRolePermission.deleteMany({ where: { roleId } });
-        }
+        await prisma.authzRole.update({
+            where: { id: roleId },
+            data: { permissions: effectivePermissions },
+        });
 
         // Upsert the grant linking the account to its custom role
-        const existingGrant = await prisma.authzAccountAccessGrant.findFirst({
-            where: { accessTo: accountId, memberId: accountId, roleId, appId: 'neup.account' },
+        const existingGrant = await prisma.access.findFirst({
+            where: {
+                memberAccountId: accountId,
+                parentAccountId: accountId,
+                parentPortfolioId: null,
+                roleId,
+                accessApplicationId: 'neup.account',
+            },
         });
         if (!existingGrant) {
-            await prisma.authzAccountAccessGrant.create({
-                data: { accessTo: accountId, memberId: accountId, roleId, appId: 'neup.account' },
+            await ensureAccessGrant(prisma, {
+                memberAccountId: accountId,
+                parentAccountId: accountId,
+                childAccountId: accountId,
+                accessApplicationId: 'neup.account',
+                roleId,
             });
         }
 

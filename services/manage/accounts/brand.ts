@@ -10,7 +10,7 @@ import { z } from 'zod';
 import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { brandCreationSchema } from '@/services/manage/accounts/schema';
-import { ensureAccessGrant } from '@/services/access-model';
+import { activeAccessWhere, ensureAccessGrant } from '@/services/access-model';
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
@@ -37,18 +37,22 @@ export async function getBrandAccounts(): Promise<BrandAccount[]> {
     if (!personalAccountId) return [];
 
     try {
-        const grants = await prisma.member.findMany({
+        const grants = await prisma.access.findMany({
             where: {
-                memberId: personalAccountId,
+                memberAccountId: personalAccountId,
                 roleId: BRAND_OWNER_ROLE_ID,
-                appId: 'neup.account',
+                accessApplicationId: 'neup.account',
+                parentAccount: { accountType: 'brand' },
+                ...activeAccessWhere(),
             },
-            select: { accessTo: true },
+            select: { parentAccountId: true },
         });
 
         if (grants.length === 0) return [];
 
-        const brandAccountIds = grants.map((g) => g.accessTo);
+        const brandAccountIds = grants
+            .map((g) => g.parentAccountId)
+            .filter((id): id is string => Boolean(id));
 
         const brandAccountsData = await prisma.account.findMany({
             where: {

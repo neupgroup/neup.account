@@ -104,6 +104,7 @@ async function main() {
       description: ROLE.description,
       appId: APP_ID,
       scope: ROLE.scope,
+      permissions: CAPABILITIES.map((cap) => cap.name),
     },
     create: {
       id: ROLE.id,
@@ -111,6 +112,7 @@ async function main() {
       description: ROLE.description,
       appId: APP_ID,
       scope: ROLE.scope,
+      permissions: CAPABILITIES.map((cap) => cap.name),
     },
   });
   console.log(`  ✓ Role upserted: ${ROLE.id}`);

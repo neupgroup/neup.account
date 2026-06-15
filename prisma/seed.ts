@@ -1,13 +1,14 @@
 import 'dotenv/config';
 import bcrypt from 'bcryptjs';
 import prisma from '../core/helpers/prisma';
+import { ensureAccessGrant } from '../services/access-model';
 
 // Root permissions are now managed via authz_role_capability in the database.
 // This legacy seed writes to the Permit table for backward compatibility.
 const ROOT_PERMISSIONS: string[] = [];
 const APP_ID = 'neup.account';
 const ROLE_DEFAULT_ID = 'individual-default-neup-account';
-const ROLE_ROOT_ID = 'account.root';
+const ROLE_ROOT_ID = 'root-full-neup-account';
 
 const DEFAULT_CAPABILITIES = [
   'profile.display.view.self',
@@ -247,6 +248,7 @@ async function main() {
         description: 'Default permission set for individual accounts.',
         scope: 'default',
         appId: APP_ID,
+        permissions: defaultDenormalized,
       },
       create: {
         id: ROLE_DEFAULT_ID,
@@ -254,6 +256,7 @@ async function main() {
         description: 'Default permission set for individual accounts.',
         scope: 'default',
         appId: APP_ID,
+        permissions: defaultDenormalized,
       },
     });
 
@@ -264,6 +267,7 @@ async function main() {
         description: 'Root permission set for individual accounts.',
         scope: 'root',
         appId: APP_ID,
+        permissions: rootDenormalized,
       },
       create: {
         id: ROLE_ROOT_ID,
@@ -271,106 +275,73 @@ async function main() {
         description: 'Root permission set for individual accounts.',
         scope: 'root',
         appId: APP_ID,
+        permissions: rootDenormalized,
       },
     });
 
     for (const permissionName of DEFAULT_CAPABILITIES) {
       const permissionId = `cap-def-${slugifyPermission(permissionName)}`;
-      await prisma.authzPermission.upsert({
-        where: { id: permissionId },
+      const permission = await prisma.authzPermission.upsert({
+        where: { name_appId: { name: permissionName, appId: APP_ID } },
         update: { name: permissionName, appId: APP_ID, tag: 'default' },
         create: { id: permissionId, name: permissionName, appId: APP_ID, tag: 'default' },
+        select: { id: true },
       });
 
-      await prisma.authzRolePermission.upsert({
-        where: { id: `rcp-def-${permissionId}` },
-        update: {
-          roleId: ROLE_DEFAULT_ID,
-          permissionId,
-          scope: 'default',
-          appId: APP_ID,
-          roleName: 'individual.default',
-          denormalizedPermission: defaultDenormalized,
+      await prisma.authzRolePermissionMap.upsert({
+        where: {
+          roleId_permissionId: {
+            roleId: ROLE_DEFAULT_ID,
+            permissionId: permission.id,
+          },
         },
+        update: {},
         create: {
-          id: `rcp-def-${permissionId}`,
           roleId: ROLE_DEFAULT_ID,
-          permissionId,
-          scope: 'default',
-          appId: APP_ID,
-          roleName: 'individual.default',
-          denormalizedPermission: defaultDenormalized,
+          permissionId: permission.id,
         },
       });
     }
 
     for (const permissionName of ROOT_CAPABILITIES) {
       const permissionId = `cap-root-${slugifyPermission(permissionName)}`;
-      await prisma.authzPermission.upsert({
-        where: { id: permissionId },
+      const permission = await prisma.authzPermission.upsert({
+        where: { name_appId: { name: permissionName, appId: APP_ID } },
         update: { name: permissionName, appId: APP_ID, tag: 'root' },
         create: { id: permissionId, name: permissionName, appId: APP_ID, tag: 'root' },
+        select: { id: true },
       });
 
-      await prisma.authzRolePermission.upsert({
-        where: { id: `rcp-root-${permissionId}` },
-        update: {
-          roleId: ROLE_ROOT_ID,
-          permissionId,
-          scope: 'root',
-          appId: APP_ID,
-          roleName: 'individual.root',
-          denormalizedPermission: rootDenormalized,
+      await prisma.authzRolePermissionMap.upsert({
+        where: {
+          roleId_permissionId: {
+            roleId: ROLE_ROOT_ID,
+            permissionId: permission.id,
+          },
         },
+        update: {},
         create: {
-          id: `rcp-root-${permissionId}`,
           roleId: ROLE_ROOT_ID,
-          permissionId,
-          scope: 'root',
-          appId: APP_ID,
-          roleName: 'individual.root',
-          denormalizedPermission: rootDenormalized,
+          permissionId: permission.id,
         },
       });
     }
 
-    const defaultGrant = await prisma.member.findFirst({
-      where: {
-        accessTo: accountId,
-        memberId: accountId,
-        roleId: ROLE_DEFAULT_ID,
-        appId: APP_ID,
-      },
+    await ensureAccessGrant(prisma, {
+      memberAccountId: accountId,
+      parentAccountId: accountId,
+      childAccountId: accountId,
+      accessApplicationId: APP_ID,
+      roleId: ROLE_DEFAULT_ID,
     });
-    if (!defaultGrant) {
-      await prisma.member.create({
-        data: {
-          accessTo: accountId,
-          memberId: accountId,
-          roleId: ROLE_DEFAULT_ID,
-          appId: APP_ID,
-        },
-      });
-    }
 
-    const rootGrant = await prisma.member.findFirst({
-      where: {
-        accessTo: accountId,
-        memberId: accountId,
-        roleId: ROLE_ROOT_ID,
-        appId: APP_ID,
-      },
+    await ensureAccessGrant(prisma, {
+      memberAccountId: accountId,
+      parentAccountId: accountId,
+      childAccountId: accountId,
+      accessApplicationId: APP_ID,
+      roleId: ROLE_ROOT_ID,
     });
-    if (!rootGrant) {
-      await prisma.member.create({
-        data: {
-          accessTo: accountId,
-          memberId: accountId,
-          roleId: ROLE_ROOT_ID,
-          appId: APP_ID,
-        },
-      });
-    }
 
     // Compatibility path for legacy permission checks.
     // Some environments no longer have the `permit` table.

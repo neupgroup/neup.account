@@ -1,8 +1,10 @@
 /**
- * Example usage of authz_app_access_grant table
- * 
- * Use case: Real estate application where account owner (xxx) wants to grant
- * another user permission to post properties on their behalf.
+ * Example usage of the canonical access model.
+ *
+ * Flow:
+ * 1. The Member row links the receiving account to the owner account/portfolio.
+ * 2. The Asset row identifies what is being shared.
+ * 3. The Access row links member + asset + role.
  */
 
 import { PrismaClient } from './generated/client';
@@ -10,14 +12,43 @@ import { PrismaClient } from './generated/client';
 const prisma = new PrismaClient();
 
 async function grantAppAccess() {
-  // Example: Grant "property_poster" role to targetUser in real-estate app
-  const grant = await prisma.member.create({
+  const appId = 'real-estate-app-id';
+  const ownerAccountId = 'owner-account-xxx';
+  const targetAccountId = 'target-user-yyy';
+  const roleId = 'property-poster-role-id';
+
+  const member = await prisma.member.upsert({
+    where: { id: `${ownerAccountId}:${targetAccountId}` },
+    update: { status: 'active', isTemporary: null },
+    create: {
+      id: `${ownerAccountId}:${targetAccountId}`,
+      memberType: 'acc_in_acc',
+      memberAccountId: targetAccountId,
+      parentAccountId: ownerAccountId,
+      status: 'active',
+    },
+  });
+
+  const asset = await prisma.asset.create({
     data: {
-      appId: 'real-estate-app-id',           // The application ID
-      accountId: 'owner-account-xxx',        // The account granting access
-      targetAccountId: 'target-user-yyy',    // The user receiving the role
-      roleId: 'property-poster-role-id',     // The role being granted
-      portfolioId: 'portfolio-zzz',          // Optional: scope to specific portfolio
+      access_type: 'app_in_acc',
+      parent_account_id: ownerAccountId,
+      access_application_id: appId,
+      status: 'active',
+    },
+  });
+
+  const grant = await prisma.access.create({
+    data: {
+      accessType: 'app_in_acc',
+      memberId: member.id,
+      memberAccountId: targetAccountId,
+      parentAccountId: ownerAccountId,
+      assetId: asset.id,
+      assetApplicationId: appId,
+      accessApplicationId: appId,
+      roleId,
+      status: 'active',
     },
   });
 
@@ -26,25 +57,17 @@ async function grantAppAccess() {
 }
 
 async function checkAppAccess(appId: string, targetAccountId: string) {
-  // Query all grants for a user in a specific app
-  const grants = await prisma.member.findMany({
+  const grants = await prisma.access.findMany({
     where: {
-      appId,
-      targetAccountId,
+      accessApplicationId: appId,
+      memberAccountId: targetAccountId,
+      status: 'active',
+      OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
     },
     include: {
-      role: {
-        include: {
-          roleMaps: {
-            include: {
-              permission: true,
-            },
-          },
-        },
-      },
-      application: true,
-      account: true,
-      portfolio: true,
+      role: true,
+      asset: true,
+      member: true,
     },
   });
 
@@ -53,8 +76,7 @@ async function checkAppAccess(appId: string, targetAccountId: string) {
 }
 
 async function revokeAppAccess(grantId: string) {
-  // Revoke a specific grant
-  await prisma.member.delete({
+  await prisma.access.delete({
     where: { id: grantId },
   });
 
@@ -62,17 +84,16 @@ async function revokeAppAccess(grantId: string) {
 }
 
 async function listAllGrantsForApp(appId: string) {
-  // List all authorization grants for an application
-  const grants = await prisma.member.findMany({
-    where: { appId },
+  return prisma.access.findMany({
+    where: { accessApplicationId: appId },
     include: {
-      account: {
+      memberAccount: {
         select: {
           id: true,
           displayName: true,
         },
       },
-      targetAccount: {
+      parentAccount: {
         select: {
           id: true,
           displayName: true,
@@ -87,11 +108,8 @@ async function listAllGrantsForApp(appId: string) {
       },
     },
   });
-
-  return grants;
 }
 
-// Export for use in your API routes
 export {
   grantAppAccess,
   checkAppAccess,

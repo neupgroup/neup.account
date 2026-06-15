@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import prisma from '../core/helpers/prisma';
+import { ensureAccessGrant } from '../services/access-model';
 
 // Root permissions are now managed via authz_role_capability in the database.
 // This script grants a legacy root Permit record for backward compatibility.
@@ -34,25 +35,21 @@ async function main() {
   const account = await prisma.account.findUnique({ where: { id: accountId }, select: { id: true, displayName: true } });
   if (!account) throw new Error(`Account "${accountId}" not found.`);
 
-  // Upsert the account.root role and grant it to the account.
-  // This replaces the legacy permit-based root grant.
+  // Upsert the root role and grant it through the canonical access table.
   await prisma.authzRole.upsert({
-    where: { id: 'account.root' },
-    update: { name: 'account.root', scope: 'root', appId: 'neup.account' },
-    create: { id: 'account.root', name: 'account.root', scope: 'root', appId: 'neup.account' },
+    where: { id: 'root-full-neup-account' },
+    update: { name: 'individual.root', scope: 'root', appId: 'neup.account' },
+    create: { id: 'root-full-neup-account', name: 'individual.root', scope: 'root', appId: 'neup.account' },
   });
 
-  const existingGrant = await prisma.member.findFirst({
-    where: { accessTo: accountId, memberId: accountId, roleId: 'account.root', appId: 'neup.account' },
+  const grant = await ensureAccessGrant(prisma, {
+    memberAccountId: accountId,
+    parentAccountId: accountId,
+    childAccountId: accountId,
+    accessApplicationId: 'neup.account',
+    roleId: 'root-full-neup-account',
   });
-  if (!existingGrant) {
-    await prisma.member.create({
-      data: { accessTo: accountId, memberId: accountId, roleId: 'account.root', appId: 'neup.account' },
-    });
-    console.log(`Root grant created for account "${account.displayName}" (${accountId}).`);
-  } else {
-    console.log(`Root grant already exists for account "${account.displayName}" (${accountId}).`);
-  }
+  console.log(`Root grant ensured for account "${account.displayName}" (${accountId}), access=${grant.id}.`);
 }
 
 main()

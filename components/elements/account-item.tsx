@@ -5,7 +5,7 @@ import { useEffect, useState, useTransition } from 'react';
 import { getUserProfile } from '@/services/user';
 import type { StoredAccount } from '@/core/auth/session';
 import { Skeleton } from '@/components/ui/skeleton';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronRight } from '@/components/icons';
 import { AccountActions } from '@/app/auth/start/start-page-component';
 import { cn } from '@/core/helpers/utils';
@@ -28,7 +28,6 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
     const [loading, setLoading] = useState(true);
     const [isSwitching, startSwitchTransition] = useTransition();
     const router = useRouter();
-    const pathname = usePathname();
     const searchParams = useSearchParams();
     const selectedAccountId = searchParams.get('selectedAccount');
 
@@ -101,7 +100,7 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
             }
 
             const query = params.toString();
-            router.push(query ? `${pathname}?${query}` : pathname);
+            router.push(query ? `/home?${query}` : '/home');
         });
     };
 

@@ -92,12 +92,13 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
                 return;
             }
 
-            const params = new URLSearchParams(searchParams.toString());
             if (isOwnerAccount) {
-                params.delete('selectedAccount');
-            } else {
-                params.set('selectedAccount', targetAccountId);
+                router.push('/home');
+                return;
             }
+
+            const params = new URLSearchParams(searchParams.toString());
+            params.set('selectedAccount', targetAccountId);
 
             const query = params.toString();
             router.push(query ? `/home?${query}` : '/home');

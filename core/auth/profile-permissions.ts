@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 
 export const PROFILE_DISPLAY_PERMISSION_GROUPS = {
   self: ['profile.display.name', 'profile.display.update'],
-  managed: ['profile.display.view.managed', 'profile.display.update.managed'],
+  managed: ['profile.display.view', 'profile.display.update'],
   root: ['profile.display.view.root', 'profile.display.update.root'],
 } as const;
 

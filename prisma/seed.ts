@@ -13,8 +13,7 @@ const ROLE_ROOT_ID = 'root-full-neup-account';
 const DEFAULT_CAPABILITIES = [
   'profile.display.name',
   'profile.display.update',
-  'profile.display.view.managed',
-  'profile.display.update.managed',
+  'profile.display.view',
   'profile.display.view.root',
   'profile.display.update.root',
   'profile.legal.view',

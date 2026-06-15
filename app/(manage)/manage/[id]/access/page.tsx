@@ -84,6 +84,12 @@ export default async function ManagedAccountAccessPage({ params, searchParams }:
     getManagedAccountAccessMembers(targetAccountId),
   ]);
 
+  console.log('[manage/access] selected account permissions', {
+    viewerAccountId,
+    targetAccountId,
+    permissions: grantedPermissions,
+  });
+
   return (
     <div className="grid gap-8">
       <BackButton href={`/manage/${id}`} />

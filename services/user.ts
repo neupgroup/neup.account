@@ -43,6 +43,22 @@ export type UserContacts = {
   otherLocation?: string;
 };
 
+export type HomeSelectedAccountAccessLog = {
+  personalAccountId: string;
+  activeAccountId: string;
+  isManaging: boolean;
+  grants: Array<{
+    accessId: string;
+    accessType: string;
+    status: string;
+    roleId: string;
+    roleName: string | null;
+    roleScope: string | null;
+    permissions: string[];
+    expiresAt: string | null;
+  }>;
+};
+
 // --- User Data Fetching ---
 
 // Fetches the full profile for an account, including individual and brand sub-profiles.
@@ -301,6 +317,78 @@ export async function checkPermissions(
   const permissionsSet = new Set(userPermissions);
 
   return requiredPermissions.every((p) => permissionsSet.has(p));
+}
+
+export async function getHomeSelectedAccountAccessLog(): Promise<HomeSelectedAccountAccessLog | null> {
+  const [personalAccountId, activeAccountId] = await Promise.all([
+    getPersonalAccountId(),
+    getActiveAccountId(),
+  ]);
+
+  if (!personalAccountId || !activeAccountId) {
+    return null;
+  }
+
+  try {
+    await cleanupExpiredAccessModel();
+
+    const grants = await prisma.access.findMany({
+      where: {
+        memberAccountId: personalAccountId,
+        parentAccountId: activeAccountId,
+        status: 'active',
+        OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
+        role: {
+          appId: 'neup.account',
+        },
+      },
+      orderBy: {
+        roleId: 'asc',
+      },
+      select: {
+        id: true,
+        accessType: true,
+        status: true,
+        roleId: true,
+        isTemporary: true,
+        role: {
+          select: {
+            name: true,
+            scope: true,
+            permissions: true,
+          },
+        },
+      },
+    });
+
+    return {
+      personalAccountId,
+      activeAccountId,
+      isManaging: personalAccountId !== activeAccountId,
+      grants: grants.map((grant) => ({
+        accessId: grant.id,
+        accessType: grant.accessType,
+        status: grant.status,
+        roleId: grant.roleId,
+        roleName: grant.role.name ?? null,
+        roleScope: grant.role.scope ?? null,
+        permissions: extractRolePermissionNames(grant.role.permissions),
+        expiresAt: grant.isTemporary?.toISOString() ?? null,
+      })),
+    };
+  } catch (error) {
+    await logError(
+      "database",
+      error,
+      `getHomeSelectedAccountAccessLog:${personalAccountId}:${activeAccountId}`,
+    );
+    return {
+      personalAccountId,
+      activeAccountId,
+      isManaging: personalAccountId !== activeAccountId,
+      grants: [],
+    };
+  }
 }
 
 // --- Validation ---

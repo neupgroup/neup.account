@@ -5,7 +5,6 @@ import { ListItem } from "@/components/ui/list-item";
 import { PrimaryHeader } from "@/components/ui/primary-header";
 import { UserCircle, FileText, HeartHandshake, AtSign, Contact, ShieldCheck } from "@/components/icons";
 import { getActiveAccountId, getPersonalAccountId } from "@/core/auth/verify";
-import { getSessionCookies } from "@/core/helpers/cookies";
 import { checkGrantedPermissions, checkPermissions, getUserProfile } from "@/services/user";
 import { logSystemError } from "@/core/helpers/logger";
 import { PROFILE_NAV_PERMISSIONS, PROFILE_SECTION_PERMISSIONS } from "@/core/auth/profile-permissions";
@@ -29,14 +28,14 @@ export default async function ProfilePage() {
         notFound();
     }
 
-    const { managingAccountId } = await getSessionCookies();
-
     const accountProfile = await getUserProfile(accountId);
     if (!accountProfile) {
         notFound();
     }
 
-    const canViewProfile = managingAccountId
+    const isManaging = accountId !== personalAccountId;
+
+    const canViewProfile = isManaging
         ? await Promise.all(PROFILE_NAV_PERMISSIONS.map((permission) => checkGrantedPermissions([permission], personalAccountId, accountId)))
             .then((results) => results.some(Boolean))
         : await Promise.all(PROFILE_NAV_PERMISSIONS.map((permission) => checkPermissions([permission])))
@@ -101,7 +100,7 @@ export default async function ProfilePage() {
     const visibleProfileFeatures = (
         await Promise.all(
             profileFeatures.map(async (feature) => {
-                const canAccess = managingAccountId
+                const canAccess = isManaging
                     ? await Promise.all(
                         feature.permissions.map((permission) => checkGrantedPermissions([permission], personalAccountId, accountId))
                     ).then((results) => results.some(Boolean))

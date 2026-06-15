@@ -5,7 +5,7 @@
 // This is called on every page load by the client-side SessionProvider.
 
 import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
-import { getUserProfile, getAccountPermission } from '@/services/user';
+import { getUserProfile, getAccountPermission, getGrantedAccountPermission } from '@/services/user';
 import { verifyActiveSession } from '@/services/auth/verify';
 import type { StoredProfileInfo } from './storage';
 
@@ -39,9 +39,13 @@ export async function checkSession(selectedAccountId?: string | null): Promise<S
     }
 
     // Fetch profile and permissions in parallel to minimize latency
+    const isManaging = activeId !== personalId;
+
     const [profile, permissions] = await Promise.all([
         getUserProfile(activeId),
-        getAccountPermission(activeId),
+        isManaging
+            ? getGrantedAccountPermission(personalId, activeId)
+            : getAccountPermission(activeId),
     ]);
 
     if (!profile) {

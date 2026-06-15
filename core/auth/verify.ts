@@ -5,6 +5,8 @@
 // "who is logged in" calls into this file.
 
 import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
+import prisma from '@/core/helpers/prisma';
 import { verifyActiveSession } from '@/services/auth/verify';
 import { getSessionCookies } from '@/core/helpers/cookies';
 
@@ -65,7 +67,41 @@ export async function validateCurrentSession() {
 // Returns the ID of the account currently in context.
 // If the user is managing a brand/dependent/delegated account, returns that account's ID.
 // Otherwise returns the personal account ID.
-export async function getActiveAccountId(): Promise<string | null> {
+async function resolveSelectedAccountId(selectedAccountId?: string | null): Promise<string | null> {
+    const requestedAccountId =
+        selectedAccountId?.trim() ||
+        (await headers()).get('x-selected-account')?.trim() ||
+        null;
+
+    if (!requestedAccountId) return null;
+
+    const personalAccountId = await getPersonalAccountId();
+    if (!personalAccountId) return null;
+
+    if (requestedAccountId === personalAccountId) {
+        return requestedAccountId;
+    }
+
+    const grant = await prisma.access.findFirst({
+        where: {
+            memberAccountId: personalAccountId,
+            parentAccountId: requestedAccountId,
+            status: 'active',
+            OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
+            role: {
+                appId: 'neup.account',
+            },
+        },
+        select: { id: true },
+    });
+
+    return grant ? requestedAccountId : null;
+}
+
+export async function getActiveAccountId(selectedAccountId?: string | null): Promise<string | null> {
+    const requestedAccountId = await resolveSelectedAccountId(selectedAccountId);
+    if (requestedAccountId) return requestedAccountId;
+
     const { managingAccountId, accountId } = await getSessionCookies();
     return managingAccountId || accountId || null;
 }

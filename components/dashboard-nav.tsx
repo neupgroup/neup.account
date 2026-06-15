@@ -1,7 +1,7 @@
 'use client';
 
 import { FlowLink } from '@/components/ui/flow-link'
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useTransition } from "react";
 import { cn } from "@/core/helpers/utils"
 import { buttonVariants } from "@/components/ui/button"
@@ -10,11 +10,11 @@ import { Skeleton } from "./ui/skeleton";
 import { useSession } from "@/core/providers/session";
 import { switchToPersonal } from "@/services/auth/switch";
 import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
-import { redirectInApp } from "@/services/navigation";
 
 export function DashboardNav() {
     const pathname = usePathname();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { permissions, isManaging, profile, loading, refetch } = useSession();
     const [isSwitching, startSwitchTransition] = useTransition();
 
@@ -22,7 +22,10 @@ export function DashboardNav() {
         startSwitchTransition(async () => {
             await switchToPersonal();
             refetch();
-            redirectInApp(router, '/home');
+            const params = new URLSearchParams(searchParams.toString());
+            params.delete('selectedAccount');
+            const query = params.toString();
+            router.replace(query ? `/home?${query}` : '/home');
             router.refresh();
         });
     };

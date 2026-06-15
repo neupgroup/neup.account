@@ -74,6 +74,9 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
     }, [account.accountId, account.aid, account.isUnknown, account.nid, account.neupId, account.isBrand, account.displayName, account.displayPhoto]);
 
     const finalAccount = { ...account, ...details };
+    const currentAccountId = finalAccount.aid || finalAccount.accountId || '';
+    const isOwnerAccount = Boolean(finalAccount.def === 1);
+    const effectiveSelectedAccountId = selectedAccountId || (isOwnerAccount ? currentAccountId : null);
 
     const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
         // Prevent navigation if the click is on a button inside AccountActions
@@ -82,11 +85,16 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
         }
 
         startSwitchTransition(async () => {
-            const targetAccountId = finalAccount.aid || finalAccount.accountId || '';
+            const targetAccountId = currentAccountId;
             if (!targetAccountId) return;
 
+            const currentlySelectedAccountId = effectiveSelectedAccountId;
+            if (currentlySelectedAccountId === targetAccountId) {
+                return;
+            }
+
             const params = new URLSearchParams(searchParams.toString());
-            if (finalAccount.def === 1) {
+            if (isOwnerAccount) {
                 params.delete('selectedAccount');
             } else {
                 params.set('selectedAccount', targetAccountId);
@@ -111,10 +119,8 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
         );
     }
 
-    const currentAccountId = finalAccount.aid || finalAccount.accountId || '';
     const isSelected =
-        Boolean(currentAccountId && selectedAccountId === currentAccountId) ||
-        Boolean(finalAccount.def === 1 && !selectedAccountId) ||
+        Boolean(currentAccountId && effectiveSelectedAccountId === currentAccountId) ||
         Boolean(isActive);
 
     return (
@@ -137,7 +143,14 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
         >
             <div className="flex items-center gap-4">
                 <div>
-                    <h3 className={cn("font-semibold", isSelected && "text-accent")}>{finalAccount.displayName}</h3>
+                    <h3 className={cn("font-semibold", isSelected && "text-accent")}>
+                        {finalAccount.displayName}
+                        {isOwnerAccount && (
+                            <span className="ml-1 text-xs font-medium text-muted-foreground">
+                                (you)
+                            </span>
+                        )}
+                    </h3>
                     <div className="flex items-center gap-2">
                         <p className="text-sm text-muted-foreground">
                             @{finalAccount.neupId}

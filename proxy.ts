@@ -141,10 +141,14 @@ function redirectToStart(request: NextRequest, pathname: string) {
 
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const selectedAccountId = request.nextUrl.searchParams.get('selectedAccount')?.trim();
 
   // 1. Prepare headers.
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-next-pathname', pathname);
+  if (selectedAccountId) {
+    requestHeaders.set('x-selected-account', selectedAccountId);
+  }
 
 
   // 2. HTTPS enforcement

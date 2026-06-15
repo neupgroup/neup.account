@@ -5,9 +5,9 @@
 // Caches a lightweight profile snapshot and permissions JSON in sessionStorage to avoid
 // redundant server calls on subsequent renders. Cache is invalidated on refetch().
 
-import { createContext, useState, useEffect, type ReactNode, useContext } from 'react';
+import { createContext, useState, useEffect, type ReactNode, useContext, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { type UserProfile, getUserProfile as fetchUserProfile } from '@/services/user';
-import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
 import { checkSession } from '@/core/auth/check';
 import { AUTH_STATE_CHANGED_EVENT } from '@/core/auth/events';
 import {
@@ -40,6 +40,9 @@ export function useSession() {
 }
 
 export const SessionProvider = ({ children }: { children: ReactNode }) => {
+    const searchParams = useSearchParams();
+    const selectedAccountId = searchParams.get('selectedAccount');
+    const selectedAccountRef = useRef<string | null>(selectedAccountId);
     const [sessionState, setSessionState] = useState<SessionState>({
         loading: true,
         profile: null,
@@ -49,11 +52,12 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
         isManaging: false,
         refetch: () => {},
     });
+    const fetchDataRef = useRef<(forceRefresh?: boolean) => Promise<void>>(async () => {});
 
-    const fetchData = async (forceRefresh = false) => {
+    fetchDataRef.current = async (forceRefresh = false) => {
         setSessionState(s => ({ ...s, loading: true }));
 
-        const result = await checkSession();
+        const result = await checkSession(selectedAccountId);
 
         if (!result.valid) {
             // Clear any stale cached data on invalid session
@@ -94,18 +98,18 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
             accountId: result.accountId,
             personalAccountId: result.personalAccountId,
             isManaging: result.accountId !== result.personalAccountId,
-            refetch: () => fetchData(true),
+            refetch: () => fetchDataRef.current(true),
         });
     };
 
     // Clears the sessionStorage cache and forces a full re-fetch from the server.
     const clearCacheAndRefetch = () => {
         deleteSessionData();
-        fetchData(true);
+        void fetchDataRef.current(true);
     };
 
     useEffect(() => {
-        fetchData();
+        void fetchDataRef.current();
 
         const handleAuthStateChanged = () => {
             clearCacheAndRefetch();
@@ -118,6 +122,16 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        if (selectedAccountRef.current === selectedAccountId) {
+            return;
+        }
+
+        selectedAccountRef.current = selectedAccountId;
+        clearCacheAndRefetch();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedAccountId]);
 
     return (
         <SessionContext.Provider value={{ ...sessionState, refetch: clearCacheAndRefetch }}>

@@ -21,7 +21,7 @@ export type SessionCheckResult =
 
 // Verifies the active session and returns the profile, permissions, and account IDs.
 // Returns { valid: false } if the session is invalid or the profile cannot be loaded.
-export async function checkSession(): Promise<SessionCheckResult> {
+export async function checkSession(selectedAccountId?: string | null): Promise<SessionCheckResult> {
     // First verify the raw session triplet (aid/sid/skey) is valid
     const verification = await verifyActiveSession();
     if (!verification.valid) {
@@ -30,7 +30,7 @@ export async function checkSession(): Promise<SessionCheckResult> {
 
     // Resolve both the active (possibly managing) and personal account IDs in parallel
     const [activeId, personalId] = await Promise.all([
-        getActiveAccountId(),
+        getActiveAccountId(selectedAccountId),
         getPersonalAccountId(),
     ]);
 

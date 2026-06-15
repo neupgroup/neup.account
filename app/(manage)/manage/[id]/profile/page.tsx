@@ -31,7 +31,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
       icon: FileText,
       title: "Legal Name",
       description: "Manage the user's legal first, middle, and last name.",
-      href: `/manage/${id}/profile/name`,
+      href: `/manage/${id}/profile/legal`,
     },
     {
       icon: HeartHandshake,

@@ -65,7 +65,7 @@ export default async function ProfilePage() {
             icon: FileText,
             title: "Legal Name",
             description: "Manage your legal first, middle, and last name.",
-            href: "/profile/name",
+            href: "/profile/legal",
         },
         {
             permissions: PROFILE_SECTION_PERMISSIONS.demographics,

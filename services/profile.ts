@@ -6,8 +6,8 @@ import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { format, isValid, parse as parseWithFormat } from 'date-fns';
-import { brandProfileFormSchema } from '@/services/profile/schema';
-import { getUserProfile, checkPermissions, checkNeupIdAvailability, getUserNeupIds } from '@/services/user';
+import { brandLegalFormSchema, brandProfileFormSchema } from '@/services/profile/schema';
+import { getUserProfile, checkGrantedPermissions, checkPermissions, checkNeupIdAvailability, getUserNeupIds } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
 import { getAITextResponse } from '@/services/shared/ai';
@@ -651,6 +651,94 @@ export async function updateBrandProfile(accountId: string, data: z.infer<typeof
     } catch (error) {
         await logError('database', error, 'updateBrandProfile');
         return { success: false, error: 'An unexpected error occurred while updating your profile.' };
+    }
+}
+
+export async function updateBrandLegalProfile(
+    accountId: string,
+    data: z.infer<typeof brandLegalFormSchema>,
+    locationString?: string,
+) {
+    const personalAccountId = await getPersonalAccountId();
+    if (!personalAccountId) {
+        return { success: false, error: "User not authenticated." };
+    }
+
+    const canUpdateLegal = accountId === personalAccountId
+        ? await checkPermissions(['profile.legal.update'])
+        : await checkGrantedPermissions(['profile.legal.update'], personalAccountId, accountId);
+
+    if (!canUpdateLegal) {
+        return { success: false, error: "You do not have permission to update this profile." };
+    }
+
+    const validation = brandLegalFormSchema.safeParse(data);
+    if (!validation.success) {
+        return { success: false, error: "Invalid data provided.", details: validation.error.flatten() };
+    }
+
+    try {
+        const beforeAccount = await prisma.account.findUnique({
+            where: { id: accountId },
+            select: {
+                brandProfile: {
+                    select: {
+                        isLegalEntity: true,
+                        details: true,
+                    },
+                },
+            },
+        });
+
+        const beforeDetails =
+            beforeAccount?.brandProfile?.details && typeof beforeAccount.brandProfile.details === 'object'
+                ? (beforeAccount.brandProfile.details as Record<string, unknown>)
+                : {};
+
+        const brandProfileData: Record<string, any> = {
+            isLegalEntity: validation.data.isLegalEntity,
+        };
+        const nextBrandDetails = { ...beforeDetails };
+
+        if (validation.data.isLegalEntity) {
+            nextBrandDetails.nameLegal = validation.data.nameLegal?.trim() || null;
+            nextBrandDetails.dateEstablished = validation.data.dateEstablished?.toISOString() || null;
+        } else {
+            nextBrandDetails.nameLegal = null;
+            nextBrandDetails.dateEstablished = null;
+        }
+
+        brandProfileData.details = nextBrandDetails;
+
+        await prisma.$transaction(async (tx: any) => {
+            await tx.account.update({
+                where: { id: accountId },
+                data: {
+                    brandProfile: {
+                        upsert: {
+                            create: brandProfileData,
+                            update: brandProfileData,
+                        },
+                    },
+                },
+            });
+
+            await updateOrCreateContact(
+                tx,
+                accountId,
+                'headOfficeLocation',
+                validation.data.isLegalEntity ? validation.data.headOfficeLocation?.trim() : undefined,
+                true,
+            );
+        });
+
+        revalidatePath('/manage/profile');
+        revalidatePath('/manage/profile/legal');
+
+        return { success: true, message: 'Brand legal information updated successfully.' };
+    } catch (error) {
+        await logError('database', error, 'updateBrandLegalProfile');
+        return { success: false, error: 'An unexpected error occurred while updating legal information.' };
     }
 }
 

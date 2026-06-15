@@ -27,6 +27,7 @@ export type UserProfile = {
   registrationId?: string;
   countryOfOrigin?: string;
   dateEstablished?: string; // ISO string
+  headOfficeLocation?: string;
   neupIdPrimary?: string;
   verified?: boolean;
   accountType?: string;
@@ -74,6 +75,15 @@ export async function getUserProfile(
       include: {
         individualProfile: true,
         brandProfile: true,
+        contacts: {
+          where: {
+            contactType: 'headOfficeLocation',
+          },
+          select: {
+            value: true,
+          },
+          take: 1,
+        },
         neupIds: {
           where: { isPrimary: true },
           select: { neupId: true },
@@ -112,6 +122,7 @@ export async function getUserProfile(
             : account.brandProfile
               ? account.createdAt.toISOString()
               : undefined,
+        headOfficeLocation: account.contacts[0]?.value || undefined,
         verified: account.isVerified || undefined,
         accountType: account.accountType || undefined,
         permit: "default",

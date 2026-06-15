@@ -32,3 +32,10 @@ export const brandProfileFormSchema = z.object({
   countryOfOrigin: z.string().optional(),
   dateEstablished: z.date().optional(),
 });
+
+export const brandLegalFormSchema = z.object({
+  isLegalEntity: z.boolean(),
+  nameLegal: z.string().optional(),
+  dateEstablished: z.date().optional(),
+  headOfficeLocation: z.string().optional(),
+});

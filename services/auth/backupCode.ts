@@ -128,8 +128,8 @@ export async function verifyBackupCode(input: VerifyBackupCodeInput): Promise<Ba
  * Generates and stores a new set of backup codes for the active account.
  */
 export async function generateBackupCode(): Promise<BackupCodeActionResult> {
-	await requireAnyPermission404(['security.backup_codes.create.self']);
-	const canCreate = await checkPermissions(['security.backup_codes.create.self']);
+	await requireAnyPermission404(['security.backup_codes.create']);
+	const canCreate = await checkPermissions(['security.backup_codes.create']);
 	if (!canCreate) return { success: false, error: 'Permission denied.' };
 
 	const accountId = await getPersonalAccountId();
@@ -183,8 +183,8 @@ export async function generateBackupCode(): Promise<BackupCodeActionResult> {
  * Returns backup codes for the active account.
  */
 export async function getBackupCode(): Promise<BackupCodeActionResult> {
-	await requireAnyPermission404(['security.backup_codes.view.self']);
-	const canView = await checkPermissions(['security.backup_codes.view.self']);
+	await requireAnyPermission404(['security.backup_codes.view']);
+	const canView = await checkPermissions(['security.backup_codes.view']);
 	if (!canView) return { success: false, error: 'Permission denied.' };
 
 	const accountId = await getPersonalAccountId();

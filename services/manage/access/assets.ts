@@ -147,8 +147,8 @@ async function canUseRootMode(rootMode?: boolean): Promise<boolean> {
  * Function getAccessAssetGroups.
  */
 export async function getAccessAssetGroups() {
-  await requireAnyPermission404(['security.third_party.view.self']);
-  const canView = await checkPermissions(['security.third_party.view.self']);
+  await requireAnyPermission404(['security.third_party.view']);
+  const canView = await checkPermissions(['security.third_party.view']);
   if (!canView) return [];
 
   const accountId = await getActiveAccountId();
@@ -190,7 +190,7 @@ export async function getAccessAssetGroups() {
  * Function getAccessAssetGroup.
  */
 export async function getAccessAssetGroup(groupId: string): Promise<AccessAssetGroup | null> {
-  await requireAnyPermission404(['security.third_party.view.self']);
+  await requireAnyPermission404(['security.third_party.view']);
   const accountId = await getActiveAccountId();
   if (!accountId) return null;
 
@@ -224,8 +224,8 @@ export async function getAccessAssetGroup(groupId: string): Promise<AccessAssetG
  * Function createAssetGroup.
  */
 export async function createAssetGroup(input: { name: string; details?: string }) {
-  await requireAnyPermission404(['security.third_party.add.self']);
-  const canAdd = await checkPermissions(['security.third_party.add.self']);
+  await requireAnyPermission404(['security.third_party.add']);
+  const canAdd = await checkPermissions(['security.third_party.add']);
   if (!canAdd) {
     return { success: false, error: 'Permission denied.' };
   }

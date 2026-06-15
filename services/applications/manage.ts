@@ -837,9 +837,9 @@ export async function updateManagedApplicationStatus(input: { appId: string; sta
     return { success: false, error: 'Invalid application status.' };
   }
 
-  await requireAnyPermission404(['root.application.view', 'linked_accounts.brand.manager.self']);
+  await requireAnyPermission404(['root.application.view', 'linked_accounts.brand.manager']);
   const isRootAppManager = await checkPermissions(['root.application.view']);
-  const isBrandManager = await checkPermissions(['linked_accounts.brand.manager.self']);
+  const isBrandManager = await checkPermissions(['linked_accounts.brand.manager']);
   if (!isRootAppManager && !isBrandManager) {
     return { success: false, error: 'Permission denied.' };
   }
@@ -1105,7 +1105,7 @@ export async function removeServerIp(input: {
  * ApplicationConnection to. appSecret is never returned.
  */
 export async function getApplicationDetailsForViewerV2(appId: string): Promise<ApplicationDetailsV2 | null> {
-  await requireAnyPermission404(['security.third_party.view.self']);
+  await requireAnyPermission404(['security.third_party.view']);
   const activeAccountId = await getActiveAccountId();
   if (!activeAccountId) return null;
 

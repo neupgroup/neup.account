@@ -516,7 +516,7 @@ export async function removeAccess(permitId: string, geolocation?: string): Prom
  * Function getDelegatablePermissions.
  */
 export async function getDelegatablePermissions(): Promise<Permission[]> {
-    await requireAnyPermission404(['security.third_party.view.self']);
+    await requireAnyPermission404(['security.third_party.view']);
     const managedAccountId = await getActiveAccountId();
     if (!managedAccountId) return [];
 
@@ -540,8 +540,8 @@ export async function updatePermissions(permitId: string, newPermissionIds: stri
         return { success: false, error: "Not authenticated." };
     }
 
-    await requireAnyPermission404(['security.third_party.add.self']);
-    const canAdd = await checkPermissions(['security.third_party.add.self']);
+    await requireAnyPermission404(['security.third_party.add']);
+    const canAdd = await checkPermissions(['security.third_party.add']);
     if (!canAdd) {
         return { success: false, error: 'Permission denied.' };
     }
@@ -598,8 +598,8 @@ export async function grantAccessByNeupId(formData: FormData, geolocation?: stri
         return { success: false, error: "Not authenticated." };
     }
 
-    await requireAnyPermission404(['security.third_party.add.self']);
-    const canAdd = await checkPermissions(['security.third_party.add.self']);
+    await requireAnyPermission404(['security.third_party.add']);
+    const canAdd = await checkPermissions(['security.third_party.add']);
     if (!canAdd) {
         return { success: false, error: 'Permission denied.' };
     }

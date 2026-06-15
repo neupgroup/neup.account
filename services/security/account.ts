@@ -37,8 +37,8 @@ const statusOrder: Record<RecoveryAccount['status'], number> = {
   * Function getRecoveryAccounts.
   */
 export async function getRecoveryAccounts(): Promise<RecoveryAccount[]> {
-   await requireAnyPermission404(['security.recovery_accounts.view.self']);
-   const canView = await checkPermissions(['security.recovery_accounts.view.self']);
+   await requireAnyPermission404(['security.recovery_accounts.view']);
+   const canView = await checkPermissions(['security.recovery_accounts.view']);
    if (!canView) return [];
  
    const accessTo = await getPersonalAccountId();
@@ -91,8 +91,8 @@ export async function getRecoveryAccounts(): Promise<RecoveryAccount[]> {
   * Function addRecoveryAccount.
   */
 export async function addRecoveryAccount(formData: FormData): Promise<{ success: boolean; error?: string; newAccount?: RecoveryAccount }> {
-   await requireAnyPermission404(['security.recovery_accounts.add.self']);
-   const canAdd = await checkPermissions(['security.recovery_accounts.add.self']);
+   await requireAnyPermission404(['security.recovery_accounts.add']);
+   const canAdd = await checkPermissions(['security.recovery_accounts.add']);
    if (!canAdd) return { success: false, error: 'Permission denied.' };
  
    const accessTo = await getPersonalAccountId();
@@ -173,8 +173,8 @@ export async function addRecoveryAccount(formData: FormData): Promise<{ success:
   * Function removeRecoveryAccount.
   */
 export async function removeRecoveryAccount(id: string): Promise<{ success: boolean; error?: string }> {
-   await requireAnyPermission404(['security.recovery_accounts.remove.self']);
-   const canRemove = await checkPermissions(['security.recovery_accounts.remove.self']);
+   await requireAnyPermission404(['security.recovery_accounts.remove']);
+   const canRemove = await checkPermissions(['security.recovery_accounts.remove']);
    if (!canRemove) return { success: false, error: 'Permission denied.' };
  
    const accessTo = await getPersonalAccountId();

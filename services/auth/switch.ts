@@ -46,8 +46,8 @@ export async function switchToAccount(memberId: string): Promise<{ success: bool
  * Sets auth_account_switch = brandId.
  */
 export async function switchToBrand(brandId: string): Promise<{ success: boolean; error?: string }> {
-  await requireAnyPermission404(['linked_accounts.brand.view.self']);
-  const canSwitch = await checkPermissions(['linked_accounts.brand.view.self']);
+  await requireAnyPermission404(['linked_accounts.brand.view']);
+  const canSwitch = await checkPermissions(['linked_accounts.brand.view']);
   if (!canSwitch) return { success: false, error: 'Permission denied.' };
 
   const personalAccountId = await getPersonalAccountId();
@@ -83,8 +83,8 @@ export async function switchToBrand(brandId: string): Promise<{ success: boolean
  * Sets auth_account_switch = dependentId.
  */
 export async function switchToDependent(dependentId: string): Promise<{ success: boolean; error?: string }> {
-  await requireAnyPermission404(['linked_accounts.dependent.view.self']);
-  const canSwitch = await checkPermissions(['linked_accounts.dependent.view.self']);
+  await requireAnyPermission404(['linked_accounts.dependent.view']);
+  const canSwitch = await checkPermissions(['linked_accounts.dependent.view']);
   if (!canSwitch) return { success: false, error: 'Permission denied.' };
 
   const personalAccountId = await getPersonalAccountId();

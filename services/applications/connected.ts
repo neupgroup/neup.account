@@ -35,8 +35,8 @@ function isInternalApp(appId: string): boolean {
 
 // Returns applications the user is connected to, split by first/third party.
 export async function getConnectedApplications(): Promise<ConnectedApplications> {
-    await requireAnyPermission404(['security.third_party.view.self']);
-    const canView = await checkPermissions(['security.third_party.view.self']);
+    await requireAnyPermission404(['security.third_party.view']);
+    const canView = await checkPermissions(['security.third_party.view']);
     if (!canView) return { firstParty: [], thirdParty: [] };
 
     const accountId = await getPersonalAccountId();
@@ -81,8 +81,8 @@ export async function getConnectedApplications(): Promise<ConnectedApplications>
 
 // Returns details for a single application by ID.
 export async function getApplicationDetails(appId: string): Promise<Application | null> {
-    await requireAnyPermission404(['security.third_party.view.self']);
-    const canView = await checkPermissions(['security.third_party.view.self']);
+    await requireAnyPermission404(['security.third_party.view']);
+    const canView = await checkPermissions(['security.third_party.view']);
     if (!canView) return null;
 
     try {

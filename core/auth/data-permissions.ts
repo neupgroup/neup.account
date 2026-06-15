@@ -1,10 +1,10 @@
 export const DATA_PRIVACY_PERMISSION_GROUPS = {
-  terms: ['data.agreed_terms.view.self'],
-  deleteAccount: ['data.delete_account.start.self'],
-  deactivateAccount: ['data.deactivate_account.start.self'],
-  materialization: ['data.materialization.view.self', 'data.materialization.modify.self'],
-  appConnections: ['security.third_party.view.self'],
-  recentActivities: ['security.recent_activities.view.self'],
+  terms: ['data.agreed_terms.view'],
+  deleteAccount: ['data.delete_account.start'],
+  deactivateAccount: ['data.deactivate_account.start'],
+  materialization: ['data.materialization.view', 'data.materialization.modify'],
+  appConnections: ['security.third_party.view'],
+  recentActivities: ['security.recent_activities.view'],
 } as const;
 
 export const DATA_PRIVACY_NAV_PERMISSIONS = Array.from(

@@ -50,8 +50,8 @@ export default async function AccountsPage() {
   }
 
   const permissions = await getAccountPermission(accountId);
-  const canCreateBrand = permissions.includes('linked_accounts.brand.create.self');
-  const canCreateDependent = permissions.includes('linked_accounts.dependent.create.self');
+  const canCreateBrand = permissions.includes('linked_accounts.brand.create');
+  const canCreateDependent = permissions.includes('linked_accounts.dependent.create');
 
   const isManaging = Boolean(await authCookies.get('auth_account_switch'));
 

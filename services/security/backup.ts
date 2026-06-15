@@ -56,8 +56,8 @@ function writeBackupCodes(codes: BackupCode[]) {
  * Function getBackupCodes.
  */
 export async function getBackupCodes(): Promise<BackupCode[]> {
-    await requireAnyPermission404(['security.backup_codes.view.self']);
-    const canView = await checkPermissions(['security.backup_codes.view.self']);
+    await requireAnyPermission404(['security.backup_codes.view']);
+    const canView = await checkPermissions(['security.backup_codes.view']);
     if (!canView) return [];
 
     const accountId = await getPersonalAccountId();
@@ -87,8 +87,8 @@ export async function getBackupCodes(): Promise<BackupCode[]> {
  * Function generateBackupCodes.
  */
 export async function generateBackupCodes(): Promise<BackupCode[]> {
-    await requireAnyPermission404(['security.backup_codes.create.self']);
-    const canCreate = await checkPermissions(['security.backup_codes.create.self']);
+    await requireAnyPermission404(['security.backup_codes.create']);
+    const canCreate = await checkPermissions(['security.backup_codes.create']);
     if (!canCreate) throw new Error("Permission denied.");
 
     const accountId = await getPersonalAccountId();

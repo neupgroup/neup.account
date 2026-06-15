@@ -19,7 +19,7 @@ export type ManagedSession = {
  * Function getUserSessions.
  */
 export async function getUserSessions(): Promise<ManagedSession[]> {
-    await requireAnyPermission404(['security.login_devices.view.self']);
+    await requireAnyPermission404(['security.login_devices.view']);
     try {
         const accountId = await getActiveAccountId();
         if (!accountId) {
@@ -60,7 +60,7 @@ export async function getUserSessions(): Promise<ManagedSession[]> {
  * Function logoutSessionById.
  */
 export async function logoutSessionById(sessionId: string): Promise<{ success: boolean, error?: string }> {
-    await requireAnyPermission404(['security.login_devices.view.self']);
+    await requireAnyPermission404(['security.login_devices.view']);
     if (!sessionId) {
         return { success: false, error: "Session ID is required." };
     }
@@ -89,7 +89,7 @@ export async function logoutSessionById(sessionId: string): Promise<{ success: b
  * Function logoutAllOtherSessions.
  */
 export async function logoutAllOtherSessions(): Promise<{ success: boolean, error?: string }> {
-    await requireAnyPermission404(['security.login_devices.view.self']);
+    await requireAnyPermission404(['security.login_devices.view']);
     try {
         const currentSession = await getActiveSession();
         if (!currentSession) {

@@ -17,8 +17,8 @@ const CONTACT_TYPE = 'recoveryPhone';
  * Function getRecoveryPhone.
  */
 export async function getRecoveryPhone(): Promise<string | null> {
-    await requireAnyPermission404(['security.recovery_phone.view.self']);
-    const canView = await checkPermissions(['security.recovery_phone.view.self']);
+    await requireAnyPermission404(['security.recovery_phone.view']);
+    const canView = await checkPermissions(['security.recovery_phone.view']);
     if (!canView) return null;
     
     const accountId = await getPersonalAccountId();
@@ -44,8 +44,8 @@ export async function getRecoveryPhone(): Promise<string | null> {
  * Function addRecoveryPhone.
  */
 export async function addRecoveryPhone(data: z.infer<typeof phoneFormSchema>): Promise<{ success: boolean; error?: string; }> {
-    await requireAnyPermission404(['security.recovery_phone.add.self']);
-    const canAdd = await checkPermissions(['security.recovery_phone.add.self']);
+    await requireAnyPermission404(['security.recovery_phone.add']);
+    const canAdd = await checkPermissions(['security.recovery_phone.add']);
     if (!canAdd) return { success: false, error: "Permission denied." };
     
     const accountId = await getPersonalAccountId();
@@ -102,8 +102,8 @@ export async function addRecoveryPhone(data: z.infer<typeof phoneFormSchema>): P
  * Function removeRecoveryPhone.
  */
 export async function removeRecoveryPhone(): Promise<{ success: boolean; error?: string; }> {
-    await requireAnyPermission404(['security.recovery_phone.remove.self']);
-    const canRemove = await checkPermissions(['security.recovery_phone.remove.self']);
+    await requireAnyPermission404(['security.recovery_phone.remove']);
+    const canRemove = await checkPermissions(['security.recovery_phone.remove']);
     if (!canRemove) return { success: false, error: "Permission denied." };
 
     const accountId = await getPersonalAccountId();

@@ -15,8 +15,8 @@ import { requireAnyPermission404 } from '@/core/auth/permission-guards';
  * Function changePassword.
  */
 export async function changePassword(data: z.infer<typeof changePasswordSchema>, geolocation?: string) {
-    await requireAnyPermission404(['security.pass.modify.self']);
-    const hasPermission = await checkPermissions(['security.pass.modify.self']);
+    await requireAnyPermission404(['security.pass.modify']);
+    const hasPermission = await checkPermissions(['security.pass.modify']);
     if (!hasPermission) {
         return { success: false, error: "You don't have permission to change the password." };
     }

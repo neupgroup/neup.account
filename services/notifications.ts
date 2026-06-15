@@ -101,7 +101,7 @@ export async function getNotifications(): Promise<AllNotifications> {
     const accountId = await getPersonalAccountId();
     if (!accountId) return { sticky: [], requests: [], other: [] };
 
-    const canView = await checkPermissions(['self.notification.read']);
+    const canView = await checkPermissions(['notification.read']);
     if (!canView) {
         notFound();
     }
@@ -173,7 +173,7 @@ export async function getNotifications(): Promise<AllNotifications> {
  * Function markNotificationAsRead.
  */
 export async function markNotificationAsRead(notificationId: string): Promise<{ success: boolean }> {
-    const canMarkAsRead = await checkPermissions(['self.notification.read']);
+    const canMarkAsRead = await checkPermissions(['notification.read']);
     if (!canMarkAsRead) return { success: false };
 
     try {
@@ -194,7 +194,7 @@ export async function markNotificationAsRead(notificationId: string): Promise<{ 
  * Function deleteNotification.
  */
 export async function deleteNotification(notificationId: string): Promise<{ success: boolean; error?: string; }> {
-    const canDelete = await checkPermissions(['self.notification.delete']);
+    const canDelete = await checkPermissions(['notification.delete']);
     if (!canDelete) return { success: false, error: "Permission denied." };
     
     try {

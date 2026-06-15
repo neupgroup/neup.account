@@ -13,9 +13,9 @@ export default async function BrandManagementLayout({
   params: Promise<{ id: string }>;
 }) {
   const resolvedParams = await params;
-  await requireAnyPermission404(['linked_accounts.brand.manage.self']);
+  await requireAnyPermission404(['linked_accounts.brand.manage']);
   const [canManageBrand, brandProfile] = await Promise.all([
-    checkPermissions(['linked_accounts.brand.manage.self']),
+    checkPermissions(['linked_accounts.brand.manage']),
     getUserProfile(resolvedParams.id)
   ]);
   

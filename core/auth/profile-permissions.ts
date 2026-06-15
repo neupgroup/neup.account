@@ -3,7 +3,7 @@ import { getPersonalAccountId } from '@/core/auth/verify';
 import { notFound } from 'next/navigation';
 
 export const PROFILE_DISPLAY_PERMISSION_GROUPS = {
-  self: ['profile.display.view.self', 'profile.display.update.self'],
+  self: ['profile.display.name', 'profile.display.update'],
   managed: ['profile.display.view.managed', 'profile.display.update.managed'],
   root: ['profile.display.view.root', 'profile.display.update.root'],
 } as const;
@@ -14,11 +14,11 @@ export const PROFILE_SECTION_PERMISSIONS = {
     ...PROFILE_DISPLAY_PERMISSION_GROUPS.managed,
     ...PROFILE_DISPLAY_PERMISSION_GROUPS.root,
   ],
-  legal: ['self.profile.legal.view', 'self.profile.legal.update'],
-  demographics: ['self.profile.demographics.view', 'self.profile.demographics.update'],
-  neupid: ['self.profile.neupid.view', 'self.profile.neupid.request', 'self.profile.neupid.remove'],
-  contact: ['self.profile.contact.view', 'self.profile.contact.update'],
-  kyc: ['self.profile.kyc.view', 'self.profile.kyc.update'],
+  legal: ['profile.legal.view', 'profile.legal.update'],
+  demographics: ['profile.demographics.view', 'profile.demographics.update'],
+  neupid: ['profile.neupid.update', 'profile.neupid.request', 'profile.neupid.remove'],
+  contact: ['profile.contact.view', 'profile.contact.update'],
+  kyc: ['profile.kyc.view', 'profile.kyc.update'],
 } as const;
 
 export const PROFILE_NAV_PERMISSIONS = Array.from(
@@ -26,8 +26,8 @@ export const PROFILE_NAV_PERMISSIONS = Array.from(
 );
 
 export const NOTIFICATION_PERMISSIONS = [
-  'self.notification.read',
-  'self.notification.delete',
+  'notification.read',
+  'notification.delete',
 ] as const;
 
 export function hasAnyPermission(

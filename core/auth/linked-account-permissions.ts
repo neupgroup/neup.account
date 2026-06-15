@@ -1,13 +1,13 @@
 export const LINKED_ACCOUNT_PERMISSION_GROUPS = {
   brand: [
-    'linked_accounts.brand.create.self',
-    'linked_accounts.brand.view.self',
-    'linked_accounts.brand.manage.self',
-    'linked_accounts.brand.manager.self',
+    'linked_accounts.brand.create',
+    'linked_accounts.brand.view',
+    'linked_accounts.brand.manage',
+    'linked_accounts.brand.manager',
   ],
   dependent: [
-    'linked_accounts.dependent.create.self',
-    'linked_accounts.dependent.view.self',
+    'linked_accounts.dependent.create',
+    'linked_accounts.dependent.view',
   ],
 } as const;
 

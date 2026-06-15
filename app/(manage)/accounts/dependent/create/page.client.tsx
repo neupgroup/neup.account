@@ -59,7 +59,7 @@ export default function CreateDependentPage() {
     
     useEffect(() => {
         async function verifyPermission() {
-            const hasPermission = await checkPermissions(['linked_accounts.dependent.create.self']);
+            const hasPermission = await checkPermissions(['linked_accounts.dependent.create']);
             setCanCreate(hasPermission);
         }
         verifyPermission();

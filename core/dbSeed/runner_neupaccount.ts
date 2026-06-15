@@ -79,53 +79,53 @@ ON CONFLICT ("id") DO NOTHING;
 
 -- 3a. Permissions — individual.default
 INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
-  ('cap-def-profile-display-view-self',       'profile.display.view.self',          '${APP_ID}', 'default'),
-  ('cap-def-profile-display-update-self',     'profile.display.update.self',        '${APP_ID}', 'default'),
+  ('cap-def-profile-display-view-self',       'profile.display.name',               '${APP_ID}', 'default'),
+  ('cap-def-profile-display-update-self',     'profile.display.update',             '${APP_ID}', 'default'),
   ('cap-def-profile-display-view-managed',    'profile.display.view.managed',       '${APP_ID}', 'default'),
   ('cap-def-profile-display-update-managed',  'profile.display.update.managed',     '${APP_ID}', 'default'),
   ('cap-def-profile-display-view-root',       'profile.display.view.root',          '${APP_ID}', 'default'),
   ('cap-def-profile-display-update-root',     'profile.display.update.root',        '${APP_ID}', 'default'),
-  ('cap-def-profile-legal-view',              'self.profile.legal.view',            '${APP_ID}', 'default'),
-  ('cap-def-profile-legal-update',            'self.profile.legal.update',          '${APP_ID}', 'default'),
-  ('cap-def-profile-demographics-view',       'self.profile.demographics.view',     '${APP_ID}', 'default'),
-  ('cap-def-profile-demographics-update',     'self.profile.demographics.update',   '${APP_ID}', 'default'),
-  ('cap-def-profile-neupid-view',             'self.profile.neupid.view',           '${APP_ID}', 'default'),
-  ('cap-def-profile-neupid-request',          'self.profile.neupid.request',        '${APP_ID}', 'default'),
-  ('cap-def-profile-neupid-remove',           'self.profile.neupid.remove',         '${APP_ID}', 'default'),
-  ('cap-def-profile-contact-view',            'self.profile.contact.view',          '${APP_ID}', 'default'),
-  ('cap-def-profile-contact-update',          'self.profile.contact.update',        '${APP_ID}', 'default'),
-  ('cap-def-profile-kyc-view',                'self.profile.kyc.view',              '${APP_ID}', 'default'),
-  ('cap-def-profile-kyc-update',              'self.profile.kyc.update',            '${APP_ID}', 'default'),
-  ('cap-def-notification-read',               'self.notification.read',             '${APP_ID}', 'default'),
-  ('cap-def-notification-delete',             'self.notification.delete',           '${APP_ID}', 'default'),
-  ('cap-def-security-pass-modify',            'security.pass.modify.self',               '${APP_ID}', 'default'),
-  ('cap-def-security-totp-add',               'security.totp.add.self',                  '${APP_ID}', 'default'),
-  ('cap-def-security-totp-remove',            'security.totp.remove.self',               '${APP_ID}', 'default'),
-  ('cap-def-security-backup-view',            'security.backup_codes.view.self',         '${APP_ID}', 'default'),
-  ('cap-def-security-backup-create',          'security.backup_codes.create.self',       '${APP_ID}', 'default'),
-  ('cap-def-security-recovery-accts-view',    'security.recovery_accounts.view.self',    '${APP_ID}', 'default'),
-  ('cap-def-security-recovery-accts-add',     'security.recovery_accounts.add.self',     '${APP_ID}', 'default'),
-  ('cap-def-security-recovery-accts-remove',  'security.recovery_accounts.remove.self',  '${APP_ID}', 'default'),
-  ('cap-def-security-recovery-phone-view',    'security.recovery_phone.view.self',       '${APP_ID}', 'default'),
-  ('cap-def-security-recovery-phone-add',     'security.recovery_phone.add.self',        '${APP_ID}', 'default'),
-  ('cap-def-security-recovery-phone-remove',  'security.recovery_phone.remove.self',     '${APP_ID}', 'default'),
-  ('cap-def-security-recovery-email-view',    'security.recovery_email.view.self',       '${APP_ID}', 'default'),
-  ('cap-def-security-recovery-email-add',     'security.recovery_email.add.self',        '${APP_ID}', 'default'),
-  ('cap-def-security-recovery-email-remove',  'security.recovery_email.remove.self',     '${APP_ID}', 'default'),
-  ('cap-def-security-devices-view',           'security.login_devices.view.self',        '${APP_ID}', 'default'),
-  ('cap-def-linked-brand-create',             'linked_accounts.brand.create.self',       '${APP_ID}', 'default'),
-  ('cap-def-linked-brand-view',               'linked_accounts.brand.view.self',         '${APP_ID}', 'default'),
-  ('cap-def-linked-dependent-create',         'linked_accounts.dependent.create.self',   '${APP_ID}', 'default'),
-  ('cap-def-linked-dependent-view',           'linked_accounts.dependent.view.self',     '${APP_ID}', 'default'),
-  ('cap-def-data-terms-view',                 'data.agreed_terms.view.self',        '${APP_ID}', 'default'),
-  ('cap-def-data-delete-start',               'data.delete_account.start.self',     '${APP_ID}', 'default'),
-  ('cap-def-data-deactivate-start',           'data.deactivate_account.start.self', '${APP_ID}', 'default'),
-  ('cap-def-data-materialization-view',       'data.materialization.view.self',     '${APP_ID}', 'default'),
-  ('cap-def-data-materialization-modify',     'data.materialization.modify.self',   '${APP_ID}', 'default'),
-  ('cap-def-security-third-party-view',       'security.third_party.view.self',          '${APP_ID}', 'default'),
-  ('cap-def-security-recent-activities',      'security.recent_activities.view.self',    '${APP_ID}', 'default'),
-  ('cap-def-security-third-party-add',        'security.third_party.add.self',           '${APP_ID}', 'default'),
-  ('cap-def-security-third-party-remove',     'security.third_party.remove.self',        '${APP_ID}', 'default'),
+  ('cap-def-profile-legal-view',              'profile.legal.view',            '${APP_ID}', 'default'),
+  ('cap-def-profile-legal-update',            'profile.legal.update',          '${APP_ID}', 'default'),
+  ('cap-def-profile-demographics-view',       'profile.demographics.view',     '${APP_ID}', 'default'),
+  ('cap-def-profile-demographics-update',     'profile.demographics.update',   '${APP_ID}', 'default'),
+  ('cap-def-profile-neupid-view',             'profile.neupid.update',         '${APP_ID}', 'default'),
+  ('cap-def-profile-neupid-request',          'profile.neupid.request',        '${APP_ID}', 'default'),
+  ('cap-def-profile-neupid-remove',           'profile.neupid.remove',         '${APP_ID}', 'default'),
+  ('cap-def-profile-contact-view',            'profile.contact.view',          '${APP_ID}', 'default'),
+  ('cap-def-profile-contact-update',          'profile.contact.update',        '${APP_ID}', 'default'),
+  ('cap-def-profile-kyc-view',                'profile.kyc.view',              '${APP_ID}', 'default'),
+  ('cap-def-profile-kyc-update',              'profile.kyc.update',            '${APP_ID}', 'default'),
+  ('cap-def-notification-read',               'notification.read',             '${APP_ID}', 'default'),
+  ('cap-def-notification-delete',             'notification.delete',           '${APP_ID}', 'default'),
+  ('cap-def-security-pass-modify',            'security.pass.modify',                    '${APP_ID}', 'default'),
+  ('cap-def-security-totp-add',               'security.totp.add',                       '${APP_ID}', 'default'),
+  ('cap-def-security-totp-remove',            'security.totp.remove',                '${APP_ID}', 'default'),
+  ('cap-def-security-backup-view',            'security.backup_codes.view',          '${APP_ID}', 'default'),
+  ('cap-def-security-backup-create',          'security.backup_codes.create',        '${APP_ID}', 'default'),
+  ('cap-def-security-recovery-accts-view',    'security.recovery_accounts.view',     '${APP_ID}', 'default'),
+  ('cap-def-security-recovery-accts-add',     'security.recovery_accounts.add',      '${APP_ID}', 'default'),
+  ('cap-def-security-recovery-accts-remove',  'security.recovery_accounts.remove',   '${APP_ID}', 'default'),
+  ('cap-def-security-recovery-phone-view',    'security.recovery_phone.view',        '${APP_ID}', 'default'),
+  ('cap-def-security-recovery-phone-add',     'security.recovery_phone.add',         '${APP_ID}', 'default'),
+  ('cap-def-security-recovery-phone-remove',  'security.recovery_phone.remove',      '${APP_ID}', 'default'),
+  ('cap-def-security-recovery-email-view',    'security.recovery_email.view',        '${APP_ID}', 'default'),
+  ('cap-def-security-recovery-email-add',     'security.recovery_email.add',         '${APP_ID}', 'default'),
+  ('cap-def-security-recovery-email-remove',  'security.recovery_email.remove',      '${APP_ID}', 'default'),
+  ('cap-def-security-devices-view',           'security.login_devices.view',         '${APP_ID}', 'default'),
+  ('cap-def-linked-brand-create',             'linked_accounts.brand.create',        '${APP_ID}', 'default'),
+  ('cap-def-linked-brand-view',               'linked_accounts.brand.view',          '${APP_ID}', 'default'),
+  ('cap-def-linked-dependent-create',         'linked_accounts.dependent.create',    '${APP_ID}', 'default'),
+  ('cap-def-linked-dependent-view',           'linked_accounts.dependent.view',      '${APP_ID}', 'default'),
+  ('cap-def-data-terms-view',                 'data.agreed_terms.view',              '${APP_ID}', 'default'),
+  ('cap-def-data-delete-start',               'data.delete_account.start',           '${APP_ID}', 'default'),
+  ('cap-def-data-deactivate-start',           'data.deactivate_account.start',       '${APP_ID}', 'default'),
+  ('cap-def-data-materialization-view',       'data.materialization.view',           '${APP_ID}', 'default'),
+  ('cap-def-data-materialization-modify',     'data.materialization.modify',         '${APP_ID}', 'default'),
+  ('cap-def-security-third-party-view',       'security.third_party.view',               '${APP_ID}', 'default'),
+  ('cap-def-security-recent-activities',      'security.recent_activities.view',         '${APP_ID}', 'default'),
+  ('cap-def-security-third-party-add',        'security.third_party.add',                '${APP_ID}', 'default'),
+  ('cap-def-security-third-party-remove',     'security.third_party.remove',             '${APP_ID}', 'default'),
   ('cap-def-people-family-view',              'people.family.view',                 '${APP_ID}', 'default'),
   ('cap-def-people-family-add',               'people.family.add',                  '${APP_ID}', 'default'),
   ('cap-def-people-family-remove',            'people.family.remove',               '${APP_ID}', 'default'),
@@ -137,7 +137,7 @@ INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-def-payment-transactions-show',       'payment.transactions.show',          '${APP_ID}', 'default'),
   ('cap-def-payment-subscriptions-show',      'payment.subscriptions.show',         '${APP_ID}', 'default'),
   ('cap-def-payment-neup-pro-view',           'payment.purchase_neup_pro.view',     '${APP_ID}', 'default'),
-  ('cap-def-linked-brand-manager',            'linked_accounts.brand.manager.self',      '${APP_ID}', 'default')
+  ('cap-def-linked-brand-manager',            'linked_accounts.brand.manager',           '${APP_ID}', 'default')
 ON CONFLICT ("id") DO NOTHING;
 
 INSERT INTO "authz_role_capability" (
@@ -150,7 +150,7 @@ SELECT
   'default',
   '${APP_ID}',
   'individual.default',
-  '["profile.display.view.self","profile.display.update.self","profile.display.view.managed","profile.display.update.managed","profile.display.view.root","profile.display.update.root","self.profile.legal.view","self.profile.legal.update","self.profile.demographics.view","self.profile.demographics.update","self.profile.neupid.view","self.profile.neupid.request","self.profile.neupid.remove","self.profile.contact.view","self.profile.contact.update","self.profile.kyc.view","self.profile.kyc.update","self.notification.read","self.notification.delete","security.pass.modify.self","security.totp.add.self","security.totp.remove.self","security.backup_codes.view.self","security.backup_codes.create.self","security.recovery_accounts.view.self","security.recovery_accounts.add.self","security.recovery_accounts.remove.self","security.recovery_phone.view.self","security.recovery_phone.add.self","security.recovery_phone.remove.self","security.recovery_email.view.self","security.recovery_email.add.self","security.recovery_email.remove.self","security.login_devices.view.self","linked_accounts.brand.create.self","linked_accounts.brand.view.self","linked_accounts.dependent.create.self","linked_accounts.dependent.view.self","data.agreed_terms.view.self","data.delete_account.start.self","data.deactivate_account.start.self","data.materialization.view.self","data.materialization.modify.self","security.third_party.view.self","security.recent_activities.view.self","security.third_party.add.self","security.third_party.remove.self","people.family.view","people.family.add","people.family.remove","people.family.partner.add","people.family.partner.remove","people.block_list.view","people.restrict_list.view","payment.method.show","payment.transactions.show","payment.subscriptions.show","payment.purchase_neup_pro.view","linked_accounts.brand.manage.self","linked_accounts.brand.manager.self"]'::jsonb
+  '["profile.display.name","profile.display.update","profile.display.view.managed","profile.display.update.managed","profile.display.view.root","profile.display.update.root","profile.legal.view","profile.legal.update","profile.demographics.view","profile.demographics.update","profile.neupid.update","profile.neupid.request","profile.neupid.remove","profile.contact.view","profile.contact.update","profile.kyc.view","profile.kyc.update","notification.read","notification.delete","security.pass.modify","security.totp.add","security.totp.remove","security.backup_codes.view","security.backup_codes.create","security.recovery_accounts.view","security.recovery_accounts.add","security.recovery_accounts.remove","security.recovery_phone.view","security.recovery_phone.add","security.recovery_phone.remove","security.recovery_email.view","security.recovery_email.add","security.recovery_email.remove","security.login_devices.view","linked_accounts.brand.create","linked_accounts.brand.view","linked_accounts.dependent.create","linked_accounts.dependent.view","data.agreed_terms.view","data.delete_account.start","data.deactivate_account.start","data.materialization.view","data.materialization.modify","security.third_party.view","security.recent_activities.view","security.third_party.add","security.third_party.remove","people.family.view","people.family.add","people.family.remove","people.family.partner.add","people.family.partner.remove","people.block_list.view","people.restrict_list.view","payment.method.show","payment.transactions.show","payment.subscriptions.show","payment.purchase_neup_pro.view","linked_accounts.brand.manage","linked_accounts.brand.manager"]'::jsonb
 FROM "authz_capability" c
 WHERE c."app_id" = '${APP_ID}'
   AND c."scope"  = 'default'
@@ -232,9 +232,9 @@ INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-brand-settings-edit',     'brand.settings.edit',           '${APP_ID}', 'brand'),
   ('cap-brand-members-view',      'brand.members.view',            '${APP_ID}', 'brand'),
   ('cap-brand-members-manage',    'brand.members.manage',          '${APP_ID}', 'brand'),
-  ('cap-brand-branches-view',     'linked_accounts.brand.view.self',    '${APP_ID}', 'brand'),
-  ('cap-brand-branches-manage',   'linked_accounts.brand.manage.self',  '${APP_ID}', 'brand'),
-  ('cap-brand-branches-manager',  'linked_accounts.brand.manager.self', '${APP_ID}', 'brand'),
+  ('cap-brand-branches-view',     'linked_accounts.brand.view',         '${APP_ID}', 'brand'),
+  ('cap-brand-branches-manage',   'linked_accounts.brand.manage',       '${APP_ID}', 'brand'),
+  ('cap-brand-branches-manager',  'linked_accounts.brand.manager',      '${APP_ID}', 'brand'),
   ('cap-brand-kyc-view',          'brand.kyc.view',                '${APP_ID}', 'brand'),
   ('cap-brand-kyc-submit',        'brand.kyc.submit',              '${APP_ID}', 'brand'),
   ('cap-brand-platforms-view',    'brand.platforms.view',          '${APP_ID}', 'brand'),
@@ -252,7 +252,7 @@ SELECT
   'brand',
   '${APP_ID}',
   'brand.owner',
-  '["brand.profile.view","brand.profile.edit","brand.settings.view","brand.settings.edit","brand.members.view","brand.members.manage","linked_accounts.brand.view.self","linked_accounts.brand.manage.self","linked_accounts.brand.manager.self","brand.kyc.view","brand.kyc.submit","brand.platforms.view","brand.platforms.manage","brand.delete"]'::jsonb
+  '["brand.profile.view","brand.profile.edit","brand.settings.view","brand.settings.edit","brand.members.view","brand.members.manage","linked_accounts.brand.view","linked_accounts.brand.manage","linked_accounts.brand.manager","brand.kyc.view","brand.kyc.submit","brand.platforms.view","brand.platforms.manage","brand.delete"]'::jsonb
 FROM "authz_capability" c
 WHERE c."app_id" = '${APP_ID}'
   AND c."scope"  = 'brand'
@@ -458,8 +458,23 @@ async function createMasterAccount(): Promise<{ skipped: boolean; reason?: strin
 // STEP 3 — Grant roles to the master account
 // =============================================================================
 
-async function assignRolesToAccount(accountId: string): Promise<void> {
-  for (const roleId of [ROLE_INDIV_DEFAULT, ROLE_INDIV_ROOT]) {
+async function resolvePrimaryNeupId(accountId: string): Promise<string | null> {
+  const row = await prisma.neupId.findFirst({
+    where: { accountId, isPrimary: true },
+    select: { id: true },
+  });
+
+  return row?.id ?? null;
+}
+
+async function assignRolesToAccount(accountId: string, primaryNeupId: string | null): Promise<void> {
+  const roleIds = [ROLE_INDIV_DEFAULT];
+
+  if (primaryNeupId === 'neupkishor') {
+    roleIds.push(ROLE_INDIV_ROOT);
+  }
+
+  for (const roleId of roleIds) {
     await ensureAccessGrant(prisma, {
       memberAccountId: accountId,
       parentAccountId: accountId,
@@ -529,8 +544,13 @@ async function main() {
   } else {
     try {
       log(3, 'Assigning roles to master account…');
-      await assignRolesToAccount(resolvedAccountId);
-      log(3, 'Roles assigned', `accountId=${resolvedAccountId} → individual.default + individual.root`);
+      const primaryNeupId = await resolvePrimaryNeupId(resolvedAccountId);
+      await assignRolesToAccount(resolvedAccountId, primaryNeupId);
+      log(
+        3,
+        'Roles assigned',
+        `accountId=${resolvedAccountId} → individual.default${primaryNeupId === 'neupkishor' ? ' + individual.root' : ''}`,
+      );
     } catch (error) {
       logError(3, 'assignRolesToAccount', error);
       throw error;

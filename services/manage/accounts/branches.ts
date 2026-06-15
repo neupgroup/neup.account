@@ -37,8 +37,8 @@ const formSchema = z.object({
  * Function createBranchAccount.
  */
 export async function createBranchAccount(data: z.infer<typeof formSchema>, geolocation?: string) {
-    await requireAnyPermission404(['linked_accounts.brand.manage.self']);
-    const canManage = await checkPermissions(['linked_accounts.brand.manage.self']);
+    await requireAnyPermission404(['linked_accounts.brand.manage']);
+    const canManage = await checkPermissions(['linked_accounts.brand.manage']);
     if (!canManage) {
         return { success: false, error: 'You do not have permission to create branch accounts.' };
     }
@@ -201,8 +201,8 @@ export async function checkBranchNeupIdAvailability(neupIdSubdomain: string): Pr
 export async function getBranches(brandId: string): Promise<BranchAccount[]> {
     if (!brandId) return [];
 
-    await requireAnyPermission404(['linked_accounts.brand.manage.self']);
-    const canManage = await checkPermissions(['linked_accounts.brand.manage.self']);
+    await requireAnyPermission404(['linked_accounts.brand.manage']);
+    const canManage = await checkPermissions(['linked_accounts.brand.manage']);
     if (!canManage) return [];
 
     try {

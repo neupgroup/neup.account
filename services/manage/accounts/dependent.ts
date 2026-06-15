@@ -31,8 +31,8 @@ export type DependentAccount = {
  * Function getDependentAccounts.
  */
 export async function getDependentAccounts(): Promise<DependentAccount[]> {
-    await requireAnyPermission404(['linked_accounts.dependent.view.self']);
-    const canView = await checkPermissions(['linked_accounts.dependent.view.self']);
+    await requireAnyPermission404(['linked_accounts.dependent.view']);
+    const canView = await checkPermissions(['linked_accounts.dependent.view']);
     if (!canView) return [];
     
     const personalAccountId = await getPersonalAccountId();
@@ -93,8 +93,8 @@ export async function getDependentAccounts(): Promise<DependentAccount[]> {
  * Function createDependentAccount.
  */
 export async function createDependentAccount(data: z.infer<typeof dependentFormSchema>, geolocation?: string) {
-    await requireAnyPermission404(['linked_accounts.dependent.create.self']);
-    const canCreate = await checkPermissions(['linked_accounts.dependent.create.self']);
+    await requireAnyPermission404(['linked_accounts.dependent.create']);
+    const canCreate = await checkPermissions(['linked_accounts.dependent.create']);
     if (!canCreate) {
         return { success: false, error: "You do not have permission to create a dependent account." };
     }

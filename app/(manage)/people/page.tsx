@@ -11,7 +11,7 @@ import { Users, MailQuestion, Contact, UserX } from "@/components/icons";
 export default async function PeopleSharingPage() {
     const [canViewFamily, canViewInvitations, canBlockUsers] = await Promise.all([
         checkPermissions(['people.family.view']),
-        checkPermissions(['self.notification.read']),
+        checkPermissions(['notification.read']),
         checkPermissions(['people.block_list.view', 'people.restrict_list.view'])
     ]);
     

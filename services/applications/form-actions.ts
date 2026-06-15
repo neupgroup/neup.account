@@ -284,7 +284,7 @@ export async function getConnectedApplicationsPageData(): Promise<{
   apps: FlatAppItem[];
   error: boolean;
 }> {
-  await requireAnyPermission404(['security.third_party.view.self']);
+  await requireAnyPermission404(['security.third_party.view']);
   const personalAccountId = await getPersonalAccountId();
   if (!personalAccountId) return { apps: [], error: false };
 

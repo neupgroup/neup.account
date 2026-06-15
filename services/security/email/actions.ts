@@ -16,8 +16,8 @@ const CONTACT_TYPE = 'recoveryEmail';
  * Function getRecoveryEmail.
  */
 export async function getRecoveryEmail(): Promise<string | null> {
-    await requireAnyPermission404(['security.recovery_email.view.self']);
-    const canView = await checkPermissions(['security.recovery_email.view.self']);
+    await requireAnyPermission404(['security.recovery_email.view']);
+    const canView = await checkPermissions(['security.recovery_email.view']);
     if (!canView) return null;
 
     const accountId = await getPersonalAccountId();
@@ -43,8 +43,8 @@ export async function getRecoveryEmail(): Promise<string | null> {
  * Function addRecoveryEmail.
  */
 export async function addRecoveryEmail(data: z.infer<typeof emailFormSchema>): Promise<{ success: boolean; error?: string; }> {
-    await requireAnyPermission404(['security.recovery_email.add.self']);
-    const canAdd = await checkPermissions(['security.recovery_email.add.self']);
+    await requireAnyPermission404(['security.recovery_email.add']);
+    const canAdd = await checkPermissions(['security.recovery_email.add']);
     if (!canAdd) return { success: false, error: "Permission denied." };
 
     const accountId = await getPersonalAccountId();
@@ -94,8 +94,8 @@ export async function addRecoveryEmail(data: z.infer<typeof emailFormSchema>): P
  * Function removeRecoveryEmail.
  */
 export async function removeRecoveryEmail(): Promise<{ success: boolean; error?: string; }> {
-    await requireAnyPermission404(['security.recovery_email.remove.self']);
-    const canRemove = await checkPermissions(['security.recovery_email.remove.self']);
+    await requireAnyPermission404(['security.recovery_email.remove']);
+    const canRemove = await checkPermissions(['security.recovery_email.remove']);
     if (!canRemove) return { success: false, error: "Permission denied." };
     
     const accountId = await getPersonalAccountId();

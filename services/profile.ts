@@ -125,7 +125,7 @@ export async function getPublicDisplayImages(accountId: string): Promise<PublicD
 }
 
 export async function getProfileContacts(accountId: string) {
-    await assertHasAnyPermission(['self.profile.contact.view', 'self.profile.contact.update']);
+    await assertHasAnyPermission(['profile.contact.view', 'profile.contact.update']);
     const rows = await prisma.contact.findMany({
         where: { accountId },
     });
@@ -139,7 +139,7 @@ export async function getProfileContacts(accountId: string) {
 }
 
 export async function getProfileNeupIds(accountId: string) {
-    await assertHasAnyPermission(['self.profile.neupid.view', 'self.profile.neupid.request', 'self.profile.neupid.remove']);
+    await assertHasAnyPermission(['profile.neupid.update', 'profile.neupid.request', 'profile.neupid.remove']);
     return prisma.neupId.findMany({
         where: { accountId },
     });
@@ -190,10 +190,10 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
 
     const [canUpdateDisplay, canUpdateLegal, canUpdateDemographics, canUpdateContact, canRequestNeupId] = await Promise.all([
         assertHasProfileDisplayPermission(accountId, 'update').then(() => true).catch(() => false),
-        checkPermissions(['self.profile.legal.update']),
-        checkPermissions(['self.profile.demographics.update']),
-        checkPermissions(['self.profile.contact.update']),
-        checkPermissions(['self.profile.neupid.request']),
+        checkPermissions(['profile.legal.update']),
+        checkPermissions(['profile.demographics.update']),
+        checkPermissions(['profile.contact.update']),
+        checkPermissions(['profile.neupid.request']),
     ]);
 
     if (

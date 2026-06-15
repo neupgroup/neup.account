@@ -86,11 +86,11 @@ export const allPermissionsMap: Record<string, string[]> = {
     "Home": [],
     "Personal Info": [...PROFILE_NAV_PERMISSIONS],
     "Profile": [...PROFILE_NAV_PERMISSIONS],
-    "Notifications": ['self.notification.read', 'self.notification.delete'],
+    "Notifications": ['notification.read', 'notification.delete'],
     "Password & Security": [...SECURITY_HUB_PERMISSIONS],
     "Linked Accounts": [...LINKED_ACCOUNT_NAV_PERMISSIONS],
     "Data & Privacy": [...DATA_PRIVACY_NAV_PERMISSIONS],
-    "Access & Control": ['security.third_party.view.self', 'security.third_party.add.self', 'security.third_party.remove.self'],
+    "Access & Control": ['security.third_party.view', 'security.third_party.add', 'security.third_party.remove'],
     "People & Sharing": ['people.family.view', 'people.family.add', 'people.family.remove', 'people.family.partner.add', 'people.family.partner.remove', 'people.block_list.view', 'people.restrict_list.view'],
     "Payment & Subscription": ['payment.method.show', 'payment.transactions.show', 'payment.subscriptions.show', 'payment.purchase_neup_pro.view'],
     "Account": ["root.account.view", "root.account.search", "root.account.create_individual"],
@@ -110,7 +110,7 @@ export const allPermissionsMap: Record<string, string[]> = {
         "root.errors.view",
         "root.display_images.view"
     ],
-    "Branches": ['linked_accounts.brand.manage.self'],
+    "Branches": ['linked_accounts.brand.manage'],
     "Blocked Users": ['people.block_list.view', 'people.restrict_list.view'],
     // Management nav — "Dashboard" is the admin home, distinct from user "Home"
     "Dashboard": ["root.dashboard.view"],

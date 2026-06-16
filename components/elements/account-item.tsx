@@ -9,6 +9,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronRight } from '@/components/icons';
 import { AccountActions } from '@/app/auth/start/start-page-component';
 import { cn } from '@/core/helpers/utils';
+import { deleteSessionData } from '@/core/auth/storage';
 
 type CombinedAccount = StoredAccount & {
     displayName?: string;
@@ -93,6 +94,7 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
             }
 
             if (isOwnerAccount) {
+                deleteSessionData();
                 router.push('/home');
                 return;
             }

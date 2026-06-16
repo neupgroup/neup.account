@@ -167,10 +167,10 @@ export async function acceptRequest(requestId: string, notificationId: string): 
             });
         });
 
-        revalidatePath('/manage/people/invitations');
+        revalidatePath('/access/invitations');
         revalidatePath('/manage/notifications');
         revalidatePath('/manage/access');
-        revalidatePath('/manage/people/family');
+        revalidatePath('/access/family');
         return { success: true };
     } catch (error) {
         await logError('database', error, `acceptRequest: ${requestId}`);
@@ -215,7 +215,7 @@ export async function rejectRequest(requestId: string, notificationId: string): 
             })
         ]);
 
-        revalidatePath('/manage/people/invitations');
+        revalidatePath('/access/invitations');
         revalidatePath('/manage/notifications');
         return { success: true };
     } catch (error) {

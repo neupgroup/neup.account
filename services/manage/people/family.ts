@@ -102,7 +102,7 @@ async function createInvite(
       });
     });
 
-    revalidatePath('/manage/people/family');
+    revalidatePath('/access/family');
     return { success: true };
   } catch (error) {
     await logError('database', error, `createInvite:${type}`);
@@ -264,7 +264,7 @@ export async function removeFamilyMember(
       where: { id: memberToRemove.id }
     });
 
-    revalidatePath('/manage/people/family');
+    revalidatePath('/access/family');
     return { success: true };
   } catch (e) {
     await logError('database', e, 'removeFamilyMember');

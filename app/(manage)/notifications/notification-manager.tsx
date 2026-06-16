@@ -49,12 +49,12 @@ function getNotificationDetails(notification: Notification): { iconName: string;
         case 'access_invitation':
             iconName = 'Handshake';
             message = `${notification.senderName} wants you to manage their account.`;
-            href = '/manage/people/invitations';
+            href = '/access/invitations';
             break;
         case 'family_invitation':
             iconName = 'UserPlus';
             message = `${notification.senderName} invited you to join their family.`;
-            href = '/manage/people/invitations';
+            href = '/access/invitations';
             break;
     }
     

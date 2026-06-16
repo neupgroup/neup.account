@@ -2,7 +2,7 @@
 
 import { useMemo, type ElementType } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { ShieldCheck, Laptop, Link, AppWindow, Users } from '@/components/icons';
+import { ShieldCheck, Laptop, Link, AppWindow } from '@/components/icons';
 import { ListItem } from '../ui/list-item';
 import { SecondaryHeader } from '../ui/secondary-header';
 import { useSession } from '@/core/providers/session';
@@ -52,22 +52,6 @@ const SETTINGS_ITEMS: SettingsItem[] = [
         title: 'Access and Control',
         description: 'Control which apps can access your data.',
         permissions: SECURITY_PERMISSION_GROUPS.thirdParty,
-        accountTypes: ['individual'],
-    },
-    {
-        href: '/people',
-        icon: Users,
-        title: 'People and Sharing',
-        description: 'Manage family members and sharing options.',
-        permissions: [
-            'people.family.view',
-            'people.family.add',
-            'people.family.remove',
-            'people.family.partner.add',
-            'people.family.partner.remove',
-            'people.block_list.view',
-            'people.restrict_list.view',
-        ],
         accountTypes: ['individual'],
     },
 ];

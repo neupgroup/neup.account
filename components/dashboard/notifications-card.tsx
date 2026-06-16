@@ -22,12 +22,12 @@ function getNotificationDetails(notification: NotificationType): { iconName: str
         case 'access_invitation':
             iconName = 'Handshake';
             message = `${notification.senderName} wants you to manage their account.`;
-            href = '/people/invitations';
+            href = '/access/invitations';
             break;
         case 'family_invitation':
             iconName = 'UserPlus';
             message = `${notification.senderName} invited you to join their family.`;
-            href = '/people/invitations';
+            href = '/access/invitations';
             break;
     }
     

@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { FlowLink } from '@/components/ui/flow-link';
 import { Card, CardContent } from '@/components/ui/card';
-import { FolderGit2, ChevronRight, Building, UserPlus } from '@/components/icons';
+import { FolderGit2, ChevronRight, Building, UserPlus, Users, MailQuestion, UserX } from '@/components/icons';
 import { getDirectAccessGroup } from '@/services/manage/access';
 import { getAccessAssetGroups, getAccessAssetGroup } from '@/services/manage/access/assets';
 import { getActiveAccountId } from '@/core/auth/verify';
@@ -54,6 +54,45 @@ function LinkAndCreateFeatures({
   );
 }
 
+function PeopleAndSharingFeatures({
+  canViewFamily,
+  canViewInvitations,
+  canBlockUsers,
+}: {
+  canViewFamily: boolean;
+  canViewInvitations: boolean;
+  canBlockUsers: boolean;
+}) {
+  return (
+    <>
+      {canViewFamily && (
+        <ListItem
+          icon={Users}
+          title="Family Sharing"
+          description="Manage your family group and shared subscriptions."
+          href="/access/family"
+        />
+      )}
+      {canViewInvitations && (
+        <ListItem
+          icon={MailQuestion}
+          title="Invitations"
+          description="Accept or reject requests from other users."
+          href="/access/invitations"
+        />
+      )}
+      {canBlockUsers && (
+        <ListItem
+          icon={UserX}
+          title="Blocked Users"
+          description="Manage users you have blocked or restricted."
+          href="/access/blocked"
+        />
+      )}
+    </>
+  );
+}
+
 // ── Portfolio detail view ─────────────────────────────────────────────────────
 
 async function PortfolioDetail({ id }: { id: string }) {
@@ -100,6 +139,11 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
   );
   const canCreateBrand = permissions.includes('linked_accounts.brand.create');
   const canCreateDependent = permissions.includes('linked_accounts.dependent.create');
+  const canViewFamily = permissions.includes('people.family.view');
+  const canViewInvitations = permissions.includes('notification.read');
+  const canBlockUsers =
+    permissions.includes('people.block_list.view') ||
+    permissions.includes('people.restrict_list.view');
   const accountsToShow =
     showLinkedAccounts && !isManagingOtherAccount ? await getAccessibleAccounts() : [];
 
@@ -148,6 +192,24 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
                   No other accounts found.
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {(canViewFamily || canViewInvitations || canBlockUsers) && (
+        <div className="space-y-2">
+          <SecondaryHeader
+            title="People & Sharing"
+            description="Manage your family, requests, and blocked users."
+          />
+          <Card>
+            <CardContent className="divide-y p-0">
+              <PeopleAndSharingFeatures
+                canViewFamily={canViewFamily}
+                canViewInvitations={canViewInvitations}
+                canBlockUsers={canBlockUsers}
+              />
             </CardContent>
           </Card>
         </div>

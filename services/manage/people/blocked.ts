@@ -118,7 +118,7 @@ async function addUserToList(neupId: string, type: 'blockList' | 'restrictList')
       where: { id: accessTo },
       data: { details: { ...(details || {}), block: newBlock } as any },
     });
-    revalidatePath('/manage/people/blocked');
+    revalidatePath('/access/blocked');
     return { success: true };
   } catch (error) {
     await logError('database', error, `addUserToList (${type})`);
@@ -159,7 +159,7 @@ async function removeUserFromList(accountId: string, type: 'blockList' | 'restri
       where: { id: accessTo },
       data: { details: { ...(details || {}), block: newBlock } as any },
     });
-    revalidatePath('/manage/people/blocked');
+    revalidatePath('/access/blocked');
     return { success: true };
   } catch (error) {
     await logError('database', error, `removeUserFromList (${type})`);

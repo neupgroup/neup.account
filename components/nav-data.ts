@@ -52,11 +52,6 @@ export const navItems = {
             description: "Manage who you share data and services with.",
         },
         { 
-            href: "/people", 
-            label: "People & Sharing", 
-            description: "Manage who you share data and services with.",
-        },
-        { 
             href: "/payment", 
             label: "Payment & Subscription", 
             description: "Manage billing and subscriptions.",
@@ -84,7 +79,6 @@ export const allPermissionsMap: Record<string, string[]> = {
     "Password & Security": [...SECURITY_HUB_PERMISSIONS],
     "Data & Privacy": [...DATA_PRIVACY_NAV_PERMISSIONS],
     "Access & Control": ['security.third_party.view', 'security.third_party.add', 'security.third_party.remove'],
-    "People & Sharing": ['people.family.view', 'people.family.add', 'people.family.remove', 'people.family.partner.add', 'people.family.partner.remove', 'people.block_list.view', 'people.restrict_list.view'],
     "Payment & Subscription": ['payment.method.show', 'payment.transactions.show', 'payment.subscriptions.show', 'payment.purchase_neup_pro.view'],
     "Account": ["root.account.view", "root.account.search", "root.account.create_individual"],
     "Requests": ["root.requests.view"],

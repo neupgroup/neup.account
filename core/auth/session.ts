@@ -43,7 +43,7 @@ export type StoredAccount = {
   accountType?: string;
 };
 
-import { setStoredAccountsCookie, getSessionCookies } from '@/core/helpers/cookies';
+import { setStoredAccountsCookie, getSessionCookies } from '@/core/auth/cookies';
 import { getUserNeupIds, validateNeupId } from '@/services/user';
 
 const SESSION_DURATION_DAYS = 30;
@@ -293,4 +293,3 @@ export async function switchToDelegated(accountId: string) {
 export async function switchToPersonal() {
   return;
 }
-

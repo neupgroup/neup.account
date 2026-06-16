@@ -1,4 +1,4 @@
-import { getSessionCookies } from '@/core/helpers/cookies';
+import { getSessionCookies } from '@/core/auth/cookies';
 import { getValidatedStoredAccounts } from '@/core/auth/session';
 import { getAppDisplayName, buildAuthQuery, getServerAuthContext, buildAuthPath, buildAuthCallbackWithStatus, getServerFlowParams } from '@/core/auth/callback';
 import prisma from '@/core/helpers/prisma';

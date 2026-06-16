@@ -1,7 +1,8 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { authCookies, getSessionCookies } from '@/core/helpers/cookies';
+import { getSessionCookies } from '@/core/auth/cookies';
+import { getCookie } from '@/core/helper/cookieHelper';
 import { verifyActiveSession } from '@/services/auth/verify';
 
 type RequireValidSessionOptions = {
@@ -18,7 +19,7 @@ export async function requireValidSession(
   const allowGuest = options.allowGuest ?? false;
 
   // Determine guest mode from cookie signals.
-  const rawGuestCookie = (await authCookies.get('guest'))?.trim().toLowerCase();
+  const rawGuestCookie = (await getCookie('guest'))?.trim().toLowerCase();
   const cookieFlagGuest = rawGuestCookie === '1' || rawGuestCookie === 'true';
   const { allAccounts } = await getSessionCookies();
   const tokenFlagGuest = Boolean(allAccounts[0]?.guest);

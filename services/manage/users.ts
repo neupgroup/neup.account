@@ -12,7 +12,7 @@ import { headers } from 'next/headers';
 import crypto from 'crypto';
 import { z } from 'zod';
 import { createNotification } from '../notifications';
-import { setSessionCookies } from '@/core/helpers/cookies';
+import { setSessionCookies } from '@/core/auth/cookies';
 import { warningReasons } from '@/app/(manage)/manage/[id]/forms';
 import type { UserProfile } from '@/services/user';
 import { extractRolePermissionNames, ensureAccessGrant } from '@/services/access-model';

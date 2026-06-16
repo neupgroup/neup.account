@@ -3,7 +3,7 @@
 import { headers } from 'next/headers';
 import prisma from '@/core/helpers/prisma';
 import { createAndSetSession } from '@/core/auth/session';
-import { authCookies } from '@/core/helpers/cookies';
+import { clearSessionCookies, getSessionCookies } from '@/core/auth/cookies';
 import { getActiveSession } from '@/core/auth/verify';
 import { makeNotification } from '@/services/notifications';
 import { logActivity } from '@/services/log-actions';
@@ -196,7 +196,7 @@ export async function validateAuthSession(input: ValidateAuthSessionInput): Prom
  * Reads auth cookies and validates them using validateAuthSession().
  */
 export async function validateAuthSessionFromCookies(): Promise<AuthValidationResult> {
-	const { accountId, sessionId, sessionKey } = await authCookies.getSessionCookies();
+	const { accountId, sessionId, sessionKey } = await getSessionCookies();
 	return validateAuthSession({
 		aid: accountId || '',
 		sid: sessionId || '',
@@ -258,7 +258,7 @@ export async function expireSession(input: ExpireSessionInput): Promise<ExpireSe
  * Reads the active auth cookies and expires the matching session.
  */
 export async function expireSessionFromCookies(): Promise<ExpireSessionResult> {
-	const { accountId, sessionId, sessionKey } = await authCookies.getSessionCookies();
+	const { accountId, sessionId, sessionKey } = await getSessionCookies();
 	return expireSession({
 		aid: accountId || '',
 		sid: sessionId || '',
@@ -520,9 +520,9 @@ export async function logoutStoredSession(sessionId: string): Promise<{ success:
     });
 
     // If this is the currently active session, clear the auth cookie
-    const { sessionId: activeSessionId } = await authCookies.getSessionCookies();
+    const { sessionId: activeSessionId } = await getSessionCookies();
     if (activeSessionId === sessionId) {
-      await authCookies.clearSessionCookies();
+      await clearSessionCookies();
     }
 
     await makeNotification({
@@ -543,9 +543,9 @@ export async function logoutStoredSession(sessionId: string): Promise<{ success:
  */
 export async function removeStoredAccount(accountId: string): Promise<{ success: boolean; error?: string }> {
   try {
-    const { accountId: activeAccountId } = await authCookies.getSessionCookies();
+    const { accountId: activeAccountId } = await getSessionCookies();
     if (accountId === activeAccountId) {
-      await authCookies.clearSessionCookies();
+      await clearSessionCookies();
     }
     return { success: true };
   } catch {

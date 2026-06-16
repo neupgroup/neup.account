@@ -6,7 +6,7 @@
 
 import { redirect } from 'next/navigation';
 import { verifyActiveSession } from '@/services/auth/verify';
-import { getSessionCookies } from '@/core/helpers/cookies';
+import { getSessionCookies } from '@/core/auth/cookies';
 import { getAccountSelectorContext } from '@/core/auth/accountSelector';
 
 // Represents an active session with both shorthand and legacy field names.

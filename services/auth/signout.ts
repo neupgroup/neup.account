@@ -4,7 +4,7 @@ import prisma from '@/core/helpers/prisma';
 import { logActivity } from '@/services/log-actions';
 import { headers } from 'next/headers';
 import { logError } from '@/core/helpers/logger';
-import { getSessionCookies, clearSessionCookies, setStoredAccountsCookie } from '@/core/helpers/cookies';
+import { getSessionCookies, clearSessionCookies, setStoredAccountsCookie } from '@/core/auth/cookies';
 import { expireSession } from './session';
 import { rotateGuestAccountOnLogout } from './guestAccount';
 import { activityAction } from '@/services/activity-action';

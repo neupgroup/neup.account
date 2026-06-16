@@ -1,7 +1,7 @@
 'use server';
 
 import prisma from '@/core/helpers/prisma';
-import { getSessionCookies } from '@/core/helpers/cookies';
+import { getSessionCookies } from '@/core/auth/cookies';
 import { getUrlParam } from '@/core/helper/urlHelper';
 
 export type AccountSelectorContext = {

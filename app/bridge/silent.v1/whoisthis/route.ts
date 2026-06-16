@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getSessionCookies } from '@/core/helpers/cookies';
+import { getSessionCookies } from '@/core/auth/cookies';
 import { getAccounts } from '@/core/auth/accounts';
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';

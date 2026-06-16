@@ -12,6 +12,7 @@ import { cleanupExpiredAccessModel, extractRolePermissionNames } from "@/service
 // --- Types ---
 
 export type UserProfile = {
+  brandName?: string;
   nameFirst?: string;
   nameMiddle?: string;
   nameLast?: string;
@@ -99,6 +100,7 @@ export async function getUserProfile(
           : {};
 
       const serializedData: UserProfile = {
+        brandName: account.brandProfile?.brandName || undefined,
         nameFirst: account.individualProfile?.firstName || undefined,
         nameMiddle: account.individualProfile?.middleName || undefined,
         nameLast: account.individualProfile?.lastName || undefined,

@@ -25,6 +25,19 @@ export async function getDisplayNameSuggestions(accountId: string): Promise<stri
     const profile = await getUserProfile(accountId);
     if (!profile) return [];
 
+    if (profile.accountType === 'brand') {
+        const suggestions = new Set<string>();
+
+        if (profile.brandName?.trim()) {
+            suggestions.add(profile.brandName.trim());
+        }
+        if (profile.nameLegal?.trim()) {
+            suggestions.add(profile.nameLegal.trim());
+        }
+
+        return Array.from(suggestions);
+    }
+
     const { nameFirst, nameMiddle, nameLast } = profile;
     const suggestions = new Set<string>();
 

@@ -39,6 +39,10 @@ export default function DemographicsPage() {
     const { toast } = useToast();
     const { profile, accountId, permissions, loading: sessionLoading } = useSession();
 
+    if (!sessionLoading && profile?.accountType === 'brand') {
+        notFound();
+    }
+
     if (!sessionLoading && !hasAnyPermission(permissions, PROFILE_SECTION_PERMISSIONS.demographics)) {
         notFound();
     }

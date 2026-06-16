@@ -58,6 +58,10 @@ export default function DisplayInfoPage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [photoView, setPhotoView] = useState<'uploader' | 'carousel' | 'public'>('uploader');
     const [publicPhotos, setPublicPhotos] = useState<PublicDisplayImage[]>([]);
+    const isBrandAccount = profile?.accountType === 'brand';
+    const currentDisplayName = isBrandAccount
+        ? (profile?.displayName || profile?.nameDisplay || '')
+        : (profile?.nameDisplay || profile?.displayName || '');
 
     if (!sessionLoading && !hasAnyPermission(permissions, PROFILE_SECTION_PERMISSIONS.display)) {
         notFound();
@@ -88,7 +92,7 @@ export default function DisplayInfoPage() {
                     const publicResources = await getPublicDisplayImages(accountId);
                     setPublicPhotos(publicResources);
 
-                    const currentName = profile.nameDisplay || '';
+                    const currentName = currentDisplayName;
                      if (suggestions.map(s => s.toLowerCase()).includes(currentName.toLowerCase())) {
                         nameForm.reset({
                             selectedDisplayName: suggestions.find(s => s.toLowerCase() === currentName.toLowerCase()) || currentName,
@@ -160,6 +164,9 @@ export default function DisplayInfoPage() {
             const sanitizedCustomName = data.customDisplayName?.trim().replace(/\s+/g, ' ') || '';
 
             if (data.selectedDisplayName === 'custom') {
+                if (isBrandAccount) {
+                    payload = { customDisplayNameRequest: sanitizedCustomName };
+                } else {
                 const lowerCustomName = sanitizedCustomName.toLowerCase();
 
                 // 1. Check if it's a case-insensitive match for a standard format.
@@ -186,6 +193,7 @@ export default function DisplayInfoPage() {
                 if (isApprovalNeeded) {
                     payload = { customDisplayNameRequest: sanitizedCustomName };
                 }
+                }
 
             } else {
                 // A standard format was selected.
@@ -207,9 +215,40 @@ export default function DisplayInfoPage() {
             }
         });
     }
+
+    const handleStandardDisplayNameSelect = (value: string) => {
+        nameForm.setValue('selectedDisplayName', value, { shouldDirty: true });
+        nameForm.setValue('customDisplayName', '', { shouldDirty: false });
+
+        if (!isBrandAccount || !accountId) {
+            return;
+        }
+
+        if (value === currentDisplayName) {
+            return;
+        }
+
+        startNameTransition(async () => {
+            const result = await updateUserProfile(accountId, { nameDisplay: value });
+
+            if (result.success) {
+                toast({ title: "Success", description: "Display name updated.", className: "bg-accent text-accent-foreground" });
+                nameForm.reset({ selectedDisplayName: value, customDisplayName: "" });
+                refetchSession();
+            } else {
+                toast({ variant: "destructive", title: "Error", description: result.error });
+            }
+        });
+    };
     
     const selectedDisplayName = nameForm.watch('selectedDisplayName');
     const currentDisplayPhoto = photoForm.watch('accountPhoto');
+    const displayNameOptions = isBrandAccount
+        ? [
+            { label: 'Brand Name', value: profile?.brandName || '' },
+            { label: 'Legal Name', value: profile?.nameLegal || '' },
+        ].filter((option) => option.value.trim().length > 0)
+        : nameSuggestions.map((name) => ({ label: name, value: name }));
     const profileGender = (profile?.gender || '').toLowerCase();
     const filteredPublicPhotos = publicPhotos.filter((photo) => {
         if (profileGender === 'male') return photo.type === 'displayImage_publicMale';
@@ -351,7 +390,7 @@ export default function DisplayInfoPage() {
                         <Card>
                             <CardContent className="pt-6 space-y-4">
                                 <div>
-                                    <h3 className="text-2xl font-semibold tracking-tight">{profile?.nameDisplay}</h3>
+                                    <h3 className="text-2xl font-semibold tracking-tight">{currentDisplayName}</h3>
                                 </div>
                                 <Separator />
                                 <FormField
@@ -362,13 +401,29 @@ export default function DisplayInfoPage() {
                                             <FormLabel>Display Name Format</FormLabel>
                                             <FormControl>
                                                 <div className="flex flex-wrap gap-2">
-                                                    {nameSuggestions.map(name => (
-                                                        <Button key={name} type="button" variant={field.value === name ? "default" : "secondary"} onClick={() => field.onChange(name)} className="relative">
-                                                            {field.value === name && <Check className="absolute -left-1 -top-1 h-4 w-4 bg-primary text-primary-foreground rounded-full p-0.5" />}
-                                                            {name}
+                                                    {displayNameOptions.map((option) => (
+                                                        <Button
+                                                            key={`${option.label}:${option.value}`}
+                                                            type="button"
+                                                            variant={field.value === option.value ? "default" : "secondary"}
+                                                            onClick={() => {
+                                                                field.onChange(option.value);
+                                                                handleStandardDisplayNameSelect(option.value);
+                                                            }}
+                                                            className="relative"
+                                                            disabled={isNamePending}
+                                                        >
+                                                            {field.value === option.value && <Check className="absolute -left-1 -top-1 h-4 w-4 bg-primary text-primary-foreground rounded-full p-0.5" />}
+                                                            {option.label}
                                                         </Button>
                                                     ))}
-                                                    <Button type="button" variant={field.value === 'custom' ? "default" : "secondary"} onClick={() => field.onChange('custom')} className="relative">
+                                                    <Button
+                                                        type="button"
+                                                        variant={field.value === 'custom' ? "default" : "secondary"}
+                                                        onClick={() => field.onChange('custom')}
+                                                        className="relative"
+                                                        disabled={isNamePending}
+                                                    >
                                                         {field.value === 'custom' && <Check className="absolute -left-1 -top-1 h-4 w-4 bg-primary text-primary-foreground rounded-full p-0.5" />}
                                                         Custom...
                                                     </Button>
@@ -395,7 +450,7 @@ export default function DisplayInfoPage() {
                                 )}
                             </CardContent>
                             <CardFooter className="border-t pt-4 mt-4 flex justify-start">
-                                 <Button type="submit" disabled={isNamePending || !nameForm.formState.isDirty}>
+                                 <Button type="submit" disabled={isNamePending || !nameForm.formState.isDirty || selectedDisplayName !== 'custom'}>
                                     {isNamePending ? <Loader2 className="animate-spin" /> : "Save"}
                                 </Button>
                             </CardFooter>

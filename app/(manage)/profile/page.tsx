@@ -97,9 +97,13 @@ export default async function ProfilePage() {
         },
     ];
 
+    const availableProfileFeatures = accountProfile.accountType === 'brand'
+        ? profileFeatures.filter((feature) => feature.href !== '/profile/demographics')
+        : profileFeatures;
+
     const visibleProfileFeatures = (
         await Promise.all(
-            profileFeatures.map(async (feature) => {
+            availableProfileFeatures.map(async (feature) => {
                 const canAccess = isManaging
                     ? await Promise.all(
                         feature.permissions.map((permission) => checkGrantedPermissions([permission], personalAccountId, accountId))

@@ -6,7 +6,7 @@ import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { createAppRole, type AppPermission } from '@/services/applications/authz-manage';
-import { redirectInApp } from '@/services/navigation';
+import { redirectInApp } from '@/core/helper/navigation';
 
 type Props = {
   appId: string;

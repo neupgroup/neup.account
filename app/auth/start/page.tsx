@@ -1,7 +1,7 @@
 import React from 'react';
 import { StartPageComponent } from './start-page-component';
 import { GuestAccountInitializer } from './guest-initializer';
-import { getAuthStartPageData } from '@/services/auth/start';
+import { getAuthStartPageData } from '@/core/auth/startPage';
 
 type StartPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;

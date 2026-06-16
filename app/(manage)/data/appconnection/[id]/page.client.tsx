@@ -66,7 +66,7 @@ export default async function ApplicationDetailPage({ params }: ApplicationDetai
   }
 
   const Icon = iconFor(details.icon);
-  const deleteAction = deleteManagedApplicationFromDetailsPage.bind(null, id);
+  const deleteAction = deleteManagedApplicationFromDetailsPage.bind(null, id, '/application');
 
   const silentSsoOrigins = details.canDelete ? await getSilentSsoOrigins(id) : [];
 

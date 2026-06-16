@@ -4,7 +4,6 @@
 // Activity logs record user actions (e.g. login, profile update) with status and IP.
 
 import prisma from '@/core/helpers/prisma';
-import { headers } from 'next/headers';
 import { logError } from '@/core/helpers/logger';
 import { getActiveAccountId } from '@/core/auth/verify';
 import { checkPermissions } from '@/services/user';
@@ -61,7 +60,7 @@ export async function logActivity(
     geolocation?: string,
 ) {
     try {
-        const ip = ipAddress || (await headers()).get('x-forwarded-for') || 'Unknown IP';
+        const ip = ipAddress || 'Unknown IP';
         
         const finalActorAccountId = actorAccountId || memberId;
 

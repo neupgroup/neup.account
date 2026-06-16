@@ -6,7 +6,7 @@ import { getAuthRequest, extendAuthRequest } from './auth-request';
 import { getAuthTimeoutError } from './timeout';
 import prisma from '@/core/helpers/prisma';
 import { verifyPassword } from './password';
-import { makeSession } from './session';
+import { makeSessionFromRequest } from '@/core/auth/makeSession';
 
 const neupIdSchema = z.object({
     neupId: z.string().min(1, "NeupID is required."),
@@ -167,7 +167,7 @@ export async function submitPasswordWithNeupId(data: { neupId: string; password:
         return { success: true, mfaRequired: true };
     }
 
-    const sessionResult = await makeSession({ accountId, loginType: 'Password' });
+    const sessionResult = await makeSessionFromRequest({ accountId, loginType: 'Password' });
     if (!sessionResult.success) {
         return { success: false, mfaRequired: false, error: sessionResult.error || 'Failed to create session.' };
     }
@@ -232,7 +232,7 @@ export async function submitPassword(data: z.infer<typeof passwordSchema>): Prom
         await extendAuthRequest(request.id);
         return { success: true, mfaRequired: true };
     } else {
-        const sessionResult = await makeSession({
+        const sessionResult = await makeSessionFromRequest({
             accountId,
             loginType: 'Password',
         });

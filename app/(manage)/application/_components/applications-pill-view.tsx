@@ -5,7 +5,7 @@ import { FlowLink } from '@/components/ui/flow-link';
 import { Badge } from '@/components/ui/badge';
 import { AppWindow, Building, BarChart, Share2, ChevronRight, Plus, type LucideIcon } from '@/components/icons';
 import type { FlatAppItem, ApplicationSection } from '@/services/applications/types';
-import { redirectInApp } from '@/services/navigation';
+import { redirectInApp } from '@/core/helper/navigation';
 
 const TAB_PARAM: Record<ApplicationSection['label'], string> = {
   Using: 'using',

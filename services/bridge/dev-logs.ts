@@ -1,4 +1,3 @@
-import { NextRequest } from 'next/server';
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 
@@ -21,15 +20,15 @@ function sanitizeValue(value: unknown): unknown {
   return output;
 }
 
-function getClientIp(request: NextRequest): string | null {
-  const forwarded = request.headers.get('x-forwarded-for');
+function getClientIp(headers: Record<string, string | null | undefined>): string | null {
+  const forwarded = headers['x-forwarded-for'];
   if (forwarded) {
     const first = forwarded.split(',')[0]?.trim();
     if (first) return first;
   }
-  const cfIp = request.headers.get('cf-connecting-ip')?.trim();
+  const cfIp = headers['cf-connecting-ip']?.trim();
   if (cfIp) return cfIp;
-  const realIp = request.headers.get('x-real-ip')?.trim();
+  const realIp = headers['x-real-ip']?.trim();
   if (realIp) return realIp;
   return null;
 }
@@ -38,7 +37,9 @@ export async function writeApplicationDevLog(input: {
   appId: string | null | undefined;
   endpoint: string;
   method: string;
-  request: NextRequest;
+  requestHeaders: Record<string, string | null | undefined>;
+  requestPath: string;
+  requestQuery?: Record<string, string>;
   statusCode: number;
   requestBody?: JsonLike;
   responseBody?: JsonLike;
@@ -55,11 +56,11 @@ export async function writeApplicationDevLog(input: {
 
     const requestMeta = {
       headers: sanitizeValue({
-        'content-type': input.request.headers.get('content-type'),
-        'x-forwarded-for': input.request.headers.get('x-forwarded-for'),
+        'content-type': input.requestHeaders['content-type'],
+        'x-forwarded-for': input.requestHeaders['x-forwarded-for'],
       }),
-      url: input.request.nextUrl.pathname,
-      search: Object.fromEntries(input.request.nextUrl.searchParams.entries()),
+      url: input.requestPath,
+      search: input.requestQuery ?? {},
     };
 
     await prisma.applicationDevLog.create({
@@ -68,13 +69,13 @@ export async function writeApplicationDevLog(input: {
         endpoint: input.endpoint,
         method: input.method,
         statusCode: input.statusCode,
-        requesterIp: getClientIp(input.request),
-        origin: input.request.headers.get('origin'),
-        referer: input.request.headers.get('referer'),
-        userAgent: input.request.headers.get('user-agent'),
+        requesterIp: getClientIp(input.requestHeaders),
+        origin: input.requestHeaders.origin ?? null,
+        referer: input.requestHeaders.referer ?? null,
+        userAgent: input.requestHeaders['user-agent'] ?? null,
         requestBody: input.requestBody ? (sanitizeValue(input.requestBody) as any) : undefined,
         responseBody: input.responseBody ? (sanitizeValue(input.responseBody) as any) : undefined,
-        query: sanitizeValue(Object.fromEntries(input.request.nextUrl.searchParams.entries())) as any,
+        query: sanitizeValue(input.requestQuery ?? {}) as any,
         requestMeta: sanitizeValue(requestMeta) as any,
         error: input.error ?? null,
       },
@@ -83,4 +84,3 @@ export async function writeApplicationDevLog(input: {
     await logError('database', error, `writeApplicationDevLog:${input.appId}`);
   }
 }
-

@@ -32,7 +32,7 @@ import { useSession } from "@/core/providers/session";
 import { Skeleton } from "./ui/skeleton";
 import { switchToPersonal } from "@/services/auth/switch";
 import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
-import { redirectInApp } from "@/services/navigation";
+import { redirectInApp } from "@/core/helper/navigation";
 
 const iconMap: { [key: string]: LucideIcon | React.ElementType } = {
     Home: Home,

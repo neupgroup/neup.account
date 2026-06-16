@@ -6,7 +6,6 @@ import prisma from '@/core/helpers/prisma';
 import { getPersonalAccountId } from '@/core/auth/verify';
 import { logActivity } from '@/services/log-actions';
 import { logError } from '@/core/helpers/logger';
-import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
 import { dependentFormSchema } from '@/services/manage/accounts/schema';
@@ -111,7 +110,6 @@ export async function createDependentAccount(data: z.infer<typeof dependentFormS
 
     const { password, agreement, ...profileData } = validation.data;
     const neupId = profileData.neupId.toLowerCase();
-    const ipAddress = (await headers()).get('x-forwarded-for') || 'Unknown IP';
 
     try {
         const existingNeupId = await prisma.neupId.findUnique({
@@ -199,7 +197,7 @@ export async function createDependentAccount(data: z.infer<typeof dependentFormS
             guardianAccountId,
             activityAction.accountDependentCreate(dependentAccountId),
             'Success',
-            ipAddress,
+            undefined,
             undefined,
             geolocation
         );
@@ -208,7 +206,7 @@ export async function createDependentAccount(data: z.infer<typeof dependentFormS
         return { success: true, dependentId: dependentAccountId };
 
     } catch (error) {
-        await logActivity('unknown', `Dependent account creation failed: ${neupId}`, 'Failed', ipAddress, guardianAccountId, geolocation);
+        await logActivity('unknown', `Dependent account creation failed: ${neupId}`, 'Failed', undefined, guardianAccountId, geolocation);
         await logError('database', error, 'createDependentAccount');
         return { success: false, error: 'An unexpected error occurred during account creation.' };
     }

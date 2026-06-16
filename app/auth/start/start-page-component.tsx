@@ -12,9 +12,9 @@ import { useToast } from '@/core/hooks/use-toast';
 import { AccountListItem } from '@/components/elements/account-item';
 import type { StoredAccount } from '@/core/auth/session';
 import { appendAuthCallbackContext, appendRedirect, getAppDisplayName, shouldReturnToAuthStartForExternalAuthentication } from '@/core/auth/callback';
-import { redirectInApp } from '@/services/navigation';
+import { redirectInApp } from '@/core/helper/navigation';
 import { cleanupExpiredStoredSessions } from '@/core/auth/session';
-import { logoutStoredSession, removeStoredAccount } from '@/services/auth/session';
+import { logoutStoredSession, removeStoredAccount } from '@/core/auth/startSessions';
 
 // Inline sign-out / remove actions rendered next to each account on the start page.
 export function AccountActions({ account }: { account: StoredAccount }) {

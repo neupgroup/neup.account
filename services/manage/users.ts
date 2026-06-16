@@ -8,11 +8,9 @@ import { getPersonalAccountId } from '@/core/auth/verify';
 import { revalidatePath } from 'next/cache';
 import { logActivity } from '@/services/log-actions';
 import { logError } from '@/core/helpers/logger';
-import { headers } from 'next/headers';
 import crypto from 'crypto';
 import { z } from 'zod';
 import { createNotification } from '../notifications';
-import { setSessionCookies } from '@/core/auth/cookies';
 import { warningReasons } from '@/app/(manage)/manage/[id]/forms';
 import type { UserProfile } from '@/services/user';
 import { extractRolePermissionNames, ensureAccessGrant } from '@/services/access-model';
@@ -791,13 +789,20 @@ export async function unblockServiceAccess(userId: string): Promise<{ success: b
 }
 
 // Creates an impersonation session for an admin to operate as another user.
-export async function impersonateUser(userId: string, neupId: string): Promise<{ success: boolean; error?: string }> {
+export async function impersonateUser(
+  userId: string,
+  neupId: string,
+  sessionContext: {
+    deviceType: string;
+    ipAddress?: string;
+    userAgent?: string;
+  },
+): Promise<{ success: boolean; error?: string; session?: { aid: string; sid: string; skey: string; expiresOn: string } }> {
     const canImpersonate = await checkPermissions(['root.account.impersonate']);
     if (!canImpersonate) return { success: false, error: 'Permission denied.' };
 
     const allowedDeviceTypes = ['web', 'api', 'android', 'ios', 'windowsapp'];
-    const headersList = await headers();
-    const deviceTypeHeader = headersList.get('x-device-type');
+    const deviceTypeHeader = sessionContext.deviceType;
     if (!deviceTypeHeader || !allowedDeviceTypes.includes(deviceTypeHeader)) {
         return { success: false, error: 'Invalid or missing device type.' };
     }
@@ -806,8 +811,8 @@ export async function impersonateUser(userId: string, neupId: string): Promise<{
     if (!adminId) return { success: false, error: 'Administrator not authenticated.' };
 
     try {
-        const ipAddress = headersList.get('x-forwarded-for') || 'Unknown IP';
-        const userAgent = headersList.get('user-agent') || 'Unknown User-Agent';
+        const ipAddress = sessionContext.ipAddress || 'Unknown IP';
+        const userAgent = sessionContext.userAgent || 'Unknown User-Agent';
         const validTill = new Date();
         validTill.setDate(validTill.getDate() + 7);
         const sessionKey = crypto.randomUUID();
@@ -816,10 +821,17 @@ export async function impersonateUser(userId: string, neupId: string): Promise<{
             data: { accountId: userId, key: sessionKey, ipAddress, userAgent, validTill, lastLoggedIn: new Date(), loginType: 'Impersonation', deviceType: deviceTypeHeader },
         });
 
-        await setSessionCookies({ aid: userId, sid: newSession.id, skey: sessionKey, accountId: userId, sessionId: newSession.id, sessionKey }, validTill);
         await logActivity(userId, `Admin impersonation started by ${adminId}`, 'Alert', undefined, adminId);
         await createNotification({ recipient_id: userId, action: 'warning.sticky', message: 'Your account was inspected by a superuser.', persistence: 'permanent', noticeType: 'warning', sender_id: adminId });
-        return { success: true };
+        return {
+            success: true,
+            session: {
+                aid: userId,
+                sid: newSession.id,
+                skey: sessionKey,
+                expiresOn: validTill.toISOString(),
+            },
+        };
     } catch (error) {
         await logError('database', error, `impersonateUser: ${userId}`);
         return { success: false, error: 'Could not start impersonation session.' };

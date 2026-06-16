@@ -1,9 +1,7 @@
 "use server";
 
-import { headers } from 'next/headers';
 import prisma from '@/core/helpers/prisma';
 import { createAndSetSession } from '@/core/auth/session';
-import { clearSessionCookies, getSessionCookies } from '@/core/auth/cookies';
 import { getActiveSession } from '@/core/auth/verify';
 import { makeNotification } from '@/services/notifications';
 import { logActivity } from '@/services/log-actions';
@@ -65,6 +63,8 @@ export type MakeSessionInput = {
 	accountId: string;
 	loginType: string;
 	geolocation?: string;
+	ipAddress: string;
+	userAgent: string;
 };
 
 
@@ -193,19 +193,6 @@ export async function validateAuthSession(input: ValidateAuthSessionInput): Prom
 
 
 /**
- * Reads auth cookies and validates them using validateAuthSession().
- */
-export async function validateAuthSessionFromCookies(): Promise<AuthValidationResult> {
-	const { accountId, sessionId, sessionKey } = await getSessionCookies();
-	return validateAuthSession({
-		aid: accountId || '',
-		sid: sessionId || '',
-		skey: sessionKey || '',
-	});
-}
-
-
-/**
  * Marks a session as expired in the database.
  */
 export async function expireSession(input: ExpireSessionInput): Promise<ExpireSessionResult> {
@@ -255,34 +242,19 @@ export async function expireSession(input: ExpireSessionInput): Promise<ExpireSe
 
 
 /**
- * Reads the active auth cookies and expires the matching session.
- */
-export async function expireSessionFromCookies(): Promise<ExpireSessionResult> {
-	const { accountId, sessionId, sessionKey } = await getSessionCookies();
-	return expireSession({
-		aid: accountId || '',
-		sid: sessionId || '',
-		skey: sessionKey || '',
-	});
-}
-
-
-/**
  * Creates a session using the current request headers for device context.
  */
 export async function makeSession(input: MakeSessionInput): Promise<MakeSessionResult> {
 	const accountId = input.accountId?.trim();
 	const loginType = input.loginType?.trim();
+	const ipAddress = input.ipAddress?.trim();
+	const userAgent = input.userAgent?.trim();
 
-	if (!accountId || !loginType) {
-		return { success: false, error: 'Missing accountId or loginType.' };
+	if (!accountId || !loginType || !ipAddress || !userAgent) {
+		return { success: false, error: 'Missing accountId, loginType, or device context.' };
 	}
 
 	try {
-		const headersList = await headers();
-		const ipAddress = headersList.get('x-forwarded-for') || 'Unknown IP';
-		const userAgent = headersList.get('user-agent') || 'Unknown User-Agent';
-
 		await createAndSetSession(accountId, loginType, ipAddress, userAgent, input.geolocation);
 		await logActivity(accountId, activityAction.login(), 'Success', ipAddress, undefined, input.geolocation);
 		await makeNotification({
@@ -499,56 +471,4 @@ export async function validateSession(input: ValidateSessionInput): Promise<Vali
 	} catch {
 		return { valid: false };
 	}
-}
-
-
-/**
- * Expires a session by ID and clears the auth cookie if it is the active session.
- * Used by the sign-out button on the auth/start page.
- */
-export async function logoutStoredSession(sessionId: string): Promise<{ success: boolean; error?: string }> {
-  const headersList = await headers();
-  const ipAddress = headersList.get('x-forwarded-for') || 'Unknown IP';
-
-  try {
-    const session = await prisma.authnSession.findUnique({ where: { id: sessionId } });
-    if (!session) return { success: false, error: 'Session not found.' };
-
-    await prisma.authnSession.update({
-      where: { id: sessionId },
-      data: { validTill: new Date() },
-    });
-
-    // If this is the currently active session, clear the auth cookie
-    const { sessionId: activeSessionId } = await getSessionCookies();
-    if (activeSessionId === sessionId) {
-      await clearSessionCookies();
-    }
-
-    await makeNotification({
-      recipient_id: session.accountId,
-      action: 'informative.logout',
-      message: 'A session was logged out.',
-    });
-
-    return { success: true };
-  } catch {
-    return { success: false, error: 'An unexpected error occurred.' };
-  }
-}
-
-/**
- * Clears the auth cookie for the current device, effectively removing the stored account.
- * Used by the "Remove" button on the auth/start page.
- */
-export async function removeStoredAccount(accountId: string): Promise<{ success: boolean; error?: string }> {
-  try {
-    const { accountId: activeAccountId } = await getSessionCookies();
-    if (accountId === activeAccountId) {
-      await clearSessionCookies();
-    }
-    return { success: true };
-  } catch {
-    return { success: false, error: 'Failed to remove account from device.' };
-  }
 }

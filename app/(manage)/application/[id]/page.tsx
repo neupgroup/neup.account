@@ -38,7 +38,11 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
   if (!details) notFound();
 
   const Icon = iconFor(details.icon);
-  const deleteAction = deleteManagedApplicationFromDetailsPage.bind(null, id);
+  const deleteAction = deleteManagedApplicationFromDetailsPage.bind(
+    null,
+    id,
+    mode === 'root' ? '/application?mode=root' : '/application',
+  );
 
   const [userStats, logPermissions] = await Promise.all([
     getApplicationUserStats(id),

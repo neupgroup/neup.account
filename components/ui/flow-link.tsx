@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { appendFlowParamsObject, getFlowParams } from '@/core/auth/callback';
 import { appendApplicationRootMode } from '@/core/helpers/application-mode';
-import { appendStickyQueryParams } from '@/services/navigation';
+import { appendStickyQueryParams } from '@/core/helper/navigation';
 import type { ComponentProps } from 'react';
 import { Suspense } from 'react';
 

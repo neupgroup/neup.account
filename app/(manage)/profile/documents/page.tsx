@@ -33,7 +33,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { redirectInApp } from '@/services/navigation';
+import { redirectInApp } from '@/core/helper/navigation';
 
 // Helper function to convert dataURL to File object
 function dataURLtoFile(dataurl: string, filename: string): File {

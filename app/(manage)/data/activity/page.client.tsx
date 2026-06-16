@@ -12,7 +12,7 @@ import { ChevronLeft, ChevronRight } from "@/components/icons";
 import { BackButton } from "@/components/ui/back-button";
 import { useEffect, useState, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { redirectInApp } from "@/services/navigation";
+import { redirectInApp } from "@/core/helper/navigation";
 import type { ActivityLog } from "@/services/log-actions";
 
 const statusVariantMap: { [key: string]: "default" | "destructive" | "secondary" } = {

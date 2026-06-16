@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FlowLink } from '@/components/ui/flow-link';
-import { redirectInApp } from '@/services/navigation';
+import { redirectInApp } from '@/core/helper/navigation';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,

@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2 } from '@/components/icons';
 import { addUserApplicationAccess, updateUserApplicationPermissions } from '@/services/applications/access';
-import { redirectInApp } from '@/services/navigation';
+import { redirectInApp } from '@/core/helper/navigation';
 
 type ApplicationAccessFormProps = {
   mode: 'add' | 'edit';

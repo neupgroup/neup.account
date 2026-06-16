@@ -3,7 +3,7 @@
 import { useSession } from "@/core/providers/session";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { redirectInApp } from "@/services/navigation";
+import { redirectInApp } from "@/core/helper/navigation";
 
 /**
  * AuthProxy handles the authentication check and redirection logic.

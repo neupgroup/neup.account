@@ -38,7 +38,11 @@ export async function getActiveSession(): Promise<Session | null> {
     return null;
   }
 
-  const result = await verifyActiveSession();
+  const result = await verifyActiveSession({
+    accountId,
+    sessionId,
+    sessionKey,
+  });
   if (!result.valid) return null;
 
   return {

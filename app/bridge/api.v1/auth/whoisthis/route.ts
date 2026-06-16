@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { verifyAccountToken } from '@/core/auth/accountToken';
 import { resolveWhoAmI } from '@/services/auth/whoami';
-import { resolveGuestAccount } from '@/services/auth/guestAccount';
+import { resolveGuestAccount } from '@/core/auth/guestAccount';
 import { getSessionCookies } from '@/core/auth/cookies';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import { extractGenderFromDetails, resolveDisplayImage } from '@/core/helpers/display-image';

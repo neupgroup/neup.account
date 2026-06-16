@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { logoutActiveSession } from '@/services/auth/signout';
-import { redirectInApp } from '@/services/navigation';
+import { logoutActiveSession } from '@/core/auth/logout';
+import { redirectInApp } from '@/core/helper/navigation';
 
 // 7 minutes 30 seconds in milliseconds
 const INACTIVITY_LIMIT_MS = 7 * 60 * 1000 + 30 * 1000;

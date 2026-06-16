@@ -7,7 +7,6 @@ import { logError } from '@/core/helpers/logger';
 import { switchToBrand as switchToBrandAction, switchToPersonal as switchToPersonalAction } from '@/core/auth/session';
 import { getPersonalAccountId } from '@/core/auth/verify';
 import { z } from 'zod';
-import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { brandCreationSchema } from '@/services/manage/accounts/schema';
 import { activeAccessWhere, ensureAccessAsset, ensureAccessMember } from '@/services/access-model';
@@ -108,8 +107,6 @@ export async function createBrandAccount(data: z.infer<typeof brandCreationSchem
 
     const { nameBrand, nameLegal, registrationId, headOfficeLocation, servingAreas } = validation.data;
     const neupId = validation.data.neupId.toLowerCase();
-    const ipAddress = (await headers()).get('x-forwarded-for') || 'Unknown IP';
-
     try {
         const existingNeupId = await prisma.neupId.findUnique({ where: { id: neupId } });
         if (existingNeupId) {
@@ -217,7 +214,7 @@ export async function createBrandAccount(data: z.infer<typeof brandCreationSchem
             creatorAccountId,
             activityAction.accountBrandCreate(brandAccountId),
             'Success',
-            ipAddress,
+            undefined,
             undefined,
             geolocation
         );

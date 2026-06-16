@@ -7,7 +7,7 @@ import { logActivity } from "@/services/log-actions";
 import { logError } from "@/core/helpers/logger";
 import prisma from "@/core/helpers/prisma";
 import bcrypt from "bcryptjs";
-import { logoutActiveSession } from "../auth/signout";
+import { logoutActiveSession } from "@/core/auth/logout";
 import { requireAnyPermission404 } from "@/core/auth/permission-guards";
 import { DATA_PRIVACY_PERMISSION_GROUPS } from "@/core/auth/data-permissions";
 

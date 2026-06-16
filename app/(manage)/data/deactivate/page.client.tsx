@@ -13,7 +13,7 @@ import { BackButton } from "@/components/ui/back-button";
 import { Geolocation } from "@/core/providers/geolocation";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
 import { useRouter } from "next/navigation";
-import { redirectInApp } from "@/services/navigation";
+import { redirectInApp } from "@/core/helper/navigation";
 
 
 export default function DeactivateAccountPage() {

@@ -9,6 +9,7 @@ import { getUserProfile, getAccountPermission, getGrantedAccountPermission } fro
 import { verifyActiveSession } from '@/services/auth/verify';
 import type { StoredProfileInfo } from './storage';
 import { getAccountSelectorContext } from '@/core/auth/accountSelector';
+import { getSessionCookies } from '@/core/auth/cookies';
 
 export type SessionCheckResult =
     | { valid: false }
@@ -24,7 +25,12 @@ export type SessionCheckResult =
 // Returns { valid: false } if the session is invalid or the profile cannot be loaded.
 export async function checkSession(selectedAccountId?: string | null): Promise<SessionCheckResult> {
     // First verify the raw session triplet (aid/sid/skey) is valid
-    const verification = await verifyActiveSession();
+    const { accountId, sessionId, sessionKey } = await getSessionCookies();
+    const verification = await verifyActiveSession({
+        accountId,
+        sessionId,
+        sessionKey,
+    });
     if (!verification.valid) {
         return { valid: false };
     }

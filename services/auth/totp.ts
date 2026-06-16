@@ -1,6 +1,4 @@
 "use server";
-
-import { headers } from 'next/headers';
 import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId } from '@/core/auth/verify';
 import { checkPermissions } from '@/services/user';
@@ -12,7 +10,7 @@ import { activityAction } from '@/services/activity-action';
 import { logError } from '@/core/helpers/logger';
 import { createNotification } from '@/services/notifications';
 import { encrypt, decrypt } from '@/services/security/totp';
-import { createAndSetSession } from '@/core/auth/session';
+import { makeSessionFromRequest } from '@/core/auth/makeSession';
 import { getAuthRequest } from './auth-request';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 
@@ -258,12 +256,13 @@ export async function verifyTotpFromPost(
 		return verification;
 	}
 
-	const headersList = await headers();
-	const ipAddress = headersList.get('x-forwarded-for') || 'Unknown IP';
-	const userAgent = headersList.get('user-agent') || 'Unknown User-Agent';
-
-	await logActivity(accountId, activityAction.login(), 'Success', ipAddress);
-	await createAndSetSession(accountId, 'Password + TOTP', ipAddress, userAgent);
+	const sessionResult = await makeSessionFromRequest({
+		accountId,
+		loginType: 'Password + TOTP',
+	});
+	if (!sessionResult.success) {
+		return { success: false, error: sessionResult.error || 'Failed to create session.' };
+	}
 
 	return { success: true };
 }

@@ -1,6 +1,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
-import { bridgeGetProfile } from '@/services/profile';
+import { bridgeGetProfile } from '@/core/auth/profileBridge';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,9 +20,13 @@ export async function GET(request: NextRequest) {
   }
 
   const result = await bridgeGetProfile({
-    searchParams: request.nextUrl.searchParams,
-    headers: request.headers,
-    body: parsedBody,
+    tempToken: request.nextUrl.searchParams.get('tempToken'),
+    appId: request.nextUrl.searchParams.get('appId'),
+    requestedAid: parsedBody?.aid || request.nextUrl.searchParams.get('aid'),
+    requestedNeupId: parsedBody?.neupid || request.nextUrl.searchParams.get('neupid'),
+    headerAid: request.headers.get('aid'),
+    headerSid: request.headers.get('sid'),
+    headerSkey: request.headers.get('skey'),
   });
 
   return NextResponse.json(result.body, { status: result.status });

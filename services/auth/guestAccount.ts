@@ -1,8 +1,7 @@
-import { cookies, headers } from 'next/headers';
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
-import { addAccount, getAccounts } from '@/core/auth/accounts';
 import crypto from 'crypto';
+import type { StoredAccount } from '@/core/auth/session';
 
 const GUEST_SESSION_DURATION_DAYS = 365;
 const ONE_MONTH_MS = 30 * 24 * 60 * 60 * 1000;
@@ -67,19 +66,20 @@ async function createGuestAccountWithSession(
  * @param linkedAccountId - Real account to link to (pass null for anonymous)
  */
 export async function resolveGuestAccount(
-  linkedAccountId: string | null = null
-): Promise<void> {
+  input: {
+    linkedAccountId?: string | null;
+    activeAccount?: StoredAccount | null;
+    ipAddress: string;
+    userAgent: string;
+  }
+): Promise<{ accountId: string; sessionId: string; sessionKey: string } | null> {
   try {
-    const headersList = await headers();
-    const ipAddress = headersList.get('x-forwarded-for') ?? 'Unknown IP';
-    const userAgent = headersList.get('user-agent') ?? 'Unknown';
-
-    const accounts = await getAccounts();
-    const activeAccount = accounts.find(a => a.def === 1);
+    const linkedAccountId = input.linkedAccountId ?? null;
+    const activeAccount = input.activeAccount ?? null;
 
     // If there's already a real signed-in user (has nid), don't touch anything
     if (activeAccount?.nid) {
-      return;
+      return null;
     }
 
     // Check if there's an existing guest account in the cookie
@@ -106,7 +106,7 @@ export async function resolveGuestAccount(
             });
           }
           // Already in auth_acc, nothing more to do
-          return;
+          return null;
         } else {
           // Stale guest — expire it
           await prisma.account.update({
@@ -119,10 +119,15 @@ export async function resolveGuestAccount(
     }
 
     // No valid guest in cookie — create a new one and write to auth_acc
-    const created = await createGuestAccountWithSession(linkedAccountId, ipAddress, userAgent);
-    await addAccount(created.accountId, created.sessionId, created.sessionKey, '');
+    const created = await createGuestAccountWithSession(
+      linkedAccountId,
+      input.ipAddress,
+      input.userAgent,
+    );
+    return created;
   } catch (error) {
     await logError('auth', error, 'resolve_guest_account');
+    return null;
   }
 }
 
@@ -130,14 +135,13 @@ export async function resolveGuestAccount(
  * Expires the current guest account on logout and creates a new anonymous one.
  * Called from logoutActiveSession.
  */
-export async function rotateGuestAccountOnLogout(): Promise<void> {
+export async function rotateGuestAccountOnLogout(input: {
+  activeAccount?: StoredAccount | null;
+  ipAddress: string;
+  userAgent: string;
+}): Promise<{ accountId: string; sessionId: string; sessionKey: string }> {
   try {
-    const headersList = await headers();
-    const ipAddress = headersList.get('x-forwarded-for') ?? 'Unknown IP';
-    const userAgent = headersList.get('user-agent') ?? 'Unknown';
-
-    const accounts = await getAccounts();
-    const activeAccount = accounts.find(a => a.def === 1);
+    const activeAccount = input.activeAccount ?? null;
 
     // Expire the current guest account if it exists
     if (activeAccount && !activeAccount.nid && activeAccount.aid) {
@@ -148,9 +152,9 @@ export async function rotateGuestAccountOnLogout(): Promise<void> {
     }
 
     // Create a new anonymous guest account and write to auth_acc
-    const created = await createGuestAccountWithSession(null, ipAddress, userAgent);
-    await addAccount(created.accountId, created.sessionId, created.sessionKey, '');
+    return await createGuestAccountWithSession(null, input.ipAddress, input.userAgent);
   } catch (error) {
     await logError('auth', error, 'rotate_guest_account_on_logout');
+    return await createGuestAccountWithSession(null, input.ipAddress, input.userAgent);
   }
 }

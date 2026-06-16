@@ -5,7 +5,6 @@
  import prisma from '@/core/helpers/prisma';
 import { logActivity } from '@/services/log-actions';
 import { logError } from '@/core/helpers/logger';
-import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { getUserNeupIds, getUserProfile, checkPermissions } from '@/services/user';
 import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
@@ -60,7 +59,6 @@ export async function createBranchAccount(data: z.infer<typeof formSchema>, geol
 
     const { name, location } = validation.data;
     const neupIdSubdomain = validation.data.neupIdSubdomain.toLowerCase();
-    const ipAddress = (await headers()).get('x-forwarded-for') || 'Unknown IP';
 
     try {
         const parentNeupIds = await getUserNeupIds(parentBrandId);
@@ -148,7 +146,7 @@ export async function createBranchAccount(data: z.infer<typeof formSchema>, geol
             parentBrandId,
             activityAction.accountBranchCreate(result),
             'Success',
-            ipAddress,
+            undefined,
             personalAccountId,
             geolocation
         );

@@ -3,7 +3,7 @@
 
 import { useEffect, useRef, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
-import { logoutActiveSession } from "@/services/auth/signout"
+import { logoutActiveSession } from "@/core/auth/logout"
 import { redirectInApp } from "@/core/helpers/link"
 
 function SignOut() {

@@ -44,7 +44,7 @@ import { parseDateString } from "@/services/profile"
 import { BackButton } from "@/components/ui/back-button"
 import { checkPermissions } from '@/services/user'
 import { Loader2 } from "@/components/icons"
-import { redirectInApp } from "@/services/navigation";
+import { redirectInApp } from "@/core/helper/navigation";
 
 type FormData = z.infer<typeof dependentFormSchema>;
 

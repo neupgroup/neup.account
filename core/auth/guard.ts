@@ -26,7 +26,13 @@ export async function requireValidSession(
   const isGuestUser = cookieFlagGuest || tokenFlagGuest;
 
   // Validate session against DB, including expected guest-vs-non-guest mode.
-  const session = await verifyActiveSession({ expectedGuest: isGuestUser });
+  const { accountId, sessionId, sessionKey } = await getSessionCookies();
+  const session = await verifyActiveSession({
+    accountId,
+    sessionId,
+    sessionKey,
+    expectedGuest: isGuestUser,
+  });
 
   if (!session.valid || (!allowGuest && isGuestUser)) {
     redirect(redirectTo);

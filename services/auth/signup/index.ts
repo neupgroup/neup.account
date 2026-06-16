@@ -4,13 +4,12 @@
 import prisma from '@/core/helpers/prisma';
 import bcrypt from 'bcryptjs';
 import { logActivity } from '@/services/log-actions';
-import { headers } from 'next/headers';
 import { logError } from '@/core/helpers/logger';
 import type { z } from 'zod';
 import { getAuthRequest, extendAuthRequest } from '../auth-request';
 import { getAuthTimeoutError } from '../timeout';
 import { verifyPassword } from '../password';
-import { makeSession } from '../session';
+import { makeSessionFromRequest } from '@/core/auth/makeSession';
 import { assignDefaultRole } from '../assignDefaultRole';
 import {
   nameSchema,
@@ -446,10 +445,6 @@ export async function submitTermsStep(authRequestId: string, data: z.infer<typeo
     };
   }
 
-  const headersList = await headers();
-  const ipAddress = headersList.get('x-forwarded-for') || 'Unknown IP';
-  const userAgent = headersList.get('user-agent') || 'Unknown User-Agent';
-
   try {
     const neupIdTaken = await prisma.neupId.findUnique({
         where: { id: neupId },
@@ -513,11 +508,10 @@ export async function submitTermsStep(authRequestId: string, data: z.infer<typeo
     await logActivity(
       accountId,
       'User Registration',
-      'Success',
-      ipAddress
+      'Success'
     );
 
-    const sessionResult = await makeSession({
+    const sessionResult = await makeSessionFromRequest({
       accountId,
       loginType: 'Registration',
     });

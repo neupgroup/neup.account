@@ -11,7 +11,7 @@ import {
   type AppPermission,
   type AppRole,
 } from '@/services/applications/authz-manage';
-import { redirectInApp } from '@/services/navigation';
+import { redirectInApp } from '@/core/helper/navigation';
 
 type Props = {
   appId: string;

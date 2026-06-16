@@ -1,6 +1,6 @@
 'use server';
 
-import { resolveGuestAccount } from '@/services/auth/guestAccount';
+import { resolveGuestAccount } from '@/core/auth/guestAccount';
 
 /**
  * Server Action — creates a guest account if none exists.

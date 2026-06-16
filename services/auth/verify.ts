@@ -1,13 +1,15 @@
 'use server';
 
 import prisma from '@/core/helpers/prisma';
-import { getSessionCookies } from '@/core/auth/cookies';
 
 export type SessionVerifyResult =
     | { valid: true; accountId: string; isGuest: boolean }
     | { valid: false };
 
 type VerifyActiveSessionOptions = {
+    accountId: string;
+    sessionId: string;
+    sessionKey: string;
     expectedGuest?: boolean;
 };
 
@@ -17,9 +19,9 @@ type VerifyActiveSessionOptions = {
  * Called on every protected page mount to catch remote logouts and expired sessions.
  */
 export async function verifyActiveSession(
-    options: VerifyActiveSessionOptions = {},
+    options: VerifyActiveSessionOptions,
 ): Promise<SessionVerifyResult> {
-    const { accountId, sessionId, sessionKey } = await getSessionCookies();
+    const { accountId, sessionId, sessionKey } = options;
 
     if (!accountId || !sessionId || !sessionKey) {
         return { valid: false };

@@ -101,6 +101,7 @@ export function MobileNav() {
             const managedItems = [
                 { href: "/home", label: "Dashboard", description: "Your central account management hub.", icon: Home, requiredPermissions: [] as string[] },
                 { href: "/profile", label: "Brand Info", description: "Manage profile details.", icon: iconMap['BrandInfo'], requiredPermissions: PROFILE_NAV_PERMISSIONS },
+                { href: "/notifications", label: "Notifications", description: "View and manage account notifications.", icon: iconMap['Notifications'], requiredPermissions: ['notification.read', 'notification.delete'] },
                 { href: "/accounts/branches", label: "Branches", description: "Manage brand branches.", icon: iconMap['LinkedAccounts'], requiredPermissions: ['linked_accounts.brand.manage'] },
             ].filter((item) => hasAnyPermission(permissions, item.requiredPermissions));
 

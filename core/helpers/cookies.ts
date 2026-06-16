@@ -111,9 +111,6 @@ export class AuthCookiesHelper extends Singleton {
         const skey = account?.skey || '';
         const allAccounts: StoredAccount[] = account ? [account] : [];
 
-        const managingCookie = await this.get('auth_account_switch');
-        const managingAccountId = managingCookie || undefined;
-
         return {
             aid,
             sid,
@@ -122,7 +119,6 @@ export class AuthCookiesHelper extends Singleton {
             accountId: aid,
             sessionId: sid,
             sessionKey: skey,
-            managingAccountId,
             allAccounts,
         };
     }
@@ -156,16 +152,6 @@ export class AuthCookiesHelper extends Singleton {
         );
         const cookieStore = await this.getStore();
         cookieStore.set('auth_account', token, LONG_LIVED_COOKIE_OPTIONS);
-    }
-
-    public async setManagingCookie(accountId: string) {
-        const expires = new Date();
-        expires.setDate(expires.getDate() + 30);
-        await this.set('auth_account_switch', accountId, { ...COOKIE_OPTIONS, expires });
-    }
-
-    public async clearManagingCookie() {
-        await this.del('auth_account_switch');
     }
 
     public async clearSessionCookies() {
@@ -215,22 +201,6 @@ export async function setSessionCookies(session: Session, expires: Date) {
  */
 export async function setStoredAccountsCookie(accounts: StoredAccount[]) {
     return authCookies.setStoredAccountsCookie(accounts);
-}
-
-
-/**
- * Sets the cookie to indicate which brand/dependent account is being managed.
- */
-export async function setManagingCookie(accountId: string) {
-    return authCookies.setManagingCookie(accountId);
-}
-
-
-/**
- * Clears the managing cookie to return to the personal account view.
- */
-export async function clearManagingCookie() {
-    return authCookies.clearManagingCookie();
 }
 
 

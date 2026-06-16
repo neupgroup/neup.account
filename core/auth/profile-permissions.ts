@@ -1,6 +1,6 @@
-import { checkGrantedPermissions, checkPermissions, getAccountPermission } from '@/services/user';
-import { getPersonalAccountId } from '@/core/auth/verify';
+import { checkGrantedPermissions, checkPermissions, getAccountPermission, getCurrentAccountPermission } from '@/services/user';
 import { notFound } from 'next/navigation';
+import { getAccountSelectorContext } from '@/core/auth/accountSelector';
 
 export const PROFILE_DISPLAY_PERMISSION_GROUPS = {
   self: ['profile.display.name', 'profile.display.update'],
@@ -45,8 +45,42 @@ export async function assertHasAnyPermission(
   requiredPermissions: readonly string[],
   accountId?: string,
 ): Promise<void> {
-  const grantedPermissions = await getAccountPermission(accountId);
+  const grantedPermissions = accountId
+    ? await getAccountPermission(accountId)
+    : await getCurrentAccountPermission();
   if (!hasAnyPermission(grantedPermissions, requiredPermissions)) {
+    notFound();
+  }
+}
+
+export async function hasSelectedAccountAnyPermission(
+  targetAccountId: string,
+  requiredPermissions: readonly string[],
+): Promise<boolean> {
+  if (!requiredPermissions.length) return true;
+
+  const { personalAccountId, isSelf } = await getAccountSelectorContext();
+  if (!personalAccountId) return false;
+
+  if (isSelf && targetAccountId === personalAccountId) {
+    return checkPermissions(requiredPermissions);
+  }
+
+  const results = await Promise.all(
+    requiredPermissions.map((permission) =>
+      checkGrantedPermissions([permission], personalAccountId, targetAccountId)
+    )
+  );
+
+  return results.some(Boolean);
+}
+
+export async function assertHasSelectedAccountAnyPermission(
+  targetAccountId: string,
+  requiredPermissions: readonly string[],
+): Promise<void> {
+  const canAccess = await hasSelectedAccountAnyPermission(targetAccountId, requiredPermissions);
+  if (!canAccess) {
     notFound();
   }
 }
@@ -55,7 +89,7 @@ export async function hasProfileDisplayPermission(
   targetAccountId: string,
   action: 'view' | 'update',
 ): Promise<boolean> {
-  const personalAccountId = await getPersonalAccountId();
+  const { personalAccountId, isSelf } = await getAccountSelectorContext();
   if (!personalAccountId) return false;
 
   const selfPermission = action === 'view'
@@ -68,7 +102,7 @@ export async function hasProfileDisplayPermission(
     ? PROFILE_DISPLAY_PERMISSION_GROUPS.root[0]
     : PROFILE_DISPLAY_PERMISSION_GROUPS.root[1];
 
-  if (targetAccountId === personalAccountId) {
+  if (isSelf && targetAccountId === personalAccountId) {
     return (
       await checkPermissions([selfPermission]) ||
       await checkPermissions([rootPermission])

@@ -7,6 +7,7 @@ import prisma from "@/core/helpers/prisma";
 import { logError } from "@/core/helpers/logger";
 import { getActiveAccountId, getPersonalAccountId } from "@/core/auth/verify";
 import { extractGenderFromDetails, resolveDisplayImage } from "@/core/helpers/display-image";
+import { getAccountSelectorContext } from "@/core/auth/accountSelector";
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from "@/services/access-model";
 
 // --- Types ---
@@ -305,6 +306,22 @@ export async function getGrantedAccountPermission(
   }
 }
 
+export async function getCurrentAccountPermission(): Promise<string[]> {
+  const {
+    activeAccountId,
+    personalAccountId,
+    isManagingOtherAccount,
+  } = await getAccountSelectorContext();
+
+  if (!activeAccountId || !personalAccountId) {
+    return [];
+  }
+
+  return isManagingOtherAccount
+    ? getGrantedAccountPermission(personalAccountId, activeAccountId)
+    : getAccountPermission(activeAccountId);
+}
+
 // Returns true when a member account has all required permissions granted on a selected account.
 export async function checkGrantedPermissions(
   requiredPermissions: readonly string[],
@@ -326,7 +343,9 @@ export async function checkPermissions(
 ): Promise<boolean> {
   if (!requiredPermissions || requiredPermissions.length === 0) return true;
 
-  const userPermissions = await getAccountPermission(accountId);
+  const userPermissions = accountId
+    ? await getAccountPermission(accountId)
+    : await getCurrentAccountPermission();
   const permissionsSet = new Set(userPermissions);
 
   return requiredPermissions.every((p) => permissionsSet.has(p));

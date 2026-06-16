@@ -1,9 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import React from 'react';
-import { getActiveAccountId } from '@/core/auth/verify';
 import { notFound } from 'next/navigation';
 import { getAccessibleAccounts } from '@/services/manage/accounts';
-import { authCookies } from '@/core/helpers/cookies';
 import { ListItem } from '@/components/ui/list-item';
 import { SecondaryHeader } from '@/components/ui/secondary-header';
 import { Bot, Building, UserPlus, FolderGit2 } from '@/components/icons';
@@ -11,7 +9,8 @@ import { PrimaryHeader } from '@/components/ui/primary-header';
 import { AccountListItem } from '@/components/elements/account-item';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/core/auth/linked-account-permissions';
-import { getAccountPermission } from '@/services/user';
+import { getCurrentAccountPermission } from '@/services/user';
+import { getAccountSelectorContext } from '@/core/auth/accountSelector';
 
 
 const LinkAndCreateFeatures = ({ canCreateBrand, canCreateDependent }: { canCreateBrand: boolean; canCreateDependent: boolean }) => (
@@ -44,16 +43,17 @@ const LinkAndCreateFeatures = ({ canCreateBrand, canCreateDependent }: { canCrea
 
 export default async function AccountsPage() {
   await requireAnyPermission404(LINKED_ACCOUNT_NAV_PERMISSIONS);
-  const accountId = await getActiveAccountId();
+  const { activeAccountId: accountId, isManagingOtherAccount } =
+    await getAccountSelectorContext();
   if (!accountId) {
     notFound();
   }
 
-  const permissions = await getAccountPermission(accountId);
+  const permissions = await getCurrentAccountPermission();
   const canCreateBrand = permissions.includes('linked_accounts.brand.create');
   const canCreateDependent = permissions.includes('linked_accounts.dependent.create');
 
-  const isManaging = Boolean(await authCookies.get('auth_account_switch'));
+  const isManaging = isManagingOtherAccount;
 
   let accountsToShow: any[] = [];
 

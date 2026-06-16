@@ -8,6 +8,7 @@ import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
 import { getUserProfile, getAccountPermission, getGrantedAccountPermission } from '@/services/user';
 import { verifyActiveSession } from '@/services/auth/verify';
 import type { StoredProfileInfo } from './storage';
+import { getAccountSelectorContext } from '@/core/auth/accountSelector';
 
 export type SessionCheckResult =
     | { valid: false }
@@ -29,21 +30,20 @@ export async function checkSession(selectedAccountId?: string | null): Promise<S
     }
 
     // Resolve both the active (possibly managing) and personal account IDs in parallel
-    const [activeId, personalId] = await Promise.all([
-        getActiveAccountId(selectedAccountId),
-        getPersonalAccountId(),
-    ]);
+    const {
+        activeAccountId: activeId,
+        personalAccountId: personalId,
+        isManagingOtherAccount,
+    } = await getAccountSelectorContext(selectedAccountId);
 
     if (!activeId || !personalId) {
         return { valid: false };
     }
 
     // Fetch profile and permissions in parallel to minimize latency
-    const isManaging = activeId !== personalId;
-
     const [profile, permissions] = await Promise.all([
         getUserProfile(activeId),
-        isManaging
+        isManagingOtherAccount
             ? getGrantedAccountPermission(personalId, activeId)
             : getAccountPermission(activeId),
     ]);

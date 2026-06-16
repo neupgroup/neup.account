@@ -4,15 +4,14 @@ import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { checkPermissions } from '@/services/user';
 import { getPersonalAccountId } from '@/core/auth/verify';
-import { setManagingCookie, clearManagingCookie } from '@/core/helpers/cookies';
 import { revalidatePath } from 'next/cache';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { cleanupExpiredAccessModel } from '@/services/access-model';
 import { BRAND_OWNER_ROLE_ID } from '@/core/auth/brand-roles';
 
 /**
- * Switch into any account the current user has been granted access to.
- * Sets auth_account_switch = memberId.
+ * Validates access to any account the current user has been granted access to.
+ * Selected-account state is URL-driven on the client.
  */
 export async function switchToAccount(memberId: string): Promise<{ success: boolean; error?: string }> {
   const personalAccountId = await getPersonalAccountId();
@@ -33,7 +32,6 @@ export async function switchToAccount(memberId: string): Promise<{ success: bool
     });
     if (!grant) return { success: false, error: 'No access found for this account.' };
 
-    await setManagingCookie(memberId);
     revalidatePath('/');
     return { success: true };
   } catch (error) {
@@ -43,8 +41,8 @@ export async function switchToAccount(memberId: string): Promise<{ success: bool
 }
 
 /**
- * Switch into a brand account owned by the current user.
- * Sets auth_account_switch = brandId.
+ * Validates access to a brand account owned by the current user.
+ * Selected-account state is URL-driven on the client.
  */
 export async function switchToBrand(brandId: string): Promise<{ success: boolean; error?: string }> {
   await requireAnyPermission404(['linked_accounts.brand.view']);
@@ -70,7 +68,6 @@ export async function switchToBrand(brandId: string): Promise<{ success: boolean
     });
     if (!ownership) return { success: false, error: 'Brand account not found or not owned by you.' };
 
-    await setManagingCookie(brandId);
     revalidatePath('/');
     return { success: true };
   } catch (error) {
@@ -80,8 +77,8 @@ export async function switchToBrand(brandId: string): Promise<{ success: boolean
 }
 
 /**
- * Switch into a dependent account owned by the current user.
- * Sets auth_account_switch = dependentId.
+ * Validates access to a dependent account owned by the current user.
+ * Selected-account state is URL-driven on the client.
  */
 export async function switchToDependent(dependentId: string): Promise<{ success: boolean; error?: string }> {
   await requireAnyPermission404(['linked_accounts.dependent.view']);
@@ -107,7 +104,6 @@ export async function switchToDependent(dependentId: string): Promise<{ success:
     });
     if (!ownership) return { success: false, error: 'Dependent account not found or not owned by you.' };
 
-    await setManagingCookie(dependentId);
     revalidatePath('/');
     return { success: true };
   } catch (error) {
@@ -117,9 +113,8 @@ export async function switchToDependent(dependentId: string): Promise<{ success:
 }
 
 /**
- * Switch back to the personal account by clearing auth_account_switch.
+ * Selected-account state is URL-driven on the client.
  */
 export async function switchToPersonal(): Promise<void> {
-  await clearManagingCookie();
   revalidatePath('/');
 }

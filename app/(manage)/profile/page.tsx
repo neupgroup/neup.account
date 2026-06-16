@@ -4,10 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ListItem } from "@/components/ui/list-item";
 import { PrimaryHeader } from "@/components/ui/primary-header";
 import { UserCircle, FileText, HeartHandshake, AtSign, Contact, ShieldCheck } from "@/components/icons";
-import { getActiveAccountId, getPersonalAccountId } from "@/core/auth/verify";
 import { checkGrantedPermissions, checkPermissions, getUserProfile } from "@/services/user";
 import { logSystemError } from "@/core/helpers/logger";
 import { PROFILE_NAV_PERMISSIONS, PROFILE_SECTION_PERMISSIONS } from "@/core/auth/profile-permissions";
+import { getAccountSelectorContext } from "@/core/auth/accountSelector";
 
 function isDebuggingEnabled() {
     return (
@@ -18,12 +18,16 @@ function isDebuggingEnabled() {
 }
 
 export default async function ProfilePage() {
-    const accountId = await getActiveAccountId();
+    const {
+        activeAccountId: accountId,
+        personalAccountId,
+        isManagingOtherAccount,
+    } = await getAccountSelectorContext();
+
     if (!accountId) {
         notFound();
     }
 
-    const personalAccountId = await getPersonalAccountId();
     if (!personalAccountId) {
         notFound();
     }
@@ -33,7 +37,7 @@ export default async function ProfilePage() {
         notFound();
     }
 
-    const isManaging = accountId !== personalAccountId;
+    const isManaging = isManagingOtherAccount;
 
     const canViewProfile = isManaging
         ? await Promise.all(PROFILE_NAV_PERMISSIONS.map((permission) => checkGrantedPermissions([permission], personalAccountId, accountId)))

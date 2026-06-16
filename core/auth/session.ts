@@ -43,7 +43,7 @@ export type StoredAccount = {
   accountType?: string;
 };
 
-import { setStoredAccountsCookie, getSessionCookies, clearManagingCookie, setManagingCookie } from '@/core/helpers/cookies';
+import { setStoredAccountsCookie, getSessionCookies } from '@/core/helpers/cookies';
 import { getUserNeupIds, validateNeupId } from '@/services/user';
 
 const SESSION_DURATION_DAYS = 30;
@@ -204,7 +204,7 @@ export async function cleanupExpiredStoredSessions(): Promise<StoredAccount[]> {
 }
 
 // Validates the given account's session against the DB, then sets it as the active
-// account (def: 1) in the cookie and clears any managing context.
+// account (def: 1) in the cookie.
 export async function switchToAccount(account: StoredAccount) {
     if (!account.sid || !account.skey) {
         return { success: false, error: 'Invalid session information. Please sign in.' };
@@ -234,8 +234,6 @@ export async function switchToAccount(account: StoredAccount) {
         ) {
             return { success: false, error: 'Invalid or expired session.' };
         }
-
-        await clearManagingCookie();
 
         const { allAccounts } = await getSessionCookies();
         const updatedAccounts = allAccounts.map((acc: StoredAccount) => ({
@@ -276,46 +274,23 @@ export async function switchToAccountByNeupId(neupId: string): Promise<{ success
   return switchToAccount(matchedAccount);
 }
 
-// Sets the managing cookie so the user operates as a brand account.
+// Selected-account state is URL-driven on the client.
 export async function switchToBrand(brandId: string) {
-  try {
-    await setManagingCookie(brandId);
-    return { success: true };
-  } catch (error) {
-    await logError('auth', error, `switchToBrand: ${brandId}`);
-    return { success: false, error: 'Failed to switch to brand account.' };
-  }
+  return { success: true };
 }
 
-// Sets the managing cookie so the user operates as a dependent account.
+// Selected-account state is URL-driven on the client.
 export async function switchToDependent(dependentId: string) {
-  try {
-    await setManagingCookie(dependentId);
-    return { success: true };
-  } catch (error) {
-    await logError('auth', error, `switchToDependent: ${dependentId}`);
-    return { success: false, error: 'Failed to switch to dependent account.' };
-  }
+  return { success: true };
 }
 
-// Sets the managing cookie so the user operates as a delegated account.
+// Selected-account state is URL-driven on the client.
 export async function switchToDelegated(accountId: string) {
-  try {
-    await setManagingCookie(accountId);
-    return { success: true };
-  } catch (error) {
-    await logError('auth', error, `switchToDelegated: ${accountId}`);
-    return { success: false, error: 'Failed to switch to delegated account.' };
-  }
+  return { success: true };
 }
 
-// Clears the auth_managing cookie, returning the user to their personal account context.
+// Selected-account state is URL-driven on the client.
 export async function switchToPersonal() {
-  try {
-    await clearManagingCookie();
-  } catch (error) {
-    await logError('auth', error, `switchToPersonal`);
-  }
+  return;
 }
-
 

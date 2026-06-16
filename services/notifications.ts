@@ -1,11 +1,12 @@
 'use server';
 
 import prisma from '@/core/helpers/prisma';
-import { getPersonalAccountId } from '@/core/auth/verify';
+import { getActiveAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
-import { checkPermissions, getUserProfile } from '@/services/user';
+import { getUserProfile } from '@/services/user';
 import { notFound } from 'next/navigation';
+import { hasSelectedAccountAnyPermission } from '@/core/auth/profile-permissions';
 
 /**
  * Type Notification.
@@ -98,10 +99,10 @@ export async function createNotification(data: NotificationCreate) {
  * Function getNotifications.
  */
 export async function getNotifications(): Promise<AllNotifications> {
-    const accountId = await getPersonalAccountId();
+    const accountId = await getActiveAccountId();
     if (!accountId) return { sticky: [], requests: [], other: [] };
 
-    const canView = await checkPermissions(['notification.read']);
+    const canView = await hasSelectedAccountAnyPermission(accountId, ['notification.read']);
     if (!canView) {
         notFound();
     }
@@ -173,12 +174,15 @@ export async function getNotifications(): Promise<AllNotifications> {
  * Function markNotificationAsRead.
  */
 export async function markNotificationAsRead(notificationId: string): Promise<{ success: boolean }> {
-    const canMarkAsRead = await checkPermissions(['notification.read']);
+    const accountId = await getActiveAccountId();
+    if (!accountId) return { success: false };
+
+    const canMarkAsRead = await hasSelectedAccountAnyPermission(accountId, ['notification.read']);
     if (!canMarkAsRead) return { success: false };
 
     try {
-        await prisma.notification.update({
-            where: { id: notificationId },
+        await prisma.notification.updateMany({
+            where: { id: notificationId, accountId },
             data: { read: true }
         });
         revalidatePath('/manage/notifications');
@@ -194,13 +198,19 @@ export async function markNotificationAsRead(notificationId: string): Promise<{ 
  * Function deleteNotification.
  */
 export async function deleteNotification(notificationId: string): Promise<{ success: boolean; error?: string; }> {
-    const canDelete = await checkPermissions(['notification.delete']);
+    const accountId = await getActiveAccountId();
+    if (!accountId) return { success: false, error: "Not authenticated." };
+
+    const canDelete = await hasSelectedAccountAnyPermission(accountId, ['notification.delete']);
     if (!canDelete) return { success: false, error: "Permission denied." };
     
     try {
-        await prisma.notification.delete({
-            where: { id: notificationId }
+        const deleted = await prisma.notification.deleteMany({
+            where: { id: notificationId, accountId }
         });
+        if (deleted.count === 0) {
+            return { success: false, error: "Could not delete notification." };
+        }
         revalidatePath('/manage/notifications');
         return { success: true };
     } catch (error) {

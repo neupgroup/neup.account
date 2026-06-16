@@ -3,7 +3,7 @@
 
 import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
-import { getUserProfile, getUserNeupIds, getAccountType, getAccountPermission, checkPermissions } from '@/services/user';
+import { getUserProfile, getUserNeupIds, getAccountType, getCurrentAccountPermission, checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
@@ -521,7 +521,7 @@ export async function getDelegatablePermissions(): Promise<Permission[]> {
     if (!managedAccountId) return [];
 
     // Get all permissions the current user has on the active account
-    const userPermissions = await getAccountPermission(managedAccountId);
+    const userPermissions = await getCurrentAccountPermission();
     
     // Convert to Permission objects
     return userPermissions.sort().map(p => ({
@@ -556,7 +556,7 @@ export async function updatePermissions(permitId: string, newPermissionIds: stri
         }
 
         // --- Permission Delegation Check ---
-        const userResolvedPermissions = await getAccountPermission(currentAccountId);
+        const userResolvedPermissions = await getCurrentAccountPermission();
         const userResolvedPermSet = new Set(userResolvedPermissions);
 
         const isAllowed = newPermissionIds.every(p => userResolvedPermSet.has(p));

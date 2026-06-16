@@ -1,8 +1,14 @@
-import { requireAnyPermission404 } from '@/core/auth/permission-guards';
-import { NOTIFICATION_PERMISSIONS } from '@/core/auth/profile-permissions';
+import { getActiveAccountId } from '@/core/auth/verify';
+import { assertHasSelectedAccountAnyPermission, NOTIFICATION_PERMISSIONS } from '@/core/auth/profile-permissions';
+import { notFound } from 'next/navigation';
 import NotificationsPageClient from './page.client';
 
 export default async function NotificationsPage() {
-    await requireAnyPermission404(NOTIFICATION_PERMISSIONS);
+    const accountId = await getActiveAccountId();
+    if (!accountId) {
+        notFound();
+    }
+
+    await assertHasSelectedAccountAnyPermission(accountId, NOTIFICATION_PERMISSIONS);
     return <NotificationsPageClient />;
 }

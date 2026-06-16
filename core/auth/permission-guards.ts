@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getAccountPermission } from '@/services/user';
+import { getAccountPermission, getCurrentAccountPermission } from '@/services/user';
 import { hasAnyPermission } from '@/core/auth/profile-permissions';
 
 export async function requireAnyPermission404(
@@ -8,7 +8,10 @@ export async function requireAnyPermission404(
 ): Promise<void> {
   if (!requiredPermissions.length) return;
 
-  const grantedPermissions = await getAccountPermission(accountId);
+  const grantedPermissions = accountId
+    ? await getAccountPermission(accountId)
+    : await getCurrentAccountPermission();
+
   if (!hasAnyPermission(grantedPermissions, requiredPermissions)) {
     notFound();
   }

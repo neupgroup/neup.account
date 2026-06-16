@@ -5,10 +5,9 @@
 // "who is logged in" calls into this file.
 
 import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
-import prisma from '@/core/helpers/prisma';
 import { verifyActiveSession } from '@/services/auth/verify';
 import { getSessionCookies } from '@/core/helpers/cookies';
+import { getAccountSelectorContext } from '@/core/auth/accountSelector';
 
 // Represents an active session with both shorthand and legacy field names.
 export type Session = {
@@ -64,52 +63,15 @@ export async function validateCurrentSession() {
   return session;
 }
 
-// Returns the ID of the account currently in context.
-// If the user is managing a brand/dependent/delegated account, returns that account's ID.
-// Otherwise returns the personal account ID.
-async function resolveSelectedAccountId(selectedAccountId?: string | null): Promise<string | null> {
-    const requestedAccountId =
-        selectedAccountId?.trim() ||
-        (await headers()).get('x-selected-account')?.trim() ||
-        null;
-
-    if (!requestedAccountId) return null;
-
-    const personalAccountId = await getPersonalAccountId();
-    if (!personalAccountId) return null;
-
-    if (requestedAccountId === personalAccountId) {
-        return requestedAccountId;
-    }
-
-    const grant = await prisma.access.findFirst({
-        where: {
-            memberAccountId: personalAccountId,
-            parentAccountId: requestedAccountId,
-            status: 'active',
-            OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
-            role: {
-                appId: 'neup.account',
-            },
-        },
-        select: { id: true },
-    });
-
-    return grant ? requestedAccountId : null;
-}
-
 export async function getActiveAccountId(selectedAccountId?: string | null): Promise<string | null> {
-    const requestedAccountId = await resolveSelectedAccountId(selectedAccountId);
-    if (requestedAccountId) return requestedAccountId;
-
-    const { managingAccountId, accountId } = await getSessionCookies();
-    return managingAccountId || accountId || null;
+    const { activeAccountId } = await getAccountSelectorContext(selectedAccountId);
+    return activeAccountId;
 }
 
 // Always returns the personal (logged-in) account ID, regardless of managing context.
 export async function getPersonalAccountId(): Promise<string | null> {
-    const { accountId } = await getSessionCookies();
-    return accountId || null;
+    const { personalAccountId } = await getAccountSelectorContext();
+    return personalAccountId;
 }
 
 // Placeholder for future server-side session refresh logic.

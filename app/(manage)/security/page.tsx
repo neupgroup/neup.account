@@ -7,7 +7,7 @@ import { notFound } from 'next/navigation';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { hasAnyPermission } from '@/core/auth/profile-permissions';
 import { SECURITY_HUB_ITEMS, SECURITY_HUB_PERMISSIONS } from '@/core/auth/security-permissions';
-import { getAccountPermission } from '@/services/user';
+import { getCurrentAccountPermission } from '@/services/user';
 import { getActiveAccountId } from '@/core/auth/verify';
 
 const SECTION_META = {
@@ -31,9 +31,9 @@ export default async function SecurityPage() {
     notFound();
   }
 
-  await requireAnyPermission404(SECURITY_HUB_PERMISSIONS, accountId);
+  await requireAnyPermission404(SECURITY_HUB_PERMISSIONS);
 
-  const permissions = await getAccountPermission(accountId);
+  const permissions = await getCurrentAccountPermission();
   const visibleItems = SECURITY_HUB_ITEMS.filter((item) => hasAnyPermission(permissions, item.permissions));
 
   const sections = (Object.keys(SECTION_META) as Array<keyof typeof SECTION_META>).map((section) => ({

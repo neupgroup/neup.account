@@ -1,17 +1,58 @@
 import { notFound } from 'next/navigation';
 import { FlowLink } from '@/components/ui/flow-link';
 import { Card, CardContent } from '@/components/ui/card';
-import { FolderGit2, ChevronRight } from '@/components/icons';
+import { FolderGit2, ChevronRight, Building, UserPlus } from '@/components/icons';
 import { getDirectAccessGroup } from '@/services/manage/access';
 import { getAccessAssetGroups, getAccessAssetGroup } from '@/services/manage/access/assets';
 import { getActiveAccountId } from '@/core/auth/verify';
 import { CreateAssetGroupCard } from './create-asset-group-card';
 import { SecondaryHeader } from '@/components/ui/secondary-header';
 import { AccessGroupView } from './_components/access-group-view';
+import { ListItem } from '@/components/ui/list-item';
+import { AccountListItem } from '@/components/elements/account-item';
+import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/core/auth/linked-account-permissions';
+import { getCurrentAccountPermission } from '@/services/user';
+import { getAccessibleAccounts } from '@/services/manage/accounts';
+import { getAccountSelectorContext } from '@/core/auth/accountSelector';
 
 type PageProps = {
   searchParams: Promise<{ portfolio?: string }>;
 };
+
+function LinkAndCreateFeatures({
+  canCreateBrand,
+  canCreateDependent,
+}: {
+  canCreateBrand: boolean;
+  canCreateDependent: boolean;
+}) {
+  return (
+    <>
+      <ListItem
+        icon={FolderGit2}
+        title="Link Other Accounts"
+        description="Connect third-party platforms like WhatsApp."
+        href="/access/link"
+      />
+      {canCreateBrand && (
+        <ListItem
+          icon={Building}
+          title="Create Brand Account"
+          description="Set up a new profile for a business or organization."
+          href="/access/createAccount?type=brand"
+        />
+      )}
+      {canCreateDependent && (
+        <ListItem
+          icon={UserPlus}
+          title="Create Dependent Account"
+          description="Create and manage an account for a family member."
+          href="/access/createAccount?type=dependent"
+        />
+      )}
+    </>
+  );
+}
 
 // ── Portfolio detail view ─────────────────────────────────────────────────────
 
@@ -44,6 +85,7 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
   }
 
   const accountId = await getActiveAccountId();
+  const { isManagingOtherAccount } = await getAccountSelectorContext();
 
   const [directGroup, portfolios] = await Promise.all([
     accountId ? getDirectAccessGroup(accountId) : null,
@@ -51,6 +93,15 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
   ]);
 
   if (!directGroup) notFound();
+
+  const permissions = await getCurrentAccountPermission();
+  const showLinkedAccounts = LINKED_ACCOUNT_NAV_PERMISSIONS.some((permission) =>
+    permissions.includes(permission),
+  );
+  const canCreateBrand = permissions.includes('linked_accounts.brand.create');
+  const canCreateDependent = permissions.includes('linked_accounts.dependent.create');
+  const accountsToShow =
+    showLinkedAccounts && !isManagingOtherAccount ? await getAccessibleAccounts() : [];
 
   return (
     <AccessGroupView
@@ -63,6 +114,45 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
       connectionsHref="/access/connection"
       applicationsHref="/access/application"
     >
+      {showLinkedAccounts && (
+        <div className="space-y-2">
+          <SecondaryHeader
+            title="Link & Create Accounts"
+            description="Add new brand or dependent accounts to your profile."
+          />
+          <Card>
+            <CardContent className="divide-y p-0">
+              <LinkAndCreateFeatures
+                canCreateBrand={canCreateBrand}
+                canCreateDependent={canCreateDependent}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {showLinkedAccounts && !isManagingOtherAccount && (
+        <div className="space-y-2">
+          <SecondaryHeader
+            title="Manage Accounts"
+            description="Switch to another account you have access to."
+          />
+          <Card>
+            <CardContent className="p-0 divide-y">
+              {accountsToShow.length > 0 ? (
+                accountsToShow.map((account) => (
+                  <AccountListItem key={account.aid} account={account} />
+                ))
+              ) : (
+                <div className="p-4 text-center text-muted-foreground text-sm">
+                  No other accounts found.
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* Section 2 — Portfolios */}
       <div className="space-y-2">
         <SecondaryHeader

@@ -218,7 +218,7 @@ export async function createBrandAccount(data: z.infer<typeof brandCreationSchem
             undefined,
             geolocation
         );
-        revalidatePath('/accounts/brand');
+        revalidatePath('/access');
 
         return { success: true };
 

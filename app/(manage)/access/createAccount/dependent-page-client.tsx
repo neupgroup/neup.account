@@ -1,8 +1,6 @@
-
 "use client"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
 import { useRouter, notFound } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -13,7 +11,6 @@ import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -48,7 +45,7 @@ import { redirectInApp } from "@/core/helper/navigation";
 
 type FormData = z.infer<typeof dependentFormSchema>;
 
-export default function CreateDependentPage() {
+export default function CreateDependentPageClient() {
     const router = useRouter()
     const { toast } = useToast()
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -116,7 +113,7 @@ export default function CreateDependentPage() {
                 description: "Dependent account created successfully.",
                 className: "bg-accent text-accent-foreground"
             });
-            redirectInApp(router, '/accounts/dependent');
+            redirectInApp(router, '/access');
             router.refresh();
         } else {
             toast({
@@ -132,16 +129,15 @@ export default function CreateDependentPage() {
     }
     
     if (canCreate === null) {
-        return <div>Loading...</div>; // Or a skeleton loader
+        return <div>Loading...</div>;
     }
     if (canCreate === false) {
         return notFound();
     }
 
-
     return (
         <div className="grid gap-8">
-            <BackButton href="/accounts/dependent" />
+            <BackButton href="/access" />
              <div>
                 <h1 className="text-3xl font-bold tracking-tight">Create Dependent Account</h1>
                 <p className="text-muted-foreground">
@@ -220,56 +216,30 @@ export default function CreateDependentPage() {
                                                 <SelectTrigger><SelectValue placeholder="Select nationality" /></SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                <SelectItem value="american">American</SelectItem>
-                                                <SelectItem value="british">British</SelectItem>
-                                                <SelectItem value="canadian">Canadian</SelectItem>
-                                                <SelectItem value="australian">Australian</SelectItem>
-                                                <SelectItem value="other">Other</SelectItem>
+                                                <SelectItem value="Nepali">Nepali</SelectItem>
+                                                <SelectItem value="Other">Other</SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
+                            <FormField control={form.control} name="agreement" render={({ field }) => (
+                                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                                    <FormControl>
+                                        <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                                    </FormControl>
+                                    <div className="space-y-1 leading-none">
+                                        <FormLabel>I confirm I have authority to create this account.</FormLabel>
+                                        <FormMessage />
+                                    </div>
+                                </FormItem>
+                            )} />
+                            <Button type="submit" disabled={isSubmitting}>
+                                {isSubmitting ? "Creating..." : "Create Dependent"}
+                            </Button>
                         </CardContent>
                     </Card>
-
-                    <Card>
-                        <CardHeader><CardTitle>Account Credentials</CardTitle></CardHeader>
-                        <CardContent className="space-y-4">
-                            <FormField control={form.control} name="neupId" render={({ field }) => ( <FormItem><FormLabel>NeupID</FormLabel><FormControl><Input placeholder="johndoe" {...field} /></FormControl><FormMessage /></FormItem> )}/>
-                            <FormField control={form.control} name="password" render={({ field }) => ( <FormItem><FormLabel>Password</FormLabel><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem> )}/>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader><CardTitle>Agreement</CardTitle></CardHeader>
-                        <CardContent>
-                            <FormField
-                                control={form.control}
-                                name="agreement"
-                                render={({ field }) => (
-                                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                                        <FormControl>
-                                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                                        </FormControl>
-                                        <div className="space-y-1 leading-none">
-                                            <FormLabel>
-                                                I acknowledge that I am the parent or legal guardian and I agree to the terms and conditions on behalf of the dependent.
-                                            </FormLabel>
-                                            <FormMessage />
-                                        </div>
-                                    </FormItem>
-                                )}
-                            />
-                        </CardContent>
-                    </Card>
-
-                    <div className="flex justify-end">
-                        <Button type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? "Creating Account..." : "Create Account"}
-                        </Button>
-                    </div>
                 </form>
             </Form>
         </div>

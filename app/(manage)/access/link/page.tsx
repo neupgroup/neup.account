@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { BackButton } from "@/components/ui/back-button";
 import { PrimaryHeader } from "@/components/ui/primary-header";
@@ -8,7 +7,7 @@ import { Bot } from "@/components/icons";
 export default function LinkAccountsPage() {
     return (
         <div className="grid gap-8">
-            <BackButton href="/manage" />
+            <BackButton href="/access" />
             <PrimaryHeader
                 title="Link Other Accounts"
                 description="Connect your accounts from other platforms to Neup.Account for a seamless experience."
@@ -19,7 +18,7 @@ export default function LinkAccountsPage() {
                         icon={Bot}
                         title="Link WhatsApp Account"
                         description="Connect your WhatsApp for notifications and services."
-                        href="/accounts/whatsapp"
+                        href="/access/link/whatsapp"
                     />
                 </CardContent>
             </Card>

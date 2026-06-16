@@ -39,7 +39,7 @@ const SETTINGS_ITEMS: SettingsItem[] = [
         accountTypes: ['individual'],
     },
     {
-        href: '/accounts/link',
+        href: '/access',
         icon: Link,
         title: 'Linked Accounts',
         description: 'Manage accounts linked to your profile.',

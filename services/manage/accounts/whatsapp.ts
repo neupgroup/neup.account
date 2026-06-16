@@ -3,7 +3,7 @@
  import { getActiveAccountId } from '@/core/auth/verify';
  import { logError } from '@/core/helpers/logger';
  import { z } from 'zod';
- import { whatsAppFormSchema, verifyCodeSchema } from '@/app/(manage)/accounts/whatsapp/schema';
+ import { whatsAppFormSchema, verifyCodeSchema } from '@/app/(manage)/access/link/whatsapp/schema';
  import { revalidatePath } from 'next/cache';
  
  /**
@@ -51,7 +51,7 @@
    try {
      if (code === '123456') {
       console.log(`Successfully linked WhatsApp number ${whatsappNumber} to account ${accountId}`);
-      revalidatePath('/accounts/whatsapp');
+      revalidatePath('/access/link/whatsapp');
       return { success: true };
     }
      return { success: false, error: 'The verification code is incorrect.' };

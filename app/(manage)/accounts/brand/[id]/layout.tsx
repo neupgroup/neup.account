@@ -26,7 +26,7 @@ export default async function BrandManagementLayout({
   return (
     <div className="grid md:grid-cols-[280px_1fr] lg:grid-cols-[320px_1fr] gap-8 items-start">
       <div className="flex flex-col gap-4 sticky top-24">
-        <BackButton href="/accounts" />
+        <BackButton href="/access" />
          <div className="flex items-center gap-4">
             <Avatar className="h-12 w-12">
                 <AvatarImage src={brandProfile.accountPhoto} alt={brandProfile.nameDisplay} data-ai-hint="logo" />

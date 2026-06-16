@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
@@ -12,7 +11,6 @@ import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
   CardFooter
@@ -31,6 +29,7 @@ import { useToast } from "@/core/hooks/use-toast"
 import { createBranchAccount, checkBranchNeupIdAvailability } from "@/services/manage/accounts/branches";
 import { CheckCircle2, XCircle, Loader2 } from "@/components/icons"
 import { BackButton } from "@/components/ui/back-button"
+import { redirectInApp } from "@/core/helper/navigation";
 
 const formSchema = z.object({
     name: z.string().min(1, "Branch name is required"),
@@ -42,7 +41,7 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export default function CreateBranchPage() {
+export default function CreateBranchPageClient() {
     const router = useRouter()
     const { toast } = useToast()
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -97,7 +96,7 @@ export default function CreateBranchPage() {
 
         if (result.success) {
             toast({ title: "Success", description: "Branch Account created successfully!", className: "bg-accent text-accent-foreground" });
-            router.back();
+            redirectInApp(router, '/access');
             router.refresh();
         } else {
             toast({
@@ -118,7 +117,7 @@ export default function CreateBranchPage() {
 
     return (
         <div className="grid gap-6">
-            <BackButton href="../branches" />
+            <BackButton href="/access" />
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Create a New Branch</h1>
                 <p className="text-muted-foreground">

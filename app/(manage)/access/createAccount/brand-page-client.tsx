@@ -35,7 +35,7 @@ import { redirectInApp } from "@/core/helper/navigation";
 
 type FormData = z.infer<typeof brandCreationSchema>;
 
-export default function CreateBrandPage() {
+export default function CreateBrandPageClient() {
     const router = useRouter()
     const { toast } = useToast()
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -96,7 +96,7 @@ export default function CreateBrandPage() {
 
             if (result.success) {
                 toast({ title: "Success", description: "Brand Account created successfully!", className: "bg-accent text-accent-foreground" });
-                redirectInApp(router, '/accounts');
+                redirectInApp(router, '/access');
             } else {
                 toast({
                     variant: "destructive",
@@ -125,7 +125,7 @@ export default function CreateBrandPage() {
 
     return (
         <div className="grid gap-8">
-            <BackButton href="/accounts" />
+            <BackButton href="/access" />
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Create a Brand Account</h1>
                 <p className="text-muted-foreground">
@@ -217,34 +217,6 @@ export default function CreateBrandPage() {
                                 )} />
                             </CardContent>
                         </Card>
-                    </div>
-                    
-                    <div className="space-y-2">
-                        <SecondaryHeader
-                            title="Agreement"
-                            description="Please review and accept the terms to proceed."
-                        />
-                        <Card>
-                            <CardContent className="pt-6">
-                                <FormField control={form.control} name="agreement" render={({ field }) => (
-                                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                                        <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl>
-                                        <div className="space-y-1 leading-none">
-                                            <FormLabel>
-                                                I agree to the terms and conditions for creating and managing a brand account.
-                                            </FormLabel>
-                                            <FormMessage />
-                                        </div>
-                                    </FormItem>
-                                )} />
-                            </CardContent>
-                        </Card>
-                    </div>
-
-                    <div className="flex justify-end">
-                        <Button type="submit" disabled={isSubmitting || neupIdStatus === 'checking'}>
-                            {isSubmitting ? "Creating Account..." : "Create Brand Account"}
-                        </Button>
                     </div>
                 </form>
             </Form>

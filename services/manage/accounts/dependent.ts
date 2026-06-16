@@ -201,7 +201,7 @@ export async function createDependentAccount(data: z.infer<typeof dependentFormS
             undefined,
             geolocation
         );
-        revalidatePath('/accounts/dependent');
+        revalidatePath('/access');
 
         return { success: true, dependentId: dependentAccountId };
 

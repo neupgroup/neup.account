@@ -1,6 +1,5 @@
 import { PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
 import { SECURITY_HUB_PERMISSIONS } from "@/core/auth/security-permissions";
-import { LINKED_ACCOUNT_NAV_PERMISSIONS } from "@/core/auth/linked-account-permissions";
 import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/core/auth/data-permissions";
 
 export type NavItem = {
@@ -36,11 +35,6 @@ export const navItems = {
             href: "/security", 
             label: "Password & Security", 
             description: "Update your password and manage your account's security.",
-        },
-        { 
-            href: "/accounts", 
-            label: "Linked Accounts", 
-            description: "Manage brand, branch, and dependent accounts.",
         },
         { 
             href: "/data", 
@@ -88,7 +82,6 @@ export const allPermissionsMap: Record<string, string[]> = {
     "Profile": [...PROFILE_NAV_PERMISSIONS],
     "Notifications": ['notification.read', 'notification.delete'],
     "Password & Security": [...SECURITY_HUB_PERMISSIONS],
-    "Linked Accounts": [...LINKED_ACCOUNT_NAV_PERMISSIONS],
     "Data & Privacy": [...DATA_PRIVACY_NAV_PERMISSIONS],
     "Access & Control": ['security.third_party.view', 'security.third_party.add', 'security.third_party.remove'],
     "People & Sharing": ['people.family.view', 'people.family.add', 'people.family.remove', 'people.family.partner.add', 'people.family.partner.remove', 'people.block_list.view', 'people.restrict_list.view'],

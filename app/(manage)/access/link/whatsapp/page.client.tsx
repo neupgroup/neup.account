@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useTransition } from "react";
@@ -13,10 +12,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -28,13 +23,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { PhoneInput } from "@/components/ui/phone-input";
-import { Loader2, MessageSquareText, Link2 } from "@/components/icons";
+import { Loader2 } from "@/components/icons";
 import { cn } from "@/core/helpers/utils";
 import { BackButton } from "@/components/ui/back-button";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
 
-
-export default function LinkWhatsAppPage() {
+export default function LinkWhatsAppPageClient() {
     const [step, setStep] = useState(1);
     const [isSubmitting, startTransition] = useTransition();
     const [whatsappNumber, setWhatsappNumber] = useState("");
@@ -70,8 +64,6 @@ export default function LinkWhatsAppPage() {
             const result = await linkWhatsAppAccount(data);
             if (result.success) {
                  toast({ title: "Success!", description: "Your WhatsApp account has been linked.", className: "bg-accent text-accent-foreground" });
-                 // Here you might want to redirect or show a success state.
-                 // For now, we'll just reset.
                  setStep(1);
                  form.reset();
                  verifyForm.reset();
@@ -84,7 +76,7 @@ export default function LinkWhatsAppPage() {
 
     return (
         <div className="grid gap-8">
-            <BackButton href="/manage" />
+            <BackButton href="/access/link" />
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Link WhatsApp Account</h1>
                 <p className="text-muted-foreground">

@@ -15,6 +15,7 @@ import { logDisplayImageResourceForAccount } from '@/services/manage/site/resour
 import { dispatchAccountUpdatedEvent, type AccountUpdateEventField } from '@/services/applications/account-update-events';
 import { extractGenderFromDetails, resolveDisplayImage } from '@/core/helpers/display-image';
 import { assertHasAnyPermission, assertHasProfileDisplayPermission } from '@/core/auth/profile-permissions';
+import { createNotification } from '@/services/notifications';
 
 
 /**
@@ -499,6 +500,13 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
                 undefined,
                 geolocation
             );
+            await createNotification({
+                recipient_id: accountId,
+                action: 'informative.profile.display_name_changed',
+                message: `Display name changed from "${beforeDisplayName || 'N/A'}" to "${afterDisplayName || 'N/A'}".`,
+                noticeType: 'success',
+                persistence: 'dismissable',
+            });
         }
 
         if (beforeDob !== afterDob) {
@@ -521,6 +529,13 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
                 undefined,
                 geolocation
             );
+            await createNotification({
+                recipient_id: accountId,
+                action: 'informative.profile.display_image_changed',
+                message: 'Your display image was updated.',
+                noticeType: 'success',
+                persistence: 'dismissable',
+            });
         }
 
         if (

@@ -19,6 +19,11 @@ function getNotificationDetails(notification: NotificationType): { iconName: str
         case 'informative.security':
             href = '/security';
             break;
+        case 'informative.profile.display_name_changed':
+        case 'informative.profile.display_image_changed':
+            iconName = 'UserCircle';
+            href = '/profile/display';
+            break;
         case 'access_invitation':
             iconName = 'Handshake';
             message = `${notification.senderName} wants you to manage their account.`;

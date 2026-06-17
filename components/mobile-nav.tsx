@@ -33,6 +33,7 @@ import { Skeleton } from "./ui/skeleton";
 import { switchToPersonal } from "@/services/auth/switch";
 import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
 import { redirectInApp } from "@/core/helper/navigation";
+import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/core/auth/data-permissions";
 
 const iconMap: { [key: string]: LucideIcon | React.ElementType } = {
     Home: Home,
@@ -102,6 +103,7 @@ export function MobileNav() {
                 { href: "/home", label: "Dashboard", description: "Your central account management hub.", icon: Home, requiredPermissions: [] as string[] },
                 { href: "/profile", label: "Brand Info", description: "Manage profile details.", icon: iconMap['BrandInfo'], requiredPermissions: PROFILE_NAV_PERMISSIONS },
                 { href: "/notifications", label: "Notifications", description: "View and manage account notifications.", icon: iconMap['Notifications'], requiredPermissions: ['notification.read', 'notification.delete'] },
+                { href: "/data", label: "Data & Privacy", description: "View data access, activity, and privacy controls for this account.", icon: iconMap['DataAndPrivacy'], requiredPermissions: DATA_PRIVACY_NAV_PERMISSIONS },
                 { href: "/access", label: "Access & Control", description: "Manage access, people, and linked accounts for this brand.", icon: iconMap['AccessAndControl'], requiredPermissions: ['linked_accounts.brand.manage'] },
             ].filter((item) => hasAnyPermission(permissions, item.requiredPermissions));
 

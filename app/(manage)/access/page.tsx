@@ -107,7 +107,6 @@ async function PortfolioDetail({ id }: { id: string }) {
       description={group.description ?? 'Portfolio access group.'}
       backHref="/access"
       membersHref={`/access/team?portfolio=${id}`}
-      accountsHref="/access/accounts"
       connectionsHref="/access/connection"
       applicationsHref="/access/application"
     />
@@ -152,6 +151,7 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
     (allowsFamilySettings && permissions.includes('people.restrict_list.view'));
   const accountsToShow =
     showLinkedAccounts && !isManagingOtherAccount ? await getAccessibleAccounts() : [];
+  const previewAccounts = accountsToShow.slice(0, 3);
 
   return (
     <AccessGroupView
@@ -160,7 +160,6 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
       name={directGroup.name}
       description="Direct access grants on this account."
       membersHref="/access/team"
-      accountsHref="/access/accounts"
       connectionsHref="/access/connection"
       applicationsHref="/access/application"
     >
@@ -190,9 +189,21 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
           <Card>
             <CardContent className="p-0 divide-y">
               {accountsToShow.length > 0 ? (
-                accountsToShow.map((account) => (
+                <>
+                {previewAccounts.map((account) => (
                   <AccountListItem key={account.aid} account={account} />
-                ))
+                ))}
+                <FlowLink
+                  href="/access/accounts"
+                  className="flex items-center gap-4 px-4 py-4 transition-colors hover:bg-muted/50"
+                >
+                  <Users className="h-5 w-5 shrink-0 text-muted-foreground" />
+                  <div className="min-w-0 flex-grow">
+                    <p className="font-medium text-foreground">See all accounts you can access</p>
+                  </div>
+                  <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
+                </FlowLink>
+                </>
               ) : (
                 <div className="p-4 text-center text-muted-foreground text-sm">
                   No other accounts found.

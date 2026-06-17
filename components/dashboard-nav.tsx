@@ -10,6 +10,7 @@ import { Skeleton } from "./ui/skeleton";
 import { useSession } from "@/core/providers/session";
 import { switchToPersonal } from "@/services/auth/switch";
 import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
+import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/core/auth/data-permissions";
 
 export function DashboardNav() {
     const pathname = usePathname();
@@ -56,6 +57,7 @@ export function DashboardNav() {
                 { href: "/home", label: "Dashboard", description: "Your central account management hub.", requiredPermissions: [] as string[] },
                 { href: "/profile", label: "Brand Info", description: "Manage profile details.", requiredPermissions: PROFILE_NAV_PERMISSIONS },
                 { href: "/notifications", label: "Notifications", description: "View and manage account notifications.", requiredPermissions: ['notification.read', 'notification.delete'] },
+                { href: "/data", label: "Data & Privacy", description: "View data access, activity, and privacy controls for this account.", requiredPermissions: DATA_PRIVACY_NAV_PERMISSIONS },
                 { href: "/access", label: "Access & Control", description: "Manage access, people, and linked accounts for this brand.", requiredPermissions: ['linked_accounts.brand.manage'] },
             ].filter((item) => hasAnyPermission(permissions, item.requiredPermissions));
 

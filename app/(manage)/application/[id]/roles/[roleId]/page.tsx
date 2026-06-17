@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
 import { checkPermissions } from '@/services/user';
-import { getAppPermissions, getAppRoles } from '@/services/applications/authz-manage';
+import { getAppDefaultRoleId, getAppPermissions, getAppRoles } from '@/services/applications/authz-manage';
 import { BackButton } from '@/components/ui/back-button';
 import { PrimaryHeader } from '@/components/ui/primary-header';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -33,7 +33,11 @@ export default async function RoleDetailsPage({ params }: Props) {
     );
   }
 
-  const [roles, permissions] = await Promise.all([getAppRoles(id), getAppPermissions(id)]);
+  const [roles, permissions, defaultRoleId] = await Promise.all([
+    getAppRoles(id),
+    getAppPermissions(id),
+    getAppDefaultRoleId(id),
+  ]);
   const role = roles.find((item) => item.id === roleId);
   if (!role) notFound();
 
@@ -46,7 +50,7 @@ export default async function RoleDetailsPage({ params }: Props) {
           description={role.description || 'No description'}
         />
       </div>
-      <RoleDetailEditor appId={id} role={role} permissions={permissions} />
+      <RoleDetailEditor appId={id} role={role} permissions={permissions} defaultRoleId={defaultRoleId} />
     </div>
   );
 }

@@ -59,7 +59,7 @@ export default async function ApplicationRolesPage({ params }: Props) {
         appId={id}
         initialRoles={roles}
         hasWebhook={Boolean(webhookUrl)}
-        initialDefaultRoleId={defaultRoleId}
+        defaultRoleId={defaultRoleId}
       />
     </div>
   );

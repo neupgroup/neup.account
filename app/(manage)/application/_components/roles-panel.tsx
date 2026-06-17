@@ -8,7 +8,6 @@ import { Badge } from '@/components/ui/badge';
 import {
   pushAuthzToWebhook,
   clearAuthzPushStatus,
-  setAppDefaultRole,
   type AppRole,
 } from '@/services/applications/authz-manage';
 
@@ -16,15 +15,13 @@ type Props = {
   appId: string;
   initialRoles: AppRole[];
   hasWebhook: boolean;
-  initialDefaultRoleId: string | null;
+  defaultRoleId: string | null;
 };
 
-export function RolesPanel({ appId, initialRoles, hasWebhook, initialDefaultRoleId }: Props) {
+export function RolesPanel({ appId, initialRoles, hasWebhook, defaultRoleId }: Props) {
   const { toast } = useToast();
   const [pushPending, setPushPending] = useState(false);
   const [clearPending, setClearPending] = useState(false);
-  const [defaultRoleId, setDefaultRoleId] = useState<string | null>(initialDefaultRoleId);
-  const [defaultPendingRoleId, setDefaultPendingRoleId] = useState<string | null>(null);
 
   const handlePush = async () => {
     setPushPending(true);
@@ -62,20 +59,6 @@ export function RolesPanel({ appId, initialRoles, hasWebhook, initialDefaultRole
     });
   };
 
-  const handleSetDefaultRole = async (roleId: string | null) => {
-    setDefaultPendingRoleId(roleId ?? '__none__');
-    const result = await setAppDefaultRole({ appId, roleId });
-    setDefaultPendingRoleId(null);
-
-    if (!result.success) {
-      toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not set default role.' });
-      return;
-    }
-
-    setDefaultRoleId(roleId);
-    toast({ title: 'Default role updated' });
-  };
-
   return (
     <div className="grid gap-6">
       <div className="overflow-hidden rounded-2xl border bg-card">
@@ -86,24 +69,6 @@ export function RolesPanel({ appId, initialRoles, hasWebhook, initialDefaultRole
           <p className="text-base font-medium leading-6">Create a role</p>
           <p className="text-sm text-muted-foreground">Define title, description, scope, and initial permissions.</p>
         </Link>
-
-        <div className="border-b px-4 py-4 sm:px-5">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-base font-medium leading-6">Default role</p>
-              <p className="text-sm text-muted-foreground">New application connections will be created with this role.</p>
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={defaultPendingRoleId === '__none__' || defaultRoleId === null}
-              onClick={() => handleSetDefaultRole(null)}
-            >
-              {defaultPendingRoleId === '__none__' ? 'Clearing...' : 'Clear Default'}
-            </Button>
-          </div>
-        </div>
 
         {initialRoles.length > 0 ? (
           initialRoles.map((role) => (
@@ -121,15 +86,6 @@ export function RolesPanel({ appId, initialRoles, hasWebhook, initialDefaultRole
                   </div>
                   <p className="truncate text-sm text-muted-foreground">{role.description || 'No description'}</p>
                 </Link>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant={defaultRoleId === role.id ? 'secondary' : 'outline'}
-                  disabled={defaultPendingRoleId === role.id || defaultRoleId === role.id}
-                  onClick={() => handleSetDefaultRole(role.id)}
-                >
-                  {defaultPendingRoleId === role.id ? 'Saving...' : defaultRoleId === role.id ? 'Default' : 'Set Default'}
-                </Button>
               </div>
             </div>
           ))

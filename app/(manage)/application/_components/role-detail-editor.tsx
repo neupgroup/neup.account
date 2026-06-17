@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
+  setAppDefaultRole,
   updateAppRole,
   type AppPermission,
   type AppRole,
@@ -18,9 +19,10 @@ type Props = {
   appId: string;
   role: AppRole;
   permissions: AppPermission[];
+  defaultRoleId: string | null;
 };
 
-export function RoleDetailEditor({ appId, role, permissions }: Props) {
+export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: initialDefaultRoleId }: Props) {
   const router = useRouter();
   const { toast } = useToast();
   const [name, setName] = useState(role.name);
@@ -45,6 +47,8 @@ export function RoleDetailEditor({ appId, role, permissions }: Props) {
   });
   const [search, setSearch] = useState('');
   const [savePending, setSavePending] = useState(false);
+  const [defaultRoleId, setDefaultRoleId] = useState<string | null>(initialDefaultRoleId);
+  const [defaultPending, setDefaultPending] = useState(false);
   const selectedSet = useMemo(() => new Set(permissionIds), [permissionIds]);
 
   const visiblePermissions = useMemo(() => {
@@ -59,6 +63,7 @@ export function RoleDetailEditor({ appId, role, permissions }: Props) {
   }, [permissions, search, selectedSet]);
 
   const selectedCount = permissionIds.length;
+  const isDefaultRole = defaultRoleId === role.id;
 
   const handleSave = async () => {
     setSavePending(true);
@@ -76,6 +81,21 @@ export function RoleDetailEditor({ appId, role, permissions }: Props) {
       return;
     }
     toast({ title: 'Role updated' });
+    router.refresh();
+  };
+
+  const handleDefaultRole = async () => {
+    setDefaultPending(true);
+    const result = await setAppDefaultRole({ appId, roleId: isDefaultRole ? null : role.id });
+    setDefaultPending(false);
+
+    if (!result.success) {
+      toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not set default role.' });
+      return;
+    }
+
+    setDefaultRoleId(isDefaultRole ? null : role.id);
+    toast({ title: 'Default role updated' });
     router.refresh();
   };
 
@@ -111,6 +131,27 @@ export function RoleDetailEditor({ appId, role, permissions }: Props) {
             </option>
           ))}
         </select>
+      </div>
+
+      <div className="grid gap-3 rounded-2xl border bg-card p-5">
+        <div>
+          <p className="text-sm font-medium">Default role</p>
+          <p className="text-xs text-muted-foreground">
+            {isDefaultRole
+              ? 'New application connections are created with this role.'
+              : 'Make this the role used when new application connections are created.'}
+          </p>
+        </div>
+        <div>
+          <Button
+            type="button"
+            variant={isDefaultRole ? 'outline' : 'secondary'}
+            onClick={handleDefaultRole}
+            disabled={defaultPending}
+          >
+            {defaultPending ? 'Saving...' : isDefaultRole ? 'Clear Default' : 'Set Default'}
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-2 rounded-2xl bg-card">

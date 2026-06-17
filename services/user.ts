@@ -110,7 +110,7 @@ export async function getUserProfile(
         nameMiddle: account.individualProfile?.middleName || undefined,
         nameLast: account.individualProfile?.lastName || undefined,
         nameDisplay:
-          account.brandProfile?.brandName || account.displayName || undefined,
+          account.displayName || account.brandProfile?.brandName || undefined,
         displayName: account.displayName || undefined,
         accountPhoto: account.displayImage || undefined,
         dateBirth:

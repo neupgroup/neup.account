@@ -37,10 +37,8 @@ export function DashboardNav() {
             })).filter(item => hasAnyPermission(permissions, item.requiredPermissions));
         };
 
-        // When managing, replace "Switch Account" with a "Switch Back" action item
         const accountNavItems = isManaging
             ? navItems.accountNav
-                .filter(item => item.label !== "Switch Account")
                 .concat([{ href: '__switch_back__', label: 'Switch Back', description: 'Return to your personal account.' }])
             : navItems.accountNav;
 

@@ -615,6 +615,7 @@ export async function updateBrandProfile(accountId: string, data: z.infer<typeof
                 ? (beforeAccount.brandProfile.details as Record<string, unknown>)
                 : {};
         const beforeLegalName = typeof beforeDetails.nameLegal === "string" ? beforeDetails.nameLegal : "";
+        const beforeDisplayName = beforeAccount?.displayName?.trim() || "";
 
         const accountData: Record<string, any> = {};
         const brandProfileData: Record<string, any> = {};
@@ -631,6 +632,15 @@ export async function updateBrandProfile(accountId: string, data: z.infer<typeof
         }
         if (validation.data.nameLegal !== undefined) {
             nextBrandDetails.nameLegal = validation.data.nameLegal.trim() || null;
+            const nextLegalName = validation.data.nameLegal.trim();
+            const submittedDisplayName = validation.data.nameDisplay?.trim() || "";
+            if (
+                beforeLegalName.trim().length > 0 &&
+                beforeDisplayName === beforeLegalName.trim() &&
+                submittedDisplayName === beforeLegalName.trim()
+            ) {
+                accountData.displayName = nextLegalName;
+            }
         }
         if (validation.data.registrationId !== undefined) {
             nextBrandDetails.registrationId = validation.data.registrationId.trim() || null;
@@ -709,6 +719,7 @@ export async function updateBrandLegalProfile(
         const beforeAccount = await prisma.account.findUnique({
             where: { id: accountId },
             select: {
+                displayName: true,
                 brandProfile: {
                     select: {
                         isLegalEntity: true,
@@ -722,6 +733,11 @@ export async function updateBrandLegalProfile(
             beforeAccount?.brandProfile?.details && typeof beforeAccount.brandProfile.details === 'object'
                 ? (beforeAccount.brandProfile.details as Record<string, unknown>)
                 : {};
+        const beforeLegalName = typeof beforeDetails.nameLegal === 'string' ? beforeDetails.nameLegal.trim() : '';
+        const beforeDisplayName = beforeAccount?.displayName?.trim() || '';
+        const nextLegalName = validation.data.isLegalEntity
+            ? validation.data.nameLegal?.trim() || ''
+            : '';
 
         const brandProfileData: Record<string, any> = {
             isLegalEntity: validation.data.isLegalEntity,
@@ -739,9 +755,19 @@ export async function updateBrandLegalProfile(
         brandProfileData.details = nextBrandDetails;
 
         await prisma.$transaction(async (tx: any) => {
+            const accountData: Record<string, any> = {};
+            if (
+                beforeLegalName.length > 0 &&
+                beforeDisplayName === beforeLegalName &&
+                beforeLegalName !== nextLegalName
+            ) {
+                accountData.displayName = nextLegalName || null;
+            }
+
             await tx.account.update({
                 where: { id: accountId },
                 data: {
+                    ...accountData,
                     brandProfile: {
                         upsert: {
                             create: brandProfileData,

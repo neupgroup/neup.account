@@ -18,6 +18,7 @@ export type AppPermission = {
   id: string;
   name: string;
   description: string | null;
+  scope: string;
   tag: Prisma.JsonValue | null;
 };
 
@@ -25,7 +26,7 @@ export type AppRole = {
   id: string;
   name: string;
   description: string | null;
-  scope: string | null;
+  scope: string;
   permissions: AppPermission[];
 };
 
@@ -64,7 +65,7 @@ async function syncRolePermissionsDenormalized(tx: any, roleId: string): Promise
     where: { roleId },
     select: {
       permission: {
-        select: { name: true },
+        select: { id: true, name: true, description: true, scope: true, tag: true },
       },
     },
     orderBy: { createdAt: 'asc' },
@@ -200,7 +201,7 @@ export async function getAppPermissions(appId: string): Promise<AppPermission[]>
     const records = await prisma.authzPermission.findMany({
       where: { appId },
       orderBy: { name: 'asc' },
-      select: { id: true, name: true, description: true, tag: true },
+      select: { id: true, name: true, description: true, scope: true, tag: true },
     });
     return records;
   } catch (error) {
@@ -213,6 +214,7 @@ export async function createAppPermission(input: {
   appId: string;
   name: string;
   description?: string;
+  scope?: string;
   tag?: Prisma.InputJsonValue;
 }): Promise<{ success: boolean; permission?: AppPermission; error?: string }> {
   const auth = await assertCanManageAuthz(input.appId);
@@ -222,6 +224,10 @@ export async function createAppPermission(input: {
   if (!name) return { success: false, error: 'Permission name is required.' };
   if (!/^[a-zA-Z0-9._]+$/.test(name)) {
     return { success: false, error: 'Permission name may only contain letters, numbers, dots (.), and underscores (_).' };
+  }
+  const scope = input.scope?.trim() || 'application';
+  if (!/^[a-zA-Z0-9._]+$/.test(scope)) {
+    return { success: false, error: 'Permission scope may only contain letters, numbers, dots (.), and underscores (_).' };
   }
 
   const existing = await prisma.authzPermission.findFirst({
@@ -237,11 +243,11 @@ export async function createAppPermission(input: {
       data: {
         name,
         description: input.description?.trim() || null,
-        scope: 'application',
+        scope,
         tag: input.tag ?? Prisma.JsonNull,
         appId: input.appId,
       },
-      select: { id: true, name: true, description: true, tag: true },
+      select: { id: true, name: true, description: true, scope: true, tag: true },
     });
 
     revalidatePath(`/data/appconnection/${input.appId}`);
@@ -256,10 +262,15 @@ export async function updateAppPermission(input: {
   appId: string;
   permissionId: string;
   description?: string;
+  scope?: string;
   tag?: Prisma.InputJsonValue;
 }): Promise<{ success: boolean; permission?: AppPermission; error?: string }> {
   const auth = await assertCanManageAuthz(input.appId);
   if ('error' in auth) return { success: false, error: auth.error };
+  const scope = input.scope?.trim() || 'application';
+  if (!/^[a-zA-Z0-9._]+$/.test(scope)) {
+    return { success: false, error: 'Permission scope may only contain letters, numbers, dots (.), and underscores (_).' };
+  }
 
   try {
     const record = await prisma.$transaction(async (tx) => {
@@ -273,9 +284,10 @@ export async function updateAppPermission(input: {
         where: { id: input.permissionId },
         data: {
           description: input.description?.trim() || null,
+          scope,
           tag: input.tag ?? Prisma.JsonNull,
         },
-        select: { id: true, name: true, description: true, tag: true },
+        select: { id: true, name: true, description: true, scope: true, tag: true },
       });
 
       await syncAllRolePermissionsDenormalized(tx, input.appId);
@@ -341,6 +353,7 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
                   id: '',
                   name: p,
                   description: null,
+                  scope: 'application',
                   tag: null,
                 }];
               }
@@ -351,6 +364,7 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
                   id?: string;
                   name?: string;
                   description?: string | null;
+                  scope?: string;
                   tag?: Prisma.JsonValue | null;
               };
 
@@ -362,6 +376,7 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
                 id,
                 name,
                 description: typeof obj.description === 'string' ? obj.description : null,
+                scope: typeof obj.scope === 'string' ? obj.scope : 'application',
                 tag: obj.tag ?? null,
               }];
             })
@@ -495,6 +510,87 @@ export async function updateAppRolePermissions(input: {
   } catch (error) {
     await logError('database', error, `updateAppRolePermissions:${input.appId}`);
     return { success: false, error: 'Failed to update role permissions.' };
+  }
+}
+
+export async function updateAppRole(input: {
+  appId: string;
+  roleId: string;
+  name: string;
+  description?: string;
+  scope?: string;
+  permissionIds: string[];
+}): Promise<{ success: boolean; role?: AppRole; error?: string }> {
+  const auth = await assertCanManageAuthz(input.appId);
+  if ('error' in auth) return { success: false, error: auth.error };
+
+  const name = input.name.trim();
+  if (!name) return { success: false, error: 'Role name is required.' };
+  if (!/^[a-z0-9._]+$/.test(name)) {
+    return { success: false, error: 'Role name may only contain lowercase letters, numbers, dots (.) and underscores (_).' };
+  }
+
+  const scope = input.scope?.trim() || 'application';
+  if (!/^[a-zA-Z0-9._]+$/.test(scope)) {
+    return { success: false, error: 'Role scope may only contain letters, numbers, dots (.), and underscores (_).' };
+  }
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      const role = await tx.authzRole.findFirst({
+        where: { id: input.roleId, appId: input.appId },
+        select: { id: true },
+      });
+      if (!role) throw new Error('Role not found.');
+
+      const duplicate = await tx.authzRole.findFirst({
+        where: {
+          appId: input.appId,
+          name,
+          id: { not: input.roleId },
+        },
+        select: { id: true },
+      });
+      if (duplicate) throw new Error(`A role named "${name}" already exists for this application.`);
+
+      await tx.authzRole.update({
+        where: { id: input.roleId },
+        data: {
+          name,
+          description: input.description?.trim() || null,
+          scope,
+        },
+      });
+
+      if (input.permissionIds.length > 0) {
+        const caps = await tx.authzPermission.findMany({
+          where: { id: { in: input.permissionIds }, appId: input.appId },
+          select: { id: true },
+        });
+        await syncRolePermissionMappings(tx, input.roleId, caps.map((cap) => cap.id));
+      } else {
+        await syncRolePermissionMappings(tx, input.roleId, []);
+      }
+
+      await syncRolePermissionsDenormalized(tx, input.roleId);
+    });
+
+    const rolePayload = await getRolePayload(input.appId, input.roleId);
+    if (rolePayload) {
+      await dispatchRoleUpdateWebhook({
+        appId: input.appId,
+        eventType: 'role.updated',
+        role: rolePayload,
+      });
+    }
+
+    const role = await getAppRoles(input.appId).then((roles) => roles.find((item) => item.id === input.roleId));
+    revalidatePath(`/data/appconnection/${input.appId}`);
+    return role ? { success: true, role } : { success: true };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '';
+    await logError('database', error, `updateAppRole:${input.appId}`);
+    return { success: false, error: message || 'Failed to update role.' };
   }
 }
 

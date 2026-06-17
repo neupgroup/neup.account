@@ -213,6 +213,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   const [addOpen, setAddOpen] = useState(false);
   const [addName, setAddName] = useState('');
   const [addDesc, setAddDesc] = useState('');
+  const [addScope, setAddScope] = useState('application');
   const [addTags, setAddTags] = useState<string[]>([]);
   const [addTagDraft, setAddTagDraft] = useState('');
   const [addPending, setAddPending] = useState(false);
@@ -220,6 +221,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   // Edit dialog
   const [editTarget, setEditTarget] = useState<AppPermission | null>(null);
   const [editDesc, setEditDesc] = useState('');
+  const [editScope, setEditScope] = useState('application');
   const [editTags, setEditTags] = useState<string[]>([]);
   const [editTagDraft, setEditTagDraft] = useState('');
   const [editPending, setEditPending] = useState(false);
@@ -229,6 +231,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   const [removePending, setRemovePending] = useState(false);
 
   const isValidName = (value: string) => /^[a-zA-Z0-9._]+$/.test(value.trim());
+  const isValidScope = (value: string) => /^[a-zA-Z0-9._]+$/.test(value.trim());
   const sortedPermissions = useMemo(() => {
     return [...permissions].sort((a, b) => {
       const result = a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
@@ -263,6 +266,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   const openEdit = (cap: AppPermission) => {
     setEditTarget(cap);
     setEditDesc(cap.description ?? '');
+    setEditScope(cap.scope || 'application');
     setEditTags(getTagLabels(cap.tag));
     setEditTagDraft('');
   };
@@ -270,6 +274,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   const closeEdit = () => {
     setEditTarget(null);
     setEditDesc('');
+    setEditScope('application');
     setEditTags([]);
     setEditTagDraft('');
   };
@@ -285,6 +290,15 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
       });
       return;
     }
+    const scope = addScope.trim() || 'application';
+    if (!isValidScope(scope)) {
+      toast({
+        variant: 'destructive',
+        title: 'Invalid scope',
+        description: 'Scope may only contain letters, numbers, dots (.), and underscores (_).',
+      });
+      return;
+    }
     const tagError = validateDraftTag(addTags, addTagDraft);
     if (tagError) {
       toast({ variant: 'destructive', title: 'Invalid tag', description: tagError });
@@ -296,6 +310,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
       appId,
       name: trimmed,
       description: addDesc || undefined,
+      scope,
       tag: serializeTags(nextTags),
     });
     setAddPending(false);
@@ -306,6 +321,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
     setPermissions((prev) => [...prev, result.permission!]);
     setAddName('');
     setAddDesc('');
+    setAddScope('application');
     setAddTags([]);
     setAddTagDraft('');
     setAddOpen(false);
@@ -314,6 +330,15 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
 
   const handleEdit = async () => {
     if (!editTarget) return;
+    const scope = editScope.trim() || 'application';
+    if (!isValidScope(scope)) {
+      toast({
+        variant: 'destructive',
+        title: 'Invalid scope',
+        description: 'Scope may only contain letters, numbers, dots (.), and underscores (_).',
+      });
+      return;
+    }
     const tagError = validateDraftTag(editTags, editTagDraft);
     if (tagError) {
       toast({ variant: 'destructive', title: 'Invalid tag', description: tagError });
@@ -325,6 +350,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
       appId,
       permissionId: editTarget.id,
       description: editDesc || undefined,
+      scope,
       tag: serializeTags(nextTags),
     });
     setEditPending(false);
@@ -403,13 +429,12 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
                 {cap.description && (
                   <p className="truncate text-sm text-muted-foreground">{cap.description}</p>
                 )}
-                {getTagLabels(cap.tag).length > 0 && (
-                  <div className="mt-1 flex flex-wrap gap-1">
-                    {getTagLabels(cap.tag).map((tag) => (
-                      <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
-                    ))}
-                  </div>
-                )}
+                <div className="mt-1 flex flex-wrap gap-1">
+                  <Badge variant="secondary" className="text-xs">{cap.scope}</Badge>
+                  {getTagLabels(cap.tag).map((tag) => (
+                    <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
+                  ))}
+                </div>
               </button>
               <Button
                 type="button"
@@ -434,7 +459,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
         open={addOpen}
         onOpenChange={(open) => {
           setAddOpen(open);
-          if (!open) { setAddName(''); setAddDesc(''); setAddTags([]); setAddTagDraft(''); }
+          if (!open) { setAddName(''); setAddDesc(''); setAddScope('application'); setAddTags([]); setAddTagDraft(''); }
         }}
       >
         <DialogContent>
@@ -458,6 +483,11 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
               onChange={(e) => setAddDesc(e.target.value)}
               placeholder="Description (optional)"
             />
+            <Input
+              value={addScope}
+              onChange={(e) => setAddScope(e.target.value)}
+              placeholder="Scope, e.g. application"
+            />
             <PermissionTagEditor
               tags={addTags}
               draft={addTagDraft}
@@ -472,7 +502,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
             <Button
               type="button"
               onClick={handleAdd}
-              disabled={addPending || !addName.trim() || !isValidName(addName)}
+              disabled={addPending || !addName.trim() || !isValidName(addName) || !isValidScope(addScope)}
             >
               {addPending ? 'Adding...' : 'Add'}
             </Button>
@@ -501,6 +531,11 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
               placeholder="Description (optional)"
               autoFocus
             />
+            <Input
+              value={editScope}
+              onChange={(e) => setEditScope(e.target.value)}
+              placeholder="Scope, e.g. application"
+            />
             <PermissionTagEditor
               tags={editTags}
               draft={editTagDraft}
@@ -515,7 +550,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
             <Button
               type="button"
               onClick={handleEdit}
-              disabled={editPending}
+              disabled={editPending || !isValidScope(editScope)}
             >
               {editPending ? 'Saving...' : 'Save'}
             </Button>

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
-  updateAppRolePermissions,
+  updateAppRole,
   type AppPermission,
   type AppRole,
 } from '@/services/applications/authz-manage';
@@ -22,6 +22,9 @@ type Props = {
 export function RoleDetailEditor({ appId, role, permissions }: Props) {
   const router = useRouter();
   const { toast } = useToast();
+  const [name, setName] = useState(role.name);
+  const [description, setDescription] = useState(role.description ?? '');
+  const [scope, setScope] = useState(role.scope || 'application');
   const [permissionIds, setPermissionIds] = useState<string[]>(() => {
     const idsFromRole = role.permissions
       .map((p) => p.id)
@@ -58,7 +61,14 @@ export function RoleDetailEditor({ appId, role, permissions }: Props) {
 
   const handleSave = async () => {
     setSavePending(true);
-    const result = await updateAppRolePermissions({ appId, roleId: role.id, permissionIds });
+    const result = await updateAppRole({
+      appId,
+      roleId: role.id,
+      name,
+      description: description || undefined,
+      scope: scope || undefined,
+      permissionIds,
+    });
     setSavePending(false);
     if (!result.success) {
       toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not update role.' });
@@ -70,6 +80,30 @@ export function RoleDetailEditor({ appId, role, permissions }: Props) {
 
   return (
     <div className="grid gap-4">
+      <div className="grid gap-3 rounded-2xl border bg-card p-5">
+        <div>
+          <p className="text-sm font-medium">Role details</p>
+          <p className="text-xs text-muted-foreground">
+            Edit the role name, description, and scope while managing its permissions.
+          </p>
+        </div>
+        <Input
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          placeholder="Role name, e.g. viewer"
+        />
+        <Input
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+          placeholder="Description (optional)"
+        />
+        <Input
+          value={scope}
+          onChange={(event) => setScope(event.target.value)}
+          placeholder="Scope, e.g. application"
+        />
+      </div>
+
       <div className="grid gap-2 rounded-2xl bg-card">
         <Input
           placeholder="Search permissions..."
@@ -118,8 +152,8 @@ export function RoleDetailEditor({ appId, role, permissions }: Props) {
         <Button variant="outline" onClick={() => redirectInApp(router, `/application/${appId}/roles?mode=root`)}>
           Back
         </Button>
-        <Button onClick={handleSave} disabled={savePending}>
-          {savePending ? 'Saving...' : 'Save Permissions'}
+        <Button onClick={handleSave} disabled={savePending || !name.trim() || !scope.trim()}>
+          {savePending ? 'Saving...' : 'Save Role'}
         </Button>
       </div>
     </div>

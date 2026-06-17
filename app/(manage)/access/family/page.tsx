@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { getFamilyGroups } from "@/services/manage/people/family";
-import { FamilyManager } from "@/app/(manage)/people/family/family-manager";
-import { PartnerManager } from "@/app/(manage)/people/family/partner-manager";
+import { FamilyManager } from "./family-manager";
+import { PartnerManager } from "./partner-manager";
 import { BackButton } from "@/components/ui/back-button";
 import { getPersonalAccountId } from '@/core/auth/verify';
 import { getUserProfile, checkPermissions } from '@/services/user';

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
+  deleteAppRole,
   setAppDefaultRole,
   updateAppRole,
   type AppPermission,
@@ -28,6 +29,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
   const [name, setName] = useState(role.name);
   const [description, setDescription] = useState(role.description ?? '');
   const [scope, setScope] = useState(isKnownRoleScope(role.scope) ? role.scope : '');
+  const [infoOpen, setInfoOpen] = useState(false);
   const [permissionIds, setPermissionIds] = useState<string[]>(() => {
     const idsFromRole = role.permissions
       .map((p) => p.id)
@@ -49,6 +51,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
   const [savePending, setSavePending] = useState(false);
   const [defaultRoleId, setDefaultRoleId] = useState<string | null>(initialDefaultRoleId);
   const [defaultPending, setDefaultPending] = useState(false);
+  const [deletePending, setDeletePending] = useState(false);
   const selectedSet = useMemo(() => new Set(permissionIds), [permissionIds]);
 
   const visiblePermissions = useMemo(() => {
@@ -99,61 +102,25 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
     router.refresh();
   };
 
+  const handleDelete = async () => {
+    const confirmed = window.confirm(`Delete the role "${role.name}"?\n\nThis action cannot be undone.`);
+    if (!confirmed) return;
+
+    setDeletePending(true);
+    const result = await deleteAppRole({ appId, roleId: role.id });
+    setDeletePending(false);
+
+    if (!result.success) {
+      toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not delete role.' });
+      return;
+    }
+
+    toast({ title: 'Role deleted' });
+    redirectInApp(router, `/application/${appId}/roles?mode=root`);
+  };
+
   return (
     <div className="grid gap-4">
-      <div className="grid gap-3 rounded-2xl border bg-card p-5">
-        <div>
-          <p className="text-sm font-medium">Role details</p>
-          <p className="text-xs text-muted-foreground">
-            Edit the role name, description, and scope while managing its permissions.
-          </p>
-        </div>
-        <Input
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          placeholder="Role name, e.g. viewer"
-        />
-        <Input
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-          placeholder="Description (optional)"
-        />
-        <select
-          value={scope}
-          onChange={(event) => setScope(event.target.value)}
-          className="h-10 rounded-md border border-input bg-background px-3 text-sm"
-          required
-        >
-          <option value="" disabled>Choose role scope</option>
-          {ROLE_SCOPE_OPTIONS.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="grid gap-3 rounded-2xl border bg-card p-5">
-        <div>
-          <p className="text-sm font-medium">Default role</p>
-          <p className="text-xs text-muted-foreground">
-            {isDefaultRole
-              ? 'New application connections are created with this role.'
-              : 'Make this the role used when new application connections are created.'}
-          </p>
-        </div>
-        <div>
-          <Button
-            type="button"
-            variant={isDefaultRole ? 'outline' : 'secondary'}
-            onClick={handleDefaultRole}
-            disabled={defaultPending}
-          >
-            {defaultPending ? 'Saving...' : isDefaultRole ? 'Clear Default' : 'Set Default'}
-          </Button>
-        </div>
-      </div>
-
       <div className="grid gap-2 rounded-2xl bg-card">
         <Input
           placeholder="Search permissions..."
@@ -198,9 +165,85 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
         )}
       </div>
 
+      {!infoOpen ? (
+        <>
+          <div className="grid gap-3 rounded-2xl border bg-card p-5">
+            <div>
+              <p className="text-sm font-medium">Default role</p>
+              <p className="text-xs text-muted-foreground">
+                {isDefaultRole
+                  ? 'New application connections are created with this role.'
+                  : 'Make this the role used when new application connections are created.'}
+              </p>
+            </div>
+            <div>
+              <Button
+                type="button"
+                variant={isDefaultRole ? 'outline' : 'secondary'}
+                onClick={handleDefaultRole}
+                disabled={defaultPending}
+              >
+                {defaultPending ? 'Saving...' : isDefaultRole ? 'Clear Default' : 'Set Default'}
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid gap-3 rounded-2xl border border-destructive/30 bg-card p-5">
+            <div>
+              <p className="text-sm font-medium text-destructive">Delete role</p>
+              <p className="text-xs text-muted-foreground">
+                Remove this role from the application. This action cannot be undone.
+              </p>
+            </div>
+            <div>
+              <Button type="button" variant="destructive" onClick={handleDelete} disabled={deletePending}>
+                {deletePending ? 'Deleting...' : 'Delete Role'}
+              </Button>
+            </div>
+          </div>
+        </>
+      ) : null}
+
+      {infoOpen ? (
+        <div className="grid gap-3 rounded-2xl border bg-card p-5">
+          <div>
+            <p className="text-sm font-medium">Role details</p>
+            <p className="text-xs text-muted-foreground">
+              Edit the role name, description, and scope while managing its permissions.
+            </p>
+          </div>
+          <Input
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            placeholder="Role name, e.g. viewer"
+          />
+          <Input
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            placeholder="Description (optional)"
+          />
+          <select
+            value={scope}
+            onChange={(event) => setScope(event.target.value)}
+            className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+            required
+          >
+            <option value="" disabled>Choose role scope</option>
+            {ROLE_SCOPE_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : null}
+
       <div className="flex justify-end gap-2">
         <Button variant="outline" onClick={() => redirectInApp(router, `/application/${appId}/roles?mode=root`)}>
           Back
+        </Button>
+        <Button type="button" variant="outline" onClick={() => setInfoOpen((open) => !open)}>
+          {infoOpen ? 'Hide Info' : 'Edit Info'}
         </Button>
         <Button onClick={handleSave} disabled={savePending || !name.trim() || !scope.trim()}>
           {savePending ? 'Saving...' : 'Save Role'}

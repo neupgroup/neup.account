@@ -62,6 +62,10 @@ export type HomeSelectedAccountAccessLog = {
   }>;
 };
 
+function stripDelegatedRootPermissions(permissions: string[]): string[] {
+  return permissions.filter((permission) => !permission.startsWith("root."));
+}
+
 // --- User Data Fetching ---
 
 // Fetches the full profile for an account, including individual and brand sub-profiles.
@@ -295,7 +299,7 @@ export async function getGrantedAccountPermission(
 
     const permissions = accessRows.flatMap((row) => extractRolePermissionNames(row.role.permissions));
 
-    return Array.from(new Set(permissions));
+    return Array.from(new Set(stripDelegatedRootPermissions(permissions)));
   } catch (error) {
     await logError(
       "database",

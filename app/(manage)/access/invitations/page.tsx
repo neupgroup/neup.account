@@ -11,6 +11,7 @@ import { Check, X, Loader2, Users, Handshake } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BackButton } from '@/components/ui/back-button';
 import { useSession } from '@/core/providers/session';
+import { hasAnyPermission } from '@/core/auth/profile-permissions';
 
 function InvitationCard({ invitation, onAction }: { invitation: Invitation, onAction: () => void }) {
     const [isAccepting, startAcceptTransition] = useTransition();
@@ -83,25 +84,20 @@ function InvitationCard({ invitation, onAction }: { invitation: Invitation, onAc
 }
 
 export default function InvitationsPage() {
-    const { profile, loading: sessionLoading } = useSession();
+    const { permissions, loading: sessionLoading } = useSession();
     const [invitations, setInvitations] = useState<Invitation[]>([]);
     const [pageLoading, setPageLoading] = useState(true);
-    const allowsFamilySettings =
-        profile?.accountType === 'individual' || profile?.accountType === 'dependent';
+    const canViewInvitations = hasAnyPermission(permissions, ['notification.read']);
 
     const fetchInvitations = async () => {
         setPageLoading(true);
         const data = await getInvitations();
-        setInvitations(
-            allowsFamilySettings
-                ? data
-                : data.filter((invitation) => invitation.action !== 'family_invitation'),
-        );
+        setInvitations(data);
         setPageLoading(false);
     };
 
     useEffect(() => {
-        if (!sessionLoading && !allowsFamilySettings) {
+        if (!sessionLoading && !canViewInvitations) {
             setInvitations([]);
             setPageLoading(false);
             return;
@@ -109,9 +105,9 @@ export default function InvitationsPage() {
         if (!sessionLoading) {
             fetchInvitations();
         }
-    }, [sessionLoading, allowsFamilySettings]);
+    }, [sessionLoading, canViewInvitations]);
 
-    if (!sessionLoading && !allowsFamilySettings) {
+    if (!sessionLoading && !canViewInvitations) {
         notFound();
     }
 

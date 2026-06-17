@@ -144,11 +144,10 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
   const canCreateBrand = permissions.includes('linked_accounts.brand.create');
   const canCreateDependent = permissions.includes('linked_accounts.dependent.create');
   const canViewFamily = allowsFamilySettings && permissions.includes('people.family.view');
-  const canViewInvitations = allowsFamilySettings && permissions.includes('notification.read');
+  const canViewInvitations = permissions.includes('notification.read');
   const canBlockUsers =
-    allowsFamilySettings &&
     permissions.includes('people.block_list.view') ||
-    (allowsFamilySettings && permissions.includes('people.restrict_list.view'));
+    permissions.includes('people.restrict_list.view');
   const accountsToShow =
     showLinkedAccounts && !isManagingOtherAccount ? await getAccessibleAccounts() : [];
   const previewAccounts = accountsToShow.slice(0, 3);
@@ -218,7 +217,7 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
         <div className="space-y-2">
           <SecondaryHeader
             title="People & Sharing"
-            description="Manage your family, requests, and blocked users."
+            description="Manage your requests, family, and blocked users."
           />
           <Card>
             <CardContent className="divide-y p-0">

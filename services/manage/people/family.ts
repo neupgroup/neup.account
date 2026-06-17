@@ -1,7 +1,7 @@
 'use server';
 
 import prisma from '@/core/helpers/prisma';
-import { getPersonalAccountId } from '@/core/auth/verify';
+import { getActiveAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
 import { getUserProfile, checkPermissions } from '@/services/user';
 import { revalidatePath } from 'next/cache';
@@ -35,7 +35,7 @@ async function createInvite(
   neupId: string,
   type: 'member' | 'partner'
 ): Promise<{ success: boolean; error?: string }> {
-  const inviterAccountId = await getPersonalAccountId();
+  const inviterAccountId = await getActiveAccountId();
   if (!inviterAccountId) return { success: false, error: 'User not authenticated.' };
 
   try {
@@ -49,6 +49,14 @@ async function createInvite(
     const inviteeAccountId = neupIdRecord.accountId;
     if (inviteeAccountId === inviterAccountId)
       return { success: false, error: 'You cannot invite yourself.' };
+
+    const inviteeProfile = await getUserProfile(inviteeAccountId);
+    if (inviteeProfile?.accountType === 'brand') {
+      return { success: false, error: "It's a brand account, cant send family invitation." };
+    }
+    if (inviteeProfile?.accountType === 'branch') {
+      return { success: false, error: "It's a branch account, cant send family invitation." };
+    }
       
     // Check if user is already in a family with the inviter.
     const family = await prisma.family.findFirst({
@@ -158,7 +166,7 @@ async function fetchFamilyGroups(): Promise<FamilyGroup[]> {
   const canView = await checkPermissions(['people.family.view']);
   if (!canView) return [];
   
-  const accountId = await getPersonalAccountId();
+  const accountId = await getActiveAccountId();
   if (!accountId) return [];
 
   try {
@@ -234,7 +242,7 @@ export async function removeFamilyMember(
   familyId: string,
   memberAccountId: string
 ): Promise<{ success: boolean; error?: string }> {
-  const removerId = await getPersonalAccountId();
+  const removerId = await getActiveAccountId();
   if (!removerId) return { success: false, error: 'User not authenticated.' };
 
   const canRemoveFamily = await checkPermissions(['people.family.remove']);

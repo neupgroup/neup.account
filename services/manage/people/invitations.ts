@@ -3,7 +3,7 @@
 
 import prisma from '@/core/helpers/prisma';
 import { getUserProfile, checkPermissions, getUserNeupIds } from '@/services/user';
-import { getPersonalAccountId } from '@/core/auth/verify';
+import { getActiveAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { ensureAccessGrant } from '@/services/access-model';
@@ -22,7 +22,10 @@ export type Invitation = {
  * Function getInvitations.
  */
 export async function getInvitations(): Promise<Invitation[]> {
-    const accountId = await getPersonalAccountId();
+    const canView = await checkPermissions(['notification.read']);
+    if (!canView) return [];
+
+    const accountId = await getActiveAccountId();
     if (!accountId) return [];
 
     try {
@@ -80,7 +83,10 @@ export async function getInvitations(): Promise<Invitation[]> {
  * Function acceptRequest.
  */
 export async function acceptRequest(requestId: string, notificationId: string): Promise<{ success: boolean; error?: string }> {
-     const inviteeId = await getPersonalAccountId();
+     const canView = await checkPermissions(['notification.read']);
+    if (!canView) return { success: false, error: 'Permission denied.' };
+
+     const inviteeId = await getActiveAccountId();
     if (!inviteeId) return { success: false, error: 'User not authenticated.' };
 
     try {
@@ -183,7 +189,10 @@ export async function acceptRequest(requestId: string, notificationId: string): 
  * Function rejectRequest.
  */
 export async function rejectRequest(requestId: string, notificationId: string): Promise<{ success: boolean; error?: string }> {
-    const inviteeId = await getPersonalAccountId();
+    const canView = await checkPermissions(['notification.read']);
+    if (!canView) return { success: false, error: 'Permission denied.' };
+
+    const inviteeId = await getActiveAccountId();
     if (!inviteeId) return { success: false, error: 'User not authenticated.' };
 
     try {

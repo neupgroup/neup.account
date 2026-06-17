@@ -1,8 +1,8 @@
 'use server';
 
 import prisma from '@/core/helpers/prisma';
-import { getPersonalAccountId } from '@/core/auth/verify';
-import { getUserProfile, getUserNeupIds } from '@/services/user';
+import { getActiveAccountId } from '@/core/auth/verify';
+import { getUserProfile, getUserNeupIds, checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
@@ -42,7 +42,12 @@ async function findAccountIdByNeupId(neupId: string): Promise<string | null> {
 
 // Unified function to fetch either blocked or restricted users
 async function getList(type: 'blockList' | 'restrictList'): Promise<BlockedUser[]> {
-  const accountId = await getPersonalAccountId();
+  const requiredPermission =
+    type === 'blockList' ? 'people.block_list.view' : 'people.restrict_list.view';
+  const canView = await checkPermissions([requiredPermission]);
+  if (!canView) return [];
+
+  const accountId = await getActiveAccountId();
   if (!accountId) return [];
 
   try {
@@ -97,7 +102,12 @@ async function addUserToList(neupId: string, type: 'blockList' | 'restrictList')
     return { success: false, error: validation.error.flatten().fieldErrors.neupId?.[0] || 'Invalid input' };
   }
 
-  const accessTo = await getPersonalAccountId();
+  const requiredPermission =
+    type === 'blockList' ? 'people.block_list.view' : 'people.restrict_list.view';
+  const canEdit = await checkPermissions([requiredPermission]);
+  if (!canEdit) return { success: false, error: 'Permission denied.' };
+
+  const accessTo = await getActiveAccountId();
   if (!accessTo) return { success: false, error: 'User not authenticated.' };
 
   const memberId = await findAccountIdByNeupId(neupId);
@@ -145,7 +155,12 @@ export async function restrictUser(neupId: string) {
 
 // Unified function to remove a user from a list
 async function removeUserFromList(accountId: string, type: 'blockList' | 'restrictList'): Promise<{ success: boolean; error?: string; }> {
-  const accessTo = await getPersonalAccountId();
+  const requiredPermission =
+    type === 'blockList' ? 'people.block_list.view' : 'people.restrict_list.view';
+  const canEdit = await checkPermissions([requiredPermission]);
+  if (!canEdit) return { success: false, error: 'Permission denied.' };
+
+  const accessTo = await getActiveAccountId();
   if (!accessTo) return { success: false, error: 'User not authenticated.' };
 
   try {

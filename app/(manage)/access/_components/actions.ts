@@ -2,11 +2,10 @@
 
 import prisma from '@/core/helpers/prisma';
 import { Prisma } from '@/prisma/generated/client';
-import { getUserProfile } from '@/services/user';
+import { checkPermissions, getCurrentAccountPermission, getUserProfile, isRootUser } from '@/services/user';
 import { getPersonalAccountId, getActiveAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
 import { assignAssetMemberRole, getRolesForAsset } from '@/services/manage/access/assets';
-import { isRootUser } from '@/services/user';
 import { BRAND_OWNER_ROLE_ID } from '@/core/auth/brand-roles';
 
 export type ResolvedAccount = {
@@ -211,6 +210,216 @@ export async function getSelectableAssets(
 import { revalidatePath } from 'next/cache';
 import { logActivity } from '@/services/log-actions';
 import { removeAssetGroupMember } from '@/services/manage/access/assets';
+import { ensureAccessGrant, extractRolePermissionNames } from '@/services/access-model';
+
+const DIRECT_CUSTOM_ROLE_PREFIX = 'account.access.';
+
+function normalizeStringList(values: string[]): string[] {
+  return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
+}
+
+async function rolePermissionNames(roleIds: string[]): Promise<Map<string, string[]>> {
+  if (roleIds.length === 0) return new Map();
+
+  const mappings = await prisma.authzRolePermissionMap.findMany({
+    where: { roleId: { in: roleIds } },
+    select: {
+      roleId: true,
+      permission: { select: { name: true } },
+    },
+  });
+
+  const byRole = new Map<string, string[]>();
+  for (const mapping of mappings) {
+    const current = byRole.get(mapping.roleId) ?? [];
+    current.push(mapping.permission.name);
+    byRole.set(mapping.roleId, current);
+  }
+
+  return byRole;
+}
+
+export type DirectAccessAssignableRole = {
+  id: string;
+  name: string;
+  description?: string;
+};
+
+export async function getDirectAccessAssignmentOptions(): Promise<{
+  roles: DirectAccessAssignableRole[];
+}> {
+  const accountId = await getActiveAccountId();
+  if (!accountId) return { roles: [] };
+
+  const canAdd = await checkPermissions(['security.third_party.add']);
+  if (!canAdd) return { roles: [] };
+
+  try {
+    const roles = await prisma.authzRole.findMany({
+      where: {
+        appId: 'neup.account',
+        name: { not: { startsWith: DIRECT_CUSTOM_ROLE_PREFIX } },
+      },
+      select: { id: true, name: true, description: true },
+      orderBy: [{ scope: 'asc' }, { name: 'asc' }],
+    });
+
+    return {
+      roles: roles.map((role) => ({
+        id: role.id,
+        name: role.name,
+        description: role.description ?? undefined,
+      })),
+    };
+  } catch (error) {
+    await logError('database', error, 'getDirectAccessAssignmentOptions');
+    return { roles: [] };
+  }
+}
+
+export async function updateDirectMemberAccess(input: {
+  memberAccountId: string;
+  roleIds: string[];
+}): Promise<{ success: boolean; error?: string }> {
+  const accountId = await getActiveAccountId();
+  if (!accountId) return { success: false, error: 'Not authenticated.' };
+
+  const canAdd = await checkPermissions(['security.third_party.add']);
+  if (!canAdd) return { success: false, error: 'Permission denied.' };
+
+  const roleIds = normalizeStringList(input.roleIds);
+
+  if (!input.memberAccountId) {
+    return { success: false, error: 'Missing member account.' };
+  }
+
+  if (input.memberAccountId === accountId) {
+    return { success: false, error: 'Direct account roles cannot be edited from this member page.' };
+  }
+
+  try {
+    const [targetMember, selectedRoles, currentPermissionNames] = await Promise.all([
+      prisma.account.findUnique({
+        where: { id: input.memberAccountId },
+        select: { id: true },
+      }),
+      roleIds.length > 0
+        ? prisma.authzRole.findMany({
+            where: {
+              id: { in: roleIds },
+              appId: 'neup.account',
+              name: { not: { startsWith: DIRECT_CUSTOM_ROLE_PREFIX } },
+            },
+            select: {
+              id: true,
+              permissions: true,
+            },
+          })
+        : Promise.resolve([]),
+      getCurrentAccountPermission(),
+    ]);
+
+    if (!targetMember) return { success: false, error: 'Member account not found.' };
+    if (selectedRoles.length !== roleIds.length) return { success: false, error: 'One or more roles are invalid.' };
+
+    const currentPermissionSet = new Set(currentPermissionNames);
+    const requestedPermissionNames = new Set<string>();
+    const roleMapPermissions = await rolePermissionNames(roleIds);
+    for (const role of selectedRoles) {
+      for (const permissionName of extractRolePermissionNames(role.permissions)) {
+        requestedPermissionNames.add(permissionName);
+      }
+      for (const permissionName of roleMapPermissions.get(role.id) ?? []) {
+        requestedPermissionNames.add(permissionName);
+      }
+    }
+
+    const disallowed = Array.from(requestedPermissionNames).filter((permissionName) => !currentPermissionSet.has(permissionName));
+    if (disallowed.length > 0) {
+      return { success: false, error: `You cannot grant permissions you do not hold: ${disallowed.join(', ')}` };
+    }
+
+    await prisma.$transaction(async (tx) => {
+      const customAccessRows = await tx.access.findMany({
+        where: {
+          parentAccountId: accountId,
+          memberAccountId: input.memberAccountId,
+          parentPortfolioId: null,
+          role: {
+            name: { startsWith: DIRECT_CUSTOM_ROLE_PREFIX },
+          },
+        },
+        select: { roleId: true },
+      });
+      const customRoleIds = Array.from(new Set(customAccessRows.map((row) => row.roleId)));
+
+      await tx.access.deleteMany({
+        where: {
+          parentAccountId: accountId,
+          memberAccountId: input.memberAccountId,
+          parentPortfolioId: null,
+        },
+      });
+
+      if (customRoleIds.length > 0) {
+        await tx.authzRolePermissionMap.deleteMany({
+          where: { roleId: { in: customRoleIds } },
+        });
+        await tx.authzRole.deleteMany({
+          where: {
+            id: { in: customRoleIds },
+            accessRows: { none: {} },
+          },
+        });
+      }
+
+      for (const roleId of roleIds) {
+        await ensureAccessGrant(tx, {
+          memberAccountId: input.memberAccountId,
+          parentAccountId: accountId,
+          childAccountId: accountId,
+          accessApplicationId: 'neup.account',
+          roleId,
+        });
+      }
+
+      if (roleIds.length > 0) {
+        const pendingRequests = await tx.request.findMany({
+          where: {
+            action: 'access_invitation',
+            senderId: accountId,
+            recipientId: input.memberAccountId,
+            status: 'pending',
+          },
+          select: { id: true, data: true },
+        });
+        const directRequestIds = pendingRequests
+          .filter((request) => !(request.data as Record<string, unknown> | null)?.parentPortfolioId)
+          .map((request) => request.id);
+
+        if (directRequestIds.length > 0) {
+          await tx.request.deleteMany({
+            where: { id: { in: directRequestIds } },
+          });
+        }
+      }
+    });
+
+    await logActivity(
+      accountId,
+      `Updated direct access roles for ${input.memberAccountId}: [${roleIds.join(', ')}]`,
+      'Success',
+    );
+
+    revalidatePath('/access');
+    revalidatePath('/access/team');
+    revalidatePath(`/access/role?member_id=${input.memberAccountId}`);
+    return { success: true };
+  } catch (error) {
+    await logError('database', error, `updateDirectMemberAccess:${accountId}:${input.memberAccountId}`);
+    return { success: false, error: 'Failed to update direct access.' };
+  }
+}
 
 /**
  * Removes all direct (non-portfolio) access grants a member holds on the

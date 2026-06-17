@@ -23,8 +23,10 @@ import {
   cancelPortfolioInvitation,
   inviteToPortfolio,
   inviteDirectMember,
+  getDirectAccessAssignmentOptions,
 } from '../_components/actions';
 import { FlowLink } from '@/components/ui/flow-link';
+import { DirectMemberAccessForm } from '../_components/direct-member-access-form';
 
 type PageProps = {
   searchParams: Promise<{ member_id?: string; portfolio?: string }>;
@@ -32,6 +34,7 @@ type PageProps = {
 
 const NEUPID_LOGO = 'https://neupgroup.com/assets/branding/neup.group/logo.svg';
 const FALLBACK_PHOTO = 'https://neupgroup.com/assets/user.png';
+const DIRECT_CUSTOM_ROLE_PREFIX = 'account.access.';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -334,10 +337,11 @@ async function MemberDirectRolesView({ memberAccountId }: { memberAccountId: str
   const accountId = await getActiveAccountId();
   if (!accountId) notFound();
 
-  const [detail, ownerProfile, isPendingInvitation] = await Promise.all([
+  const [detail, ownerProfile, isPendingInvitation, assignmentOptions] = await Promise.all([
     getDirectMemberDetail(accountId, memberAccountId),
     getUserProfile(accountId),
     hasPendingDirectInvitation(accountId, memberAccountId),
+    getDirectAccessAssignmentOptions(),
   ]);
 
   // Profile must exist for the account to be valid
@@ -346,7 +350,8 @@ async function MemberDirectRolesView({ memberAccountId }: { memberAccountId: str
   const userPhoto = detail.accountPhoto ?? FALLBACK_PHOTO;
   const ownerName = ownerProfile?.nameDisplay ?? accountId;
   const isOwnerAccount = memberAccountId === accountId;
-  const hasNoAccess = detail.roles.length === 0 && !isPendingInvitation;
+  const visibleRoles = detail.roles.filter((role) => !role.roleId.startsWith(DIRECT_CUSTOM_ROLE_PREFIX));
+  const hasNoAccess = visibleRoles.length === 0 && !isPendingInvitation;
 
   const avatar = (
     <PlatformAvatar userPhoto={userPhoto} platformLogo={NEUPID_LOGO} platformName="NeupID" />
@@ -379,11 +384,20 @@ async function MemberDirectRolesView({ memberAccountId }: { memberAccountId: str
         />
       )}
 
+      {!isOwnerAccount && (
+        <DirectMemberAccessForm
+          memberAccountId={memberAccountId}
+          memberDisplayName={detail.displayName}
+          roles={assignmentOptions.roles}
+          assignedRoleIds={visibleRoles.map((role) => role.roleId)}
+        />
+      )}
+
       {/* Roles list */}
-      {detail.roles.length > 0 ? (
+      {visibleRoles.length > 0 ? (
         <Card>
           <CardContent className="divide-y p-0">
-            {detail.roles.map((role, i) => (
+            {visibleRoles.map((role, i) => (
               <RoleCard
                 key={`${role.roleId}-${i}`}
                 platformLabel="NeupID"

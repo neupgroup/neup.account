@@ -46,12 +46,14 @@ async function main() {
         update: {
           name: permissionName,
           appId: APP_ID,
+          scope: 'brand',
           tag: 'brand',
         },
         create: {
           id: permissionId,
           name: permissionName,
           appId: APP_ID,
+          scope: 'brand',
           tag: 'brand',
         },
         select: { id: true },

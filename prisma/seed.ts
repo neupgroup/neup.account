@@ -284,8 +284,8 @@ async function main() {
       const permissionId = `cap-def-${slugifyPermission(permissionName)}`;
       const permission = await prisma.authzPermission.upsert({
         where: { name_appId: { name: permissionName, appId: APP_ID } },
-        update: { name: permissionName, appId: APP_ID, tag: 'default' },
-        create: { id: permissionId, name: permissionName, appId: APP_ID, tag: 'default' },
+        update: { name: permissionName, appId: APP_ID, scope: 'default', tag: 'default' },
+        create: { id: permissionId, name: permissionName, appId: APP_ID, scope: 'default', tag: 'default' },
         select: { id: true },
       });
 
@@ -308,8 +308,8 @@ async function main() {
       const permissionId = `cap-root-${slugifyPermission(permissionName)}`;
       const permission = await prisma.authzPermission.upsert({
         where: { name_appId: { name: permissionName, appId: APP_ID } },
-        update: { name: permissionName, appId: APP_ID, tag: 'root' },
-        create: { id: permissionId, name: permissionName, appId: APP_ID, tag: 'root' },
+        update: { name: permissionName, appId: APP_ID, scope: 'root', tag: 'root' },
+        create: { id: permissionId, name: permissionName, appId: APP_ID, scope: 'root', tag: 'root' },
         select: { id: true },
       });
 

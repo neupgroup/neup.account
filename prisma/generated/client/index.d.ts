@@ -38570,6 +38570,7 @@ export namespace Prisma {
     name: string | null
     description: string | null
     appId: string | null
+    scope: string | null
   }
 
   export type AuthzPermissionMaxAggregateOutputType = {
@@ -38577,6 +38578,7 @@ export namespace Prisma {
     name: string | null
     description: string | null
     appId: string | null
+    scope: string | null
   }
 
   export type AuthzPermissionCountAggregateOutputType = {
@@ -38584,6 +38586,7 @@ export namespace Prisma {
     name: number
     description: number
     appId: number
+    scope: number
     tag: number
     _all: number
   }
@@ -38594,6 +38597,7 @@ export namespace Prisma {
     name?: true
     description?: true
     appId?: true
+    scope?: true
   }
 
   export type AuthzPermissionMaxAggregateInputType = {
@@ -38601,6 +38605,7 @@ export namespace Prisma {
     name?: true
     description?: true
     appId?: true
+    scope?: true
   }
 
   export type AuthzPermissionCountAggregateInputType = {
@@ -38608,6 +38613,7 @@ export namespace Prisma {
     name?: true
     description?: true
     appId?: true
+    scope?: true
     tag?: true
     _all?: true
   }
@@ -38689,6 +38695,7 @@ export namespace Prisma {
     name: string
     description: string | null
     appId: string | null
+    scope: string
     tag: JsonValue | null
     _count: AuthzPermissionCountAggregateOutputType | null
     _min: AuthzPermissionMinAggregateOutputType | null
@@ -38714,6 +38721,7 @@ export namespace Prisma {
     name?: boolean
     description?: boolean
     appId?: boolean
+    scope?: boolean
     tag?: boolean
     application?: boolean | AuthzPermission$applicationArgs<ExtArgs>
     roleMappings?: boolean | AuthzPermission$roleMappingsArgs<ExtArgs>
@@ -38725,6 +38733,7 @@ export namespace Prisma {
     name?: boolean
     description?: boolean
     appId?: boolean
+    scope?: boolean
     tag?: boolean
     application?: boolean | AuthzPermission$applicationArgs<ExtArgs>
   }, ExtArgs["result"]["authzPermission"]>
@@ -38734,6 +38743,7 @@ export namespace Prisma {
     name?: boolean
     description?: boolean
     appId?: boolean
+    scope?: boolean
     tag?: boolean
     application?: boolean | AuthzPermission$applicationArgs<ExtArgs>
   }, ExtArgs["result"]["authzPermission"]>
@@ -38743,10 +38753,11 @@ export namespace Prisma {
     name?: boolean
     description?: boolean
     appId?: boolean
+    scope?: boolean
     tag?: boolean
   }
 
-  export type AuthzPermissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "appId" | "tag", ExtArgs["result"]["authzPermission"]>
+  export type AuthzPermissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "appId" | "scope" | "tag", ExtArgs["result"]["authzPermission"]>
   export type AuthzPermissionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     application?: boolean | AuthzPermission$applicationArgs<ExtArgs>
     roleMappings?: boolean | AuthzPermission$roleMappingsArgs<ExtArgs>
@@ -38770,6 +38781,7 @@ export namespace Prisma {
       name: string
       description: string | null
       appId: string | null
+      scope: string
       tag: Prisma.JsonValue | null
     }, ExtArgs["result"]["authzPermission"]>
     composites: {}
@@ -39200,6 +39212,7 @@ export namespace Prisma {
     readonly name: FieldRef<"AuthzPermission", 'String'>
     readonly description: FieldRef<"AuthzPermission", 'String'>
     readonly appId: FieldRef<"AuthzPermission", 'String'>
+    readonly scope: FieldRef<"AuthzPermission", 'String'>
     readonly tag: FieldRef<"AuthzPermission", 'Json'>
   }
     
@@ -39804,7 +39817,7 @@ export namespace Prisma {
     name: string
     description: string | null
     appId: string | null
-    scope: string | null
+    scope: string
     pushed: boolean
     permissions: JsonValue | null
     _count: AuthzRoleCountAggregateOutputType | null
@@ -39910,7 +39923,7 @@ export namespace Prisma {
       name: string
       description: string | null
       appId: string | null
-      scope: string | null
+      scope: string
       pushed: boolean
       permissions: Prisma.JsonValue | null
     }, ExtArgs["result"]["authzRole"]>
@@ -45715,6 +45728,7 @@ export namespace Prisma {
     name: 'name',
     description: 'description',
     appId: 'appId',
+    scope: 'scope',
     tag: 'tag'
   };
 
@@ -48179,6 +48193,7 @@ export namespace Prisma {
     name?: StringFilter<"AuthzPermission"> | string
     description?: StringNullableFilter<"AuthzPermission"> | string | null
     appId?: StringNullableFilter<"AuthzPermission"> | string | null
+    scope?: StringFilter<"AuthzPermission"> | string
     tag?: JsonNullableFilter<"AuthzPermission">
     application?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
     roleMappings?: AuthzRolePermissionMapListRelationFilter
@@ -48189,6 +48204,7 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     appId?: SortOrderInput | SortOrder
+    scope?: SortOrder
     tag?: SortOrderInput | SortOrder
     application?: ApplicationOrderByWithRelationInput
     roleMappings?: AuthzRolePermissionMapOrderByRelationAggregateInput
@@ -48203,6 +48219,7 @@ export namespace Prisma {
     name?: StringFilter<"AuthzPermission"> | string
     description?: StringNullableFilter<"AuthzPermission"> | string | null
     appId?: StringNullableFilter<"AuthzPermission"> | string | null
+    scope?: StringFilter<"AuthzPermission"> | string
     tag?: JsonNullableFilter<"AuthzPermission">
     application?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
     roleMappings?: AuthzRolePermissionMapListRelationFilter
@@ -48213,6 +48230,7 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     appId?: SortOrderInput | SortOrder
+    scope?: SortOrder
     tag?: SortOrderInput | SortOrder
     _count?: AuthzPermissionCountOrderByAggregateInput
     _max?: AuthzPermissionMaxOrderByAggregateInput
@@ -48227,6 +48245,7 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"AuthzPermission"> | string
     description?: StringNullableWithAggregatesFilter<"AuthzPermission"> | string | null
     appId?: StringNullableWithAggregatesFilter<"AuthzPermission"> | string | null
+    scope?: StringWithAggregatesFilter<"AuthzPermission"> | string
     tag?: JsonNullableWithAggregatesFilter<"AuthzPermission">
   }
 
@@ -48238,7 +48257,7 @@ export namespace Prisma {
     name?: StringFilter<"AuthzRole"> | string
     description?: StringNullableFilter<"AuthzRole"> | string | null
     appId?: StringNullableFilter<"AuthzRole"> | string | null
-    scope?: StringNullableFilter<"AuthzRole"> | string | null
+    scope?: StringFilter<"AuthzRole"> | string
     pushed?: BoolFilter<"AuthzRole"> | boolean
     permissions?: JsonNullableFilter<"AuthzRole">
     application?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
@@ -48255,7 +48274,7 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     appId?: SortOrderInput | SortOrder
-    scope?: SortOrderInput | SortOrder
+    scope?: SortOrder
     pushed?: SortOrder
     permissions?: SortOrderInput | SortOrder
     application?: ApplicationOrderByWithRelationInput
@@ -48276,7 +48295,7 @@ export namespace Prisma {
     name?: StringFilter<"AuthzRole"> | string
     description?: StringNullableFilter<"AuthzRole"> | string | null
     appId?: StringNullableFilter<"AuthzRole"> | string | null
-    scope?: StringNullableFilter<"AuthzRole"> | string | null
+    scope?: StringFilter<"AuthzRole"> | string
     pushed?: BoolFilter<"AuthzRole"> | boolean
     permissions?: JsonNullableFilter<"AuthzRole">
     application?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
@@ -48293,7 +48312,7 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     appId?: SortOrderInput | SortOrder
-    scope?: SortOrderInput | SortOrder
+    scope?: SortOrder
     pushed?: SortOrder
     permissions?: SortOrderInput | SortOrder
     _count?: AuthzRoleCountOrderByAggregateInput
@@ -48309,7 +48328,7 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"AuthzRole"> | string
     description?: StringNullableWithAggregatesFilter<"AuthzRole"> | string | null
     appId?: StringNullableWithAggregatesFilter<"AuthzRole"> | string | null
-    scope?: StringNullableWithAggregatesFilter<"AuthzRole"> | string | null
+    scope?: StringWithAggregatesFilter<"AuthzRole"> | string
     pushed?: BoolWithAggregatesFilter<"AuthzRole"> | boolean
     permissions?: JsonNullableWithAggregatesFilter<"AuthzRole">
   }
@@ -50946,6 +50965,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
+    scope: string
     tag?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationCreateNestedOneWithoutAuthzPermissionsInput
     roleMappings?: AuthzRolePermissionMapCreateNestedManyWithoutPermissionInput
@@ -50956,6 +50976,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     appId?: string | null
+    scope: string
     tag?: NullableJsonNullValueInput | InputJsonValue
     roleMappings?: AuthzRolePermissionMapUncheckedCreateNestedManyWithoutPermissionInput
   }
@@ -50964,6 +50985,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     tag?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationUpdateOneWithoutAuthzPermissionsNestedInput
     roleMappings?: AuthzRolePermissionMapUpdateManyWithoutPermissionNestedInput
@@ -50974,6 +50996,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     appId?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     tag?: NullableJsonNullValueInput | InputJsonValue
     roleMappings?: AuthzRolePermissionMapUncheckedUpdateManyWithoutPermissionNestedInput
   }
@@ -50983,6 +51006,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     appId?: string | null
+    scope: string
     tag?: NullableJsonNullValueInput | InputJsonValue
   }
 
@@ -50990,6 +51014,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     tag?: NullableJsonNullValueInput | InputJsonValue
   }
 
@@ -50998,6 +51023,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     appId?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     tag?: NullableJsonNullValueInput | InputJsonValue
   }
 
@@ -51005,7 +51031,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
-    scope?: string | null
+    scope: string
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
@@ -51022,7 +51048,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     appId?: string | null
-    scope?: string | null
+    scope: string
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
@@ -51037,7 +51063,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
@@ -51054,7 +51080,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     appId?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
@@ -51070,7 +51096,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     appId?: string | null
-    scope?: string | null
+    scope: string
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
   }
@@ -51079,7 +51105,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
   }
@@ -51089,7 +51115,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     appId?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
   }
@@ -52915,6 +52941,7 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrder
     appId?: SortOrder
+    scope?: SortOrder
     tag?: SortOrder
   }
 
@@ -52923,6 +52950,7 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrder
     appId?: SortOrder
+    scope?: SortOrder
   }
 
   export type AuthzPermissionMinOrderByAggregateInput = {
@@ -52930,6 +52958,7 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrder
     appId?: SortOrder
+    scope?: SortOrder
   }
 
   export type AuthzRoleNameAppIdCompoundUniqueInput = {
@@ -61840,7 +61869,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
-    scope?: string | null
+    scope: string
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
@@ -61856,7 +61885,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     appId?: string | null
-    scope?: string | null
+    scope: string
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
@@ -61959,6 +61988,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
+    scope: string
     tag?: NullableJsonNullValueInput | InputJsonValue
     roleMappings?: AuthzRolePermissionMapCreateNestedManyWithoutPermissionInput
   }
@@ -61967,6 +61997,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
+    scope: string
     tag?: NullableJsonNullValueInput | InputJsonValue
     roleMappings?: AuthzRolePermissionMapUncheckedCreateNestedManyWithoutPermissionInput
   }
@@ -61985,7 +62016,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
-    scope?: string | null
+    scope: string
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutRoleInput
@@ -62000,7 +62031,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
-    scope?: string | null
+    scope: string
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
@@ -62267,7 +62298,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
@@ -62283,7 +62314,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     appId?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
@@ -62388,6 +62419,7 @@ export namespace Prisma {
     name?: StringFilter<"AuthzPermission"> | string
     description?: StringNullableFilter<"AuthzPermission"> | string | null
     appId?: StringNullableFilter<"AuthzPermission"> | string | null
+    scope?: StringFilter<"AuthzPermission"> | string
     tag?: JsonNullableFilter<"AuthzPermission">
   }
 
@@ -62415,7 +62447,7 @@ export namespace Prisma {
     name?: StringFilter<"AuthzRole"> | string
     description?: StringNullableFilter<"AuthzRole"> | string | null
     appId?: StringNullableFilter<"AuthzRole"> | string | null
-    scope?: StringNullableFilter<"AuthzRole"> | string | null
+    scope?: StringFilter<"AuthzRole"> | string
     pushed?: BoolFilter<"AuthzRole"> | boolean
     permissions?: JsonNullableFilter<"AuthzRole">
   }
@@ -64916,7 +64948,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
-    scope?: string | null
+    scope: string
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
@@ -64932,7 +64964,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     appId?: string | null
-    scope?: string | null
+    scope: string
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
@@ -65558,7 +65590,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
@@ -65574,7 +65606,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     appId?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
@@ -66096,7 +66128,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
-    scope?: string | null
+    scope: string
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
@@ -66112,7 +66144,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     appId?: string | null
-    scope?: string | null
+    scope: string
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
@@ -66428,7 +66460,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
@@ -66444,7 +66476,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     appId?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
@@ -66944,7 +66976,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
-    scope?: string | null
+    scope: string
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
@@ -66960,7 +66992,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     appId?: string | null
-    scope?: string | null
+    scope: string
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
@@ -67196,7 +67228,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
@@ -67212,7 +67244,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     appId?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
@@ -67860,7 +67892,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
-    scope?: string | null
+    scope: string
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
@@ -67876,7 +67908,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     appId?: string | null
-    scope?: string | null
+    scope: string
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutRoleInput
@@ -67895,6 +67927,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
+    scope: string
     tag?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationCreateNestedOneWithoutAuthzPermissionsInput
   }
@@ -67904,6 +67937,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     appId?: string | null
+    scope: string
     tag?: NullableJsonNullValueInput | InputJsonValue
   }
 
@@ -67927,7 +67961,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
@@ -67943,7 +67977,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     appId?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
@@ -67968,6 +68002,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     tag?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationUpdateOneWithoutAuthzPermissionsNestedInput
   }
@@ -67977,6 +68012,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     appId?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     tag?: NullableJsonNullValueInput | InputJsonValue
   }
 
@@ -68108,7 +68144,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
-    scope?: string | null
+    scope: string
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationCreateNestedOneWithoutAuthzRolesInput
@@ -68124,7 +68160,7 @@ export namespace Prisma {
     name: string
     description?: string | null
     appId?: string | null
-    scope?: string | null
+    scope: string
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     accessRows?: AccessUncheckedCreateNestedManyWithoutRoleInput
@@ -68319,7 +68355,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     application?: ApplicationUpdateOneWithoutAuthzRolesNestedInput
@@ -68335,7 +68371,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     appId?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     accessRows?: AccessUncheckedUpdateManyWithoutRoleNestedInput
@@ -70310,6 +70346,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
+    scope: string
     tag?: NullableJsonNullValueInput | InputJsonValue
   }
 
@@ -70317,7 +70354,7 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
-    scope?: string | null
+    scope: string
     pushed?: boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
   }
@@ -70479,6 +70516,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     tag?: NullableJsonNullValueInput | InputJsonValue
     roleMappings?: AuthzRolePermissionMapUpdateManyWithoutPermissionNestedInput
   }
@@ -70487,6 +70525,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     tag?: NullableJsonNullValueInput | InputJsonValue
     roleMappings?: AuthzRolePermissionMapUncheckedUpdateManyWithoutPermissionNestedInput
   }
@@ -70495,6 +70534,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     tag?: NullableJsonNullValueInput | InputJsonValue
   }
 
@@ -70502,7 +70542,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUpdateManyWithoutRoleNestedInput
@@ -70517,7 +70557,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
     assetsGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutRoleNestedInput
@@ -70532,7 +70572,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableStringFieldUpdateOperationsInput | string | null
+    scope?: StringFieldUpdateOperationsInput | string
     pushed?: BoolFieldUpdateOperationsInput | boolean
     permissions?: NullableJsonNullValueInput | InputJsonValue
   }

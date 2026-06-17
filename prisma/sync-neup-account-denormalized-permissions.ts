@@ -62,14 +62,15 @@ async function main() {
     // 2b) Ensure individual.defaultAndApplication role exists with application-only permissions.
     await pool.query(
       `
-      INSERT INTO authz_role (id, app_id, name, description, permissions)
-      VALUES ($1, $2, $3, $4, $5::jsonb)
+      INSERT INTO authz_role (id, app_id, name, description, scope, permissions)
+      VALUES ($1, $2, $3, $4, $5, $6::jsonb)
       ON CONFLICT (id) DO UPDATE
       SET name = EXCLUDED.name,
           description = EXCLUDED.description,
+          scope = EXCLUDED.scope,
           permissions = EXCLUDED.permissions;
       `,
-      [roleId, APP_ID, roleName, roleDescription, JSON.stringify(applicationPermissions)],
+      [roleId, APP_ID, roleName, roleDescription, 'application', JSON.stringify(applicationPermissions)],
     );
 
     // 2c) Ensure individual.root includes all application/config/display-image permissions.

@@ -119,6 +119,7 @@ async function ensureApplicationManagementRoles(): Promise<void> {
           name: cap.name,
           description: cap.description,
           appId: GLOBAL_AUTHZ_APP_ID,
+          scope: 'application',
           tag: 'application',
         },
         create: {
@@ -126,6 +127,7 @@ async function ensureApplicationManagementRoles(): Promise<void> {
           name: cap.name,
           description: cap.description,
           appId: GLOBAL_AUTHZ_APP_ID,
+          scope: 'application',
           tag: 'application',
         },
       });
@@ -235,6 +237,7 @@ export async function createAppPermission(input: {
       data: {
         name,
         description: input.description?.trim() || null,
+        scope: 'application',
         tag: input.tag ?? Prisma.JsonNull,
         appId: input.appId,
       },
@@ -401,7 +404,7 @@ export async function createAppRole(input: {
         data: {
           name,
           description: input.description?.trim() || null,
-          scope: input.scope?.trim() || null,
+          scope: input.scope?.trim() || 'application',
           appId: input.appId,
         },
         select: { id: true, name: true, description: true, scope: true },

@@ -83,6 +83,7 @@ async function main() {
         name: cap.name,
         description: cap.description,
         appId: APP_ID,
+        scope: cap.tag,
         tag: cap.tag,
       },
       create: {
@@ -90,6 +91,7 @@ async function main() {
         name: cap.name,
         description: cap.description,
         appId: APP_ID,
+        scope: cap.tag,
         tag: cap.tag,
       },
     });

@@ -405,8 +405,8 @@ export async function createManagedApplication(input: { name: string }) {
       for (const cap of permissions) {
         await tx.authzPermission.upsert({
           where: { id: cap.id },
-          update: { name: cap.name, description: cap.description, appId: 'neup.account', tag: 'application' },
-          create: { id: cap.id, name: cap.name, description: cap.description, appId: 'neup.account', tag: 'application' },
+          update: { name: cap.name, description: cap.description, appId: 'neup.account', scope: 'application', tag: 'application' },
+          create: { id: cap.id, name: cap.name, description: cap.description, appId: 'neup.account', scope: 'application', tag: 'application' },
         });
       }
       await tx.authzRole.upsert({

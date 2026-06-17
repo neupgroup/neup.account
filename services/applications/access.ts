@@ -9,6 +9,7 @@ import { getApplicationDefaultRoleId } from '@/services/applications/default-rol
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
+import { canAssignRoleScopeToAccount, expectedRoleScopeForAccount } from '@/services/role-scopes';
 
 const manageApplicationSchema = z.object({
   appId: z.string().min(1, 'Application ID is required.'),
@@ -97,6 +98,32 @@ export async function addUserApplicationAccess(input: { appId: string; permissio
     const application = await prisma.application.findUnique({ where: { id: appId }, select: { id: true } });
     if (!application) return { success: false, error: 'Application not found.' };
 
+    const account = await prisma.account.findUnique({
+      where: { id: accountId },
+      select: { accountType: true },
+    });
+    if (!account) return { success: false, error: 'Account not found.' };
+
+    const selectedRoles = permissions.length
+      ? await prisma.authzRole.findMany({
+          where: { id: { in: permissions }, appId },
+          select: { id: true, name: true, scope: true },
+        })
+      : [];
+    if (selectedRoles.length !== permissions.length) {
+      return { success: false, error: 'One or more roles were not found for this application.' };
+    }
+
+    const immediateRoles = selectedRoles.filter((role) =>
+      canAssignRoleScopeToAccount(role.scope, account.accountType, ['public']),
+    );
+    const approvalRoles = selectedRoles.filter((role) =>
+      canAssignRoleScopeToAccount(role.scope, account.accountType, ['toApprove']),
+    );
+    if (immediateRoles.length + approvalRoles.length !== selectedRoles.length) {
+      return { success: false, error: 'One or more roles cannot be requested by this account type.' };
+    }
+
     await prisma.$transaction(async (tx) => {
       await cleanupExpiredAccessModel(tx);
 
@@ -120,27 +147,58 @@ export async function addUserApplicationAccess(input: { appId: string; permissio
         );
       }
 
-      await tx.access.deleteMany({
-        where: {
-          memberAccountId: accountId,
-          parentAccountId: accountId,
-          assetApplicationId: appId,
-        },
-      });
+      const publicScope = expectedRoleScopeForAccount(account.accountType, 'public');
+      if (publicScope) {
+        await tx.access.deleteMany({
+          where: {
+            memberAccountId: accountId,
+            parentAccountId: accountId,
+            assetApplicationId: appId,
+            role: { scope: publicScope },
+          },
+        });
+      }
 
-      if (permissions.length > 0) {
-        for (const roleId of permissions) {
+      if (immediateRoles.length > 0) {
+        for (const role of immediateRoles) {
           await ensureAccessGrant(tx, {
             memberAccountId: accountId,
             parentAccountId: accountId,
             childApplicationId: appId,
             accessApplicationId: appId,
-            roleId,
+            roleId: role.id,
             details: {
               connectionId: connection.id,
             },
           });
         }
+      }
+
+      if (approvalRoles.length > 0) {
+        const ownerGrant = await tx.access.findFirst({
+          where: {
+            assetApplicationId: appId,
+            roleId: 'application.owner',
+            status: 'active',
+          },
+          select: { memberAccountId: true },
+        });
+        await tx.request.create({
+          data: {
+            senderId: accountId,
+            recipientId: ownerGrant?.memberAccountId ?? accountId,
+            action: 'applicationRoleRequest',
+            type: 'applicationRoleRequest',
+            data: {
+              appId,
+              accountId,
+              connectionId: connection.id,
+              roleIds: approvalRoles.map((role) => role.id),
+              roles: approvalRoles.map((role) => ({ id: role.id, name: role.name, scope: role.scope })),
+              assignmentKind: 'publicApplicationAccess',
+            },
+          },
+        });
       }
     });
 
@@ -169,35 +227,96 @@ export async function updateUserApplicationPermissions(input: { appId: string; p
   const { appId, permissions } = parsed.data;
 
   try {
+    const account = await prisma.account.findUnique({
+      where: { id: accountId },
+      select: { accountType: true },
+    });
+    if (!account) return { success: false, error: 'Account not found.' };
+
+    const selectedRoles = permissions.length
+      ? await prisma.authzRole.findMany({
+          where: { id: { in: permissions }, appId },
+          select: { id: true, name: true, scope: true },
+        })
+      : [];
+    if (selectedRoles.length !== permissions.length) {
+      return { success: false, error: 'One or more roles were not found for this application.' };
+    }
+
+    const immediateRoles = selectedRoles.filter((role) =>
+      canAssignRoleScopeToAccount(role.scope, account.accountType, ['public']),
+    );
+    const approvalRoles = selectedRoles.filter((role) =>
+      canAssignRoleScopeToAccount(role.scope, account.accountType, ['toApprove']),
+    );
+    if (immediateRoles.length + approvalRoles.length !== selectedRoles.length) {
+      return { success: false, error: 'One or more roles cannot be requested by this account type.' };
+    }
+
     await prisma.$transaction(async (tx) => {
       await cleanupExpiredAccessModel(tx);
 
-      await tx.access.deleteMany({
-        where: {
-          memberAccountId: accountId,
-          parentAccountId: accountId,
-          assetApplicationId: appId,
-        },
-      });
+      const publicScope = expectedRoleScopeForAccount(account.accountType, 'public');
+      if (publicScope) {
+        await tx.access.deleteMany({
+          where: {
+            memberAccountId: accountId,
+            parentAccountId: accountId,
+            assetApplicationId: appId,
+            role: { scope: publicScope },
+          },
+        });
+      }
 
-      if (permissions.length > 0) {
+      if (immediateRoles.length > 0) {
         const connection = await tx.connection.findUnique({
           where: { accountId_appId: { accountId, appId } },
           select: { id: true },
         });
 
-        for (const roleId of permissions) {
+        for (const role of immediateRoles) {
           await ensureAccessGrant(tx, {
             memberAccountId: accountId,
             parentAccountId: accountId,
             childApplicationId: appId,
             accessApplicationId: appId,
-            roleId,
+            roleId: role.id,
             details: {
               connectionId: connection?.id ?? null,
             },
           });
         }
+      }
+
+      if (approvalRoles.length > 0) {
+        const connection = await tx.connection.findUnique({
+          where: { accountId_appId: { accountId, appId } },
+          select: { id: true },
+        });
+        const ownerGrant = await tx.access.findFirst({
+          where: {
+            assetApplicationId: appId,
+            roleId: 'application.owner',
+            status: 'active',
+          },
+          select: { memberAccountId: true },
+        });
+        await tx.request.create({
+          data: {
+            senderId: accountId,
+            recipientId: ownerGrant?.memberAccountId ?? accountId,
+            action: 'applicationRoleRequest',
+            type: 'applicationRoleRequest',
+            data: {
+              appId,
+              accountId,
+              connectionId: connection?.id ?? null,
+              roleIds: approvalRoles.map((role) => role.id),
+              roles: approvalRoles.map((role) => ({ id: role.id, name: role.name, scope: role.scope })),
+              assignmentKind: 'publicApplicationAccess',
+            },
+          },
+        });
       }
     });
 

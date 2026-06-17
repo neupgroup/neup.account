@@ -47,6 +47,11 @@ export function RoleSelector({ appId, connectionId, roles, currentRoleId }: Role
         return;
       }
 
+      if (result.pendingApproval) {
+        setMessage('Approval request created.');
+        return;
+      }
+
       setSelectedRoleId(roleId);
       setMessage('Role updated.');
     });

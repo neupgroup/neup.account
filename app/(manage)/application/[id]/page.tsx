@@ -169,6 +169,17 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
           </FlowLink>
 
           <FlowLink
+            href={`/application/${id}/requests?mode=root`}
+            className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
+          >
+            <div className="min-w-0">
+              <p className="font-medium">Requests</p>
+              <p className="text-sm text-muted-foreground">Review role assignment requests waiting for approval.</p>
+            </div>
+            <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+          </FlowLink>
+
+          <FlowLink
             href={`/access/asset?asset=${id}${modeSuffix}`}
             className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5"
           >

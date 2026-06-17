@@ -11,6 +11,7 @@ export const REQUEST_TYPE_LABELS: Record<string, string> = {
   kyc_request:          'KYC',
   kycVerification:      'KYC Verification',
   applicationChange:    'Application Change',
+  applicationRoleRequest: 'Application Role',
   accountDeletion:      'Account Deletion',
   payment_request:      'Payment',
   report:               'Report',

@@ -30,13 +30,13 @@ function statusLabel(status: string | null): string {
 export default async function ApplicationUserDetailsPage({ params }: Props) {
   const { id: appId, connId } = await params;
 
-  const [application, details, roles] = await Promise.all([
+  const [application, details] = await Promise.all([
     getApplicationDetailsForViewerV2(appId),
     getApplicationUserConnectionDetails({ appId, connectionId: connId }),
-    getApplicationRoleOptions(appId),
   ]);
 
   if (!application || !details) notFound();
+  const roles = await getApplicationRoleOptions(appId, details.accountType);
 
   const initials = details.displayName?.charAt(0).toUpperCase() ?? '?';
 

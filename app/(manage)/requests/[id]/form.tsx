@@ -27,6 +27,7 @@ import { approveKycRequest, rejectKycRequest } from '@/services/manage/requests/
 import { grantVerification, revokeVerification } from '@/services/manage/verifications';
 import { approveAccountDeletion, cancelAccountDeletion } from '@/services/manage/requests/deletion';
 import { approveApplicationChangeRequest, denyApplicationChangeRequest } from '@/services/applications/change-requests';
+import { approveApplicationRoleRequest, denyApplicationRoleRequest } from '@/services/applications/role-requests';
 import { reissueRequestWithRemarks } from '@/services/manage/requests/reissue';
 
 type Props = { request: UnifiedRequest };
@@ -90,6 +91,11 @@ export function RequestActionForm({ request }: Props) {
         done(result.success, result.error ?? 'Application changes applied.');
         break;
       }
+      case 'applicationRoleRequest': {
+        const result = await approveApplicationRoleRequest(request.id);
+        done(result.success, result.error ?? 'Application role request approved.');
+        break;
+      }
       case 'accountDeletion': {
         const result = await approveAccountDeletion(String(d.accountId ?? ''));
         done(result.success, result.error ?? 'Account deleted.');
@@ -140,6 +146,11 @@ export function RequestActionForm({ request }: Props) {
       case 'applicationChange': {
         const result = await denyApplicationChangeRequest(request.id);
         done(result.success, result.error ?? 'Application change request denied.');
+        break;
+      }
+      case 'applicationRoleRequest': {
+        const result = await denyApplicationRoleRequest(request.id);
+        done(result.success, result.error ?? 'Application role request denied.');
         break;
       }
       case 'accountDeletion': {

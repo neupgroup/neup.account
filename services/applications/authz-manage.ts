@@ -9,6 +9,7 @@ import { dispatchAuthzWebhook } from './authz-webhook';
 import { checkPermissions } from '@/services/user';
 import { dispatchRoleUpdateWebhook, getRolePayload } from './role-update-events';
 import { activeAccessWhere } from '@/services/access-model';
+import { isKnownRoleScope, roleScopeError } from '@/services/role-scopes';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -414,12 +415,17 @@ export async function createAppRole(input: {
   }
 
   try {
+    const scope = input.scope?.trim() || '';
+    if (!isKnownRoleScope(scope)) {
+      return { success: false, error: roleScopeError() };
+    }
+
     const role = await prisma.$transaction(async (tx) => {
       const created = await tx.authzRole.create({
         data: {
           name,
           description: input.description?.trim() || null,
-          scope: input.scope?.trim() || 'application',
+          scope,
           appId: input.appId,
         },
         select: { id: true, name: true, description: true, scope: true },
@@ -530,9 +536,9 @@ export async function updateAppRole(input: {
     return { success: false, error: 'Role name may only contain lowercase letters, numbers, dots (.) and underscores (_).' };
   }
 
-  const scope = input.scope?.trim() || 'application';
-  if (!/^[a-zA-Z0-9._]+$/.test(scope)) {
-    return { success: false, error: 'Role scope may only contain letters, numbers, dots (.), and underscores (_).' };
+  const scope = input.scope?.trim() || '';
+  if (!isKnownRoleScope(scope)) {
+    return { success: false, error: roleScopeError() };
   }
 
   try {

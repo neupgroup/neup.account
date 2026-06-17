@@ -121,8 +121,8 @@ export async function getAllRequests(options: GetRequestsOptions = {}): Promise<
       for (const row of rows) {
         const payload = (row.data ?? {}) as Record<string, unknown>;
 
-        // applicationChange — filter by appId if requested
-        if (row.action === 'applicationChange' && application) {
+        // Application-scoped requests — filter by appId if requested
+        if ((row.action === 'applicationChange' || row.action === 'applicationRoleRequest') && application) {
           if (payload.appId !== application) continue;
         }
 
@@ -150,6 +150,16 @@ export async function getAllRequests(options: GetRequestsOptions = {}): Promise<
             const appName = appNameMap.get(appId) || appId || displayName;
             const scope = getApplicationChangeScope(changes as Array<Record<string, unknown>>);
             summary = `${appName} requested change of their ${scope}.`;
+            break;
+          }
+          case 'applicationRoleRequest': {
+            const appId = typeof payload.appId === 'string' ? payload.appId : '';
+            const appName = appNameMap.get(appId) || appId || 'Application';
+            const roles = Array.isArray(payload.roles) ? payload.roles : [];
+            const roleNames = roles
+              .map((role) => role && typeof role === 'object' && 'name' in role ? String((role as Record<string, unknown>).name ?? '') : '')
+              .filter(Boolean);
+            summary = `${displayName} requested ${roleNames.join(', ') || 'application role'} for ${appName}.`;
             break;
           }
           default:
@@ -477,6 +487,21 @@ export async function getRequestDetail(id: string): Promise<UnifiedRequest | nul
       };
     }
 
+    if (row.action === 'applicationRoleRequest') {
+      const appId = typeof payload.appId === 'string' ? payload.appId : '';
+      const app = appId
+        ? await prisma.application.findUnique({
+            where: { id: appId },
+            select: { name: true },
+          })
+        : null;
+      enrichedData = {
+        ...enrichedData,
+        appId,
+        appName: app?.name ?? '',
+      };
+    }
+
     let summary = '';
     switch (row.action) {
       case 'neupid_request':
@@ -492,6 +517,14 @@ export async function getRequestDetail(id: string): Promise<UnifiedRequest | nul
         const appName = String(enrichedData.appName ?? '');
         const scope = String(enrichedData.requestedScope ?? 'configuration');
         summary = `${appName || displayName} requested change of their ${scope}.`;
+        break;
+      }
+      case 'applicationRoleRequest': {
+        const roles = Array.isArray(enrichedData.roles) ? enrichedData.roles : [];
+        const roleNames = roles
+          .map((role) => role && typeof role === 'object' && 'name' in role ? String((role as Record<string, unknown>).name ?? '') : '')
+          .filter(Boolean);
+        summary = `${displayName} requested ${roleNames.join(', ') || 'application role'} for ${String(enrichedData.appName ?? '') || 'application'}.`;
         break;
       }
       default:

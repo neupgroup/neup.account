@@ -17,6 +17,7 @@ import {
   type AppPermission,
   type AppRole,
 } from '@/services/applications/authz-manage';
+import { ROLE_SCOPE_OPTIONS } from '@/services/role-scopes';
 
 // ---------------------------------------------------------------------------
 // Props
@@ -592,11 +593,19 @@ export function AuthzManagementPanel({ appId, initialPermissions, initialRoles, 
               onChange={(e) => setNewRoleDesc(e.target.value)}
               placeholder="Description (optional)"
             />
-            <Input
+            <select
               value={newRoleScope}
               onChange={(e) => setNewRoleScope(e.target.value)}
-              placeholder="Scope (optional)"
-            />
+              className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+              required
+            >
+              <option value="" disabled>Choose role scope</option>
+              {ROLE_SCOPE_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
             {permissions.length > 0 && (
               <div className="space-y-2">
                 <p className="text-xs font-medium text-muted-foreground">Assign permissions</p>
@@ -624,7 +633,7 @@ export function AuthzManagementPanel({ appId, initialPermissions, initialRoles, 
               <Button
                 type="button"
                 onClick={handleAddRole}
-                disabled={rolePending || !newRoleName.trim()}
+                disabled={rolePending || !newRoleName.trim() || !newRoleScope}
               >
                 {rolePending ? 'Adding...' : 'Add Role'}
               </Button>

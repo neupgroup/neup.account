@@ -13,6 +13,7 @@ import { dispatchAccountUpdatedEvent } from '@/services/applications/account-upd
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
 import { activeAccessWhere, ensureAccessGrant } from '@/services/access-model';
+import { canAssignRoleScopeToAccount } from '@/services/role-scopes';
 import {
   applicationAccessFields,
   applicationResponseFields,
@@ -1844,11 +1845,12 @@ export async function getApplicationUserConnectionDetails(params: {
   }
 }
 
-export async function getApplicationRoleOptions(appId: string): Promise<AppRoleOption[]> {
+export async function getApplicationRoleOptions(appId: string, targetAccountType?: string | null): Promise<AppRoleOption[]> {
   const accountId = await getActiveAccountId();
   if (!accountId) return [];
 
   const isRootViewer = await checkPermissions(['root.application.view']);
+  const isRootEditor = await checkPermissions(['root.application.edit']);
   const isOwner = await isApplicationOwnerForAccount(accountId, appId);
   if (!isRootViewer && !isOwner) return [];
 
@@ -1864,7 +1866,14 @@ export async function getApplicationRoleOptions(appId: string): Promise<AppRoleO
       },
     });
 
-    return roles;
+    if (!targetAccountType) return roles;
+
+    return roles.filter((role) => {
+      const modes = isRootEditor
+        ? ['manageable', 'toApprove', 'root'] as const
+        : ['manageable', 'toApprove'] as const;
+      return canAssignRoleScopeToAccount(role.scope, targetAccountType, [...modes]);
+    });
   } catch (error) {
     await logError('database', error, `getApplicationRoleOptions:${appId}`);
     return [];
@@ -1875,7 +1884,7 @@ export async function assignApplicationConnectionRole(input: {
   appId: string;
   connectionId: string;
   roleId: string;
-}): Promise<{ success: boolean; error?: string }> {
+}): Promise<{ success: boolean; error?: string; pendingApproval?: boolean }> {
   const accountId = await getActiveAccountId();
   if (!accountId) return { success: false, error: 'Not signed in.' };
 
@@ -1889,16 +1898,50 @@ export async function assignApplicationConnectionRole(input: {
     const [connection, role] = await Promise.all([
       prisma.connection.findFirst({
         where: { id: input.connectionId, appId: input.appId },
-        select: { id: true, accountId: true },
+        select: {
+          id: true,
+          accountId: true,
+          account: { select: { accountType: true } },
+        },
       }),
       prisma.authzRole.findFirst({
         where: { id: input.roleId, appId: input.appId },
-        select: { id: true },
+        select: { id: true, name: true, scope: true },
       }),
     ]);
 
     if (!connection) return { success: false, error: 'Connection not found.' };
     if (!role) return { success: false, error: 'Role not found for this application.' };
+
+    const canAssignImmediately =
+      canAssignRoleScopeToAccount(role.scope, connection.account.accountType, ['manageable']) ||
+      (isRootEditor && canAssignRoleScopeToAccount(role.scope, connection.account.accountType, ['root']));
+
+    if (!canAssignImmediately) {
+      if (!canAssignRoleScopeToAccount(role.scope, connection.account.accountType, ['toApprove'])) {
+        return { success: false, error: 'This role scope cannot be assigned to this account type.' };
+      }
+
+      await prisma.request.create({
+        data: {
+          senderId: accountId,
+          recipientId: accountId,
+          action: 'applicationRoleRequest',
+          type: 'applicationRoleRequest',
+          data: {
+            appId: input.appId,
+            accountId: connection.accountId,
+            connectionId: connection.id,
+            roleIds: [role.id],
+            roles: [{ id: role.id, name: role.name, scope: role.scope }],
+            assignmentKind: 'connectionRole',
+          },
+        },
+      });
+
+      revalidatePath(`/application/${input.appId}/requests`);
+      return { success: true, pendingApproval: true };
+    }
 
     await prisma.connection.update({
       where: { id: input.connectionId },

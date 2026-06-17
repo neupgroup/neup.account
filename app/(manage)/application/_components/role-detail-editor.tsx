@@ -12,6 +12,7 @@ import {
   type AppRole,
 } from '@/services/applications/authz-manage';
 import { redirectInApp } from '@/core/helper/navigation';
+import { ROLE_SCOPE_OPTIONS, isKnownRoleScope } from '@/services/role-scopes';
 
 type Props = {
   appId: string;
@@ -24,7 +25,7 @@ export function RoleDetailEditor({ appId, role, permissions }: Props) {
   const { toast } = useToast();
   const [name, setName] = useState(role.name);
   const [description, setDescription] = useState(role.description ?? '');
-  const [scope, setScope] = useState(role.scope || 'application');
+  const [scope, setScope] = useState(isKnownRoleScope(role.scope) ? role.scope : '');
   const [permissionIds, setPermissionIds] = useState<string[]>(() => {
     const idsFromRole = role.permissions
       .map((p) => p.id)
@@ -97,11 +98,19 @@ export function RoleDetailEditor({ appId, role, permissions }: Props) {
           onChange={(event) => setDescription(event.target.value)}
           placeholder="Description (optional)"
         />
-        <Input
+        <select
           value={scope}
           onChange={(event) => setScope(event.target.value)}
-          placeholder="Scope, e.g. application"
-        />
+          className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+          required
+        >
+          <option value="" disabled>Choose role scope</option>
+          {ROLE_SCOPE_OPTIONS.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="grid gap-2 rounded-2xl bg-card">

@@ -164,6 +164,42 @@ function RequestDetailBody({ request }: { request: Awaited<ReturnType<typeof get
       );
     }
 
+    case 'applicationRoleRequest': {
+      const roles = Array.isArray(d.roles)
+        ? d.roles as Array<{ id?: string; name?: string; scope?: string }>
+        : [];
+      return (
+        <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+            <DetailRow label="Application" value={String(d.appName ?? d.appId ?? '')} />
+            <DetailRow label="Application ID" value={String(d.appId ?? '')} />
+            <DetailRow label="Account ID" value={String(d.accountId ?? '')} />
+            <DetailRow label="Connection ID" value={String(d.connectionId ?? '')} />
+            <DetailRow label="Assignment" value={String(d.assignmentKind ?? '')} />
+            <DetailRow label="Submitted" value={request.submittedAt} />
+          </div>
+          <div className="space-y-2">
+            <p className="text-sm font-medium">Requested Roles</p>
+            <div className="grid gap-2">
+              {roles.length > 0 ? roles.map((role) => (
+                <Card key={role.id ?? role.name}>
+                  <CardContent className="flex flex-wrap items-center justify-between gap-2 p-4">
+                    <div>
+                      <p className="text-sm font-medium">{role.name ?? role.id}</p>
+                      <p className="text-xs text-muted-foreground">{role.id}</p>
+                    </div>
+                    {role.scope ? <Badge variant="outline">{role.scope}</Badge> : null}
+                  </CardContent>
+                </Card>
+              )) : (
+                <p className="text-sm text-muted-foreground">No role details were stored.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     case 'accountDeletion':
       return (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">

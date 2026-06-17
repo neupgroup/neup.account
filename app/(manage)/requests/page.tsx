@@ -30,6 +30,7 @@ const TYPE_FILTERS = [
   { label: 'KYC',                key: 'kyc_request' },
   { label: 'KYC Verification',   key: 'kycVerification' },
   { label: 'App Changes',        key: 'applicationChange' },
+  { label: 'App Roles',          key: 'applicationRoleRequest' },
   { label: 'Account Deletion',   key: 'accountDeletion' },
 ];
 

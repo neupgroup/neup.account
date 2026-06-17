@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { createAppRole, type AppPermission } from '@/services/applications/authz-manage';
 import { redirectInApp } from '@/core/helper/navigation';
+import { ROLE_SCOPE_OPTIONS } from '@/services/role-scopes';
 
 type Props = {
   appId: string;
@@ -49,7 +50,19 @@ export function RoleCreateForm({ appId, permissions }: Props) {
     <div className="grid gap-4 rounded-2xl border bg-card p-5">
       <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Role name, e.g. viewer" />
       <Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description (optional)" />
-      <Input value={scope} onChange={(e) => setScope(e.target.value)} placeholder="Scope (optional)" />
+      <select
+        value={scope}
+        onChange={(e) => setScope(e.target.value)}
+        className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+        required
+      >
+        <option value="" disabled>Choose role scope</option>
+        {ROLE_SCOPE_OPTIONS.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
 
       <div className="grid gap-2">
         <p className="text-sm font-medium">Permissions</p>
@@ -81,7 +94,7 @@ export function RoleCreateForm({ appId, permissions }: Props) {
         <Button variant="outline" onClick={() => redirectInApp(router, `/application/${appId}/roles?mode=root`)}>
           Cancel
         </Button>
-        <Button onClick={handleSubmit} disabled={pending || !name.trim()}>
+        <Button onClick={handleSubmit} disabled={pending || !name.trim() || !scope}>
           {pending ? 'Creating...' : 'Create Role'}
         </Button>
       </div>

@@ -11,6 +11,7 @@ import { checkPermissions, getAccountType, isRootUser } from '@/services/user';
 import { resolveAssetName } from '@/services/manage/access/asset-resolvers';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
+import { canAssignRoleScopeToAccount, expectedRoleScopeForAccount } from '@/services/role-scopes';
 
 const memberPattern = /^(account:)?[^\s:]+$/;
 
@@ -1026,6 +1027,23 @@ export async function assignAssetMemberRole(input: {
     if (!childRef) {
       return { success: false, error: 'Asset does not have a valid child reference.' };
     }
+
+    if (assetRow.member_account_id) {
+      const [targetAccount, role] = await Promise.all([
+        prisma.account.findUnique({
+          where: { id: assetRow.member_account_id },
+          select: { accountType: true },
+        }),
+        prisma.authzRole.findUnique({
+          where: { id: input.role },
+          select: { scope: true },
+        }),
+      ]);
+      if (!targetAccount || !role || !canAssignRoleScopeToAccount(role.scope, targetAccount.accountType, ['manageable'])) {
+        return { success: false, error: 'This role scope cannot be assigned to this asset account type.' };
+      }
+    }
+
     await ensureAccessGrant(prisma, {
       memberAccountId: member.memberAccountId,
       ...(groupId ? { parentPortfolioId: groupId } : { parentAccountId: accountId }),
@@ -1055,25 +1073,42 @@ export type AssetRole = {
   description?: string;
 };
 
-// Maps asset.assetType values to the authzRole.scope used in the seeder.
+// Maps asset.assetType values to the authzRole.scope used for non-account assets.
 const ASSET_TYPE_TO_ROLE_SCOPE: Record<string, string> = {
-  app_in_port:          'application',
-  app_in_acc:           'application',
-  acc_in_port:          'account',
-  acc_in_acc:           'account',
+  app_in_port:          '',
+  app_in_acc:           '',
+  acc_in_port:          'individual.managable',
+  acc_in_acc:           'individual.managable',
   conn_in_port:         'connection',
   conn_in_acc:          'connection',
   port_in_acc:          'portfolio',
   // legacy aliases
-  application:          'application',
-  app:                  'application',
-  'account.individual': 'account',
-  'account.brand':      'account',
-  'account.branch':     'account',
-  'account.dependent':  'account',
-  brand_account:        'account',
-  branch_account:       'account',
+  application:          '',
+  app:                  '',
+  'account.individual': 'individual.managable',
+  'account.brand':      'brand.managable',
+  'account.branch':     'branch.brand.managable',
+  'account.dependent':  'dependent.individual.managable',
+  brand_account:        'brand.managable',
+  branch_account:       'branch.brand.managable',
 };
+
+async function expectedScopeForAssetRow(assetRow: {
+  member_account_id?: string | null;
+  access_application_id?: string | null;
+  access_type?: string | null;
+}) {
+  if (assetRow.member_account_id) {
+    const account = await prisma.account.findUnique({
+      where: { id: assetRow.member_account_id },
+      select: { accountType: true },
+    });
+    return expectedRoleScopeForAccount(account?.accountType, 'manageable');
+  }
+
+  const type = (assetRow.access_type ?? '').trim().toLowerCase();
+  return ASSET_TYPE_TO_ROLE_SCOPE[type] || null;
+}
 
 /**
  * Function getRolesForAsset.
@@ -1090,14 +1125,12 @@ export async function getRolesForAsset(portfolioAssetId: string): Promise<AssetR
   try {
     const assetRow = await prisma.asset.findUnique({
       where: { id: portfolioAssetId },
-      select: { access_type: true },
+      select: { access_type: true, member_account_id: true, access_application_id: true },
     });
 
     if (!assetRow) return [];
 
-    const type = assetRow.access_type.trim().toLowerCase();
-    const roleScope = ASSET_TYPE_TO_ROLE_SCOPE[type];
-
+    const roleScope = await expectedScopeForAssetRow(assetRow);
     if (!roleScope) return [];
 
     const roles = await prisma.authzRole.findMany({
@@ -1285,6 +1318,31 @@ export async function bulkAssignAssetRoles(input: {
       member_portfolio_id: string | null;
       access_type: string;
     }> = [];
+
+    const accountAssetIds = input.assetIds.filter((assetId) => input.assetType !== 'application');
+    if (accountAssetIds.length > 0) {
+      const [targetAccounts, roles] = await Promise.all([
+        prisma.account.findMany({
+          where: { id: { in: accountAssetIds } },
+          select: { id: true, accountType: true },
+        }),
+        prisma.authzRole.findMany({
+          where: { id: { in: input.roleIds } },
+          select: { id: true, scope: true },
+        }),
+      ]);
+
+      if (targetAccounts.length !== accountAssetIds.length || roles.length !== input.roleIds.length) {
+        return { success: false, error: 'One or more accounts or roles were not found.' };
+      }
+
+      const invalid = targetAccounts.some((targetAccount) =>
+        roles.some((role) => !canAssignRoleScopeToAccount(role.scope, targetAccount.accountType, ['manageable']))
+      );
+      if (invalid) {
+        return { success: false, error: 'One or more role scopes cannot be assigned to the selected account type.' };
+      }
+    }
 
     await prisma.$transaction(async (tx) => {
       // Add missing assets to the portfolio only in portfolio mode.

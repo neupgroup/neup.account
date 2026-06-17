@@ -62,8 +62,8 @@ export type HomeSelectedAccountAccessLog = {
   }>;
 };
 
-function stripDelegatedRootPermissions(permissions: string[]): string[] {
-  return permissions.filter((permission) => !permission.startsWith("root."));
+function shouldIgnoreManagedRoleScope(scope: string | null | undefined): boolean {
+  return scope === 'individual.root';
 }
 
 // --- User Data Fetching ---
@@ -291,15 +291,20 @@ export async function getGrantedAccountPermission(
       select: {
         role: {
           select: {
+            scope: true,
             permissions: true,
           },
         },
       },
     });
 
-    const permissions = accessRows.flatMap((row) => extractRolePermissionNames(row.role.permissions));
+    const permissions = accessRows.flatMap((row) =>
+      shouldIgnoreManagedRoleScope(row.role.scope)
+        ? []
+        : extractRolePermissionNames(row.role.permissions)
+    );
 
-    return Array.from(new Set(stripDelegatedRootPermissions(permissions)));
+    return Array.from(new Set(permissions));
   } catch (error) {
     await logError(
       "database",

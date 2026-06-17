@@ -226,9 +226,9 @@ export async function createAppPermission(input: {
   if (!/^[a-zA-Z0-9._]+$/.test(name)) {
     return { success: false, error: 'Permission name may only contain letters, numbers, dots (.), and underscores (_).' };
   }
-  const scope = input.scope?.trim() || 'application';
-  if (!/^[a-zA-Z0-9._]+$/.test(scope)) {
-    return { success: false, error: 'Permission scope may only contain letters, numbers, dots (.), and underscores (_).' };
+  const scope = input.scope?.trim() || '';
+  if (!isKnownRoleScope(scope)) {
+    return { success: false, error: roleScopeError() };
   }
 
   const existing = await prisma.authzPermission.findFirst({
@@ -268,9 +268,9 @@ export async function updateAppPermission(input: {
 }): Promise<{ success: boolean; permission?: AppPermission; error?: string }> {
   const auth = await assertCanManageAuthz(input.appId);
   if ('error' in auth) return { success: false, error: auth.error };
-  const scope = input.scope?.trim() || 'application';
-  if (!/^[a-zA-Z0-9._]+$/.test(scope)) {
-    return { success: false, error: 'Permission scope may only contain letters, numbers, dots (.), and underscores (_).' };
+  const scope = input.scope?.trim() || '';
+  if (!isKnownRoleScope(scope)) {
+    return { success: false, error: roleScopeError() };
   }
 
   try {

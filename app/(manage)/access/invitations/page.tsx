@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useTransition } from 'react';
+import { notFound } from 'next/navigation';
 import { useToast } from '@/core/hooks/use-toast';
 import { getInvitations, acceptRequest, rejectRequest } from '@/services/manage/people/invitations';
 import type { Invitation } from '@/services/manage/people/invitations';
@@ -9,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Check, X, Loader2, Users, Handshake } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BackButton } from '@/components/ui/back-button';
+import { useSession } from '@/core/providers/session';
 
 function InvitationCard({ invitation, onAction }: { invitation: Invitation, onAction: () => void }) {
     const [isAccepting, startAcceptTransition] = useTransition();
@@ -81,19 +83,37 @@ function InvitationCard({ invitation, onAction }: { invitation: Invitation, onAc
 }
 
 export default function InvitationsPage() {
+    const { profile, loading: sessionLoading } = useSession();
     const [invitations, setInvitations] = useState<Invitation[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [pageLoading, setPageLoading] = useState(true);
+    const allowsFamilySettings =
+        profile?.accountType === 'individual' || profile?.accountType === 'dependent';
 
     const fetchInvitations = async () => {
-        setLoading(true);
+        setPageLoading(true);
         const data = await getInvitations();
-        setInvitations(data);
-        setLoading(false);
+        setInvitations(
+            allowsFamilySettings
+                ? data
+                : data.filter((invitation) => invitation.action !== 'family_invitation'),
+        );
+        setPageLoading(false);
     };
 
     useEffect(() => {
-        fetchInvitations();
-    }, []);
+        if (!sessionLoading && !allowsFamilySettings) {
+            setInvitations([]);
+            setPageLoading(false);
+            return;
+        }
+        if (!sessionLoading) {
+            fetchInvitations();
+        }
+    }, [sessionLoading, allowsFamilySettings]);
+
+    if (!sessionLoading && !allowsFamilySettings) {
+        notFound();
+    }
 
     return (
         <div className="grid gap-8">
@@ -105,7 +125,7 @@ export default function InvitationsPage() {
                 </p>
             </div>
             <div className="space-y-4">
-                {loading ? (
+                {pageLoading ? (
                     <div className="space-y-4">
                         <Skeleton className="h-20 w-full" />
                         <Skeleton className="h-20 w-full" />

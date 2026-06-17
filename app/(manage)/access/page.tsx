@@ -11,7 +11,7 @@ import { AccessGroupView } from './_components/access-group-view';
 import { ListItem } from '@/components/ui/list-item';
 import { AccountListItem } from '@/components/elements/account-item';
 import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/core/auth/linked-account-permissions';
-import { getCurrentAccountPermission } from '@/services/user';
+import { getCurrentAccountPermission, getUserProfile } from '@/services/user';
 import { getAccessibleAccounts } from '@/services/manage/accounts';
 import { getAccountSelectorContext } from '@/core/auth/accountSelector';
 
@@ -133,17 +133,23 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
 
   if (!directGroup) notFound();
 
-  const permissions = await getCurrentAccountPermission();
+  const [permissions, activeProfile] = await Promise.all([
+    getCurrentAccountPermission(),
+    accountId ? getUserProfile(accountId) : Promise.resolve(null),
+  ]);
+  const allowsFamilySettings =
+    activeProfile?.accountType === 'individual' || activeProfile?.accountType === 'dependent';
   const showLinkedAccounts = LINKED_ACCOUNT_NAV_PERMISSIONS.some((permission) =>
     permissions.includes(permission),
   );
   const canCreateBrand = permissions.includes('linked_accounts.brand.create');
   const canCreateDependent = permissions.includes('linked_accounts.dependent.create');
-  const canViewFamily = permissions.includes('people.family.view');
-  const canViewInvitations = permissions.includes('notification.read');
+  const canViewFamily = allowsFamilySettings && permissions.includes('people.family.view');
+  const canViewInvitations = allowsFamilySettings && permissions.includes('notification.read');
   const canBlockUsers =
+    allowsFamilySettings &&
     permissions.includes('people.block_list.view') ||
-    permissions.includes('people.restrict_list.view');
+    (allowsFamilySettings && permissions.includes('people.restrict_list.view'));
   const accountsToShow =
     showLinkedAccounts && !isManagingOtherAccount ? await getAccessibleAccounts() : [];
 

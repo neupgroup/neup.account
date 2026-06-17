@@ -3,19 +3,24 @@ import { getFamilyGroups } from "@/services/manage/people/family";
 import { FamilyManager } from "./family-manager";
 import { PartnerManager } from "./partner-manager";
 import { BackButton } from "@/components/ui/back-button";
-import { getPersonalAccountId } from '@/core/auth/verify';
+import { getActiveAccountId } from '@/core/auth/verify';
 import { getUserProfile, checkPermissions } from '@/services/user';
 import { notFound } from "next/navigation";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
 
 export default async function FamilySharingPage() {
-    const canView = await checkPermissions(['people.family.view']);
-    if (!canView) {
+    const activeAccountId = await getActiveAccountId();
+    if (!activeAccountId) return <p>Please log in.</p>;
+
+    const [canView, activeProfile] = await Promise.all([
+        checkPermissions(['people.family.view']),
+        getUserProfile(activeAccountId),
+    ]);
+    const allowsFamilySettings =
+        activeProfile?.accountType === 'individual' || activeProfile?.accountType === 'dependent';
+    if (!canView || !allowsFamilySettings) {
         notFound();
     }
-    
-    const personalId = await getPersonalAccountId();
-    if (!personalId) return <p>Please log in.</p>;
 
     const [familyGroups, canAddFamily, canAddPartner] = await Promise.all([
         getFamilyGroups(),
@@ -35,7 +40,7 @@ export default async function FamilySharingPage() {
             
             {familyGroups.length > 0 ? (
                 familyGroups.map(async (group) => {
-                    const isOwner = group.createdBy === personalId;
+                    const isOwner = group.createdBy === activeAccountId;
                     const canAddMoreFamily = group.members.filter(m => !m.hidden).length < 5;
                     const ownerProfile = await getUserProfile(group.createdBy);
                     const ownerName = ownerProfile?.nameDisplay || `${ownerProfile?.nameFirst} ${ownerProfile?.nameLast}`.trim() || 'A User';
@@ -62,7 +67,7 @@ export default async function FamilySharingPage() {
                     />
                      <Card>
                         <CardContent className="p-6">
-                            <FamilyManager familyGroup={{ id: 'temp', createdBy: personalId, members: [] }} canAddMore={true} isOwner={true} />
+                            <FamilyManager familyGroup={{ id: 'temp', createdBy: activeAccountId, members: [] }} canAddMore={true} isOwner={true} />
                         </CardContent>
                     </Card>
                  </div>

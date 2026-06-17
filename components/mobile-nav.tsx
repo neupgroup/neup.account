@@ -99,16 +99,17 @@ export function MobileNav() {
         const config: NavSection[] = [];
         
         if (isManaging) {
-            const managedItems = [
+            const managedPrimaryItems = [
                 { href: "/home", label: "Dashboard", description: "Your central account management hub.", icon: Home, requiredPermissions: [] as string[] },
                 { href: "/profile", label: "Brand Info", description: "Manage profile details.", icon: iconMap['BrandInfo'], requiredPermissions: PROFILE_NAV_PERMISSIONS },
                 { href: "/notifications", label: "Notifications", description: "View and manage account notifications.", icon: iconMap['Notifications'], requiredPermissions: ['notification.read', 'notification.delete'] },
                 { href: "/data", label: "Data & Privacy", description: "View data access, activity, and privacy controls for this account.", icon: iconMap['DataAndPrivacy'], requiredPermissions: DATA_PRIVACY_NAV_PERMISSIONS },
                 { href: "/access", label: "Access & Control", description: "Manage access, people, and linked accounts for this brand.", icon: iconMap['AccessAndControl'], requiredPermissions: ['linked_accounts.brand.manage'] },
+                { href: "/payment", label: "Payment & Subscription", description: "Manage billing and subscriptions for this account.", icon: iconMap['PaymentAndSubscription'], requiredPermissions: ['payment.method.show', 'payment.transactions.show', 'payment.subscriptions.show', 'payment.purchase_neup_pro.view'] },
             ].filter((item) => hasAnyPermission(permissions, item.requiredPermissions));
 
-            if (managedItems.length > 0) {
-                config.push({ title: profile?.nameDisplay || "Brand", items: managedItems });
+            if (managedPrimaryItems.length > 0) {
+                config.push({ title: profile?.nameDisplay || "Brand", items: managedPrimaryItems });
             }
              config.push({ title: "Account", items: visibleAccountNav });
         } else {

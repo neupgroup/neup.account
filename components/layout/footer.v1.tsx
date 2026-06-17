@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation';
 
 const MANAGE_PREFIXES = [
   '/access',
-  '/accounts',
   '/data',
   '/home',
   '/manage',

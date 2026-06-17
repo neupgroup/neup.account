@@ -11,10 +11,10 @@ import { Separator } from '@/components/ui/separator';
 export function BrandNav({ brandId }: { brandId: string }) {
   const pathname = usePathname();
   const navItems = [
-    { href: `/accounts/brand/${brandId}/info`, label: 'Profile', icon: UserCircle },
-    { href: `/accounts/brand/${brandId}/users`, label: 'Users & Permissions', icon: Users },
-    { href: `/accounts/brand/${brandId}/kyc`, label: 'KYC Verification', icon: ShieldCheck },
-    { href: `/accounts/brand/${brandId}/platforms`, label: 'Platform Accounts', icon: AppWindow },
+    { href: `/access/brand/${brandId}/info`, label: 'Profile', icon: UserCircle },
+    { href: `/access/brand/${brandId}/users`, label: 'Users & Permissions', icon: Users },
+    { href: `/access/brand/${brandId}/kyc`, label: 'KYC Verification', icon: ShieldCheck },
+    { href: `/access/brand/${brandId}/platforms`, label: 'Platform Accounts', icon: AppWindow },
   ];
 
   return (

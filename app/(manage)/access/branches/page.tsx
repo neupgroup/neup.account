@@ -1,4 +1,3 @@
-
 import { FlowLink } from '@/components/ui/flow-link';
 import {
     Card,
@@ -23,7 +22,6 @@ import { notFound } from "next/navigation";
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { LINKED_ACCOUNT_PERMISSION_GROUPS } from '@/core/auth/linked-account-permissions';
 
-
 export default async function BrandBranchPage() {
     await requireAnyPermission404(LINKED_ACCOUNT_PERMISSION_GROUPS.brand);
     const brandId = await getActiveAccountId();
@@ -39,7 +37,7 @@ export default async function BrandBranchPage() {
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Manage Branches</h1>
                 <p className="text-muted-foreground">
-                    Oversee and configure your brand's various branches or locations.
+                    Oversee and configure your brand&apos;s various branches or locations.
                 </p>
             </div>
             <Card>

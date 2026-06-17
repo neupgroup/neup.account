@@ -401,8 +401,8 @@ export async function createAppRole(input: {
 
   const name = input.name.trim();
   if (!name) return { success: false, error: 'Role name is required.' };
-  if (!/^[a-z0-9._]+$/.test(name)) {
-    return { success: false, error: 'Role name may only contain lowercase letters, numbers, dots (.) and underscores (_).' };
+  if (!/^[A-Za-z0-9._]+$/.test(name)) {
+    return { success: false, error: 'Role name may only contain letters, numbers, dots (.) and underscores (_).' };
   }
 
   // Enforce uniqueness: one role per name per app
@@ -532,8 +532,8 @@ export async function updateAppRole(input: {
 
   const name = input.name.trim();
   if (!name) return { success: false, error: 'Role name is required.' };
-  if (!/^[a-z0-9._]+$/.test(name)) {
-    return { success: false, error: 'Role name may only contain lowercase letters, numbers, dots (.) and underscores (_).' };
+  if (!/^[A-Za-z0-9._]+$/.test(name)) {
+    return { success: false, error: 'Role name may only contain letters, numbers, dots (.) and underscores (_).' };
   }
 
   const scope = input.scope?.trim() || '';

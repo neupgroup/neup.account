@@ -40,7 +40,7 @@ export default async function RootLayout({
             <PageProgressBar />
             <div className="flex min-h-screen flex-col">
               <HeaderV1 logoUrl={logoUrl} />
-              <main className="flex-1">{children}</main>
+              <main className="flex-1 pt-16">{children}</main>
             </div>
             <Toaster />
             <Suspense>

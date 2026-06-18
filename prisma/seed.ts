@@ -2,6 +2,7 @@ import 'dotenv/config';
 import bcrypt from 'bcryptjs';
 import prisma from '../core/helpers/prisma';
 import { ensureAccessGrant } from '../services/access-model';
+import { BRAND_ROOT_PERMISSION_NAMES } from '../core/auth/brand-roles';
 
 // Root permissions are now managed via authz_role_capability in the database.
 // This legacy seed writes to the Permit table for backward compatibility.
@@ -88,7 +89,7 @@ const ROOT_CAPABILITIES = [
   'root.account.edit_neupid',
   'application.view.scopeRoot',
   'application.edit.scopeRoot',
-  'application.delete.scopedRoot',
+  'application.delete.scopeRoot',
   'application.logs.view.scopeRoot',
   'application.devlogs.view.scopeRoot',
   'application.roles.view.scopeRoot',
@@ -109,6 +110,7 @@ const ROOT_CAPABILITIES = [
   'root.display_images.add',
   'root.display_images.update',
   'root.display_images.delete',
+  ...BRAND_ROOT_PERMISSION_NAMES,
 ] as const;
 
 function slugifyPermission(name: string): string {
@@ -305,7 +307,10 @@ async function main() {
 
     for (const permissionName of ROOT_CAPABILITIES) {
       const permissionId = `cap-root-${slugifyPermission(permissionName)}`;
-      const permissionScope = permissionName.startsWith('application.') ? 'individual.root' : 'root';
+      const permissionScope =
+        permissionName.startsWith('application.') || permissionName.startsWith('account.brand.')
+          ? 'individual.root'
+          : 'root';
       const permission = await prisma.authzPermission.upsert({
         where: { name_appId: { name: permissionName, appId: APP_ID } },
         update: { name: permissionName, appId: APP_ID, scope: permissionScope, tag: permissionScope },

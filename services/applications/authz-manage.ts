@@ -3,12 +3,17 @@
 import { revalidatePath } from 'next/cache';
 import { Prisma } from '@/prisma/generated/client/client';
 import prisma from '@/core/helpers/prisma';
-import { getActiveAccountId } from '@/core/auth/verify';
+import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
 import { dispatchAuthzWebhook } from './authz-webhook';
 import { checkPermissions } from '@/services/user';
 import { dispatchRoleUpdateWebhook, getRolePayload } from './role-update-events';
 import { activeAccessWhere } from '@/services/access-model';
+import {
+  APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS,
+  ROOT_APPLICATION_EDIT_PERMISSION,
+  getApplicationPermissionNames,
+} from '@/services/applications/permission-definitions';
 import { isKnownRoleScope, roleScopeError } from '@/services/role-scopes';
 
 // ---------------------------------------------------------------------------
@@ -48,7 +53,6 @@ export async function getAppDefaultRoleId(appId: string): Promise<string | null>
 // Auth guard
 // ---------------------------------------------------------------------------
 
-const ROOT_ROLE_MANAGE_PERMISSIONS = ['application.edit.scopeRoot'];
 const GLOBAL_AUTHZ_APP_ID = 'neup.account';
 const ROOT_PERMISSION_SCOPE = 'individual.root';
 
@@ -147,34 +151,29 @@ async function validateRolePermissionSelection(
 }
 
 async function ensureApplicationManagementRoles(): Promise<void> {
-  const permissions = [
-    { id: 'cap-appmanage-application-view', name: 'application.view', description: 'View application details and settings.' },
-    { id: 'cap-appmanage-application-edit', name: 'application.edit', description: 'Edit application details, secrets, access fields, policies, and endpoints.' },
-    { id: 'cap-appmanage-application-delete', name: 'application.delete', description: 'Delete or deactivate an application.' },
-    { id: 'cap-appmanage-application-logs-view', name: 'application.logs.view', description: 'View application activity logs.' },
-    { id: 'cap-appmanage-application-devlogs-view', name: 'application.devlogs.view', description: 'View development API request/response logs for the application.' },
-    { id: 'cap-appmanage-application-roles-view', name: 'application.roles.view', description: 'View application roles and permissions.' },
-    { id: 'cap-appmanage-application-roles-manage', name: 'application.roles.manage', description: 'Create, update, and delete application roles and permissions.' },
-  ] as const;
+  const permissions = APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS.map((permission, index) => ({
+    id: `cap-appmanage-${index + 1}-${permission.name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}`,
+    ...permission,
+  }));
 
   await prisma.$transaction(async (tx) => {
     for (const cap of permissions) {
       await tx.authzPermission.upsert({
-        where: { id: cap.id },
+        where: { name_appId: { name: cap.name, appId: GLOBAL_AUTHZ_APP_ID } },
         update: {
           name: cap.name,
           description: cap.description,
           appId: GLOBAL_AUTHZ_APP_ID,
-          scope: 'application',
-          tag: 'application',
+          scope: cap.scope,
+          tag: cap.tag,
         },
         create: {
           id: cap.id,
           name: cap.name,
           description: cap.description,
           appId: GLOBAL_AUTHZ_APP_ID,
-          scope: 'application',
-          tag: 'application',
+          scope: cap.scope,
+          tag: cap.tag,
         },
       });
     }
@@ -220,20 +219,39 @@ async function assertCanManageAuthz(appId: string): Promise<{ accountId: string 
   await ensureApplicationManagementRoles();
 
   // Root override: global root app editors can manage app roles/permissions.
-  const isRootManager = await checkPermissions(ROOT_ROLE_MANAGE_PERMISSIONS, accountId, { roleScope: ROOT_PERMISSION_SCOPE });
+  const isRootManager = await checkPermissions([ROOT_APPLICATION_EDIT_PERMISSION], accountId, { roleScope: ROOT_PERMISSION_SCOPE });
   if (isRootManager) return { accountId };
 
-  const grant = await prisma.access.findFirst({
+  const personalAccountId = await getPersonalAccountId();
+  const scopedManagePermissions = getApplicationPermissionNames(
+    ['roles.manage'],
+    [personalAccountId && personalAccountId === accountId ? 'public' : 'managed'],
+  );
+
+  const grants = await prisma.access.findMany({
     where: {
-      roleId: { in: ['application.owner', 'application.manage', 'application.edit', 'app.manage', 'app.edit'] },
       memberAccountId: accountId,
       accessApplicationId: appId,
       ...activeAccessWhere(),
     },
-    select: { id: true },
+    select: {
+      id: true,
+      role: {
+        select: {
+          permissions: true,
+        },
+      },
+    },
   });
 
-  if (!grant) return { error: 'Permission denied.' };
+  const hasScopedManagePermission = grants.some((grant) => {
+    const permissionNames = Array.isArray(grant.role.permissions)
+      ? grant.role.permissions.filter((permission): permission is string => typeof permission === 'string')
+      : [];
+    return scopedManagePermissions.some((permissionName) => permissionNames.includes(permissionName));
+  });
+
+  if (!hasScopedManagePermission) return { error: 'Permission denied.' };
   return { accountId };
 }
 

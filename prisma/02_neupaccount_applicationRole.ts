@@ -4,7 +4,7 @@
  * Seeds the application.owner role for the neupaccount application.
  *
  * Order of operations (must be followed to satisfy FK constraints):
- *   1. Upsert permissions  (application.view, application.edit, application.delete, application.logs.view, application.devlogs.view)
+ *   1. Upsert permissions  (application.*.scopePublic + application.*.scopeManaged)
  *   2. Upsert role          (application.owner)
  *   3. Upsert permission-to-role maps (AuthzRolePermissionMap)
  *
@@ -16,6 +16,7 @@
 
 import 'dotenv/config';
 import prisma from '../core/helpers/prisma';
+import { APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS } from '../services/applications/permission-definitions';
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not set.');
@@ -26,38 +27,13 @@ const APP_ID = 'neup.account';
 // ---------------------------------------------------------------------------
 // Permission definitions
 // ---------------------------------------------------------------------------
-const CAPABILITIES = [
-  {
-    id: 'cap-appowner-application-view',
-    name: 'application.view',
-    description: 'View application details and settings.',
-    tag: 'application',
-  },
-  {
-    id: 'cap-appowner-application-edit',
-    name: 'application.edit',
-    description: 'Edit application details, secrets, access fields, policies, and endpoints.',
-    tag: 'application',
-  },
-  {
-    id: 'cap-appowner-application-delete',
-    name: 'application.delete',
-    description: 'Delete or deactivate an application.',
-    tag: 'application',
-  },
-  {
-    id: 'cap-appowner-application-logs-view',
-    name: 'application.logs.view',
-    description: 'View application activity logs.',
-    tag: 'application',
-  },
-  {
-    id: 'cap-appowner-application-devlogs-view',
-    name: 'application.devlogs.view',
-    description: 'View development API request/response logs for the application.',
-    tag: 'application',
-  },
-] as const;
+const CAPABILITIES = APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS.map((permission, index) => ({
+  id: `cap-appowner-${index + 1}-${permission.name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}`,
+  name: permission.name,
+  description: permission.description,
+  tag: permission.tag,
+  scope: permission.scope,
+}));
 
 // ---------------------------------------------------------------------------
 // Role definition
@@ -78,12 +54,12 @@ async function main() {
   // 1. Upsert permissions
   for (const cap of CAPABILITIES) {
     await prisma.authzPermission.upsert({
-      where: { id: cap.id },
+      where: { name_appId: { name: cap.name, appId: APP_ID } },
       update: {
         name: cap.name,
         description: cap.description,
         appId: APP_ID,
-        scope: cap.tag,
+        scope: cap.scope,
         tag: cap.tag,
       },
       create: {
@@ -91,7 +67,7 @@ async function main() {
         name: cap.name,
         description: cap.description,
         appId: APP_ID,
-        scope: cap.tag,
+        scope: cap.scope,
         tag: cap.tag,
       },
     });

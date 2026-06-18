@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
-import { checkPermissions } from '@/services/user';
+import { canCurrentAccountManageApplicationRoles, getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
 import { getAppDefaultRoleId, getAppPermissions, getAppRoles } from '@/services/applications/authz-manage';
 import { BackButton } from '@/components/ui/back-button';
 import { PrimaryHeader } from '@/components/ui/primary-header';
@@ -15,8 +14,7 @@ export default async function RoleDetailsPage({ params }: Props) {
   const details = await getApplicationDetailsForViewerV2(id);
   if (!details) notFound();
 
-  const canRootManage = await checkPermissions(['application.edit.scopeRoot'], undefined, { roleScope: 'individual.root' });
-  const canManageRoles = details.canDelete || canRootManage;
+  const canManageRoles = await canCurrentAccountManageApplicationRoles(id);
   if (!canManageRoles) {
     return (
       <div className="grid gap-8">

@@ -14,6 +14,17 @@ import { dispatchAccountUpdatedEvent } from '@/services/applications/account-upd
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
 import { activeAccessWhere, ensureAccessGrant } from '@/services/access-model';
+import {
+  APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS,
+  ROOT_APPLICATION_DELETE_PERMISSION,
+  ROOT_APPLICATION_DEVLOGS_VIEW_PERMISSION,
+  ROOT_APPLICATION_EDIT_PERMISSION,
+  ROOT_APPLICATION_LOGS_VIEW_PERMISSION,
+  ROOT_APPLICATION_VIEW_PERMISSION,
+  getApplicationPermissionNames,
+  type ApplicationPermissionBase,
+  type ApplicationPermissionAudience,
+} from '@/services/applications/permission-definitions';
 import { canAssignRoleScopeToAccount } from '@/services/role-scopes';
 import {
   applicationAccessFields,
@@ -31,10 +42,6 @@ import {
 
 const responseAccessSet = new Set<ApplicationAccessField>(applicationResponseFields);
 const tokenFieldSet = new Set<ApplicationAccessField>(applicationTokenFields);
-const ROOT_APPLICATION_VIEW_PERMISSION = 'application.view.scopeRoot';
-const ROOT_APPLICATION_EDIT_PERMISSION = 'application.edit.scopeRoot';
-const ROOT_APPLICATION_LOGS_VIEW_PERMISSION = 'application.logs.view.scopeRoot';
-const ROOT_APPLICATION_DEVLOGS_VIEW_PERMISSION = 'application.devlogs.view.scopeRoot';
 const ROOT_PERMISSION_SCOPE = 'individual.root';
 
 const createApplicationSchema = z.object({
@@ -79,6 +86,7 @@ const updateApplicationStatusSchema = z.object({
 const viewRoleKeys = new Set(['application.owner', 'application.view', 'app.view', 'application.edit', 'app.edit', 'application.manage', 'app.manage', 'manage', '*']);
 const editRoleKeys = new Set(['application.owner', 'application.edit', 'app.edit', 'application.manage', 'app.manage', 'manage', '*']);
 const ownerRoleKeys = new Set(['application.owner', 'app.owner', 'owner', '*']);
+const APPLICATION_NON_ROOT_AUDIENCES: ApplicationPermissionAudience[] = ['public', 'managed'];
 
 function extractPermissionNames(raw: unknown): string[] {
   if (!Array.isArray(raw)) return [];
@@ -96,6 +104,26 @@ function extractPermissionNames(raw: unknown): string[] {
   }
 
   return out;
+}
+
+function hasAnyPermissionName(granted: Set<string>, permissionNames: readonly string[]): boolean {
+  return permissionNames.some((permissionName) => granted.has(permissionName));
+}
+
+function resolveApplicationPermissionAudience(
+  activeAccountId: string,
+  personalAccountId: string | null,
+): ApplicationPermissionAudience {
+  return personalAccountId && activeAccountId === personalAccountId ? 'public' : 'managed';
+}
+
+async function getCurrentScopedApplicationPermissionNames(
+  activeAccountId: string,
+  bases: readonly ApplicationPermissionBase[],
+): Promise<string[]> {
+  const personalAccountId = await getPersonalAccountId();
+  const audience = resolveApplicationPermissionAudience(activeAccountId, personalAccountId);
+  return getApplicationPermissionNames(bases, [audience]);
 }
 
 /**
@@ -215,8 +243,18 @@ async function resolveApplicationAccessForAccount(accountId: string, appId: stri
     }
 
     const normalizedRoles = new Set(roleRows.map((row) => row.roleId.trim().toLowerCase()));
-    const canEdit = Array.from(normalizedRoles).some((role) => editRoleKeys.has(role));
-    const canView = canEdit || Array.from(normalizedRoles).some((role) => viewRoleKeys.has(role));
+    const grantedPermissions = new Set(roleRows.flatMap((row) => extractPermissionNames(row.permissions)));
+    const permissionDrivenEdit = hasAnyPermissionName(
+      grantedPermissions,
+      getApplicationPermissionNames(['edit', 'delete', 'roles.manage'], APPLICATION_NON_ROOT_AUDIENCES),
+    );
+    const permissionDrivenView = hasAnyPermissionName(
+      grantedPermissions,
+      getApplicationPermissionNames(['view', 'roles.view'], APPLICATION_NON_ROOT_AUDIENCES),
+    );
+    const roleDrivenEdit = Array.from(normalizedRoles).some((role) => editRoleKeys.has(role));
+    const canEdit = permissionDrivenEdit || roleDrivenEdit;
+    const canView = canEdit || permissionDrivenView || Array.from(normalizedRoles).some((role) => viewRoleKeys.has(role));
 
     return { canView, canEdit };
   } catch (error) {
@@ -296,6 +334,7 @@ export async function getApplicationDetailsForViewer(appId: string): Promise<App
   if (!activeAccountId) return null;
 
   const personalAccountId = await getPersonalAccountId();
+  const deletePermissionNames = await getCurrentScopedApplicationPermissionNames(activeAccountId, ['delete']);
 
   try {
     const authorization = await getApplicationAuthorization(activeAccountId, appId);
@@ -317,7 +356,7 @@ export async function getApplicationDetailsForViewer(appId: string): Promise<App
       personalAccountId
         ? getApplicationRoleGrantsForAccount(personalAccountId, appId)
         : [],
-      isApplicationOwnerForAccount(activeAccountId, appId),
+      hasApplicationPermission(activeAccountId, appId, deletePermissionNames),
     ]);
 
     if (!application) return null;
@@ -361,9 +400,13 @@ export async function deleteManagedApplication(appId: string): Promise<{ success
   }
 
   try {
-    const canDelete = await isApplicationOwnerForAccount(activeAccountId, appId);
+    const [deletePermissionNames, isRootDeleter] = await Promise.all([
+      getCurrentScopedApplicationPermissionNames(activeAccountId, ['delete']),
+      checkPermissions([ROOT_APPLICATION_DELETE_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE }),
+    ]);
+    const canDelete = isRootDeleter || await hasApplicationPermission(activeAccountId, appId, deletePermissionNames);
     if (!canDelete) {
-      return { success: false, error: 'Only the application owner can delete this app.' };
+      return { success: false, error: 'You do not have permission to delete this application.' };
     }
 
     await prisma.application.delete({
@@ -402,18 +445,15 @@ export async function createManagedApplication(input: { name: string }) {
     const application = await prisma.$transaction(async (tx) => {
       // Ensure the application.owner role and its permissions exist before creating grants.
       // This makes createManagedApplication self-contained regardless of seed state.
-      const permissions = [
-        { id: 'cap-appowner-application-view',   name: 'application.view',   description: 'View application details and settings.' },
-        { id: 'cap-appowner-application-edit',   name: 'application.edit',   description: 'Edit application details, secrets, access fields, policies, and endpoints.' },
-        { id: 'cap-appowner-application-delete', name: 'application.delete', description: 'Delete or deactivate an application.' },
-        { id: 'cap-appowner-application-logs-view', name: 'application.logs.view', description: 'View application activity logs.' },
-        { id: 'cap-appowner-application-devlogs-view', name: 'application.devlogs.view', description: 'View development API request/response logs for the application.' },
-      ];
+      const permissions = APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS.map((permission, index) => ({
+        id: `cap-appowner-${index + 1}-${permission.name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}`,
+        ...permission,
+      }));
       for (const cap of permissions) {
         await tx.authzPermission.upsert({
-          where: { id: cap.id },
-          update: { name: cap.name, description: cap.description, appId: 'neup.account', scope: 'application', tag: 'application' },
-          create: { id: cap.id, name: cap.name, description: cap.description, appId: 'neup.account', scope: 'application', tag: 'application' },
+          where: { name_appId: { name: cap.name, appId: 'neup.account' } },
+          update: { name: cap.name, description: cap.description, appId: 'neup.account', scope: cap.scope, tag: cap.tag },
+          create: { id: cap.id, name: cap.name, description: cap.description, appId: 'neup.account', scope: cap.scope, tag: cap.tag },
         });
       }
       await tx.authzRole.upsert({
@@ -457,7 +497,7 @@ export async function createManagedApplication(input: { name: string }) {
             id: cap.id,
             name: cap.name,
             description: cap.description ?? null,
-            scope: 'application',
+            scope: cap.scope,
           })),
         },
       });
@@ -1121,6 +1161,7 @@ export async function getApplicationDetailsForViewerV2(appId: string): Promise<A
   if (!activeAccountId) return null;
 
   const personalAccountId = await getPersonalAccountId();
+  const deletePermissionNames = await getCurrentScopedApplicationPermissionNames(activeAccountId, ['delete']);
 
   try {
     const isRootViewer = await checkPermissions([ROOT_APPLICATION_VIEW_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE });
@@ -1165,7 +1206,7 @@ export async function getApplicationDetailsForViewerV2(appId: string): Promise<A
       : null;
 
     const [canDelete, accessForAccount] = await Promise.all([
-      isApplicationOwnerForAccount(activeAccountId, appId),
+      hasApplicationPermission(activeAccountId, appId, deletePermissionNames),
       resolveApplicationAccessForAccount(activeAccountId, appId),
     ]);
 
@@ -1201,6 +1242,45 @@ export async function getApplicationDetailsForViewerV2(appId: string): Promise<A
     await logError('database', error, `getApplicationDetailsForViewerV2:${appId}`);
     return null;
   }
+}
+
+export async function canCurrentAccountManageApplicationRoles(appId: string): Promise<boolean> {
+  const accountId = await getActiveAccountId();
+  if (!accountId) return false;
+
+  const [isRootManager, rolePermissionNames] = await Promise.all([
+    checkPermissions([ROOT_APPLICATION_EDIT_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE }),
+    getCurrentScopedApplicationPermissionNames(accountId, ['roles.manage']),
+  ]);
+
+  if (isRootManager) return true;
+  return hasApplicationPermission(accountId, appId, rolePermissionNames);
+}
+
+async function canCurrentAccountEditApplication(appId: string): Promise<boolean> {
+  const accountId = await getActiveAccountId();
+  if (!accountId) return false;
+
+  const [isRootEditor, permissionNames] = await Promise.all([
+    checkPermissions([ROOT_APPLICATION_EDIT_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE }),
+    getCurrentScopedApplicationPermissionNames(accountId, ['edit']),
+  ]);
+
+  if (isRootEditor) return true;
+  return hasApplicationPermission(accountId, appId, permissionNames);
+}
+
+async function canCurrentAccountViewApplication(appId: string): Promise<boolean> {
+  const accountId = await getActiveAccountId();
+  if (!accountId) return false;
+
+  const [isRootViewer, permissionNames] = await Promise.all([
+    checkPermissions([ROOT_APPLICATION_VIEW_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE }),
+    getCurrentScopedApplicationPermissionNames(accountId, ['view', 'edit', 'delete', 'roles.view', 'roles.manage']),
+  ]);
+
+  if (isRootViewer) return true;
+  return hasApplicationPermission(accountId, appId, permissionNames);
 }
 
 
@@ -1248,8 +1328,8 @@ export async function updateAppMeta(
 
   const { appId, name, description, icon, website } = parsed.data;
 
-  const canEdit = await isApplicationOwnerForAccount(accountId, appId);
-  if (!canEdit) return { success: false, error: 'Only the application owner can edit metadata.' };
+  const canEdit = await canCurrentAccountEditApplication(appId);
+  if (!canEdit) return { success: false, error: 'You do not have permission to edit application metadata.' };
 
   try {
     await prisma.application.update({
@@ -1293,9 +1373,8 @@ export async function getAppStatusLog(appId: string): Promise<AppStatusLogEntry[
   const accountId = await getActiveAccountId();
   if (!accountId) return [];
 
-  const isRootViewer = await checkPermissions([ROOT_APPLICATION_VIEW_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE });
-  const isOwner = await isApplicationOwnerForAccount(accountId, appId);
-  if (!isRootViewer && !isOwner) return [];
+  const canView = await canCurrentAccountViewApplication(appId);
+  if (!canView) return [];
 
   try {
     const rows = await prisma.activity.findMany({
@@ -1338,8 +1417,8 @@ export async function requestAppPublication(
   const accountId = await getActiveAccountId();
   if (!accountId) return { success: false, error: 'Not signed in.' };
 
-  const isOwner = await isApplicationOwnerForAccount(accountId, appId);
-  if (!isOwner) return { success: false, error: 'Only the application owner can request publication.' };
+  const canEdit = await canCurrentAccountEditApplication(appId);
+  if (!canEdit) return { success: false, error: 'You do not have permission to request publication for this application.' };
 
   try {
     const app = await prisma.application.findUnique({
@@ -1447,9 +1526,8 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
   const accountId = await getActiveAccountId();
   if (!accountId) return null;
 
-  const isRootViewer = await checkPermissions([ROOT_APPLICATION_VIEW_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE });
-  const isOwner = await isApplicationOwnerForAccount(accountId, appId);
-  if (!isRootViewer && !isOwner) return null;
+  const canView = await canCurrentAccountViewApplication(appId);
+  if (!canView) return null;
 
   try {
     // All access grants for this app
@@ -1693,9 +1771,8 @@ export async function getApplicationUsersPaginated(params: {
   const accountId = await getActiveAccountId();
   if (!accountId) return { users: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
 
-  const isRootViewer = await checkPermissions([ROOT_APPLICATION_VIEW_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE });
-  const isOwner = await isApplicationOwnerForAccount(accountId, params.appId);
-  if (!isRootViewer && !isOwner) return { users: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
+  const canView = await canCurrentAccountViewApplication(params.appId);
+  if (!canView) return { users: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
 
   const { appId, page, pageSize = 20, search = '', status, activeSince, sort = 'newest' } = params;
 
@@ -1800,9 +1877,8 @@ export async function getApplicationUserConnectionDetails(params: {
   const accountId = await getActiveAccountId();
   if (!accountId) return null;
 
-  const isRootViewer = await checkPermissions([ROOT_APPLICATION_VIEW_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE });
-  const isOwner = await isApplicationOwnerForAccount(accountId, params.appId);
-  if (!isRootViewer && !isOwner) return null;
+  const canView = await canCurrentAccountViewApplication(params.appId);
+  if (!canView) return null;
 
   try {
     const row = await prisma.connection.findFirst({
@@ -1863,10 +1939,9 @@ export async function getApplicationRoleOptions(appId: string, targetAccountType
   const accountId = await getActiveAccountId();
   if (!accountId) return [];
 
-  const isRootViewer = await checkPermissions([ROOT_APPLICATION_VIEW_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE });
   const isRootEditor = await checkPermissions([ROOT_APPLICATION_EDIT_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE });
-  const isOwner = await isApplicationOwnerForAccount(accountId, appId);
-  if (!isRootViewer && !isOwner) return [];
+  const canView = await canCurrentAccountViewApplication(appId);
+  if (!canView) return [];
 
   try {
     const roles = await prisma.authzRole.findMany({
@@ -1903,9 +1978,11 @@ export async function assignApplicationConnectionRole(input: {
   const accountId = await getActiveAccountId();
   if (!accountId) return { success: false, error: 'Not signed in.' };
 
-  const isRootEditor = await checkPermissions([ROOT_APPLICATION_EDIT_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE });
-  const isOwner = await isApplicationOwnerForAccount(accountId, input.appId);
-  if (!isRootEditor && !isOwner) {
+  const [isRootEditor, canManageRoles] = await Promise.all([
+    checkPermissions([ROOT_APPLICATION_EDIT_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE }),
+    canCurrentAccountManageApplicationRoles(input.appId),
+  ]);
+  if (!isRootEditor && !canManageRoles) {
     return { success: false, error: 'Permission denied.' };
   }
 
@@ -2026,8 +2103,8 @@ export async function updateAppEdit(
 
   const { appId, name, description, icon, website, status } = parsed.data;
 
-  const canEdit = await isApplicationOwnerForAccount(accountId, appId);
-  if (!canEdit) return { success: false, error: 'Only the application owner can edit this application.' };
+  const canEdit = await canCurrentAccountEditApplication(appId);
+  if (!canEdit) return { success: false, error: 'You do not have permission to edit this application.' };
 
   try {
     await prisma.application.update({
@@ -2105,8 +2182,8 @@ export async function saveAppConfig(
   );
   const fixedTokenFields: ApplicationAccessField[] = [];
 
-  const canEdit = await isApplicationOwnerForAccount(accountId, appId);
-  if (!canEdit) return { success: false, error: 'Only the application owner can configure this application.' };
+  const canEdit = await canCurrentAccountEditApplication(appId);
+  if (!canEdit) return { success: false, error: 'You do not have permission to configure this application.' };
 
   try {
     const existing = await prisma.application.findUnique({
@@ -2172,7 +2249,7 @@ export async function getAppConfigData(appId: string): Promise<{
   const accountId = await getActiveAccountId();
   if (!accountId) return null;
 
-  const canEdit = await isApplicationOwnerForAccount(accountId, appId);
+  const canEdit = await canCurrentAccountEditApplication(appId);
   if (!canEdit) return null;
 
   try {
@@ -2249,8 +2326,8 @@ export async function saveAccountUpdateWebhookUrl(input: {
   const accountId = await getActiveAccountId();
   if (!accountId) return { success: false, error: 'Not signed in.' };
 
-  const canEdit = await isApplicationOwnerForAccount(accountId, input.appId);
-  if (!canEdit) return { success: false, error: 'Only the application owner can configure this application.' };
+  const canEdit = await canCurrentAccountEditApplication(input.appId);
+  if (!canEdit) return { success: false, error: 'You do not have permission to configure this application.' };
 
   const url = input.url.trim();
 
@@ -2303,8 +2380,8 @@ export async function saveRoleUpdateWebhookUrl(input: {
   const accountId = await getActiveAccountId();
   if (!accountId) return { success: false, error: 'Not signed in.' };
 
-  const canEdit = await isApplicationOwnerForAccount(accountId, input.appId);
-  if (!canEdit) return { success: false, error: 'Only the application owner can configure this application.' };
+  const canEdit = await canCurrentAccountEditApplication(input.appId);
+  if (!canEdit) return { success: false, error: 'You do not have permission to configure this application.' };
 
   const url = input.url.trim();
 
@@ -2395,10 +2472,11 @@ export async function getApplicationDevLogsPaginated(input: {
 }): Promise<ApplicationDevLogsPage | null> {
   const accountId = await getActiveAccountId();
   if (!accountId) return null;
+  const devLogPermissionNames = await getCurrentScopedApplicationPermissionNames(accountId, ['devlogs.view']);
 
   const [isRootViewer, canViewDevLogs] = await Promise.all([
     checkPermissions([ROOT_APPLICATION_DEVLOGS_VIEW_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE }),
-    hasApplicationPermission(accountId, input.appId, ['application.devlogs.view']),
+    hasApplicationPermission(accountId, input.appId, devLogPermissionNames),
   ]);
 
   if (!isRootViewer && !canViewDevLogs) return null;
@@ -2452,12 +2530,12 @@ export async function clearApplicationDevLogs(appId: string): Promise<{ success:
   const accountId = await getActiveAccountId();
   if (!accountId) return { success: false, error: 'Not signed in.' };
 
-  const [isRootEditor, isOwner] = await Promise.all([
+  const [isRootEditor, canEdit] = await Promise.all([
     checkPermissions([ROOT_APPLICATION_EDIT_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE }),
-    isApplicationOwnerForAccount(accountId, appId),
+    canCurrentAccountEditApplication(appId),
   ]);
 
-  if (!isRootEditor && !isOwner) {
+  if (!isRootEditor && !canEdit) {
     return { success: false, error: 'Permission denied.' };
   }
 
@@ -2480,6 +2558,10 @@ export async function getApplicationLogPermissions(appId: string): Promise<{
 }> {
   const accountId = await getActiveAccountId();
   if (!accountId) return { canViewLogs: false, canViewDevLogs: false };
+  const [logPermissionNames, devLogPermissionNames] = await Promise.all([
+    getCurrentScopedApplicationPermissionNames(accountId, ['logs.view']),
+    getCurrentScopedApplicationPermissionNames(accountId, ['devlogs.view']),
+  ]);
 
   const [isRootLogsViewer, isRootDevLogsViewer] = await Promise.all([
     checkPermissions([ROOT_APPLICATION_LOGS_VIEW_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE }),
@@ -2487,8 +2569,8 @@ export async function getApplicationLogPermissions(appId: string): Promise<{
   ]);
 
   const [canViewLogs, canViewDevLogs] = await Promise.all([
-    hasApplicationPermission(accountId, appId, ['application.logs.view']),
-    hasApplicationPermission(accountId, appId, ['application.devlogs.view']),
+    hasApplicationPermission(accountId, appId, logPermissionNames),
+    hasApplicationPermission(accountId, appId, devLogPermissionNames),
   ]);
 
   return {

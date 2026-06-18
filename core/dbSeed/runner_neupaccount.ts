@@ -19,7 +19,7 @@ import bcrypt from 'bcryptjs';
 import { Prisma } from '@/prisma/generated/client';
 import prisma from '@/core/helpers/prisma';
 import { ensureAccessGrant } from '@/services/access-model';
-import { BRAND_OWNER_PERMISSION_NAMES, BRAND_OWNER_ROLE_ID, BRAND_OWNER_ROLE_NAME } from '@/core/auth/brand-roles';
+import { BRAND_OWNER_PERMISSION_NAMES, BRAND_OWNER_ROLE_ID, BRAND_OWNER_ROLE_NAME, BRAND_ROOT_PERMISSION_NAMES } from '@/core/auth/brand-roles';
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not set.');
@@ -165,11 +165,15 @@ INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-root-admin-accounts-create',       'root.account.create_individual','${APP_ID}', 'root'),
   ('cap-root-admin-applications-view',     'application.view.scopeRoot',            '${APP_ID}', 'individual.root'),
   ('cap-root-admin-applications-edit',     'application.edit.scopeRoot',            '${APP_ID}', 'individual.root'),
-  ('cap-root-admin-application-delete',    'application.delete.scopedRoot',         '${APP_ID}', 'individual.root'),
+  ('cap-root-admin-application-delete',    'application.delete.scopeRoot',          '${APP_ID}', 'individual.root'),
   ('cap-root-admin-application-logs-view', 'application.logs.view.scopeRoot',       '${APP_ID}', 'individual.root'),
   ('cap-root-admin-application-devlogs-view', 'application.devlogs.view.scopeRoot', '${APP_ID}', 'individual.root'),
   ('cap-root-admin-application-roles-view','application.roles.view.scopeRoot',      '${APP_ID}', 'individual.root'),
   ('cap-root-admin-application-roles-manage','application.roles.manage.scopeRoot',  '${APP_ID}', 'individual.root'),
+  ('cap-root-brand-delete',               'account.brand.delete.scopeRoot',         '${APP_ID}', 'individual.root'),
+  ('cap-root-brand-kyc-submit',           'account.brand.kyc.submit.scopeRoot',     '${APP_ID}', 'individual.root'),
+  ('cap-root-brand-kyc-view',             'account.brand.kyc.view.scopeRoot',       '${APP_ID}', 'individual.root'),
+  ('cap-root-brand-members-manage',       'account.brand.members.manage.scopeRoot', '${APP_ID}', 'individual.root'),
   ('cap-root-admin-permits-view',          'root.permission.view',         '${APP_ID}', 'root'),
   ('cap-root-admin-permits-edit',          'root.permission.edit',         '${APP_ID}', 'root'),
   ('cap-root-admin-requests-view',         'root.requests.view',           '${APP_ID}', 'root'),
@@ -192,7 +196,31 @@ SELECT
   'individual.root',
   '${APP_ID}',
   'individual.root',
-  '["root.account.view","root.account.modify","root.account.delete","root.account.search","root.account.create_individual","application.view.scopeRoot","application.edit.scopeRoot","application.delete.scopedRoot","application.logs.view.scopeRoot","application.devlogs.view.scopeRoot","application.roles.view.scopeRoot","application.roles.manage.scopeRoot","root.permission.view","root.permission.edit","root.requests.view","root.dashboard.view","root.payment_config.view","root.errors.view","root.display_images.view","root.display_images.add","root.display_images.update","root.display_images.delete"]'::jsonb
+  '${JSON.stringify([
+    'root.account.view',
+    'root.account.modify',
+    'root.account.delete',
+    'root.account.search',
+    'root.account.create_individual',
+    'application.view.scopeRoot',
+    'application.edit.scopeRoot',
+    'application.delete.scopeRoot',
+    'application.logs.view.scopeRoot',
+    'application.devlogs.view.scopeRoot',
+    'application.roles.view.scopeRoot',
+    'application.roles.manage.scopeRoot',
+    ...BRAND_ROOT_PERMISSION_NAMES,
+    'root.permission.view',
+    'root.permission.edit',
+    'root.requests.view',
+    'root.dashboard.view',
+    'root.payment_config.view',
+    'root.errors.view',
+    'root.display_images.view',
+    'root.display_images.add',
+    'root.display_images.update',
+    'root.display_images.delete',
+  ])}'::jsonb
 FROM "authz_capability" c
 WHERE c."app_id" = '${APP_ID}'
   AND c."scope"  = 'individual.root'
@@ -200,9 +228,20 @@ ON CONFLICT ("id") DO NOTHING;
 
 -- 3c. Permissions — application.owner
 INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
-  ('cap-appowner-application-view',    'application.view',    '${APP_ID}', 'application'),
-  ('cap-appowner-application-edit',    'application.edit',    '${APP_ID}', 'application'),
-  ('cap-appowner-application-delete',  'application.delete',  '${APP_ID}', 'application')
+  ('cap-appowner-application-view-public',         'application.view.scopePublic',          '${APP_ID}', 'individual.public'),
+  ('cap-appowner-application-view-managed',        'application.view.scopeManaged',         '${APP_ID}', 'managable'),
+  ('cap-appowner-application-edit-public',         'application.edit.scopePublic',          '${APP_ID}', 'individual.public'),
+  ('cap-appowner-application-edit-managed',        'application.edit.scopeManaged',         '${APP_ID}', 'managable'),
+  ('cap-appowner-application-delete-public',       'application.delete.scopePublic',        '${APP_ID}', 'individual.public'),
+  ('cap-appowner-application-delete-managed',      'application.delete.scopeManaged',       '${APP_ID}', 'managable'),
+  ('cap-appowner-application-logs-view-public',    'application.logs.view.scopePublic',     '${APP_ID}', 'individual.public'),
+  ('cap-appowner-application-logs-view-managed',   'application.logs.view.scopeManaged',    '${APP_ID}', 'managable'),
+  ('cap-appowner-application-devlogs-view-public', 'application.devlogs.view.scopePublic',  '${APP_ID}', 'individual.public'),
+  ('cap-appowner-application-devlogs-view-managed','application.devlogs.view.scopeManaged', '${APP_ID}', 'managable'),
+  ('cap-appowner-application-roles-view-public',   'application.roles.view.scopePublic',    '${APP_ID}', 'individual.public'),
+  ('cap-appowner-application-roles-view-managed',  'application.roles.view.scopeManaged',   '${APP_ID}', 'managable'),
+  ('cap-appowner-application-roles-manage-public', 'application.roles.manage.scopePublic',  '${APP_ID}', 'individual.public'),
+  ('cap-appowner-application-roles-manage-managed','application.roles.manage.scopeManaged', '${APP_ID}', 'managable')
 ON CONFLICT ("id") DO NOTHING;
 
 INSERT INTO "authz_role_capability" (
@@ -215,7 +254,7 @@ SELECT
   'application',
   '${APP_ID}',
   'application.owner',
-  '["application.view","application.edit","application.delete"]'::jsonb
+  '["application.view.scopePublic","application.view.scopeManaged","application.edit.scopePublic","application.edit.scopeManaged","application.delete.scopePublic","application.delete.scopeManaged","application.logs.view.scopePublic","application.logs.view.scopeManaged","application.devlogs.view.scopePublic","application.devlogs.view.scopeManaged","application.roles.view.scopePublic","application.roles.view.scopeManaged","application.roles.manage.scopePublic","application.roles.manage.scopeManaged"]'::jsonb
 FROM "authz_capability" c
 WHERE c."app_id" = '${APP_ID}'
   AND c."scope"  = 'application'
@@ -232,15 +271,15 @@ INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-brand-settings-view',     'brand.settings.view',           '${APP_ID}', 'brand'),
   ('cap-brand-settings-edit',     'brand.settings.edit',           '${APP_ID}', 'brand'),
   ('cap-brand-members-view',      'brand.members.view',            '${APP_ID}', 'brand'),
-  ('cap-brand-members-manage',    'brand.members.manage',          '${APP_ID}', 'brand'),
+  ('cap-brand-members-manage',    'account.brand.members.manage.scopeManaged', '${APP_ID}', 'brand.managable'),
   ('cap-brand-branches-view',     'linked_accounts.brand.view',         '${APP_ID}', 'brand'),
   ('cap-brand-branches-manage',   'linked_accounts.brand.manage',       '${APP_ID}', 'brand'),
   ('cap-brand-branches-manager',  'linked_accounts.brand.manager',      '${APP_ID}', 'brand'),
-  ('cap-brand-kyc-view',          'brand.kyc.view',                '${APP_ID}', 'brand'),
-  ('cap-brand-kyc-submit',        'brand.kyc.submit',              '${APP_ID}', 'brand'),
+  ('cap-brand-kyc-view',          'account.brand.kyc.view.scopeManaged',   '${APP_ID}', 'brand.managable'),
+  ('cap-brand-kyc-submit',        'account.brand.kyc.submit.scopeManaged', '${APP_ID}', 'brand.managable'),
   ('cap-brand-platforms-view',    'brand.platforms.view',          '${APP_ID}', 'brand'),
   ('cap-brand-platforms-manage',  'brand.platforms.manage',        '${APP_ID}', 'brand'),
-  ('cap-brand-delete',            'brand.delete',                  '${APP_ID}', 'brand')
+  ('cap-brand-delete',            'account.brand.delete.scopeManaged', '${APP_ID}', 'brand.managable')
 ON CONFLICT ("id") DO NOTHING;
 
 INSERT INTO "authz_role_capability" (

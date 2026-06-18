@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
-import { getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
+import { canCurrentAccountManageApplicationRoles, getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
 import { getAppPermissions } from '@/services/applications/authz-manage';
-import { checkPermissions } from '@/services/user';
 import { BackButton } from '@/components/ui/back-button';
 import { PrimaryHeader } from '@/components/ui/primary-header';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -20,8 +19,7 @@ export default async function ApplicationPermissionsPage({ params, searchParams 
 
   if (!details) notFound();
 
-  const canRootManage = await checkPermissions(['application.edit.scopeRoot'], undefined, { roleScope: 'individual.root' });
-  const canManagePermissions = details.canDelete || canRootManage;
+  const canManagePermissions = await canCurrentAccountManageApplicationRoles(id);
   const modeSuffix = mode ? `?mode=${encodeURIComponent(mode)}` : '';
 
   if (!canManagePermissions) {

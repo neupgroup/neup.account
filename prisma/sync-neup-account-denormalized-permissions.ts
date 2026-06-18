@@ -16,10 +16,10 @@ async function main() {
     const roleName = 'individual.defaultAndApplication';
     const roleDescription = 'Default individual permissions with application view/edit access.';
     const applicationPermissions = [
-      'application.view',
-      'application.edit',
-      'application.logs.view',
-      'application.devlogs.view',
+      'application.view.scopePublic',
+      'application.edit.scopePublic',
+      'application.logs.view.scopePublic',
+      'application.devlogs.view.scopePublic',
     ];
 
     // 1) Rebuild authz_role.permissions from legacy role-capability mapping if it still exists.

@@ -14,6 +14,7 @@ import {
   ROOT_APPLICATION_EDIT_PERMISSION,
   getApplicationPermissionNames,
 } from '@/services/applications/permission-definitions';
+import { getRoleScopeCompatibilityError } from '@/services/applications/role-scope-compatibility';
 import { isKnownRoleScope, roleScopeError } from '@/services/role-scopes';
 
 // ---------------------------------------------------------------------------
@@ -129,6 +130,7 @@ function hasUsableScope(scope: string | null | undefined): boolean {
 async function validateRolePermissionSelection(
   tx: any,
   appId: string,
+  roleScope: string,
   permissionIds: string[],
 ): Promise<string | null> {
   if (permissionIds.length === 0) return null;
@@ -145,6 +147,14 @@ async function validateRolePermissionSelection(
   const missingScopePermission = permissions.find((permission: { scope: string | null }) => !hasUsableScope(permission.scope));
   if (missingScopePermission) {
     return 'Permissions without a scope cannot be added to a role.';
+  }
+
+  const compatibilityError = getRoleScopeCompatibilityError(
+    roleScope,
+    permissions.map((permission: { scope: string | null }) => permission.scope),
+  );
+  if (compatibilityError) {
+    return compatibilityError;
   }
 
   return null;
@@ -330,10 +340,6 @@ export async function updateAppPermission(input: {
 }): Promise<{ success: boolean; permission?: AppPermission; error?: string }> {
   const auth = await assertCanManageAuthz(input.appId);
   if ('error' in auth) return { success: false, error: auth.error };
-  const scope = input.scope?.trim() || '';
-  if (!isKnownRoleScope(scope)) {
-    return { success: false, error: roleScopeError() };
-  }
 
   try {
     const affectedRoleIds = await getMappedRoleIdsForPermission(input.permissionId);
@@ -341,15 +347,17 @@ export async function updateAppPermission(input: {
     const record = await prisma.$transaction(async (tx) => {
       const existing = await tx.authzPermission.findFirst({
         where: { id: input.permissionId, appId: input.appId },
-        select: { id: true },
+        select: { id: true, scope: true },
       });
       if (!existing) throw new Error('Permission not found.');
+      if (typeof input.scope === 'string' && input.scope.trim() !== existing.scope) {
+        throw new Error('Permission scope cannot be changed. Delete and recreate the permission instead.');
+      }
 
       const updated = await tx.authzPermission.update({
         where: { id: input.permissionId },
         data: {
           description: input.description?.trim() || null,
-          scope,
           tag: input.tag ?? Prisma.JsonNull,
         },
         select: { id: true, name: true, description: true, scope: true, tag: true },
@@ -363,8 +371,9 @@ export async function updateAppPermission(input: {
     revalidatePath(`/data/appconnection/${input.appId}`);
     return { success: true, permission: record };
   } catch (error) {
+    const message = error instanceof Error ? error.message : '';
     await logError('database', error, `updateAppPermission:${input.appId}`);
-    return { success: false, error: 'Failed to update permission.' };
+    return { success: false, error: message || 'Failed to update permission.' };
   }
 }
 
@@ -501,7 +510,7 @@ export async function createAppRole(input: {
       });
 
       if (input.permissionIds.length > 0) {
-        const selectionError = await validateRolePermissionSelection(tx, input.appId, input.permissionIds);
+        const selectionError = await validateRolePermissionSelection(tx, input.appId, scope, input.permissionIds);
         if (selectionError) throw new Error(selectionError);
 
         const caps = await tx.authzPermission.findMany({
@@ -557,12 +566,12 @@ export async function updateAppRolePermissions(input: {
     await prisma.$transaction(async (tx) => {
       const role = await tx.authzRole.findFirst({
         where: { id: input.roleId, appId: input.appId },
-        select: { id: true, name: true },
+        select: { id: true, name: true, scope: true },
       });
       if (!role) throw new Error('Role not found.');
 
       if (input.permissionIds.length > 0) {
-        const selectionError = await validateRolePermissionSelection(tx, input.appId, input.permissionIds);
+        const selectionError = await validateRolePermissionSelection(tx, input.appId, role.scope, input.permissionIds);
         if (selectionError) throw new Error(selectionError);
 
         const caps = await tx.authzPermission.findMany({
@@ -613,18 +622,20 @@ export async function updateAppRole(input: {
     return { success: false, error: 'Role name may only contain letters, numbers, dots (.) and underscores (_).' };
   }
 
-  const scope = input.scope?.trim() || '';
-  if (!isKnownRoleScope(scope)) {
-    return { success: false, error: roleScopeError() };
-  }
-
   try {
     await prisma.$transaction(async (tx) => {
       const role = await tx.authzRole.findFirst({
         where: { id: input.roleId, appId: input.appId },
-        select: { id: true },
+        select: { id: true, scope: true },
       });
       if (!role) throw new Error('Role not found.');
+      const scope = role.scope;
+      if (!isKnownRoleScope(scope)) {
+        throw new Error(roleScopeError());
+      }
+      if (typeof input.scope === 'string' && input.scope.trim() !== scope) {
+        throw new Error('Role scope cannot be changed. Delete and recreate the role instead.');
+      }
 
       const duplicate = await tx.authzRole.findFirst({
         where: {
@@ -641,12 +652,11 @@ export async function updateAppRole(input: {
         data: {
           name,
           description: input.description?.trim() || null,
-          scope,
         },
       });
 
       if (input.permissionIds.length > 0) {
-        const selectionError = await validateRolePermissionSelection(tx, input.appId, input.permissionIds);
+        const selectionError = await validateRolePermissionSelection(tx, input.appId, scope, input.permissionIds);
         if (selectionError) throw new Error(selectionError);
 
         const caps = await tx.authzPermission.findMany({

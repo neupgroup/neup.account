@@ -15,7 +15,11 @@ import {
   type AppRole,
 } from '@/services/applications/authz-manage';
 import { redirectInApp } from '@/core/helper/navigation';
-import { ROLE_SCOPE_OPTIONS, isKnownRoleScope } from '@/services/role-scopes';
+import { isKnownRoleScope } from '@/services/role-scopes';
+import {
+  getRoleScopeCompatibilityError,
+  isPermissionScopeAllowedForRoleScope,
+} from '@/services/applications/role-scope-compatibility';
 
 type Props = {
   appId: string;
@@ -29,7 +33,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
   const { toast } = useToast();
   const [name, setName] = useState(role.name);
   const [description, setDescription] = useState(role.description ?? '');
-  const [scope, setScope] = useState(isKnownRoleScope(role.scope) ? role.scope : '');
+  const scope = isKnownRoleScope(role.scope) ? role.scope : '';
   const [infoOpen, setInfoOpen] = useState(false);
   const [permissionIds, setPermissionIds] = useState<string[]>(() => {
     const idsFromRole = role.permissions
@@ -55,6 +59,14 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
   const [deletePending, setDeletePending] = useState(false);
   const selectedSet = useMemo(() => new Set(permissionIds), [permissionIds]);
   const hasUsableScope = (value: string | null | undefined) => typeof value === 'string' && value.trim().length > 0;
+  const selectedPermissions = useMemo(
+    () => permissions.filter((permission) => selectedSet.has(permission.id)),
+    [permissions, selectedSet],
+  );
+  const scopeCompatibilityError = useMemo(
+    () => getRoleScopeCompatibilityError(scope, selectedPermissions.map((permission) => permission.scope)),
+    [scope, selectedPermissions],
+  );
 
   const visiblePermissions = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -71,6 +83,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
   const isDefaultRole = defaultRoleId === role.id;
 
   const handleSave = async () => {
+    if (scopeCompatibilityError) return;
     setSavePending(true);
     const result = await updateAppRole({
       appId,
@@ -132,13 +145,16 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
         <p className="text-xs text-muted-foreground">
           Selected: {selectedCount} of {permissions.length}
         </p>
+        {scopeCompatibilityError ? (
+          <p className="text-xs text-destructive">{scopeCompatibilityError}</p>
+        ) : null}
         {permissions.length === 0 ? (
           <p className="text-sm text-muted-foreground">No permissions defined yet.</p>
         ) : (
           <div className="overflow-hidden rounded-2xl border bg-card">
             {visiblePermissions.map((permission) => {
               const isChecked = selectedSet.has(permission.id);
-              const canAddPermission = hasUsableScope(permission.scope);
+              const canAddPermission = hasUsableScope(permission.scope) && (isChecked || isPermissionScopeAllowedForRoleScope(permission.scope, scope));
               return (
                 <label
                   key={permission.id}
@@ -171,7 +187,11 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
                       {permission.description || 'No description'}
                     </p>
                     {!canAddPermission ? (
-                      <p className="text-xs text-muted-foreground">Missing scope. This permission cannot be added to a role.</p>
+                      <p className="text-xs text-muted-foreground">
+                        {!hasUsableScope(permission.scope)
+                          ? 'Missing scope. This permission cannot be added to a role.'
+                          : 'This permission is not allowed for the selected role scope.'}
+                      </p>
                     ) : null}
                   </div>
                 </label>
@@ -225,7 +245,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
           <div>
             <p className="text-sm font-medium">Role details</p>
             <p className="text-xs text-muted-foreground">
-              Edit the role name, description, and scope while managing its permissions.
+              Edit the role name and description while managing its permissions.
             </p>
           </div>
           <Input
@@ -238,19 +258,18 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
             onChange={(event) => setDescription(event.target.value)}
             placeholder="Description (optional)"
           />
-          <select
-            value={scope}
-            onChange={(event) => setScope(event.target.value)}
-            className="h-10 rounded-md border border-input bg-background px-3 text-sm"
-            required
-          >
-            <option value="" disabled>Choose role scope</option>
-            {ROLE_SCOPE_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Scope</label>
+            <div className="flex min-h-10 items-center rounded-md border border-input bg-muted/30 px-3 text-sm">
+              {scope || 'Unknown'}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Role scope cannot be changed. Delete and recreate the role if you need a different scope.
+            </p>
+          </div>
+          {scopeCompatibilityError ? (
+            <p className="text-xs text-destructive">{scopeCompatibilityError}</p>
+          ) : null}
         </div>
       ) : null}
 
@@ -261,7 +280,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
         <Button type="button" variant="outline" onClick={() => setInfoOpen((open) => !open)}>
           {infoOpen ? 'Hide Info' : 'Edit Info'}
         </Button>
-        <Button onClick={handleSave} disabled={savePending || !name.trim() || !scope.trim()}>
+        <Button onClick={handleSave} disabled={savePending || !name.trim() || !scope.trim() || !!scopeCompatibilityError}>
           {savePending ? 'Saving...' : 'Save Role'}
         </Button>
       </div>

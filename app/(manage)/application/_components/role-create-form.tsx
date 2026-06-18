@@ -1,13 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { createAppRole, type AppPermission } from '@/services/applications/authz-manage';
 import { redirectInApp } from '@/core/helper/navigation';
 import { ROLE_SCOPE_OPTIONS } from '@/services/role-scopes';
+import {
+  getCompatibleRoleScopesForPermissionScopes,
+  getRoleScopeCompatibilityError,
+  isPermissionScopeAllowedForRoleScope,
+} from '@/services/applications/role-scope-compatibility';
 
 type Props = {
   appId: string;
@@ -23,10 +29,23 @@ export function RoleCreateForm({ appId, permissions }: Props) {
   const [permissionIds, setPermissionIds] = useState<string[]>([]);
   const [pending, setPending] = useState(false);
   const hasUsableScope = (value: string | null | undefined) => typeof value === 'string' && value.trim().length > 0;
+  const selectedPermissions = useMemo(
+    () => permissions.filter((permission) => permissionIds.includes(permission.id)),
+    [permissionIds, permissions],
+  );
+  const compatibleRoleScopes = useMemo(
+    () => getCompatibleRoleScopesForPermissionScopes(selectedPermissions.map((permission) => permission.scope)),
+    [selectedPermissions],
+  );
+  const compatibleRoleScopeSet = useMemo(() => new Set(compatibleRoleScopes), [compatibleRoleScopes]);
+  const scopeCompatibilityError = useMemo(
+    () => getRoleScopeCompatibilityError(scope, selectedPermissions.map((permission) => permission.scope)),
+    [scope, selectedPermissions],
+  );
 
   const handleSubmit = async () => {
     const roleName = name.trim();
-    if (!roleName) return;
+    if (!roleName || scopeCompatibilityError) return;
     setPending(true);
     const result = await createAppRole({
       appId,
@@ -59,11 +78,14 @@ export function RoleCreateForm({ appId, permissions }: Props) {
       >
         <option value="" disabled>Choose role scope</option>
         {ROLE_SCOPE_OPTIONS.map((option) => (
-          <option key={option} value={option}>
+          <option key={option} value={option} disabled={!compatibleRoleScopeSet.has(option)}>
             {option}
           </option>
         ))}
       </select>
+      {scopeCompatibilityError ? (
+        <p className="text-xs text-destructive">{scopeCompatibilityError}</p>
+      ) : null}
 
       <div className="grid gap-2">
         <p className="text-sm font-medium">Permissions</p>
@@ -71,26 +93,38 @@ export function RoleCreateForm({ appId, permissions }: Props) {
           <p className="text-sm text-muted-foreground">No permissions defined yet.</p>
         ) : (
           <div className="grid gap-2 sm:grid-cols-2">
-            {permissions.map((permission) => (
-              <label key={permission.id} className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${!hasUsableScope(permission.scope) ? 'opacity-60' : ''}`}>
-                <input
-                  type="checkbox"
-                  checked={permissionIds.includes(permission.id)}
-                  disabled={!hasUsableScope(permission.scope)}
-                  onChange={() =>
-                    setPermissionIds((prev) =>
-                      prev.includes(permission.id)
-                        ? prev.filter((id) => id !== permission.id)
-                        : [...prev, permission.id]
-                    )
-                  }
-                />
-                <span>{permission.name}</span>
-                {!hasUsableScope(permission.scope) ? (
-                  <span className="text-xs text-muted-foreground">(missing scope)</span>
-                ) : null}
-              </label>
-            ))}
+            {permissions.map((permission) => {
+              const isChecked = permissionIds.includes(permission.id);
+              const canUsePermission = hasUsableScope(permission.scope) && (isChecked || !scope || isPermissionScopeAllowedForRoleScope(permission.scope, scope));
+
+              return (
+                <label key={permission.id} className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${canUsePermission ? '' : 'opacity-60'}`}>
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    disabled={!canUsePermission}
+                    onChange={() =>
+                      setPermissionIds((prev) =>
+                        prev.includes(permission.id)
+                          ? prev.filter((id) => id !== permission.id)
+                          : [...prev, permission.id]
+                      )
+                    }
+                  />
+                  <span>{permission.name}</span>
+                  {permission.scope ? (
+                    <Badge variant="secondary" className="text-xs">
+                      {permission.scope}
+                    </Badge>
+                  ) : null}
+                  {!hasUsableScope(permission.scope) ? (
+                    <span className="text-xs text-muted-foreground">(missing scope)</span>
+                  ) : scope && !isChecked && !isPermissionScopeAllowedForRoleScope(permission.scope, scope) ? (
+                    <span className="text-xs text-muted-foreground">(not allowed for selected role scope)</span>
+                  ) : null}
+                </label>
+              );
+            })}
           </div>
         )}
       </div>
@@ -99,7 +133,7 @@ export function RoleCreateForm({ appId, permissions }: Props) {
         <Button variant="outline" onClick={() => redirectInApp(router, `/application/${appId}/roles?mode=root`)}>
           Cancel
         </Button>
-        <Button onClick={handleSubmit} disabled={pending || !name.trim() || !scope}>
+        <Button onClick={handleSubmit} disabled={pending || !name.trim() || !scope || !!scopeCompatibilityError}>
           {pending ? 'Creating...' : 'Create Role'}
         </Button>
       </div>

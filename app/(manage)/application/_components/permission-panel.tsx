@@ -182,7 +182,6 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   // Edit dialog
   const [editTarget, setEditTarget] = useState<AppPermission | null>(null);
   const [editDesc, setEditDesc] = useState('');
-  const [editScope, setEditScope] = useState('');
   const [editTags, setEditTags] = useState<string[]>([]);
   const [editTagDraft, setEditTagDraft] = useState('');
   const [editPending, setEditPending] = useState(false);
@@ -226,7 +225,6 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   const openEdit = (cap: AppPermission) => {
     setEditTarget(cap);
     setEditDesc(cap.description ?? '');
-    setEditScope(isKnownRoleScope(cap.scope) ? cap.scope : '');
     setEditTags(getTagLabels(cap.tag));
     setEditTagDraft('');
   };
@@ -234,7 +232,6 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   const closeEdit = () => {
     setEditTarget(null);
     setEditDesc('');
-    setEditScope('');
     setEditTags([]);
     setEditTagDraft('');
   };
@@ -290,15 +287,6 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
 
   const handleEdit = async () => {
     if (!editTarget) return;
-    const scope = editScope.trim();
-    if (!isValidScope(scope)) {
-      toast({
-        variant: 'destructive',
-        title: 'Invalid scope',
-        description: 'Choose a valid scope.',
-      });
-      return;
-    }
     const tagError = validateDraftTag(editTags, editTagDraft);
     if (tagError) {
       toast({ variant: 'destructive', title: 'Invalid tag', description: tagError });
@@ -310,7 +298,6 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
       appId,
       permissionId: editTarget.id,
       description: editDesc || undefined,
-      scope,
       tag: serializeTags(nextTags),
     });
     setEditPending(false);
@@ -483,7 +470,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
           <DialogHeader>
             <DialogTitle>Edit Permission</DialogTitle>
             <DialogDescription>
-              Update the description or tag of this permission. Permission names cannot be changed after creation.
+              Update the description or tag of this permission. Permission names and scopes cannot be changed after creation.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
@@ -498,18 +485,15 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
               placeholder="Description (optional)"
               autoFocus
             />
-            <Select value={editScope} onValueChange={setEditScope}>
-              <SelectTrigger className="h-12 w-full">
-                <SelectValue placeholder="Choose permission scope" />
-              </SelectTrigger>
-              <SelectContent>
-                {ROLE_SCOPE_OPTIONS.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Scope</label>
+              <div className="flex min-h-12 items-center rounded-md border border-input bg-muted/30 px-3 text-sm">
+                {editTarget?.scope ?? 'Unknown'}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                To change the scope, delete this permission and create a new one.
+              </p>
+            </div>
             <PermissionTagEditor
               tags={editTags}
               draft={editTagDraft}
@@ -524,7 +508,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
             <Button
               type="button"
               onClick={handleEdit}
-              disabled={editPending || !isValidScope(editScope)}
+              disabled={editPending}
             >
               {editPending ? 'Saving...' : 'Save'}
             </Button>

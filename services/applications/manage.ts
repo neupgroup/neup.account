@@ -3,6 +3,7 @@
 import { randomUUID } from 'crypto';
 import { isIP } from 'node:net';
 import { revalidatePath } from 'next/cache';
+import { notFound } from 'next/navigation';
 import { z } from 'zod';
 import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
@@ -30,6 +31,11 @@ import {
 
 const responseAccessSet = new Set<ApplicationAccessField>(applicationResponseFields);
 const tokenFieldSet = new Set<ApplicationAccessField>(applicationTokenFields);
+const ROOT_APPLICATION_VIEW_PERMISSION = 'application.view.scopeRoot';
+const ROOT_APPLICATION_EDIT_PERMISSION = 'application.edit.scopeRoot';
+const ROOT_APPLICATION_LOGS_VIEW_PERMISSION = 'application.logs.view.scopeRoot';
+const ROOT_APPLICATION_DEVLOGS_VIEW_PERMISSION = 'application.devlogs.view.scopeRoot';
+const ROOT_PERMISSION_SCOPE = 'individual.root';
 
 const createApplicationSchema = z.object({
   name: z.string().trim().min(1, 'Application name is required.').max(120, 'Application name is too long.'),
@@ -382,7 +388,7 @@ export async function createManagedApplication(input: { name: string }) {
     return { success: false, error: 'Invalid application name.' };
   }
 
-  const canCreateApplication = await checkPermissions(['root.application.create']);
+  const canCreateApplication = false;
   if (!canCreateApplication) {
     return { success: false, error: 'Permission denied.' };
   }
@@ -838,9 +844,13 @@ export async function updateManagedApplicationStatus(input: { appId: string; sta
     return { success: false, error: 'Invalid application status.' };
   }
 
-  await requireAnyPermission404(['root.application.view', 'linked_accounts.brand.manager']);
-  const isRootAppManager = await checkPermissions(['root.application.view']);
-  const isBrandManager = await checkPermissions(['linked_accounts.brand.manager']);
+  const [isRootAppManager, isBrandManager] = await Promise.all([
+    checkPermissions([ROOT_APPLICATION_VIEW_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE }),
+    checkPermissions(['linked_accounts.brand.manager']),
+  ]);
+  if (!isRootAppManager && !isBrandManager) {
+    notFound();
+  }
   if (!isRootAppManager && !isBrandManager) {
     return { success: false, error: 'Permission denied.' };
   }
@@ -1101,7 +1111,7 @@ export async function removeServerIp(input: {
 /**
  * Function getApplicationDetailsForViewerV2.
  *
- * Role-aware detail loader. Root users (root.application.view) can view any application.
+ * Role-aware detail loader. Root users with the scoped root application view permission can view any application.
  * Regular users can view apps they have an member for OR an
  * ApplicationConnection to. appSecret is never returned.
  */
@@ -1113,7 +1123,7 @@ export async function getApplicationDetailsForViewerV2(appId: string): Promise<A
   const personalAccountId = await getPersonalAccountId();
 
   try {
-    const isRootViewer = await checkPermissions(['root.application.view']);
+    const isRootViewer = await checkPermissions([ROOT_APPLICATION_VIEW_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE });
 
     const application = await prisma.application.findUnique({
       where: { id: appId },
@@ -1283,7 +1293,7 @@ export async function getAppStatusLog(appId: string): Promise<AppStatusLogEntry[
   const accountId = await getActiveAccountId();
   if (!accountId) return [];
 
-  const isRootViewer = await checkPermissions(['root.application.view']);
+  const isRootViewer = await checkPermissions([ROOT_APPLICATION_VIEW_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE });
   const isOwner = await isApplicationOwnerForAccount(accountId, appId);
   if (!isRootViewer && !isOwner) return [];
 
@@ -1437,7 +1447,7 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
   const accountId = await getActiveAccountId();
   if (!accountId) return null;
 
-  const isRootViewer = await checkPermissions(['root.application.view']);
+  const isRootViewer = await checkPermissions([ROOT_APPLICATION_VIEW_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE });
   const isOwner = await isApplicationOwnerForAccount(accountId, appId);
   if (!isRootViewer && !isOwner) return null;
 
@@ -1683,7 +1693,7 @@ export async function getApplicationUsersPaginated(params: {
   const accountId = await getActiveAccountId();
   if (!accountId) return { users: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
 
-  const isRootViewer = await checkPermissions(['root.application.view']);
+  const isRootViewer = await checkPermissions([ROOT_APPLICATION_VIEW_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE });
   const isOwner = await isApplicationOwnerForAccount(accountId, params.appId);
   if (!isRootViewer && !isOwner) return { users: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
 
@@ -1790,7 +1800,7 @@ export async function getApplicationUserConnectionDetails(params: {
   const accountId = await getActiveAccountId();
   if (!accountId) return null;
 
-  const isRootViewer = await checkPermissions(['root.application.view']);
+  const isRootViewer = await checkPermissions([ROOT_APPLICATION_VIEW_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE });
   const isOwner = await isApplicationOwnerForAccount(accountId, params.appId);
   if (!isRootViewer && !isOwner) return null;
 
@@ -1853,8 +1863,8 @@ export async function getApplicationRoleOptions(appId: string, targetAccountType
   const accountId = await getActiveAccountId();
   if (!accountId) return [];
 
-  const isRootViewer = await checkPermissions(['root.application.view']);
-  const isRootEditor = await checkPermissions(['root.application.edit']);
+  const isRootViewer = await checkPermissions([ROOT_APPLICATION_VIEW_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE });
+  const isRootEditor = await checkPermissions([ROOT_APPLICATION_EDIT_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE });
   const isOwner = await isApplicationOwnerForAccount(accountId, appId);
   if (!isRootViewer && !isOwner) return [];
 
@@ -1893,7 +1903,7 @@ export async function assignApplicationConnectionRole(input: {
   const accountId = await getActiveAccountId();
   if (!accountId) return { success: false, error: 'Not signed in.' };
 
-  const isRootEditor = await checkPermissions(['root.application.edit']);
+  const isRootEditor = await checkPermissions([ROOT_APPLICATION_EDIT_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE });
   const isOwner = await isApplicationOwnerForAccount(accountId, input.appId);
   if (!isRootEditor && !isOwner) {
     return { success: false, error: 'Permission denied.' };
@@ -2387,7 +2397,7 @@ export async function getApplicationDevLogsPaginated(input: {
   if (!accountId) return null;
 
   const [isRootViewer, canViewDevLogs] = await Promise.all([
-    checkPermissions(['root.application.devlogs.view']),
+    checkPermissions([ROOT_APPLICATION_DEVLOGS_VIEW_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE }),
     hasApplicationPermission(accountId, input.appId, ['application.devlogs.view']),
   ]);
 
@@ -2443,7 +2453,7 @@ export async function clearApplicationDevLogs(appId: string): Promise<{ success:
   if (!accountId) return { success: false, error: 'Not signed in.' };
 
   const [isRootEditor, isOwner] = await Promise.all([
-    checkPermissions(['root.application.edit']),
+    checkPermissions([ROOT_APPLICATION_EDIT_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE }),
     isApplicationOwnerForAccount(accountId, appId),
   ]);
 
@@ -2472,8 +2482,8 @@ export async function getApplicationLogPermissions(appId: string): Promise<{
   if (!accountId) return { canViewLogs: false, canViewDevLogs: false };
 
   const [isRootLogsViewer, isRootDevLogsViewer] = await Promise.all([
-    checkPermissions(['root.application.logs.view']),
-    checkPermissions(['root.application.devlogs.view']),
+    checkPermissions([ROOT_APPLICATION_LOGS_VIEW_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE }),
+    checkPermissions([ROOT_APPLICATION_DEVLOGS_VIEW_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE }),
   ]);
 
   const [canViewLogs, canViewDevLogs] = await Promise.all([

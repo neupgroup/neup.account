@@ -86,14 +86,13 @@ const ROOT_CAPABILITIES = [
   'root.account.impersonate',
   'root.account.edit_pro_status',
   'root.account.edit_neupid',
-  'root.application.view',
-  'root.application.create',
-  'root.application.edit',
-  'root.application.delete',
-  'root.application.logs.view',
-  'root.application.devlogs.view',
-  'root.application.roles.view',
-  'root.application.roles.manage',
+  'application.view.scopeRoot',
+  'application.edit.scopeRoot',
+  'application.delete.scopedRoot',
+  'application.logs.view.scopeRoot',
+  'application.devlogs.view.scopeRoot',
+  'application.roles.view.scopeRoot',
+  'application.roles.manage.scopeRoot',
   'root.permission.view',
   'root.permission.edit',
   'root.requests.view',
@@ -266,7 +265,7 @@ async function main() {
       update: {
         name: 'individual.root',
         description: 'Root permission set for individual accounts.',
-        scope: 'root',
+        scope: 'individual.root',
         appId: APP_ID,
         permissions: rootDenormalized,
       },
@@ -274,7 +273,7 @@ async function main() {
         id: ROLE_ROOT_ID,
         name: 'individual.root',
         description: 'Root permission set for individual accounts.',
-        scope: 'root',
+        scope: 'individual.root',
         appId: APP_ID,
         permissions: rootDenormalized,
       },
@@ -306,10 +305,11 @@ async function main() {
 
     for (const permissionName of ROOT_CAPABILITIES) {
       const permissionId = `cap-root-${slugifyPermission(permissionName)}`;
+      const permissionScope = permissionName.startsWith('application.') ? 'individual.root' : 'root';
       const permission = await prisma.authzPermission.upsert({
         where: { name_appId: { name: permissionName, appId: APP_ID } },
-        update: { name: permissionName, appId: APP_ID, scope: 'root', tag: 'root' },
-        create: { id: permissionId, name: permissionName, appId: APP_ID, scope: 'root', tag: 'root' },
+        update: { name: permissionName, appId: APP_ID, scope: permissionScope, tag: permissionScope },
+        create: { id: permissionId, name: permissionName, appId: APP_ID, scope: permissionScope, tag: permissionScope },
         select: { id: true },
       });
 

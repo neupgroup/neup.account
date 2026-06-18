@@ -38,8 +38,8 @@ async function main() {
   // Upsert the root role and grant it through the canonical access table.
   await prisma.authzRole.upsert({
     where: { id: 'root-full-neup-account' },
-    update: { name: 'individual.root', scope: 'root', appId: 'neup.account' },
-    create: { id: 'root-full-neup-account', name: 'individual.root', scope: 'root', appId: 'neup.account' },
+    update: { name: 'individual.root', scope: 'individual.root', appId: 'neup.account' },
+    create: { id: 'root-full-neup-account', name: 'individual.root', scope: 'individual.root', appId: 'neup.account' },
   });
 
   const grant = await ensureAccessGrant(prisma, {

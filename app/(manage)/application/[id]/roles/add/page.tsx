@@ -15,7 +15,7 @@ export default async function AddRolePage({ params }: Props) {
   const details = await getApplicationDetailsForViewerV2(id);
   if (!details) notFound();
 
-  const canRootManage = await checkPermissions(['root.application.edit']);
+  const canRootManage = await checkPermissions(['application.edit.scopeRoot'], undefined, { roleScope: 'individual.root' });
   const canManageRoles = details.canDelete || canRootManage;
   if (!canManageRoles) {
     return (
@@ -45,4 +45,3 @@ export default async function AddRolePage({ params }: Props) {
     </div>
   );
 }
-

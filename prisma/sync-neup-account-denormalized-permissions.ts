@@ -89,7 +89,7 @@ async function main() {
           FROM authz_permission c
           WHERE c.app_id = $1
             AND (
-              c.name LIKE 'application.%'
+              (c.scope = 'individual.root' AND c.name LIKE 'application.%')
               OR c.name LIKE 'config.%'
               OR c.name LIKE 'root.display_images.%'
             )

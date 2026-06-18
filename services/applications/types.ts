@@ -148,6 +148,6 @@ export type ApplicationDetailsV2 = {
   policies: ApplicationPolicyEntry[];
   endpoints: ApplicationEndpointConfig;
   canEdit: boolean;           // true for app owner/developer
-  isRootViewer: boolean;      // true when root.application.view permission held
+  isRootViewer: boolean;      // true when scoped root application view permission is held
   canDelete: boolean;         // true for app owner
 };

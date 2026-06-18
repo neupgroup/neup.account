@@ -17,7 +17,7 @@ export default async function ApplicationRolesPage({ params }: Props) {
 
   if (!details) notFound();
 
-  const canRootManage = await checkPermissions(['root.application.edit']);
+  const canRootManage = await checkPermissions(['application.edit.scopeRoot'], undefined, { roleScope: 'individual.root' });
   const canManageRoles = details.canDelete || canRootManage;
 
   if (!canManageRoles) {

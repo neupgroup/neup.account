@@ -9,6 +9,9 @@ import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-
 import { canAssignRoleScopeToAccount } from '@/services/role-scopes';
 import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';
 
+const ROOT_APPLICATION_EDIT_PERMISSION = 'application.edit.scopeRoot';
+const ROOT_PERMISSION_SCOPE = 'individual.root';
+
 function stringList(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
   return value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0);
@@ -18,7 +21,11 @@ export async function approveApplicationRoleRequest(requestId: string): Promise<
   const actorAccountId = await getActiveAccountId();
   if (!actorAccountId) return { success: false, error: 'Not signed in.' };
 
-  const canApprove = await checkPermissions(['root.application.edit', 'root.requests.manage']);
+  const [canRootEdit, canManageRequests] = await Promise.all([
+    checkPermissions([ROOT_APPLICATION_EDIT_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE }),
+    checkPermissions(['root.requests.manage']),
+  ]);
+  const canApprove = canRootEdit && canManageRequests;
   if (!canApprove) return { success: false, error: 'Permission denied.' };
 
   try {
@@ -123,7 +130,11 @@ export async function approveApplicationRoleRequest(requestId: string): Promise<
 }
 
 export async function denyApplicationRoleRequest(requestId: string): Promise<{ success: boolean; error?: string }> {
-  const canDeny = await checkPermissions(['root.application.edit', 'root.requests.manage']);
+  const [canRootEdit, canManageRequests] = await Promise.all([
+    checkPermissions([ROOT_APPLICATION_EDIT_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE }),
+    checkPermissions(['root.requests.manage']),
+  ]);
+  const canDeny = canRootEdit && canManageRequests;
   if (!canDeny) return { success: false, error: 'Permission denied.' };
 
   try {
@@ -139,4 +150,3 @@ export async function denyApplicationRoleRequest(requestId: string): Promise<{ s
     return { success: false, error: 'Failed to deny role request.' };
   }
 }
-

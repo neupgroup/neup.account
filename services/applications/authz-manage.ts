@@ -48,8 +48,9 @@ export async function getAppDefaultRoleId(appId: string): Promise<string | null>
 // Auth guard
 // ---------------------------------------------------------------------------
 
-const ROOT_ROLE_MANAGE_PERMISSIONS = ['root.application.edit'];
+const ROOT_ROLE_MANAGE_PERMISSIONS = ['application.edit.scopeRoot'];
 const GLOBAL_AUTHZ_APP_ID = 'neup.account';
+const ROOT_PERMISSION_SCOPE = 'individual.root';
 
 async function syncRolePermissionMappings(tx: any, roleId: string, permissionIds: string[]): Promise<void> {
   await tx.authzRolePermissionMap.deleteMany({ where: { roleId } });
@@ -219,7 +220,7 @@ async function assertCanManageAuthz(appId: string): Promise<{ accountId: string 
   await ensureApplicationManagementRoles();
 
   // Root override: global root app editors can manage app roles/permissions.
-  const isRootManager = await checkPermissions(ROOT_ROLE_MANAGE_PERMISSIONS, accountId);
+  const isRootManager = await checkPermissions(ROOT_ROLE_MANAGE_PERMISSIONS, accountId, { roleScope: ROOT_PERMISSION_SCOPE });
   if (isRootManager) return { accountId };
 
   const grant = await prisma.access.findFirst({

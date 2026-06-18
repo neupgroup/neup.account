@@ -62,8 +62,26 @@ export type HomeSelectedAccountAccessLog = {
   }>;
 };
 
+type PermissionGrantEntry = {
+  name: string;
+  roleScope: string | null;
+};
+
 function shouldIgnoreManagedRoleScope(scope: string | null | undefined): boolean {
   return scope === 'individual.root';
+}
+
+function matchesRoleScope(
+  roleScope: string | null,
+  expectedRoleScopes?: readonly string[] | string,
+): boolean {
+  if (!expectedRoleScopes) return true;
+
+  const allowedScopes = Array.isArray(expectedRoleScopes)
+    ? expectedRoleScopes
+    : [expectedRoleScopes];
+
+  return roleScope !== null && allowedScopes.includes(roleScope);
 }
 
 // --- User Data Fetching ---
@@ -267,6 +285,47 @@ export async function getAccountPermission(
   }
 }
 
+async function getAccountPermissionEntries(
+  accountId: string,
+): Promise<PermissionGrantEntry[]> {
+  try {
+    await cleanupExpiredAccessModel();
+
+    const accessRows = await prisma.access.findMany({
+      where: {
+        memberAccountId: accountId,
+        status: 'active',
+        OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
+        role: {
+          appId: 'neup.account',
+        },
+      },
+      select: {
+        role: {
+          select: {
+            scope: true,
+            permissions: true,
+          },
+        },
+      },
+    });
+
+    return accessRows.flatMap((row) =>
+      extractRolePermissionNames(row.role.permissions).map((name) => ({
+        name,
+        roleScope: row.role.scope ?? null,
+      }))
+    );
+  } catch (error) {
+    await logError(
+      'database',
+      error,
+      `getAccountPermissionEntries — grant/permission query failed for ${accountId}`,
+    );
+    return [];
+  }
+}
+
 // Resolves permissions granted by a personal/member account to a selected/managed account.
 // This is used when the personal account is viewing or managing another account in context.
 export async function getGrantedAccountPermission(
@@ -315,6 +374,56 @@ export async function getGrantedAccountPermission(
   }
 }
 
+async function getGrantedAccountPermissionEntries(
+  memberAccountId: string,
+  parentAccountId: string,
+): Promise<PermissionGrantEntry[]> {
+  if (!memberAccountId || !parentAccountId) return [];
+
+  try {
+    await cleanupExpiredAccessModel();
+
+    const accessRows = await prisma.access.findMany({
+      where: {
+        memberAccountId,
+        parentAccountId,
+        status: 'active',
+        OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
+        role: {
+          appId: 'neup.account',
+        },
+      },
+      select: {
+        role: {
+          select: {
+            scope: true,
+            permissions: true,
+          },
+        },
+      },
+    });
+
+    return accessRows.flatMap((row) => {
+      const roleScope = row.role.scope ?? null;
+      if (shouldIgnoreManagedRoleScope(roleScope)) {
+        return [];
+      }
+
+      return extractRolePermissionNames(row.role.permissions).map((name) => ({
+        name,
+        roleScope,
+      }));
+    });
+  } catch (error) {
+    await logError(
+      'database',
+      error,
+      `getGrantedAccountPermissionEntries — grant/permission query failed for ${memberAccountId}:${parentAccountId}`,
+    );
+    return [];
+  }
+}
+
 export async function getCurrentAccountPermission(): Promise<string[]> {
   const {
     activeAccountId,
@@ -329,6 +438,22 @@ export async function getCurrentAccountPermission(): Promise<string[]> {
   return isManagingOtherAccount
     ? getGrantedAccountPermission(personalAccountId, activeAccountId)
     : getAccountPermission(activeAccountId);
+}
+
+async function getCurrentAccountPermissionEntries(): Promise<PermissionGrantEntry[]> {
+  const {
+    activeAccountId,
+    personalAccountId,
+    isManagingOtherAccount,
+  } = await getAccountSelectorContext();
+
+  if (!activeAccountId || !personalAccountId) {
+    return [];
+  }
+
+  return isManagingOtherAccount
+    ? getGrantedAccountPermissionEntries(personalAccountId, activeAccountId)
+    : getAccountPermissionEntries(activeAccountId);
 }
 
 // Returns true when a member account has all required permissions granted on a selected account.
@@ -349,8 +474,25 @@ export async function checkGrantedPermissions(
 export async function checkPermissions(
   requiredPermissions: readonly string[],
   accountId?: string,
+  options?: {
+    roleScope?: readonly string[] | string;
+  },
 ): Promise<boolean> {
   if (!requiredPermissions || requiredPermissions.length === 0) return true;
+
+  if (options?.roleScope) {
+    const entries = accountId
+      ? await getAccountPermissionEntries(accountId)
+      : await getCurrentAccountPermissionEntries();
+
+    return requiredPermissions.every((permission) =>
+      entries.some(
+        (entry) =>
+          entry.name === permission &&
+          matchesRoleScope(entry.roleScope, options.roleScope),
+      )
+    );
+  }
 
   const userPermissions = accountId
     ? await getAccountPermission(accountId)

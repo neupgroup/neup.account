@@ -20,7 +20,7 @@ export default async function ApplicationPermissionsPage({ params, searchParams 
 
   if (!details) notFound();
 
-  const canRootManage = await checkPermissions(['root.application.edit']);
+  const canRootManage = await checkPermissions(['application.edit.scopeRoot'], undefined, { roleScope: 'individual.root' });
   const canManagePermissions = details.canDelete || canRootManage;
   const modeSuffix = mode ? `?mode=${encodeURIComponent(mode)}` : '';
 
@@ -59,4 +59,3 @@ export default async function ApplicationPermissionsPage({ params, searchParams 
     </div>
   );
 }
-

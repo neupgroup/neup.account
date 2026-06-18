@@ -3,10 +3,9 @@ import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ApplicationCreateForm } from '@/app/(manage)/application/_components/application-create-form';
-import { checkPermissions } from '@/services/user';
 
 export default async function AddApplicationPage() {
-  const canCreateApplication = await checkPermissions(['root.application.create']);
+  const canCreateApplication = false;
   if (!canCreateApplication) {
     notFound();
   }

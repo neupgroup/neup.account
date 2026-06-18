@@ -74,7 +74,7 @@ INSERT INTO "application" (
 -- 2. Roles
 INSERT INTO "authz_role" ("id", "name", "description", "app_id", "scope") VALUES
   ('${ROLE_INDIV_DEFAULT}', 'individual.default', 'Default permission set for individual accounts.',  '${APP_ID}', 'default'),
-  ('${ROLE_INDIV_ROOT}',    'individual.root',    'Admin-only permission set for root accounts.',     '${APP_ID}', 'root'),
+  ('${ROLE_INDIV_ROOT}',    'individual.root',    'Admin-only permission set for root accounts.',     '${APP_ID}', 'individual.root'),
   ('${ROLE_APP_OWNER}',     'application.owner',  'Full ownership role for applications.',            '${APP_ID}', 'application')
 ON CONFLICT ("id") DO NOTHING;
 
@@ -163,12 +163,13 @@ INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-root-admin-accounts-delete',       'root.account.delete',          '${APP_ID}', 'root'),
   ('cap-root-admin-accounts-search',       'root.account.search',          '${APP_ID}', 'root'),
   ('cap-root-admin-accounts-create',       'root.account.create_individual','${APP_ID}', 'root'),
-  ('cap-root-admin-applications-view',     'root.application.view',                '${APP_ID}', 'root'),
-  ('cap-root-admin-applications-create',   'root.application.create',              '${APP_ID}', 'root'),
-  ('cap-root-admin-applications-edit',     'root.application.edit',                '${APP_ID}', 'root'),
-  ('cap-root-admin-application-delete',    'root.application.delete',              '${APP_ID}', 'root'),
-  ('cap-root-admin-application-roles-view','root.application.roles.view',          '${APP_ID}', 'root'),
-  ('cap-root-admin-application-roles-manage','root.application.roles.manage',      '${APP_ID}', 'root'),
+  ('cap-root-admin-applications-view',     'application.view.scopeRoot',            '${APP_ID}', 'individual.root'),
+  ('cap-root-admin-applications-edit',     'application.edit.scopeRoot',            '${APP_ID}', 'individual.root'),
+  ('cap-root-admin-application-delete',    'application.delete.scopedRoot',         '${APP_ID}', 'individual.root'),
+  ('cap-root-admin-application-logs-view', 'application.logs.view.scopeRoot',       '${APP_ID}', 'individual.root'),
+  ('cap-root-admin-application-devlogs-view', 'application.devlogs.view.scopeRoot', '${APP_ID}', 'individual.root'),
+  ('cap-root-admin-application-roles-view','application.roles.view.scopeRoot',      '${APP_ID}', 'individual.root'),
+  ('cap-root-admin-application-roles-manage','application.roles.manage.scopeRoot',  '${APP_ID}', 'individual.root'),
   ('cap-root-admin-permits-view',          'root.permission.view',         '${APP_ID}', 'root'),
   ('cap-root-admin-permits-edit',          'root.permission.edit',         '${APP_ID}', 'root'),
   ('cap-root-admin-requests-view',         'root.requests.view',           '${APP_ID}', 'root'),
@@ -188,13 +189,13 @@ SELECT
   'rcp-root-' || c."id",
   '${ROLE_INDIV_ROOT}',
   c."id",
-  'root',
+  'individual.root',
   '${APP_ID}',
   'individual.root',
-  '["root.account.view","root.account.modify","root.account.delete","root.account.search","root.account.create_individual","root.application.view","root.application.create","root.application.edit","root.application.delete","root.application.roles.view","root.application.roles.manage","root.permission.view","root.permission.edit","root.requests.view","root.dashboard.view","root.payment_config.view","root.errors.view","root.display_images.view","root.display_images.add","root.display_images.update","root.display_images.delete"]'::jsonb
+  '["root.account.view","root.account.modify","root.account.delete","root.account.search","root.account.create_individual","application.view.scopeRoot","application.edit.scopeRoot","application.delete.scopedRoot","application.logs.view.scopeRoot","application.devlogs.view.scopeRoot","application.roles.view.scopeRoot","application.roles.manage.scopeRoot","root.permission.view","root.permission.edit","root.requests.view","root.dashboard.view","root.payment_config.view","root.errors.view","root.display_images.view","root.display_images.add","root.display_images.update","root.display_images.delete"]'::jsonb
 FROM "authz_capability" c
 WHERE c."app_id" = '${APP_ID}'
-  AND c."scope"  = 'root'
+  AND c."scope"  = 'individual.root'
 ON CONFLICT ("id") DO NOTHING;
 
 -- 3c. Permissions — application.owner

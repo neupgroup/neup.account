@@ -90,7 +90,7 @@ export const allPermissionsMap: Record<string, string[]> = {
         "root.display_images.delete"
     ],
     "Permissions": ["root.permission.view", "root.permission.edit"],
-    "Applications": ["root.application.view", "root.application.create"],
+    "Applications": ["application.view.scopeRoot"],
     "Site Config": [
         "root.payment_config.view",
         "root.errors.view",

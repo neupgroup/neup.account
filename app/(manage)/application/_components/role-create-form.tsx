@@ -22,6 +22,7 @@ export function RoleCreateForm({ appId, permissions }: Props) {
   const [scope, setScope] = useState('');
   const [permissionIds, setPermissionIds] = useState<string[]>([]);
   const [pending, setPending] = useState(false);
+  const hasUsableScope = (value: string | null | undefined) => typeof value === 'string' && value.trim().length > 0;
 
   const handleSubmit = async () => {
     const roleName = name.trim();
@@ -71,10 +72,11 @@ export function RoleCreateForm({ appId, permissions }: Props) {
         ) : (
           <div className="grid gap-2 sm:grid-cols-2">
             {permissions.map((permission) => (
-              <label key={permission.id} className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm">
+              <label key={permission.id} className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${!hasUsableScope(permission.scope) ? 'opacity-60' : ''}`}>
                 <input
                   type="checkbox"
                   checked={permissionIds.includes(permission.id)}
+                  disabled={!hasUsableScope(permission.scope)}
                   onChange={() =>
                     setPermissionIds((prev) =>
                       prev.includes(permission.id)
@@ -84,6 +86,9 @@ export function RoleCreateForm({ appId, permissions }: Props) {
                   }
                 />
                 <span>{permission.name}</span>
+                {!hasUsableScope(permission.scope) ? (
+                  <span className="text-xs text-muted-foreground">(missing scope)</span>
+                ) : null}
               </label>
             ))}
           </div>

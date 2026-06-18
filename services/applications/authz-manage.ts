@@ -102,6 +102,49 @@ async function syncAllRolePermissionsDenormalized(tx: any, appId: string): Promi
   }
 }
 
+async function getMappedRoleIdsForPermission(permissionId: string): Promise<string[]> {
+  const mappings = await prisma.authzRolePermissionMap.findMany({
+    where: { permissionId },
+    select: { roleId: true },
+  });
+
+  return Array.from(new Set(mappings.map((mapping) => mapping.roleId).filter(Boolean)));
+}
+
+async function syncRolePermissionsForRoleIds(roleIds: string[]): Promise<void> {
+  for (const roleId of Array.from(new Set(roleIds))) {
+    await syncRolePermissionsDenormalized(prisma, roleId);
+  }
+}
+
+function hasUsableScope(scope: string | null | undefined): boolean {
+  return typeof scope === 'string' && scope.trim().length > 0;
+}
+
+async function validateRolePermissionSelection(
+  tx: any,
+  appId: string,
+  permissionIds: string[],
+): Promise<string | null> {
+  if (permissionIds.length === 0) return null;
+
+  const permissions = await tx.authzPermission.findMany({
+    where: { id: { in: permissionIds }, appId },
+    select: { id: true, scope: true },
+  });
+
+  if (permissions.length !== permissionIds.length) {
+    return 'One or more permissions do not belong to this application.';
+  }
+
+  const missingScopePermission = permissions.find((permission: { scope: string | null }) => !hasUsableScope(permission.scope));
+  if (missingScopePermission) {
+    return 'Permissions without a scope cannot be added to a role.';
+  }
+
+  return null;
+}
+
 async function ensureApplicationManagementRoles(): Promise<void> {
   const permissions = [
     { id: 'cap-appmanage-application-view', name: 'application.view', description: 'View application details and settings.' },
@@ -274,6 +317,8 @@ export async function updateAppPermission(input: {
   }
 
   try {
+    const affectedRoleIds = await getMappedRoleIdsForPermission(input.permissionId);
+
     const record = await prisma.$transaction(async (tx) => {
       const existing = await tx.authzPermission.findFirst({
         where: { id: input.permissionId, appId: input.appId },
@@ -291,9 +336,10 @@ export async function updateAppPermission(input: {
         select: { id: true, name: true, description: true, scope: true, tag: true },
       });
 
-      await syncAllRolePermissionsDenormalized(tx, input.appId);
       return updated;
     });
+
+    await syncRolePermissionsForRoleIds(affectedRoleIds);
 
     revalidatePath(`/data/appconnection/${input.appId}`);
     return { success: true, permission: record };
@@ -311,10 +357,14 @@ export async function deleteAppPermission(input: {
   if ('error' in auth) return { success: false, error: auth.error };
 
   try {
+    const affectedRoleIds = await getMappedRoleIdsForPermission(input.permissionId);
+
     await prisma.$transaction(async (tx) => {
       await tx.authzPermission.delete({ where: { id: input.permissionId } });
-      await syncAllRolePermissionsDenormalized(tx, input.appId);
     });
+
+    await syncRolePermissionsForRoleIds(affectedRoleIds);
+
     revalidatePath(`/data/appconnection/${input.appId}`);
     return { success: true };
   } catch (error) {
@@ -432,6 +482,9 @@ export async function createAppRole(input: {
       });
 
       if (input.permissionIds.length > 0) {
+        const selectionError = await validateRolePermissionSelection(tx, input.appId, input.permissionIds);
+        if (selectionError) throw new Error(selectionError);
+
         const caps = await tx.authzPermission.findMany({
           where: { id: { in: input.permissionIds }, appId: input.appId },
           select: { id: true, name: true },
@@ -467,8 +520,9 @@ export async function createAppRole(input: {
     revalidatePath(`/data/appconnection/${input.appId}`);
     return { success: true, role: fullRole };
   } catch (error) {
+    const message = error instanceof Error ? error.message : '';
     await logError('database', error, `createAppRole:${input.appId}`);
-    return { success: false, error: 'Failed to create role.' };
+    return { success: false, error: message || 'Failed to create role.' };
   }
 }
 
@@ -489,6 +543,9 @@ export async function updateAppRolePermissions(input: {
       if (!role) throw new Error('Role not found.');
 
       if (input.permissionIds.length > 0) {
+        const selectionError = await validateRolePermissionSelection(tx, input.appId, input.permissionIds);
+        if (selectionError) throw new Error(selectionError);
+
         const caps = await tx.authzPermission.findMany({
           where: { id: { in: input.permissionIds }, appId: input.appId },
           select: { id: true, name: true },
@@ -514,8 +571,9 @@ export async function updateAppRolePermissions(input: {
     revalidatePath(`/data/appconnection/${input.appId}`);
     return { success: true };
   } catch (error) {
+    const message = error instanceof Error ? error.message : '';
     await logError('database', error, `updateAppRolePermissions:${input.appId}`);
-    return { success: false, error: 'Failed to update role permissions.' };
+    return { success: false, error: message || 'Failed to update role permissions.' };
   }
 }
 
@@ -569,6 +627,9 @@ export async function updateAppRole(input: {
       });
 
       if (input.permissionIds.length > 0) {
+        const selectionError = await validateRolePermissionSelection(tx, input.appId, input.permissionIds);
+        if (selectionError) throw new Error(selectionError);
+
         const caps = await tx.authzPermission.findMany({
           where: { id: { in: input.permissionIds }, appId: input.appId },
           select: { id: true },

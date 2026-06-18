@@ -23,12 +23,14 @@ export function RoleSelector({ appId, connectionId, roles, currentRoleId }: Role
   const [selectedRoleId, setSelectedRoleId] = useState<string | null>(currentRoleId);
   const [message, setMessage] = useState<string>('');
   const [pending, startTransition] = useTransition();
+  const hasUsableScope = (value: string | null | undefined) => typeof value === 'string' && value.trim().length > 0;
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return roles;
+    const assignableRoles = roles.filter((role) => hasUsableScope(role.scope));
+    if (!q) return assignableRoles;
 
-    return roles.filter((role) => {
+    return assignableRoles.filter((role) => {
       const haystacks = [role.name, role.id, role.description ?? ''];
       return haystacks.some((part) => part.toLowerCase().includes(q));
     });

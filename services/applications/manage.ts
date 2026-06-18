@@ -1662,6 +1662,10 @@ export type AppRoleOption = {
   scope: string | null;
 };
 
+function hasUsableRoleScope(scope: string | null | undefined): boolean {
+  return typeof scope === 'string' && scope.trim().length > 0;
+}
+
 /**
  * Returns a paginated list of accounts connected to an application.
  * Supports filtering by status and connectedAt window, plus sorting.
@@ -1866,9 +1870,10 @@ export async function getApplicationRoleOptions(appId: string, targetAccountType
       },
     });
 
-    if (!targetAccountType) return roles;
+    if (!targetAccountType) return roles.filter((role) => hasUsableRoleScope(role.scope));
 
     return roles.filter((role) => {
+      if (!hasUsableRoleScope(role.scope)) return false;
       const modes = isRootEditor
         ? ['manageable', 'toApprove', 'root'] as const
         : ['manageable', 'toApprove'] as const;
@@ -1912,6 +1917,9 @@ export async function assignApplicationConnectionRole(input: {
 
     if (!connection) return { success: false, error: 'Connection not found.' };
     if (!role) return { success: false, error: 'Role not found for this application.' };
+    if (!hasUsableRoleScope(role.scope)) {
+      return { success: false, error: 'Roles without a scope cannot be assigned to a user.' };
+    }
 
     const canAssignImmediately =
       canAssignRoleScopeToAccount(role.scope, connection.account.accountType, ['manageable']) ||

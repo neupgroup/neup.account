@@ -38,6 +38,7 @@ import {
   deleteAppPermission,
   type AppPermission,
 } from '@/services/applications/authz-manage';
+import { ROLE_SCOPE_OPTIONS, isKnownRoleScope } from '@/services/role-scopes';
 
 type Props = {
   appId: string;
@@ -45,35 +46,24 @@ type Props = {
 };
 
 type PermissionTagInput = Parameters<typeof createAppPermission>[0]['tag'];
-const RECOMMENDED_PERMISSION_TAGS = ['private', 'public', 'protected', 'manageable'] as const;
-const CUSTOM_TAG_LIMIT = 4;
+const TAG_LIMIT = 4;
 const TAG_NAME_PATTERN = /^[a-zA-Z0-9._]+$/;
-
-function isRecommendedTag(tag: string) {
-  return RECOMMENDED_PERMISSION_TAGS.includes(tag as (typeof RECOMMENDED_PERMISSION_TAGS)[number]);
-}
 
 function normalizePermissionTags(tags: string[]) {
   const seen = new Set<string>();
-  let recommendedTag: string | null = null;
-  const customTags: string[] = [];
+  const normalizedTags: string[] = [];
 
   for (const rawTag of tags) {
     const tag = rawTag.trim();
     if (!tag || seen.has(tag) || !TAG_NAME_PATTERN.test(tag)) continue;
     seen.add(tag);
 
-    if (isRecommendedTag(tag)) {
-      recommendedTag = recommendedTag ?? tag;
-      continue;
-    }
-
-    if (customTags.length < CUSTOM_TAG_LIMIT) {
-      customTags.push(tag);
+    if (normalizedTags.length < TAG_LIMIT) {
+      normalizedTags.push(tag);
     }
   }
 
-  return recommendedTag ? [recommendedTag, ...customTags] : customTags;
+  return normalizedTags;
 }
 
 function PermissionTagEditor({
@@ -89,8 +79,6 @@ function PermissionTagEditor({
 }) {
   const [error, setError] = useState('');
   const normalizedTags = normalizePermissionTags(tags);
-  const selectedRecommendedTag = normalizedTags.find(isRecommendedTag) ?? null;
-  const customTags = normalizedTags.filter((tag) => !isRecommendedTag(tag));
 
   const updateTags = (nextTags: string[]) => {
     onTagsChange(normalizePermissionTags(nextTags));
@@ -105,17 +93,13 @@ function PermissionTagEditor({
       return;
     }
 
-    if (!isRecommendedTag(nextTag) && customTags.length >= CUSTOM_TAG_LIMIT && !customTags.includes(nextTag)) {
-      setError('You can add up to 4 custom tags.');
+    if (normalizedTags.length >= TAG_LIMIT && !normalizedTags.includes(nextTag)) {
+      setError('You can add up to 4 tags.');
       return;
     }
 
     setError('');
-    if (isRecommendedTag(nextTag)) {
-      updateTags([nextTag, ...customTags]);
-    } else {
-      updateTags([...(selectedRecommendedTag ? [selectedRecommendedTag] : []), ...customTags, nextTag]);
-    }
+    updateTags([...normalizedTags, nextTag]);
     onDraftChange('');
   };
 
@@ -149,29 +133,6 @@ function PermissionTagEditor({
         placeholder="Add custom tag and press Enter"
       />
 
-      <div className="flex flex-wrap gap-2">
-        {RECOMMENDED_PERMISSION_TAGS.map((tag) => {
-          const selected = selectedRecommendedTag === tag;
-          return (
-            <button
-              key={tag}
-              type="button"
-              className={`rounded-full border px-3 py-1 text-xs transition-colors ${
-                selected
-                  ? 'border-primary bg-primary text-primary-foreground'
-                  : 'bg-background text-muted-foreground hover:bg-muted'
-              }`}
-              onClick={() => {
-                setError('');
-                updateTags(selected ? customTags : [tag, ...customTags]);
-              }}
-            >
-              {tag}
-            </button>
-          );
-        })}
-      </div>
-
       {normalizedTags.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {normalizedTags.map((tag) => (
@@ -198,7 +159,7 @@ function PermissionTagEditor({
       )}
 
       <p className="text-xs text-muted-foreground">
-        Select one recommended tag, plus up to 4 custom tags using letters, numbers, dots, or underscores.
+        Add up to 4 tags using letters, numbers, dots, or underscores.
       </p>
     </div>
   );
@@ -213,7 +174,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   const [addOpen, setAddOpen] = useState(false);
   const [addName, setAddName] = useState('');
   const [addDesc, setAddDesc] = useState('');
-  const [addScope, setAddScope] = useState('application');
+  const [addScope, setAddScope] = useState('');
   const [addTags, setAddTags] = useState<string[]>([]);
   const [addTagDraft, setAddTagDraft] = useState('');
   const [addPending, setAddPending] = useState(false);
@@ -221,7 +182,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   // Edit dialog
   const [editTarget, setEditTarget] = useState<AppPermission | null>(null);
   const [editDesc, setEditDesc] = useState('');
-  const [editScope, setEditScope] = useState('application');
+  const [editScope, setEditScope] = useState('');
   const [editTags, setEditTags] = useState<string[]>([]);
   const [editTagDraft, setEditTagDraft] = useState('');
   const [editPending, setEditPending] = useState(false);
@@ -231,7 +192,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   const [removePending, setRemovePending] = useState(false);
 
   const isValidName = (value: string) => /^[a-zA-Z0-9._]+$/.test(value.trim());
-  const isValidScope = (value: string) => /^[a-zA-Z0-9._]+$/.test(value.trim());
+  const isValidScope = (value: string) => isKnownRoleScope(value.trim());
   const sortedPermissions = useMemo(() => {
     return [...permissions].sort((a, b) => {
       const result = a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
@@ -256,9 +217,8 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
       return 'Tags may only contain letters, numbers, dots (.), and underscores (_).';
     }
     const normalizedTags = normalizePermissionTags(currentTags);
-    const customTags = normalizedTags.filter((tag) => !isRecommendedTag(tag));
-    if (!isRecommendedTag(nextTag) && customTags.length >= CUSTOM_TAG_LIMIT && !customTags.includes(nextTag)) {
-      return 'You can add up to 4 custom tags.';
+    if (normalizedTags.length >= TAG_LIMIT && !normalizedTags.includes(nextTag)) {
+      return 'You can add up to 4 tags.';
     }
     return null;
   };
@@ -266,7 +226,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   const openEdit = (cap: AppPermission) => {
     setEditTarget(cap);
     setEditDesc(cap.description ?? '');
-    setEditScope(cap.scope || 'application');
+    setEditScope(isKnownRoleScope(cap.scope) ? cap.scope : '');
     setEditTags(getTagLabels(cap.tag));
     setEditTagDraft('');
   };
@@ -274,7 +234,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   const closeEdit = () => {
     setEditTarget(null);
     setEditDesc('');
-    setEditScope('application');
+    setEditScope('');
     setEditTags([]);
     setEditTagDraft('');
   };
@@ -290,12 +250,12 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
       });
       return;
     }
-    const scope = addScope.trim() || 'application';
+    const scope = addScope.trim();
     if (!isValidScope(scope)) {
       toast({
         variant: 'destructive',
         title: 'Invalid scope',
-        description: 'Scope may only contain letters, numbers, dots (.), and underscores (_).',
+        description: 'Choose a valid scope.',
       });
       return;
     }
@@ -321,7 +281,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
     setPermissions((prev) => [...prev, result.permission!]);
     setAddName('');
     setAddDesc('');
-    setAddScope('application');
+    setAddScope('');
     setAddTags([]);
     setAddTagDraft('');
     setAddOpen(false);
@@ -330,12 +290,12 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
 
   const handleEdit = async () => {
     if (!editTarget) return;
-    const scope = editScope.trim() || 'application';
+    const scope = editScope.trim();
     if (!isValidScope(scope)) {
       toast({
         variant: 'destructive',
         title: 'Invalid scope',
-        description: 'Scope may only contain letters, numbers, dots (.), and underscores (_).',
+        description: 'Choose a valid scope.',
       });
       return;
     }
@@ -459,7 +419,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
         open={addOpen}
         onOpenChange={(open) => {
           setAddOpen(open);
-          if (!open) { setAddName(''); setAddDesc(''); setAddScope('application'); setAddTags([]); setAddTagDraft(''); }
+          if (!open) { setAddName(''); setAddDesc(''); setAddScope(''); setAddTags([]); setAddTagDraft(''); }
         }}
       >
         <DialogContent>
@@ -483,11 +443,18 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
               onChange={(e) => setAddDesc(e.target.value)}
               placeholder="Description (optional)"
             />
-            <Input
-              value={addScope}
-              onChange={(e) => setAddScope(e.target.value)}
-              placeholder="Scope, e.g. application"
-            />
+            <Select value={addScope} onValueChange={setAddScope}>
+              <SelectTrigger className="h-12 w-full">
+                <SelectValue placeholder="Choose permission scope" />
+              </SelectTrigger>
+              <SelectContent>
+                {ROLE_SCOPE_OPTIONS.map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <PermissionTagEditor
               tags={addTags}
               draft={addTagDraft}
@@ -531,11 +498,18 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
               placeholder="Description (optional)"
               autoFocus
             />
-            <Input
-              value={editScope}
-              onChange={(e) => setEditScope(e.target.value)}
-              placeholder="Scope, e.g. application"
-            />
+            <Select value={editScope} onValueChange={setEditScope}>
+              <SelectTrigger className="h-12 w-full">
+                <SelectValue placeholder="Choose permission scope" />
+              </SelectTrigger>
+              <SelectContent>
+                {ROLE_SCOPE_OPTIONS.map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <PermissionTagEditor
               tags={editTags}
               draft={editTagDraft}

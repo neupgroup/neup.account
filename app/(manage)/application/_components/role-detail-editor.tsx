@@ -53,6 +53,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
   const [defaultPending, setDefaultPending] = useState(false);
   const [deletePending, setDeletePending] = useState(false);
   const selectedSet = useMemo(() => new Set(permissionIds), [permissionIds]);
+  const hasUsableScope = (value: string | null | undefined) => typeof value === 'string' && value.trim().length > 0;
 
   const visiblePermissions = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -136,13 +137,17 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
           <div className="overflow-hidden rounded-2xl border bg-card">
             {visiblePermissions.map((permission) => {
               const isChecked = selectedSet.has(permission.id);
+              const canAddPermission = hasUsableScope(permission.scope);
               return (
                 <label
                   key={permission.id}
-                  className="group flex cursor-pointer items-start gap-3 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
+                  className={`group flex items-start gap-3 border-b px-4 py-4 transition-colors last:border-b-0 sm:px-5 ${
+                    canAddPermission || isChecked ? 'cursor-pointer hover:bg-muted/40' : 'cursor-not-allowed opacity-60'
+                  }`}
                 >
                   <Checkbox
                     checked={isChecked}
+                    disabled={!canAddPermission && !isChecked}
                     onCheckedChange={() =>
                       setPermissionIds((prev) =>
                         prev.includes(permission.id)
@@ -157,6 +162,9 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
                     <p className="text-sm text-muted-foreground">
                       {permission.description || 'No description'}
                     </p>
+                    {!canAddPermission ? (
+                      <p className="text-xs text-muted-foreground">Missing scope. This permission cannot be added to a role.</p>
+                    ) : null}
                   </div>
                 </label>
               );

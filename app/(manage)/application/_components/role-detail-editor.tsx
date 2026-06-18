@@ -6,6 +6,7 @@ import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
 import {
   deleteAppRole,
   setAppDefaultRole,
@@ -158,7 +159,14 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
                     className="mt-0.5"
                   />
                   <div className="min-w-0">
-                    <p className="truncate text-base font-medium leading-6">{permission.name}</p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="truncate text-base font-medium leading-6">{permission.name}</p>
+                      {permission.scope ? (
+                        <Badge variant="secondary" className="text-xs">
+                          {permission.scope}
+                        </Badge>
+                      ) : null}
+                    </div>
                     <p className="text-sm text-muted-foreground">
                       {permission.description || 'No description'}
                     </p>

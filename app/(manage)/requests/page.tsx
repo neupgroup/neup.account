@@ -63,7 +63,7 @@ function formatHumanReadableTimestamp(value?: string) {
 }
 
 async function RequestsList({ type, application }: { type?: string; application?: string }) {
-  const canView = await checkPermissions(['root.requests.view']);
+  const canView = await checkPermissions(['requests.root_approval.view']);
 
   if (!canView) {
     return (

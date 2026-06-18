@@ -100,7 +100,7 @@ type GetActivitiesResponse = {
 export async function getActivities({ startAfter: startAfterDocId, forCurrentUser = false, targetId }: GetActivitiesParams): Promise<GetActivitiesResponse> {
     try {
         const currentAccountId = await getActiveAccountId();
-        const isRootUser = await checkPermissions(['root.requests.view']);
+        const isRootUser = await checkPermissions(['requests.root_approval.view']);
         
         const where: any = {};
         if (targetId) {

@@ -27,7 +27,7 @@ const verificationActionSchema = z.object({
  * Function getPendingVerificationRequests.
  */
 export async function getPendingVerificationRequests(): Promise<VerificationRequest[]> {
-    const canView = await checkPermissions(['root.requests.view']);
+    const canView = await checkPermissions(['requests.root_approval.view']);
     if (!canView) return [];
 
     try {
@@ -69,7 +69,7 @@ export async function getPendingVerificationRequests(): Promise<VerificationRequ
  * Function grantVerification.
  */
 export async function grantVerification(accountId: string, data: z.infer<typeof verificationActionSchema>): Promise<{ success: boolean; error?: string }> {
-    const canApprove = await checkPermissions(['root.requests.approve']);
+    const canApprove = await checkPermissions(['requests.root_approval.approve']);
     if (!canApprove) return { success: false, error: 'Permission denied.' };
     
     const adminId = await getPersonalAccountId();
@@ -129,7 +129,7 @@ export async function grantVerification(accountId: string, data: z.infer<typeof 
  * Function revokeVerification.
  */
 export async function revokeVerification(accountId: string, reason: string): Promise<{ success: boolean; error?: string }> {
-    const canDeny = await checkPermissions(['root.requests.deny']);
+    const canDeny = await checkPermissions(['requests.root_approval.approve']);
     if (!canDeny) return { success: false, error: 'Permission denied.' };
     
     const adminId = await getPersonalAccountId();

@@ -19,7 +19,7 @@ const managementItems = [
         label: 'Requests',
         description: 'Review and act on pending user requests.',
         icon: List,
-        permission: 'root.requests.view',
+        permission: 'requests.root_approval.view',
     },
     {
         href: '/data/appconnection?mode=root',

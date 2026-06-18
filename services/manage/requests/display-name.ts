@@ -23,7 +23,7 @@ export type DisplayNameRequest = {
  * Function getDisplayNameRequests.
  */
 export async function getDisplayNameRequests(): Promise<DisplayNameRequest[]> {
-    const canView = await checkPermissions(['root.requests.view']);
+    const canView = await checkPermissions(['requests.root_approval.view']);
     if (!canView) return [];
 
     try {
@@ -66,7 +66,7 @@ export async function getDisplayNameRequests(): Promise<DisplayNameRequest[]> {
  * Function processDisplayNameRequest.
  */
 export async function processDisplayNameRequest(requestId: string, accountId: string, displayName: string, approve: boolean) {
-    const canApprove = await checkPermissions(['root.requests.approve']);
+    const canApprove = await checkPermissions(['requests.root_approval.approve']);
     if (!canApprove) return { success: false, error: 'Permission denied.' };
 
     const adminId = await getPersonalAccountId();

@@ -25,7 +25,7 @@ const formSchema = z.object({
 // Fetch all social media links.
 export async function getSocialLinks(): Promise<SocialLink[]> {
     const canView =
-        (await checkPermissions(['root.site.social_accounts.read'])) ||
+        (await checkPermissions(['site.social_accounts.read'])) ||
         (await checkPermissions(['root.payment_config.view']));
     if (!canView) return [];
 
@@ -52,7 +52,7 @@ export async function addSocialLink(formData: FormData): Promise<{
     newLink?: SocialLink
 }> {
     const canAdd =
-        (await checkPermissions(['root.site.social_accounts.add'])) ||
+        (await checkPermissions(['site.social_accounts.add'])) ||
         (await checkPermissions(['root.payment_config.view']));
     if (!canAdd) return {success: false, error: 'Permission denied.'};
     
@@ -107,7 +107,7 @@ export async function toggleSocialLinkVisibility(id: string, isVisible: boolean)
     error?: string
 }> {
     const canEdit =
-        (await checkPermissions(['root.site.social_accounts.edit'])) ||
+        (await checkPermissions(['site.social_accounts.edit'])) ||
         (await checkPermissions(['root.payment_config.view']));
     if (!canEdit) return {success: false, error: 'Permission denied.'};
 
@@ -143,7 +143,7 @@ export async function toggleSocialLinkVisibility(id: string, isVisible: boolean)
  */
 export async function deleteSocialLink(id: string): Promise<{ success: boolean; error?: string }> {
     const canDelete =
-        (await checkPermissions(['root.site.social_accounts.delete'])) ||
+        (await checkPermissions(['site.social_accounts.delete'])) ||
         (await checkPermissions(['root.payment_config.view']));
     if (!canDelete) return {success: false, error: 'Permission denied.'};
 

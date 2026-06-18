@@ -64,7 +64,7 @@ function getApplicationChangeScope(
 
 
 export async function getAllRequests(options: GetRequestsOptions = {}): Promise<UnifiedRequest[]> {
-  const canView = await checkPermissions(['root.requests.view']);
+  const canView = await checkPermissions(['requests.root_approval.view']);
   if (!canView) return [];
 
   const { type, application } = options;
@@ -300,7 +300,7 @@ export async function getAllRequests(options: GetRequestsOptions = {}): Promise<
 // ---------------------------------------------------------------------------
 
 export async function getRequestDetail(id: string): Promise<UnifiedRequest | null> {
-  const canView = await checkPermissions(['root.requests.view']);
+  const canView = await checkPermissions(['requests.root_approval.view']);
   if (!canView) return null;
 
   try {

@@ -28,7 +28,7 @@ const requestByAdminSchema = z.object({
  * Function getDeletionRequests.
  */
 export async function getDeletionRequests(): Promise<DeletionRequest[]> {
-  const canView = await checkPermissions(['root.requests.view']);
+  const canView = await checkPermissions(['requests.root_approval.view']);
   if (!canView) return [];
 
   try {
@@ -150,7 +150,7 @@ export async function approveAccountDeletion(
 export async function cancelAccountDeletion(
   accountId: string
 ): Promise<{ success: boolean; error?: string }> {
-    const canCancel = await checkPermissions(['root.requests.approve']);
+    const canCancel = await checkPermissions(['requests.root_approval.approve']);
     if (!canCancel) return { success: false, error: 'Permission denied.' };
     
     const adminId = await getPersonalAccountId();

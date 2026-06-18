@@ -24,7 +24,7 @@ export type KycRequest = {
  * Function getPendingKycRequests.
  */
 export async function getPendingKycRequests(): Promise<KycRequest[]> {
-    const canView = await checkPermissions(['root.requests.view']);
+    const canView = await checkPermissions(['requests.root_approval.view']);
     if (!canView) return [];
 
     try {
@@ -74,7 +74,7 @@ export async function getPendingKycRequests(): Promise<KycRequest[]> {
  * Function approveKycRequest.
  */
 export async function approveKycRequest(kycId: string, accountId: string): Promise<{ success: boolean; error?: string }> {
-    const canApprove = await checkPermissions(['root.requests.approve']);
+    const canApprove = await checkPermissions(['requests.root_approval.approve']);
     if (!canApprove) return { success: false, error: 'Permission denied.' };
 
     try {
@@ -103,7 +103,7 @@ export async function approveKycRequest(kycId: string, accountId: string): Promi
  * Function rejectKycRequest.
  */
 export async function rejectKycRequest(kycId: string, accountId: string, reason: string): Promise<{ success: boolean; error?: string }> {
-    const canDeny = await checkPermissions(['root.requests.deny']);
+    const canDeny = await checkPermissions(['requests.root_approval.approve']);
     if (!canDeny) return { success: false, error: 'Permission denied.' };
 
     try {

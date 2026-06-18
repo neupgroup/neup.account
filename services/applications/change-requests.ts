@@ -257,7 +257,7 @@ export async function getApplicationChangeRequests(options?: {
   appId?: string;
   status?: string;
 }): Promise<ApplicationChangeRequest[]> {
-  const canView = await checkPermissions(['root.requests.view']);
+  const canView = await checkPermissions(['requests.root_approval.view']);
   if (!canView) return [];
 
   try {
@@ -329,7 +329,7 @@ export async function getApplicationChangeRequests(options?: {
 export async function getApplicationChangeRequestDetails(
   requestId: string,
 ): Promise<ApplicationChangeRequest | null> {
-  const canView = await checkPermissions(['root.requests.view']);
+  const canView = await checkPermissions(['requests.root_approval.view']);
   if (!canView) return null;
 
   try {
@@ -386,7 +386,7 @@ export async function getApplicationChangeRequestDetails(
 export async function approveApplicationChangeRequest(
   requestId: string,
 ): Promise<{ success: boolean; error?: string }> {
-  const canApprove = await checkPermissions(['root.requests.approve']);
+  const canApprove = await checkPermissions(['requests.root_approval.approve']);
   if (!canApprove) return { success: false, error: 'Permission denied.' };
 
   const actorAccountId = await getActiveAccountId();
@@ -451,7 +451,7 @@ export async function approveApplicationChangeRequest(
 export async function denyApplicationChangeRequest(
   requestId: string,
 ): Promise<{ success: boolean; error?: string }> {
-  const canDeny = await checkPermissions(['root.requests.deny']);
+  const canDeny = await checkPermissions(['requests.root_approval.approve']);
   if (!canDeny) return { success: false, error: 'Permission denied.' };
 
   const actorAccountId = await getActiveAccountId();

@@ -6,7 +6,7 @@ export default async function RequestsLayout({
 }: {
   children: ReactNode;
 }) {
-  await requireAnyPermission404(['root.requests.view']);
+  await requireAnyPermission404(['requests.root_approval.view']);
 
   return children;
 }

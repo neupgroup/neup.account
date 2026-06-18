@@ -80,7 +80,7 @@ export const allPermissionsMap: Record<string, string[]> = {
     "Access & Control": ['security.third_party.view', 'security.third_party.add', 'security.third_party.remove'],
     "Payment & Subscription": ['payment.method.show', 'payment.transactions.show', 'payment.subscriptions.show', 'payment.purchase_neup_pro.view'],
     "Account": ["root.account.view", "root.account.search", "root.account.create_individual"],
-    "Requests": ["root.requests.view"],
+    "Requests": ["requests.root_approval.view"],
     "Configurations": [
         "root.payment_config.view",
         "root.errors.view",

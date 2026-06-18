@@ -10,7 +10,7 @@ function hasOverlap(fieldsA: string[], fieldsB: string[]) {
 }
 
 export async function reissueRequestWithRemarks(input: { requestId: string; remarks: string }) {
-  const canApprove = await checkPermissions(['root.requests.approve']);
+  const canApprove = await checkPermissions(['requests.root_approval.approve']);
   if (!canApprove) return { success: false, error: 'Permission denied.' };
 
   const remarks = input.remarks?.trim() || '';
@@ -78,4 +78,3 @@ export async function reissueRequestWithRemarks(input: { requestId: string; rema
     return { success: false, error: 'Failed to reissue request.' };
   }
 }
-

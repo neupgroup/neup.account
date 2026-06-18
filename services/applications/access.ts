@@ -9,7 +9,7 @@ import { getApplicationDefaultRoleId } from '@/services/applications/default-rol
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
-import { canAssignRoleScopeToAccount, expectedRoleScopeForAccount } from '@/services/role-scopes';
+import { canAssignRoleScopeToAccount, expectedRoleScopesForAccount } from '@/services/role-scopes';
 
 const manageApplicationSchema = z.object({
   appId: z.string().min(1, 'Application ID is required.'),
@@ -147,14 +147,14 @@ export async function addUserApplicationAccess(input: { appId: string; permissio
         );
       }
 
-      const publicScope = expectedRoleScopeForAccount(account.accountType, 'public');
-      if (publicScope) {
+      const publicScopes = expectedRoleScopesForAccount(account.accountType, 'public');
+      if (publicScopes.length > 0) {
         await tx.access.deleteMany({
           where: {
             memberAccountId: accountId,
             parentAccountId: accountId,
             assetApplicationId: appId,
-            role: { scope: publicScope },
+            role: { scope: { in: publicScopes } },
           },
         });
       }
@@ -256,14 +256,14 @@ export async function updateUserApplicationPermissions(input: { appId: string; p
     await prisma.$transaction(async (tx) => {
       await cleanupExpiredAccessModel(tx);
 
-      const publicScope = expectedRoleScopeForAccount(account.accountType, 'public');
-      if (publicScope) {
+      const publicScopes = expectedRoleScopesForAccount(account.accountType, 'public');
+      if (publicScopes.length > 0) {
         await tx.access.deleteMany({
           where: {
             memberAccountId: accountId,
             parentAccountId: accountId,
             assetApplicationId: appId,
-            role: { scope: publicScope },
+            role: { scope: { in: publicScopes } },
           },
         });
       }

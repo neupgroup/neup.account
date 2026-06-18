@@ -1,13 +1,16 @@
 export const ROLE_SCOPE_OPTIONS = [
+  'managable',
   'brand.managable',
   'branch.brand.managable',
   'individual.managable',
   'dependent.individual.managable',
+  'public',
   'individual.root',
   'individual.public',
   'brand.public',
   'branch.brand.public',
   'dependent.individual.public',
+  'toApprove',
   'individual.toApprove',
   'dependent.individual.toApprove',
   'brand.toApprove',
@@ -73,12 +76,41 @@ export function expectedRoleScopeForAccount(
   return null;
 }
 
+export function expectedRoleScopesForAccount(
+  accountType: string | null | undefined,
+  mode: RoleAssignmentMode,
+): RoleScope[] {
+  const scopes: RoleScope[] = [];
+
+  if (mode === 'manageable') {
+    scopes.push('managable');
+  } else if (mode === 'public') {
+    scopes.push('public');
+  } else if (mode === 'toApprove') {
+    scopes.push('toApprove');
+  }
+
+  const specificScope = expectedRoleScopeForAccount(accountType, mode);
+  if (specificScope && !scopes.includes(specificScope)) {
+    scopes.push(specificScope);
+  }
+
+  return scopes;
+}
+
 export function canAssignRoleScopeToAccount(
   scope: string | null | undefined,
   accountType: string | null | undefined,
   modes: RoleAssignmentMode[],
 ): boolean {
   if (!scope) return false;
-  return modes.some((mode) => expectedRoleScopeForAccount(accountType, mode) === scope);
-}
+  const normalizedScope = scope.trim();
 
+  return modes.some((mode) => {
+    if (mode === 'manageable' && normalizedScope === 'managable') return true;
+    if (mode === 'public' && normalizedScope === 'public') return true;
+    if (mode === 'toApprove' && normalizedScope === 'toApprove') return true;
+
+    return expectedRoleScopeForAccount(accountType, mode) === normalizedScope;
+  });
+}

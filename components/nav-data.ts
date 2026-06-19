@@ -62,7 +62,12 @@ export const navItems = {
         { href: "/manage/requests", label: "Requests", description: "Review and act on pending user requests." },
         { href: "/data/appconnection?mode=root", label: "Applications", description: "Approve, reject, block, or activate applications." },
         { href: "/cleanup", label: "Cleanup", description: "Delete expired guest accounts and their associated data." },
-        { href: "/config", label: "Configurations", description: "Manage payment settings and footer social accounts." },
+        { href: "/site/config", label: "Configurations", description: "Manage payment settings and footer social accounts." },
+    ],
+    rootNav: [
+        { href: "/manage", label: "Manage", description: "Open the root management dashboard." },
+        { href: "/manage/cleanup", label: "Cleanup Accounts", description: "Delete expired guest accounts and their associated data." },
+        { href: "/site/config", label: "Site Config", description: "Open site-wide configuration tools." },
     ],
     accountNav: [
         { href: "/auth/signout", label: "SignOut Account", description: "Sign out of your account." },
@@ -83,7 +88,6 @@ export const allPermissionsMap: Record<string, string[]> = {
     "Requests": ["requests.root_approval.view"],
     "Configurations": [
         "root.payment_config.view",
-        "root.errors.view",
         "root.display_images.view",
         "root.display_images.add",
         "root.display_images.update",
@@ -93,12 +97,13 @@ export const allPermissionsMap: Record<string, string[]> = {
     "Applications": ["application.view.scopeRoot"],
     "Site Config": [
         "root.payment_config.view",
-        "root.errors.view",
         "root.display_images.view"
     ],
     "Branches": ['linked_accounts.brand.manage'],
     "Blocked Users": ['people.block_list.view', 'people.restrict_list.view'],
     // Management nav — "Dashboard" is the admin home, distinct from user "Home"
     "Dashboard": ["root.dashboard.view"],
+    "Manage": ["root.dashboard.view"],
     "Cleanup": ["root.account.delete"],
+    "Cleanup Accounts": ["root.account.delete"],
 };

@@ -92,6 +92,8 @@ export async function updateSiteLogoUrl(
     revalidatePath('/manage/config');
     revalidatePath('/config');
     revalidatePath('/config/app');
+    revalidatePath('/site/config');
+    revalidatePath('/site/config/app');
     revalidatePath('/');
 
     return { success: true, siteLogoUrl: resolvedSiteLogoUrl };

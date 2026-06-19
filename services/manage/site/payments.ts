@@ -108,6 +108,8 @@ export async function updatePaymentSettings(
     revalidatePath('/manage/config');
     revalidatePath('/config');
     revalidatePath('/config/payments');
+    revalidatePath('/site/config');
+    revalidatePath('/site/config/payments');
     revalidatePath('/payment/neup.pro');
 
     return {

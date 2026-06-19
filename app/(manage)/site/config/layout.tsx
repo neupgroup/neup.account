@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 
-export default async function ConfigLayout({
+export default async function SiteConfigLayout({
   children,
 }: {
   children: ReactNode;

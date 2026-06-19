@@ -2,9 +2,9 @@ import { notFound } from 'next/navigation';
 import { BackButton } from '@/components/ui/back-button';
 import { checkPermissions } from '@/services/user';
 import { getSocialLinks } from '@/services/manage/site/socials';
-import { SocialLinksManager } from './social-links-manager';
+import { SocialLinksManager } from '../../../config/socials/social-links-manager';
 
-export default async function ConfigSocialsPage() {
+export default async function SiteConfigSocialsPage() {
   const canView = await checkPermissions(['root.payment_config.view']);
   if (!canView) {
     notFound();
@@ -14,7 +14,7 @@ export default async function ConfigSocialsPage() {
 
   return (
     <div className="grid gap-8">
-      <BackButton href="/config" />
+      <BackButton href="/site/config" />
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Footer Social Accounts</h1>
         <p className="text-muted-foreground">

@@ -2,9 +2,9 @@ import { notFound } from 'next/navigation';
 import { BackButton } from '@/components/ui/back-button';
 import { checkPermissions } from '@/services/user';
 import { getResources } from '@/services/manage/site/resources';
-import { DisplayImagesManager } from './display-images-manager.client';
+import { DisplayImagesManager } from '../../../config/displayImages/display-images-manager.client';
 
-export default async function ConfigDisplayImagesPage() {
+export default async function SiteConfigDisplayImagesPage() {
   const canView = await checkPermissions(['root.display_images.view']);
   if (!canView) {
     notFound();
@@ -17,7 +17,7 @@ export default async function ConfigDisplayImagesPage() {
 
   return (
     <div className="grid gap-8">
-      <BackButton href="/config" />
+      <BackButton href="/site/config" />
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Display Images</h1>
         <p className="text-muted-foreground">

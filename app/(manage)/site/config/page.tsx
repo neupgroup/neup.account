@@ -8,32 +8,32 @@ import { PrimaryHeader } from '@/components/ui/primary-header';
 
 const configItems = [
   {
-    href: '/config/socials',
+    href: '/site/config/socials',
     title: 'Social Accounts',
     description: 'Define social links shown in the website footer.',
     icon: Globe,
   },
   {
-    href: '/config/payments',
+    href: '/site/config/payments',
     title: 'Payment Settings',
     description: 'Define payment details used across the website.',
     icon: CreditCard,
   },
   {
-    href: '/config/app',
+    href: '/site/config/app',
     title: 'App Settings',
     description: 'Update the site logo used across the application.',
     icon: AppWindow,
   },
   {
-    href: '/config/displayImages',
+    href: '/site/config/displayImages',
     title: 'Display Images',
     description: 'Manage display-image resources and metadata.',
     icon: Camera,
   },
 ];
 
-export default async function ConfigPage() {
+export default async function SiteConfigPage() {
   const [canViewPaymentConfig, canViewDisplayImages] = await Promise.all([
     checkPermissions(['root.payment_config.view']),
     checkPermissions(['root.display_images.view']),
@@ -44,7 +44,7 @@ export default async function ConfigPage() {
   }
 
   const visibleItems = configItems.filter((item) => {
-    if (item.href === '/config/displayImages') return canViewDisplayImages;
+    if (item.href === '/site/config/displayImages') return canViewDisplayImages;
     return canViewPaymentConfig;
   });
 

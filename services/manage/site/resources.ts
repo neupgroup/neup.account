@@ -123,6 +123,7 @@ export async function createResource(formData: FormData): Promise<{ success: boo
     });
 
     revalidatePath('/config/displayImages');
+    revalidatePath('/site/config/displayImages');
 
     return { success: true, resource: normalizeResourceRow(row) };
   } catch (error) {
@@ -146,6 +147,7 @@ export async function deleteResource(formData: FormData): Promise<{ success: boo
     await prisma.resource.delete({ where: { id: validation.data.resourceId } });
 
     revalidatePath('/config/displayImages');
+    revalidatePath('/site/config/displayImages');
     return { success: true };
   } catch (error) {
     await logError('database', error, 'deleteResource');
@@ -189,6 +191,7 @@ export async function updateResourceTitle(formData: FormData): Promise<{ success
     });
 
     revalidatePath('/config/displayImages');
+    revalidatePath('/site/config/displayImages');
 
     return { success: true, resource: normalizeResourceRow(updated) };
   } catch (error) {

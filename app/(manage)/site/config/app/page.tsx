@@ -2,9 +2,9 @@ import { notFound } from 'next/navigation';
 import { BackButton } from '@/components/ui/back-button';
 import { checkPermissions } from '@/services/user';
 import { getSiteLogoUrl } from '@/services/manage/site/logo';
-import { AppLogoForm } from './app-logo-form.client';
+import { AppLogoForm } from '../../../config/app/app-logo-form.client';
 
-export default async function ConfigAppPage() {
+export default async function SiteConfigAppPage() {
   const canView = await checkPermissions(['root.payment_config.view']);
   if (!canView) {
     notFound();
@@ -14,7 +14,7 @@ export default async function ConfigAppPage() {
 
   return (
     <div className="grid gap-8">
-      <BackButton href="/config" />
+      <BackButton href="/site/config" />
       <div>
         <h1 className="text-3xl font-bold tracking-tight">App Settings</h1>
         <p className="text-muted-foreground">

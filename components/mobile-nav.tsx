@@ -90,6 +90,7 @@ export function MobileNav() {
             : navItems.accountNav;
 
         const visibleNeupIdNav = navItemsWithPerms(navItems.neupIdNav);
+        const visibleRootNav = navItemsWithPerms(navItems.rootNav);
         const visibleAccountNav = navItemsWithPerms(accountNavItems);
         
         const primaryNeupId = profile?.neupIdPrimary ? `@${profile.neupIdPrimary}` : 'Neup.Account';
@@ -113,6 +114,9 @@ export function MobileNav() {
         } else {
             if (visibleNeupIdNav.length > 0) {
                 config.push({ title: primaryNeupId, items: visibleNeupIdNav });
+            }
+            if (visibleRootNav.length > 0) {
+                config.push({ title: "Root", items: visibleRootNav });
             }
             if (visibleAccountNav.length > 0) {
                 config.push({ title: "Account", items: visibleAccountNav });

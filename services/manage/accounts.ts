@@ -8,6 +8,7 @@ import { getPersonalAccountId } from '@/core/auth/verify';
 import type { StoredAccount } from '@/core/auth/session';
 import { resolveDisplayImage } from '@/core/helpers/display-image';
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from '@/services/access-model';
+import type { Prisma } from '@/prisma/generated/client/client';
 
 export type UserStats = {
     totalUsers: number;
@@ -222,6 +223,64 @@ export type AccountsPage = {
 export type AccountFilterTab = 'all' | 'active' | 'guest' | 'brand' | 'individual';
 export type AccountSortKey = 'newest' | 'oldest' | 'name_asc' | 'name_desc' | 'last_active';
 
+const SEARCHABLE_ACCOUNT_TYPES = new Set(['individual', 'brand', 'branch', 'dependent', 'guest']);
+const ACTIVE_IN_UNITS_MS: Record<string, number> = {
+    m: 60 * 1000,
+    h: 60 * 60 * 1000,
+    d: 24 * 60 * 60 * 1000,
+    w: 7 * 24 * 60 * 60 * 1000,
+};
+
+type ParsedAccountSearch = {
+    text: string;
+    accountType?: string;
+    roleName?: string;
+    activeSince?: Date;
+};
+
+function parseAccountSearch(search: string): ParsedAccountSearch {
+    const parsed: ParsedAccountSearch = { text: '' };
+    const textParts: string[] = [];
+
+    for (const rawPart of search.split('&')) {
+        const part = rawPart.trim();
+        if (!part) continue;
+
+        const typeMatch = part.match(/^type:(.+)$/i);
+        if (typeMatch) {
+            const accountType = typeMatch[1]?.trim().toLowerCase();
+            if (accountType && SEARCHABLE_ACCOUNT_TYPES.has(accountType)) {
+                parsed.accountType = accountType;
+                continue;
+            }
+        }
+
+        const roleMatch = part.match(/^role:(.+)$/i);
+        if (roleMatch) {
+            const roleName = roleMatch[1]?.trim();
+            if (roleName) {
+                parsed.roleName = roleName;
+                continue;
+            }
+        }
+
+        const activeInMatch = part.match(/^activein:(\d+)([mhdw])$/i);
+        if (activeInMatch) {
+            const amount = Number(activeInMatch[1]);
+            const unit = activeInMatch[2].toLowerCase();
+            if (amount > 0 && ACTIVE_IN_UNITS_MS[unit]) {
+                parsed.activeSince = new Date(Date.now() - amount * ACTIVE_IN_UNITS_MS[unit]);
+                continue;
+            }
+        }
+
+        textParts.push(part);
+    }
+
+    parsed.text = textParts.join(' & ').trim();
+    return parsed;
+}
+
 /**
  * Function getAllAccountsPaginated.
  *
@@ -241,8 +300,10 @@ export async function getAllAccountsPaginated(params: {
     const { page, pageSize = 10, search = '', filter = 'all', sort = 'newest' } = params;
 
     try {
+        const parsedSearch = parseAccountSearch(search);
+
         // Build where clause
-        const where: Record<string, unknown> = {};
+        const where: Prisma.AccountWhereInput = {};
 
         if (filter === 'active') {
             where.status = 'active';
@@ -254,11 +315,42 @@ export async function getAllAccountsPaginated(params: {
             where.accountType = 'individual';
         }
 
-        if (search) {
+        if (parsedSearch.accountType) {
+            where.accountType = parsedSearch.accountType;
+        }
+
+        if (parsedSearch.roleName) {
+            where.denormRoles = {
+                some: {
+                    authzRole: {
+                        name: {
+                            equals: parsedSearch.roleName,
+                            mode: 'insensitive',
+                        },
+                    },
+                },
+            };
+        }
+
+        if (parsedSearch.activeSince) {
+            const activeAccounts = await prisma.activity.groupBy({
+                by: ['memberId'],
+                where: { timestamp: { gte: parsedSearch.activeSince } },
+            });
+
+            const activeAccountIds = activeAccounts.map((entry) => entry.memberId);
+            if (activeAccountIds.length === 0) {
+                return { accounts: [], total: 0, page, pageSize, totalPages: 0 };
+            }
+
+            where.id = { in: activeAccountIds };
+        }
+
+        if (parsedSearch.text) {
             where.OR = [
-                { displayName: { contains: search, mode: 'insensitive' } },
-                { neupIds: { some: { neupId: { contains: search, mode: 'insensitive' } } } },
-                { id: { contains: search, mode: 'insensitive' } },
+                { displayName: { contains: parsedSearch.text, mode: 'insensitive' } },
+                { neupIds: { some: { neupId: { contains: parsedSearch.text, mode: 'insensitive' } } } },
+                { id: { contains: parsedSearch.text, mode: 'insensitive' } },
             ];
         }
 
@@ -273,13 +365,10 @@ export async function getAllAccountsPaginated(params: {
             ? (orderByMap[sort as Exclude<AccountSortKey, 'last_active'>] ?? { createdAt: 'desc' })
             : { createdAt: 'desc' }; // will re-sort after activity lookup
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const whereArg = where as any;
-
         const [total, rows] = await Promise.all([
-            prisma.account.count({ where: whereArg }),
+            prisma.account.count({ where }),
             prisma.account.findMany({
-                where: whereArg,
+                where,
                 orderBy,
                 skip: sort !== 'last_active' ? (page - 1) * pageSize : 0,
                 take:  sort !== 'last_active' ? pageSize : undefined,

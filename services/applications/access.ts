@@ -6,6 +6,7 @@ import prisma from '@/core/helpers/prisma';
 import { getPersonalAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
+import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
@@ -29,6 +30,161 @@ export type UserApplicationAccess = {
 const INTERNAL_APP_PREFIX = 'neup.';
 function isInternalApp(appId: string) {
   return appId.startsWith(INTERNAL_APP_PREFIX);
+}
+
+export type AssignOwnApplicationRoleResult =
+  | { success: true; mode: 'assigned'; appId: string; roleId: string; roleName: string; scope: string }
+  | { success: true; mode: 'requested'; appId: string; roleId: string; roleName: string; scope: string; requestId: string }
+  | { success: false; error: string };
+
+export async function assignOwnApplicationRole(input: {
+  accountId: string;
+  appId: string;
+  roleReference: string;
+  requestSource?: string;
+}): Promise<AssignOwnApplicationRoleResult> {
+  const accountId = input.accountId?.trim();
+  const appId = input.appId?.trim();
+  const roleReference = input.roleReference?.trim();
+
+  if (!accountId || !appId || !roleReference) {
+    return { success: false, error: 'Account ID, application ID, and role are required.' };
+  }
+
+  try {
+    const [account, application, role] = await Promise.all([
+      prisma.account.findUnique({
+        where: { id: accountId },
+        select: { accountType: true },
+      }),
+      prisma.application.findUnique({
+        where: { id: appId },
+        select: { id: true, name: true },
+      }),
+      prisma.authzRole.findFirst({
+        where: {
+          appId,
+          OR: [{ id: roleReference }, { name: roleReference }],
+        },
+        select: { id: true, name: true, scope: true },
+      }),
+    ]);
+
+    if (!account) return { success: false, error: 'Account not found.' };
+    if (!application) return { success: false, error: 'Application not found.' };
+    if (!role) return { success: false, error: 'Role not found for this application.' };
+
+    const canAssignImmediately = canAssignRoleScopeToAccount(role.scope, account.accountType, ['public']);
+    const requiresApproval = canAssignRoleScopeToAccount(role.scope, account.accountType, ['toApprove']);
+
+    if (!canAssignImmediately && !requiresApproval) {
+      return { success: false, error: 'This role scope cannot be requested by this account type.' };
+    }
+
+    const connectionDetails = await prisma.$transaction(async (tx) => {
+      await cleanupExpiredAccessModel(tx);
+
+      const defaultRoleId = await getApplicationDefaultRoleId(appId);
+      const existingConnection = await tx.connection.findUnique({
+        where: { accountId_appId: { accountId, appId } },
+        select: { id: true },
+      });
+      const connection = existingConnection
+        ? existingConnection
+        : await tx.connection.create({
+            data: { accountId, appId, status: 'active', roleId: defaultRoleId },
+            select: { id: true },
+          });
+
+      if (canAssignImmediately) {
+        const publicScopes = expectedRoleScopesForAccount(account.accountType, 'public');
+        if (publicScopes.length > 0) {
+          await tx.access.deleteMany({
+            where: {
+              memberAccountId: accountId,
+              parentAccountId: accountId,
+              assetApplicationId: appId,
+              role: { scope: { in: publicScopes } },
+            },
+          });
+        }
+
+        await ensureAccessGrant(tx, {
+          memberAccountId: accountId,
+          parentAccountId: accountId,
+          childApplicationId: appId,
+          accessApplicationId: appId,
+          roleId: role.id,
+          details: {
+            connectionId: connection.id,
+            source: input.requestSource ?? 'assignOwnApplicationRole',
+          },
+        });
+
+        return { connectionId: connection.id, requestId: null as string | null };
+      }
+
+      const ownerGrant = await tx.access.findFirst({
+        where: {
+          assetApplicationId: appId,
+          roleId: 'application.owner',
+          status: 'active',
+        },
+        select: { memberAccountId: true },
+      });
+
+      const request = await tx.request.create({
+        data: {
+          senderId: accountId,
+          recipientId: ownerGrant?.memberAccountId ?? accountId,
+          action: 'applicationRoleRequest',
+          type: 'applicationRoleRequest',
+          data: {
+            appId,
+            appName: application.name,
+            accountId,
+            connectionId: connection.id,
+            roleIds: [role.id],
+            roles: [{ id: role.id, name: role.name, scope: role.scope }],
+            assignmentKind: 'publicApplicationAccess',
+            requestSource: input.requestSource ?? 'assignOwnApplicationRole',
+          },
+        },
+        select: { id: true },
+      });
+
+      return { connectionId: connection.id, requestId: request.id };
+    });
+
+    revalidatePath('/data/appconnection');
+    revalidatePath(`/data/appconnection/${appId}`);
+    revalidatePath(`/application/${appId}/requests`);
+
+    if (canAssignImmediately) {
+      await dispatchAccountUpdatedEvent({ accountId, changedFields: ['role'] });
+      return {
+        success: true,
+        mode: 'assigned',
+        appId,
+        roleId: role.id,
+        roleName: role.name,
+        scope: role.scope,
+      };
+    }
+
+    return {
+      success: true,
+      mode: 'requested',
+      appId,
+      roleId: role.id,
+      roleName: role.name,
+      scope: role.scope,
+      requestId: connectionDetails.requestId!,
+    };
+  } catch (error) {
+    await logError('database', error, `assignOwnApplicationRole:${accountId}:${appId}:${roleReference}`);
+    return { success: false, error: 'Failed to assign application role.' };
+  }
 }
 
 export async function getUserApplicationAccess(appId: string): Promise<UserApplicationAccess | null> {

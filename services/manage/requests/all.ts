@@ -9,6 +9,8 @@ import prisma from '@/core/helpers/prisma';
 import { checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import { getUserProfile, getUserNeupIds } from '@/services/user';
+import { getActiveAccountId } from '@/core/auth/verify';
+import { isApplicationOwnerForAccount } from '@/services/applications/manage';
 import { REQUEST_TYPE_LABELS, UnifiedRequest, GetRequestsOptions } from './types';
 
 // ---------------------------------------------------------------------------
@@ -64,10 +66,16 @@ function getApplicationChangeScope(
 
 
 export async function getAllRequests(options: GetRequestsOptions = {}): Promise<UnifiedRequest[]> {
-  const canView = await checkPermissions(['requests.root_approval.view']);
-  if (!canView) return [];
-
   const { type, application } = options;
+  const [activeAccountId, canViewRoot] = await Promise.all([
+    getActiveAccountId(),
+    checkPermissions(['requests.root_approval.view']),
+  ]);
+  const canViewApplication = application && activeAccountId
+    ? await isApplicationOwnerForAccount(activeAccountId, application)
+    : false;
+  if (!canViewRoot && !canViewApplication) return [];
+
   const results: UnifiedRequest[] = [];
 
   try {
@@ -300,12 +308,15 @@ export async function getAllRequests(options: GetRequestsOptions = {}): Promise<
 // ---------------------------------------------------------------------------
 
 export async function getRequestDetail(id: string): Promise<UnifiedRequest | null> {
-  const canView = await checkPermissions(['requests.root_approval.view']);
-  if (!canView) return null;
+  const [activeAccountId, canViewRoot] = await Promise.all([
+    getActiveAccountId(),
+    checkPermissions(['requests.root_approval.view']),
+  ]);
 
   try {
     // accountDeletion uses a synthetic id
     if (id.startsWith('deletion:')) {
+      if (!canViewRoot) return null;
       const accountId = id.replace('deletion:', '');
       const acc = await prisma.account.findUnique({
         where: { id: accountId },
@@ -350,6 +361,7 @@ export async function getRequestDetail(id: string): Promise<UnifiedRequest | nul
       },
     });
     if (verification) {
+      if (!canViewRoot) return null;
       const acc = await prisma.account.findUnique({
         where: { id: verification.accountId },
         select: {
@@ -399,6 +411,12 @@ export async function getRequestDetail(id: string): Promise<UnifiedRequest | nul
     if (!row) return null;
 
     const payload = (row.data ?? {}) as Record<string, unknown>;
+    const appId = typeof payload.appId === 'string' ? payload.appId : '';
+    const canViewApplication = row.action === 'applicationRoleRequest' && !!activeAccountId && !!appId
+      ? await isApplicationOwnerForAccount(activeAccountId, appId)
+      : false;
+    if (!canViewRoot && !canViewApplication) return null;
+
     const sender = row.sender;
     const displayName =
       (sender.brandProfile?.brandName ??

@@ -8,6 +8,7 @@ import { logError } from '@/core/helpers/logger';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
 import { canAssignRoleScopeToAccount } from '@/services/role-scopes';
 import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';
+import { isApplicationOwnerForAccount } from '@/services/applications/manage';
 
 const ROOT_APPLICATION_EDIT_PERMISSION = 'application.edit.scopeRoot';
 const ROOT_PERMISSION_SCOPE = 'individual.root';
@@ -25,8 +26,6 @@ export async function approveApplicationRoleRequest(requestId: string): Promise<
     checkPermissions([ROOT_APPLICATION_EDIT_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE }),
     checkPermissions(['root.requests.manage']),
   ]);
-  const canApprove = canRootEdit && canManageRequests;
-  if (!canApprove) return { success: false, error: 'Permission denied.' };
 
   try {
     const request = await prisma.request.findUnique({
@@ -42,6 +41,9 @@ export async function approveApplicationRoleRequest(requestId: string): Promise<
     const connectionId = typeof data.connectionId === 'string' ? data.connectionId : '';
     const assignmentKind = typeof data.assignmentKind === 'string' ? data.assignmentKind : '';
     const roleIds = stringList(data.roleIds);
+    const isAppOwner = appId ? await isApplicationOwnerForAccount(actorAccountId, appId) : false;
+    const canApprove = (canRootEdit && canManageRequests) || isAppOwner;
+    if (!canApprove) return { success: false, error: 'Permission denied.' };
 
     if (!appId || !accountId || roleIds.length === 0) {
       return { success: false, error: 'Request payload is missing role assignment details.' };
@@ -130,14 +132,27 @@ export async function approveApplicationRoleRequest(requestId: string): Promise<
 }
 
 export async function denyApplicationRoleRequest(requestId: string): Promise<{ success: boolean; error?: string }> {
+  const actorAccountId = await getActiveAccountId();
+  if (!actorAccountId) return { success: false, error: 'Not signed in.' };
+
   const [canRootEdit, canManageRequests] = await Promise.all([
     checkPermissions([ROOT_APPLICATION_EDIT_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE }),
     checkPermissions(['root.requests.manage']),
   ]);
-  const canDeny = canRootEdit && canManageRequests;
-  if (!canDeny) return { success: false, error: 'Permission denied.' };
 
   try {
+    const request = await prisma.request.findUnique({
+      where: { id: requestId },
+      select: { data: true },
+    });
+    if (!request) return { success: false, error: 'Request not found.' };
+
+    const data = request.data && typeof request.data === 'object' ? request.data as Record<string, unknown> : {};
+    const appId = typeof data.appId === 'string' ? data.appId : '';
+    const isAppOwner = appId ? await isApplicationOwnerForAccount(actorAccountId, appId) : false;
+    const canDeny = (canRootEdit && canManageRequests) || isAppOwner;
+    if (!canDeny) return { success: false, error: 'Permission denied.' };
+
     await prisma.request.update({
       where: { id: requestId },
       data: { status: 'denied' },

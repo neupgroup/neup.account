@@ -57,6 +57,49 @@ export async function getAppDefaultRoleId(appId: string): Promise<string | null>
 const GLOBAL_AUTHZ_APP_ID = 'neup.account';
 const ROOT_PERMISSION_SCOPE = 'individual.root';
 
+function getSystemRoleScope(roleId: string): string {
+  if (roleId === 'application.manage') return 'managable';
+  if (roleId === 'application.owner') return 'public';
+  return 'public';
+}
+
+async function upsertPermissionsForApp(
+  tx: any,
+  appId: string,
+  definitions: Array<{ id: string; name: string; description: string; scope: string; tag: Prisma.JsonValue }>,
+): Promise<Array<{ id: string; name: string }>> {
+  const persistedPermissions: Array<{ id: string; name: string }> = [];
+
+  for (const definition of definitions) {
+    const permission = await tx.authzPermission.upsert({
+      where: { name_appId: { name: definition.name, appId } },
+      update: {
+        name: definition.name,
+        description: definition.description,
+        appId,
+        scope: definition.scope,
+        tag: definition.tag,
+      },
+      create: {
+        id: definition.id,
+        name: definition.name,
+        description: definition.description,
+        appId,
+        scope: definition.scope,
+        tag: definition.tag,
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+
+    persistedPermissions.push(permission);
+  }
+
+  return persistedPermissions;
+}
+
 async function syncRolePermissionMappings(tx: any, roleId: string, permissionIds: string[]): Promise<void> {
   await tx.authzRolePermissionMap.deleteMany({ where: { roleId } });
   if (permissionIds.length === 0) return;
@@ -127,6 +170,15 @@ function hasUsableScope(scope: string | null | undefined): boolean {
   return typeof scope === 'string' && scope.trim().length > 0;
 }
 
+function isMissingTableError(error: unknown, tableName: string): boolean {
+  if (!(error instanceof Prisma.PrismaClientKnownRequestError)) return false;
+
+  const target = error.meta?.table;
+  if (typeof target === 'string' && target === tableName) return true;
+
+  return typeof error.message === 'string' && error.message.includes(`The table \`${tableName}\` does not exist`);
+}
+
 async function validateRolePermissionSelection(
   tx: any,
   appId: string,
@@ -161,32 +213,13 @@ async function validateRolePermissionSelection(
 }
 
 async function ensureApplicationManagementRoles(): Promise<void> {
-  const permissions = APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS.map((permission, index) => ({
+  const permissionDefinitions = APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS.map((permission, index) => ({
     id: `cap-appmanage-${index + 1}-${permission.name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}`,
     ...permission,
   }));
 
   await prisma.$transaction(async (tx) => {
-    for (const cap of permissions) {
-      await tx.authzPermission.upsert({
-        where: { name_appId: { name: cap.name, appId: GLOBAL_AUTHZ_APP_ID } },
-        update: {
-          name: cap.name,
-          description: cap.description,
-          appId: GLOBAL_AUTHZ_APP_ID,
-          scope: cap.scope,
-          tag: cap.tag,
-        },
-        create: {
-          id: cap.id,
-          name: cap.name,
-          description: cap.description,
-          appId: GLOBAL_AUTHZ_APP_ID,
-          scope: cap.scope,
-          tag: cap.tag,
-        },
-      });
-    }
+    const permissions = await upsertPermissionsForApp(tx, GLOBAL_AUTHZ_APP_ID, permissionDefinitions);
 
     for (const roleId of ['application.owner', 'application.manage']) {
       await tx.authzRole.upsert({
@@ -198,7 +231,7 @@ async function ensureApplicationManagementRoles(): Promise<void> {
               ? 'Full ownership of an application.'
               : 'Manage application settings, roles, and permissions.',
           appId: GLOBAL_AUTHZ_APP_ID,
-          scope: 'application',
+          scope: getSystemRoleScope(roleId),
         },
         create: {
           id: roleId,
@@ -208,13 +241,13 @@ async function ensureApplicationManagementRoles(): Promise<void> {
               ? 'Full ownership of an application.'
               : 'Manage application settings, roles, and permissions.',
           appId: GLOBAL_AUTHZ_APP_ID,
-          scope: 'application',
+          scope: getSystemRoleScope(roleId),
         },
       });
     }
 
     for (const roleId of ['application.owner', 'application.manage']) {
-      const permissionIds = permissions.map((cap) => cap.id);
+      const permissionIds = permissions.map((permission) => permission.id);
       await syncRolePermissionMappings(tx, roleId, permissionIds);
       await syncRolePermissionsDenormalized(tx, roleId);
     }
@@ -698,8 +731,58 @@ export async function deleteAppRole(input: {
   if ('error' in auth) return { success: false, error: auth.error };
 
   try {
+    if (input.appId === GLOBAL_AUTHZ_APP_ID && ['application.owner', 'application.manage'].includes(input.roleId)) {
+      return { success: false, error: 'This system role cannot be deleted.' };
+    }
+
     const rolePayload = await getRolePayload(input.appId, input.roleId);
-    await prisma.authzRole.delete({ where: { id: input.roleId } });
+    const deletionCheck = await prisma.$transaction(async (tx) => {
+      const role = await tx.authzRole.findFirst({
+        where: { id: input.roleId, appId: input.appId },
+        select: { id: true, name: true },
+      });
+      if (!role) {
+        return { canDelete: false as const, error: 'Role not found.' };
+      }
+
+      const [defaultRoleCount, connectionCount, accessCount, memberRoleCount] = await Promise.all([
+        tx.application.count({ where: { defaultRoleId: input.roleId } }),
+        tx.connection.count({ where: { roleId: input.roleId } }),
+        tx.access.count({ where: { roleId: input.roleId } }),
+        tx.role.count({ where: { roleId: input.roleId } }),
+      ]);
+
+      let assetGrantCount = 0;
+      try {
+        assetGrantCount = await tx.authzAssetsAccessGrant.count({ where: { role_id: input.roleId } });
+      } catch (error) {
+        if (!isMissingTableError(error, 'public.authz_assets_access_grant')) {
+          throw error;
+        }
+      }
+
+      if (defaultRoleCount > 0) {
+        return {
+          canDelete: false as const,
+          error: 'This role is the default role for one or more applications. Clear it as the default role first.',
+        };
+      }
+
+      const totalAssignments = connectionCount + accessCount + memberRoleCount + assetGrantCount;
+      if (totalAssignments > 0) {
+        return {
+          canDelete: false as const,
+          error: 'This role is still assigned to members, connections, or access grants. Reassign or remove those usages first.',
+        };
+      }
+
+      await tx.authzRole.delete({ where: { id: input.roleId } });
+      return { canDelete: true as const };
+    });
+
+    if (!deletionCheck.canDelete) {
+      return { success: false, error: deletionCheck.error };
+    }
 
     if (rolePayload) {
       await dispatchRoleUpdateWebhook({

@@ -109,8 +109,8 @@ export async function bridgeCreateAuthAccess(input: Record<string, any>): Promis
     // Ensure the access.member role exists
     await prisma.authzRole.upsert({
       where: { id: 'access.member' },
-      update: { name: 'access.member', scope: 'account', appId: 'neup.account' },
-      create: { id: 'access.member', name: 'access.member', scope: 'account', appId: 'neup.account' },
+      update: { name: 'access.member', scope: 'public', appId: 'neup.account' },
+      create: { id: 'access.member', name: 'access.member', scope: 'public', appId: 'neup.account' },
     });
 
     await prisma.$transaction(async (tx) => {

@@ -445,21 +445,24 @@ export async function createManagedApplication(input: { name: string }) {
     const application = await prisma.$transaction(async (tx) => {
       // Ensure the application.owner role and its permissions exist before creating grants.
       // This makes createManagedApplication self-contained regardless of seed state.
-      const permissions = APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS.map((permission, index) => ({
+      const permissionDefinitions = APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS.map((permission, index) => ({
         id: `cap-appowner-${index + 1}-${permission.name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}`,
         ...permission,
       }));
-      for (const cap of permissions) {
-        await tx.authzPermission.upsert({
+      const permissions: Array<{ id: string; name: string; description: string | null; scope: string }> = [];
+      for (const cap of permissionDefinitions) {
+        const permission = await tx.authzPermission.upsert({
           where: { name_appId: { name: cap.name, appId: 'neup.account' } },
           update: { name: cap.name, description: cap.description, appId: 'neup.account', scope: cap.scope, tag: cap.tag },
           create: { id: cap.id, name: cap.name, description: cap.description, appId: 'neup.account', scope: cap.scope, tag: cap.tag },
+          select: { id: true, name: true, description: true, scope: true },
         });
+        permissions.push(permission);
       }
       await tx.authzRole.upsert({
         where: { id: 'application.owner' },
-        update: { name: 'application.owner', description: 'Full ownership of an application.', appId: 'neup.account', scope: 'application' },
-        create: { id: 'application.owner', name: 'application.owner', description: 'Full ownership of an application.', appId: 'neup.account', scope: 'application' },
+        update: { name: 'application.owner', description: 'Full ownership of an application.', appId: 'neup.account', scope: 'public' },
+        create: { id: 'application.owner', name: 'application.owner', description: 'Full ownership of an application.', appId: 'neup.account', scope: 'public' },
       });
       await tx.authzRolePermissionMap.deleteMany({
         where: { roleId: 'application.owner' },
@@ -471,7 +474,7 @@ export async function createManagedApplication(input: { name: string }) {
       await tx.authzRole.update({
         where: { id: 'application.owner' },
         data: {
-          permissions: permissions.map((cap) => cap.name),
+          permissions: permissions.map((permission) => permission.name),
         },
       });
       const createdApp = await tx.application.create({
@@ -493,11 +496,11 @@ export async function createManagedApplication(input: { name: string }) {
         accessApplicationId: createdApp.id,
         roleId: 'application.owner',
         details: {
-          permissions: permissions.map((cap) => ({
-            id: cap.id,
-            name: cap.name,
-            description: cap.description ?? null,
-            scope: cap.scope,
+          permissions: permissions.map((permission) => ({
+            id: permission.id,
+            name: permission.name,
+            description: permission.description ?? null,
+            scope: permission.scope,
           })),
         },
       });

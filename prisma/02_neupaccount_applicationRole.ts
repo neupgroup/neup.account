@@ -50,10 +50,11 @@ const ROLE = {
 // ---------------------------------------------------------------------------
 async function main() {
   console.log(`[02_neupaccount_applicationRole] Seeding role "${ROLE.id}" for app "${APP_ID}"…`);
+  const persistedCapabilities: Array<{ id: string; name: string }> = [];
 
   // 1. Upsert permissions
   for (const cap of CAPABILITIES) {
-    await prisma.authzPermission.upsert({
+    const permission = await prisma.authzPermission.upsert({
       where: { name_appId: { name: cap.name, appId: APP_ID } },
       update: {
         name: cap.name,
@@ -70,8 +71,13 @@ async function main() {
         scope: cap.scope,
         tag: cap.tag,
       },
+      select: {
+        id: true,
+        name: true,
+      },
     });
-    console.log(`  ✓ Permission upserted: ${cap.id}`);
+    persistedCapabilities.push(permission);
+    console.log(`  ✓ Permission upserted: ${permission.id}`);
   }
 
   // 2. Upsert role
@@ -82,7 +88,7 @@ async function main() {
       description: ROLE.description,
       appId: APP_ID,
       scope: ROLE.scope,
-      permissions: CAPABILITIES.map((cap) => cap.name),
+      permissions: persistedCapabilities.map((cap) => cap.name),
     },
     create: {
       id: ROLE.id,
@@ -90,13 +96,13 @@ async function main() {
       description: ROLE.description,
       appId: APP_ID,
       scope: ROLE.scope,
-      permissions: CAPABILITIES.map((cap) => cap.name),
+      permissions: persistedCapabilities.map((cap) => cap.name),
     },
   });
   console.log(`  ✓ Role upserted: ${ROLE.id}`);
 
   // 3. Upsert permission-to-role maps
-  for (const cap of CAPABILITIES) {
+  for (const cap of persistedCapabilities) {
     await prisma.authzRolePermissionMap.upsert({
       where: {
         roleId_permissionId: {

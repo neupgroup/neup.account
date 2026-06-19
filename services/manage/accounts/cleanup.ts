@@ -1,6 +1,7 @@
 'use server';
 
 import prisma from '@/core/helpers/prisma';
+import type { Prisma } from '@/prisma/generated/client/client';
 import { checkPermissions } from '@/services/user';
 import { getPersonalAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
@@ -13,6 +14,66 @@ export type ExpiredGuestAccount = {
     createdAt: string;
     status: string | null;
 };
+
+type Tx = Prisma.TransactionClient;
+
+async function tableExists(tx: Tx, qualifiedTableName: string): Promise<boolean> {
+    const rows = await tx.$queryRaw<Array<{ exists: string | null }>>`
+        SELECT to_regclass(${qualifiedTableName})::text AS "exists"
+    `;
+
+    return Boolean(rows[0]?.exists);
+}
+
+async function deleteGuestAccountsByIds(accountIds: string[]): Promise<number> {
+    if (accountIds.length === 0) return 0;
+
+    const deleteResult = await prisma.$transaction(async (tx) => {
+        const hasAuthzAssetsAccessGrant = await tableExists(tx, 'public.authz_assets_access_grant');
+
+        await tx.account.updateMany({
+            where: { linkedAccountId: { in: accountIds } },
+            data: { linkedAccountId: null },
+        });
+
+        await tx.systemError.updateMany({
+            where: { accountId: { in: accountIds } },
+            data: { accountId: null },
+        });
+
+        await tx.verification.updateMany({
+            where: { doneBy: { in: accountIds } },
+            data: { doneBy: null },
+        });
+
+        await tx.role.deleteMany({ where: { accountId: { in: accountIds } } });
+        if (hasAuthzAssetsAccessGrant) {
+            await tx.authzAssetsAccessGrant.deleteMany({ where: { account_id: { in: accountIds } } });
+        }
+        await tx.request.deleteMany({
+            where: {
+                OR: [{ senderId: { in: accountIds } }, { recipientId: { in: accountIds } }],
+            },
+        });
+        await tx.familyMember.deleteMany({ where: { memberId: { in: accountIds } } });
+        await tx.connection.deleteMany({ where: { accountId: { in: accountIds } } });
+        await tx.neupId.deleteMany({ where: { accountId: { in: accountIds } } });
+        await tx.contact.deleteMany({ where: { accountId: { in: accountIds } } });
+        await tx.authnSession.deleteMany({ where: { accountId: { in: accountIds } } });
+        await tx.activity.deleteMany({
+            where: {
+                OR: [{ memberId: { in: accountIds } }, { actorAccountId: { in: accountIds } }],
+            },
+        });
+        await tx.notification.deleteMany({ where: { accountId: { in: accountIds } } });
+        await tx.verification.deleteMany({ where: { accountId: { in: accountIds } } });
+        await tx.authnMethod.deleteMany({ where: { accountId: { in: accountIds } } });
+
+        return tx.account.deleteMany({ where: { id: { in: accountIds } } });
+    });
+
+    return deleteResult.count;
+}
 
 /**
  * Returns all guest accounts with status 'expired'.
@@ -79,16 +140,10 @@ export async function deleteExpiredGuestAccount(
         if (account.accountType !== 'guest') return { success: false, error: 'Account is not a guest account.' };
         if (account.status !== 'expired') return { success: false, error: 'Account is not expired.' };
 
-        await prisma.$transaction([
-            prisma.neupId.deleteMany({ where: { accountId } }),
-            prisma.contact.deleteMany({ where: { accountId } }),
-            prisma.authnSession.deleteMany({ where: { accountId } }),
-            prisma.activity.deleteMany({ where: { OR: [{ memberId: accountId }, { actorAccountId: accountId }] } }),
-            prisma.notification.deleteMany({ where: { accountId } }),
-            prisma.verification.deleteMany({ where: { accountId } }),
-            prisma.authnMethod.deleteMany({ where: { accountId } }),
-            prisma.account.delete({ where: { id: accountId } }),
-        ]);
+        const deletedCount = await deleteGuestAccountsByIds([accountId]);
+        if (deletedCount !== 1) {
+            return { success: false, error: 'Account could not be deleted.' };
+        }
 
         // Log on the admin's account — the deleted account no longer exists
         await logActivity(
@@ -133,16 +188,7 @@ export async function deleteAllExpiredGuestAccounts(): Promise<{
 
         const ids = expiredGuests.map((a) => a.id);
 
-        await prisma.$transaction([
-            prisma.neupId.deleteMany({ where: { accountId: { in: ids } } }),
-            prisma.contact.deleteMany({ where: { accountId: { in: ids } } }),
-            prisma.authnSession.deleteMany({ where: { accountId: { in: ids } } }),
-            prisma.activity.deleteMany({ where: { OR: [{ memberId: { in: ids } }, { actorAccountId: { in: ids } }] } }),
-            prisma.notification.deleteMany({ where: { accountId: { in: ids } } }),
-            prisma.verification.deleteMany({ where: { accountId: { in: ids } } }),
-            prisma.authnMethod.deleteMany({ where: { accountId: { in: ids } } }),
-            prisma.account.deleteMany({ where: { id: { in: ids } } }),
-        ]);
+        const deletedCount = await deleteGuestAccountsByIds(ids);
 
         // Log on the admin's account with the full list of deleted IDs for audit trail
         await logActivity(
@@ -153,7 +199,7 @@ export async function deleteAllExpiredGuestAccounts(): Promise<{
             adminId,
         );
         revalidatePath('/manage/accounts/cleanup');
-        return { success: true, deletedCount: ids.length };
+        return { success: true, deletedCount };
     } catch (error) {
         await logError('database', error, 'deleteAllExpiredGuestAccounts');
         return { success: false, deletedCount: 0, error: 'An unexpected error occurred during bulk deletion.' };

@@ -1,4 +1,13 @@
-export const PERMISSION_SCOPE_OPTIONS = ['public', 'managable', 'toApprove', 'root'] as const;
+export const PERMISSION_SCOPE_OPTIONS = [
+  'public',
+  'managable',
+  'managable.brand',
+  'managable.branch',
+  'managable.dependent',
+  'managable.individual',
+  'toApprove',
+  'root',
+] as const;
 
 export type PermissionScopeOption = (typeof PERMISSION_SCOPE_OPTIONS)[number];
 
@@ -17,6 +26,10 @@ function getProgressiveScopeLevel(scope: string): PermissionScopeOption | 'unkno
   if (!normalized) return 'unknown';
   if (normalized === 'root' || normalized === 'individual.root') return 'root';
   if (normalized === 'toApprove' || normalized.endsWith('.toApprove')) return 'toApprove';
+  if (normalized === 'managable.brand' || normalized === 'brand.managable') return 'managable.brand';
+  if (normalized === 'managable.branch' || normalized === 'branch.brand.managable') return 'managable.branch';
+  if (normalized === 'managable.dependent' || normalized === 'dependent.individual.managable') return 'managable.dependent';
+  if (normalized === 'managable.individual' || normalized === 'individual.managable') return 'managable.individual';
   if (normalized === 'managable' || normalized.endsWith('.managable')) return 'managable';
   if (normalized === 'public' || normalized.endsWith('.public') || normalized === 'default' || normalized === 'application' || normalized === 'brand') {
     return 'public';

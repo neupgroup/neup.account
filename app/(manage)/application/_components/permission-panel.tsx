@@ -49,6 +49,10 @@ function normalizeScopeFilter(value: string): string | null {
   const normalized = value.trim().toLowerCase();
   if (!normalized) return null;
   if (normalized === 'managed' || normalized === 'manageable') return 'managable';
+  if (normalized === 'managed.brand' || normalized === 'manageable.brand') return 'managable.brand';
+  if (normalized === 'managed.branch' || normalized === 'manageable.branch') return 'managable.branch';
+  if (normalized === 'managed.dependent' || normalized === 'manageable.dependent') return 'managable.dependent';
+  if (normalized === 'managed.individual' || normalized === 'manageable.individual') return 'managable.individual';
   if (PERMISSION_SCOPE_OPTIONS.includes(normalized as (typeof PERMISSION_SCOPE_OPTIONS)[number])) return normalized;
   return null;
 }

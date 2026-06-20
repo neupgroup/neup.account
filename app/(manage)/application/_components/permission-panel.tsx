@@ -1,11 +1,12 @@
 'use client';
 
-import { useMemo, useState, type KeyboardEvent } from 'react';
+import { useMemo, useState } from 'react';
 import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Plus, ChevronRight, X } from '@/components/icons';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Plus, ChevronRight } from '@/components/icons';
 import {
   Select,
   SelectContent,
@@ -38,128 +39,45 @@ import {
   deleteAppPermission,
   type AppPermission,
 } from '@/services/applications/authz-manage';
-import { ROLE_SCOPE_OPTIONS, isKnownRoleScope } from '@/services/role-scopes';
+import { PERMISSION_SCOPE_OPTIONS } from '@/services/applications/permission-scopes';
 
 type Props = {
   appId: string;
   initialPermissions: AppPermission[];
 };
 
-type PermissionTagInput = Parameters<typeof createAppPermission>[0]['tag'];
-const TAG_LIMIT = 4;
-const TAG_NAME_PATTERN = /^[a-zA-Z0-9._]+$/;
-
-function normalizePermissionTags(tags: string[]) {
-  const seen = new Set<string>();
-  const normalizedTags: string[] = [];
-
-  for (const rawTag of tags) {
-    const tag = rawTag.trim();
-    if (!tag || seen.has(tag) || !TAG_NAME_PATTERN.test(tag)) continue;
-    seen.add(tag);
-
-    if (normalizedTags.length < TAG_LIMIT) {
-      normalizedTags.push(tag);
-    }
-  }
-
-  return normalizedTags;
-}
-
-function PermissionTagEditor({
-  tags,
-  draft,
-  onDraftChange,
-  onTagsChange,
+function PermissionScopeSelector({
+  value,
+  onChange,
 }: {
-  tags: string[];
-  draft: string;
-  onDraftChange: (value: string) => void;
-  onTagsChange: (tags: string[]) => void;
+  value: string[];
+  onChange: (value: string[]) => void;
 }) {
-  const [error, setError] = useState('');
-  const normalizedTags = normalizePermissionTags(tags);
-
-  const updateTags = (nextTags: string[]) => {
-    onTagsChange(normalizePermissionTags(nextTags));
-  };
-
-  const addTag = (rawTag: string) => {
-    const nextTag = rawTag.trim();
-    if (!nextTag) return;
-
-    if (!TAG_NAME_PATTERN.test(nextTag)) {
-      setError('Tags may only contain letters, numbers, dots (.), and underscores (_).');
-      return;
-    }
-
-    if (normalizedTags.length >= TAG_LIMIT && !normalizedTags.includes(nextTag)) {
-      setError('You can add up to 4 tags.');
-      return;
-    }
-
-    setError('');
-    updateTags([...normalizedTags, nextTag]);
-    onDraftChange('');
-  };
-
-  const addDraftTag = () => {
-    addTag(draft);
-  };
-
-  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      addDraftTag();
-      return;
-    }
-
-    if (event.key === 'Backspace' && !draft && tags.length > 0) {
-      updateTags(normalizedTags.slice(0, -1));
-    }
-  };
+  const selected = new Set(value);
 
   return (
     <div className="space-y-2">
-      <input
-        value={draft}
-        onChange={(event) => {
-          onDraftChange(event.target.value);
-          if (error) setError('');
-        }}
-        onKeyDown={handleKeyDown}
-        onBlur={addDraftTag}
-        className="flex h-12 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        placeholder="Add custom tag and press Enter"
-      />
+      <p className="text-sm font-medium">Scopes</p>
+      <div className="grid gap-2 sm:grid-cols-2">
+        {PERMISSION_SCOPE_OPTIONS.map((scope) => (
+          <label key={scope} className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm">
+            <Checkbox
+              checked={selected.has(scope)}
+              onCheckedChange={(checked) => {
+                if (checked) {
+                  onChange(Array.from(new Set([...value, scope])));
+                  return;
+                }
 
-      {normalizedTags.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {normalizedTags.map((tag) => (
-            <span
-              key={tag}
-              className="inline-flex h-8 items-center gap-1 rounded-full border bg-muted px-3 text-sm leading-none text-foreground"
-            >
-              {tag}
-              <button
-                type="button"
-                className="ml-1 rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
-                onClick={() => updateTags(normalizedTags.filter((candidate) => candidate !== tag))}
-                aria-label={`Remove ${tag}`}
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </span>
-          ))}
-        </div>
-      )}
-
-      {error && (
-        <p className="text-xs text-destructive">{error}</p>
-      )}
-
+                onChange(value.filter((item) => item !== scope));
+              }}
+            />
+            <span>{scope}</span>
+          </label>
+        ))}
+      </div>
       <p className="text-xs text-muted-foreground">
-        Add up to 4 tags using letters, numbers, dots, or underscores.
+        A role can only include this permission when the role scope level appears here.
       </p>
     </div>
   );
@@ -170,28 +88,20 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   const [permissions, setPermissions] = useState<AppPermission[]>(initialPermissions);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
-  // Add dialog
   const [addOpen, setAddOpen] = useState(false);
   const [addName, setAddName] = useState('');
   const [addDesc, setAddDesc] = useState('');
-  const [addScope, setAddScope] = useState('');
-  const [addTags, setAddTags] = useState<string[]>([]);
-  const [addTagDraft, setAddTagDraft] = useState('');
+  const [addScope, setAddScope] = useState<string[]>([]);
   const [addPending, setAddPending] = useState(false);
 
-  // Edit dialog
   const [editTarget, setEditTarget] = useState<AppPermission | null>(null);
   const [editDesc, setEditDesc] = useState('');
-  const [editTags, setEditTags] = useState<string[]>([]);
-  const [editTagDraft, setEditTagDraft] = useState('');
+  const [editScope, setEditScope] = useState<string[]>([]);
   const [editPending, setEditPending] = useState(false);
 
-  // Remove dialog
   const [removeTarget, setRemoveTarget] = useState<AppPermission | null>(null);
   const [removePending, setRemovePending] = useState(false);
 
-  const isValidName = (value: string) => /^[a-zA-Z0-9._]+$/.test(value.trim());
-  const isValidScope = (value: string) => isKnownRoleScope(value.trim());
   const sortedPermissions = useMemo(() => {
     return [...permissions].sort((a, b) => {
       const result = a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
@@ -199,41 +109,18 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
     });
   }, [permissions, sortDirection]);
 
-  const getTagLabels = (value: AppPermission['tag']): string[] => {
-    if (typeof value === 'string') return [value];
-    if (Array.isArray(value)) return value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0);
-    if (value === null) return [];
-    return [JSON.stringify(value)];
-  };
-  const serializeTags = (tags: string[]): PermissionTagInput | undefined => {
-    const cleaned = normalizePermissionTags(tags);
-    return cleaned.length > 0 ? cleaned : undefined;
-  };
-  const validateDraftTag = (currentTags: string[], draft: string) => {
-    const nextTag = draft.trim();
-    if (!nextTag) return null;
-    if (!TAG_NAME_PATTERN.test(nextTag)) {
-      return 'Tags may only contain letters, numbers, dots (.), and underscores (_).';
-    }
-    const normalizedTags = normalizePermissionTags(currentTags);
-    if (normalizedTags.length >= TAG_LIMIT && !normalizedTags.includes(nextTag)) {
-      return 'You can add up to 4 tags.';
-    }
-    return null;
-  };
+  const isValidName = (value: string) => /^[a-zA-Z0-9._]+$/.test(value.trim());
 
-  const openEdit = (cap: AppPermission) => {
-    setEditTarget(cap);
-    setEditDesc(cap.description ?? '');
-    setEditTags(getTagLabels(cap.tag));
-    setEditTagDraft('');
+  const openEdit = (permission: AppPermission) => {
+    setEditTarget(permission);
+    setEditDesc(permission.description ?? '');
+    setEditScope(permission.scope);
   };
 
   const closeEdit = () => {
     setEditTarget(null);
     setEditDesc('');
-    setEditTags([]);
-    setEditTagDraft('');
+    setEditScope([]);
   };
 
   const handleAdd = async () => {
@@ -247,79 +134,82 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
       });
       return;
     }
-    const scope = addScope.trim();
-    if (!isValidScope(scope)) {
+    if (addScope.length === 0) {
       toast({
         variant: 'destructive',
-        title: 'Invalid scope',
-        description: 'Choose a valid scope.',
+        title: 'Missing scope',
+        description: 'Select at least one scope.',
       });
       return;
     }
-    const tagError = validateDraftTag(addTags, addTagDraft);
-    if (tagError) {
-      toast({ variant: 'destructive', title: 'Invalid tag', description: tagError });
-      return;
-    }
-    const nextTags = addTagDraft.trim() ? normalizePermissionTags([...addTags, addTagDraft.trim()]) : normalizePermissionTags(addTags);
+
     setAddPending(true);
     const result = await createAppPermission({
       appId,
       name: trimmed,
       description: addDesc || undefined,
-      scope,
-      tag: serializeTags(nextTags),
+      scope: addScope,
     });
     setAddPending(false);
+
     if (!result.success || !result.permission) {
       toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not create permission.' });
       return;
     }
-    setPermissions((prev) => [...prev, result.permission!]);
+
+    const createdPermission = result.permission;
+    setPermissions((prev) => [...prev, createdPermission]);
     setAddName('');
     setAddDesc('');
-    setAddScope('');
-    setAddTags([]);
-    setAddTagDraft('');
+    setAddScope([]);
     setAddOpen(false);
     toast({ title: 'Permission created' });
   };
 
   const handleEdit = async () => {
     if (!editTarget) return;
-    const tagError = validateDraftTag(editTags, editTagDraft);
-    if (tagError) {
-      toast({ variant: 'destructive', title: 'Invalid tag', description: tagError });
+    if (editScope.length === 0) {
+      toast({
+        variant: 'destructive',
+        title: 'Missing scope',
+        description: 'Select at least one scope.',
+      });
       return;
     }
-    const nextTags = editTagDraft.trim() ? normalizePermissionTags([...editTags, editTagDraft.trim()]) : normalizePermissionTags(editTags);
+
     setEditPending(true);
     const result = await updateAppPermission({
       appId,
       permissionId: editTarget.id,
       description: editDesc || undefined,
-      tag: serializeTags(nextTags),
+      scope: editScope,
     });
     setEditPending(false);
+
     if (!result.success || !result.permission) {
       toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not update permission.' });
       return;
     }
-    setPermissions((prev) => prev.map((c) => c.id === editTarget.id ? result.permission! : c));
+
+    const updatedPermission = result.permission;
+    setPermissions((prev) => prev.map((permission) => (permission.id === editTarget.id ? updatedPermission : permission)));
     closeEdit();
     toast({ title: 'Permission updated' });
   };
 
   const handleRemoveConfirm = async () => {
     if (!removeTarget) return;
+
     setRemovePending(true);
     const result = await deleteAppPermission({ appId, permissionId: removeTarget.id });
     setRemovePending(false);
+
     if (!result.success) {
       toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not delete permission.' });
       return;
     }
-    setPermissions((prev) => prev.filter((c) => c.id !== removeTarget.id));
+
+    setPermissions((prev) => prev.filter((permission) => permission.id !== removeTarget.id));
     setRemoveTarget(null);
     toast({ title: 'Permission removed' });
   };
@@ -341,9 +231,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
         </div>
       </div>
 
-      {/* Main list */}
       <div className="overflow-hidden rounded-2xl border bg-card">
-        {/* Add row */}
         <button
           type="button"
           onClick={() => setAddOpen(true)}
@@ -360,26 +248,22 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
           <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
         </button>
 
-        {/* Permission rows */}
         {sortedPermissions.length > 0 ? (
-          sortedPermissions.map((cap) => (
+          sortedPermissions.map((permission) => (
             <div
-              key={cap.id}
+              key={permission.id}
               className="group flex items-center justify-between gap-4 border-b px-4 py-4 last:border-b-0 transition-colors hover:bg-muted/40 sm:px-5"
             >
-              <button
-                type="button"
-                className="min-w-0 flex-1 text-left"
-                onClick={() => openEdit(cap)}
-              >
-                <p className="truncate text-base font-medium leading-6">{cap.name}</p>
-                {cap.description && (
-                  <p className="truncate text-sm text-muted-foreground">{cap.description}</p>
-                )}
+              <button type="button" className="min-w-0 flex-1 text-left" onClick={() => openEdit(permission)}>
+                <p className="truncate text-base font-medium leading-6">{permission.name}</p>
+                {permission.description ? (
+                  <p className="truncate text-sm text-muted-foreground">{permission.description}</p>
+                ) : null}
                 <div className="mt-1 flex flex-wrap gap-1">
-                  <Badge variant="secondary" className="text-xs">{cap.scope}</Badge>
-                  {getTagLabels(cap.tag).map((tag) => (
-                    <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
+                  {permission.scope.map((scope) => (
+                    <Badge key={`${permission.id}-${scope}`} variant="secondary" className="text-xs">
+                      {scope}
+                    </Badge>
                   ))}
                 </div>
               </button>
@@ -388,7 +272,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
                 variant="ghost"
                 size="sm"
                 className="shrink-0 text-muted-foreground"
-                onClick={() => setRemoveTarget(cap)}
+                onClick={() => setRemoveTarget(permission)}
               >
                 Remove
               </Button>
@@ -401,126 +285,65 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
         )}
       </div>
 
-      {/* Add dialog */}
       <Dialog
         open={addOpen}
         onOpenChange={(open) => {
           setAddOpen(open);
-          if (!open) { setAddName(''); setAddDesc(''); setAddScope(''); setAddTags([]); setAddTagDraft(''); }
+          if (!open) {
+            setAddName('');
+            setAddDesc('');
+            setAddScope([]);
+          }
         }}
       >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>New Permission</DialogTitle>
             <DialogDescription>
-              Use letters, numbers, dots, or underscores — e.g.{' '}
-              <code className="rounded bg-muted px-1 py-0.5 text-xs">orders.read</code> or{' '}
-              <code className="rounded bg-muted px-1 py-0.5 text-xs">Orders_Read</code>.
+              Use letters, numbers, dots, or underscores for the permission name and choose the role scope levels that can use it.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
-            <Input
-              value={addName}
-              onChange={(e) => setAddName(e.target.value)}
-              placeholder="Name, e.g. orders.read"
-              autoFocus
-            />
-            <Input
-              value={addDesc}
-              onChange={(e) => setAddDesc(e.target.value)}
-              placeholder="Description (optional)"
-            />
-            <Select value={addScope} onValueChange={setAddScope}>
-              <SelectTrigger className="h-12 w-full">
-                <SelectValue placeholder="Choose permission scope" />
-              </SelectTrigger>
-              <SelectContent>
-                {ROLE_SCOPE_OPTIONS.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <PermissionTagEditor
-              tags={addTags}
-              draft={addTagDraft}
-              onDraftChange={setAddTagDraft}
-              onTagsChange={setAddTags}
-            />
+            <Input value={addName} onChange={(event) => setAddName(event.target.value)} placeholder="Name, e.g. orders.read" autoFocus />
+            <Input value={addDesc} onChange={(event) => setAddDesc(event.target.value)} placeholder="Description (optional)" />
+            <PermissionScopeSelector value={addScope} onChange={setAddScope} />
           </div>
           <DialogFooter>
             <DialogClose asChild>
               <Button type="button" variant="outline">Cancel</Button>
             </DialogClose>
-            <Button
-              type="button"
-              onClick={handleAdd}
-              disabled={addPending || !addName.trim() || !isValidName(addName) || !isValidScope(addScope)}
-            >
+            <Button type="button" onClick={handleAdd} disabled={addPending || !addName.trim() || !isValidName(addName) || addScope.length === 0}>
               {addPending ? 'Adding...' : 'Add'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Edit dialog */}
       <Dialog open={!!editTarget} onOpenChange={(open) => { if (!open) closeEdit(); }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edit Permission</DialogTitle>
             <DialogDescription>
-              Update the description or tag of this permission. Permission names and scopes cannot be changed after creation.
+              Update the description and scope list for this permission. The name stays fixed after creation.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
-            <Input
-              value={editTarget?.name ?? ''}
-              disabled
-              aria-label="Permission name"
-            />
-            <Input
-              value={editDesc}
-              onChange={(e) => setEditDesc(e.target.value)}
-              placeholder="Description (optional)"
-              autoFocus
-            />
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Scope</label>
-              <div className="flex min-h-12 items-center rounded-md border border-input bg-muted/30 px-3 text-sm">
-                {editTarget?.scope ?? 'Unknown'}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                To change the scope, delete this permission and create a new one.
-              </p>
-            </div>
-            <PermissionTagEditor
-              tags={editTags}
-              draft={editTagDraft}
-              onDraftChange={setEditTagDraft}
-              onTagsChange={setEditTags}
-            />
+            <Input value={editTarget?.name ?? ''} disabled aria-label="Permission name" />
+            <Input value={editDesc} onChange={(event) => setEditDesc(event.target.value)} placeholder="Description (optional)" autoFocus />
+            <PermissionScopeSelector value={editScope} onChange={setEditScope} />
           </div>
           <DialogFooter>
             <DialogClose asChild>
               <Button type="button" variant="outline">Cancel</Button>
             </DialogClose>
-            <Button
-              type="button"
-              onClick={handleEdit}
-              disabled={editPending}
-            >
+            <Button type="button" onClick={handleEdit} disabled={editPending || editScope.length === 0}>
               {editPending ? 'Saving...' : 'Save'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Remove confirm dialog */}
-      <AlertDialog
-        open={!!removeTarget}
-        onOpenChange={(open) => { if (!open) setRemoveTarget(null); }}
-      >
+      <AlertDialog open={!!removeTarget} onOpenChange={(open) => { if (!open) setRemoveTarget(null); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Remove permission?</AlertDialogTitle>

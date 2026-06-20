@@ -1,3 +1,5 @@
+import { type PermissionScopeOption } from '@/services/applications/permission-scopes';
+
 export type ApplicationPermissionBase =
   | 'delete'
   | 'devlogs.view'
@@ -59,10 +61,10 @@ function permissionDescription(base: ApplicationPermissionBase, audience: Applic
   return `${baseDescription} For individual account application access.`;
 }
 
-function permissionScope(audience: ApplicationPermissionAudience): string {
-  if (audience === 'root') return 'individual.root';
+function permissionScope(audience: ApplicationPermissionAudience): PermissionScopeOption {
+  if (audience === 'root') return 'root';
   if (audience === 'managed') return 'managable';
-  return 'individual.public';
+  return 'public';
 }
 
 export function getApplicationPermissionName(
@@ -81,13 +83,12 @@ export function getApplicationPermissionNames(
 
 export function getApplicationPermissionDefinitions(
   audiences: readonly ApplicationPermissionAudience[],
-): Array<{ name: string; description: string; scope: string; tag: string }> {
+): Array<{ name: string; description: string; scope: PermissionScopeOption[] }> {
   return audiences.flatMap((audience) =>
     (Object.keys(APPLICATION_PERMISSION_DEFINITION_MAP) as ApplicationPermissionBase[]).map((base) => ({
       name: permissionName(base, audience),
       description: permissionDescription(base, audience),
-      scope: permissionScope(audience),
-      tag: permissionScope(audience),
+      scope: [permissionScope(audience)],
     })),
   );
 }

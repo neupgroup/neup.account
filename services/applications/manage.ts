@@ -5,6 +5,7 @@ import { isIP } from 'node:net';
 import { revalidatePath } from 'next/cache';
 import { notFound } from 'next/navigation';
 import { z } from 'zod';
+import { Prisma } from '@/prisma/generated/client/client';
 import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
 import { checkPermissions } from '@/services/user';
@@ -458,12 +459,12 @@ export async function createManagedApplication(input: { name: string }) {
         id: `cap-appowner-${index + 1}-${permission.name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}`,
         ...permission,
       }));
-      const permissions: Array<{ id: string; name: string; description: string | null; scope: string }> = [];
+      const permissions: Array<{ id: string; name: string; description: string | null; scope: Prisma.JsonValue }> = [];
       for (const cap of permissionDefinitions) {
         const permission = await tx.authzPermission.upsert({
           where: { name_appId: { name: cap.name, appId: 'neup.account' } },
-          update: { name: cap.name, description: cap.description, appId: 'neup.account', scope: cap.scope, tag: cap.tag },
-          create: { id: cap.id, name: cap.name, description: cap.description, appId: 'neup.account', scope: cap.scope, tag: cap.tag },
+          update: { name: cap.name, description: cap.description, appId: 'neup.account', scope: cap.scope },
+          create: { id: cap.id, name: cap.name, description: cap.description, appId: 'neup.account', scope: cap.scope },
           select: { id: true, name: true, description: true, scope: true },
         });
         permissions.push(permission);

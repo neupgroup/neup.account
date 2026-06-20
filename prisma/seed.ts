@@ -286,8 +286,8 @@ async function main() {
       const permissionId = `cap-def-${slugifyPermission(permissionName)}`;
       const permission = await prisma.authzPermission.upsert({
         where: { name_appId: { name: permissionName, appId: APP_ID } },
-        update: { name: permissionName, appId: APP_ID, scope: 'default', tag: 'default' },
-        create: { id: permissionId, name: permissionName, appId: APP_ID, scope: 'default', tag: 'default' },
+        update: { name: permissionName, appId: APP_ID, scope: ['public'] },
+        create: { id: permissionId, name: permissionName, appId: APP_ID, scope: ['public'] },
         select: { id: true },
       });
 
@@ -310,12 +310,12 @@ async function main() {
       const permissionId = `cap-root-${slugifyPermission(permissionName)}`;
       const permissionScope =
         permissionName.startsWith('application.') || permissionName.startsWith('account.brand.')
-          ? 'individual.root'
-          : 'root';
+          ? ['root']
+          : ['root'];
       const permission = await prisma.authzPermission.upsert({
         where: { name_appId: { name: permissionName, appId: APP_ID } },
-        update: { name: permissionName, appId: APP_ID, scope: permissionScope, tag: permissionScope },
-        create: { id: permissionId, name: permissionName, appId: APP_ID, scope: permissionScope, tag: permissionScope },
+        update: { name: permissionName, appId: APP_ID, scope: permissionScope },
+        create: { id: permissionId, name: permissionName, appId: APP_ID, scope: permissionScope },
         select: { id: true },
       });
 

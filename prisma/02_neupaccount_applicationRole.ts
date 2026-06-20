@@ -31,7 +31,6 @@ const CAPABILITIES = APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS.map((
   id: `cap-appowner-${index + 1}-${permission.name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}`,
   name: permission.name,
   description: permission.description,
-  tag: permission.tag,
   scope: permission.scope,
 }));
 
@@ -61,7 +60,6 @@ async function main() {
         description: cap.description,
         appId: APP_ID,
         scope: cap.scope,
-        tag: cap.tag,
       },
       create: {
         id: cap.id,
@@ -69,7 +67,6 @@ async function main() {
         description: cap.description,
         appId: APP_ID,
         scope: cap.scope,
-        tag: cap.tag,
       },
       select: {
         id: true,

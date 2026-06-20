@@ -15,12 +15,8 @@ import {
   type AppRole,
 } from '@/services/applications/authz-manage';
 import { redirectInApp } from '@/core/helper/navigation';
-import { isKnownRoleScope } from '@/services/role-scopes';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
-import {
-  getRoleScopeCompatibilityError,
-  isPermissionScopeAllowedForRoleScope,
-} from '@/services/applications/role-scope-compatibility';
+import { getRoleScopeCompatibilityError, isPermissionScopeAllowedForRoleScope } from '@/services/applications/role-scope-compatibility';
 
 type Props = {
   appId: string;
@@ -32,19 +28,16 @@ type Props = {
 export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: initialDefaultRoleId }: Props) {
   const router = useRouter();
   const { toast } = useToast();
-  const [name, setName] = useState(role.name);
   const [description, setDescription] = useState(role.description ?? '');
-  const scope = isKnownRoleScope(role.scope) ? role.scope : '';
-  const [infoOpen, setInfoOpen] = useState(false);
   const [permissionIds, setPermissionIds] = useState<string[]>(() => {
     const idsFromRole = role.permissions
-      .map((p) => p.id)
+      .map((permission) => permission.id)
       .filter((id): id is string => typeof id === 'string' && id.length > 0);
 
     const namesFromRole = new Set(
       role.permissions
-        .map((p) => p.name)
-        .filter((name): name is string => typeof name === 'string' && name.length > 0)
+        .map((permission) => permission.name)
+        .filter((name): name is string => typeof name === 'string' && name.length > 0),
     );
 
     const idsFromNames = permissions
@@ -58,47 +51,47 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
   const [defaultRoleId, setDefaultRoleId] = useState<string | null>(initialDefaultRoleId);
   const [defaultPending, setDefaultPending] = useState(false);
   const [deletePending, setDeletePending] = useState(false);
+
   const selectedSet = useMemo(() => new Set(permissionIds), [permissionIds]);
-  const hasUsableScope = (value: string | null | undefined) => typeof value === 'string' && value.trim().length > 0;
   const selectedPermissions = useMemo(
     () => permissions.filter((permission) => selectedSet.has(permission.id)),
     [permissions, selectedSet],
   );
   const scopeCompatibilityError = useMemo(
-    () => getRoleScopeCompatibilityError(scope, selectedPermissions.map((permission) => permission.scope)),
-    [scope, selectedPermissions],
+    () => getRoleScopeCompatibilityError(role.scope, selectedPermissions.map((permission) => permission.scope)),
+    [role.scope, selectedPermissions],
   );
 
   const visiblePermissions = useMemo(() => {
-    const q = search.trim().toLowerCase();
+    const query = search.trim().toLowerCase();
     const filtered = permissions.filter((permission) => {
-      if (!q) return true;
+      if (!query) return true;
       const haystack = `${permission.name} ${permission.description || ''}`.toLowerCase();
-      return haystack.includes(q);
+      return haystack.includes(query);
     });
 
     return filtered.sort((a, b) => a.name.localeCompare(b.name));
-  }, [permissions, search, selectedSet]);
+  }, [permissions, search]);
 
-  const selectedCount = permissionIds.length;
   const isDefaultRole = defaultRoleId === role.id;
 
   const handleSave = async () => {
     if (scopeCompatibilityError) return;
+
     setSavePending(true);
     const result = await updateAppRole({
       appId,
       roleId: role.id,
-      name,
       description: description || undefined,
-      scope: scope || undefined,
       permissionIds,
     });
     setSavePending(false);
+
     if (!result.success) {
       toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not update role.' });
       return;
     }
+
     toast({ title: 'Role updated' });
     router.refresh();
   };
@@ -137,6 +130,24 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
 
   return (
     <div className="grid gap-4">
+      <div className="grid gap-3 rounded-2xl border bg-card p-5">
+        <div>
+          <p className="text-sm font-medium">Role details</p>
+          <p className="text-xs text-muted-foreground">
+            Role name and scope are fixed after creation. Update the description and permission mapping here.
+          </p>
+        </div>
+        <Input value={role.name} disabled aria-label="Role name" />
+        <div className="flex min-h-10 items-center rounded-md border border-input bg-muted/30 px-3 text-sm">
+          {role.scope}
+        </div>
+        <Input
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+          placeholder="Description (optional)"
+        />
+      </div>
+
       <div className="grid gap-2 rounded-2xl bg-card">
         <Input
           placeholder="Search permissions..."
@@ -144,7 +155,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
           onChange={(event) => setSearch(event.target.value)}
         />
         <p className="text-xs text-muted-foreground">
-          Selected: {selectedCount} of {permissions.length}
+          Selected: {permissionIds.length} of {permissions.length}
         </p>
         {scopeCompatibilityError ? (
           <p className="text-xs text-destructive">{scopeCompatibilityError}</p>
@@ -155,22 +166,23 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
           <div className="overflow-hidden rounded-2xl border bg-card">
             {visiblePermissions.map((permission) => {
               const isChecked = selectedSet.has(permission.id);
-              const canAddPermission = hasUsableScope(permission.scope) && (isChecked || isPermissionScopeAllowedForRoleScope(permission.scope, scope));
+              const canAddPermission = isChecked || isPermissionScopeAllowedForRoleScope(permission.scope, role.scope);
+
               return (
                 <label
                   key={permission.id}
                   className={`group flex items-start gap-3 border-b px-4 py-4 transition-colors last:border-b-0 sm:px-5 ${
-                    canAddPermission || isChecked ? 'cursor-pointer hover:bg-muted/40' : 'cursor-not-allowed opacity-60'
+                    canAddPermission ? 'cursor-pointer hover:bg-muted/40' : 'cursor-not-allowed opacity-60'
                   }`}
                 >
                   <Checkbox
                     checked={isChecked}
-                    disabled={!canAddPermission && !isChecked}
+                    disabled={!canAddPermission}
                     onCheckedChange={() =>
                       setPermissionIds((prev) =>
                         prev.includes(permission.id)
                           ? prev.filter((id) => id !== permission.id)
-                          : [...prev, permission.id]
+                          : [...prev, permission.id],
                       )
                     }
                     className="mt-0.5"
@@ -178,20 +190,18 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="truncate text-base font-medium leading-6">{permission.name}</p>
-                      {permission.scope ? (
-                        <Badge variant="secondary" className="text-xs">
-                          {permission.scope}
+                      {permission.scope.map((scope) => (
+                        <Badge key={`${permission.id}-${scope}`} variant="secondary" className="text-xs">
+                          {scope}
                         </Badge>
-                      ) : null}
+                      ))}
                     </div>
                     <p className="text-sm text-muted-foreground">
                       {permission.description || 'No description'}
                     </p>
                     {!canAddPermission ? (
                       <p className="text-xs text-muted-foreground">
-                        {!hasUsableScope(permission.scope)
-                          ? 'Missing scope. This permission cannot be added to a role.'
-                          : 'This permission is not allowed for the selected role scope.'}
+                        This permission does not include the role scope level required by this role.
                       </p>
                     ) : null}
                   </div>
@@ -202,86 +212,46 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
         )}
       </div>
 
-      {!infoOpen ? (
-        <>
-          <div className="grid gap-3 rounded-2xl border bg-card p-5">
-            <div>
-              <p className="text-sm font-medium">Default role</p>
-              <p className="text-xs text-muted-foreground">
-                {isDefaultRole
-                  ? 'New application connections are created with this role.'
-                  : 'Make this the role used when new application connections are created.'}
-              </p>
-            </div>
-            <div>
-              <Button
-                type="button"
-                variant={isDefaultRole ? 'outline' : 'secondary'}
-                onClick={handleDefaultRole}
-                disabled={defaultPending}
-              >
-                {defaultPending ? 'Saving...' : isDefaultRole ? 'Clear Default' : 'Set Default'}
-              </Button>
-            </div>
-          </div>
-
-          <div className="grid gap-3 rounded-2xl border border-destructive/30 bg-card p-5">
-            <div>
-              <p className="text-sm font-medium text-destructive">Delete role</p>
-              <p className="text-xs text-muted-foreground">
-                Remove this role from the application. This action cannot be undone.
-              </p>
-            </div>
-            <div>
-              <Button type="button" variant="destructive" onClick={handleDelete} disabled={deletePending}>
-                {deletePending ? 'Deleting...' : 'Delete Role'}
-              </Button>
-            </div>
-          </div>
-        </>
-      ) : null}
-
-      {infoOpen ? (
-        <div className="grid gap-3 rounded-2xl border bg-card p-5">
-          <div>
-            <p className="text-sm font-medium">Role details</p>
-            <p className="text-xs text-muted-foreground">
-              Edit the role name and description while managing its permissions.
-            </p>
-          </div>
-          <Input
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            placeholder="Role name, e.g. viewer"
-          />
-          <Input
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-            placeholder="Description (optional)"
-          />
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Scope</label>
-            <div className="flex min-h-10 items-center rounded-md border border-input bg-muted/30 px-3 text-sm">
-              {scope || 'Unknown'}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Role scope cannot be changed. Delete and recreate the role if you need a different scope.
-            </p>
-          </div>
-          {scopeCompatibilityError ? (
-            <p className="text-xs text-destructive">{scopeCompatibilityError}</p>
-          ) : null}
+      <div className="grid gap-3 rounded-2xl border bg-card p-5">
+        <div>
+          <p className="text-sm font-medium">Default role</p>
+          <p className="text-xs text-muted-foreground">
+            {isDefaultRole
+              ? 'New application connections are created with this role.'
+              : 'Make this the role used when new application connections are created.'}
+          </p>
         </div>
-      ) : null}
+        <div>
+          <Button
+            type="button"
+            variant={isDefaultRole ? 'outline' : 'secondary'}
+            onClick={handleDefaultRole}
+            disabled={defaultPending}
+          >
+            {defaultPending ? 'Saving...' : isDefaultRole ? 'Clear Default' : 'Set Default'}
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid gap-3 rounded-2xl border border-destructive/30 bg-card p-5">
+        <div>
+          <p className="text-sm font-medium text-destructive">Delete role</p>
+          <p className="text-xs text-muted-foreground">
+            Remove this role from the application. This action cannot be undone.
+          </p>
+        </div>
+        <div>
+          <Button type="button" variant="destructive" onClick={handleDelete} disabled={deletePending}>
+            {deletePending ? 'Deleting...' : 'Delete Role'}
+          </Button>
+        </div>
+      </div>
 
       <div className="flex justify-end gap-2">
         <Button variant="outline" onClick={() => redirectInApp(router, applicationHref('/application/roles', appId, { mode: 'root' }))}>
           Back
         </Button>
-        <Button type="button" variant="outline" onClick={() => setInfoOpen((open) => !open)}>
-          {infoOpen ? 'Hide Info' : 'Edit Info'}
-        </Button>
-        <Button onClick={handleSave} disabled={savePending || !name.trim() || !scope.trim() || !!scopeCompatibilityError}>
+        <Button onClick={handleSave} disabled={savePending || !!scopeCompatibilityError}>
           {savePending ? 'Saving...' : 'Save Role'}
         </Button>
       </div>

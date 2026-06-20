@@ -68,7 +68,7 @@ export function RolesPanel({ appId, initialRoles, hasWebhook, defaultRoleId }: P
           className="group block border-b px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5"
         >
           <p className="text-base font-medium leading-6">Create a role</p>
-          <p className="text-sm text-muted-foreground">Define title, description, scope, and initial permissions.</p>
+          <p className="text-sm text-muted-foreground">Define the role name, description, and fixed scope.</p>
         </Link>
 
         {initialRoles.length > 0 ? (

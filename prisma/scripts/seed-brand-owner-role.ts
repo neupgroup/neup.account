@@ -41,8 +41,7 @@ async function main() {
 
     for (const permissionName of BRAND_OWNER_PERMISSION_NAMES) {
       const permissionId = `cap-brand-owner-${slugifyPermission(permissionName)}`;
-      const permissionScope = permissionName.includes('.scopeManaged') ? 'brand.managable' : 'brand';
-      const permissionTag = permissionScope;
+      const permissionScope = permissionName.includes('.scopeManaged') ? ['managable'] : ['public'];
 
       const permission = await tx.authzPermission.upsert({
         where: { name_appId: { name: permissionName, appId: APP_ID } },
@@ -50,14 +49,12 @@ async function main() {
           name: permissionName,
           appId: APP_ID,
           scope: permissionScope,
-          tag: permissionTag,
         },
         create: {
           id: permissionId,
           name: permissionName,
           appId: APP_ID,
           scope: permissionScope,
-          tag: permissionTag,
         },
         select: { id: true },
       });
@@ -84,15 +81,13 @@ async function main() {
         update: {
           name: permissionName,
           appId: APP_ID,
-          scope: 'individual.root',
-          tag: 'individual.root',
+          scope: ['root'],
         },
         create: {
           id: permissionId,
           name: permissionName,
           appId: APP_ID,
-          scope: 'individual.root',
-          tag: 'individual.root',
+          scope: ['root'],
         },
       });
     }

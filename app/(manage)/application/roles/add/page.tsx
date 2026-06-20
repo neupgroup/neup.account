@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
 import { canCurrentAccountManageApplicationRoles, getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
-import { getAppPermissions } from '@/services/applications/authz-manage';
 import { BackButton } from '@/components/ui/back-button';
 import { PrimaryHeader } from '@/components/ui/primary-header';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -37,15 +36,13 @@ export default async function AddRoleQueryPage({ searchParams }: Props) {
     );
   }
 
-  const permissions = await getAppPermissions(applicationId);
-
   return (
     <div className="grid gap-8">
       <div className="space-y-4">
         <BackButton href={applicationHref('/application/roles', applicationId, { mode: 'root' })} />
-        <PrimaryHeader title="Add Role" description={`Create a role for ${details.name} and assign permissions.`} />
+        <PrimaryHeader title="Add Role" description={`Create a role for ${details.name}. Permissions are mapped after the role is created.`} />
       </div>
-      <RoleCreateForm appId={applicationId} permissions={permissions} />
+      <RoleCreateForm appId={applicationId} />
     </div>
   );
 }

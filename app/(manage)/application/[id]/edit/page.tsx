@@ -7,6 +7,7 @@ import { ShieldAlert } from 'lucide-react';
 import { AppEditForm } from '@/app/(manage)/application/_components/app-edit-form';
 import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId } from '@/core/auth/verify';
+import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -20,7 +21,7 @@ export default async function ApplicationEditPage({ params }: Props) {
     return (
       <div className="grid gap-8">
         <div className="space-y-4">
-          <BackButton href={`/application/${id}`} />
+          <BackButton href={applicationHref('/application', id)} />
           <PrimaryHeader title="Basic Information" description="Application details." />
         </div>
         <Alert variant="destructive">
@@ -35,7 +36,7 @@ export default async function ApplicationEditPage({ params }: Props) {
   return (
     <div className="grid gap-8">
       <div className="space-y-4">
-        <BackButton href={`/application/${id}`} />
+        <BackButton href={applicationHref('/application', id)} />
         <PrimaryHeader
           title="Basic Information"
           description={`Update the details for ${details.name}.`}

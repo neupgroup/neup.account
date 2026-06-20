@@ -11,6 +11,7 @@ import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
 import { canAssignRoleScopeToAccount, expectedRoleScopesForAccount } from '@/services/role-scopes';
+import { revalidateApplicationRequestsRoutes } from '@/services/applications/revalidate-routes';
 
 const manageApplicationSchema = z.object({
   appId: z.string().min(1, 'Application ID is required.'),
@@ -158,7 +159,7 @@ export async function assignOwnApplicationRole(input: {
 
     revalidatePath('/data/appconnection');
     revalidatePath(`/data/appconnection/${appId}`);
-    revalidatePath(`/application/${appId}/requests`);
+    revalidateApplicationRequestsRoutes(appId);
 
     if (canAssignImmediately) {
       await dispatchAccountUpdatedEvent({ accountId, changedFields: ['role'] });

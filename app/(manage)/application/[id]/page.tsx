@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { getApplicationDetailsForViewerV2, getApplicationLogPermissions, getApplicationUserStats } from '@/services/applications/manage';
 import { deleteManagedApplicationFromDetailsPage } from '@/services/applications/form-actions';
 import { AppWindow, Building, BarChart, Share2, ExternalLink, ChevronRight, Users, UserPlus, ArrowLeft, type LucideIcon } from '@/components/icons';
+import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -106,7 +107,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
           ].map(({ label, value, description, icon: Icon }) => (
             <FlowLink
               key={label}
-              href={`/application/${id}/users`}
+              href={applicationHref('/application/users', id)}
               className="group p-6 transition-colors hover:bg-muted/40"
             >
               <div className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -125,7 +126,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
         <h2 className="text-xl font-semibold tracking-tight">Manage Application</h2>
         <div className="overflow-hidden rounded-2xl border bg-card">
           <FlowLink
-            href={`/application/${id}/edit`}
+            href={applicationHref('/application/edit', id)}
             className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
           >
             <div className="min-w-0">
@@ -136,7 +137,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
           </FlowLink>
 
           <FlowLink
-            href={`/application/${id}/config`}
+            href={applicationHref('/application/config', id)}
             className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
           >
             <div className="min-w-0">
@@ -147,7 +148,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
           </FlowLink>
 
           <FlowLink
-            href={`/application/${id}/roles?mode=root`}
+            href={applicationHref('/application/roles', id, { mode: 'root' })}
             className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
           >
             <div className="min-w-0">
@@ -158,7 +159,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
           </FlowLink>
 
           <FlowLink
-            href={`/application/${id}/permissions?mode=root`}
+            href={applicationHref('/application/permissions', id, { mode: 'root' })}
             className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
           >
             <div className="min-w-0">
@@ -169,7 +170,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
           </FlowLink>
 
           <FlowLink
-            href={`/application/${id}/requests?mode=root`}
+            href={applicationHref('/application/requests', id, { mode: 'root' })}
             className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
           >
             <div className="min-w-0">
@@ -205,7 +206,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
 
           {logPermissions.canViewDevLogs ? (
             <FlowLink
-              href={`/application/${id}/logs`}
+              href={applicationHref('/application/logs', id)}
               className="group flex items-center justify-between gap-4 border-t px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
             >
               <div className="min-w-0">

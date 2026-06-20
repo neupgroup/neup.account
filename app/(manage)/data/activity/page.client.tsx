@@ -14,6 +14,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { redirectInApp } from "@/core/helper/navigation";
 import type { ActivityLog } from "@/services/log-actions";
+import { applicationHref } from "@/app/(manage)/application/_lib/query-param";
 
 const statusVariantMap: { [key: string]: "default" | "destructive" | "secondary" } = {
     Success: "default",
@@ -145,7 +146,7 @@ function DataActivityPageComponent({ after, applicationId, history }: { after?: 
         redirectInApp(router, buildUrl(prevAfterId, newHistory));
     };
 
-    const backHref = applicationId ? `/application/${applicationId}` : '/data';
+    const backHref = applicationId ? applicationHref('/application', applicationId) : '/data';
 
     return (
         <div className="grid gap-8">

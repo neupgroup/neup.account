@@ -9,6 +9,7 @@ import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-
 import { canAssignRoleScopeToAccount } from '@/services/role-scopes';
 import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';
 import { isApplicationOwnerForAccount } from '@/services/applications/manage';
+import { revalidateApplicationRequestsRoutes, revalidateApplicationUsersRoutes } from '@/services/applications/revalidate-routes';
 
 const ROOT_APPLICATION_EDIT_PERMISSION = 'application.edit.scopeRoot';
 const ROOT_PERMISSION_SCOPE = 'individual.root';
@@ -120,9 +121,8 @@ export async function approveApplicationRoleRequest(requestId: string): Promise<
 
     revalidatePath('/requests');
     revalidatePath(`/requests/${requestId}`);
-    revalidatePath(`/application/${appId}/requests`);
-    revalidatePath(`/application/${appId}/users`);
-    if (connectionId) revalidatePath(`/application/${appId}/users/${connectionId}`);
+    revalidateApplicationRequestsRoutes(appId);
+    revalidateApplicationUsersRoutes(appId, connectionId || undefined);
 
     return { success: true };
   } catch (error) {

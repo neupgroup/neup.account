@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { createAppRole, type AppPermission } from '@/services/applications/authz-manage';
 import { redirectInApp } from '@/core/helper/navigation';
 import { ROLE_SCOPE_OPTIONS } from '@/services/role-scopes';
+import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import {
   getCompatibleRoleScopesForPermissionScopes,
   getRoleScopeCompatibilityError,
@@ -62,7 +63,7 @@ export function RoleCreateForm({ appId, permissions }: Props) {
     }
 
     toast({ title: 'Role created' });
-    redirectInApp(router, `/application/${appId}/roles/${result.role.id}?mode=root`);
+    redirectInApp(router, applicationHref(`/application/roles/${result.role.id}`, appId, { mode: 'root' }));
     router.refresh();
   };
 
@@ -130,7 +131,7 @@ export function RoleCreateForm({ appId, permissions }: Props) {
       </div>
 
       <div className="flex gap-2 justify-end">
-        <Button variant="outline" onClick={() => redirectInApp(router, `/application/${appId}/roles?mode=root`)}>
+        <Button variant="outline" onClick={() => redirectInApp(router, applicationHref('/application/roles', appId, { mode: 'root' }))}>
           Cancel
         </Button>
         <Button onClick={handleSubmit} disabled={pending || !name.trim() || !scope || !!scopeCompatibilityError}>

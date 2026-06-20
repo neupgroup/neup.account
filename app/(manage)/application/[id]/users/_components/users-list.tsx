@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FlowLink } from '@/components/ui/flow-link';
+import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { redirectInApp } from '@/core/helper/navigation';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -79,7 +80,7 @@ function UserRow({
 
   return (
     <FlowLink
-      href={`/application/${appId}/users/${user.connectionId}?mode=root`}
+      href={applicationHref(`/application/users/${user.connectionId}`, appId, { mode: 'root' })}
       className={`
         flex items-center gap-4 px-4 py-3.5
         border border-border bg-card
@@ -177,6 +178,7 @@ function UsersListInner({ appId }: { appId: string }) {
   // Sync filters to URL
   const syncUrl = useCallback((query: string, status: string, since: string, nextSort: AppUserSortKey) => {
     const params = new URLSearchParams();
+    params.set('application', appId);
     if (query.trim()) params.set('q', query.trim());
     if (status !== 'all') params.set('status', status);
     if (since !== 'all') params.set('activeSince', since);
@@ -184,7 +186,7 @@ function UsersListInner({ appId }: { appId: string }) {
     const qs = params.toString();
     if (qs === searchParams.toString()) return;
     redirectInApp(router, `${pathname}${qs ? `?${qs}` : ''}`, { replace: true, scroll: false });
-  }, [router, pathname, searchParams]);
+  }, [appId, router, pathname, searchParams]);
 
   // Debounce search
   useEffect(() => {

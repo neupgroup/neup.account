@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { AppWindow, Building, BarChart, Share2, ChevronRight, Plus, type LucideIcon } from '@/components/icons';
 import type { FlatAppItem, ApplicationSection } from '@/services/applications/types';
 import { redirectInApp } from '@/core/helper/navigation';
+import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 
 const TAB_PARAM: Record<ApplicationSection['label'], string> = {
   Using: 'using',
@@ -40,7 +41,7 @@ function AppRow({ app, showStatus }: { app: FlatAppItem; showStatus?: boolean })
   const Icon = iconFor(app.icon);
   return (
     <FlowLink
-      href={`/application/${app.id}`}
+      href={applicationHref('/application', app.id)}
       className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
     >
       <div className="flex min-w-0 items-center gap-3">

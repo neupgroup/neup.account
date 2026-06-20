@@ -7,6 +7,7 @@ import { BackButton } from '@/components/ui/back-button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
 import { RequestActionForm } from './form';
+import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -251,7 +252,7 @@ export default async function RequestDetailPage({ params }: Props) {
               {isApplicationChange && appId ? (
                 <>
                   <Link
-                    href={`/application/${appId}?mode=root`}
+                    href={applicationHref('/application', appId, { mode: 'root' })}
                     className="no-underline hover:underline underline-offset-4"
                   >
                     {appName}

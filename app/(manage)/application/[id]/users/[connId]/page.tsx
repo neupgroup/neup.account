@@ -11,6 +11,7 @@ import {
   getApplicationUserConnectionDetails,
 } from '@/services/applications/manage';
 import { RoleSelector } from './_components/role-selector';
+import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = {
   params: Promise<{ id: string; connId: string }>;
@@ -44,7 +45,7 @@ export default async function ApplicationUserDetailsPage({ params }: Props) {
     <div className="grid gap-6">
       <div>
         <Button variant="ghost" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
-          <FlowLink href={`/application/${appId}/users?mode=root`}>
+          <FlowLink href={applicationHref('/application/users', appId, { mode: 'root' })}>
             <ArrowLeft className="h-4 w-4" />
             Back
           </FlowLink>
@@ -123,7 +124,7 @@ export default async function ApplicationUserDetailsPage({ params }: Props) {
 
       <div className="overflow-hidden rounded-2xl border bg-card">
         <FlowLink
-          href={`/application/${appId}/users/${connId}/delete?mode=root`}
+          href={applicationHref(`/application/users/${connId}/delete`, appId, { mode: 'root' })}
           className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5"
         >
           <div className="min-w-0">
@@ -134,7 +135,7 @@ export default async function ApplicationUserDetailsPage({ params }: Props) {
         </FlowLink>
 
         <FlowLink
-          href={`/application/${appId}/users/${connId}/activity?mode=root`}
+          href={applicationHref(`/application/users/${connId}/activity`, appId, { mode: 'root' })}
           className="group flex items-center justify-between gap-4 px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5"
         >
           <div className="min-w-0">

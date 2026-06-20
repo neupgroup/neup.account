@@ -14,6 +14,7 @@ import { logError } from '@/core/helpers/logger';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { ACCESS_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
 import type { ApplicationSection, FlatAppItem } from '@/services/applications/types';
+import { revalidateApplicationDetailRoutes } from '@/services/applications/revalidate-routes';
 
 export type { FlatAppItem } from '@/services/applications/types';
 
@@ -255,7 +256,7 @@ export async function updateApplicationInfo(
     });
 
     revalidatePath('/application');
-    revalidatePath(`/application/${appId}`);
+    revalidateApplicationDetailRoutes(appId);
     return { success: true };
   } catch (error) {
     await logError('database', error, `updateApplicationInfo:${appId}`);

@@ -6,6 +6,7 @@ import { PrimaryHeader } from '@/components/ui/primary-header';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { PermissionPanel } from '@/app/(manage)/application/_components/permission-panel';
+import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -20,13 +21,12 @@ export default async function ApplicationPermissionsPage({ params, searchParams 
   if (!details) notFound();
 
   const canManagePermissions = await canCurrentAccountManageApplicationRoles(id);
-  const modeSuffix = mode ? `?mode=${encodeURIComponent(mode)}` : '';
 
   if (!canManagePermissions) {
     return (
       <div className="grid gap-8">
         <div className="space-y-4">
-          <BackButton href={`/application/${id}${modeSuffix}`} />
+          <BackButton href={applicationHref('/application', id, mode ? { mode } : undefined)} />
           <PrimaryHeader
             title="Permissions"
             description={`Manage permissions for ${details.name}.`}
@@ -46,7 +46,7 @@ export default async function ApplicationPermissionsPage({ params, searchParams 
   return (
     <div className="grid gap-8">
       <div className="space-y-4">
-        <BackButton href={`/application/${id}${modeSuffix}`} />
+        <BackButton href={applicationHref('/application', id, mode ? { mode } : undefined)} />
         <PrimaryHeader
           title="Permissions"
           description={`Define and manage permissions for ${details.name}.`}

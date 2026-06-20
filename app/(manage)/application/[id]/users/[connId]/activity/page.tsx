@@ -2,6 +2,7 @@ import { ArrowLeft } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FlowLink } from '@/components/ui/flow-link';
+import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = { params: Promise<{ id: string; connId: string }> };
 
@@ -12,7 +13,7 @@ export default async function ApplicationUserActivityPage({ params }: Props) {
     <div className="grid gap-6">
       <div>
         <Button variant="ghost" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
-          <FlowLink href={`/application/${id}/users/${connId}?mode=root`}>
+          <FlowLink href={applicationHref(`/application/users/${connId}`, id, { mode: 'root' })}>
             <ArrowLeft className="h-4 w-4" />
             Back
           </FlowLink>

@@ -16,6 +16,11 @@ import {
 } from '@/services/applications/permission-definitions';
 import { getRoleScopeCompatibilityError } from '@/services/applications/role-scope-compatibility';
 import { isKnownRoleScope, roleScopeError } from '@/services/role-scopes';
+import {
+  revalidateApplicationConfigRoutes,
+  revalidateApplicationPermissionsRoutes,
+  revalidateApplicationRoleRoutes,
+} from '@/services/applications/revalidate-routes';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -821,8 +826,8 @@ export async function setAppDefaultRole(input: {
       data: { defaultRoleId: input.roleId ?? null },
     });
 
-    revalidatePath(`/application/${input.appId}/roles`);
-    revalidatePath(`/application/${input.appId}/config`);
+    revalidateApplicationRoleRoutes(input.appId, input.roleId ?? undefined);
+    revalidateApplicationConfigRoutes(input.appId);
     return { success: true };
   } catch (error) {
     await logError('database', error, `setAppDefaultRole:${input.appId}`);
@@ -919,7 +924,7 @@ export async function clearAuthzPushStatus(appId: string): Promise<{
       prisma.authzRole.updateMany({ where: { appId }, data: { pushed: false } }),
     ]);
 
-    revalidatePath(`/application/${appId}/roles`);
+    revalidateApplicationRoleRoutes(appId);
     revalidatePath(`/data/appconnection/${appId}`);
 
     return { success: true, cleared: { roles: rolesResult.count, access: 0 } };

@@ -16,6 +16,7 @@ import {
 } from '@/services/applications/authz-manage';
 import { redirectInApp } from '@/core/helper/navigation';
 import { isKnownRoleScope } from '@/services/role-scopes';
+import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import {
   getRoleScopeCompatibilityError,
   isPermissionScopeAllowedForRoleScope,
@@ -131,7 +132,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
     }
 
     toast({ title: 'Role deleted' });
-    redirectInApp(router, `/application/${appId}/roles?mode=root`);
+    redirectInApp(router, applicationHref('/application/roles', appId, { mode: 'root' }));
   };
 
   return (
@@ -274,7 +275,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
       ) : null}
 
       <div className="flex justify-end gap-2">
-        <Button variant="outline" onClick={() => redirectInApp(router, `/application/${appId}/roles?mode=root`)}>
+        <Button variant="outline" onClick={() => redirectInApp(router, applicationHref('/application/roles', appId, { mode: 'root' }))}>
           Back
         </Button>
         <Button type="button" variant="outline" onClick={() => setInfoOpen((open) => !open)}>

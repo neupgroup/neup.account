@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { FlowLink } from '@/components/ui/flow-link';
 import { clearApplicationDevLogs, getApplicationDetailsForViewerV2, getApplicationDevLogsPaginated } from '@/services/applications/manage';
+import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -55,7 +56,7 @@ export default async function ApplicationLogsPage({ params, searchParams }: Prop
     (query.pageSize ?? '') === String(pageSize);
 
   if (!isCanonical) {
-    redirect(`/application/${id}/logs?${canonical.toString()}`);
+    redirect(applicationHref('/application/logs', id, Object.fromEntries(canonical.entries())));
   }
 
   const details = await getApplicationDetailsForViewerV2(id);
@@ -72,7 +73,7 @@ export default async function ApplicationLogsPage({ params, searchParams }: Prop
   return (
     <div className="grid gap-6">
       <div className="space-y-4">
-        <BackButton href={`/application/${id}`} />
+        <BackButton href={applicationHref('/application', id)} />
         <PrimaryHeader
           title="Development Logs"
           description={`Request/response debug logs for ${details.name}. Logs are captured only while app status is development.`}
@@ -95,7 +96,7 @@ export default async function ApplicationLogsPage({ params, searchParams }: Prop
             </p>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" asChild disabled={logPage.page <= 1}>
-                <FlowLink href={`/application/${id}/logs?${new URLSearchParams({ ...(mode ? { mode } : {}), page: String(logPage.page - 1), pageSize: String(logPage.pageSize) }).toString()}`}>
+                <FlowLink href={applicationHref('/application/logs', id, { ...(mode ? { mode } : {}), page: String(logPage.page - 1), pageSize: String(logPage.pageSize) })}>
                   Previous
                 </FlowLink>
               </Button>
@@ -103,7 +104,7 @@ export default async function ApplicationLogsPage({ params, searchParams }: Prop
                 Page {logPage.page} of {logPage.totalPages}
               </span>
               <Button variant="outline" size="sm" asChild disabled={logPage.page >= logPage.totalPages}>
-                <FlowLink href={`/application/${id}/logs?${new URLSearchParams({ ...(mode ? { mode } : {}), page: String(logPage.page + 1), pageSize: String(logPage.pageSize) }).toString()}`}>
+                <FlowLink href={applicationHref('/application/logs', id, { ...(mode ? { mode } : {}), page: String(logPage.page + 1), pageSize: String(logPage.pageSize) })}>
                   Next
                 </FlowLink>
               </Button>

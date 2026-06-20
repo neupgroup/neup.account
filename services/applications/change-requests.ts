@@ -13,6 +13,7 @@ import { checkPermissions } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
 import { logError } from '@/core/helpers/logger';
 import { isApplicationOwnerForAccount } from '@/services/applications/manage';
+import { revalidateApplicationDetailRoutes, revalidateApplicationEditRoutes } from '@/services/applications/revalidate-routes';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -232,8 +233,7 @@ export async function submitApplicationChangeRequest(
 
     await logActivity(appId, `Application change request submitted by owner`, 'Pending', undefined, accountId);
 
-    revalidatePath(`/application/${appId}`);
-    revalidatePath(`/application/${appId}/edit`);
+    revalidateApplicationEditRoutes(appId);
     revalidatePath('/requests/application-changes');
 
     return { success: true };
@@ -433,8 +433,7 @@ export async function approveApplicationChangeRequest(
     await logActivity(appId, `Application change request approved`, 'Success', undefined, actorAccountId);
 
     revalidatePath('/application');
-    revalidatePath(`/application/${appId}`);
-    revalidatePath(`/application/${appId}/edit`);
+    revalidateApplicationEditRoutes(appId);
     revalidatePath('/requests/application-changes');
 
     return { success: true };

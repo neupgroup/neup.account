@@ -5,6 +5,7 @@ import { PrimaryHeader } from '@/components/ui/primary-header';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { AppConfigForm } from '@/app/(manage)/application/_components/app-config-form';
+import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -18,7 +19,7 @@ export default async function ApplicationConfigPage({ params }: Props) {
     return (
       <div className="grid gap-8">
         <div className="space-y-4">
-          <BackButton href={`/application/${id}`} />
+          <BackButton href={applicationHref('/application', id)} />
           <PrimaryHeader title="Configuration" description="API and access configuration." />
         </div>
         <Alert variant="destructive">
@@ -36,7 +37,7 @@ export default async function ApplicationConfigPage({ params }: Props) {
   return (
     <div className="grid gap-8">
       <div className="space-y-4">
-        <BackButton href={`/application/${id}`} />
+        <BackButton href={applicationHref('/application', id)} />
         <PrimaryHeader
           title="Configuration"
           description={`API secret, response fields, token fields, SSO origins, and server IPs for ${details.name}.`}

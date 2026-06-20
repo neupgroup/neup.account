@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { FlowLink } from '@/components/ui/flow-link';
 import { getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
 import { getAllRequests } from '@/services/manage/requests/all';
+import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -53,7 +54,7 @@ export default async function ApplicationRequestsPage({ params }: Props) {
     <div className="grid gap-6">
       <div>
         <Button variant="ghost" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
-          <FlowLink href={`/application/${id}?mode=root`}>
+          <FlowLink href={applicationHref('/application', id, { mode: 'root' })}>
             <ArrowLeft className="h-4 w-4" />
             Back
           </FlowLink>
@@ -105,4 +106,3 @@ export default async function ApplicationRequestsPage({ params }: Props) {
     </div>
   );
 }
-

@@ -27,6 +27,14 @@ import {
 } from '@/services/applications/permission-definitions';
 import { canAssignRoleScopeToAccount } from '@/services/role-scopes';
 import {
+  revalidateApplicationConfigRoutes,
+  revalidateApplicationDetailRoutes,
+  revalidateApplicationEditRoutes,
+  revalidateApplicationLogsRoutes,
+  revalidateApplicationRequestsRoutes,
+  revalidateApplicationUsersRoutes,
+} from '@/services/applications/revalidate-routes';
+import {
   applicationAccessFields,
   applicationResponseFields,
   applicationTokenFields,
@@ -712,8 +720,7 @@ export async function saveApplicationSecret(input: { appId: string; secretKey: s
       return { success: false, error: 'Application not found.' };
     }
 
-    revalidatePath('/application');
-    revalidatePath(`/application/${parsed.data.appId}`);
+    revalidateApplicationDetailRoutes(parsed.data.appId);
 
     return { success: true };
   } catch (error) {
@@ -767,8 +774,7 @@ export async function saveApplicationAccess(input: { appId: string; access: Appl
       return { success: false, error: 'Application not found.' };
     }
 
-    revalidatePath('/application');
-    revalidatePath(`/application/${parsed.data.appId}`);
+    revalidateApplicationDetailRoutes(parsed.data.appId);
 
     return { success: true };
   } catch (error) {
@@ -814,8 +820,7 @@ export async function saveApplicationPolicies(input: { appId: string; policies: 
       }
     });
 
-    revalidatePath('/application');
-    revalidatePath(`/application/${parsed.data.appId}`);
+    revalidateApplicationDetailRoutes(parsed.data.appId);
 
     return { success: true };
   } catch (error) {
@@ -868,8 +873,7 @@ export async function saveApplicationEndpoints(input: { appId: string } & Applic
       return { success: false, error: 'Application not found.' };
     }
 
-    revalidatePath('/application');
-    revalidatePath(`/application/${parsed.data.appId}`);
+    revalidateApplicationDetailRoutes(parsed.data.appId);
 
     return { success: true };
   } catch (error) {
@@ -914,8 +918,7 @@ export async function updateManagedApplicationStatus(input: { appId: string; sta
     }
 
     revalidatePath('/manage/applications');
-    revalidatePath('/application');
-    revalidatePath(`/application/${parsed.data.appId}`);
+    revalidateApplicationDetailRoutes(parsed.data.appId);
 
     return { success: true };
   } catch (error) {
@@ -1038,7 +1041,7 @@ export async function addSilentSsoOrigin(input: {
       },
     });
 
-    revalidatePath(`/application/${input.appId}`);
+    revalidateApplicationDetailRoutes(input.appId);
     return { success: true };
   } catch (error) {
     await logError('database', error, `addSilentSsoOrigin:${input.appId}`);
@@ -1065,7 +1068,7 @@ export async function removeSilentSsoOrigin(input: {
       where: { id: input.bridgeId, appId: input.appId, type: 'silentSsoOrigin' },
     });
 
-    revalidatePath(`/application/${input.appId}`);
+    revalidateApplicationDetailRoutes(input.appId);
     return { success: true };
   } catch (error) {
     await logError('database', error, `removeSilentSsoOrigin:${input.appId}`);
@@ -1114,8 +1117,7 @@ export async function addServerIp(input: {
       },
     });
 
-    revalidatePath(`/application/${input.appId}`);
-    revalidatePath(`/application/${input.appId}/config`);
+    revalidateApplicationConfigRoutes(input.appId);
     return { success: true };
   } catch (error) {
     await logError('database', error, `addServerIp:${input.appId}`);
@@ -1142,8 +1144,7 @@ export async function removeServerIp(input: {
       where: { id: input.bridgeId, appId: input.appId, type: 'serverIp' },
     });
 
-    revalidatePath(`/application/${input.appId}`);
-    revalidatePath(`/application/${input.appId}/config`);
+    revalidateApplicationConfigRoutes(input.appId);
     return { success: true };
   } catch (error) {
     await logError('database', error, `removeServerIp:${input.appId}`);
@@ -1345,9 +1346,7 @@ export async function updateAppMeta(
         website: website || null,
       },
     });
-    revalidatePath('/application');
-    revalidatePath(`/application/${appId}`);
-    revalidatePath(`/application/${appId}/meta`);
+    revalidateApplicationDetailRoutes(appId);
     return { success: true };
   } catch (error) {
     await logError('database', error, `updateAppMeta:${appId}`);
@@ -1459,7 +1458,7 @@ export async function requestAppPublication(
       });
     });
 
-    revalidatePath(`/application/${appId}/status`);
+    revalidateApplicationDetailRoutes(appId);
     return { success: true };
   } catch (error) {
     await logError('database', error, `requestAppPublication:${appId}`);
@@ -2170,7 +2169,7 @@ export async function assignApplicationConnectionRole(input: {
         },
       });
 
-      revalidatePath(`/application/${input.appId}/requests`);
+      revalidateApplicationRequestsRoutes(input.appId);
       return { success: true, pendingApproval: true };
     }
 
@@ -2184,9 +2183,7 @@ export async function assignApplicationConnectionRole(input: {
       changedFields: ['role'],
     });
 
-    revalidatePath(`/application/${input.appId}/users`);
-    revalidatePath(`/application/${input.appId}/users/${input.connectionId}`);
-    revalidatePath(`/application/${input.appId}/users/${input.connectionId}/role`);
+    revalidateApplicationUsersRoutes(input.appId, input.connectionId);
 
     return { success: true };
   } catch (error) {
@@ -2253,9 +2250,7 @@ export async function updateAppEdit(
         status,
       },
     });
-    revalidatePath('/application');
-    revalidatePath(`/application/${appId}`);
-    revalidatePath(`/application/${appId}/edit`);
+    revalidateApplicationEditRoutes(appId);
     return { success: true };
   } catch (error) {
     await logError('database', error, `updateAppEdit:${appId}`);
@@ -2354,9 +2349,7 @@ export async function saveAppConfig(
       data: updateData,
     });
 
-    revalidatePath('/application');
-    revalidatePath(`/application/${appId}`);
-    revalidatePath(`/application/${appId}/config`);
+    revalidateApplicationConfigRoutes(appId);
     return { success: true };
   } catch (error) {
     await logError('database', error, `saveAppConfig:${appId}`);
@@ -2501,7 +2494,7 @@ export async function saveAccountUpdateWebhookUrl(input: {
       }
     }
 
-    revalidatePath(`/application/${input.appId}/config`);
+    revalidateApplicationConfigRoutes(input.appId);
     return { success: true };
   } catch (error) {
     await logError('database', error, `saveAccountUpdateWebhookUrl:${input.appId}`);
@@ -2555,7 +2548,7 @@ export async function saveRoleUpdateWebhookUrl(input: {
       }
     }
 
-    revalidatePath(`/application/${input.appId}/config`);
+    revalidateApplicationConfigRoutes(input.appId);
     return { success: true };
   } catch (error) {
     await logError('database', error, `saveRoleUpdateWebhookUrl:${input.appId}`);
@@ -2680,7 +2673,7 @@ export async function clearApplicationDevLogs(appId: string): Promise<{ success:
       where: { appId },
     });
 
-    revalidatePath(`/application/${appId}/logs`);
+    revalidateApplicationLogsRoutes(appId);
     return { success: true };
   } catch (error) {
     await logError('database', error, `clearApplicationDevLogs:${appId}`);

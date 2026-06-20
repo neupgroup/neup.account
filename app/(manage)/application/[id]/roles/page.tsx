@@ -7,6 +7,7 @@ import { PrimaryHeader } from '@/components/ui/primary-header';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { RolesPanel } from '@/app/(manage)/application/_components/roles-panel';
+import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -22,7 +23,7 @@ export default async function ApplicationRolesPage({ params }: Props) {
     return (
       <div className="grid gap-8">
         <div className="space-y-4">
-          <BackButton href={`/application/${id}`} />
+          <BackButton href={applicationHref('/application', id)} />
           <PrimaryHeader
             title="Roles & Permissions"
             description={`Manage permissions and roles for ${details.name}.`}
@@ -46,7 +47,7 @@ export default async function ApplicationRolesPage({ params }: Props) {
   return (
     <div className="grid gap-8">
       <div className="space-y-4">
-        <BackButton href={`/application/${id}`} />
+        <BackButton href={applicationHref('/application', id)} />
         <PrimaryHeader
           title="Roles & Permissions"
           description={`Manage roles for ${details.name}. Open a role to assign permissions.`}

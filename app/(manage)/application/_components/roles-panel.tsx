@@ -10,6 +10,7 @@ import {
   clearAuthzPushStatus,
   type AppRole,
 } from '@/services/applications/authz-manage';
+import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = {
   appId: string;
@@ -63,7 +64,7 @@ export function RolesPanel({ appId, initialRoles, hasWebhook, defaultRoleId }: P
     <div className="grid gap-6">
       <div className="overflow-hidden rounded-2xl border bg-card">
         <Link
-          href={`/application/${appId}/roles/add?mode=root`}
+          href={applicationHref('/application/roles/add', appId, { mode: 'root' })}
           className="group block border-b px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5"
         >
           <p className="text-base font-medium leading-6">Create a role</p>
@@ -74,7 +75,7 @@ export function RolesPanel({ appId, initialRoles, hasWebhook, defaultRoleId }: P
           initialRoles.map((role) => (
             <div key={role.id} className="border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5">
               <div className="flex items-start justify-between gap-4">
-                <Link href={`/application/${appId}/roles/${role.id}?mode=root`} className="min-w-0 flex-1">
+                <Link href={applicationHref(`/application/roles/${role.id}`, appId, { mode: 'root' })} className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <p className="truncate text-base font-medium leading-6">{role.name}</p>
                     {role.scope && (

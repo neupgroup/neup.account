@@ -6,6 +6,7 @@ import { PrimaryHeader } from '@/components/ui/primary-header';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { RoleDetailEditor } from '@/app/(manage)/application/_components/role-detail-editor';
+import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = { params: Promise<{ id: string; roleId: string }> };
 
@@ -19,7 +20,7 @@ export default async function RoleDetailsPage({ params }: Props) {
     return (
       <div className="grid gap-8">
         <div className="space-y-4">
-          <BackButton href={`/application/${id}/roles?mode=root`} />
+          <BackButton href={applicationHref('/application/roles', id, { mode: 'root' })} />
           <PrimaryHeader title="Role Details" description={`Manage role permissions for ${details.name}.`} />
         </div>
         <Alert variant="destructive">
@@ -42,7 +43,7 @@ export default async function RoleDetailsPage({ params }: Props) {
   return (
     <div className="grid gap-8">
       <div className="space-y-4">
-        <BackButton href={`/application/${id}/roles?mode=root`} />
+        <BackButton href={applicationHref('/application/roles', id, { mode: 'root' })} />
         <PrimaryHeader
           title={`Role: ${role.name}`}
           description={role.description || 'No description'}

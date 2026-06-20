@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { createManagedApplication } from '@/services/applications/manage';
 import { redirectInApp } from '@/core/helper/navigation';
+import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 
 export function ApplicationCreateForm() {
   const router = useRouter();
@@ -27,12 +28,12 @@ export function ApplicationCreateForm() {
     const result = await createManagedApplication({ name: trimmedName });
     setIsSubmitting(false);
 
-    if (!result.success) {
+    if (!result.success || !result.appId) {
       toast({ variant: 'destructive', title: 'Create failed', description: result.error || 'Could not create the application.' });
       return;
     }
 
-    redirectInApp(router, `/application/${result.appId}`);
+    redirectInApp(router, applicationHref('/application', result.appId));
     router.refresh();
   };
 

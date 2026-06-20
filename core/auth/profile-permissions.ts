@@ -16,7 +16,7 @@ export const PROFILE_SECTION_PERMISSIONS = {
   ],
   legal: ['profile.legal.view', 'profile.legal.update'],
   demographics: ['profile.demographics.view', 'profile.demographics.update'],
-  neupid: ['profile.neupid.update', 'profile.neupid.request', 'profile.neupid.remove'],
+  neupid: ['profile.neupid.view', 'profile.neupid.update', 'profile.neupid.request', 'profile.neupid.remove'],
   contact: ['profile.contact.view', 'profile.contact.update'],
   kyc: ['profile.kyc.view', 'profile.kyc.update'],
 } as const;

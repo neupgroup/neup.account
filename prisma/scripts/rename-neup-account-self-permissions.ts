@@ -11,7 +11,7 @@ const RENAMES: Array<[string, string]> = [
   ['self.profile.legal.update', 'profile.legal.update'],
   ['self.profile.demographics.view', 'profile.demographics.view'],
   ['self.profile.demographics.update', 'profile.demographics.update'],
-  ['self.profile.neupid.view', 'profile.neupid.update'],
+  ['self.profile.neupid.view', 'profile.neupid.view'],
   ['self.profile.neupid.request', 'profile.neupid.request'],
   ['self.profile.neupid.remove', 'profile.neupid.remove'],
   ['self.profile.contact.view', 'profile.contact.view'],

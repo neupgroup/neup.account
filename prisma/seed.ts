@@ -21,6 +21,7 @@ const DEFAULT_CAPABILITIES = [
   'profile.legal.update',
   'profile.demographics.view',
   'profile.demographics.update',
+  'profile.neupid.view',
   'profile.neupid.update',
   'profile.neupid.request',
   'profile.neupid.remove',

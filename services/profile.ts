@@ -153,7 +153,7 @@ export async function getProfileContacts(accountId: string) {
 }
 
 export async function getProfileNeupIds(accountId: string) {
-    await assertHasAnyPermission(['profile.neupid.update', 'profile.neupid.request', 'profile.neupid.remove']);
+    await assertHasAnyPermission(['profile.neupid.view', 'profile.neupid.update', 'profile.neupid.request', 'profile.neupid.remove']);
     return prisma.neupId.findMany({
         where: { accountId },
     });

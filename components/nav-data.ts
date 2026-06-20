@@ -1,6 +1,7 @@
 import { PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
 import { SECURITY_HUB_PERMISSIONS } from "@/core/auth/security-permissions";
 import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/core/auth/data-permissions";
+import { ACCESS_VIEW_PERMISSIONS } from "@/core/auth/access-view-permissions";
 
 export type NavItem = {
     href: string;
@@ -66,6 +67,7 @@ export const navItems = {
     ],
     rootNav: [
         { href: "/manage", label: "Manage", description: "Open the root management dashboard." },
+        { href: "/manage/requests", label: "Requests", description: "Review and act on pending user and application requests." },
         { href: "/manage/cleanup", label: "Cleanup Accounts", description: "Delete expired guest accounts and their associated data." },
         { href: "/site/config", label: "Site Config", description: "Open site-wide configuration tools." },
     ],
@@ -82,7 +84,7 @@ export const allPermissionsMap: Record<string, string[]> = {
     "Notifications": ['notification.read', 'notification.delete'],
     "Password & Security": [...SECURITY_HUB_PERMISSIONS],
     "Data & Privacy": [...DATA_PRIVACY_NAV_PERMISSIONS],
-    "Access & Control": ['security.third_party.view', 'security.third_party.add', 'security.third_party.remove'],
+    "Access & Control": [...ACCESS_VIEW_PERMISSIONS, 'security.third_party.add', 'security.third_party.remove'],
     "Payment & Subscription": ['payment.method.show', 'payment.transactions.show', 'payment.subscriptions.show', 'payment.purchase_neup_pro.view'],
     "Account": ["root.account.view", "root.account.search", "root.account.create_individual"],
     "Requests": ["requests.root_approval.view"],

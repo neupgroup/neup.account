@@ -39,6 +39,7 @@ import {
   applicationPartyValues,
   type ApplicationParty,
 } from '@/services/applications/types';
+import { ACCESS_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
 
 const responseAccessSet = new Set<ApplicationAccessField>(applicationResponseFields);
 const tokenFieldSet = new Set<ApplicationAccessField>(applicationTokenFields);
@@ -1159,7 +1160,7 @@ export async function removeServerIp(input: {
  * ApplicationConnection to. appSecret is never returned.
  */
 export async function getApplicationDetailsForViewerV2(appId: string): Promise<ApplicationDetailsV2 | null> {
-  await requireAnyPermission404(['security.third_party.view']);
+  await requireAnyPermission404(ACCESS_VIEW_PERMISSIONS);
   const activeAccountId = await getActiveAccountId();
   if (!activeAccountId) return null;
 

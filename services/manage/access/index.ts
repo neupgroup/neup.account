@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { logActivity } from '@/services/log-actions';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { activeAccessWhere, getLogicalAssetId } from '@/services/access-model';
+import { ACCESS_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
 
 function isMissingAssetsGrantTableError(error: unknown): boolean {
   const candidate = error as { code?: string };
@@ -516,7 +517,7 @@ export async function removeAccess(permitId: string, geolocation?: string): Prom
  * Function getDelegatablePermissions.
  */
 export async function getDelegatablePermissions(): Promise<Permission[]> {
-    await requireAnyPermission404(['security.third_party.view']);
+    await requireAnyPermission404(ACCESS_VIEW_PERMISSIONS);
     const managedAccountId = await getActiveAccountId();
     if (!managedAccountId) return [];
 

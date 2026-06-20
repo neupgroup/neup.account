@@ -1,3 +1,5 @@
+import { ACCESS_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
+
 export const SECURITY_PERMISSION_GROUPS = {
   password: ['security.pass.modify'],
   totp: ['security.totp.add', 'security.totp.remove'],
@@ -20,7 +22,7 @@ export const SECURITY_PERMISSION_GROUPS = {
   devices: ['security.login_devices.view'],
   recentActivities: ['security.recent_activities.view'],
   thirdParty: [
-    'security.third_party.view',
+    ...ACCESS_VIEW_PERMISSIONS,
     'security.third_party.add',
     'security.third_party.remove',
   ],

@@ -8,6 +8,7 @@ import { checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import type { Application } from '@/services/applications/types';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { ACCESS_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
 
 type ConnectedApplications = {
     firstParty: Application[];
@@ -35,9 +36,7 @@ function isInternalApp(appId: string): boolean {
 
 // Returns applications the user is connected to, split by first/third party.
 export async function getConnectedApplications(): Promise<ConnectedApplications> {
-    await requireAnyPermission404(['security.third_party.view']);
-    const canView = await checkPermissions(['security.third_party.view']);
-    if (!canView) return { firstParty: [], thirdParty: [] };
+    await requireAnyPermission404(ACCESS_VIEW_PERMISSIONS);
 
     const accountId = await getPersonalAccountId();
     if (!accountId) return { firstParty: [], thirdParty: [] };
@@ -81,9 +80,7 @@ export async function getConnectedApplications(): Promise<ConnectedApplications>
 
 // Returns details for a single application by ID.
 export async function getApplicationDetails(appId: string): Promise<Application | null> {
-    await requireAnyPermission404(['security.third_party.view']);
-    const canView = await checkPermissions(['security.third_party.view']);
-    if (!canView) return null;
+    await requireAnyPermission404(ACCESS_VIEW_PERMISSIONS);
 
     try {
         const app = await prisma.application.findUnique({ where: { id: appId } });

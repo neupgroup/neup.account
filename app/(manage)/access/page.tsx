@@ -14,6 +14,8 @@ import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/core/auth/linked-account-permi
 import { getCurrentAccountPermission, getUserProfile } from '@/services/user';
 import { getAccessibleAccounts } from '@/services/manage/accounts';
 import { getAccountSelectorContext } from '@/core/auth/accountSelector';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { ACCESS_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
 
 type PageProps = {
   searchParams: Promise<{ portfolio?: string }>;
@@ -116,6 +118,7 @@ async function PortfolioDetail({ id }: { id: string }) {
 // ── Root view — direct access + portfolios list ───────────────────────────────
 
 export default async function AccessControlPage({ searchParams }: PageProps) {
+  await requireAnyPermission404(ACCESS_VIEW_PERMISSIONS);
   const { portfolio: parentPortfolioId } = await searchParams;
 
   if (parentPortfolioId) {

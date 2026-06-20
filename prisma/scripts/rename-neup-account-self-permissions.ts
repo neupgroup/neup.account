@@ -47,7 +47,7 @@ const RENAMES: Array<[string, string]> = [
   ['data.materialization.view.self', 'data.materialization.view'],
   ['data.materialization.modify.self', 'data.materialization.modify'],
   ['security.recent_activities.view.self', 'security.recent_activities.view'],
-  ['security.third_party.view.self', 'security.third_party.view'],
+  ['security.third_party.view.self', 'access.view.scopePublic'],
   ['security.third_party.add.self', 'security.third_party.add'],
   ['security.third_party.remove.self', 'security.third_party.remove'],
 ];

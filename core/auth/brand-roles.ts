@@ -7,6 +7,7 @@ export const BRAND_OWNER_PERMISSION_NAMES = [
   'brand.settings.view',
   'brand.settings.edit',
   'brand.members.view',
+  'access.view.scopeManaged',
   'account.brand.members.manage.scopeManaged',
   'linked_accounts.brand.view',
   'linked_accounts.brand.manage',

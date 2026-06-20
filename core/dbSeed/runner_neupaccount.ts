@@ -122,7 +122,7 @@ INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-def-data-deactivate-start',           'data.deactivate_account.start',       '${APP_ID}', 'default'),
   ('cap-def-data-materialization-view',       'data.materialization.view',           '${APP_ID}', 'default'),
   ('cap-def-data-materialization-modify',     'data.materialization.modify',         '${APP_ID}', 'default'),
-  ('cap-def-security-third-party-view',       'security.third_party.view',               '${APP_ID}', 'default'),
+  ('cap-def-access-view-public',              'access.view.scopePublic',                 '${APP_ID}', 'default'),
   ('cap-def-security-recent-activities',      'security.recent_activities.view',         '${APP_ID}', 'default'),
   ('cap-def-security-third-party-add',        'security.third_party.add',                '${APP_ID}', 'default'),
   ('cap-def-security-third-party-remove',     'security.third_party.remove',             '${APP_ID}', 'default'),
@@ -150,7 +150,7 @@ SELECT
   'default',
   '${APP_ID}',
   'individual.default',
-  '["profile.display.name","profile.display.update","profile.display.view","profile.display.view.root","profile.display.update.root","profile.legal.view","profile.legal.update","profile.demographics.view","profile.demographics.update","profile.neupid.update","profile.neupid.request","profile.neupid.remove","profile.contact.view","profile.contact.update","profile.kyc.view","profile.kyc.update","notification.read","notification.delete","security.pass.modify","security.totp.add","security.totp.remove","security.backup_codes.view","security.backup_codes.create","security.recovery_accounts.view","security.recovery_accounts.add","security.recovery_accounts.remove","security.recovery_phone.view","security.recovery_phone.add","security.recovery_phone.remove","security.recovery_email.view","security.recovery_email.add","security.recovery_email.remove","security.login_devices.view","linked_accounts.brand.create","linked_accounts.brand.view","linked_accounts.dependent.create","linked_accounts.dependent.view","data.agreed_terms.view","data.delete_account.start","data.deactivate_account.start","data.materialization.view","data.materialization.modify","security.third_party.view","security.recent_activities.view","security.third_party.add","security.third_party.remove","people.family.view","people.family.add","people.family.remove","people.family.partner.add","people.family.partner.remove","people.block_list.view","people.restrict_list.view","payment.method.show","payment.transactions.show","payment.subscriptions.show","payment.purchase_neup_pro.view","linked_accounts.brand.manage","linked_accounts.brand.manager"]'::jsonb
+  '["profile.display.name","profile.display.update","profile.display.view","profile.display.view.root","profile.display.update.root","profile.legal.view","profile.legal.update","profile.demographics.view","profile.demographics.update","profile.neupid.update","profile.neupid.request","profile.neupid.remove","profile.contact.view","profile.contact.update","profile.kyc.view","profile.kyc.update","notification.read","notification.delete","security.pass.modify","security.totp.add","security.totp.remove","security.backup_codes.view","security.backup_codes.create","security.recovery_accounts.view","security.recovery_accounts.add","security.recovery_accounts.remove","security.recovery_phone.view","security.recovery_phone.add","security.recovery_phone.remove","security.recovery_email.view","security.recovery_email.add","security.recovery_email.remove","security.login_devices.view","linked_accounts.brand.create","linked_accounts.brand.view","linked_accounts.dependent.create","linked_accounts.dependent.view","data.agreed_terms.view","data.delete_account.start","data.deactivate_account.start","data.materialization.view","data.materialization.modify","access.view.scopePublic","security.recent_activities.view","security.third_party.add","security.third_party.remove","people.family.view","people.family.add","people.family.remove","people.family.partner.add","people.family.partner.remove","people.block_list.view","people.restrict_list.view","payment.method.show","payment.transactions.show","payment.subscriptions.show","payment.purchase_neup_pro.view","linked_accounts.brand.manage","linked_accounts.brand.manager"]'::jsonb
 FROM "authz_capability" c
 WHERE c."app_id" = '${APP_ID}'
   AND c."scope"  = 'default'
@@ -163,6 +163,7 @@ INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-root-admin-accounts-delete',       'root.account.delete',          '${APP_ID}', 'root'),
   ('cap-root-admin-accounts-search',       'root.account.search',          '${APP_ID}', 'root'),
   ('cap-root-admin-accounts-create',       'root.account.create_individual','${APP_ID}', 'root'),
+  ('cap-root-admin-access-view',           'access.view.scopeRoot',        '${APP_ID}', 'individual.root'),
   ('cap-root-admin-applications-view',     'application.view.scopeRoot',            '${APP_ID}', 'individual.root'),
   ('cap-root-admin-applications-edit',     'application.edit.scopeRoot',            '${APP_ID}', 'individual.root'),
   ('cap-root-admin-application-delete',    'application.delete.scopeRoot',          '${APP_ID}', 'individual.root'),
@@ -202,6 +203,7 @@ SELECT
     'root.account.delete',
     'root.account.search',
     'root.account.create_individual',
+    'access.view.scopeRoot',
     'application.view.scopeRoot',
     'application.edit.scopeRoot',
     'application.delete.scopeRoot',
@@ -271,6 +273,7 @@ INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-brand-settings-view',     'brand.settings.view',           '${APP_ID}', 'brand'),
   ('cap-brand-settings-edit',     'brand.settings.edit',           '${APP_ID}', 'brand'),
   ('cap-brand-members-view',      'brand.members.view',            '${APP_ID}', 'brand'),
+  ('cap-brand-access-view',       'access.view.scopeManaged',      '${APP_ID}', 'brand.managable'),
   ('cap-brand-members-manage',    'account.brand.members.manage.scopeManaged', '${APP_ID}', 'brand.managable'),
   ('cap-brand-branches-view',     'linked_accounts.brand.view',         '${APP_ID}', 'brand'),
   ('cap-brand-branches-manage',   'linked_accounts.brand.manage',       '${APP_ID}', 'brand'),

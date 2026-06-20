@@ -1,9 +1,11 @@
+import { ACCESS_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
+
 export const DATA_PRIVACY_PERMISSION_GROUPS = {
   terms: ['data.agreed_terms.view'],
   deleteAccount: ['data.delete_account.start'],
   deactivateAccount: ['data.deactivate_account.start'],
   materialization: ['data.materialization.view', 'data.materialization.modify'],
-  appConnections: ['security.third_party.view'],
+  appConnections: ACCESS_VIEW_PERMISSIONS,
   recentActivities: ['security.recent_activities.view'],
 } as const;
 

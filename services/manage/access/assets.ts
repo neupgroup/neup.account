@@ -10,6 +10,7 @@ import { logError } from '@/core/helpers/logger';
 import { checkPermissions, getAccountType, isRootUser } from '@/services/user';
 import { resolveAssetName } from '@/services/manage/access/asset-resolvers';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { ACCESS_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
 import { canAssignRoleScopeToAccount, expectedRoleScopeForAccount } from '@/services/role-scopes';
 
@@ -148,9 +149,7 @@ async function canUseRootMode(rootMode?: boolean): Promise<boolean> {
  * Function getAccessAssetGroups.
  */
 export async function getAccessAssetGroups() {
-  await requireAnyPermission404(['security.third_party.view']);
-  const canView = await checkPermissions(['security.third_party.view']);
-  if (!canView) return [];
+  await requireAnyPermission404(ACCESS_VIEW_PERMISSIONS);
 
   const accountId = await getActiveAccountId();
   if (!accountId) return [];
@@ -191,7 +190,7 @@ export async function getAccessAssetGroups() {
  * Function getAccessAssetGroup.
  */
 export async function getAccessAssetGroup(groupId: string): Promise<AccessAssetGroup | null> {
-  await requireAnyPermission404(['security.third_party.view']);
+  await requireAnyPermission404(ACCESS_VIEW_PERMISSIONS);
   const accountId = await getActiveAccountId();
   if (!accountId) return null;
 

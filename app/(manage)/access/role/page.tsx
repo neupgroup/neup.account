@@ -27,6 +27,8 @@ import {
 } from '../_components/actions';
 import { FlowLink } from '@/components/ui/flow-link';
 import { DirectMemberAccessForm } from '../_components/direct-member-access-form';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
 
 type PageProps = {
   searchParams: Promise<{ member_id?: string; portfolio?: string }>;
@@ -672,6 +674,7 @@ async function MemberPortfolioRolesView({
 // ── Page entry point ──────────────────────────────────────────────────────────
 
 export default async function RolePage({ searchParams }: PageProps) {
+  await requireAnyPermission404([...ACCESS_TEAM_VIEW_PERMISSIONS]);
   const { member_id: memberAccountId, portfolio: parentPortfolioId } = await searchParams;
 
   // /access/role?member_id=[id]&portfolio=[id]

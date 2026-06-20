@@ -42,6 +42,7 @@ import { BackButton } from "@/components/ui/back-button"
 import { checkPermissions } from '@/services/user'
 import { Loader2 } from "@/components/icons"
 import { redirectInApp } from "@/core/helper/navigation";
+import { ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS } from '@/core/auth/access-view-permissions';
 
 type FormData = z.infer<typeof dependentFormSchema>;
 
@@ -56,7 +57,7 @@ export default function CreateDependentPageClient() {
     
     useEffect(() => {
         async function verifyPermission() {
-            const hasPermission = await checkPermissions(['linked_accounts.dependent.create']);
+            const hasPermission = await checkPermissions([...ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS]);
             setCanCreate(hasPermission);
         }
         verifyPermission();

@@ -7,6 +7,10 @@ import { getActiveAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { ensureAccessGrant } from '@/services/access-model';
+import {
+  ACCESS_INVITATION_APPROVE_PERMISSIONS,
+  ACCESS_INVITATIONS_VIEW_PERMISSIONS,
+} from '@/core/auth/access-view-permissions';
 
 export type Invitation = {
     notificationId: string;
@@ -22,7 +26,7 @@ export type Invitation = {
  * Function getInvitations.
  */
 export async function getInvitations(): Promise<Invitation[]> {
-    const canView = await checkPermissions(['notification.read']);
+    const canView = await checkPermissions([...ACCESS_INVITATIONS_VIEW_PERMISSIONS]);
     if (!canView) return [];
 
     const accountId = await getActiveAccountId();
@@ -83,8 +87,8 @@ export async function getInvitations(): Promise<Invitation[]> {
  * Function acceptRequest.
  */
 export async function acceptRequest(requestId: string, notificationId: string): Promise<{ success: boolean; error?: string }> {
-     const canView = await checkPermissions(['notification.read']);
-    if (!canView) return { success: false, error: 'Permission denied.' };
+     const canApprove = await checkPermissions([...ACCESS_INVITATION_APPROVE_PERMISSIONS]);
+    if (!canApprove) return { success: false, error: 'Permission denied.' };
 
      const inviteeId = await getActiveAccountId();
     if (!inviteeId) return { success: false, error: 'User not authenticated.' };
@@ -189,8 +193,8 @@ export async function acceptRequest(requestId: string, notificationId: string): 
  * Function rejectRequest.
  */
 export async function rejectRequest(requestId: string, notificationId: string): Promise<{ success: boolean; error?: string }> {
-    const canView = await checkPermissions(['notification.read']);
-    if (!canView) return { success: false, error: 'Permission denied.' };
+    const canApprove = await checkPermissions([...ACCESS_INVITATION_APPROVE_PERMISSIONS]);
+    if (!canApprove) return { success: false, error: 'Permission denied.' };
 
     const inviteeId = await getActiveAccountId();
     if (!inviteeId) return { success: false, error: 'User not authenticated.' };

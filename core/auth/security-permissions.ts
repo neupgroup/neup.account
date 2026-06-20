@@ -1,4 +1,11 @@
-import { ACCESS_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
+import {
+  ACCESS_APPLICATION_ADD_PERMISSIONS,
+  ACCESS_APPLICATION_REMOVE_PERMISSIONS,
+  ACCESS_APPLICATION_VIEW_PERMISSIONS,
+  ACCESS_CONNECTION_ADD_PERMISSIONS,
+  ACCESS_CONNECTION_REMOVE_PERMISSIONS,
+  ACCESS_CONNECTION_VIEW_PERMISSIONS,
+} from '@/core/auth/access-view-permissions';
 
 export const SECURITY_PERMISSION_GROUPS = {
   password: ['security.pass.modify'],
@@ -22,9 +29,12 @@ export const SECURITY_PERMISSION_GROUPS = {
   devices: ['security.login_devices.view'],
   recentActivities: ['security.recent_activities.view'],
   thirdParty: [
-    ...ACCESS_VIEW_PERMISSIONS,
-    'security.third_party.add',
-    'security.third_party.remove',
+    ...ACCESS_CONNECTION_VIEW_PERMISSIONS,
+    ...ACCESS_CONNECTION_ADD_PERMISSIONS,
+    ...ACCESS_CONNECTION_REMOVE_PERMISSIONS,
+    ...ACCESS_APPLICATION_VIEW_PERMISSIONS,
+    ...ACCESS_APPLICATION_ADD_PERMISSIONS,
+    ...ACCESS_APPLICATION_REMOVE_PERMISSIONS,
   ],
 } as const;
 

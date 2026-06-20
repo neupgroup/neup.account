@@ -5,6 +5,10 @@ import CreateBrandPageClient from './brand-page-client';
 import CreateDependentPageClient from './dependent-page-client';
 import CreateBranchPageClient from './branch-page-client';
 import { createPageMetadata } from '@/core/metadata';
+import {
+    ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS,
+    ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS,
+} from '@/core/auth/access-view-permissions';
 
 type PageProps = {
     searchParams: Promise<{ type?: string }>;
@@ -24,12 +28,12 @@ export default async function CreateAccountPage({ searchParams }: PageProps) {
     const { type } = await searchParams;
 
     if (type === 'brand') {
-        await requireAnyPermission404(['linked_accounts.brand.create']);
+        await requireAnyPermission404([...ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS]);
         return <CreateBrandPageClient />;
     }
 
     if (type === 'dependent') {
-        await requireAnyPermission404(['linked_accounts.dependent.create']);
+        await requireAnyPermission404([...ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS]);
         return <CreateDependentPageClient />;
     }
 

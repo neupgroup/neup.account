@@ -16,7 +16,20 @@ import { getCurrentAccountPermission, getUserProfile } from '@/services/user';
 import { getAccessibleAccounts } from '@/services/manage/accounts';
 import { getAccountSelectorContext } from '@/core/auth/accountSelector';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
-import { ACCESS_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
+import {
+  ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS,
+  ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS,
+  ACCESS_ACCOUNTS_SWITCH_PERMISSIONS,
+  ACCESS_APPLICATION_VIEW_PERMISSIONS,
+  ACCESS_BLOCK_VIEW_PERMISSIONS,
+  ACCESS_CONNECTION_VIEW_PERMISSIONS,
+  ACCESS_FAMILY_MEMBER_UPDATE_PERMISSIONS,
+  ACCESS_FAMILY_PARTNER_UPDATE_PERMISSIONS,
+  ACCESS_INVITATIONS_VIEW_PERMISSIONS,
+  ACCESS_PORTFOLIO_CREATE_PERMISSIONS,
+  ACCESS_TEAM_VIEW_PERMISSIONS,
+  ACCESS_VIEW_PERMISSIONS,
+} from '@/core/auth/access-view-permissions';
 import { createPageMetadata } from '@/core/metadata';
 
 type PageProps = {
@@ -122,6 +135,7 @@ function PeopleAndSharingFeatures({
 async function PortfolioDetail({ id }: { id: string }) {
   const group = await getAccessAssetGroup(id);
   if (!group) notFound();
+  const permissions = await getCurrentAccountPermission();
 
   return (
     <AccessGroupView
@@ -133,6 +147,9 @@ async function PortfolioDetail({ id }: { id: string }) {
       membersHref={`/access/team?portfolio=${id}`}
       connectionsHref="/access/connection"
       applicationsHref="/access/application"
+      showMembers={ACCESS_TEAM_VIEW_PERMISSIONS.some((permission) => permissions.includes(permission))}
+      showConnections={ACCESS_CONNECTION_VIEW_PERMISSIONS.some((permission) => permissions.includes(permission))}
+      showApplications={ACCESS_APPLICATION_VIEW_PERMISSIONS.some((permission) => permissions.includes(permission))}
     />
   );
 }
@@ -163,18 +180,39 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
   ]);
   const allowsFamilySettings =
     activeProfile?.accountType === 'individual' || activeProfile?.accountType === 'dependent';
+  const canViewTeam = ACCESS_TEAM_VIEW_PERMISSIONS.some((permission) => permissions.includes(permission));
+  const canViewConnections = ACCESS_CONNECTION_VIEW_PERMISSIONS.some((permission) => permissions.includes(permission));
+  const canViewApplications = ACCESS_APPLICATION_VIEW_PERMISSIONS.some((permission) => permissions.includes(permission));
   const showLinkedAccounts = LINKED_ACCOUNT_NAV_PERMISSIONS.some((permission) =>
     permissions.includes(permission),
   );
-  const canCreateBrand = permissions.includes('linked_accounts.brand.create');
-  const canCreateDependent = permissions.includes('linked_accounts.dependent.create');
-  const canViewFamily = allowsFamilySettings && permissions.includes('people.family.view');
-  const canViewInvitations = permissions.includes('notification.read');
-  const canBlockUsers =
-    permissions.includes('people.block_list.view') ||
-    permissions.includes('people.restrict_list.view');
+  const canCreateBrand = ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS.some((permission) =>
+    permissions.includes(permission),
+  );
+  const canCreateDependent = ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS.some((permission) =>
+    permissions.includes(permission),
+  );
+  const canViewFamily =
+    allowsFamilySettings &&
+    [...ACCESS_FAMILY_MEMBER_UPDATE_PERMISSIONS, ...ACCESS_FAMILY_PARTNER_UPDATE_PERMISSIONS].some(
+      (permission) => permissions.includes(permission),
+    );
+  const canViewInvitations = ACCESS_INVITATIONS_VIEW_PERMISSIONS.some((permission) =>
+    permissions.includes(permission),
+  );
+  const canBlockUsers = ACCESS_BLOCK_VIEW_PERMISSIONS.some((permission) =>
+    permissions.includes(permission),
+  );
+  const canSwitchAccounts = ACCESS_ACCOUNTS_SWITCH_PERMISSIONS.some((permission) =>
+    permissions.includes(permission),
+  );
+  const canCreatePortfolios = ACCESS_PORTFOLIO_CREATE_PERMISSIONS.some((permission) =>
+    permissions.includes(permission),
+  );
   const accountsToShow =
-    showLinkedAccounts && !isManagingOtherAccount ? await getAccessibleAccounts() : [];
+    showLinkedAccounts && canSwitchAccounts && !isManagingOtherAccount
+      ? await getAccessibleAccounts()
+      : [];
   const previewAccounts = accountsToShow.slice(0, 3);
 
   return (
@@ -186,6 +224,9 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
       membersHref="/access/team"
       connectionsHref="/access/connection"
       applicationsHref="/access/application"
+      showMembers={canViewTeam}
+      showConnections={canViewConnections}
+      showApplications={canViewApplications}
     >
       {showLinkedAccounts && (
         <div className="space-y-2">
@@ -204,7 +245,7 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
         </div>
       )}
 
-      {showLinkedAccounts && !isManagingOtherAccount && (
+      {showLinkedAccounts && canSwitchAccounts && !isManagingOtherAccount && (
         <div className="space-y-2">
           <SecondaryHeader
             title="Manage Accounts"
@@ -257,33 +298,35 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
       )}
 
       {/* Section 2 — Portfolios */}
-      <div className="space-y-2">
-        <SecondaryHeader
-          title="Portfolios"
-          description="Manage asset groups and role-based access."
-        />
-        <Card>
-          <CardContent className="divide-y p-2">
-            <CreateAssetGroupCard variant="row" />
-            {portfolios.map((portfolio) => (
-              <FlowLink
-                key={portfolio.id}
-                href={`/access?portfolio=${portfolio.id}`}
-                className="flex items-center gap-4 py-4 px-4 hover:bg-muted/50 transition-colors"
-              >
-                <FolderGit2 className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                <div className="flex-grow min-w-0">
-                  <p className="font-medium text-foreground truncate">{portfolio.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {portfolio._count.members} members · {portfolio._count.assets} assets
-                  </p>
-                </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-              </FlowLink>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
+      {(canCreatePortfolios || portfolios.length > 0) && (
+        <div className="space-y-2">
+          <SecondaryHeader
+            title="Portfolios"
+            description="Manage asset groups and role-based access."
+          />
+          <Card>
+            <CardContent className="divide-y p-2">
+              {canCreatePortfolios && <CreateAssetGroupCard variant="row" />}
+              {portfolios.map((portfolio) => (
+                <FlowLink
+                  key={portfolio.id}
+                  href={`/access?portfolio=${portfolio.id}`}
+                  className="flex items-center gap-4 py-4 px-4 hover:bg-muted/50 transition-colors"
+                >
+                  <FolderGit2 className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                  <div className="flex-grow min-w-0">
+                    <p className="font-medium text-foreground truncate">{portfolio.name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {portfolio._count.members} members · {portfolio._count.assets} assets
+                    </p>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                </FlowLink>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </AccessGroupView>
   );
 }

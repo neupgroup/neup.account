@@ -5,6 +5,8 @@ import { AppWindow, ChevronRight, Users } from '@/components/icons';
 import { FlowLink } from '@/components/ui/flow-link';
 import { getConnectionPageData } from './actions';
 import { createPageMetadata } from '@/core/metadata';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { ACCESS_CONNECTION_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
 
 export const metadata: Metadata = createPageMetadata('Connection Management');
 
@@ -35,6 +37,7 @@ function AccessSummary({ accessCount }: { accessCount: number }) {
 }
 
 export default async function ConnectionPage() {
+  await requireAnyPermission404([...ACCESS_CONNECTION_VIEW_PERMISSIONS]);
   const connections = await getConnectionPageData();
 
   return (

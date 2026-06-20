@@ -1,7 +1,10 @@
 import { PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
 import { SECURITY_HUB_PERMISSIONS } from "@/core/auth/security-permissions";
 import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/core/auth/data-permissions";
-import { ACCESS_VIEW_PERMISSIONS } from "@/core/auth/access-view-permissions";
+import {
+    ACCESS_BLOCK_VIEW_PERMISSIONS,
+    ACCESS_VIEW_PERMISSIONS,
+} from "@/core/auth/access-view-permissions";
 
 export type NavItem = {
     href: string;
@@ -84,7 +87,7 @@ export const allPermissionsMap: Record<string, string[]> = {
     "Notifications": ['notification.read', 'notification.delete'],
     "Password & Security": [...SECURITY_HUB_PERMISSIONS],
     "Data & Privacy": [...DATA_PRIVACY_NAV_PERMISSIONS],
-    "Access & Control": [...ACCESS_VIEW_PERMISSIONS, 'security.third_party.add', 'security.third_party.remove'],
+    "Access & Control": [...ACCESS_VIEW_PERMISSIONS],
     "Payment & Subscription": ['payment.method.show', 'payment.transactions.show', 'payment.subscriptions.show', 'payment.purchase_neup_pro.view'],
     "Account": ["root.account.view", "root.account.search", "root.account.create_individual"],
     "Requests": ["requests.root_approval.view"],
@@ -102,7 +105,7 @@ export const allPermissionsMap: Record<string, string[]> = {
         "root.display_images.view"
     ],
     "Branches": ['linked_accounts.brand.manage'],
-    "Blocked Users": ['people.block_list.view', 'people.restrict_list.view'],
+    "Blocked Users": [...ACCESS_BLOCK_VIEW_PERMISSIONS],
     // Management nav — "Dashboard" is the admin home, distinct from user "Home"
     "Dashboard": ["root.dashboard.view"],
     "Manage": ["root.dashboard.view"],

@@ -12,10 +12,10 @@ import { User, Plus } from "lucide-react";
 import { AccountListItem } from "@/components/elements/account-item";
 import { BackButton } from "@/components/ui/back-button";
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
-import { LINKED_ACCOUNT_PERMISSION_GROUPS } from '@/core/auth/linked-account-permissions';
+import { ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
 
 export default async function DependentAccountsPage() {
-    await requireAnyPermission404(LINKED_ACCOUNT_PERMISSION_GROUPS.dependent);
+    await requireAnyPermission404([...ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS]);
 
     const dependentAccounts = await getDependentAccounts();
 

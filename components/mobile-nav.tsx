@@ -34,6 +34,7 @@ import { switchToPersonal } from "@/services/auth/switch";
 import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
 import { redirectInApp } from "@/core/helper/navigation";
 import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/core/auth/data-permissions";
+import { ACCESS_VIEW_PERMISSIONS } from "@/core/auth/access-view-permissions";
 
 const iconMap: { [key: string]: LucideIcon | React.ElementType } = {
     Home: Home,
@@ -103,7 +104,7 @@ export function MobileNav() {
                 { href: "/profile", label: "Brand Info", description: "Manage profile details.", icon: iconMap['BrandInfo'], requiredPermissions: PROFILE_NAV_PERMISSIONS },
                 { href: "/notifications", label: "Notifications", description: "View and manage account notifications.", icon: iconMap['Notifications'], requiredPermissions: ['notification.read', 'notification.delete'] },
                 { href: "/data", label: "Data & Privacy", description: "View data access, activity, and privacy controls for this account.", icon: iconMap['DataAndPrivacy'], requiredPermissions: DATA_PRIVACY_NAV_PERMISSIONS },
-                { href: "/access", label: "Access & Control", description: "Manage access, people, and linked accounts for this brand.", icon: iconMap['AccessAndControl'], requiredPermissions: ['linked_accounts.brand.manage'] },
+                { href: "/access", label: "Access & Control", description: "Manage access, people, and linked accounts for this brand.", icon: iconMap['AccessAndControl'], requiredPermissions: [...ACCESS_VIEW_PERMISSIONS] },
                 { href: "/payment", label: "Payment & Subscription", description: "Manage billing and subscriptions for this account.", icon: iconMap['PaymentAndSubscription'], requiredPermissions: ['payment.method.show', 'payment.transactions.show', 'payment.subscriptions.show', 'payment.purchase_neup_pro.view'] },
             ].filter((item) => hasAnyPermission(permissions, item.requiredPermissions));
 

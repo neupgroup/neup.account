@@ -15,6 +15,10 @@ import { activityAction } from '@/services/activity-action';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { BRAND_OWNER_PERMISSION_NAMES, BRAND_OWNER_ROLE_ID, BRAND_OWNER_ROLE_NAME } from '@/core/auth/brand-roles';
 import { assetTypeForRefs } from '@/services/access-model';
+import {
+  ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS,
+  ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS,
+} from '@/core/auth/access-view-permissions';
 
 export type BrandAccount = {
     id: string;
@@ -28,8 +32,8 @@ export type BrandAccount = {
  * Returns all brand accounts where the personal account holds the brand.owner role.
  */
 export async function getBrandAccounts(): Promise<BrandAccount[]> {
-    await requireAnyPermission404(['linked_accounts.brand.view']);
-    const canView = await checkPermissions(['linked_accounts.brand.view']);
+    await requireAnyPermission404([...ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS]);
+    const canView = await checkPermissions([...ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS]);
     if (!canView) return [];
 
     const personalAccountId = await getPersonalAccountId();
@@ -89,8 +93,8 @@ export async function getBrandAccounts(): Promise<BrandAccount[]> {
  * Creates the account, neupId, brand profile, optional contact, then grants brand ownership to the creator.
  */
 export async function createBrandAccount(data: z.infer<typeof brandCreationSchema>, geolocation?: string) {
-    await requireAnyPermission404(['linked_accounts.brand.create']);
-    const canCreate = await checkPermissions(['linked_accounts.brand.create']);
+    await requireAnyPermission404([...ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS]);
+    const canCreate = await checkPermissions([...ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS]);
     if (!canCreate) {
         return { success: false, error: 'You do not have permission to create a brand account.' };
     }

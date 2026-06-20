@@ -6,6 +6,10 @@ import { getUserProfile, getUserNeupIds, checkPermissions } from '@/services/use
 import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import {
+  ACCESS_BLOCK_UPDATE_PERMISSIONS,
+  ACCESS_BLOCK_VIEW_PERMISSIONS,
+} from '@/core/auth/access-view-permissions';
 
 const neupIdSchema = z.object({
   neupId: z.string().min(3, 'NeupID must be at least 3 characters.'),
@@ -42,9 +46,7 @@ async function findAccountIdByNeupId(neupId: string): Promise<string | null> {
 
 // Unified function to fetch either blocked or restricted users
 async function getList(type: 'blockList' | 'restrictList'): Promise<BlockedUser[]> {
-  const requiredPermission =
-    type === 'blockList' ? 'people.block_list.view' : 'people.restrict_list.view';
-  const canView = await checkPermissions([requiredPermission]);
+  const canView = await checkPermissions([...ACCESS_BLOCK_VIEW_PERMISSIONS]);
   if (!canView) return [];
 
   const accountId = await getActiveAccountId();
@@ -102,9 +104,7 @@ async function addUserToList(neupId: string, type: 'blockList' | 'restrictList')
     return { success: false, error: validation.error.flatten().fieldErrors.neupId?.[0] || 'Invalid input' };
   }
 
-  const requiredPermission =
-    type === 'blockList' ? 'people.block_list.view' : 'people.restrict_list.view';
-  const canEdit = await checkPermissions([requiredPermission]);
+  const canEdit = await checkPermissions([...ACCESS_BLOCK_UPDATE_PERMISSIONS]);
   if (!canEdit) return { success: false, error: 'Permission denied.' };
 
   const accessTo = await getActiveAccountId();
@@ -155,9 +155,7 @@ export async function restrictUser(neupId: string) {
 
 // Unified function to remove a user from a list
 async function removeUserFromList(accountId: string, type: 'blockList' | 'restrictList'): Promise<{ success: boolean; error?: string; }> {
-  const requiredPermission =
-    type === 'blockList' ? 'people.block_list.view' : 'people.restrict_list.view';
-  const canEdit = await checkPermissions([requiredPermission]);
+  const canEdit = await checkPermissions([...ACCESS_BLOCK_UPDATE_PERMISSIONS]);
   if (!canEdit) return { success: false, error: 'Permission denied.' };
 
   const accessTo = await getActiveAccountId();

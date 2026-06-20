@@ -12,8 +12,20 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { BackButton } from '@/components/ui/back-button';
 import { useSession } from '@/core/providers/session';
 import { hasAnyPermission } from '@/core/auth/profile-permissions';
+import {
+    ACCESS_INVITATION_APPROVE_PERMISSIONS,
+    ACCESS_INVITATIONS_VIEW_PERMISSIONS,
+} from '@/core/auth/access-view-permissions';
 
-function InvitationCard({ invitation, onAction }: { invitation: Invitation, onAction: () => void }) {
+function InvitationCard({
+    invitation,
+    onAction,
+    canApprove,
+}: {
+    invitation: Invitation,
+    onAction: () => void,
+    canApprove: boolean,
+}) {
     const [isAccepting, startAcceptTransition] = useTransition();
     const [isRejecting, startRejectTransition] = useTransition();
     const { toast } = useToast();
@@ -71,10 +83,10 @@ function InvitationCard({ invitation, onAction }: { invitation: Invitation, onAc
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" size="icon" className="h-8 w-8 text-green-600 border-green-600 hover:bg-green-50" onClick={handleAccept} disabled={isPending}>
+                    <Button variant="outline" size="icon" className="h-8 w-8 text-green-600 border-green-600 hover:bg-green-50" onClick={handleAccept} disabled={isPending || !canApprove}>
                         {isAccepting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
                     </Button>
-                    <Button variant="destructive" size="icon" className="h-8 w-8" onClick={handleReject} disabled={isPending}>
+                    <Button variant="destructive" size="icon" className="h-8 w-8" onClick={handleReject} disabled={isPending || !canApprove}>
                         {isRejecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <X className="h-4 w-4" />}
                     </Button>
                 </div>
@@ -87,7 +99,8 @@ export default function InvitationsPage() {
     const { permissions, loading: sessionLoading } = useSession();
     const [invitations, setInvitations] = useState<Invitation[]>([]);
     const [pageLoading, setPageLoading] = useState(true);
-    const canViewInvitations = hasAnyPermission(permissions, ['notification.read']);
+    const canViewInvitations = hasAnyPermission(permissions, [...ACCESS_INVITATIONS_VIEW_PERMISSIONS]);
+    const canApproveInvitations = hasAnyPermission(permissions, [...ACCESS_INVITATION_APPROVE_PERMISSIONS]);
 
     const fetchInvitations = async () => {
         setPageLoading(true);
@@ -128,7 +141,12 @@ export default function InvitationsPage() {
                     </div>
                 ) : invitations.length > 0 ? (
                     invitations.map(inv => (
-                        <InvitationCard key={inv.requestId} invitation={inv} onAction={fetchInvitations} />
+                        <InvitationCard
+                            key={inv.requestId}
+                            invitation={inv}
+                            onAction={fetchInvitations}
+                            canApprove={canApproveInvitations}
+                        />
                     ))
                 ) : (
                     <Card>

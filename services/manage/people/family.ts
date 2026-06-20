@@ -6,6 +6,10 @@ import { logError } from '@/core/helpers/logger';
 import { getUserProfile, checkPermissions } from '@/services/user';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import {
+  ACCESS_FAMILY_MEMBER_UPDATE_PERMISSIONS,
+  ACCESS_FAMILY_PARTNER_UPDATE_PERMISSIONS,
+} from '@/core/auth/access-view-permissions';
 
 export type FamilyMember = {
   accountId: string;
@@ -125,7 +129,7 @@ async function createInvite(
 export async function addFamilyMember(
   formData: FormData
 ): Promise<{ success: boolean; error?: string }> {
-  const canAdd = await checkPermissions(['people.family.add']);
+  const canAdd = await checkPermissions([...ACCESS_FAMILY_MEMBER_UPDATE_PERMISSIONS]);
   if (!canAdd) return { success: false, error: 'Permission denied.' };
 
   const validation = addAccountSchema.safeParse({
@@ -146,7 +150,7 @@ export async function addFamilyMember(
 export async function addPartner(
   formData: FormData
 ): Promise<{ success: boolean; error?: string }> {
-  const canAdd = await checkPermissions(['people.family.partner.add']);
+  const canAdd = await checkPermissions([...ACCESS_FAMILY_PARTNER_UPDATE_PERMISSIONS]);
   if (!canAdd) return { success: false, error: 'Permission denied.' };
 
   const validation = addAccountSchema.safeParse({
@@ -163,8 +167,11 @@ export async function addPartner(
 
 // --- DATA FETCHING FOR DISPLAY ---
 async function fetchFamilyGroups(): Promise<FamilyGroup[]> {
-  const canView = await checkPermissions(['people.family.view']);
-  if (!canView) return [];
+  const [canManageMembers, canManagePartners] = await Promise.all([
+    checkPermissions([...ACCESS_FAMILY_MEMBER_UPDATE_PERMISSIONS]),
+    checkPermissions([...ACCESS_FAMILY_PARTNER_UPDATE_PERMISSIONS]),
+  ]);
+  if (!canManageMembers && !canManagePartners) return [];
   
   const accountId = await getActiveAccountId();
   if (!accountId) return [];
@@ -245,8 +252,8 @@ export async function removeFamilyMember(
   const removerId = await getActiveAccountId();
   if (!removerId) return { success: false, error: 'User not authenticated.' };
 
-  const canRemoveFamily = await checkPermissions(['people.family.remove']);
-  const canRemovePartner = await checkPermissions(['people.family.partner.remove']);
+  const canRemoveFamily = await checkPermissions([...ACCESS_FAMILY_MEMBER_UPDATE_PERMISSIONS]);
+  const canRemovePartner = await checkPermissions([...ACCESS_FAMILY_PARTNER_UPDATE_PERMISSIONS]);
 
   try {
     const family = await prisma.family.findUnique({

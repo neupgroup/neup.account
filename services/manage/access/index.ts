@@ -10,7 +10,11 @@ import { z } from 'zod';
 import { logActivity } from '@/services/log-actions';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { activeAccessWhere, getLogicalAssetId } from '@/services/access-model';
-import { ACCESS_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
+import {
+  ACCESS_TEAM_ADD_PERMISSIONS,
+  ACCESS_TEAM_VIEW_PERMISSIONS,
+  ACCESS_VIEW_PERMISSIONS,
+} from '@/core/auth/access-view-permissions';
 
 function isMissingAssetsGrantTableError(error: unknown): boolean {
   const candidate = error as { code?: string };
@@ -249,6 +253,9 @@ export type DirectAccessGroup = {
  * (non-portfolio) grants on it, one entry per grant row.
  */
 export async function getDirectAccessGroup(accountId: string): Promise<DirectAccessGroup | null> {
+  const canView = await checkPermissions([...ACCESS_TEAM_VIEW_PERMISSIONS]);
+  if (!canView) return null;
+
   try {
     const [accountProfile, grants] = await Promise.all([
       getUserProfile(accountId),
@@ -319,6 +326,9 @@ export type DirectMember = {
  * pending access_invitation request (shown with status 'invited').
  */
 export async function getDirectMembers(accountId: string): Promise<{ accountName: string; members: DirectMember[] }> {
+  const canView = await checkPermissions([...ACCESS_TEAM_VIEW_PERMISSIONS]);
+  if (!canView) return { accountName: accountId, members: [] };
+
   try {
     const [accountProfile, grants, pendingInvitations] = await Promise.all([
       getUserProfile(accountId),
@@ -541,8 +551,8 @@ export async function updatePermissions(permitId: string, newPermissionIds: stri
         return { success: false, error: "Not authenticated." };
     }
 
-    await requireAnyPermission404(['security.third_party.add']);
-    const canAdd = await checkPermissions(['security.third_party.add']);
+    await requireAnyPermission404([...ACCESS_TEAM_ADD_PERMISSIONS]);
+    const canAdd = await checkPermissions([...ACCESS_TEAM_ADD_PERMISSIONS]);
     if (!canAdd) {
         return { success: false, error: 'Permission denied.' };
     }
@@ -599,8 +609,8 @@ export async function grantAccessByNeupId(formData: FormData, geolocation?: stri
         return { success: false, error: "Not authenticated." };
     }
 
-    await requireAnyPermission404(['security.third_party.add']);
-    const canAdd = await checkPermissions(['security.third_party.add']);
+    await requireAnyPermission404([...ACCESS_TEAM_ADD_PERMISSIONS]);
+    const canAdd = await checkPermissions([...ACCESS_TEAM_ADD_PERMISSIONS]);
     if (!canAdd) {
         return { success: false, error: 'Permission denied.' };
     }
@@ -715,6 +725,9 @@ export async function getDirectMemberDetail(
   accessTo: string,
   memberAccountId: string,
 ): Promise<DirectMemberDetail | null> {
+  const canView = await checkPermissions([...ACCESS_TEAM_VIEW_PERMISSIONS]);
+  if (!canView) return null;
+
   try {
     const [profile, grants] = await Promise.all([
       getUserProfile(memberAccountId),
@@ -804,6 +817,9 @@ export type PortfolioMemberSummary = {
 export async function getPortfolioMembers(
   parentPortfolioId: string,
 ): Promise<{ portfolioName: string; members: PortfolioMemberSummary[] }> {
+  const canView = await checkPermissions([...ACCESS_TEAM_VIEW_PERMISSIONS]);
+  if (!canView) return { portfolioName: '', members: [] };
+
   try {
     const portfolio = await prisma.portfolio.findUnique({
       where: { id: parentPortfolioId },
@@ -890,6 +906,9 @@ export async function getPortfolioMemberDetail(
   parentPortfolioId: string,
   memberAccountId: string,
 ): Promise<PortfolioMemberDetail | null> {
+  const canView = await checkPermissions([...ACCESS_TEAM_VIEW_PERMISSIONS]);
+  if (!canView) return null;
+
   try {
     const [portfolio, memberProfile, memberRow] = await Promise.all([
       prisma.portfolio.findUnique({

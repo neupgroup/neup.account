@@ -8,6 +8,13 @@ import { getUserProfile } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
+import { checkPermissions } from '@/services/user';
+import {
+  ACCESS_APPLICATION_ADD_PERMISSIONS,
+  ACCESS_APPLICATION_REMOVE_PERMISSIONS,
+  ACCESS_APPLICATION_VIEW_PERMISSIONS,
+  ACCESS_CONNECTION_VIEW_PERMISSIONS,
+} from '@/core/auth/access-view-permissions';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -88,6 +95,9 @@ type ApplicationAccessPageOptions = {
 export async function getApplicationAccessPageData(
   options?: ApplicationAccessPageOptions,
 ): Promise<AppWithAccess[]> {
+  const canView = await checkPermissions([...ACCESS_APPLICATION_VIEW_PERMISSIONS]);
+  if (!canView) return [];
+
   const personalAccountId = await getPersonalAccountId();
   if (!personalAccountId) return [];
 
@@ -199,6 +209,9 @@ export async function getApplicationAccessPageData(
 }
 
 export async function getConnectionPageData(): Promise<ConnectionPageItem[]> {
+  const canView = await checkPermissions([...ACCESS_CONNECTION_VIEW_PERMISSIONS]);
+  if (!canView) return [];
+
   const accountId = await getActiveAccountId();
   if (!accountId) return [];
 
@@ -263,6 +276,9 @@ export async function getConnectionPageData(): Promise<ConnectionPageItem[]> {
 }
 
 export async function getConnectionDetail(connectionId: string): Promise<ConnectionDetail | null> {
+  const canView = await checkPermissions([...ACCESS_CONNECTION_VIEW_PERMISSIONS]);
+  if (!canView) return null;
+
   const accountId = await getActiveAccountId();
   if (!accountId) return null;
 
@@ -422,6 +438,9 @@ export async function assignAppAccessToAccount(input: {
   memberId: string;
   roleIds: string[];
 }): Promise<{ success: boolean; invited?: boolean; appName?: string; error?: string }> {
+  const canAdd = await checkPermissions([...ACCESS_APPLICATION_ADD_PERMISSIONS]);
+  if (!canAdd) return { success: false, error: 'Permission denied.' };
+
   const accessTo = await getActiveAccountId();
   if (!accessTo) return { success: false, error: 'Not authenticated.' };
 
@@ -506,6 +525,9 @@ export async function revokeAppAccessFromAccount(input: {
   appId: string;
   memberId: string;
 }): Promise<{ success: boolean; error?: string }> {
+  const canRemove = await checkPermissions([...ACCESS_APPLICATION_REMOVE_PERMISSIONS]);
+  if (!canRemove) return { success: false, error: 'Permission denied.' };
+
   const accessTo = await getActiveAccountId();
   if (!accessTo) return { success: false, error: 'Not authenticated.' };
 

@@ -1,13 +1,22 @@
+import {
+  ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS,
+  ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS,
+  ACCESS_ACCOUNTS_SWITCH_PERMISSIONS,
+  ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS,
+} from '@/core/auth/access-view-permissions';
+
 export const LINKED_ACCOUNT_PERMISSION_GROUPS = {
   brand: [
-    'linked_accounts.brand.create',
-    'linked_accounts.brand.view',
+    ...ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS,
+    ...ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS,
+    ...ACCESS_ACCOUNTS_SWITCH_PERMISSIONS,
     'linked_accounts.brand.manage',
     'linked_accounts.brand.manager',
   ],
   dependent: [
-    'linked_accounts.dependent.create',
-    'linked_accounts.dependent.view',
+    ...ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS,
+    ...ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS,
+    ...ACCESS_ACCOUNTS_SWITCH_PERMISSIONS,
   ],
 } as const;
 

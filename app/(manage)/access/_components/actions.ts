@@ -7,6 +7,10 @@ import { getPersonalAccountId, getActiveAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
 import { assignAssetMemberRole, getRolesForAsset } from '@/services/manage/access/assets';
 import { BRAND_OWNER_ROLE_ID } from '@/core/auth/brand-roles';
+import {
+  ACCESS_TEAM_ADD_PERMISSIONS,
+  ACCESS_TEAM_REMOVE_PERMISSIONS,
+} from '@/core/auth/access-view-permissions';
 
 export type ResolvedAccount = {
   accountId: string;
@@ -288,7 +292,7 @@ export async function getDirectAccessAssignmentOptions(): Promise<{
   const accountId = await getActiveAccountId();
   if (!accountId) return { roles: [] };
 
-  const canAdd = await checkPermissions(['security.third_party.add']);
+  const canAdd = await checkPermissions([...ACCESS_TEAM_ADD_PERMISSIONS]);
   if (!canAdd) return { roles: [] };
 
   try {
@@ -327,7 +331,7 @@ export async function updateDirectMemberAccess(input: {
   const accountId = await getActiveAccountId();
   if (!accountId) return { success: false, error: 'Not authenticated.' };
 
-  const canAdd = await checkPermissions(['security.third_party.add']);
+  const canAdd = await checkPermissions([...ACCESS_TEAM_ADD_PERMISSIONS]);
   if (!canAdd) return { success: false, error: 'Permission denied.' };
 
   const roleIds = normalizeStringList(input.roleIds);
@@ -488,6 +492,9 @@ export async function removeDirectMember(
   const accessTo = await getActiveAccountId();
   if (!accessTo) return { success: false, error: 'Not authenticated.' };
 
+  const canRemove = await checkPermissions([...ACCESS_TEAM_REMOVE_PERMISSIONS]);
+  if (!canRemove) return { success: false, error: 'Permission denied.' };
+
   // Nobody can remove the account owner's own direct grants:
   // - not a delegated actor (personalAccountId !== accessTo)
   // - not the owner themselves
@@ -530,6 +537,9 @@ export async function cancelDirectInvitation(
 ): Promise<{ success: boolean; error?: string }> {
   const senderAccountId = await getActiveAccountId();
   if (!senderAccountId) return { success: false, error: 'Not authenticated.' };
+
+  const canRemove = await checkPermissions([...ACCESS_TEAM_REMOVE_PERMISSIONS]);
+  if (!canRemove) return { success: false, error: 'Permission denied.' };
 
   try {
     await prisma.request.deleteMany({
@@ -584,6 +594,9 @@ export async function cancelPortfolioInvitation(
   const senderAccountId = await getActiveAccountId();
   if (!senderAccountId) return { success: false, error: 'Not authenticated.' };
 
+  const canRemove = await checkPermissions([...ACCESS_TEAM_REMOVE_PERMISSIONS]);
+  if (!canRemove) return { success: false, error: 'Permission denied.' };
+
   try {
     const member = await prisma.member.findFirst({
       where: {
@@ -630,6 +643,9 @@ export async function inviteDirectMember(
 ): Promise<{ success: boolean; error?: string }> {
   const senderAccountId = await getActiveAccountId();
   if (!senderAccountId) return { success: false, error: 'Not authenticated.' };
+
+  const canAdd = await checkPermissions([...ACCESS_TEAM_ADD_PERMISSIONS]);
+  if (!canAdd) return { success: false, error: 'Permission denied.' };
 
   try {
     // Prevent inviting self

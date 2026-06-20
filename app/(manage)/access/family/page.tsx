@@ -9,6 +9,10 @@ import { getUserProfile, checkPermissions } from '@/services/user';
 import { notFound } from "next/navigation";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
 import { createPageMetadata } from '@/core/metadata';
+import {
+    ACCESS_FAMILY_MEMBER_UPDATE_PERMISSIONS,
+    ACCESS_FAMILY_PARTNER_UPDATE_PERMISSIONS,
+} from '@/core/auth/access-view-permissions';
 
 export const metadata: Metadata = createPageMetadata('Family Management');
 
@@ -16,21 +20,18 @@ export default async function FamilySharingPage() {
     const activeAccountId = await getActiveAccountId();
     if (!activeAccountId) return <p>Please log in.</p>;
 
-    const [canView, activeProfile] = await Promise.all([
-        checkPermissions(['people.family.view']),
+    const [canAddFamily, canAddPartner, activeProfile] = await Promise.all([
+        checkPermissions([...ACCESS_FAMILY_MEMBER_UPDATE_PERMISSIONS]),
+        checkPermissions([...ACCESS_FAMILY_PARTNER_UPDATE_PERMISSIONS]),
         getUserProfile(activeAccountId),
     ]);
     const allowsFamilySettings =
         activeProfile?.accountType === 'individual' || activeProfile?.accountType === 'dependent';
-    if (!canView || !allowsFamilySettings) {
+    if ((!canAddFamily && !canAddPartner) || !allowsFamilySettings) {
         notFound();
     }
 
-    const [familyGroups, canAddFamily, canAddPartner] = await Promise.all([
-        getFamilyGroups(),
-        checkPermissions(['people.family.add']),
-        checkPermissions(['people.family.partner.add']),
-    ]);
+    const familyGroups = await getFamilyGroups();
 
     return (
         <div className="grid gap-8">

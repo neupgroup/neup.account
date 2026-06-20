@@ -8,6 +8,8 @@ import { getApplicationAccessPageData } from '../connection/actions';
 import { AssignAppAccessForm } from '../connection/assign-app-access-form';
 import { RevokeAppAccessButton } from '../connection/revoke-app-access-form';
 import { createPageMetadata } from '@/core/metadata';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { ACCESS_APPLICATION_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
 
 export const metadata: Metadata = createPageMetadata('Application Management');
 
@@ -31,6 +33,7 @@ function StatusBadge({ status }: { status: string | null }) {
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default async function ApplicationAccessPage() {
+  await requireAnyPermission404([...ACCESS_APPLICATION_VIEW_PERMISSIONS]);
   const apps = await getApplicationAccessPageData({ ownerOnly: true });
 
   return (

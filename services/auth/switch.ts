@@ -8,12 +8,17 @@ import { revalidatePath } from 'next/cache';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { cleanupExpiredAccessModel } from '@/services/access-model';
 import { BRAND_OWNER_ROLE_ID } from '@/core/auth/brand-roles';
+import { ACCESS_ACCOUNTS_SWITCH_PERMISSIONS } from '@/core/auth/access-view-permissions';
 
 /**
  * Validates access to any account the current user has been granted access to.
  * Selected-account state is URL-driven on the client.
  */
 export async function switchToAccount(memberId: string): Promise<{ success: boolean; error?: string }> {
+  await requireAnyPermission404([...ACCESS_ACCOUNTS_SWITCH_PERMISSIONS]);
+  const canSwitch = await checkPermissions([...ACCESS_ACCOUNTS_SWITCH_PERMISSIONS]);
+  if (!canSwitch) return { success: false, error: 'Permission denied.' };
+
   const personalAccountId = await getPersonalAccountId();
   if (!personalAccountId) return { success: false, error: 'Not authenticated.' };
 
@@ -45,8 +50,8 @@ export async function switchToAccount(memberId: string): Promise<{ success: bool
  * Selected-account state is URL-driven on the client.
  */
 export async function switchToBrand(brandId: string): Promise<{ success: boolean; error?: string }> {
-  await requireAnyPermission404(['linked_accounts.brand.view']);
-  const canSwitch = await checkPermissions(['linked_accounts.brand.view']);
+  await requireAnyPermission404([...ACCESS_ACCOUNTS_SWITCH_PERMISSIONS]);
+  const canSwitch = await checkPermissions([...ACCESS_ACCOUNTS_SWITCH_PERMISSIONS]);
   if (!canSwitch) return { success: false, error: 'Permission denied.' };
 
   const personalAccountId = await getPersonalAccountId();
@@ -81,8 +86,8 @@ export async function switchToBrand(brandId: string): Promise<{ success: boolean
  * Selected-account state is URL-driven on the client.
  */
 export async function switchToDependent(dependentId: string): Promise<{ success: boolean; error?: string }> {
-  await requireAnyPermission404(['linked_accounts.dependent.view']);
-  const canSwitch = await checkPermissions(['linked_accounts.dependent.view']);
+  await requireAnyPermission404([...ACCESS_ACCOUNTS_SWITCH_PERMISSIONS]);
+  const canSwitch = await checkPermissions([...ACCESS_ACCOUNTS_SWITCH_PERMISSIONS]);
   if (!canSwitch) return { success: false, error: 'Permission denied.' };
 
   const personalAccountId = await getPersonalAccountId();

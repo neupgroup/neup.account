@@ -14,6 +14,8 @@ import { AddUserForm } from '../add-user-form';
 import { FlowLink } from '@/components/ui/flow-link';
 import { PrimaryHeader } from '@/components/ui/primary-header';
 import { createPageMetadata } from '@/core/metadata';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
 
 type PageProps = {
   searchParams: Promise<{ portfolio?: string; asset?: string; mode?: string }>;
@@ -272,6 +274,7 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
 }
 
 export default async function TeamPage({ searchParams }: PageProps) {
+  await requireAnyPermission404([...ACCESS_TEAM_VIEW_PERMISSIONS]);
   const { portfolio, asset, mode } = await searchParams;
 
   if (asset) {

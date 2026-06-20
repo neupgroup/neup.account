@@ -10,7 +10,18 @@ import { logError } from '@/core/helpers/logger';
 import { checkPermissions, getAccountType, isRootUser } from '@/services/user';
 import { resolveAssetName } from '@/services/manage/access/asset-resolvers';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
-import { ACCESS_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
+import {
+  ACCESS_APPLICATION_ADD_PERMISSIONS,
+  ACCESS_APPLICATION_REMOVE_PERMISSIONS,
+  ACCESS_CONNECTION_ADD_PERMISSIONS,
+  ACCESS_CONNECTION_REMOVE_PERMISSIONS,
+  ACCESS_LINKED_ACCOUNT_ADD_PERMISSIONS,
+  ACCESS_LINKED_ACCOUNT_REMOVE_PERMISSIONS,
+  ACCESS_PORTFOLIO_CREATE_PERMISSIONS,
+  ACCESS_TEAM_ADD_PERMISSIONS,
+  ACCESS_TEAM_REMOVE_PERMISSIONS,
+  ACCESS_VIEW_PERMISSIONS,
+} from '@/core/auth/access-view-permissions';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
 import { canAssignRoleScopeToAccount, expectedRoleScopeForAccount } from '@/services/role-scopes';
 
@@ -116,6 +127,30 @@ type AccessAssetGroup = Prisma.PortfolioGetPayload<{
 function normalizeDetails(value?: string): string | null {
   const trimmed = (value || '').trim();
   return trimmed.length > 0 ? trimmed : null;
+}
+
+async function hasAnyPermission(permissions: readonly string[]): Promise<boolean> {
+  return checkPermissions([...permissions]);
+}
+
+function permissionSetForAssetType(
+  type: string,
+  action: 'add' | 'remove',
+): readonly string[] {
+  const normalized = type.trim().toLowerCase();
+  if (normalized === 'application' || normalized === 'app_in_port') {
+    return action === 'add'
+      ? ACCESS_APPLICATION_ADD_PERMISSIONS
+      : ACCESS_APPLICATION_REMOVE_PERMISSIONS;
+  }
+  if (normalized === 'brand_account' || normalized === 'branch_account' || normalized === 'acc_in_port') {
+    return action === 'add'
+      ? ACCESS_LINKED_ACCOUNT_ADD_PERMISSIONS
+      : ACCESS_LINKED_ACCOUNT_REMOVE_PERMISSIONS;
+  }
+  return action === 'add'
+    ? ACCESS_CONNECTION_ADD_PERMISSIONS
+    : ACCESS_CONNECTION_REMOVE_PERMISSIONS;
 }
 
 
@@ -224,8 +259,8 @@ export async function getAccessAssetGroup(groupId: string): Promise<AccessAssetG
  * Function createAssetGroup.
  */
 export async function createAssetGroup(input: { name: string; details?: string }) {
-  await requireAnyPermission404(['security.third_party.add']);
-  const canAdd = await checkPermissions(['security.third_party.add']);
+  await requireAnyPermission404([...ACCESS_PORTFOLIO_CREATE_PERMISSIONS]);
+  const canAdd = await hasAnyPermission(ACCESS_PORTFOLIO_CREATE_PERMISSIONS);
   if (!canAdd) {
     return { success: false, error: 'Permission denied.' };
   }
@@ -299,6 +334,11 @@ export async function addAssetGroupMember(input: {
   const accountId = await getActiveAccountId();
   if (!accountId) {
     return { success: false, error: 'Not authenticated.' };
+  }
+
+  const canAdd = await hasAnyPermission(ACCESS_TEAM_ADD_PERMISSIONS);
+  if (!canAdd) {
+    return { success: false, error: 'Permission denied.' };
   }
 
   const memberPattern = /^(account:)?[^\s:]+$/;
@@ -389,6 +429,11 @@ export async function updatePortfolioMemberFlags(input: {
     return { success: false, error: 'Not authenticated.' };
   }
 
+  const canAdd = await hasAnyPermission(ACCESS_TEAM_ADD_PERMISSIONS);
+  if (!canAdd) {
+    return { success: false, error: 'Permission denied.' };
+  }
+
   if (!input.groupId || !input.memberId) {
     return { success: false, error: 'Missing required fields.' };
   }
@@ -472,6 +517,11 @@ export async function addAssetToGroup(input: { groupId: string; asset: string; t
     return { success: false, error: 'Not authenticated.' };
   }
 
+  const canAdd = await hasAnyPermission(permissionSetForAssetType(input.type, 'add'));
+  if (!canAdd) {
+    return { success: false, error: 'Permission denied.' };
+  }
+
   const parsed = addAssetSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: parsed.error.flatten().fieldErrors.asset?.[0] || 'Invalid asset input.' };
@@ -528,6 +578,11 @@ export async function addAssetToGroupWithMode(
   const accountId = await getActiveAccountId();
   if (!accountId) {
     return { success: false, error: 'Not authenticated.' };
+  }
+
+  const canAdd = await hasAnyPermission(permissionSetForAssetType(input.type, 'add'));
+  if (!canAdd) {
+    return { success: false, error: 'Permission denied.' };
   }
 
   const parsed = addAssetSchema.safeParse(input);
@@ -603,7 +658,6 @@ export async function removeAssetFromGroup(input: { groupId: string; portfolioAs
       return { success: false, error: 'Permission denied.' };
     }
 
-    // Load the asset row so we know assetId and assetType for re-attachment
     const assetRow = await prisma.asset.findFirst({
       where: {
         id: input.portfolioAssetId,
@@ -614,6 +668,11 @@ export async function removeAssetFromGroup(input: { groupId: string; portfolioAs
 
     if (!assetRow) {
       return { success: false, error: 'Asset not found in this portfolio.' };
+    }
+
+    const canRemove = await hasAnyPermission(permissionSetForAssetType(assetRow.access_type, 'remove'));
+    if (!canRemove) {
+      return { success: false, error: 'Permission denied.' };
     }
 
     await prisma.$transaction(async (tx) => {
@@ -731,6 +790,11 @@ export async function removeAssetFromGroupWithMode(
       return { success: false, error: 'Asset not found in this portfolio.' };
     }
 
+    const canRemove = await hasAnyPermission(permissionSetForAssetType(assetRow.access_type, 'remove'));
+    if (!canRemove) {
+      return { success: false, error: 'Permission denied.' };
+    }
+
     await prisma.$transaction(async (tx) => {
       await tx.access.deleteMany({
         where: {
@@ -830,6 +894,11 @@ export async function removeAssetGroupMember(input: {
   const accountId = await getActiveAccountId();
   if (!accountId) {
     return { success: false, error: 'Not authenticated.' };
+  }
+
+  const canRemove = await hasAnyPermission(ACCESS_TEAM_REMOVE_PERMISSIONS);
+  if (!canRemove) {
+    return { success: false, error: 'Permission denied.' };
   }
 
   if (!input.groupId || !input.memberId) {
@@ -946,6 +1015,11 @@ export async function assignAssetMemberRole(input: {
   const accountId = await getActiveAccountId();
   if (!accountId) {
     return { success: false, error: 'Not authenticated.' };
+  }
+
+  const canAdd = await hasAnyPermission(ACCESS_TEAM_ADD_PERMISSIONS);
+  if (!canAdd) {
+    return { success: false, error: 'Permission denied.' };
   }
 
   if (!input.assetMember || !input.asset || !input.role) {
@@ -1205,6 +1279,11 @@ export async function bulkAssignAssetRoles(input: {
   const accountId = await getActiveAccountId();
   if (!accountId) {
     return { success: false, error: 'Not authenticated.' };
+  }
+
+  const canAdd = await hasAnyPermission(ACCESS_TEAM_ADD_PERMISSIONS);
+  if (!canAdd) {
+    return { success: false, error: 'Permission denied.' };
   }
 
   if (!input.memberId || !input.assetIds.length || !input.roleIds.length) {

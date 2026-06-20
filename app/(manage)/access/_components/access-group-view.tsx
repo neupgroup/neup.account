@@ -32,6 +32,9 @@ export type AccessGroupViewProps = {
   membersHref: string;
   connectionsHref: string;
   applicationsHref: string;
+  showMembers?: boolean;
+  showConnections?: boolean;
+  showApplications?: boolean;
   /** href for the back button — omit to hide (root /access page) */
   backHref?: string;
   /** Section 2 content — only rendered on the individual view */
@@ -46,6 +49,9 @@ export function AccessGroupView({
   membersHref,
   connectionsHref,
   applicationsHref,
+  showMembers = true,
+  showConnections = true,
+  showApplications = true,
   backHref,
   children,
 }: AccessGroupViewProps) {
@@ -64,43 +70,47 @@ export function AccessGroupView({
         />
         <Card>
           <CardContent className="divide-y p-2">
-            {/* Members */}
-            <FlowLink
-              href={membersHref}
-              className="flex items-center gap-4 py-4 px-4 hover:bg-muted/50 transition-colors"
-            >
-              <Users className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-              <div className="flex-grow min-w-0">
-                <p className="font-medium text-foreground">Team</p>
-                <p className="text-sm text-muted-foreground">See people who have access to this profile.</p>
-              </div>
-              <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-            </FlowLink>
+            {showMembers && (
+              <FlowLink
+                href={membersHref}
+                className="flex items-center gap-4 py-4 px-4 hover:bg-muted/50 transition-colors"
+              >
+                <Users className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                <div className="flex-grow min-w-0">
+                  <p className="font-medium text-foreground">Team</p>
+                  <p className="text-sm text-muted-foreground">See people who have access to this profile.</p>
+                </div>
+                <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+              </FlowLink>
+            )}
 
-            {/* Applications */}
-            <FlowLink
-              href={connectionsHref}
-              className="flex items-center gap-4 py-4 px-4 hover:bg-muted/50 transition-colors"
-            >
-              <AppWindow className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-              <div className="flex-grow min-w-0">
-                <p className="font-medium text-foreground">Connections</p>
-                <p className="text-sm text-muted-foreground">See all application this profile is connected to.</p>
-              </div>
-              <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-            </FlowLink>
+            {showConnections && (
+              <FlowLink
+                href={connectionsHref}
+                className="flex items-center gap-4 py-4 px-4 hover:bg-muted/50 transition-colors"
+              >
+                <AppWindow className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                <div className="flex-grow min-w-0">
+                  <p className="font-medium text-foreground">Connections</p>
+                  <p className="text-sm text-muted-foreground">See all application this profile is connected to.</p>
+                </div>
+                <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+              </FlowLink>
+            )}
 
-            <FlowLink
-              href={applicationsHref}
-              className="flex items-center gap-4 py-4 px-4 hover:bg-muted/50 transition-colors"
-            >
-              <AppWindow className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-              <div className="flex-grow min-w-0">
-                <p className="font-medium text-foreground">Applications</p>
-                <p className="text-sm text-muted-foreground">See all applications you have access to.</p>
-              </div>
-              <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-            </FlowLink>
+            {showApplications && (
+              <FlowLink
+                href={applicationsHref}
+                className="flex items-center gap-4 py-4 px-4 hover:bg-muted/50 transition-colors"
+              >
+                <AppWindow className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                <div className="flex-grow min-w-0">
+                  <p className="font-medium text-foreground">Applications</p>
+                  <p className="text-sm text-muted-foreground">See all applications you have access to.</p>
+                </div>
+                <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+              </FlowLink>
+            )}
           </CardContent>
         </Card>
       </div>

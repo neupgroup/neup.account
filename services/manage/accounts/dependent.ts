@@ -13,6 +13,10 @@ import { ensureAccessGrant } from '@/services/access-model';
 import { checkPermissions, getUserProfile, getUserNeupIds } from '@/services/user';
 import { activityAction } from '@/services/activity-action';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import {
+  ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS,
+  ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS,
+} from '@/core/auth/access-view-permissions';
 
 
 /**
@@ -30,8 +34,8 @@ export type DependentAccount = {
  * Function getDependentAccounts.
  */
 export async function getDependentAccounts(): Promise<DependentAccount[]> {
-    await requireAnyPermission404(['linked_accounts.dependent.view']);
-    const canView = await checkPermissions(['linked_accounts.dependent.view']);
+    await requireAnyPermission404([...ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS]);
+    const canView = await checkPermissions([...ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS]);
     if (!canView) return [];
     
     const personalAccountId = await getPersonalAccountId();
@@ -92,8 +96,8 @@ export async function getDependentAccounts(): Promise<DependentAccount[]> {
  * Function createDependentAccount.
  */
 export async function createDependentAccount(data: z.infer<typeof dependentFormSchema>, geolocation?: string) {
-    await requireAnyPermission404(['linked_accounts.dependent.create']);
-    const canCreate = await checkPermissions(['linked_accounts.dependent.create']);
+    await requireAnyPermission404([...ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS]);
+    const canCreate = await checkPermissions([...ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS]);
     if (!canCreate) {
         return { success: false, error: "You do not have permission to create a dependent account." };
     }

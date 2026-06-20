@@ -7,13 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Plus, ChevronRight, X } from '@/components/icons';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -44,6 +37,79 @@ type Props = {
   appId: string;
   initialPermissions: AppPermission[];
 };
+
+type PermissionSearchFilters = {
+  nameTerms: string[];
+  plainTerms: string[];
+  scopes: string[];
+  sort: 'asc' | 'desc';
+};
+
+function normalizeScopeFilter(value: string): string | null {
+  const normalized = value.trim().toLowerCase();
+  if (!normalized) return null;
+  if (normalized === 'managed' || normalized === 'manageable') return 'managable';
+  if (PERMISSION_SCOPE_OPTIONS.includes(normalized as (typeof PERMISSION_SCOPE_OPTIONS)[number])) return normalized;
+  return null;
+}
+
+function parsePermissionSearch(input: string): PermissionSearchFilters {
+  const filters: PermissionSearchFilters = {
+    nameTerms: [],
+    plainTerms: [],
+    scopes: [],
+    sort: 'asc',
+  };
+
+  const segments = input
+    .split('&')
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+
+  if (segments.length === 0 && input.trim()) {
+    filters.plainTerms.push(input.trim().toLowerCase());
+    return filters;
+  }
+
+  for (const segment of segments) {
+    const separatorIndex = segment.indexOf(':');
+    if (separatorIndex === -1) {
+      filters.plainTerms.push(segment.toLowerCase());
+      continue;
+    }
+
+    const key = segment.slice(0, separatorIndex).trim().toLowerCase();
+    const rawValue = segment.slice(separatorIndex + 1).trim();
+    if (!rawValue) continue;
+
+    if (key === 'sort') {
+      const normalizedSort = rawValue.toLowerCase();
+      if (normalizedSort === 'asc' || normalizedSort === 'desc') {
+        filters.sort = normalizedSort;
+      }
+      continue;
+    }
+
+    if (key === 'scope') {
+      for (const part of rawValue.split('||')) {
+        const normalizedScope = normalizeScopeFilter(part);
+        if (normalizedScope && !filters.scopes.includes(normalizedScope)) {
+          filters.scopes.push(normalizedScope);
+        }
+      }
+      continue;
+    }
+
+    if (key === 'name') {
+      filters.nameTerms.push(rawValue.toLowerCase());
+      continue;
+    }
+
+    filters.plainTerms.push(segment.toLowerCase());
+  }
+
+  return filters;
+}
 
 function PermissionScopeSelector({
   value,
@@ -139,7 +205,7 @@ function PermissionScopeSelector({
 export function PermissionPanel({ appId, initialPermissions }: Props) {
   const { toast } = useToast();
   const [permissions, setPermissions] = useState<AppPermission[]>(initialPermissions);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [search, setSearch] = useState('');
 
   const [addOpen, setAddOpen] = useState(false);
   const [addName, setAddName] = useState('');
@@ -155,12 +221,25 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   const [removeTarget, setRemoveTarget] = useState<AppPermission | null>(null);
   const [removePending, setRemovePending] = useState(false);
 
-  const sortedPermissions = useMemo(() => {
-    return [...permissions].sort((a, b) => {
-      const result = a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
-      return sortDirection === 'asc' ? result : -result;
-    });
-  }, [permissions, sortDirection]);
+  const filteredPermissions = useMemo(() => {
+    const filters = parsePermissionSearch(search);
+
+    return [...permissions]
+      .filter((permission) => {
+        const nameHaystack = permission.name.toLowerCase();
+        const plainHaystack = `${permission.name} ${permission.description ?? ''}`.toLowerCase();
+        const matchesName = filters.nameTerms.every((term) => nameHaystack.includes(term));
+        const matchesPlain = filters.plainTerms.every((term) => plainHaystack.includes(term));
+        const matchesScope =
+          filters.scopes.length === 0 || permission.scope.some((scope) => filters.scopes.includes(scope));
+
+        return matchesName && matchesPlain && matchesScope;
+      })
+      .sort((a, b) => {
+        const result = a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+        return filters.sort === 'asc' ? result : -result;
+      });
+  }, [permissions, search]);
 
   const isValidName = (value: string) => /^[a-zA-Z0-9._]+$/.test(value.trim());
 
@@ -269,20 +348,11 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
 
   return (
     <>
-      <div className="flex items-center justify-end">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Sort by</span>
-          <Select value={sortDirection} onValueChange={(value) => setSortDirection(value as 'asc' | 'desc')}>
-            <SelectTrigger className="h-9 w-[132px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent align="end">
-              <SelectItem value="asc">Name A-Z</SelectItem>
-              <SelectItem value="desc">Name Z-A</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+      <Input
+        value={search}
+        onChange={(event) => setSearch(event.target.value)}
+        placeholder="Search permissions... e.g. sort:asc&scope:public&name:access"
+      />
 
       <div className="overflow-hidden rounded-2xl border bg-card">
         <button
@@ -301,8 +371,8 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
           <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
         </button>
 
-        {sortedPermissions.length > 0 ? (
-          sortedPermissions.map((permission) => (
+        {filteredPermissions.length > 0 ? (
+          filteredPermissions.map((permission) => (
             <div
               key={permission.id}
               className="group flex items-center justify-between gap-4 border-b px-4 py-4 last:border-b-0 transition-colors hover:bg-muted/40 sm:px-5"
@@ -333,7 +403,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
           ))
         ) : (
           <div className="px-4 py-8 text-center text-sm text-muted-foreground sm:px-5">
-            No permissions defined yet.
+            {permissions.length === 0 ? 'No permissions defined yet.' : 'No permissions match your search.'}
           </div>
         )}
       </div>

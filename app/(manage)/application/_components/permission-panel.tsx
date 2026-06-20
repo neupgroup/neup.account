@@ -233,12 +233,12 @@ function PermissionScopeSelector({
   return (
     <div className="space-y-2">
       <p className="text-sm font-medium">Scopes</p>
-      <div className="w-full overflow-hidden rounded-md border bg-background px-3 py-2">
+      <div className="w-full max-w-full overflow-hidden rounded-md border bg-background px-3 py-2">
         <div
           ref={containerRef}
-          className="w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="w-full max-w-full overflow-hidden"
         >
-          <div className="inline-flex min-h-8 min-w-full flex-nowrap items-center gap-1.5">
+          <div className="flex min-h-8 min-w-0 flex-wrap items-center gap-1.5">
           {value.map((scope, index) => (
             <button
               type="button"
@@ -271,7 +271,7 @@ function PermissionScopeSelector({
                 focusInput();
               }}
               placeholder={value.length === 0 ? 'Type to search scopes' : 'Add more scopes'}
-              className="h-7 min-w-[140px] flex-1 border-0 bg-transparent p-0 text-sm outline-none placeholder:text-muted-foreground"
+              className="h-7 min-w-[140px] shrink-0 border-0 bg-transparent p-0 text-sm outline-none placeholder:text-muted-foreground"
             />
           </div>
         </div>
@@ -515,7 +515,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
           }
         }}
       >
-        <DialogContent>
+        <DialogContent className="overflow-hidden">
           <DialogHeader>
             <DialogTitle>New Permission</DialogTitle>
             <DialogDescription>
@@ -539,7 +539,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
       </Dialog>
 
       <Dialog open={!!editTarget} onOpenChange={(open) => { if (!open) closeEdit(); }}>
-        <DialogContent>
+        <DialogContent className="overflow-hidden">
           <DialogHeader>
             <DialogTitle>Edit Permission</DialogTitle>
             <DialogDescription>

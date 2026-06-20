@@ -15,11 +15,13 @@ import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { ACCESS_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
 import type { ApplicationSection, FlatAppItem } from '@/services/applications/types';
 import { revalidateApplicationDetailRoutes } from '@/services/applications/revalidate-routes';
+import {
+  ROOT_APPLICATION_EDIT_PERMISSION,
+  ROOT_APPLICATION_VIEW_PERMISSION,
+} from '@/services/applications/permission-definitions';
 
 export type { FlatAppItem } from '@/services/applications/types';
 
-const ROOT_APPLICATION_VIEW_PERMISSION = 'application.view.scopeRoot';
-const ROOT_APPLICATION_EDIT_PERMISSION = 'application.edit.scopeRoot';
 const ROOT_PERMISSION_SCOPE = 'individual.root';
 
 // Aggregates managed and connected applications for the applications list page.

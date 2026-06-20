@@ -4,7 +4,7 @@
  * Seeds the application.owner role for the neupaccount application.
  *
  * Order of operations (must be followed to satisfy FK constraints):
- *   1. Upsert permissions  (application.*.scopePublic + application.*.scopeManaged)
+ *   1. Upsert permissions  (application.* unified permission names)
  *   2. Upsert role          (application.owner)
  *   3. Upsert permission-to-role maps (AuthzRolePermissionMap)
  *

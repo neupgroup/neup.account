@@ -49,16 +49,14 @@ const APPLICATION_PERMISSION_DEFINITION_MAP: Record<ApplicationPermissionBase, A
 
 function permissionName(base: ApplicationPermissionBase, audience: ApplicationPermissionAudience): string {
   const suffix = APPLICATION_PERMISSION_DEFINITION_MAP[base].suffix;
-  if (audience === 'root') return `application.${suffix}.scopeRoot`;
-  if (audience === 'managed') return `application.${suffix}.scopeManaged`;
-  return `application.${suffix}.scopePublic`;
+  void audience;
+  return `application.${suffix}`;
 }
 
 function permissionDescription(base: ApplicationPermissionBase, audience: ApplicationPermissionAudience): string {
   const baseDescription = APPLICATION_PERMISSION_DEFINITION_MAP[base].description;
-  if (audience === 'root') return `${baseDescription} Across all applications as a root administrator.`;
-  if (audience === 'managed') return `${baseDescription} For managed and brand account application access.`;
-  return `${baseDescription} For individual account application access.`;
+  void audience;
+  return baseDescription;
 }
 
 function permissionScope(audience: ApplicationPermissionAudience): PermissionScopeOption {
@@ -78,19 +76,38 @@ export function getApplicationPermissionNames(
   bases: readonly ApplicationPermissionBase[],
   audiences: readonly ApplicationPermissionAudience[],
 ): string[] {
-  return bases.flatMap((base) => audiences.map((audience) => permissionName(base, audience)));
+  return Array.from(new Set(
+    bases.flatMap((base) => audiences.map((audience) => permissionName(base, audience))),
+  ));
 }
 
 export function getApplicationPermissionDefinitions(
   audiences: readonly ApplicationPermissionAudience[],
 ): Array<{ name: string; description: string; scope: PermissionScopeOption[] }> {
-  return audiences.flatMap((audience) =>
-    (Object.keys(APPLICATION_PERMISSION_DEFINITION_MAP) as ApplicationPermissionBase[]).map((base) => ({
-      name: permissionName(base, audience),
-      description: permissionDescription(base, audience),
-      scope: [permissionScope(audience)],
-    })),
-  );
+  const definitions = new Map<string, { name: string; description: string; scope: PermissionScopeOption[] }>();
+
+  for (const audience of audiences) {
+    for (const base of Object.keys(APPLICATION_PERMISSION_DEFINITION_MAP) as ApplicationPermissionBase[]) {
+      const name = permissionName(base, audience);
+      const scope = permissionScope(audience);
+      const existing = definitions.get(name);
+
+      if (existing) {
+        if (!existing.scope.includes(scope)) {
+          existing.scope.push(scope);
+        }
+        continue;
+      }
+
+      definitions.set(name, {
+        name,
+        description: permissionDescription(base, audience),
+        scope: [scope],
+      });
+    }
+  }
+
+  return Array.from(definitions.values());
 }
 
 export const ROOT_APPLICATION_VIEW_PERMISSION = getApplicationPermissionName('view', 'root');

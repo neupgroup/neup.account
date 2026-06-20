@@ -67,6 +67,8 @@ type PermissionGrantEntry = {
   roleScope: string | null;
 };
 
+export type AccountRolePermissionsEntry = [roleId: string, roleName: string | null, permissionNames: string[]];
+
 function shouldIgnoreManagedRoleScope(scope: string | null | undefined): boolean {
   return scope === 'individual.root';
 }
@@ -82,6 +84,110 @@ function matchesRoleScope(
     : [expectedRoleScopes];
 
   return roleScope !== null && allowedScopes.includes(roleScope);
+}
+
+type AppAccessGrantQuery = {
+  memberAccountId: string;
+  appId: string;
+  accessType?: 'acc_self' | 'acc_self_root';
+  parentAccountId?: string;
+};
+
+async function getAppAccessRoleRows({
+  memberAccountId,
+  appId,
+  accessType,
+  parentAccountId,
+}: AppAccessGrantQuery): Promise<Array<{ roleId: string; roleName: string | null; roleScope: string | null; permissionNames: string[] }>> {
+  if (!memberAccountId || !appId) return [];
+
+  try {
+    await cleanupExpiredAccessModel();
+
+    const accessRows = await prisma.access.findMany({
+      where: {
+        memberAccountId,
+        accessApplicationId: appId,
+        ...(accessType ? { accessType } : {}),
+        ...(parentAccountId ? { parentAccountId } : {}),
+        status: 'active',
+        OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
+        role: {
+          appId,
+        },
+      },
+      select: {
+        roleId: true,
+        role: {
+          select: {
+            name: true,
+            scope: true,
+            permissions: true,
+          },
+        },
+      },
+      orderBy: [
+        { roleId: 'asc' },
+        { id: 'asc' },
+      ],
+    });
+
+    return accessRows.map((row) => ({
+      roleId: row.roleId,
+      roleName: row.role.name ?? null,
+      roleScope: row.role.scope ?? null,
+      permissionNames: extractRolePermissionNames(row.role.permissions),
+    }));
+  } catch (error) {
+    const scopeLabel = accessType ?? 'all';
+    const parentLabel = parentAccountId ?? 'self';
+    await logError(
+      'database',
+      error,
+      `getAppAccessRoleRows:${memberAccountId}:${appId}:${scopeLabel}:${parentLabel}`,
+    );
+    return [];
+  }
+}
+
+function flattenPermissionNames(
+  rows: Array<{ roleScope: string | null; permissionNames: string[] }>,
+  options?: { ignoreManagedRootScope?: boolean },
+): string[] {
+  const permissions = rows.flatMap((row) =>
+    options?.ignoreManagedRootScope && shouldIgnoreManagedRoleScope(row.roleScope)
+      ? []
+      : row.permissionNames
+  );
+
+  return Array.from(new Set(permissions));
+}
+
+function toRolePermissionEntries(
+  rows: Array<{ roleId: string; roleName: string | null; roleScope: string | null; permissionNames: string[] }>,
+  options?: { ignoreManagedRootScope?: boolean },
+): AccountRolePermissionsEntry[] {
+  const grouped = new Map<string, AccountRolePermissionsEntry>();
+
+  for (const row of rows) {
+    if (options?.ignoreManagedRootScope && shouldIgnoreManagedRoleScope(row.roleScope)) {
+      continue;
+    }
+
+    const existing = grouped.get(row.roleId);
+    if (existing) {
+      existing[2] = Array.from(new Set([...existing[2], ...row.permissionNames]));
+      continue;
+    }
+
+    grouped.set(row.roleId, [
+      row.roleId,
+      row.roleName,
+      Array.from(new Set(row.permissionNames)),
+    ]);
+  }
+
+  return Array.from(grouped.values());
 }
 
 // --- User Data Fetching ---
@@ -372,6 +478,86 @@ export async function getGrantedAccountPermission(
     );
     return [];
   }
+}
+
+export async function getAccountsPermission(
+  accountId: string,
+  appId: string,
+): Promise<string[]> {
+  const rows = await getAppAccessRoleRows({
+    memberAccountId: accountId,
+    appId,
+    accessType: 'acc_self',
+  });
+
+  return flattenPermissionNames(rows);
+}
+
+export async function getAccountsRole(
+  accountId: string,
+  appId: string,
+): Promise<AccountRolePermissionsEntry[]> {
+  const rows = await getAppAccessRoleRows({
+    memberAccountId: accountId,
+    appId,
+    accessType: 'acc_self',
+  });
+
+  return toRolePermissionEntries(rows);
+}
+
+export async function getManagedAccountPermissions(
+  managedAccountId: string,
+  managerAccountId: string,
+  appId: string,
+): Promise<string[]> {
+  const rows = await getAppAccessRoleRows({
+    memberAccountId: managerAccountId,
+    parentAccountId: managedAccountId,
+    appId,
+  });
+
+  return flattenPermissionNames(rows, { ignoreManagedRootScope: true });
+}
+
+export async function getManagedAccountRoles(
+  managedAccountId: string,
+  managerAccountId: string,
+  appId: string,
+): Promise<AccountRolePermissionsEntry[]> {
+  const rows = await getAppAccessRoleRows({
+    memberAccountId: managerAccountId,
+    parentAccountId: managedAccountId,
+    appId,
+  });
+
+  return toRolePermissionEntries(rows, { ignoreManagedRootScope: true });
+}
+
+export async function getRootPermissions(
+  accountId: string,
+  appId: string,
+): Promise<string[]> {
+  const rows = await getAppAccessRoleRows({
+    memberAccountId: accountId,
+    appId,
+    accessType: 'acc_self_root',
+  });
+
+  return flattenPermissionNames(rows);
+}
+
+export async function getRootRoles(
+  accountId: string,
+  appId: string,
+): Promise<AccountRolePermissionsEntry[]> {
+  const rows = await getAppAccessRoleRows({
+    memberAccountId: accountId,
+    appId,
+    accessType: 'acc_self_root',
+  });
+
+  return toRolePermissionEntries(rows);
 }
 
 async function getGrantedAccountPermissionEntries(

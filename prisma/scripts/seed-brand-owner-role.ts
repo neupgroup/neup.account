@@ -14,6 +14,22 @@ function slugifyPermission(permission: string): string {
   return permission.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
+function permissionScopesForBrandOwnerPermission(permissionName: string): string[] {
+  if (
+    permissionName === 'access.view' ||
+    [
+      'account.brand.members.manage',
+      'account.brand.kyc.view',
+      'account.brand.kyc.submit',
+      'account.brand.delete',
+    ].includes(permissionName)
+  ) {
+    return ['public', 'managable', 'root'];
+  }
+
+  return ['public'];
+}
+
 async function main() {
   if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL is not set.');
@@ -41,7 +57,7 @@ async function main() {
 
     for (const permissionName of BRAND_OWNER_PERMISSION_NAMES) {
       const permissionId = `cap-brand-owner-${slugifyPermission(permissionName)}`;
-      const permissionScope = permissionName.includes('.scopeManaged') ? ['managable'] : ['public'];
+      const permissionScope = permissionScopesForBrandOwnerPermission(permissionName);
 
       const permission = await tx.authzPermission.upsert({
         where: { name_appId: { name: permissionName, appId: APP_ID } },

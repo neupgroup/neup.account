@@ -54,7 +54,7 @@ const DEFAULT_CAPABILITIES = [
   'data.deactivate_account.start',
   'data.materialization.view',
   'data.materialization.modify',
-  'access.view.scopePublic',
+  'access.view',
   'security.recent_activities.view',
   'security.third_party.add',
   'security.third_party.remove',
@@ -81,20 +81,20 @@ const ROOT_CAPABILITIES = [
   'root.account.create_individual',
   'root.account.access.view',
   'root.account.access.edit',
-  'access.view.scopeRoot',
+  'access.view',
   'root.account.send_warning',
   'root.account.give_block_account',
   'root.account.remove_block_account',
   'root.account.impersonate',
   'root.account.edit_pro_status',
   'root.account.edit_neupid',
-  'application.view.scopeRoot',
-  'application.edit.scopeRoot',
-  'application.delete.scopeRoot',
-  'application.logs.view.scopeRoot',
-  'application.devlogs.view.scopeRoot',
-  'application.roles.view.scopeRoot',
-  'application.roles.manage.scopeRoot',
+  'application.view',
+  'application.edit',
+  'application.delete',
+  'application.logs.view',
+  'application.devlogs.view',
+  'application.roles.view',
+  'application.roles.manage',
   'root.permission.view',
   'root.permission.edit',
   'root.requests.view',
@@ -116,6 +116,29 @@ const ROOT_CAPABILITIES = [
 
 function slugifyPermission(name: string): string {
   return name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase();
+}
+
+function permissionScopesForNeupAccountPermission(permissionName: string, fallback: string[]): string[] {
+  if (
+    permissionName === 'access.view' ||
+    [
+      'application.view',
+      'application.edit',
+      'application.delete',
+      'application.logs.view',
+      'application.devlogs.view',
+      'application.roles.view',
+      'application.roles.manage',
+      'account.brand.members.manage',
+      'account.brand.kyc.view',
+      'account.brand.kyc.submit',
+      'account.brand.delete',
+    ].includes(permissionName)
+  ) {
+    return ['public', 'managable', 'root'];
+  }
+
+  return fallback;
 }
 
 if (!process.env.DATABASE_URL) {
@@ -284,10 +307,11 @@ async function main() {
 
     for (const permissionName of DEFAULT_CAPABILITIES) {
       const permissionId = `cap-def-${slugifyPermission(permissionName)}`;
+      const permissionScope = permissionScopesForNeupAccountPermission(permissionName, ['public']);
       const permission = await prisma.authzPermission.upsert({
         where: { name_appId: { name: permissionName, appId: APP_ID } },
-        update: { name: permissionName, appId: APP_ID, scope: ['public'] },
-        create: { id: permissionId, name: permissionName, appId: APP_ID, scope: ['public'] },
+        update: { name: permissionName, appId: APP_ID, scope: permissionScope },
+        create: { id: permissionId, name: permissionName, appId: APP_ID, scope: permissionScope },
         select: { id: true },
       });
 
@@ -308,10 +332,7 @@ async function main() {
 
     for (const permissionName of ROOT_CAPABILITIES) {
       const permissionId = `cap-root-${slugifyPermission(permissionName)}`;
-      const permissionScope =
-        permissionName.startsWith('application.') || permissionName.startsWith('account.brand.')
-          ? ['root']
-          : ['root'];
+      const permissionScope = permissionScopesForNeupAccountPermission(permissionName, ['root']);
       const permission = await prisma.authzPermission.upsert({
         where: { name_appId: { name: permissionName, appId: APP_ID } },
         update: { name: permissionName, appId: APP_ID, scope: permissionScope },

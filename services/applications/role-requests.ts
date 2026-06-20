@@ -10,8 +10,8 @@ import { canAssignRoleScopeToAccount } from '@/services/role-scopes';
 import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';
 import { isApplicationOwnerForAccount } from '@/services/applications/manage';
 import { revalidateApplicationRequestsRoutes, revalidateApplicationUsersRoutes } from '@/services/applications/revalidate-routes';
+import { ROOT_APPLICATION_EDIT_PERMISSION } from '@/services/applications/permission-definitions';
 
-const ROOT_APPLICATION_EDIT_PERMISSION = 'application.edit.scopeRoot';
 const ROOT_PERMISSION_SCOPE = 'individual.root';
 
 function stringList(value: unknown): string[] {

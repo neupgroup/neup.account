@@ -218,6 +218,43 @@ function normalizeStringList(values: string[]): string[] {
   return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
 }
 
+async function getSelfManagedDirectRoleIds(): Promise<Set<string> | null> {
+  const [activeAccountId, personalAccountId] = await Promise.all([
+    getActiveAccountId(),
+    getPersonalAccountId(),
+  ]);
+
+  if (!activeAccountId || !personalAccountId || activeAccountId !== personalAccountId) {
+    return null;
+  }
+
+  const account = await prisma.account.findUnique({
+    where: { id: activeAccountId },
+    select: { accountType: true },
+  });
+
+  if (account?.accountType !== 'individual') {
+    return null;
+  }
+
+  const accessRows = await prisma.access.findMany({
+    where: {
+      memberAccountId: activeAccountId,
+      parentAccountId: activeAccountId,
+      accessType: 'acc_self',
+      status: 'active',
+      OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
+      role: {
+        appId: 'neup.account',
+        name: { not: { startsWith: DIRECT_CUSTOM_ROLE_PREFIX } },
+      },
+    },
+    select: { roleId: true },
+  });
+
+  return new Set(accessRows.map((row) => row.roleId));
+}
+
 async function rolePermissionNames(roleIds: string[]): Promise<Map<string, string[]>> {
   if (roleIds.length === 0) return new Map();
 
@@ -255,10 +292,16 @@ export async function getDirectAccessAssignmentOptions(): Promise<{
   if (!canAdd) return { roles: [] };
 
   try {
+    const allowedRoleIds = await getSelfManagedDirectRoleIds();
+    if (allowedRoleIds && allowedRoleIds.size === 0) {
+      return { roles: [] };
+    }
+
     const roles = await prisma.authzRole.findMany({
       where: {
         appId: 'neup.account',
         name: { not: { startsWith: DIRECT_CUSTOM_ROLE_PREFIX } },
+        ...(allowedRoleIds ? { id: { in: Array.from(allowedRoleIds) } } : {}),
       },
       select: { id: true, name: true, description: true },
       orderBy: [{ scope: 'asc' }, { name: 'asc' }],
@@ -298,6 +341,14 @@ export async function updateDirectMemberAccess(input: {
   }
 
   try {
+    const allowedRoleIds = await getSelfManagedDirectRoleIds();
+    if (allowedRoleIds) {
+      const disallowedRoleIds = roleIds.filter((roleId) => !allowedRoleIds.has(roleId));
+      if (disallowedRoleIds.length > 0) {
+        return { success: false, error: 'One or more roles are not available for your self account.' };
+      }
+    }
+
     const [targetMember, selectedRoles, currentPermissionNames] = await Promise.all([
       prisma.account.findUnique({
         where: { id: input.memberAccountId },

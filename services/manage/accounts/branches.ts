@@ -109,8 +109,8 @@ export async function createBranchAccount(data: z.infer<typeof formSchema>, geol
             // Grant brand.owner on the branch to the personal account (same role as brand)
             await tx.authzRole.upsert({
                 where: { id: 'brand-owner-neup-account' },
-                update: { name: 'brand.owner', scope: 'brand.managable', appId: 'neup.account' },
-                create: { id: 'brand-owner-neup-account', name: 'brand.owner', scope: 'brand.managable', appId: 'neup.account' },
+                update: { name: 'brand.owner', scope: 'managable.i00b10', appId: 'neup.account' },
+                create: { id: 'brand-owner-neup-account', name: 'brand.owner', scope: 'managable.i00b10', appId: 'neup.account' },
             });
             await ensureAccessGrant(tx, {
                 memberAccountId: personalAccountId,

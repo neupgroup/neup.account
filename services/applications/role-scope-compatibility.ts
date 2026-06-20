@@ -1,56 +1,34 @@
 import { normalizePermissionScopes, type PermissionScopeOption } from '@/services/applications/permission-scopes';
+import { decodeRoleScope, normalizeRoleScope, scopeCoversRoleScope } from '@/services/role-scopes';
 
-export type ProgressiveScopeLevel =
-  | 'toApprove'
-  | 'managable'
-  | 'managable.brand'
-  | 'managable.branch'
-  | 'managable.dependent'
-  | 'managable.individual'
-  | 'public'
-  | 'root'
-  | 'unknown';
+export type ProgressiveScopeLevel = 'toApprove' | 'managable' | 'public' | 'root' | 'unknown';
 
 function normalizeScope(scope: string | null | undefined): string {
-  return (scope ?? '').trim();
+  return normalizeRoleScope(scope) ?? (scope ?? '').trim();
 }
 
 export function getProgressiveScopeLevel(scope: string | null | undefined): ProgressiveScopeLevel {
-  const normalized = normalizeScope(scope);
-  if (!normalized) return 'unknown';
-  if (normalized === 'root') return 'root';
-  if (normalized === 'individual.root') return 'root';
-  if (normalized === 'toApprove' || normalized.endsWith('.toApprove')) return 'toApprove';
-  if (normalized === 'managable.brand' || normalized === 'brand.managable') return 'managable.brand';
-  if (normalized === 'managable.branch' || normalized === 'branch.brand.managable') return 'managable.branch';
-  if (normalized === 'managable.dependent' || normalized === 'dependent.individual.managable') return 'managable.dependent';
-  if (normalized === 'managable.individual' || normalized === 'individual.managable') return 'managable.individual';
-  if (normalized === 'managable' || normalized.endsWith('.managable')) return 'managable';
-  if (normalized === 'public' || normalized.endsWith('.public')) return 'public';
-  return 'unknown';
+  const decoded = decodeRoleScope(scope);
+  return decoded?.mode ?? 'unknown';
 }
 
-export function getAllowedPermissionLevelsForRoleScope(scope: string | null | undefined): PermissionScopeOption[] {
-  const level = getProgressiveScopeLevel(scope);
-  if (level === 'public') return ['public'];
-  if (level === 'toApprove') return ['toApprove'];
-  if (level === 'managable') return ['managable'];
-  if (level === 'managable.brand') return ['managable', 'managable.brand'];
-  if (level === 'managable.branch') return ['managable', 'managable.branch'];
-  if (level === 'managable.dependent') return ['managable', 'managable.dependent'];
-  if (level === 'managable.individual') return ['managable', 'managable.individual'];
-  if (level === 'root') return ['root'];
-  return [];
+export function getAllowedPermissionLevelsForRoleScope(
+  scope: string | null | undefined,
+): PermissionScopeOption[] {
+  const normalized = normalizeRoleScope(scope);
+  return normalized ? [normalized] : [];
 }
 
 export function isPermissionScopeAllowedForRoleScope(
   permissionScopes: unknown,
   roleScope: string | null | undefined,
 ): boolean {
-  const allowedLevels = getAllowedPermissionLevelsForRoleScope(roleScope);
-  if (allowedLevels.length === 0) return false;
+  const normalizedRoleScope = normalizeRoleScope(roleScope);
+  if (!normalizedRoleScope) return false;
 
-  return normalizePermissionScopes(permissionScopes).some((scope) => allowedLevels.includes(scope));
+  return normalizePermissionScopes(permissionScopes).some((scope) =>
+    scopeCoversRoleScope(scope, normalizedRoleScope),
+  );
 }
 
 export function getInvalidPermissionScopesForRoleScope(

@@ -30,6 +30,7 @@ import {
   revalidateApplicationPermissionsRoutes,
   revalidateApplicationRoleRoutes,
 } from '@/services/applications/revalidate-routes';
+import { normalizeRoleScope } from '@/services/role-scopes';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -70,9 +71,9 @@ export async function getAppDefaultRoleId(appId: string): Promise<string | null>
 const GLOBAL_AUTHZ_APP_ID = 'neup.account';
 
 function getSystemRoleScope(roleId: string): string {
-  if (roleId === 'application.owner') return 'public';
-  if (roleId === 'application.manage') return 'managable';
-  return 'public';
+  if (roleId === 'application.owner') return 'public.i10b00';
+  if (roleId === 'application.manage') return 'managable.i10b00';
+  return 'public.i10b00';
 }
 
 async function upsertPermissionsForApp(
@@ -592,7 +593,7 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
       id: role.id,
       name: role.name,
       description: role.description,
-      scope: role.scope,
+      scope: normalizeRoleScope(role.scope) ?? role.scope,
       permissions: Array.isArray(role.permissions)
         ? role.permissions
             .flatMap((p): AppPermission[] => {

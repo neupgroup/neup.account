@@ -1,11 +1,11 @@
 'use client';
 
-import { useMemo, useRef, useState, type KeyboardEvent } from 'react';
+import { useMemo, useState } from 'react';
 import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Plus, ChevronRight, X } from '@/components/icons';
+import { Plus, ChevronRight } from '@/components/icons';
 import {
   Dialog,
   DialogContent,
@@ -31,7 +31,8 @@ import {
   deleteAppPermission,
   type AppPermission,
 } from '@/services/applications/authz-manage';
-import { PERMISSION_SCOPE_OPTIONS } from '@/services/applications/permission-scopes';
+import { normalizeRoleScope } from '@/services/role-scopes';
+import { PermissionScopeSelector } from './scope-selectors';
 
 type Props = {
   appId: string;
@@ -47,15 +48,7 @@ type PermissionSearchFilters = {
 };
 
 function normalizeScopeFilter(value: string): string | null {
-  const normalized = value.trim().toLowerCase();
-  if (!normalized) return null;
-  if (normalized === 'managed' || normalized === 'manageable') return 'managable';
-  if (normalized === 'managed.brand' || normalized === 'manageable.brand') return 'managable.brand';
-  if (normalized === 'managed.branch' || normalized === 'manageable.branch') return 'managable.branch';
-  if (normalized === 'managed.dependent' || normalized === 'manageable.dependent') return 'managable.dependent';
-  if (normalized === 'managed.individual' || normalized === 'manageable.individual') return 'managable.individual';
-  if (PERMISSION_SCOPE_OPTIONS.includes(normalized as (typeof PERMISSION_SCOPE_OPTIONS)[number])) return normalized;
-  return null;
+  return normalizeRoleScope(value);
 }
 
 function parsePermissionSearch(input: string): PermissionSearchFilters {
@@ -114,189 +107,6 @@ function parsePermissionSearch(input: string): PermissionSearchFilters {
   }
 
   return filters;
-}
-
-function PermissionScopeSelector({
-  value,
-  onChange,
-}: {
-  value: string[];
-  onChange: (value: string[]) => void;
-}) {
-  const [query, setQuery] = useState('');
-  const [activeChipIndex, setActiveChipIndex] = useState<number | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const chipRefs = useRef<Array<HTMLButtonElement | null>>([]);
-  const selected = new Set(value);
-  const normalizedQuery = query.trim().toLowerCase();
-  const filteredScopes = PERMISSION_SCOPE_OPTIONS.filter((scope) => {
-    if (selected.has(scope)) return false;
-    if (!normalizedQuery) return true;
-    return scope.toLowerCase().includes(normalizedQuery);
-  });
-
-  const addScope = (scope: string) => {
-    if (selected.has(scope)) return;
-    onChange([...value, scope]);
-    setQuery('');
-    requestAnimationFrame(() => {
-      inputRef.current?.focus();
-      inputRef.current?.scrollIntoView({ block: 'nearest', inline: 'end' });
-    });
-  };
-
-  const removeScope = (scope: string) => {
-    onChange(value.filter((item) => item !== scope));
-  };
-
-  const focusChip = (index: number) => {
-    const chip = chipRefs.current[index];
-    if (!chip) return;
-
-    setActiveChipIndex(index);
-    chip.focus();
-
-    const container = containerRef.current;
-    if (!container) return;
-
-    const targetLeft = Math.max(chip.offsetLeft - 4, 0);
-    container.scrollTo({ left: targetLeft, behavior: 'auto' });
-  };
-
-  const focusInput = () => {
-    setActiveChipIndex(null);
-    inputRef.current?.focus();
-
-    const container = containerRef.current;
-    const input = inputRef.current;
-    if (!container || !input) return;
-
-    const targetLeft = Math.max(input.offsetLeft + input.offsetWidth - container.clientWidth, 0);
-    container.scrollTo({ left: targetLeft, behavior: 'auto' });
-  };
-
-  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Backspace' && !query && value.length > 0) {
-      event.preventDefault();
-      removeScope(value[value.length - 1]);
-      return;
-    }
-
-    if (event.key === 'ArrowLeft' && !query && value.length > 0) {
-      event.preventDefault();
-      focusChip(value.length - 1);
-      return;
-    }
-
-    if (event.key === 'Enter' && filteredScopes.length > 0) {
-      event.preventDefault();
-      addScope(filteredScopes[0]);
-    }
-  };
-
-  const handleChipKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
-    if (event.key === 'ArrowLeft') {
-      event.preventDefault();
-      if (index === 0) {
-        focusInput();
-        return;
-      }
-      focusChip(index - 1);
-      return;
-    }
-
-    if (event.key === 'ArrowRight') {
-      event.preventDefault();
-      if (index === value.length - 1) {
-        focusInput();
-        return;
-      }
-      focusChip(index + 1);
-      return;
-    }
-
-    if ((event.key === 'Backspace' || event.key === 'Delete') && value[index]) {
-      event.preventDefault();
-      const scopeToRemove = value[index];
-      removeScope(scopeToRemove);
-      requestAnimationFrame(() => {
-        const nextIndex = Math.min(index, value.length - 2);
-        if (nextIndex >= 0) {
-          focusChip(nextIndex);
-          return;
-        }
-        focusInput();
-      });
-    }
-  };
-
-  return (
-    <div className="space-y-2">
-      <p className="text-sm font-medium">Scopes</p>
-      <div className="w-full max-w-full overflow-hidden rounded-md border bg-background px-3 py-2">
-        <div
-          ref={containerRef}
-          className="w-full max-w-full overflow-hidden"
-        >
-          <div className="flex min-h-8 min-w-0 flex-wrap items-center gap-1.5">
-          {value.map((scope, index) => (
-            <button
-              type="button"
-              key={scope}
-              ref={(element) => {
-                chipRefs.current[index] = element;
-              }}
-              className={`inline-flex h-7 shrink-0 items-center gap-1 rounded-full border px-2.5 text-xs transition-colors ${
-                activeChipIndex === index
-                  ? 'border-primary bg-primary/10 text-foreground'
-                  : 'bg-muted text-foreground'
-              }`}
-              onClick={() => focusChip(index)}
-              onFocus={() => setActiveChipIndex(index)}
-              onKeyDown={(event) => handleChipKeyDown(event, index)}
-              aria-label={`Selected scope ${scope}`}
-            >
-              {scope}
-              <span className="rounded-full p-0.5 text-muted-foreground">
-                <X className="h-3.5 w-3.5" />
-              </span>
-            </button>
-          ))}
-            <input
-              ref={inputRef}
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              onKeyDown={handleKeyDown}
-              onFocus={() => {
-                focusInput();
-              }}
-              placeholder={value.length === 0 ? 'Type to search scopes' : 'Add more scopes'}
-              className="h-7 min-w-[140px] shrink-0 border-0 bg-transparent p-0 text-sm outline-none placeholder:text-muted-foreground"
-            />
-          </div>
-        </div>
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {filteredScopes.map((scope) => (
-          <button
-            key={scope}
-            type="button"
-            className="rounded-full border px-3 py-1 text-sm transition-colors hover:bg-muted"
-            onClick={() => addScope(scope)}
-          >
-            {scope}
-          </button>
-        ))}
-        {filteredScopes.length === 0 && normalizedQuery ? (
-          <p className="text-xs text-muted-foreground">No scopes match "{query}".</p>
-        ) : null}
-      </div>
-      <p className="text-xs text-muted-foreground">
-        A role can only include this permission when the role scope level appears here.
-      </p>
-    </div>
-  );
 }
 
 export function PermissionPanel({ appId, initialPermissions, canManage }: Props) {

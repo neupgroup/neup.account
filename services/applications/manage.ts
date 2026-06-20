@@ -60,7 +60,7 @@ import {
 
 const responseAccessSet = new Set<ApplicationAccessField>(applicationResponseFields);
 const tokenFieldSet = new Set<ApplicationAccessField>(applicationTokenFields);
-const ROOT_PERMISSION_SCOPE = 'individual.root';
+const ROOT_PERMISSION_SCOPE = 'root.i10b00';
 
 const createApplicationSchema = z.object({
   name: z.string().trim().min(1, 'Application name is required.').max(120, 'Application name is too long.'),
@@ -526,8 +526,8 @@ export async function createManagedApplication(input: { name: string }) {
       }
       await tx.authzRole.upsert({
         where: { id: 'application.owner' },
-        update: { name: 'application.owner', description: 'Full ownership of an application.', appId: 'neup.account', scope: 'public' },
-        create: { id: 'application.owner', name: 'application.owner', description: 'Full ownership of an application.', appId: 'neup.account', scope: 'public' },
+        update: { name: 'application.owner', description: 'Full ownership of an application.', appId: 'neup.account', scope: 'public.i10b00' },
+        create: { id: 'application.owner', name: 'application.owner', description: 'Full ownership of an application.', appId: 'neup.account', scope: 'public.i10b00' },
       });
       await tx.authzRolePermissionMap.deleteMany({
         where: { roleId: 'application.owner' },

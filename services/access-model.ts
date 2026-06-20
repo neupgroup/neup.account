@@ -1,6 +1,7 @@
 import prisma from '@/core/helpers/prisma';
 import type { Prisma } from '@/prisma/generated/client/client';
 import type { AccessType, AssetType } from '@/prisma/generated/client';
+import { isRootRoleScope } from '@/services/role-scopes';
 
 type Tx = Prisma.TransactionClient;
 
@@ -56,7 +57,7 @@ function accessTypeForGrant(input: AccessGrantInput, roleScope: string | null): 
   const isSelfGrant = 'parentAccountId' in input && input.parentAccountId === input.memberAccountId;
   if (!isSelfGrant) return assetTypeForRefs(input, input);
 
-  return roleScope === 'individual.root' || roleScope === 'root'
+  return isRootRoleScope(roleScope)
     ? 'acc_self_root'
     : 'acc_self';
 }

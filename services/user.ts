@@ -9,6 +9,7 @@ import { getActiveAccountId, getPersonalAccountId } from "@/core/auth/verify";
 import { extractGenderFromDetails, resolveDisplayImage } from "@/core/helpers/display-image";
 import { getAccountSelectorContext } from "@/core/auth/accountSelector";
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from "@/services/access-model";
+import { isRootRoleScope, normalizeRoleScope } from '@/services/role-scopes';
 
 // --- Types ---
 
@@ -70,7 +71,7 @@ type PermissionGrantEntry = {
 export type AccountRolePermissionsEntry = [roleId: string, roleName: string | null, permissionNames: string[]];
 
 function shouldIgnoreManagedRoleScope(scope: string | null | undefined): boolean {
-  return scope === 'individual.root';
+  return isRootRoleScope(scope);
 }
 
 function matchesRoleScope(
@@ -83,7 +84,12 @@ function matchesRoleScope(
     ? expectedRoleScopes
     : [expectedRoleScopes];
 
-  return roleScope !== null && allowedScopes.includes(roleScope);
+  const normalizedRoleScope = normalizeRoleScope(roleScope);
+  if (!normalizedRoleScope) return false;
+
+  return allowedScopes
+    .map((scope) => normalizeRoleScope(scope) ?? scope.trim())
+    .includes(normalizedRoleScope);
 }
 
 type AppAccessGrantQuery = {

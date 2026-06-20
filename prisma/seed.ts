@@ -160,6 +160,14 @@ function slugifyPermission(name: string): string {
 }
 
 function permissionScopesForNeupAccountPermission(permissionName: string, fallback: string[]): string[] {
+  const encodeScopes = (scopes: string[]) =>
+    scopes.map((scope) => {
+      if (scope === 'public') return 'public.i10b00';
+      if (scope === 'managable') return 'managable.i10b00';
+      if (scope === 'root') return 'root.i10b00';
+      return scope;
+    });
+
   if (
     permissionName === 'access.view' ||
     [
@@ -197,7 +205,7 @@ function permissionScopesForNeupAccountPermission(permissionName: string, fallba
       'account.brand.delete',
     ].includes(permissionName)
   ) {
-    return ['public', 'managable', 'root'];
+    return encodeScopes(['public', 'managable', 'root']);
   }
 
   if (
@@ -209,10 +217,10 @@ function permissionScopesForNeupAccountPermission(permissionName: string, fallba
       'access.portfolio.delete',
     ].includes(permissionName)
   ) {
-    return ['public', 'root'];
+    return encodeScopes(['public', 'root']);
   }
 
-  return fallback;
+  return encodeScopes(fallback);
 }
 
 if (!process.env.DATABASE_URL) {
@@ -346,7 +354,7 @@ async function main() {
       update: {
         name: 'individual.default',
         description: 'Default permission set for individual accounts.',
-        scope: 'default',
+        scope: 'public.i10b00',
         appId: APP_ID,
         permissions: defaultDenormalized,
       },
@@ -354,7 +362,7 @@ async function main() {
         id: ROLE_DEFAULT_ID,
         name: 'individual.default',
         description: 'Default permission set for individual accounts.',
-        scope: 'default',
+        scope: 'public.i10b00',
         appId: APP_ID,
         permissions: defaultDenormalized,
       },
@@ -365,7 +373,7 @@ async function main() {
       update: {
         name: 'individual.root',
         description: 'Root permission set for individual accounts.',
-        scope: 'individual.root',
+        scope: 'root.i10b00',
         appId: APP_ID,
         permissions: rootDenormalized,
       },
@@ -373,7 +381,7 @@ async function main() {
         id: ROLE_ROOT_ID,
         name: 'individual.root',
         description: 'Root permission set for individual accounts.',
-        scope: 'individual.root',
+        scope: 'root.i10b00',
         appId: APP_ID,
         permissions: rootDenormalized,
       },

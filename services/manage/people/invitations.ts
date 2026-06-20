@@ -145,8 +145,8 @@ export async function acceptRequest(requestId: string, notificationId: string): 
                 // Ensure the direct-access role exists
                 await tx.authzRole.upsert({
                     where: { id: 'access.member' },
-                    update: { name: 'access.member', scope: 'public', appId: 'neup.account' },
-                    create: { id: 'access.member', name: 'access.member', scope: 'public', appId: 'neup.account' },
+                    update: { name: 'access.member', scope: 'public.i10b00', appId: 'neup.account' },
+                    create: { id: 'access.member', name: 'access.member', scope: 'public.i10b00', appId: 'neup.account' },
                 });
                 await ensureAccessGrant(tx, {
                     memberAccountId: inviteeId,

@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { createAppRole } from '@/services/applications/authz-manage';
 import { redirectInApp } from '@/core/helper/navigation';
-import { ROLE_SCOPE_OPTIONS } from '@/services/role-scopes';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
+import { RoleScopeSelector } from './scope-selectors';
 
 type Props = {
   appId: string;
@@ -50,19 +50,7 @@ export function RoleCreateForm({ appId }: Props) {
     <div className="grid gap-4 rounded-2xl border bg-card p-5">
       <Input value={name} onChange={(event) => setName(event.target.value)} placeholder="Role name, e.g. viewer" />
       <Input value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Description (optional)" />
-      <select
-        value={scope}
-        onChange={(event) => setScope(event.target.value)}
-        className="h-10 rounded-md border border-input bg-background px-3 text-sm"
-        required
-      >
-        <option value="" disabled>Choose role scope</option>
-        {ROLE_SCOPE_OPTIONS.map((option) => (
-          <option key={option} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
+      <RoleScopeSelector value={scope} onChange={setScope} />
 
       <div className="flex justify-end gap-2">
         <Button variant="outline" onClick={() => redirectInApp(router, applicationHref('/application/roles', appId, { mode: 'root' }))}>

@@ -105,9 +105,9 @@ function permissionDescription(base: ApplicationPermissionBase, audience: Applic
 }
 
 function permissionScope(audience: ApplicationPermissionAudience): PermissionScopeOption {
-  if (audience === 'root') return 'root';
-  if (audience === 'managed') return 'managable';
-  return 'public';
+  if (audience === 'root') return 'root.i10b00';
+  if (audience === 'managed') return 'managable.i10b00';
+  return 'public.i10b00';
 }
 
 export function getApplicationPermissionName(

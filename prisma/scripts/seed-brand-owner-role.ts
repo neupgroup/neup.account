@@ -24,10 +24,10 @@ function permissionScopesForBrandOwnerPermission(permissionName: string): string
       'account.brand.delete',
     ].includes(permissionName)
   ) {
-    return ['public', 'managable', 'root'];
+    return ['public.i00b10', 'managable.i00b10', 'root.i10b00'];
   }
 
-  return ['public'];
+  return ['public.i00b10'];
 }
 
 async function main() {
@@ -42,7 +42,7 @@ async function main() {
         name: BRAND_OWNER_ROLE_NAME,
         description: 'Brand ownership role for brand accounts.',
         appId: APP_ID,
-        scope: 'brand',
+        scope: 'managable.i00b10',
         permissions: BRAND_OWNER_PERMISSION_NAMES,
       },
       create: {
@@ -50,7 +50,7 @@ async function main() {
         name: BRAND_OWNER_ROLE_NAME,
         description: 'Brand ownership role for brand accounts.',
         appId: APP_ID,
-        scope: 'brand',
+        scope: 'managable.i00b10',
         permissions: BRAND_OWNER_PERMISSION_NAMES,
       },
     });
@@ -97,13 +97,13 @@ async function main() {
         update: {
           name: permissionName,
           appId: APP_ID,
-          scope: ['root'],
+          scope: ['root.i10b00'],
         },
         create: {
           id: permissionId,
           name: permissionName,
           appId: APP_ID,
-          scope: ['root'],
+          scope: ['root.i10b00'],
         },
       });
     }

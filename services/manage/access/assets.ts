@@ -1150,20 +1150,20 @@ export type AssetRole = {
 const ASSET_TYPE_TO_ROLE_SCOPE: Record<string, string> = {
   app_in_port:          '',
   app_in_acc:           '',
-  acc_in_port:          'individual.managable',
-  acc_in_acc:           'individual.managable',
+  acc_in_port:          'managable.i10b00',
+  acc_in_acc:           'managable.i10b00',
   conn_in_port:         'connection',
   conn_in_acc:          'connection',
   port_in_acc:          'portfolio',
   // legacy aliases
   application:          '',
   app:                  '',
-  'account.individual': 'individual.managable',
-  'account.brand':      'brand.managable',
-  'account.branch':     'branch.brand.managable',
-  'account.dependent':  'dependent.individual.managable',
-  brand_account:        'brand.managable',
-  branch_account:       'branch.brand.managable',
+  'account.individual': 'managable.i10b00',
+  'account.brand':      'managable.i00b10',
+  'account.branch':     'managable.i00b01',
+  'account.dependent':  'managable.i01b00',
+  brand_account:        'managable.i00b10',
+  branch_account:       'managable.i00b01',
 };
 
 async function expectedScopeForAssetRow(assetRow: {

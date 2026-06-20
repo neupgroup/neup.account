@@ -234,6 +234,7 @@ const ACTIVE_IN_UNITS_MS: Record<string, number> = {
 type ParsedAccountSearch = {
     text: string;
     accountType?: string;
+    neupId?: string;
     roleName?: string;
     activeSince?: Date;
 };
@@ -251,6 +252,15 @@ function parseAccountSearch(search: string): ParsedAccountSearch {
             const accountType = typeMatch[1]?.trim().toLowerCase();
             if (accountType && SEARCHABLE_ACCOUNT_TYPES.has(accountType)) {
                 parsed.accountType = accountType;
+                continue;
+            }
+        }
+
+        const neupIdMatch = part.match(/^neupid:(.+)$/i);
+        if (neupIdMatch) {
+            const neupId = neupIdMatch[1]?.trim();
+            if (neupId) {
+                parsed.neupId = neupId;
                 continue;
             }
         }
@@ -327,6 +337,17 @@ export async function getAllAccountsPaginated(params: {
                             equals: parsedSearch.roleName,
                             mode: 'insensitive',
                         },
+                    },
+                },
+            };
+        }
+
+        if (parsedSearch.neupId) {
+            where.neupIds = {
+                some: {
+                    neupId: {
+                        contains: parsedSearch.neupId,
+                        mode: 'insensitive',
                     },
                 },
             };

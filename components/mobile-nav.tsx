@@ -93,7 +93,7 @@ export function MobileNav() {
         const visibleRootNav = navItemsWithPerms(navItems.rootNav);
         const visibleAccountNav = navItemsWithPerms(accountNavItems);
         
-        const primaryNeupId = profile?.neupIdPrimary ? `@${profile.neupIdPrimary}` : 'Neup.Account';
+        const primaryNeupId = profile?.neupIdPrimary ? `@${profile.neupIdPrimary}` : 'NeupID';
 
         const config: NavSection[] = [];
         
@@ -130,7 +130,7 @@ export function MobileNav() {
         return (
             <div className="grid gap-8">
                  <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Neup.Account</h1>
+                    <h1 className="text-3xl font-bold tracking-tight">NeupID</h1>
                     <p className="text-muted-foreground">
                         Navigate to different sections of your account.
                     </p>
@@ -146,7 +146,7 @@ export function MobileNav() {
     return (
         <div className="grid gap-8">
              <div>
-                <h1 className="text-3xl font-bold tracking-tight">Neup.Account</h1>
+                <h1 className="text-3xl font-bold tracking-tight">NeupID</h1>
                 <p className="text-muted-foreground">
                     Navigate to different sections of your account.
                 </p>

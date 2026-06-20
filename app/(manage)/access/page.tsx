@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { FlowLink } from '@/components/ui/flow-link';
 import { Card, CardContent } from '@/components/ui/card';
@@ -16,10 +17,31 @@ import { getAccessibleAccounts } from '@/services/manage/accounts';
 import { getAccountSelectorContext } from '@/core/auth/accountSelector';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { ACCESS_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
+import { createPageMetadata } from '@/core/metadata';
 
 type PageProps = {
-  searchParams: Promise<{ portfolio?: string }>;
+  searchParams: Promise<{ portfolio?: string; account?: string }>;
 };
+
+export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
+  const { portfolio, account } = await searchParams;
+
+  if (portfolio) {
+    const group = await getAccessAssetGroup(portfolio);
+    return createPageMetadata('Access', group?.name ? `${group.name} Portfolio` : 'Portfolio');
+  }
+
+  if (account) {
+    const profile = await getUserProfile(account);
+    const accountName =
+      profile?.nameDisplay ||
+      [profile?.nameFirst, profile?.nameLast].filter(Boolean).join(' ').trim() ||
+      account;
+    return createPageMetadata('Access', `${accountName}'s Account`);
+  }
+
+  return createPageMetadata('Access & Control');
+}
 
 function LinkAndCreateFeatures({
   canCreateBrand,

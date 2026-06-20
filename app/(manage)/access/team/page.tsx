@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { BackButton } from '@/components/ui/back-button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -12,10 +13,13 @@ import { AssetMemberLookupForm } from '../_components/asset-member-lookup-form';
 import { AddUserForm } from '../add-user-form';
 import { FlowLink } from '@/components/ui/flow-link';
 import { PrimaryHeader } from '@/components/ui/primary-header';
+import { createPageMetadata } from '@/core/metadata';
 
 type PageProps = {
   searchParams: Promise<{ portfolio?: string; asset?: string; mode?: string }>;
 };
+
+export const metadata: Metadata = createPageMetadata('Team Management');
 
 type MemberStatus = 'active' | 'invited' | 'on_hold' | 'expired';
 

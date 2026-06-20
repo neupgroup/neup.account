@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { getApplicationsManagePageData } from '@/services/applications/form-actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle } from '@/components/icons';
@@ -5,10 +6,24 @@ import { Suspense } from 'react';
 import { ApplicationsPillView } from '@/app/(manage)/application/_components/applications-pill-view';
 import { ApplicationDetailPage } from '@/app/(manage)/application/_components/application-detail-page';
 import { getQueryParam } from '@/app/(manage)/application/_lib/query-param';
+import { getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
+import { createPageMetadata } from '@/core/metadata';
 
 type Props = {
   searchParams: Promise<{ application?: string | string[]; mode?: string }>;
 };
+
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const resolvedSearchParams = await searchParams;
+  const applicationId = getQueryParam(resolvedSearchParams.application);
+
+  if (!applicationId) {
+    return createPageMetadata('Application Management');
+  }
+
+  const details = await getApplicationDetailsForViewerV2(applicationId);
+  return createPageMetadata(details?.name ? `${details.name} Management` : 'Application Management');
+}
 
 export default async function ApplicationsManagePage({ searchParams }: Props) {
   const resolvedSearchParams = await searchParams;

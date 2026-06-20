@@ -148,7 +148,7 @@ export function StartPageComponent({ accounts, hasActiveSession, appName }: Star
           </div>
           <CardTitle className="text-2xl font-headline">Get Started</CardTitle>
           <CardDescription>
-            {appName ? `Continue to ${displayAppName} with your NeupAccount.` : 'Choose an option below to continue with Neup.Account.'}
+            {appName ? `Continue to ${displayAppName} with your NeupID.` : 'Choose an option below to continue with NeupID.'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -192,7 +192,7 @@ export function StartPageComponent({ accounts, hasActiveSession, appName }: Star
               <div>
                 <h3 className="font-semibold">Sign Up</h3>
                 <p className="text-sm text-muted-foreground">
-                  Sign up for an Neup.Account to use NeupID Group Products and Services.
+                  Sign up for a NeupID to use NeupID Group Products and Services.
                 </p>
               </div>
               <ChevronRight className="h-5 w-5 text-muted-foreground" />

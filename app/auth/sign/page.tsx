@@ -72,7 +72,7 @@ export default async function AuthSignPage({ searchParams }: SignPageProps) {
             <div className="pt-4 space-y-1">
               <CardTitle className="text-2xl font-headline">Sign in to continue</CardTitle>
               <CardDescription>
-                Sign in with your Neup.Account to continue to{' '}
+                Sign in with your NeupID to continue to{' '}
                 <span className="font-medium text-foreground">{displayAppName}</span>.
               </CardDescription>
             </div>

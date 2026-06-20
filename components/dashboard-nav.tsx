@@ -46,7 +46,7 @@ export function DashboardNav() {
         const visibleRootNav = navItemsWithPerms(navItems.rootNav);
         const visibleAccountNav = navItemsWithPerms(accountNavItems);
 
-        const primaryNeupId = profile?.neupIdPrimary ? `@${profile.neupIdPrimary}` : 'Neup.Account';
+        const primaryNeupId = profile?.neupIdPrimary ? `@${profile.neupIdPrimary}` : 'NeupID';
         const title = isManaging ? profile?.nameDisplay : primaryNeupId;
 
         const config: NavSection[] = [];

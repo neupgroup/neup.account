@@ -42,7 +42,7 @@ export async function getAppInfo(): Promise<AppInfo | null> {
     const linkedinRaw = findByType('linkedin');
 
     return {
-        name: 'Neup.Account',
+        name: 'NeupID',
         version: '1.0.0',
         description: 'Unified account management for Neup ecosystem.',
         whatsappContact: whatsappRaw,

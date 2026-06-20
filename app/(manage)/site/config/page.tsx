@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { FlowLink } from '@/components/ui/flow-link';
 import { notFound } from 'next/navigation';
 import { CreditCard, Globe, ArrowRight, AppWindow, Camera } from '@/components/icons';
@@ -5,6 +6,9 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/ca
 import { BackButton } from '@/components/ui/back-button';
 import { checkPermissions } from '@/services/user';
 import { PrimaryHeader } from '@/components/ui/primary-header';
+import { createPageMetadata } from '@/core/metadata';
+
+export const metadata: Metadata = createPageMetadata('Site Configuration');
 
 const configItems = [
   {

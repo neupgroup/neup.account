@@ -1,8 +1,12 @@
+import type { Metadata } from 'next';
 import { BackButton } from '@/components/ui/back-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AppWindow, ChevronRight, Users } from '@/components/icons';
 import { FlowLink } from '@/components/ui/flow-link';
 import { getConnectionPageData } from './actions';
+import { createPageMetadata } from '@/core/metadata';
+
+export const metadata: Metadata = createPageMetadata('Connection Management');
 
 function StatusDot({ status }: { status: string }) {
   const color =

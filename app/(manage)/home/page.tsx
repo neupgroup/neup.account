@@ -1,4 +1,4 @@
-
+import type { Metadata } from 'next';
 import { checkPermissions, getHomeSelectedAccountAccessLog, getAccountType } from '@/services/user';
 import { notFound } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard/dashboard-header';
@@ -10,8 +10,10 @@ import { NotificationsCard } from '@/components/dashboard/notifications-card';
 import { ManageStatsCard } from '@/components/dashboard/manage-stats-card';
 import { FindUserCard } from '@/components/dashboard/find-user-card';
 import { SystemToolsCard } from '@/components/dashboard/system-tools-card';
+import { createPageMetadata } from '@/core/metadata';
 
 export const dynamic = 'force-dynamic';
+export const metadata: Metadata = createPageMetadata('Homepage');
 
 export default async function HomePage() {
     const [accountId, personalAccountId] = await Promise.all([

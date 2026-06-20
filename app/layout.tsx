@@ -10,10 +10,12 @@ import { UrlErrorBanner } from '@/components/ui/url-error-banner';
 import { PersistentBacksTo } from '@/components/persistent-backs-to';
 import { HeaderV1 } from '@/components/layout/header.v1';
 import { getSiteLogoUrl } from '@/services/manage/site/logo';
+import { APP_NAME } from '@/core/metadata';
+import { AppTitleSync } from '@/components/app-title-sync';
 
 export const metadata: Metadata = {
-  title: 'Neup.Account',
-  description: 'Create an account to access NeupID Group Products and Services.',
+  title: APP_NAME,
+  description: 'Create an account to access NeupID products and services.',
   metadataBase: new URL('https://neupgroup.com/account'),
 };
 
@@ -36,6 +38,7 @@ export default async function RootLayout({
       <body className="font-body antialiased">
         <GeolocationProvider>
           <SessionProvider>
+            <AppTitleSync />
             <PersistentBacksTo />
             <PageProgressBar />
             <div className="flex min-h-screen flex-col">

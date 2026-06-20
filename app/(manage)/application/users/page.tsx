@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { FlowLink } from '@/components/ui/flow-link';
@@ -5,10 +6,23 @@ import { ArrowLeft } from '@/components/icons';
 import { getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 import { UsersList } from './_components/users-list';
+import { createPageMetadata } from '@/core/metadata';
 
 type Props = {
   searchParams: Promise<{ application?: string | string[] }>;
 };
+
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const { application } = await searchParams;
+  const applicationId = getQueryParam(application);
+
+  if (!applicationId) {
+    return createPageMetadata('Users', 'Application Management');
+  }
+
+  const details = await getApplicationDetailsForViewerV2(applicationId);
+  return createPageMetadata('Users', details?.name ? `${details.name} Management` : 'Application Management');
+}
 
 export default async function ApplicationUsersQueryPage({ searchParams }: Props) {
   const { application } = await searchParams;

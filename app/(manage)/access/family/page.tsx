@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { Card, CardContent } from "@/components/ui/card";
 import { getFamilyGroups } from "@/services/manage/people/family";
 import { FamilyManager } from "./family-manager";
@@ -7,6 +8,9 @@ import { getActiveAccountId } from '@/core/auth/verify';
 import { getUserProfile, checkPermissions } from '@/services/user';
 import { notFound } from "next/navigation";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
+import { createPageMetadata } from '@/core/metadata';
+
+export const metadata: Metadata = createPageMetadata('Family Management');
 
 export default async function FamilySharingPage() {
     const activeAccountId = await getActiveAccountId();

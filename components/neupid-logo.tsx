@@ -26,7 +26,7 @@ export function NeupIdLogo({ iconHref, textHref, logoUrl }: NeupIdLogoProps) {
       </a>
       <FlowLink href={textHref}>
         <span className="text-lg font-semibold tracking-tight font-headline">
-          Neup.Account
+          NeupID
         </span>
       </FlowLink>
     </div>

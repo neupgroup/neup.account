@@ -141,7 +141,7 @@ function NeupIdStep() {
       <Card className="mx-auto max-w-lg w-full border-0 shadow-none md:border md:shadow-sm">
         <CardHeader>
           <div className="flex justify-start items-center mb-4"></div>
-          <CardTitle className="text-2xl font-headline">Sign in with Neup.Account</CardTitle>
+          <CardTitle className="text-2xl font-headline">Sign in with NeupID</CardTitle>
           <CardDescription>
             Sign in with your NeupID to access NeupID Group Products and Services
           </CardDescription>

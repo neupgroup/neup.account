@@ -16,7 +16,7 @@ export default function UnsecurePage() {
                 </CardHeader>
                 <CardContent>
                     <p className="text-sm text-center text-muted-foreground">
-                        Neup.Account requires a secure HTTPS connection to protect your credentials. Please access this site over HTTPS.
+                        NeupID requires a secure HTTPS connection to protect your credentials. Please access this site over HTTPS.
                     </p>
                 </CardContent>
             </Card>

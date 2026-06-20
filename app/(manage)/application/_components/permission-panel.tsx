@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, type KeyboardEvent } from 'react';
+import { useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -123,6 +123,10 @@ function PermissionScopeSelector({
   onChange: (value: string[]) => void;
 }) {
   const [query, setQuery] = useState('');
+  const [activeChipIndex, setActiveChipIndex] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const chipRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const selected = new Set(value);
   const normalizedQuery = query.trim().toLowerCase();
   const filteredScopes = PERMISSION_SCOPE_OPTIONS.filter((scope) => {
@@ -135,10 +139,40 @@ function PermissionScopeSelector({
     if (selected.has(scope)) return;
     onChange([...value, scope]);
     setQuery('');
+    requestAnimationFrame(() => {
+      inputRef.current?.focus();
+      inputRef.current?.scrollIntoView({ block: 'nearest', inline: 'end' });
+    });
   };
 
   const removeScope = (scope: string) => {
     onChange(value.filter((item) => item !== scope));
+  };
+
+  const focusChip = (index: number) => {
+    const chip = chipRefs.current[index];
+    if (!chip) return;
+
+    setActiveChipIndex(index);
+    chip.focus();
+
+    const container = containerRef.current;
+    if (!container) return;
+
+    const targetLeft = Math.max(chip.offsetLeft - 4, 0);
+    container.scrollTo({ left: targetLeft, behavior: 'auto' });
+  };
+
+  const focusInput = () => {
+    setActiveChipIndex(null);
+    inputRef.current?.focus();
+
+    const container = containerRef.current;
+    const input = inputRef.current;
+    if (!container || !input) return;
+
+    const targetLeft = Math.max(input.offsetLeft + input.offsetWidth - container.clientWidth, 0);
+    container.scrollTo({ left: targetLeft, behavior: 'auto' });
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -148,40 +182,98 @@ function PermissionScopeSelector({
       return;
     }
 
+    if (event.key === 'ArrowLeft' && !query && value.length > 0) {
+      event.preventDefault();
+      focusChip(value.length - 1);
+      return;
+    }
+
     if (event.key === 'Enter' && filteredScopes.length > 0) {
       event.preventDefault();
       addScope(filteredScopes[0]);
     }
   };
 
+  const handleChipKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      if (index === 0) {
+        focusInput();
+        return;
+      }
+      focusChip(index - 1);
+      return;
+    }
+
+    if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      if (index === value.length - 1) {
+        focusInput();
+        return;
+      }
+      focusChip(index + 1);
+      return;
+    }
+
+    if ((event.key === 'Backspace' || event.key === 'Delete') && value[index]) {
+      event.preventDefault();
+      const scopeToRemove = value[index];
+      removeScope(scopeToRemove);
+      requestAnimationFrame(() => {
+        const nextIndex = Math.min(index, value.length - 2);
+        if (nextIndex >= 0) {
+          focusChip(nextIndex);
+          return;
+        }
+        focusInput();
+      });
+    }
+  };
+
   return (
     <div className="space-y-2">
       <p className="text-sm font-medium">Scopes</p>
-      <div className="rounded-md border bg-background px-3 py-2">
-        <div className="flex min-h-8 flex-wrap items-center gap-1.5">
-          {value.map((scope) => (
-            <span
+      <div className="w-full overflow-hidden rounded-md border bg-background px-3 py-2">
+        <div
+          ref={containerRef}
+          className="w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          <div className="inline-flex min-h-8 min-w-full flex-nowrap items-center gap-1.5">
+          {value.map((scope, index) => (
+            <button
+              type="button"
               key={scope}
-              className="inline-flex h-7 items-center gap-1 rounded-full border bg-muted px-2.5 text-xs"
+              ref={(element) => {
+                chipRefs.current[index] = element;
+              }}
+              className={`inline-flex h-7 shrink-0 items-center gap-1 rounded-full border px-2.5 text-xs transition-colors ${
+                activeChipIndex === index
+                  ? 'border-primary bg-primary/10 text-foreground'
+                  : 'bg-muted text-foreground'
+              }`}
+              onClick={() => focusChip(index)}
+              onFocus={() => setActiveChipIndex(index)}
+              onKeyDown={(event) => handleChipKeyDown(event, index)}
+              aria-label={`Selected scope ${scope}`}
             >
               {scope}
-              <button
-                type="button"
-                className="rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
-                onClick={() => removeScope(scope)}
-                aria-label={`Remove ${scope}`}
-              >
+              <span className="rounded-full p-0.5 text-muted-foreground">
                 <X className="h-3.5 w-3.5" />
-              </button>
-            </span>
+              </span>
+            </button>
           ))}
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={value.length === 0 ? 'Type to search scopes' : 'Add more scopes'}
-            className="h-7 min-w-[140px] flex-1 border-0 bg-transparent p-0 text-sm outline-none placeholder:text-muted-foreground"
-          />
+            <input
+              ref={inputRef}
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              onKeyDown={handleKeyDown}
+              onFocus={() => {
+                focusInput();
+              }}
+              placeholder={value.length === 0 ? 'Type to search scopes' : 'Add more scopes'}
+              className="h-7 min-w-[140px] flex-1 border-0 bg-transparent p-0 text-sm outline-none placeholder:text-muted-foreground"
+            />
+          </div>
         </div>
       </div>
       <div className="flex flex-wrap gap-2">

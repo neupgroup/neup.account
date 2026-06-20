@@ -11,16 +11,18 @@ type RoleSelectorProps = {
   appId: string;
   connectionId: string;
   roles: AppRoleOption[];
-  currentRoleId: string | null;
+  currentRoleIds: string[];
+  pendingRoleIds: string[];
 };
 
 const INITIAL_VISIBLE = 5;
 const LOAD_MORE_COUNT = 10;
 
-export function RoleSelector({ appId, connectionId, roles, currentRoleId }: RoleSelectorProps) {
+export function RoleSelector({ appId, connectionId, roles, currentRoleIds, pendingRoleIds }: RoleSelectorProps) {
   const [query, setQuery] = useState('');
   const [visible, setVisible] = useState(INITIAL_VISIBLE);
-  const [selectedRoleId, setSelectedRoleId] = useState<string | null>(currentRoleId);
+  const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>(() => Array.from(new Set([...currentRoleIds, ...pendingRoleIds])));
+  const [pendingSelections, setPendingSelections] = useState<string[]>(pendingRoleIds);
   const [message, setMessage] = useState<string>('');
   const [pending, startTransition] = useTransition();
   const hasUsableScope = (value: string | null | undefined) => typeof value === 'string' && value.trim().length > 0;
@@ -39,23 +41,31 @@ export function RoleSelector({ appId, connectionId, roles, currentRoleId }: Role
   const visibleRoles = filtered.slice(0, visible);
   const hasMore = visible < filtered.length;
 
-  const handleSelect = (roleId: string) => {
+  const handleToggle = (roleId: string) => {
     setMessage('');
 
+    const nextSelectedRoleIds = selectedRoleIds.includes(roleId)
+      ? selectedRoleIds.filter((id) => id !== roleId)
+      : [...selectedRoleIds, roleId];
+
     startTransition(async () => {
-      const result = await assignApplicationConnectionRole({ appId, connectionId, roleId });
+      const result = await assignApplicationConnectionRole({ appId, connectionId, roleIds: nextSelectedRoleIds });
       if (!result.success) {
-        setMessage(result.error || 'Could not assign role.');
+        setMessage(result.error || 'Could not update roles.');
         return;
       }
+
+      const assignedRoleIds = result.roleIds ?? nextSelectedRoleIds;
+      const nextPendingRoleIds = result.pendingRoleIds ?? pendingSelections;
+      setSelectedRoleIds(Array.from(new Set([...assignedRoleIds, ...nextPendingRoleIds])));
+      setPendingSelections(nextPendingRoleIds);
 
       if (result.pendingApproval) {
-        setMessage('Approval request created.');
+        setMessage('Roles updated. Approval request created for approvable roles.');
         return;
       }
 
-      setSelectedRoleId(roleId);
-      setMessage('Role updated.');
+      setMessage('Roles updated.');
     });
   };
 
@@ -65,8 +75,8 @@ export function RoleSelector({ appId, connectionId, roles, currentRoleId }: Role
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
+          onChange={(event) => {
+            setQuery(event.target.value);
             setVisible(INITIAL_VISIBLE);
           }}
           placeholder="Search roles by name or id"
@@ -76,13 +86,14 @@ export function RoleSelector({ appId, connectionId, roles, currentRoleId }: Role
 
       <div className="grid gap-2">
         {visibleRoles.map((role) => {
-          const isActive = selectedRoleId === role.id;
+          const isSelected = selectedRoleIds.includes(role.id);
+          const isPendingSelection = pendingSelections.includes(role.id);
 
           return (
             <button
               key={role.id}
               type="button"
-              onClick={() => handleSelect(role.id)}
+              onClick={() => handleToggle(role.id)}
               disabled={pending}
               className="rounded-lg border bg-card p-3 text-left transition-colors hover:bg-muted/40 disabled:cursor-not-allowed disabled:opacity-60"
             >
@@ -90,7 +101,10 @@ export function RoleSelector({ appId, connectionId, roles, currentRoleId }: Role
                 <div className="min-w-0">
                   <p className="truncate font-medium">{role.name}</p>
                 </div>
-                {isActive ? <Badge>Current</Badge> : null}
+                <div className="flex items-center gap-2">
+                  {isPendingSelection ? <Badge variant="outline">Pending</Badge> : null}
+                  {isSelected ? <Badge>Selected</Badge> : null}
+                </div>
               </div>
               {role.description ? <p className="mt-1 text-xs text-muted-foreground">{role.description}</p> : null}
             </button>
@@ -99,7 +113,7 @@ export function RoleSelector({ appId, connectionId, roles, currentRoleId }: Role
       </div>
 
       {hasMore ? (
-        <Button variant="outline" className="mt-3" onClick={() => setVisible((v) => v + LOAD_MORE_COUNT)}>
+        <Button variant="outline" className="mt-3" onClick={() => setVisible((count) => count + LOAD_MORE_COUNT)}>
           Show more
         </Button>
       ) : null}

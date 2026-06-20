@@ -61,22 +61,35 @@ export async function approveApplicationRoleRequest(requestId: string): Promise<
     if (roles.length !== roleIds.length) return { success: false, error: 'One or more requested roles were not found.' };
 
     if (assignmentKind === 'connectionRole') {
-      const role = roles[0];
-      if (!role || !canAssignRoleScopeToAccount(role.scope, account.accountType, ['toApprove'])) {
-        return { success: false, error: 'Requested role scope is not approvable for this account type.' };
-      }
-
       const connection = await prisma.connection.findFirst({
         where: { id: connectionId, appId, accountId },
         select: { id: true },
       });
       if (!connection) return { success: false, error: 'Connection not found.' };
 
+      const invalidRole = roles.find((role) => !canAssignRoleScopeToAccount(role.scope, account.accountType, ['toApprove']));
+      if (invalidRole) {
+        return { success: false, error: 'One or more requested role scopes are not approvable for this account type.' };
+      }
+
       await prisma.$transaction(async (tx) => {
-        await tx.connection.update({
-          where: { id: connection.id },
-          data: { roleId: role.id },
-        });
+        await cleanupExpiredAccessModel(tx);
+
+        for (const role of roles) {
+          await ensureAccessGrant(tx, {
+            memberAccountId: accountId,
+            parentAccountId: accountId,
+            childApplicationId: appId,
+            accessApplicationId: appId,
+            roleId: role.id,
+            details: {
+              connectionId: connection.id,
+              approvedBy: actorAccountId,
+              approvedRequestId: requestId,
+            },
+          });
+        }
+
         await tx.request.update({
           where: { id: requestId },
           data: { status: 'approved' },

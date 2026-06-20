@@ -115,13 +115,14 @@ export default async function ApplicationUserDetailsQueryPage({ params, searchPa
       <div className="grid gap-2">
         <div className="grid gap-0.5">
           <h2 className="text-lg font-semibold tracking-tight">Role Management</h2>
-          <p className="text-sm text-muted-foreground">Search and assign the appropriate role for this user connection.</p>
+          <p className="text-sm text-muted-foreground">Toggle public, root, and approval-based roles for this user connection.</p>
         </div>
         <RoleSelector
           appId={appId}
           connectionId={connId}
           roles={roles}
-          currentRoleId={details.roleId}
+          currentRoleIds={details.roleIds}
+          pendingRoleIds={details.pendingRoleIds}
         />
       </div>
 

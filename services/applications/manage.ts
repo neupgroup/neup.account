@@ -14,7 +14,7 @@ import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
-import { activeAccessWhere, ensureAccessGrant } from '@/services/access-model';
+import { activeAccessWhere, cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
 import {
   APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS,
   ROOT_APPLICATION_DELETE_PERMISSION,
@@ -1806,6 +1806,8 @@ export type AppUserConnectionDetails = {
   connectedAt: Date;
   connectionStatus: string;
   roleId: string | null;
+  roleIds: string[];
+  pendingRoleIds: string[];
   displayName: string | null;
   displayImage: string | null;
   accountType: string;
@@ -1824,6 +1826,11 @@ export type AppRoleOption = {
 
 function hasUsableRoleScope(scope: string | null | undefined): boolean {
   return typeof scope === 'string' && scope.trim().length > 0;
+}
+
+function stringList(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0);
 }
 
 /**
@@ -2017,38 +2024,93 @@ export async function getApplicationUserConnectionDetails(params: {
   if (!canView) return null;
 
   try {
-    const row = await prisma.connection.findFirst({
+    const [row, pendingRequests] = await Promise.all([
+      prisma.connection.findFirst({
+        where: {
+          id: params.connectionId,
+          appId: params.appId,
+        },
+        select: {
+          id: true,
+          appId: true,
+          accountId: true,
+          connectedAt: true,
+          status: true,
+          roleId: true,
+          account: {
+            select: {
+              id: true,
+              displayName: true,
+              displayImage: true,
+              accountType: true,
+              isVerified: true,
+              status: true,
+              createdAt: true,
+              neupIds: {
+                where: { isPrimary: true },
+                take: 1,
+                select: { neupId: true },
+              },
+            },
+          },
+        },
+      }),
+      prisma.request.findMany({
+        where: {
+          status: 'pending',
+          type: 'applicationRoleRequest',
+        },
+        select: { data: true },
+      }),
+    ]);
+
+    if (!row) return null;
+
+    const accessRows = await prisma.access.findMany({
       where: {
-        id: params.connectionId,
-        appId: params.appId,
+        memberAccountId: row.accountId,
+        parentAccountId: row.accountId,
+        assetApplicationId: params.appId,
+        ...activeAccessWhere(),
       },
       select: {
-        id: true,
-        appId: true,
-        accountId: true,
-        connectedAt: true,
-        status: true,
         roleId: true,
-        account: {
+        role: {
           select: {
-            id: true,
-            displayName: true,
-            displayImage: true,
-            accountType: true,
-            isVerified: true,
-            status: true,
-            createdAt: true,
-            neupIds: {
-              where: { isPrimary: true },
-              take: 1,
-              select: { neupId: true },
-            },
+            appId: true,
+            scope: true,
           },
         },
       },
     });
 
-    if (!row) return null;
+    const roleIds = Array.from(
+      new Set(
+        accessRows
+          .filter((accessRow) => accessRow.role.appId === params.appId)
+          .filter((accessRow) => {
+            const scope = accessRow.role.scope;
+            return (
+              canAssignRoleScopeToAccount(scope, row.account.accountType, ['public', 'toApprove']) ||
+              canAssignRoleScopeToAccount(scope, row.account.accountType, ['root'])
+            );
+          })
+          .map((accessRow) => accessRow.roleId),
+      ),
+    );
+
+    const pendingRoleIds = Array.from(
+      new Set(
+        pendingRequests.flatMap((request) => {
+          const data = request.data && typeof request.data === 'object' ? request.data as Record<string, unknown> : {};
+          if (typeof data.appId !== 'string' || data.appId !== params.appId) return [];
+          if (typeof data.accountId !== 'string' || data.accountId !== row.accountId) return [];
+          if (typeof data.connectionId !== 'string' || data.connectionId !== row.id) return [];
+          if (data.assignmentKind !== 'connectionRole') return [];
+          return stringList(data.roleIds);
+        }),
+      ),
+    );
 
     return {
       connectionId: row.id,
@@ -2057,6 +2119,8 @@ export async function getApplicationUserConnectionDetails(params: {
       connectedAt: row.connectedAt,
       connectionStatus: row.status,
       roleId: row.roleId,
+      roleIds,
+      pendingRoleIds,
       displayName: row.account.displayName,
       displayImage: row.account.displayImage,
       accountType: row.account.accountType,
@@ -2096,8 +2160,8 @@ export async function getApplicationRoleOptions(appId: string, targetAccountType
     return roles.filter((role) => {
       if (!hasUsableRoleScope(role.scope)) return false;
       const modes = isRootEditor
-        ? ['manageable', 'toApprove', 'root'] as const
-        : ['manageable', 'toApprove'] as const;
+        ? ['public', 'toApprove', 'root'] as const
+        : ['public', 'toApprove'] as const;
       return canAssignRoleScopeToAccount(role.scope, targetAccountType, [...modes]);
     });
   } catch (error) {
@@ -2109,8 +2173,8 @@ export async function getApplicationRoleOptions(appId: string, targetAccountType
 export async function assignApplicationConnectionRole(input: {
   appId: string;
   connectionId: string;
-  roleId: string;
-}): Promise<{ success: boolean; error?: string; pendingApproval?: boolean }> {
+  roleIds: string[];
+}): Promise<{ success: boolean; error?: string; pendingApproval?: boolean; roleIds?: string[]; pendingRoleIds?: string[] }> {
   const accountId = await getActiveAccountId();
   if (!accountId) return { success: false, error: 'Not signed in.' };
 
@@ -2123,7 +2187,9 @@ export async function assignApplicationConnectionRole(input: {
   }
 
   try {
-    const [connection, role] = await Promise.all([
+    const uniqueRoleIds = Array.from(new Set(input.roleIds.map((roleId) => roleId.trim()).filter(Boolean)));
+
+    const [connection, roles, pendingRequests] = await Promise.all([
       prisma.connection.findFirst({
         where: { id: input.connectionId, appId: input.appId },
         select: {
@@ -2132,51 +2198,138 @@ export async function assignApplicationConnectionRole(input: {
           account: { select: { accountType: true } },
         },
       }),
-      prisma.authzRole.findFirst({
-        where: { id: input.roleId, appId: input.appId },
+      prisma.authzRole.findMany({
+        where: { id: { in: uniqueRoleIds }, appId: input.appId },
         select: { id: true, name: true, scope: true },
+      }),
+      prisma.request.findMany({
+        where: {
+          status: 'pending',
+          type: 'applicationRoleRequest',
+        },
+        select: { id: true, data: true },
       }),
     ]);
 
     if (!connection) return { success: false, error: 'Connection not found.' };
-    if (!role) return { success: false, error: 'Role not found for this application.' };
-    if (!hasUsableRoleScope(role.scope)) {
+    if (roles.length !== uniqueRoleIds.length) return { success: false, error: 'One or more roles were not found for this application.' };
+
+    const invalidRole = roles.find((role) => !hasUsableRoleScope(role.scope));
+    if (invalidRole) {
       return { success: false, error: 'Roles without a scope cannot be assigned to a user.' };
     }
 
-    const canAssignImmediately =
-      canAssignRoleScopeToAccount(role.scope, connection.account.accountType, ['manageable']) ||
-      (isRootEditor && canAssignRoleScopeToAccount(role.scope, connection.account.accountType, ['root']));
+    const immediateRoles = roles.filter((role) =>
+      canAssignRoleScopeToAccount(role.scope, connection.account.accountType, ['public']) ||
+      (isRootEditor && canAssignRoleScopeToAccount(role.scope, connection.account.accountType, ['root'])),
+    );
+    const approvableRoles = roles.filter((role) =>
+      !immediateRoles.some((candidate) => candidate.id === role.id) &&
+      canAssignRoleScopeToAccount(role.scope, connection.account.accountType, ['toApprove']),
+    );
 
-    if (!canAssignImmediately) {
-      if (!canAssignRoleScopeToAccount(role.scope, connection.account.accountType, ['toApprove'])) {
-        return { success: false, error: 'This role scope cannot be assigned to this account type.' };
-      }
-
-      await prisma.request.create({
-        data: {
-          senderId: accountId,
-          recipientId: accountId,
-          action: 'applicationRoleRequest',
-          type: 'applicationRoleRequest',
-          data: {
-            appId: input.appId,
-            accountId: connection.accountId,
-            connectionId: connection.id,
-            roleIds: [role.id],
-            roles: [{ id: role.id, name: role.name, scope: role.scope }],
-            assignmentKind: 'connectionRole',
-          },
-        },
-      });
-
-      revalidateApplicationRequestsRoutes(input.appId);
-      return { success: true, pendingApproval: true };
+    if (immediateRoles.length + approvableRoles.length !== roles.length) {
+      return { success: false, error: 'One or more selected roles cannot be assigned from this page.' };
     }
 
-    await prisma.connection.update({
-      where: { id: input.connectionId },
-      data: { roleId: input.roleId },
+    const existingAssignedRows = await prisma.access.findMany({
+      where: {
+        memberAccountId: connection.accountId,
+        parentAccountId: connection.accountId,
+        assetApplicationId: input.appId,
+        ...activeAccessWhere(),
+      },
+      select: {
+        roleId: true,
+        role: {
+          select: {
+            scope: true,
+            appId: true,
+          },
+        },
+      },
+    });
+
+    const currentAssignableRoleIds = Array.from(
+      new Set(
+        existingAssignedRows
+          .filter((row) => row.role.appId === input.appId)
+          .filter((row) =>
+            canAssignRoleScopeToAccount(row.role.scope, connection.account.accountType, ['public']) ||
+            (isRootEditor && canAssignRoleScopeToAccount(row.role.scope, connection.account.accountType, ['root'])),
+          )
+          .map((row) => row.roleId),
+      ),
+    );
+
+    const nextImmediateRoleIds = immediateRoles.map((role) => role.id);
+    const roleIdsToRemove = currentAssignableRoleIds.filter((roleId) => !nextImmediateRoleIds.includes(roleId));
+    const roleIdsToAdd = nextImmediateRoleIds.filter((roleId) => !currentAssignableRoleIds.includes(roleId));
+
+    const existingPendingRoleIds = Array.from(
+      new Set(
+        pendingRequests.flatMap((request) => {
+          const data = request.data && typeof request.data === 'object' ? request.data as Record<string, unknown> : {};
+          if (typeof data.appId !== 'string' || data.appId !== input.appId) return [];
+          if (typeof data.accountId !== 'string' || data.accountId !== connection.accountId) return [];
+          if (typeof data.connectionId !== 'string' || data.connectionId !== connection.id) return [];
+          if (data.assignmentKind !== 'connectionRole') return [];
+          return stringList(data.roleIds);
+        }),
+      ),
+    );
+
+    const nextPendingRoleIds = approvableRoles
+      .map((role) => role.id)
+      .filter((roleId) => !existingPendingRoleIds.includes(roleId));
+
+    await prisma.$transaction(async (tx) => {
+      await cleanupExpiredAccessModel(tx);
+
+      if (roleIdsToRemove.length > 0) {
+        await tx.access.deleteMany({
+          where: {
+            memberAccountId: connection.accountId,
+            parentAccountId: connection.accountId,
+            assetApplicationId: input.appId,
+            roleId: { in: roleIdsToRemove },
+          },
+        });
+      }
+
+      for (const roleId of roleIdsToAdd) {
+        await ensureAccessGrant(tx, {
+          memberAccountId: connection.accountId,
+          parentAccountId: connection.accountId,
+          childApplicationId: input.appId,
+          accessApplicationId: input.appId,
+          roleId,
+          details: {
+            connectionId: connection.id,
+            source: 'assignApplicationConnectionRole',
+          },
+        });
+      }
+
+      if (nextPendingRoleIds.length > 0) {
+        const requestedRoles = approvableRoles.filter((role) => nextPendingRoleIds.includes(role.id));
+        await tx.request.create({
+          data: {
+            senderId: accountId,
+            recipientId: accountId,
+            action: 'applicationRoleRequest',
+            type: 'applicationRoleRequest',
+            data: {
+              appId: input.appId,
+              accountId: connection.accountId,
+              connectionId: connection.id,
+              roleIds: requestedRoles.map((role) => role.id),
+              roles: requestedRoles.map((role) => ({ id: role.id, name: role.name, scope: role.scope })),
+              assignmentKind: 'connectionRole',
+            },
+          },
+        });
+      }
     });
 
     await dispatchAccountUpdatedEvent({
@@ -2184,9 +2337,17 @@ export async function assignApplicationConnectionRole(input: {
       changedFields: ['role'],
     });
 
+    if (nextPendingRoleIds.length > 0) {
+      revalidateApplicationRequestsRoutes(input.appId);
+    }
     revalidateApplicationUsersRoutes(input.appId, input.connectionId);
 
-    return { success: true };
+    return {
+      success: true,
+      pendingApproval: nextPendingRoleIds.length > 0,
+      roleIds: nextImmediateRoleIds,
+      pendingRoleIds: Array.from(new Set([...existingPendingRoleIds, ...nextPendingRoleIds])),
+    };
   } catch (error) {
     await logError('database', error, `assignApplicationConnectionRole:${input.appId}:${input.connectionId}`);
     return { success: false, error: 'Failed to assign role.' };

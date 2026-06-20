@@ -529,6 +529,18 @@ exports.AssetType = exports.$Enums.AssetType = {
   conn_in_port: 'conn_in_port'
 };
 
+exports.AccessType = exports.$Enums.AccessType = {
+  acc_self: 'acc_self',
+  acc_self_root: 'acc_self_root',
+  acc_in_port: 'acc_in_port',
+  acc_in_acc: 'acc_in_acc',
+  app_in_port: 'app_in_port',
+  app_in_acc: 'app_in_acc',
+  port_in_acc: 'port_in_acc',
+  conn_in_acc: 'conn_in_acc',
+  conn_in_port: 'conn_in_port'
+};
+
 exports.Prisma.ModelName = {
   Account: 'Account',
   Resource: 'Resource',

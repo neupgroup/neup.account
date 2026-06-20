@@ -218,6 +218,21 @@ export const AssetType: {
 export type AssetType = (typeof AssetType)[keyof typeof AssetType]
 
 
+export const AccessType: {
+  acc_self: 'acc_self',
+  acc_self_root: 'acc_self_root',
+  acc_in_port: 'acc_in_port',
+  acc_in_acc: 'acc_in_acc',
+  app_in_port: 'app_in_port',
+  app_in_acc: 'app_in_acc',
+  port_in_acc: 'port_in_acc',
+  conn_in_acc: 'conn_in_acc',
+  conn_in_port: 'conn_in_port'
+};
+
+export type AccessType = (typeof AccessType)[keyof typeof AccessType]
+
+
 export const MemberAccessFor: {
   account: 'account',
   application: 'application',
@@ -245,6 +260,10 @@ export const AuthzGrantStatus: typeof $Enums.AuthzGrantStatus
 export type AssetType = $Enums.AssetType
 
 export const AssetType: typeof $Enums.AssetType
+
+export type AccessType = $Enums.AccessType
+
+export const AccessType: typeof $Enums.AccessType
 
 export type MemberAccessFor = $Enums.MemberAccessFor
 
@@ -31520,7 +31539,7 @@ export namespace Prisma {
 
   export type AccessMinAggregateOutputType = {
     id: string | null
-    accessType: $Enums.AssetType | null
+    accessType: $Enums.AccessType | null
     memberId: string | null
     memberAccountId: string | null
     parentAccountId: string | null
@@ -31538,7 +31557,7 @@ export namespace Prisma {
 
   export type AccessMaxAggregateOutputType = {
     id: string | null
-    accessType: $Enums.AssetType | null
+    accessType: $Enums.AccessType | null
     memberId: string | null
     memberAccountId: string | null
     parentAccountId: string | null
@@ -31705,7 +31724,7 @@ export namespace Prisma {
 
   export type AccessGroupByOutputType = {
     id: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     memberAccountId: string | null
     parentAccountId: string | null
@@ -31906,7 +31925,7 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      accessType: $Enums.AssetType
+      accessType: $Enums.AccessType
       memberId: string
       memberAccountId: string | null
       parentAccountId: string | null
@@ -32356,7 +32375,7 @@ export namespace Prisma {
    */
   interface AccessFieldRefs {
     readonly id: FieldRef<"Access", 'String'>
-    readonly accessType: FieldRef<"Access", 'AssetType'>
+    readonly accessType: FieldRef<"Access", 'AccessType'>
     readonly memberId: FieldRef<"Access", 'String'>
     readonly memberAccountId: FieldRef<"Access", 'String'>
     readonly parentAccountId: FieldRef<"Access", 'String'>
@@ -45930,6 +45949,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'AccessType'
+   */
+  export type EnumAccessTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AccessType'>
+
+
+
+  /**
+   * Reference to a field of type 'AccessType[]'
+   */
+  export type ListEnumAccessTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AccessType[]'>
+
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -47694,7 +47727,7 @@ export namespace Prisma {
     OR?: AccessWhereInput[]
     NOT?: AccessWhereInput | AccessWhereInput[]
     id?: StringFilter<"Access"> | string
-    accessType?: EnumAssetTypeFilter<"Access"> | $Enums.AssetType
+    accessType?: EnumAccessTypeFilter<"Access"> | $Enums.AccessType
     memberId?: StringFilter<"Access"> | string
     memberAccountId?: StringNullableFilter<"Access"> | string | null
     parentAccountId?: StringNullableFilter<"Access"> | string | null
@@ -47757,7 +47790,7 @@ export namespace Prisma {
     AND?: AccessWhereInput | AccessWhereInput[]
     OR?: AccessWhereInput[]
     NOT?: AccessWhereInput | AccessWhereInput[]
-    accessType?: EnumAssetTypeFilter<"Access"> | $Enums.AssetType
+    accessType?: EnumAccessTypeFilter<"Access"> | $Enums.AccessType
     memberId?: StringFilter<"Access"> | string
     memberAccountId?: StringNullableFilter<"Access"> | string | null
     parentAccountId?: StringNullableFilter<"Access"> | string | null
@@ -47812,7 +47845,7 @@ export namespace Prisma {
     OR?: AccessScalarWhereWithAggregatesInput[]
     NOT?: AccessScalarWhereWithAggregatesInput | AccessScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Access"> | string
-    accessType?: EnumAssetTypeWithAggregatesFilter<"Access"> | $Enums.AssetType
+    accessType?: EnumAccessTypeWithAggregatesFilter<"Access"> | $Enums.AccessType
     memberId?: StringWithAggregatesFilter<"Access"> | string
     memberAccountId?: StringNullableWithAggregatesFilter<"Access"> | string | null
     parentAccountId?: StringNullableWithAggregatesFilter<"Access"> | string | null
@@ -50491,7 +50524,7 @@ export namespace Prisma {
 
   export type AccessCreateInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -50510,7 +50543,7 @@ export namespace Prisma {
 
   export type AccessUncheckedCreateInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
@@ -50529,7 +50562,7 @@ export namespace Prisma {
 
   export type AccessUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -50548,7 +50581,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -50567,7 +50600,7 @@ export namespace Prisma {
 
   export type AccessCreateManyInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
@@ -50586,7 +50619,7 @@ export namespace Prisma {
 
   export type AccessUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -50594,7 +50627,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -52701,6 +52734,13 @@ export namespace Prisma {
     isTemporary?: SortOrder
   }
 
+  export type EnumAccessTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.AccessType | EnumAccessTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.AccessType[] | ListEnumAccessTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AccessType[] | ListEnumAccessTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumAccessTypeFilter<$PrismaModel> | $Enums.AccessType
+  }
+
   export type MemberScalarRelationFilter = {
     is?: MemberWhereInput
     isNot?: MemberWhereInput
@@ -52769,6 +52809,16 @@ export namespace Prisma {
     isTemporary?: SortOrder
     roleId?: SortOrder
     status?: SortOrder
+  }
+
+  export type EnumAccessTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AccessType | EnumAccessTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.AccessType[] | ListEnumAccessTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AccessType[] | ListEnumAccessTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumAccessTypeWithAggregatesFilter<$PrismaModel> | $Enums.AccessType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAccessTypeFilter<$PrismaModel>
+    _max?: NestedEnumAccessTypeFilter<$PrismaModel>
   }
 
   export type AccountOwnershipCountOrderByAggregateInput = {
@@ -55878,6 +55928,10 @@ export namespace Prisma {
     connect?: AuthzRoleWhereUniqueInput
   }
 
+  export type EnumAccessTypeFieldUpdateOperationsInput = {
+    set?: $Enums.AccessType
+  }
+
   export type MemberUpdateOneRequiredWithoutAccessRowsNestedInput = {
     create?: XOR<MemberCreateWithoutAccessRowsInput, MemberUncheckedCreateWithoutAccessRowsInput>
     connectOrCreate?: MemberCreateOrConnectWithoutAccessRowsInput
@@ -56993,6 +57047,23 @@ export namespace Prisma {
     _max?: NestedEnumAssetTypeFilter<$PrismaModel>
   }
 
+  export type NestedEnumAccessTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.AccessType | EnumAccessTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.AccessType[] | ListEnumAccessTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AccessType[] | ListEnumAccessTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumAccessTypeFilter<$PrismaModel> | $Enums.AccessType
+  }
+
+  export type NestedEnumAccessTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AccessType | EnumAccessTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.AccessType[] | ListEnumAccessTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AccessType[] | ListEnumAccessTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumAccessTypeWithAggregatesFilter<$PrismaModel> | $Enums.AccessType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAccessTypeFilter<$PrismaModel>
+    _max?: NestedEnumAccessTypeFilter<$PrismaModel>
+  }
+
   export type AccountTypeBrandCreateWithoutAccountInput = {
     brandName?: string | null
     isLegalEntity?: boolean
@@ -57451,7 +57522,7 @@ export namespace Prisma {
 
   export type AccessCreateWithoutMemberAccountInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -57469,7 +57540,7 @@ export namespace Prisma {
 
   export type AccessUncheckedCreateWithoutMemberAccountInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     parentAccountId?: string | null
     parentPortfolioId?: string | null
@@ -57497,7 +57568,7 @@ export namespace Prisma {
 
   export type AccessCreateWithoutParentAccountInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -57515,7 +57586,7 @@ export namespace Prisma {
 
   export type AccessUncheckedCreateWithoutParentAccountInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
     parentPortfolioId?: string | null
@@ -57543,7 +57614,7 @@ export namespace Prisma {
 
   export type AccessCreateWithoutAssetAccountInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -57561,7 +57632,7 @@ export namespace Prisma {
 
   export type AccessUncheckedCreateWithoutAssetAccountInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
@@ -58530,7 +58601,7 @@ export namespace Prisma {
     OR?: AccessScalarWhereInput[]
     NOT?: AccessScalarWhereInput | AccessScalarWhereInput[]
     id?: StringFilter<"Access"> | string
-    accessType?: EnumAssetTypeFilter<"Access"> | $Enums.AssetType
+    accessType?: EnumAccessTypeFilter<"Access"> | $Enums.AccessType
     memberId?: StringFilter<"Access"> | string
     memberAccountId?: StringNullableFilter<"Access"> | string | null
     parentAccountId?: StringNullableFilter<"Access"> | string | null
@@ -62124,7 +62195,7 @@ export namespace Prisma {
 
   export type AccessCreateWithoutAssetApplicationInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -62142,7 +62213,7 @@ export namespace Prisma {
 
   export type AccessUncheckedCreateWithoutAssetApplicationInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
@@ -62170,7 +62241,7 @@ export namespace Prisma {
 
   export type AccessCreateWithoutAccessApplicationInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -62188,7 +62259,7 @@ export namespace Prisma {
 
   export type AccessUncheckedCreateWithoutAccessApplicationInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
@@ -62814,7 +62885,7 @@ export namespace Prisma {
 
   export type AccessCreateWithoutParentPortfolioInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -62832,7 +62903,7 @@ export namespace Prisma {
 
   export type AccessUncheckedCreateWithoutParentPortfolioInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
@@ -62860,7 +62931,7 @@ export namespace Prisma {
 
   export type AccessCreateWithoutAssetPortfolioInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -62878,7 +62949,7 @@ export namespace Prisma {
 
   export type AccessUncheckedCreateWithoutAssetPortfolioInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
@@ -63352,7 +63423,7 @@ export namespace Prisma {
 
   export type AccessCreateWithoutAssetInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -63370,7 +63441,7 @@ export namespace Prisma {
 
   export type AccessUncheckedCreateWithoutAssetInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
@@ -64073,7 +64144,7 @@ export namespace Prisma {
 
   export type AccessCreateWithoutMemberInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -64091,7 +64162,7 @@ export namespace Prisma {
 
   export type AccessUncheckedCreateWithoutMemberInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberAccountId?: string | null
     parentAccountId?: string | null
     parentPortfolioId?: string | null
@@ -66203,7 +66274,7 @@ export namespace Prisma {
 
   export type AccessCreateWithoutAssetConnectionInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -66221,7 +66292,7 @@ export namespace Prisma {
 
   export type AccessUncheckedCreateWithoutAssetConnectionInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
@@ -67521,7 +67592,7 @@ export namespace Prisma {
 
   export type AccessCreateWithoutRoleInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -67539,7 +67610,7 @@ export namespace Prisma {
 
   export type AccessUncheckedCreateWithoutRoleInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
@@ -69034,7 +69105,7 @@ export namespace Prisma {
 
   export type AccessCreateManyMemberAccountInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     parentAccountId?: string | null
     parentPortfolioId?: string | null
@@ -69052,7 +69123,7 @@ export namespace Prisma {
 
   export type AccessCreateManyParentAccountInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
     parentPortfolioId?: string | null
@@ -69070,7 +69141,7 @@ export namespace Prisma {
 
   export type AccessCreateManyAssetAccountInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
@@ -69619,7 +69690,7 @@ export namespace Prisma {
 
   export type AccessUpdateWithoutMemberAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -69637,7 +69708,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateWithoutMemberAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -69655,7 +69726,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateManyWithoutMemberAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -69673,7 +69744,7 @@ export namespace Prisma {
 
   export type AccessUpdateWithoutParentAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -69691,7 +69762,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateWithoutParentAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -69709,7 +69780,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateManyWithoutParentAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -69727,7 +69798,7 @@ export namespace Prisma {
 
   export type AccessUpdateWithoutAssetAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -69745,7 +69816,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateWithoutAssetAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -69763,7 +69834,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateManyWithoutAssetAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -70383,7 +70454,7 @@ export namespace Prisma {
 
   export type AccessCreateManyAssetApplicationInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
@@ -70401,7 +70472,7 @@ export namespace Prisma {
 
   export type AccessCreateManyAccessApplicationInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
@@ -70651,7 +70722,7 @@ export namespace Prisma {
 
   export type AccessUpdateWithoutAssetApplicationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -70669,7 +70740,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateWithoutAssetApplicationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -70687,7 +70758,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateManyWithoutAssetApplicationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -70705,7 +70776,7 @@ export namespace Prisma {
 
   export type AccessUpdateWithoutAccessApplicationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -70723,7 +70794,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateWithoutAccessApplicationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -70741,7 +70812,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateManyWithoutAccessApplicationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -70846,7 +70917,7 @@ export namespace Prisma {
 
   export type AccessCreateManyParentPortfolioInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
@@ -70864,7 +70935,7 @@ export namespace Prisma {
 
   export type AccessCreateManyAssetPortfolioInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
@@ -71015,7 +71086,7 @@ export namespace Prisma {
 
   export type AccessUpdateWithoutParentPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -71033,7 +71104,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateWithoutParentPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -71051,7 +71122,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateManyWithoutParentPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -71069,7 +71140,7 @@ export namespace Prisma {
 
   export type AccessUpdateWithoutAssetPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -71087,7 +71158,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateWithoutAssetPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -71105,7 +71176,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateManyWithoutAssetPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -71150,7 +71221,7 @@ export namespace Prisma {
 
   export type AccessCreateManyAssetInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
@@ -71191,7 +71262,7 @@ export namespace Prisma {
 
   export type AccessUpdateWithoutAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -71209,7 +71280,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateWithoutAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -71227,7 +71298,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateManyWithoutAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -71314,7 +71385,7 @@ export namespace Prisma {
 
   export type AccessCreateManyMemberInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberAccountId?: string | null
     parentAccountId?: string | null
     parentPortfolioId?: string | null
@@ -71346,7 +71417,7 @@ export namespace Prisma {
 
   export type AccessUpdateWithoutMemberInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -71364,7 +71435,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateWithoutMemberInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -71382,7 +71453,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateManyWithoutMemberInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -71455,7 +71526,7 @@ export namespace Prisma {
 
   export type AccessCreateManyAssetConnectionInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
@@ -71532,7 +71603,7 @@ export namespace Prisma {
 
   export type AccessUpdateWithoutAssetConnectionInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -71550,7 +71621,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateWithoutAssetConnectionInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -71568,7 +71639,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateManyWithoutAssetConnectionInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -71661,7 +71732,7 @@ export namespace Prisma {
 
   export type AccessCreateManyRoleInput = {
     id?: string
-    accessType: $Enums.AssetType
+    accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
@@ -71753,7 +71824,7 @@ export namespace Prisma {
 
   export type AccessUpdateWithoutRoleInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -71771,7 +71842,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateWithoutRoleInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -71789,7 +71860,7 @@ export namespace Prisma {
 
   export type AccessUncheckedUpdateManyWithoutRoleInput = {
     id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
+    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null

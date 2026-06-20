@@ -1,6 +1,6 @@
 import prisma from '@/core/helpers/prisma';
 import type { Prisma } from '@/prisma/generated/client/client';
-import type { AssetType } from '@/prisma/generated/client';
+import type { AccessType, AssetType } from '@/prisma/generated/client';
 
 type Tx = Prisma.TransactionClient;
 
@@ -50,6 +50,15 @@ export function assetTypeForRefs(parent: ParentRef, child: AssetChildRef): Asset
   if ('childConnectionId' in child) return 'conn_in_acc';
   if ('childApplicationId' in child) return 'app_in_acc';
   return 'port_in_acc';
+}
+
+function accessTypeForGrant(input: AccessGrantInput, roleScope: string | null): AccessType {
+  const isSelfGrant = 'parentAccountId' in input && input.parentAccountId === input.memberAccountId;
+  if (!isSelfGrant) return assetTypeForRefs(input, input);
+
+  return roleScope === 'individual.root' || roleScope === 'root'
+    ? 'acc_self_root'
+    : 'acc_self';
 }
 
 export function getLogicalAssetId(asset: {
@@ -188,6 +197,14 @@ export async function ensureAccessAsset(tx: Tx, input: ParentRef & AssetChildRef
 }
 
 export async function ensureAccessGrant(tx: Tx, input: AccessGrantInput) {
+  const role = await tx.authzRole.findUnique({
+    where: { id: input.roleId },
+    select: { scope: true },
+  });
+  if (!role) {
+    throw new Error(`Access role "${input.roleId}" was not found.`);
+  }
+
   const member = await ensureAccessMember(tx, {
     childAccountId: input.memberAccountId,
     parentAccountId: 'parentAccountId' in input ? input.parentAccountId : undefined,
@@ -196,7 +213,7 @@ export async function ensureAccessGrant(tx: Tx, input: AccessGrantInput) {
   } as ParentRef & { childAccountId: string; isTemporary?: Date | null });
 
   const asset = await ensureAccessAsset(tx, input);
-  const accessType = assetTypeForRefs(input, input);
+  const accessType = accessTypeForGrant(input, role.scope);
 
   const existing = await tx.access.findFirst({
     where: {

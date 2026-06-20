@@ -662,11 +662,11 @@ export async function isRootUser(accountId: string): Promise<boolean> {
     const count = await prisma.access.count({
       where: {
         memberAccountId: accountId,
+        accessType: 'acc_self_root',
         status: 'active',
         OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
         role: {
           appId: 'neup.account',
-          scope: 'root',
         },
       },
     });

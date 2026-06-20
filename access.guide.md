@@ -56,7 +56,7 @@ The access table will have the fields like the following. Look at the table to u
 | Field Name            | Field value/description                                                                                                                                                 |
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | id                    |                                                                                                                                                                         |
-| access_type           | varchar                                                                                                                                                                 |
+| access_type           | `acc_self` for regular self grants, `acc_self.root` for root self grants, otherwise the asset relationship type                                                         |
 | member_id             | references Member.id -> who's getting the access. Not nullable.                                                                                                         |
 | member_account_id     | (denorm, references Member.member_account_id, nullable) -> who's getting access. main account id of that individual                                                     |
 | parent_account_id     | (denorm, references Member.parent_account_id, nullable)-> who owns that account, if account owns it.                                                                    |

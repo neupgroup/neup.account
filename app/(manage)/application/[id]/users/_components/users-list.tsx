@@ -159,21 +159,32 @@ function UsersListInner({ appId }: { appId: string }) {
 
   // Seed from URL params
   useEffect(() => {
+    const q = searchParams.get('q') || '';
+    setSearch(q);
+    setDebouncedSearch(q);
+
     const s = searchParams.get('status') as AppUserStatus | null;
-    if (s && STATUS_TABS.some((t) => t.value === s)) setActiveStatus(s);
+    setActiveStatus(s && STATUS_TABS.some((t) => t.value === s) ? s : 'all');
 
     const since = searchParams.get('activeSince') as '1d' | '7d' | '30d' | null;
-    if (since && SINCE_OPTIONS.some((o) => o.value === since)) setActiveSince(since);
+    setActiveSince(since && SINCE_OPTIONS.some((o) => o.value === since) ? since : 'all');
+
+    const nextSort = searchParams.get('sort') as AppUserSortKey | null;
+    const validSorts: AppUserSortKey[] = ['newest', 'oldest', 'name_asc', 'name_desc'];
+    setSort(nextSort && validSorts.includes(nextSort) ? nextSort : 'newest');
   }, [searchParams]);
 
   // Sync filters to URL
-  const syncUrl = useCallback((status: string, since: string) => {
+  const syncUrl = useCallback((query: string, status: string, since: string, nextSort: AppUserSortKey) => {
     const params = new URLSearchParams();
+    if (query.trim()) params.set('q', query.trim());
     if (status !== 'all') params.set('status', status);
     if (since !== 'all') params.set('activeSince', since);
+    if (nextSort !== 'newest') params.set('sort', nextSort);
     const qs = params.toString();
+    if (qs === searchParams.toString()) return;
     redirectInApp(router, `${pathname}${qs ? `?${qs}` : ''}`, { replace: true, scroll: false });
-  }, [router, pathname]);
+  }, [router, pathname, searchParams]);
 
   // Debounce search
   useEffect(() => {
@@ -182,6 +193,9 @@ function UsersListInner({ appId }: { appId: string }) {
   }, [search]);
 
   useEffect(() => { setPage(1); }, [activeStatus, activeSince, sort]);
+  useEffect(() => {
+    syncUrl(debouncedSearch, activeStatus, activeSince, sort);
+  }, [debouncedSearch, activeStatus, activeSince, sort, syncUrl]);
 
   const fetchPage = useCallback(() => {
     startTransition(async () => {
@@ -220,7 +234,7 @@ function UsersListInner({ appId }: { appId: string }) {
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Search by name or ID…"
+          placeholder="Search by name, or use type:brand&activein:7d&role:owner"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-10"
@@ -236,7 +250,6 @@ function UsersListInner({ appId }: { appId: string }) {
             onValueChange={(v) => {
               const val = v as 'all' | AppUserStatus;
               setActiveStatus(val);
-              syncUrl(val, activeSince);
             }}
           >
             <TabsList className="h-auto flex-wrap gap-1 bg-transparent p-0">
@@ -258,7 +271,6 @@ function UsersListInner({ appId }: { appId: string }) {
             onValueChange={(v) => {
               const val = v as 'all' | '1d' | '7d' | '30d';
               setActiveSince(val);
-              syncUrl(activeStatus, val);
             }}
           >
             <SelectTrigger className="w-36 h-8 text-xs">

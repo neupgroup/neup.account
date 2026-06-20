@@ -1712,6 +1712,74 @@ export async function getApplicationUserStats(appId: string): Promise<Applicatio
 export type AppUserStatus = 'active' | 'creationRequired' | 'deactivated';
 export type AppUserSortKey = 'newest' | 'oldest' | 'name_asc' | 'name_desc';
 
+const SEARCHABLE_APP_USER_ACCOUNT_TYPES = new Set(['individual', 'brand', 'branch', 'dependent', 'guest', 'root']);
+const APP_USER_ACTIVE_IN_UNITS_MS: Record<string, number> = {
+  m: 60 * 1000,
+  h: 60 * 60 * 1000,
+  d: 24 * 60 * 60 * 1000,
+  w: 7 * 24 * 60 * 60 * 1000,
+};
+
+type ParsedApplicationUserSearch = {
+  text: string;
+  accountType?: string;
+  neupId?: string;
+  roleName?: string;
+  activeSince?: Date;
+};
+
+function parseApplicationUserSearch(search: string): ParsedApplicationUserSearch {
+  const parsed: ParsedApplicationUserSearch = { text: '' };
+  const textParts: string[] = [];
+
+  for (const rawPart of search.split('&')) {
+    const part = rawPart.trim();
+    if (!part) continue;
+
+    const typeMatch = part.match(/^(?:type|accounttype|acctype|actype):(.+)$/i);
+    if (typeMatch) {
+      const accountType = typeMatch[1]?.trim().toLowerCase();
+      if (accountType && SEARCHABLE_APP_USER_ACCOUNT_TYPES.has(accountType)) {
+        parsed.accountType = accountType;
+        continue;
+      }
+    }
+
+    const neupIdMatch = part.match(/^neupid:(.+)$/i);
+    if (neupIdMatch) {
+      const neupId = neupIdMatch[1]?.trim();
+      if (neupId) {
+        parsed.neupId = neupId;
+        continue;
+      }
+    }
+
+    const roleMatch = part.match(/^role:(.+)$/i);
+    if (roleMatch) {
+      const roleName = roleMatch[1]?.trim();
+      if (roleName) {
+        parsed.roleName = roleName;
+        continue;
+      }
+    }
+
+    const activeInMatch = part.match(/^activein:(\d+)([mhdw])$/i);
+    if (activeInMatch) {
+      const amount = Number(activeInMatch[1]);
+      const unit = activeInMatch[2].toLowerCase();
+      if (amount > 0 && APP_USER_ACTIVE_IN_UNITS_MS[unit]) {
+        parsed.activeSince = new Date(Date.now() - amount * APP_USER_ACTIVE_IN_UNITS_MS[unit]);
+        continue;
+      }
+    }
+
+    textParts.push(part);
+  }
+
+  parsed.text = textParts.join(' & ').trim();
+  return parsed;
+}
+
 export type AppUserEntry = {
   connectionId: string;
   accountId: string;
@@ -1781,9 +1849,10 @@ export async function getApplicationUsersPaginated(params: {
   const { appId, page, pageSize = 20, search = '', status, activeSince, sort = 'newest' } = params;
 
   try {
+    const parsedSearch = parseApplicationUserSearch(search);
     const now = new Date();
     const sinceMap: Record<string, number> = { '1d': 1, '7d': 7, '30d': 30 };
-    const sinceDate = activeSince
+    const connectionSinceDate = activeSince
       ? new Date(now.getTime() - sinceMap[activeSince] * 24 * 60 * 60 * 1000)
       : undefined;
 
@@ -1795,7 +1864,7 @@ export async function getApplicationUsersPaginated(params: {
     };
 
     const connectionWhere: Record<string, unknown> = { appId };
-    if (sinceDate) connectionWhere.connectedAt = { gte: sinceDate };
+    if (connectionSinceDate) connectionWhere.connectedAt = { gte: connectionSinceDate };
 
     // Fetch connections with joined account data
     const orderByMap: Record<AppUserSortKey, object> = {
@@ -1811,16 +1880,79 @@ export async function getApplicationUsersPaginated(params: {
     } else if (status) {
       accountWhere.status = statusMap[status];
     }
-    if (search) {
+    if (parsedSearch.accountType === 'root') {
+      accountWhere.accessMemberRows = {
+        some: {
+          accessType: 'acc_self_root',
+          status: 'active',
+          OR: [
+            { isTemporary: null },
+            { isTemporary: { gt: new Date() } },
+          ],
+        },
+      };
+    } else if (parsedSearch.accountType) {
+      accountWhere.accountType = parsedSearch.accountType;
+    }
+
+    if (parsedSearch.neupId) {
+      accountWhere.neupIds = {
+        some: {
+          neupId: {
+            contains: parsedSearch.neupId,
+            mode: 'insensitive',
+          },
+        },
+      };
+    }
+
+    if (parsedSearch.text) {
       accountWhere.OR = [
-        { displayName: { contains: search, mode: 'insensitive' } },
-        { id: { contains: search, mode: 'insensitive' } },
-        { neupIds: { some: { neupId: { contains: search, mode: 'insensitive' } } } },
+        { displayName: { contains: parsedSearch.text, mode: 'insensitive' } },
+        { id: { contains: parsedSearch.text, mode: 'insensitive' } },
+        { neupIds: { some: { neupId: { contains: parsedSearch.text, mode: 'insensitive' } } } },
       ];
     }
 
     if (Object.keys(accountWhere).length > 0) {
       connectionWhere.account = accountWhere;
+    }
+
+    if (parsedSearch.roleName) {
+      connectionWhere.OR = [
+        {
+          role: {
+            name: {
+              equals: parsedSearch.roleName,
+              mode: 'insensitive',
+            },
+          },
+        },
+        {
+          roleId: {
+            equals: parsedSearch.roleName,
+            mode: 'insensitive',
+          },
+        },
+      ];
+    }
+
+    if (parsedSearch.activeSince) {
+      const activeAccounts = await prisma.activity.groupBy({
+        by: ['memberId'],
+        where: { timestamp: { gte: parsedSearch.activeSince } },
+      });
+
+      const activeAccountIds = activeAccounts.map((entry) => entry.memberId);
+      if (activeAccountIds.length === 0) {
+        return { users: [], total: 0, page, pageSize, totalPages: 0 };
+      }
+
+      const currentAccountWhere = (connectionWhere.account as Record<string, unknown> | undefined) ?? {};
+      connectionWhere.account = {
+        ...currentAccountWhere,
+        id: { in: activeAccountIds },
+      };
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

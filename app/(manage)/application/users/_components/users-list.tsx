@@ -29,16 +29,16 @@ import {
 const PAGE_SIZE = 20;
 
 const STATUS_TABS: { value: 'all' | AppUserStatus; label: string }[] = [
-  { value: 'all',             label: 'All' },
-  { value: 'active',          label: 'Active' },
+  { value: 'all', label: 'All' },
+  { value: 'active', label: 'Active' },
   { value: 'creationRequired', label: 'Pending' },
-  { value: 'deactivated',     label: 'Deactivated' },
+  { value: 'deactivated', label: 'Deactivated' },
 ];
 
 const SINCE_OPTIONS: { value: 'all' | '1d' | '7d' | '30d'; label: string }[] = [
   { value: 'all', label: 'All time' },
-  { value: '1d',  label: 'Last 24 hours' },
-  { value: '7d',  label: 'Last 7 days' },
+  { value: '1d', label: 'Last 24 hours' },
+  { value: '7d', label: 'Last 7 days' },
   { value: '30d', label: 'Last 30 days' },
 ];
 
@@ -72,9 +72,9 @@ function UserRow({
 
   const roundingClass =
     isFirst && isLast ? 'rounded-lg'
-    : isFirst          ? 'rounded-t-lg'
-    : isLast           ? 'rounded-b-lg'
-    : '';
+      : isFirst ? 'rounded-t-lg'
+        : isLast ? 'rounded-b-lg'
+          : '';
 
   const initials = user.displayName?.charAt(0).toUpperCase() ?? '?';
 
@@ -147,18 +147,17 @@ function UsersListInner({ appId }: { appId: string }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const [users, setUsers]           = useState<AppUserEntry[]>([]);
-  const [total, setTotal]           = useState(0);
+  const [users, setUsers] = useState<AppUserEntry[]>([]);
+  const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [page, setPage]             = useState(1);
-  const [search, setSearch]         = useState('');
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [activeStatus, setActiveStatus] = useState<'all' | AppUserStatus>('all');
-  const [activeSince, setActiveSince]   = useState<'all' | '1d' | '7d' | '30d'>('all');
-  const [sort, setSort]             = useState<AppUserSortKey>('newest');
-  const [loading, startTransition]  = useTransition();
+  const [activeSince, setActiveSince] = useState<'all' | '1d' | '7d' | '30d'>('all');
+  const [sort, setSort] = useState<AppUserSortKey>('newest');
+  const [loading, startTransition] = useTransition();
 
-  // Seed from URL params
   useEffect(() => {
     const q = searchParams.get('q') || '';
     setSearch(q);
@@ -175,7 +174,6 @@ function UsersListInner({ appId }: { appId: string }) {
     setSort(nextSort && validSorts.includes(nextSort) ? nextSort : 'newest');
   }, [searchParams]);
 
-  // Sync filters to URL
   const syncUrl = useCallback((query: string, status: string, since: string, nextSort: AppUserSortKey) => {
     const params = new URLSearchParams();
     params.set('application', appId);
@@ -188,7 +186,6 @@ function UsersListInner({ appId }: { appId: string }) {
     redirectInApp(router, `${pathname}${qs ? `?${qs}` : ''}`, { replace: true, scroll: false });
   }, [appId, router, pathname, searchParams]);
 
-  // Debounce search
   useEffect(() => {
     const t = setTimeout(() => { setDebouncedSearch(search); setPage(1); }, 300);
     return () => clearTimeout(t);
@@ -219,20 +216,18 @@ function UsersListInner({ appId }: { appId: string }) {
   useEffect(() => { fetchPage(); }, [fetchPage]);
 
   const start = total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
-  const end   = Math.min(page * PAGE_SIZE, total);
+  const end = Math.min(page * PAGE_SIZE, total);
 
   return (
     <div className="grid gap-6">
-      {/* Count */}
       <p className="text-muted-foreground text-sm">
         {loading
           ? 'Loading…'
           : total === 0
-          ? 'No users found'
-          : `${start}–${end} of ${total} user${total !== 1 ? 's' : ''}`}
+            ? 'No users found'
+            : `${start}–${end} of ${total} user${total !== 1 ? 's' : ''}`}
       </p>
 
-      {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
@@ -243,10 +238,8 @@ function UsersListInner({ appId }: { appId: string }) {
         />
       </div>
 
-      {/* Filters + sort */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3 flex-wrap">
-          {/* Status tabs */}
           <Tabs
             value={activeStatus}
             onValueChange={(v) => {
@@ -267,7 +260,6 @@ function UsersListInner({ appId }: { appId: string }) {
             </TabsList>
           </Tabs>
 
-          {/* Active since */}
           <Select
             value={activeSince}
             onValueChange={(v) => {
@@ -286,7 +278,6 @@ function UsersListInner({ appId }: { appId: string }) {
           </Select>
         </div>
 
-        {/* Sort */}
         <Select value={sort} onValueChange={(v) => setSort(v as AppUserSortKey)}>
           <SelectTrigger className="w-44 h-8 text-xs gap-1.5">
             <ArrowUpDown className="h-3 w-3 shrink-0" />
@@ -301,7 +292,6 @@ function UsersListInner({ appId }: { appId: string }) {
         </Select>
       </div>
 
-      {/* List */}
       {loading ? (
         <UserListSkeleton />
       ) : users.length > 0 ? (
@@ -322,7 +312,6 @@ function UsersListInner({ appId }: { appId: string }) {
         </div>
       )}
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between gap-2">
           <span className="text-sm text-muted-foreground">

@@ -1,6 +1,9 @@
 import { notFound } from 'next/navigation';
-import LegacyApplicationUserActivityPage from '@/app/(manage)/application/[id]/users/[connId]/activity/page';
-import { getQueryParam } from '@/app/(manage)/application/_lib/query-param';
+import { ArrowLeft } from '@/components/icons';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { FlowLink } from '@/components/ui/flow-link';
+import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = {
   params: Promise<{ connId: string }>;
@@ -14,7 +17,25 @@ export default async function ApplicationUserActivityQueryPage({ params, searchP
 
   if (!applicationId) notFound();
 
-  return LegacyApplicationUserActivityPage({
-    params: Promise.resolve({ id: applicationId, connId }),
-  });
+  return (
+    <div className="grid gap-6">
+      <div>
+        <Button variant="ghost" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
+          <FlowLink href={applicationHref(`/application/users/${connId}`, applicationId, { mode: 'root' })}>
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </FlowLink>
+        </Button>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Activity</CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm text-muted-foreground">
+          User activity timeline for this application connection will be added here.
+        </CardContent>
+      </Card>
+    </div>
+  );
 }

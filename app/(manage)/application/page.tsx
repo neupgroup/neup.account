@@ -3,7 +3,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle } from '@/components/icons';
 import { Suspense } from 'react';
 import { ApplicationsPillView } from '@/app/(manage)/application/_components/applications-pill-view';
-import ApplicationDetailPage from '@/app/(manage)/application/[id]/page';
+import { ApplicationDetailPage } from '@/app/(manage)/application/_components/application-detail-page';
 import { getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = {
@@ -15,10 +15,7 @@ export default async function ApplicationsManagePage({ searchParams }: Props) {
   const applicationId = getQueryParam(resolvedSearchParams.application);
 
   if (applicationId) {
-    return ApplicationDetailPage({
-      params: Promise.resolve({ id: applicationId }),
-      searchParams: Promise.resolve({ mode: resolvedSearchParams.mode }),
-    });
+    return <ApplicationDetailPage applicationId={applicationId} mode={resolvedSearchParams.mode} />;
   }
 
   const { sections, canCreateApplication, hasPartialError } = await getApplicationsManagePageData();

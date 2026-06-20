@@ -8,11 +8,6 @@ import { deleteManagedApplicationFromDetailsPage } from '@/services/applications
 import { AppWindow, Building, BarChart, Share2, ExternalLink, ChevronRight, Users, UserPlus, ArrowLeft, type LucideIcon } from '@/components/icons';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 
-type Props = {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ mode?: string }>;
-};
-
 function iconFor(appIcon?: string): LucideIcon {
   const appIconMap: Record<string, LucideIcon> = {
     'app-window': AppWindow,
@@ -30,29 +25,31 @@ const statusVariant: Record<string, 'default' | 'secondary' | 'destructive' | 'o
   blocked: 'destructive',
 };
 
-export default async function ApplicationDetailPage({ params, searchParams }: Props) {
-  const { id } = await params;
-  const { mode } = await searchParams;
+type Props = {
+  applicationId: string;
+  mode?: string;
+};
+
+export async function ApplicationDetailPage({ applicationId, mode }: Props) {
   const modeSuffix = mode === 'root' ? '&mode=root' : '';
-  const details = await getApplicationDetailsForViewerV2(id);
+  const details = await getApplicationDetailsForViewerV2(applicationId);
 
   if (!details) notFound();
 
   const Icon = iconFor(details.icon);
   const deleteAction = deleteManagedApplicationFromDetailsPage.bind(
     null,
-    id,
+    applicationId,
     mode === 'root' ? '/application?mode=root' : '/application',
   );
 
   const [userStats, logPermissions] = await Promise.all([
-    getApplicationUserStats(id),
-    getApplicationLogPermissions(id),
+    getApplicationUserStats(applicationId),
+    getApplicationLogPermissions(applicationId),
   ]);
 
   return (
     <div className="grid gap-6">
-      {/* Back */}
       <div>
         <Button variant="ghost" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
           <FlowLink href="/application">
@@ -62,7 +59,6 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
         </Button>
       </div>
 
-      {/* Header */}
       <div className="flex items-start gap-4">
         <div className="flex items-center gap-3">
           <span className="flex h-12 w-12 items-center justify-center rounded-xl border bg-muted/40 shrink-0">
@@ -96,7 +92,6 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
         </div>
       </div>
 
-      {/* User Stats */}
       <Card>
         <CardContent className="grid p-0 md:grid-cols-2 lg:grid-cols-4 divide-y md:divide-y-0 md:divide-x">
           {[
@@ -104,15 +99,15 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
             { label: 'Last 24 Hours', value: userStats?.last24h ?? 0, description: 'New connections today', icon: UserPlus },
             { label: 'Last 7 Days', value: userStats?.lastWeek ?? 0, description: 'New connections this week', icon: UserPlus },
             { label: 'Last 30 Days', value: userStats?.lastMonth ?? 0, description: 'New connections this month', icon: UserPlus },
-          ].map(({ label, value, description, icon: Icon }) => (
+          ].map(({ label, value, description, icon: StatIcon }) => (
             <FlowLink
               key={label}
-              href={applicationHref('/application/users', id)}
+              href={applicationHref('/application/users', applicationId)}
               className="group p-6 transition-colors hover:bg-muted/40"
             >
               <div className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <h3 className="text-sm font-medium">{label}</h3>
-                <Icon className="h-4 w-4 text-muted-foreground" />
+                <StatIcon className="h-4 w-4 text-muted-foreground" />
               </div>
               <div className="text-2xl font-bold">{value.toLocaleString()}</div>
               <p className="text-xs text-muted-foreground">{description}</p>
@@ -121,12 +116,11 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
         </CardContent>
       </Card>
 
-      {/* Manage Application */}
       <div className="grid gap-3">
         <h2 className="text-xl font-semibold tracking-tight">Manage Application</h2>
         <div className="overflow-hidden rounded-2xl border bg-card">
           <FlowLink
-            href={applicationHref('/application/edit', id)}
+            href={applicationHref('/application/edit', applicationId)}
             className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
           >
             <div className="min-w-0">
@@ -137,7 +131,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
           </FlowLink>
 
           <FlowLink
-            href={applicationHref('/application/config', id)}
+            href={applicationHref('/application/config', applicationId)}
             className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
           >
             <div className="min-w-0">
@@ -148,7 +142,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
           </FlowLink>
 
           <FlowLink
-            href={applicationHref('/application/roles', id, { mode: 'root' })}
+            href={applicationHref('/application/roles', applicationId, { mode: 'root' })}
             className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
           >
             <div className="min-w-0">
@@ -159,7 +153,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
           </FlowLink>
 
           <FlowLink
-            href={applicationHref('/application/permissions', id, { mode: 'root' })}
+            href={applicationHref('/application/permissions', applicationId, { mode: 'root' })}
             className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
           >
             <div className="min-w-0">
@@ -170,7 +164,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
           </FlowLink>
 
           <FlowLink
-            href={applicationHref('/application/requests', id, { mode: 'root' })}
+            href={applicationHref('/application/requests', applicationId, { mode: 'root' })}
             className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
           >
             <div className="min-w-0">
@@ -181,7 +175,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
           </FlowLink>
 
           <FlowLink
-            href={`/access/asset?asset=${id}${modeSuffix}`}
+            href={`/access/asset?asset=${applicationId}${modeSuffix}`}
             className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5"
           >
             <div className="min-w-0">
@@ -193,7 +187,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
 
           {logPermissions.canViewLogs ? (
             <FlowLink
-              href={`/data/activity?application=${id}`}
+              href={`/data/activity?application=${applicationId}`}
               className="group flex items-center justify-between gap-4 px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
             >
               <div className="min-w-0">
@@ -206,7 +200,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
 
           {logPermissions.canViewDevLogs ? (
             <FlowLink
-              href={applicationHref('/application/logs', id)}
+              href={applicationHref('/application/logs', applicationId)}
               className="group flex items-center justify-between gap-4 border-t px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
             >
               <div className="min-w-0">

@@ -1,6 +1,12 @@
 import { notFound } from 'next/navigation';
-import LegacyApplicationPermissionsPage from '@/app/(manage)/application/[id]/permissions/page';
-import { getQueryParam } from '@/app/(manage)/application/_lib/query-param';
+import { canCurrentAccountManageApplicationRoles, getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
+import { getAppPermissions } from '@/services/applications/authz-manage';
+import { BackButton } from '@/components/ui/back-button';
+import { PrimaryHeader } from '@/components/ui/primary-header';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { ShieldAlert } from 'lucide-react';
+import { PermissionPanel } from '@/app/(manage)/application/_components/permission-panel';
+import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = {
   searchParams: Promise<{ application?: string | string[]; mode?: string }>;
@@ -11,9 +17,44 @@ export default async function ApplicationPermissionsQueryPage({ searchParams }: 
   const applicationId = getQueryParam(resolvedSearchParams.application);
 
   if (!applicationId) notFound();
+  const mode = resolvedSearchParams.mode;
+  const details = await getApplicationDetailsForViewerV2(applicationId);
+  if (!details) notFound();
 
-  return LegacyApplicationPermissionsPage({
-    params: Promise.resolve({ id: applicationId }),
-    searchParams: Promise.resolve({ mode: resolvedSearchParams.mode }),
-  });
+  const canManagePermissions = await canCurrentAccountManageApplicationRoles(applicationId);
+
+  if (!canManagePermissions) {
+    return (
+      <div className="grid gap-8">
+        <div className="space-y-4">
+          <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
+          <PrimaryHeader
+            title="Permissions"
+            description={`Manage permissions for ${details.name}.`}
+          />
+        </div>
+        <Alert variant="destructive">
+          <ShieldAlert className="h-4 w-4" />
+          <AlertTitle>Access Denied</AlertTitle>
+          <AlertDescription>Only the application owner can manage permissions.</AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  const permissions = await getAppPermissions(applicationId);
+
+  return (
+    <div className="grid gap-8">
+      <div className="space-y-4">
+        <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
+        <PrimaryHeader
+          title="Permissions"
+          description={`Define and manage permissions for ${details.name}.`}
+        />
+      </div>
+
+      <PermissionPanel appId={applicationId} initialPermissions={permissions} />
+    </div>
+  );
 }

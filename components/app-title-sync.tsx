@@ -84,7 +84,7 @@ function resolveTitle(pathname: string, searchParams: URLSearchParams) {
   if (pathname === '/application') {
     if (applicationId) {
       const applicationName = getText('main h1');
-      return formatAppTitle(applicationName ? `${applicationName} Management` : 'Application Management');
+      return formatAppTitle(applicationName ? `${applicationName}'s Management` : 'Application Management');
     }
 
     return formatAppTitle('Application Management');

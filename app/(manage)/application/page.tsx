@@ -22,7 +22,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   }
 
   const details = await getApplicationDetailsForViewerV2(applicationId);
-  return createPageMetadata(details?.name ? `${details.name} Management` : 'Application Management');
+  return createPageMetadata(details?.name ? `${details.name}'s Management` : 'Application Management');
 }
 
 export default async function ApplicationsManagePage({ searchParams }: Props) {

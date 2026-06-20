@@ -12,7 +12,7 @@ import { getActiveAccountId } from '@/core/auth/verify';
 import { checkPermissions } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
 import { logError } from '@/core/helpers/logger';
-import { isApplicationOwnerForAccount } from '@/services/applications/manage';
+import { canCurrentAccountEditApplicationBasics } from '@/services/applications/manage';
 import { revalidateApplicationDetailRoutes, revalidateApplicationEditRoutes } from '@/services/applications/revalidate-routes';
 
 // ---------------------------------------------------------------------------
@@ -123,8 +123,8 @@ export async function submitApplicationChangeRequest(
 
   const { appId, name, description, icon, website, status } = parsed.data;
 
-  const canEdit = await isApplicationOwnerForAccount(accountId, appId);
-  if (!canEdit) return { success: false, error: 'Only the application owner can submit changes.' };
+  const canEdit = await canCurrentAccountEditApplicationBasics(appId);
+  if (!canEdit) return { success: false, error: 'You do not have permission to submit application changes.' };
 
   // Fetch current values to record a diff
   const current = await prisma.application.findUnique({

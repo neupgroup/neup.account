@@ -14,12 +14,14 @@ import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = {
   appId: string;
+  canManage: boolean;
+  canResetPush: boolean;
   initialRoles: AppRole[];
   hasWebhook: boolean;
   defaultRoleId: string | null;
 };
 
-export function RolesPanel({ appId, initialRoles, hasWebhook, defaultRoleId }: Props) {
+export function RolesPanel({ appId, canManage, canResetPush, initialRoles, hasWebhook, defaultRoleId }: Props) {
   const { toast } = useToast();
   const [pushPending, setPushPending] = useState(false);
   const [clearPending, setClearPending] = useState(false);
@@ -63,13 +65,15 @@ export function RolesPanel({ appId, initialRoles, hasWebhook, defaultRoleId }: P
   return (
     <div className="grid gap-6">
       <div className="overflow-hidden rounded-2xl border bg-card">
-        <Link
-          href={applicationHref('/application/roles/add', appId, { mode: 'root' })}
-          className="group block border-b px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5"
-        >
-          <p className="text-base font-medium leading-6">Create a role</p>
-          <p className="text-sm text-muted-foreground">Define the role name, description, and fixed scope.</p>
-        </Link>
+        {canManage ? (
+          <Link
+            href={applicationHref('/application/roles/add', appId, { mode: 'root' })}
+            className="group block border-b px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5"
+          >
+            <p className="text-base font-medium leading-6">Create a role</p>
+            <p className="text-sm text-muted-foreground">Define the role name, description, and fixed scope.</p>
+          </Link>
+        ) : null}
 
         {initialRoles.length > 0 ? (
           initialRoles.map((role) => (
@@ -108,23 +112,27 @@ export function RolesPanel({ appId, initialRoles, hasWebhook, defaultRoleId }: P
           Pushes every <code className="rounded bg-muted px-1 py-0.5 text-xs">authz_role_capability</code> record
           for this app to the webhook as individual <code className="rounded bg-muted px-1 py-0.5 text-xs">insert</code> operations.
         </p>
-        <Button type="button" onClick={handlePush} disabled={pushPending || !hasWebhook}>
-          {pushPending ? 'Pushing...' : 'Push All to App'}
-        </Button>
+        {canManage ? (
+          <Button type="button" onClick={handlePush} disabled={pushPending || !hasWebhook}>
+            {pushPending ? 'Pushing...' : 'Push All to App'}
+          </Button>
+        ) : null}
       </div>
 
-      <div className="rounded-2xl border bg-card p-5 space-y-3">
-        <p className="text-base font-semibold">Reset Push Status</p>
-        <p className="text-sm text-muted-foreground">
-            Clears the <code className="rounded bg-muted px-1 py-0.5 text-xs">pushed</code> flag on roles and access grants for this application.
-        </p>
-        <p className="text-sm text-muted-foreground">
-          Use this if your client’s synced authz data is corrupted and you need to re-sync from scratch.
-        </p>
-        <Button type="button" variant="outline" onClick={handleClearPushStatus} disabled={clearPending}>
-          {clearPending ? 'Clearing...' : 'Clear Push Status'}
-        </Button>
-      </div>
+      {canResetPush ? (
+        <div className="rounded-2xl border bg-card p-5 space-y-3">
+          <p className="text-base font-semibold">Reset Push Status</p>
+          <p className="text-sm text-muted-foreground">
+              Clears the <code className="rounded bg-muted px-1 py-0.5 text-xs">pushed</code> flag on roles and access grants for this application.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Use this if your client’s synced authz data is corrupted and you need to re-sync from scratch.
+          </p>
+          <Button type="button" variant="outline" onClick={handleClearPushStatus} disabled={clearPending}>
+            {clearPending ? 'Clearing...' : 'Clear Push Status'}
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 }

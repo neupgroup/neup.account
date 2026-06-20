@@ -36,6 +36,7 @@ import { PERMISSION_SCOPE_OPTIONS } from '@/services/applications/permission-sco
 type Props = {
   appId: string;
   initialPermissions: AppPermission[];
+  canManage: boolean;
 };
 
 type PermissionSearchFilters = {
@@ -298,7 +299,7 @@ function PermissionScopeSelector({
   );
 }
 
-export function PermissionPanel({ appId, initialPermissions }: Props) {
+export function PermissionPanel({ appId, initialPermissions, canManage }: Props) {
   const { toast } = useToast();
   const [permissions, setPermissions] = useState<AppPermission[]>(initialPermissions);
   const [search, setSearch] = useState('');
@@ -340,6 +341,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   const isValidName = (value: string) => /^[a-zA-Z0-9._]+$/.test(value.trim());
 
   const openEdit = (permission: AppPermission) => {
+    if (!canManage) return;
     setEditTarget(permission);
     setEditDesc(permission.description ?? '');
     setEditScope(permission.scope);
@@ -352,6 +354,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   };
 
   const handleAdd = async () => {
+    if (!canManage) return;
     const trimmed = addName.trim();
     if (!trimmed) return;
     if (!isValidName(trimmed)) {
@@ -395,6 +398,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   };
 
   const handleEdit = async () => {
+    if (!canManage) return;
     if (!editTarget) return;
     if (editScope.length === 0) {
       toast({
@@ -426,6 +430,7 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
   };
 
   const handleRemoveConfirm = async () => {
+    if (!canManage) return;
     if (!removeTarget) return;
 
     setRemovePending(true);
@@ -451,21 +456,23 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
       />
 
       <div className="overflow-hidden rounded-2xl border bg-card">
-        <button
-          type="button"
-          onClick={() => setAddOpen(true)}
-          className="group flex w-full items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5"
-        >
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-dashed bg-muted/20">
-              <Plus className="h-5 w-5 text-muted-foreground" />
+        {canManage ? (
+          <button
+            type="button"
+            onClick={() => setAddOpen(true)}
+            className="group flex w-full items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5"
+          >
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-dashed bg-muted/20">
+                <Plus className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <p className="truncate text-base font-medium leading-6 text-muted-foreground">
+                New Permission
+              </p>
             </div>
-            <p className="truncate text-base font-medium leading-6 text-muted-foreground">
-              New Permission
-            </p>
-          </div>
-          <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-        </button>
+            <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+          </button>
+        ) : null}
 
         {filteredPermissions.length > 0 ? (
           filteredPermissions.map((permission) => (
@@ -486,15 +493,17 @@ export function PermissionPanel({ appId, initialPermissions }: Props) {
                   ))}
                 </div>
               </button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="shrink-0 text-muted-foreground"
-                onClick={() => setRemoveTarget(permission)}
-              >
-                Remove
-              </Button>
+              {canManage ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="shrink-0 text-muted-foreground"
+                  onClick={() => setRemoveTarget(permission)}
+                >
+                  Remove
+                </Button>
+              ) : null}
             </div>
           ))
         ) : (

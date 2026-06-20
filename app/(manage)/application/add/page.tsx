@@ -3,9 +3,11 @@ import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ApplicationCreateForm } from '@/app/(manage)/application/_components/application-create-form';
+import { hasRootApplicationPermission } from '@/services/applications/manage';
+import { ROOT_APPLICATION_CREATE_PERMISSION } from '@/services/applications/permission-definitions';
 
 export default async function AddApplicationPage() {
-  const canCreateApplication = false;
+  const canCreateApplication = await hasRootApplicationPermission(ROOT_APPLICATION_CREATE_PERMISSION);
   if (!canCreateApplication) {
     notFound();
   }

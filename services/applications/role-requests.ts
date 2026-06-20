@@ -8,9 +8,9 @@ import { logError } from '@/core/helpers/logger';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
 import { canAssignRoleScopeToAccount } from '@/services/role-scopes';
 import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';
-import { hasRootApplicationPermission, isApplicationOwnerForAccount } from '@/services/applications/manage';
+import { canCurrentAccountManageApplicationRoles, hasRootApplicationPermission } from '@/services/applications/manage';
 import { revalidateApplicationRequestsRoutes, revalidateApplicationUsersRoutes } from '@/services/applications/revalidate-routes';
-import { ROOT_APPLICATION_EDIT_PERMISSION } from '@/services/applications/permission-definitions';
+import { ROOT_APPLICATION_ROLES_MANAGE_PERMISSION } from '@/services/applications/permission-definitions';
 
 function stringList(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
@@ -22,7 +22,7 @@ export async function approveApplicationRoleRequest(requestId: string): Promise<
   if (!actorAccountId) return { success: false, error: 'Not signed in.' };
 
   const [canRootEdit, canManageRequests] = await Promise.all([
-    hasRootApplicationPermission(ROOT_APPLICATION_EDIT_PERMISSION),
+    hasRootApplicationPermission(ROOT_APPLICATION_ROLES_MANAGE_PERMISSION),
     checkPermissions(['root.requests.manage']),
   ]);
 
@@ -40,8 +40,8 @@ export async function approveApplicationRoleRequest(requestId: string): Promise<
     const connectionId = typeof data.connectionId === 'string' ? data.connectionId : '';
     const assignmentKind = typeof data.assignmentKind === 'string' ? data.assignmentKind : '';
     const roleIds = stringList(data.roleIds);
-    const isAppOwner = appId ? await isApplicationOwnerForAccount(actorAccountId, appId) : false;
-    const canApprove = (canRootEdit && canManageRequests) || isAppOwner;
+    const canManageAppRoles = appId ? await canCurrentAccountManageApplicationRoles(appId) : false;
+    const canApprove = (canRootEdit && canManageRequests) || canManageAppRoles;
     if (!canApprove) return { success: false, error: 'Permission denied.' };
 
     if (!appId || !accountId || roleIds.length === 0) {
@@ -147,7 +147,7 @@ export async function denyApplicationRoleRequest(requestId: string): Promise<{ s
   if (!actorAccountId) return { success: false, error: 'Not signed in.' };
 
   const [canRootEdit, canManageRequests] = await Promise.all([
-    hasRootApplicationPermission(ROOT_APPLICATION_EDIT_PERMISSION),
+    hasRootApplicationPermission(ROOT_APPLICATION_ROLES_MANAGE_PERMISSION),
     checkPermissions(['root.requests.manage']),
   ]);
 
@@ -160,8 +160,8 @@ export async function denyApplicationRoleRequest(requestId: string): Promise<{ s
 
     const data = request.data && typeof request.data === 'object' ? request.data as Record<string, unknown> : {};
     const appId = typeof data.appId === 'string' ? data.appId : '';
-    const isAppOwner = appId ? await isApplicationOwnerForAccount(actorAccountId, appId) : false;
-    const canDeny = (canRootEdit && canManageRequests) || isAppOwner;
+    const canManageAppRoles = appId ? await canCurrentAccountManageApplicationRoles(appId) : false;
+    const canDeny = (canRootEdit && canManageRequests) || canManageAppRoles;
     if (!canDeny) return { success: false, error: 'Permission denied.' };
 
     await prisma.request.update({

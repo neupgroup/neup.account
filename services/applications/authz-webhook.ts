@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
+import { canCurrentAccountManageApplicationRoles } from '@/services/applications/manage';
 
 const BRIDGE_TYPE = 'authzWebhook';
 
@@ -41,6 +42,9 @@ export async function saveAuthzWebhookUrl(input: {
 }): Promise<{ success: boolean; error?: string }> {
   const accountId = await getActiveAccountId();
   if (!accountId) return { success: false, error: 'Not signed in.' };
+
+  const canManageRoles = await canCurrentAccountManageApplicationRoles(input.appId);
+  if (!canManageRoles) return { success: false, error: 'Permission denied.' };
 
   const url = input.url.trim();
 

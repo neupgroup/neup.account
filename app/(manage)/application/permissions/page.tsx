@@ -1,5 +1,9 @@
 import { notFound } from 'next/navigation';
-import { canCurrentAccountManageApplicationRoles, getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
+import {
+  canCurrentAccountManageApplicationRoles,
+  canCurrentAccountViewApplicationRoles,
+  getApplicationDetailsForViewerV2,
+} from '@/services/applications/manage';
 import { getAppPermissions } from '@/services/applications/authz-manage';
 import { BackButton } from '@/components/ui/back-button';
 import { PrimaryHeader } from '@/components/ui/primary-header';
@@ -21,9 +25,12 @@ export default async function ApplicationPermissionsQueryPage({ searchParams }: 
   const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
   if (!details) notFound();
 
-  const canManagePermissions = await canCurrentAccountManageApplicationRoles(applicationId);
+  const [canViewPermissions, canManagePermissions] = await Promise.all([
+    canCurrentAccountViewApplicationRoles(applicationId),
+    canCurrentAccountManageApplicationRoles(applicationId),
+  ]);
 
-  if (!canManagePermissions) {
+  if (!canViewPermissions) {
     return (
       <div className="grid gap-8">
         <div className="space-y-4">
@@ -36,7 +43,7 @@ export default async function ApplicationPermissionsQueryPage({ searchParams }: 
         <Alert variant="destructive">
           <ShieldAlert className="h-4 w-4" />
           <AlertTitle>Access Denied</AlertTitle>
-          <AlertDescription>Only the application owner can manage permissions.</AlertDescription>
+          <AlertDescription>You do not have permission to view application permissions.</AlertDescription>
         </Alert>
       </div>
     );
@@ -54,7 +61,7 @@ export default async function ApplicationPermissionsQueryPage({ searchParams }: 
         />
       </div>
 
-      <PermissionPanel appId={applicationId} initialPermissions={permissions} />
+      <PermissionPanel appId={applicationId} initialPermissions={permissions} canManage={canManagePermissions} />
     </div>
   );
 }

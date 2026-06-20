@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FlowLink } from '@/components/ui/flow-link';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
+import { canCurrentAccountRemoveApplicationUser } from '@/services/applications/manage';
 
 type Props = {
   params: Promise<{ connId: string }>;
@@ -16,6 +17,8 @@ export default async function ApplicationUserDeleteQueryPage({ params, searchPar
   const applicationId = getQueryParam(application);
 
   if (!applicationId) notFound();
+  const canRemoveUser = await canCurrentAccountRemoveApplicationUser(applicationId);
+  if (!canRemoveUser) notFound();
 
   return (
     <div className="grid gap-6">

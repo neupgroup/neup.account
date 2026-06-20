@@ -10,7 +10,9 @@ import { dispatchRoleUpdateWebhook, getRolePayload } from './role-update-events'
 import { activeAccessWhere } from '@/services/access-model';
 import {
   APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS,
-  ROOT_APPLICATION_EDIT_PERMISSION,
+  ROOT_APPLICATION_ROLES_MANAGE_PERMISSION,
+  ROOT_APPLICATION_ROLES_RESET_PUSH_PERMISSION,
+  ROOT_APPLICATION_ROLES_VIEW_PERMISSION,
   getApplicationPermissionNames,
 } from '@/services/applications/permission-definitions';
 import { getRoleScopeCompatibilityError } from '@/services/applications/role-scope-compatibility';
@@ -68,8 +70,8 @@ export async function getAppDefaultRoleId(appId: string): Promise<string | null>
 const GLOBAL_AUTHZ_APP_ID = 'neup.account';
 
 function getSystemRoleScope(roleId: string): string {
-  if (roleId === 'application.manage') return 'managable';
   if (roleId === 'application.owner') return 'public';
+  if (roleId === 'application.manage') return 'managable';
   return 'public';
 }
 
@@ -270,20 +272,19 @@ async function ensureApplicationManagementRoles(): Promise<void> {
   });
 }
 
-async function assertCanManageAuthz(appId: string): Promise<{ accountId: string } | { error: string }> {
+async function assertCanViewAuthz(appId: string): Promise<{ accountId: string } | { error: string }> {
   const accountId = await getActiveAccountId();
   if (!accountId) return { error: 'Not signed in.' };
 
   // Ensure management roles/permissions are always present in authz tables.
   await ensureApplicationManagementRoles();
 
-  // Root override: global root app editors can manage app roles/permissions.
-  const isRootManager = await hasRootApplicationPermission(ROOT_APPLICATION_EDIT_PERMISSION);
-  if (isRootManager) return { accountId };
+  const isRootViewer = await hasRootApplicationPermission(ROOT_APPLICATION_ROLES_VIEW_PERMISSION);
+  if (isRootViewer) return { accountId };
 
   const personalAccountId = await getPersonalAccountId();
-  const scopedManagePermissions = getApplicationPermissionNames(
-    ['roles.manage'],
+  const scopedViewPermissions = getApplicationPermissionNames(
+    ['roles.view', 'roles.manage', 'roles.resetPush'],
     [personalAccountId && personalAccountId === accountId ? 'public' : 'managed'],
   );
 
@@ -303,6 +304,45 @@ async function assertCanManageAuthz(appId: string): Promise<{ accountId: string 
     },
   });
 
+  const hasScopedViewPermission = grants.some((grant) => {
+    const permissionNames = Array.isArray(grant.role.permissions)
+      ? grant.role.permissions.filter((permission): permission is string => typeof permission === 'string')
+      : [];
+    return scopedViewPermissions.some((permissionName) => permissionNames.includes(permissionName));
+  });
+
+  if (!hasScopedViewPermission) return { error: 'Permission denied.' };
+  return { accountId };
+}
+
+async function assertCanManageAuthz(appId: string): Promise<{ accountId: string } | { error: string }> {
+  const auth = await assertCanViewAuthz(appId);
+  if ('error' in auth) return auth;
+
+  const isRootManager = await hasRootApplicationPermission(ROOT_APPLICATION_ROLES_MANAGE_PERMISSION);
+  if (isRootManager) return auth;
+
+  const personalAccountId = await getPersonalAccountId();
+  const scopedManagePermissions = getApplicationPermissionNames(
+    ['roles.manage'],
+    [personalAccountId && personalAccountId === auth.accountId ? 'public' : 'managed'],
+  );
+
+  const grants = await prisma.access.findMany({
+    where: {
+      memberAccountId: auth.accountId,
+      accessApplicationId: appId,
+      ...activeAccessWhere(),
+    },
+    select: {
+      role: {
+        select: {
+          permissions: true,
+        },
+      },
+    },
+  });
+
   const hasScopedManagePermission = grants.some((grant) => {
     const permissionNames = Array.isArray(grant.role.permissions)
       ? grant.role.permissions.filter((permission): permission is string => typeof permission === 'string')
@@ -311,7 +351,46 @@ async function assertCanManageAuthz(appId: string): Promise<{ accountId: string 
   });
 
   if (!hasScopedManagePermission) return { error: 'Permission denied.' };
-  return { accountId };
+  return auth;
+}
+
+async function assertCanResetAuthzPush(appId: string): Promise<{ accountId: string } | { error: string }> {
+  const auth = await assertCanViewAuthz(appId);
+  if ('error' in auth) return auth;
+
+  const isRootManager = await hasRootApplicationPermission(ROOT_APPLICATION_ROLES_RESET_PUSH_PERMISSION);
+  if (isRootManager) return auth;
+
+  const personalAccountId = await getPersonalAccountId();
+  const scopedResetPermissions = getApplicationPermissionNames(
+    ['roles.resetPush'],
+    [personalAccountId && personalAccountId === auth.accountId ? 'public' : 'managed'],
+  );
+
+  const grants = await prisma.access.findMany({
+    where: {
+      memberAccountId: auth.accountId,
+      accessApplicationId: appId,
+      ...activeAccessWhere(),
+    },
+    select: {
+      role: {
+        select: {
+          permissions: true,
+        },
+      },
+    },
+  });
+
+  const hasScopedResetPermission = grants.some((grant) => {
+    const permissionNames = Array.isArray(grant.role.permissions)
+      ? grant.role.permissions.filter((permission): permission is string => typeof permission === 'string')
+      : [];
+    return scopedResetPermissions.some((permissionName) => permissionNames.includes(permissionName));
+  });
+
+  if (!hasScopedResetPermission) return { error: 'Permission denied.' };
+  return auth;
 }
 
 // ---------------------------------------------------------------------------
@@ -319,6 +398,9 @@ async function assertCanManageAuthz(appId: string): Promise<{ accountId: string 
 // ---------------------------------------------------------------------------
 
 export async function getAppPermissions(appId: string): Promise<AppPermission[]> {
+  const auth = await assertCanViewAuthz(appId);
+  if ('error' in auth) return [];
+
   try {
     const records = await prisma.authzPermission.findMany({
       where: { appId },
@@ -490,6 +572,9 @@ export async function deleteAppPermission(input: {
 // ---------------------------------------------------------------------------
 
 export async function getAppRoles(appId: string): Promise<AppRole[]> {
+  const auth = await assertCanViewAuthz(appId);
+  if ('error' in auth) return [];
+
   try {
     const roles = await prisma.authzRole.findMany({
       where: { appId },
@@ -946,7 +1031,7 @@ export async function clearAuthzPushStatus(appId: string): Promise<{
   cleared: { roles: number; access: number };
   error?: string;
 }> {
-  const auth = await assertCanManageAuthz(appId);
+  const auth = await assertCanResetAuthzPush(appId);
   if ('error' in auth) return { success: false, cleared: { roles: 0, access: 0 }, error: auth.error };
 
   try {

@@ -10,7 +10,7 @@ import { checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import { getUserProfile, getUserNeupIds } from '@/services/user';
 import { getActiveAccountId } from '@/core/auth/verify';
-import { isApplicationOwnerForAccount } from '@/services/applications/manage';
+import { canCurrentAccountViewApplicationRoles } from '@/services/applications/manage';
 import { REQUEST_TYPE_LABELS, UnifiedRequest, GetRequestsOptions } from './types';
 
 // ---------------------------------------------------------------------------
@@ -72,7 +72,7 @@ export async function getAllRequests(options: GetRequestsOptions = {}): Promise<
     checkPermissions(['requests.root_approval.view']),
   ]);
   const canViewApplication = application && activeAccountId
-    ? await isApplicationOwnerForAccount(activeAccountId, application)
+    ? await canCurrentAccountViewApplicationRoles(application)
     : false;
   if (!canViewRoot && !canViewApplication) return [];
 
@@ -413,7 +413,7 @@ export async function getRequestDetail(id: string): Promise<UnifiedRequest | nul
     const payload = (row.data ?? {}) as Record<string, unknown>;
     const appId = typeof payload.appId === 'string' ? payload.appId : '';
     const canViewApplication = row.action === 'applicationRoleRequest' && !!activeAccountId && !!appId
-      ? await isApplicationOwnerForAccount(activeAccountId, appId)
+      ? await canCurrentAccountViewApplicationRoles(appId)
       : false;
     if (!canViewRoot && !canViewApplication) return null;
 

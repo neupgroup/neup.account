@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FlowLink } from '@/components/ui/flow-link';
-import { getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
+import { canCurrentAccountViewApplicationRoles, getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
 import { getAllRequests } from '@/services/manage/requests/all';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 
@@ -19,6 +19,8 @@ export default async function ApplicationRequestsQueryPage({ searchParams }: Pro
   if (!applicationId) notFound();
   const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
   if (!details) notFound();
+  const canViewRequests = await canCurrentAccountViewApplicationRoles(applicationId);
+  if (!canViewRequests) notFound();
 
   const requests = await getAllRequests({ type: 'applicationRoleRequest', application: applicationId });
   const statusVariant: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {

@@ -1,5 +1,9 @@
 import { notFound } from 'next/navigation';
-import { canCurrentAccountManageApplicationRoles, getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
+import {
+  canCurrentAccountManageApplicationRoles,
+  canCurrentAccountViewApplicationRoles,
+  getApplicationDetailsForViewerV2,
+} from '@/services/applications/manage';
 import { getAppDefaultRoleId, getAppPermissions, getAppRoles } from '@/services/applications/authz-manage';
 import { BackButton } from '@/components/ui/back-button';
 import { PrimaryHeader } from '@/components/ui/primary-header';
@@ -22,8 +26,11 @@ export default async function RoleDetailsQueryPage({ params, searchParams }: Pro
   const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
   if (!details) notFound();
 
-  const canManageRoles = await canCurrentAccountManageApplicationRoles(applicationId);
-  if (!canManageRoles) {
+  const [canViewRoles, canManageRoles] = await Promise.all([
+    canCurrentAccountViewApplicationRoles(applicationId),
+    canCurrentAccountManageApplicationRoles(applicationId),
+  ]);
+  if (!canViewRoles) {
     return (
       <div className="grid gap-8">
         <div className="space-y-4">
@@ -33,7 +40,7 @@ export default async function RoleDetailsQueryPage({ params, searchParams }: Pro
         <Alert variant="destructive">
           <ShieldAlert className="h-4 w-4" />
           <AlertTitle>Access Denied</AlertTitle>
-          <AlertDescription>Only the application owner can manage roles.</AlertDescription>
+          <AlertDescription>You do not have permission to view application roles.</AlertDescription>
         </Alert>
       </div>
     );
@@ -56,7 +63,7 @@ export default async function RoleDetailsQueryPage({ params, searchParams }: Pro
           description={role.description || 'No description'}
         />
       </div>
-      <RoleDetailEditor appId={applicationId} role={role} permissions={permissions} defaultRoleId={defaultRoleId} />
+      <RoleDetailEditor appId={applicationId} role={role} permissions={permissions} defaultRoleId={defaultRoleId} canManage={canManageRoles} />
     </div>
   );
 }

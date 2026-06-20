@@ -3,7 +3,16 @@ import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { getApplicationDetailsForViewerV2, getApplicationLogPermissions, getApplicationUserStats } from '@/services/applications/manage';
+import {
+  canCurrentAccountDeleteApplication,
+  canCurrentAccountEditApplicationBasics,
+  canCurrentAccountViewApplicationConfig,
+  canCurrentAccountViewApplicationRoles,
+  canCurrentAccountViewApplicationUsers,
+  getApplicationDetailsForViewerV2,
+  getApplicationLogPermissions,
+  getApplicationUserStats,
+} from '@/services/applications/manage';
 import { deleteManagedApplicationFromDetailsPage } from '@/services/applications/form-actions';
 import { AppWindow, Building, BarChart, Share2, ExternalLink, ChevronRight, Users, UserPlus, ArrowLeft, type LucideIcon } from '@/components/icons';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
@@ -43,9 +52,14 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
     mode === 'root' ? '/application?mode=root' : '/application',
   );
 
-  const [userStats, logPermissions] = await Promise.all([
+  const [userStats, logPermissions, canEditBasics, canViewConfig, canViewRoles, canViewUsers, canDeleteApplication] = await Promise.all([
     getApplicationUserStats(applicationId),
     getApplicationLogPermissions(applicationId),
+    canCurrentAccountEditApplicationBasics(applicationId),
+    canCurrentAccountViewApplicationConfig(applicationId),
+    canCurrentAccountViewApplicationRoles(applicationId),
+    canCurrentAccountViewApplicationUsers(applicationId),
+    canCurrentAccountDeleteApplication(applicationId),
   ]);
 
   return (
@@ -99,80 +113,99 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
             { label: 'Last 24 Hours', value: userStats?.last24h ?? 0, description: 'New connections today', icon: UserPlus },
             { label: 'Last 7 Days', value: userStats?.lastWeek ?? 0, description: 'New connections this week', icon: UserPlus },
             { label: 'Last 30 Days', value: userStats?.lastMonth ?? 0, description: 'New connections this month', icon: UserPlus },
-          ].map(({ label, value, description, icon: StatIcon }) => (
-            <FlowLink
-              key={label}
-              href={applicationHref('/application/users', applicationId, mode ? { mode } : undefined)}
-              className="group p-6 transition-colors hover:bg-muted/40"
-            >
-              <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <h3 className="text-sm font-medium">{label}</h3>
-                <StatIcon className="h-4 w-4 text-muted-foreground" />
+          ].map(({ label, value, description, icon: StatIcon }) =>
+            canViewUsers ? (
+              <FlowLink
+                key={label}
+                href={applicationHref('/application/users', applicationId, mode ? { mode } : undefined)}
+                className="group p-6 transition-colors hover:bg-muted/40"
+              >
+                <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <h3 className="text-sm font-medium">{label}</h3>
+                  <StatIcon className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <div className="text-2xl font-bold">{value.toLocaleString()}</div>
+                <p className="text-xs text-muted-foreground">{description}</p>
+              </FlowLink>
+            ) : (
+              <div key={label} className="p-6">
+                <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <h3 className="text-sm font-medium">{label}</h3>
+                  <StatIcon className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <div className="text-2xl font-bold">{value.toLocaleString()}</div>
+                <p className="text-xs text-muted-foreground">{description}</p>
               </div>
-              <div className="text-2xl font-bold">{value.toLocaleString()}</div>
-              <p className="text-xs text-muted-foreground">{description}</p>
-            </FlowLink>
-          ))}
+            ),
+          )}
         </CardContent>
       </Card>
 
       <div className="grid gap-3">
         <h2 className="text-xl font-semibold tracking-tight">Manage Application</h2>
         <div className="overflow-hidden rounded-2xl border bg-card">
-          <FlowLink
-            href={applicationHref('/application/edit', applicationId, mode ? { mode } : undefined)}
-            className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
-          >
-            <div className="min-w-0">
-              <p className="font-medium">Basic Information</p>
-              <p className="text-sm text-muted-foreground">Update name, description, icon, website, and status.</p>
-            </div>
-            <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-          </FlowLink>
+          {canEditBasics ? (
+            <FlowLink
+              href={applicationHref('/application/edit', applicationId, mode ? { mode } : undefined)}
+              className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
+            >
+              <div className="min-w-0">
+                <p className="font-medium">Basic Information</p>
+                <p className="text-sm text-muted-foreground">Update name, description, icon, website, and status.</p>
+              </div>
+              <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+            </FlowLink>
+          ) : null}
 
-          <FlowLink
-            href={applicationHref('/application/config', applicationId, mode ? { mode } : undefined)}
-            className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
-          >
-            <div className="min-w-0">
-              <p className="font-medium">Configuration</p>
-              <p className="text-sm text-muted-foreground">API secret, response fields, and silent SSO origins.</p>
-            </div>
-            <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-          </FlowLink>
+          {canViewConfig ? (
+            <FlowLink
+              href={applicationHref('/application/config', applicationId, mode ? { mode } : undefined)}
+              className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
+            >
+              <div className="min-w-0">
+                <p className="font-medium">Configuration</p>
+                <p className="text-sm text-muted-foreground">API secret, response fields, and silent SSO origins.</p>
+              </div>
+              <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+            </FlowLink>
+          ) : null}
 
-          <FlowLink
-            href={applicationHref('/application/roles', applicationId, { mode: 'root' })}
-            className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
-          >
-            <div className="min-w-0">
-              <p className="font-medium">Roles &amp; Permissions</p>
-              <p className="text-sm text-muted-foreground">Define permissions and group them into roles for access grants.</p>
-            </div>
-            <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-          </FlowLink>
+          {canViewRoles ? (
+            <>
+              <FlowLink
+                href={applicationHref('/application/roles', applicationId, { mode: 'root' })}
+                className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
+              >
+                <div className="min-w-0">
+                  <p className="font-medium">Roles &amp; Permissions</p>
+                  <p className="text-sm text-muted-foreground">Define permissions and group them into roles for access grants.</p>
+                </div>
+                <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+              </FlowLink>
 
-          <FlowLink
-            href={applicationHref('/application/permissions', applicationId, { mode: 'root' })}
-            className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
-          >
-            <div className="min-w-0">
-              <p className="font-medium">Permissions</p>
-              <p className="text-sm text-muted-foreground">Create and manage permission definitions for this application.</p>
-            </div>
-            <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-          </FlowLink>
+              <FlowLink
+                href={applicationHref('/application/permissions', applicationId, { mode: 'root' })}
+                className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
+              >
+                <div className="min-w-0">
+                  <p className="font-medium">Permissions</p>
+                  <p className="text-sm text-muted-foreground">Create and manage permission definitions for this application.</p>
+                </div>
+                <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+              </FlowLink>
 
-          <FlowLink
-            href={applicationHref('/application/requests', applicationId, { mode: 'root' })}
-            className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
-          >
-            <div className="min-w-0">
-              <p className="font-medium">Requests</p>
-              <p className="text-sm text-muted-foreground">Review role assignment requests waiting for approval.</p>
-            </div>
-            <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-          </FlowLink>
+              <FlowLink
+                href={applicationHref('/application/requests', applicationId, { mode: 'root' })}
+                className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
+              >
+                <div className="min-w-0">
+                  <p className="font-medium">Requests</p>
+                  <p className="text-sm text-muted-foreground">Review role assignment requests waiting for approval.</p>
+                </div>
+                <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+              </FlowLink>
+            </>
+          ) : null}
 
           <FlowLink
             href={`/access/asset?asset=${applicationId}${modeSuffix}`}
@@ -213,11 +246,11 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
         </div>
       </div>
 
-      {details.canDelete && (
+      {canDeleteApplication && (
         <Card className="border-destructive">
           <CardHeader>
-            <CardTitle>Owner Actions</CardTitle>
-            <CardDescription>Only the owner of this app can delete it.</CardDescription>
+            <CardTitle>Danger Zone</CardTitle>
+            <CardDescription>Delete this application.</CardDescription>
           </CardHeader>
           <CardContent>
             <form action={deleteAction}>

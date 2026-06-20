@@ -6,7 +6,12 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FlowLink } from '@/components/ui/flow-link';
-import { clearApplicationDevLogs, getApplicationDetailsForViewerV2, getApplicationDevLogsPaginated } from '@/services/applications/manage';
+import {
+  canCurrentAccountClearApplicationDevLogs,
+  clearApplicationDevLogs,
+  getApplicationDetailsForViewerV2,
+  getApplicationDevLogsPaginated,
+} from '@/services/applications/manage';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = {
@@ -65,6 +70,7 @@ export default async function ApplicationLogsQueryPage({ searchParams }: Props) 
 
   const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
   if (!details) notFound();
+  const canClearDevLogs = await canCurrentAccountClearApplicationDevLogs(applicationId);
 
   const logPage = await getApplicationDevLogsPaginated({ appId: applicationId, page, pageSize });
   if (logPage === null) notFound();
@@ -155,13 +161,15 @@ export default async function ApplicationLogsQueryPage({ searchParams }: Props) 
         </div>
       )}
 
-      <div className="flex justify-start">
-        <form action={clearLogsAction}>
-          <Button type="submit" variant="destructive">
-            Clear All Logs
-          </Button>
-        </form>
-      </div>
+      {canClearDevLogs ? (
+        <div className="flex justify-start">
+          <form action={clearLogsAction}>
+            <Button type="submit" variant="destructive">
+              Clear All Logs
+            </Button>
+          </form>
+        </div>
+      ) : null}
     </div>
   );
 }

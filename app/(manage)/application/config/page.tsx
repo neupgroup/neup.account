@@ -1,5 +1,10 @@
 import { notFound } from 'next/navigation';
-import { getApplicationDetailsForViewerV2, getAppConfigData } from '@/services/applications/manage';
+import {
+  canCurrentAccountUpdateApplicationConfig,
+  canCurrentAccountViewApplicationConfig,
+  getApplicationDetailsForViewerV2,
+  getAppConfigData,
+} from '@/services/applications/manage';
 import { BackButton } from '@/components/ui/back-button';
 import { PrimaryHeader } from '@/components/ui/primary-header';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -19,7 +24,12 @@ export default async function ApplicationConfigQueryPage({ searchParams }: Props
   const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
   if (!details) notFound();
 
-  if (!details.canDelete) {
+  const [canViewConfig, canUpdateConfig] = await Promise.all([
+    canCurrentAccountViewApplicationConfig(applicationId),
+    canCurrentAccountUpdateApplicationConfig(applicationId),
+  ]);
+
+  if (!canViewConfig) {
     return (
       <div className="grid gap-8">
         <div className="space-y-4">
@@ -29,7 +39,7 @@ export default async function ApplicationConfigQueryPage({ searchParams }: Props
         <Alert variant="destructive">
           <ShieldAlert className="h-4 w-4" />
           <AlertTitle>Access Denied</AlertTitle>
-          <AlertDescription>Only the application owner can configure this application.</AlertDescription>
+          <AlertDescription>You do not have permission to view this application configuration.</AlertDescription>
         </Alert>
       </div>
     );
@@ -50,6 +60,7 @@ export default async function ApplicationConfigQueryPage({ searchParams }: Props
 
       <AppConfigForm
         appId={applicationId}
+        canUpdate={canUpdateConfig}
         hasSecretKey={config.hasSecretKey}
         initialAccess={config.access}
         initialTokenFields={config.tokenFields}

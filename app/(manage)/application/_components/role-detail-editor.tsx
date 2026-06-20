@@ -23,9 +23,10 @@ type Props = {
   role: AppRole;
   permissions: AppPermission[];
   defaultRoleId: string | null;
+  canManage: boolean;
 };
 
-export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: initialDefaultRoleId }: Props) {
+export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: initialDefaultRoleId, canManage }: Props) {
   const router = useRouter();
   const { toast } = useToast();
   const [description, setDescription] = useState(role.description ?? '');
@@ -143,6 +144,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
         </div>
         <Input
           value={description}
+          disabled={!canManage}
           onChange={(event) => setDescription(event.target.value)}
           placeholder="Description (optional)"
         />
@@ -177,7 +179,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
                 >
                   <Checkbox
                     checked={isChecked}
-                    disabled={!canAddPermission}
+                    disabled={!canManage || !canAddPermission}
                     onCheckedChange={() =>
                       setPermissionIds((prev) =>
                         prev.includes(permission.id)
@@ -226,7 +228,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
             type="button"
             variant={isDefaultRole ? 'outline' : 'secondary'}
             onClick={handleDefaultRole}
-            disabled={defaultPending}
+            disabled={defaultPending || !canManage}
           >
             {defaultPending ? 'Saving...' : isDefaultRole ? 'Clear Default' : 'Set Default'}
           </Button>
@@ -241,7 +243,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
           </p>
         </div>
         <div>
-          <Button type="button" variant="destructive" onClick={handleDelete} disabled={deletePending}>
+          <Button type="button" variant="destructive" onClick={handleDelete} disabled={deletePending || !canManage}>
             {deletePending ? 'Deleting...' : 'Delete Role'}
           </Button>
         </div>
@@ -251,7 +253,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
         <Button variant="outline" onClick={() => redirectInApp(router, applicationHref('/application/roles', appId, { mode: 'root' }))}>
           Back
         </Button>
-        <Button onClick={handleSave} disabled={savePending || !!scopeCompatibilityError}>
+        <Button onClick={handleSave} disabled={savePending || !!scopeCompatibilityError || !canManage}>
           {savePending ? 'Saving...' : 'Save Role'}
         </Button>
       </div>

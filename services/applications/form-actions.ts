@@ -15,12 +15,11 @@ import { getSignedApplications } from '@/services/applications/connected';
 import { getPersonalAccountId } from '@/core/auth/verify';
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
-import { requireAnyPermission404 } from '@/core/auth/permission-guards';
-import { ACCESS_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
 import type { ApplicationSection, FlatAppItem } from '@/services/applications/types';
 import { revalidateApplicationDetailRoutes } from '@/services/applications/revalidate-routes';
 import {
-  ROOT_APPLICATION_EDIT_PERMISSION,
+  ROOT_APPLICATION_BASICS_EDIT_PERMISSION,
+  ROOT_APPLICATION_CREATE_PERMISSION,
   ROOT_APPLICATION_VIEW_PERMISSION,
 } from '@/services/applications/permission-definitions';
 
@@ -30,7 +29,7 @@ export type { FlatAppItem } from '@/services/applications/types';
 export async function getApplicationsPageData() {
   const managedApplications = await getManagedApplications();
   const { internal, external } = await getSignedApplications();
-  const canCreateApplication = false;
+  const canCreateApplication = await hasRootApplicationPermission(ROOT_APPLICATION_CREATE_PERMISSION);
   const connectedApplications = [...internal, ...external];
 
   const managedItems: FlatAppItem[] = managedApplications.map((app) => ({
@@ -127,7 +126,7 @@ export async function getApplicationsPageDataV2(): Promise<{
         return prisma.application.findMany({ orderBy: { createdAt: 'desc' } });
       })(),
     ]),
-    Promise.resolve(false),
+    hasRootApplicationPermission(ROOT_APPLICATION_CREATE_PERMISSION),
   ]);
 
   const sections: ApplicationSection[] = [];
@@ -233,7 +232,7 @@ const updateApplicationInfoSchema = z.object({
 export async function updateApplicationInfo(
   input: z.infer<typeof updateApplicationInfoSchema>,
 ): Promise<{ success: boolean; error?: string; fieldErrors?: Record<string, string> }> {
-  const canEdit = await hasRootApplicationPermission(ROOT_APPLICATION_EDIT_PERMISSION);
+  const canEdit = await hasRootApplicationPermission(ROOT_APPLICATION_BASICS_EDIT_PERMISSION);
   if (!canEdit) return { success: false, error: 'Permission denied.' };
 
   const parsed = updateApplicationInfoSchema.safeParse(input);
@@ -282,7 +281,6 @@ export async function getConnectedApplicationsPageData(): Promise<{
   apps: FlatAppItem[];
   error: boolean;
 }> {
-  await requireAnyPermission404(ACCESS_VIEW_PERMISSIONS);
   const personalAccountId = await getPersonalAccountId();
   if (!personalAccountId) return { apps: [], error: false };
 
@@ -342,7 +340,7 @@ export async function getApplicationsManagePageData(): Promise<{
         return prisma.application.findMany({ orderBy: { createdAt: 'desc' } });
       })(),
     ]),
-    Promise.resolve(false),
+    hasRootApplicationPermission(ROOT_APPLICATION_CREATE_PERMISSION),
   ]);
 
   const sections: ApplicationSection[] = [];

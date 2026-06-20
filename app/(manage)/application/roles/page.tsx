@@ -1,5 +1,10 @@
 import { notFound } from 'next/navigation';
-import { canCurrentAccountManageApplicationRoles, getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
+import {
+  canCurrentAccountManageApplicationRoles,
+  canCurrentAccountResetApplicationRolePush,
+  canCurrentAccountViewApplicationRoles,
+  getApplicationDetailsForViewerV2,
+} from '@/services/applications/manage';
 import { getAppDefaultRoleId, getAppRoles } from '@/services/applications/authz-manage';
 import { getAuthzWebhookUrl } from '@/services/applications/authz-webhook';
 import { BackButton } from '@/components/ui/back-button';
@@ -21,8 +26,12 @@ export default async function ApplicationRolesQueryPage({ searchParams }: Props)
   const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
   if (!details) notFound();
 
-  const canManageRoles = await canCurrentAccountManageApplicationRoles(applicationId);
-  if (!canManageRoles) {
+  const [canViewRoles, canManageRoles, canResetPush] = await Promise.all([
+    canCurrentAccountViewApplicationRoles(applicationId),
+    canCurrentAccountManageApplicationRoles(applicationId),
+    canCurrentAccountResetApplicationRolePush(applicationId),
+  ]);
+  if (!canViewRoles) {
     return (
       <div className="grid gap-8">
         <div className="space-y-4">
@@ -35,7 +44,7 @@ export default async function ApplicationRolesQueryPage({ searchParams }: Props)
         <Alert variant="destructive">
           <ShieldAlert className="h-4 w-4" />
           <AlertTitle>Access Denied</AlertTitle>
-          <AlertDescription>Only the application owner can manage roles.</AlertDescription>
+          <AlertDescription>You do not have permission to view application roles.</AlertDescription>
         </Alert>
       </div>
     );
@@ -59,6 +68,8 @@ export default async function ApplicationRolesQueryPage({ searchParams }: Props)
 
       <RolesPanel
         appId={applicationId}
+        canManage={canManageRoles}
+        canResetPush={canResetPush}
         initialRoles={roles}
         hasWebhook={Boolean(webhookUrl)}
         defaultRoleId={defaultRoleId}

@@ -79,6 +79,7 @@ const isResponseField = (field: ApplicationAccessField): field is ApplicationRes
 
 type Props = {
   appId: string;
+  canUpdate: boolean;
   hasSecretKey: boolean;
   initialAccess: ApplicationAccessField[];
   initialTokenFields: ApplicationAccessField[];
@@ -97,6 +98,7 @@ type Props = {
 
 export function AppConfigForm({
   appId,
+  canUpdate,
   hasSecretKey,
   initialAccess,
   initialTokenFields,
@@ -303,7 +305,7 @@ export function AppConfigForm({
   };
 
   return (
-    <div className="grid gap-6">
+    <div className={`grid gap-6 ${!canUpdate ? 'pointer-events-none opacity-70' : ''}`}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-6">
 

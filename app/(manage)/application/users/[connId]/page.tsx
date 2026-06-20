@@ -6,6 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FlowLink } from '@/components/ui/flow-link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
+  canCurrentAccountRemoveApplicationUser,
+  canCurrentAccountUpdateApplicationUserRole,
+  canCurrentAccountViewApplicationUsers,
   getApplicationDetailsForViewerV2,
   getApplicationRoleOptions,
   getApplicationUserConnectionDetails,
@@ -31,7 +34,13 @@ export default async function ApplicationUserDetailsQueryPage({ params, searchPa
   ]);
 
   if (!applicationDetails || !details) notFound();
-  const roles = await getApplicationRoleOptions(appId, details.accountType);
+  const [canViewUsers, canUpdateUserRole, canRemoveUser] = await Promise.all([
+    canCurrentAccountViewApplicationUsers(appId),
+    canCurrentAccountUpdateApplicationUserRole(appId),
+    canCurrentAccountRemoveApplicationUser(appId),
+  ]);
+  if (!canViewUsers) notFound();
+  const roles = canUpdateUserRole ? await getApplicationRoleOptions(appId, details.accountType) : [];
 
   const initials = details.displayName?.charAt(0).toUpperCase() ?? '?';
   const statusVariant = (status: string | null): 'default' | 'secondary' | 'destructive' | 'outline' => {
@@ -112,31 +121,35 @@ export default async function ApplicationUserDetailsQueryPage({ params, searchPa
         </CardContent>
       </Card>
 
-      <div className="grid gap-2">
-        <div className="grid gap-0.5">
-          <h2 className="text-lg font-semibold tracking-tight">Role Management</h2>
-          <p className="text-sm text-muted-foreground">Toggle public, root, and approval-based roles for this user connection.</p>
+      {canUpdateUserRole ? (
+        <div className="grid gap-2">
+          <div className="grid gap-0.5">
+            <h2 className="text-lg font-semibold tracking-tight">Role Management</h2>
+            <p className="text-sm text-muted-foreground">Toggle public, root, and approval-based roles for this user connection.</p>
+          </div>
+          <RoleSelector
+            appId={appId}
+            connectionId={connId}
+            roles={roles}
+            currentRoleIds={details.roleIds}
+            pendingRoleIds={details.pendingRoleIds}
+          />
         </div>
-        <RoleSelector
-          appId={appId}
-          connectionId={connId}
-          roles={roles}
-          currentRoleIds={details.roleIds}
-          pendingRoleIds={details.pendingRoleIds}
-        />
-      </div>
+      ) : null}
 
       <div className="overflow-hidden rounded-2xl border bg-card">
-        <FlowLink
-          href={applicationHref(`/application/users/${connId}/delete`, appId, mode ? { mode } : undefined)}
-          className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5"
-        >
-          <div className="min-w-0">
-            <p className="font-medium">Delete Account</p>
-            <p className="text-sm text-muted-foreground">Remove this account from the application.</p>
-          </div>
-          <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-        </FlowLink>
+        {canRemoveUser ? (
+          <FlowLink
+            href={applicationHref(`/application/users/${connId}/delete`, appId, mode ? { mode } : undefined)}
+            className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5"
+          >
+            <div className="min-w-0">
+              <p className="font-medium">Delete Account</p>
+              <p className="text-sm text-muted-foreground">Remove this account from the application.</p>
+            </div>
+            <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+          </FlowLink>
+        ) : null}
 
         <FlowLink
           href={applicationHref(`/application/users/${connId}/activity`, appId, mode ? { mode } : undefined)}

@@ -223,7 +223,7 @@ export type AccountsPage = {
 export type AccountFilterTab = 'all' | 'active' | 'guest' | 'brand' | 'individual';
 export type AccountSortKey = 'newest' | 'oldest' | 'name_asc' | 'name_desc' | 'last_active';
 
-const SEARCHABLE_ACCOUNT_TYPES = new Set(['individual', 'brand', 'branch', 'dependent', 'guest']);
+const SEARCHABLE_ACCOUNT_TYPES = new Set(['individual', 'brand', 'branch', 'dependent', 'guest', 'root']);
 const ACTIVE_IN_UNITS_MS: Record<string, number> = {
     m: 60 * 1000,
     h: 60 * 60 * 1000,
@@ -247,9 +247,9 @@ function parseAccountSearch(search: string): ParsedAccountSearch {
         const part = rawPart.trim();
         if (!part) continue;
 
-        const typeMatch = part.match(/^(type|accounttype|actype):(.+)$/i);
+        const typeMatch = part.match(/^(?:type|accounttype|acctype|actype):(.+)$/i);
         if (typeMatch) {
-            const accountType = typeMatch[2]?.trim().toLowerCase();
+            const accountType = typeMatch[1]?.trim().toLowerCase();
             if (accountType && SEARCHABLE_ACCOUNT_TYPES.has(accountType)) {
                 parsed.accountType = accountType;
                 continue;
@@ -325,7 +325,18 @@ export async function getAllAccountsPaginated(params: {
             where.accountType = 'individual';
         }
 
-        if (parsedSearch.accountType) {
+        if (parsedSearch.accountType === 'root') {
+            where.accessMemberRows = {
+                some: {
+                    accessType: 'acc_self_root',
+                    status: 'active',
+                    OR: [
+                        { isTemporary: null },
+                        { isTemporary: { gt: new Date() } },
+                    ],
+                },
+            };
+        } else if (parsedSearch.accountType) {
             where.accountType = parsedSearch.accountType;
         }
 

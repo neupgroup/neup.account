@@ -247,9 +247,9 @@ function parseAccountSearch(search: string): ParsedAccountSearch {
         const part = rawPart.trim();
         if (!part) continue;
 
-        const typeMatch = part.match(/^type:(.+)$/i);
+        const typeMatch = part.match(/^(type|accounttype|actype):(.+)$/i);
         if (typeMatch) {
-            const accountType = typeMatch[1]?.trim().toLowerCase();
+            const accountType = typeMatch[2]?.trim().toLowerCase();
             if (accountType && SEARCHABLE_ACCOUNT_TYPES.has(accountType)) {
                 parsed.accountType = accountType;
                 continue;

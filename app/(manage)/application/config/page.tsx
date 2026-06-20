@@ -8,22 +8,22 @@ import { AppConfigForm } from '@/app/(manage)/application/_components/app-config
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = {
-  searchParams: Promise<{ application?: string | string[] }>;
+  searchParams: Promise<{ application?: string | string[]; mode?: string }>;
 };
 
 export default async function ApplicationConfigQueryPage({ searchParams }: Props) {
-  const { application } = await searchParams;
+  const { application, mode } = await searchParams;
   const applicationId = getQueryParam(application);
 
   if (!applicationId) notFound();
-  const details = await getApplicationDetailsForViewerV2(applicationId);
+  const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
   if (!details) notFound();
 
   if (!details.canDelete) {
     return (
       <div className="grid gap-8">
         <div className="space-y-4">
-          <BackButton href={applicationHref('/application', applicationId)} />
+          <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
           <PrimaryHeader title="Configuration" description="API and access configuration." />
         </div>
         <Alert variant="destructive">
@@ -41,7 +41,7 @@ export default async function ApplicationConfigQueryPage({ searchParams }: Props
   return (
     <div className="grid gap-8">
       <div className="space-y-4">
-        <BackButton href={applicationHref('/application', applicationId)} />
+        <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
         <PrimaryHeader
           title="Configuration"
           description={`API secret, response fields, token fields, SSO origins, and server IPs for ${details.name}.`}

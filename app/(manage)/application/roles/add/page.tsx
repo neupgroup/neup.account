@@ -8,15 +8,15 @@ import { RoleCreateForm } from '@/app/(manage)/application/_components/role-crea
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = {
-  searchParams: Promise<{ application?: string | string[] }>;
+  searchParams: Promise<{ application?: string | string[]; mode?: string }>;
 };
 
 export default async function AddRoleQueryPage({ searchParams }: Props) {
-  const { application } = await searchParams;
+  const { application, mode } = await searchParams;
   const applicationId = getQueryParam(application);
 
   if (!applicationId) notFound();
-  const details = await getApplicationDetailsForViewerV2(applicationId);
+  const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
   if (!details) notFound();
 
   const canManageRoles = await canCurrentAccountManageApplicationRoles(applicationId);
@@ -24,7 +24,7 @@ export default async function AddRoleQueryPage({ searchParams }: Props) {
     return (
       <div className="grid gap-8">
         <div className="space-y-4">
-          <BackButton href={applicationHref('/application/roles', applicationId, { mode: 'root' })} />
+          <BackButton href={applicationHref('/application/roles', applicationId, mode ? { mode } : undefined)} />
           <PrimaryHeader title="Add Role" description={`Create a role for ${details.name}.`} />
         </div>
         <Alert variant="destructive">
@@ -39,7 +39,7 @@ export default async function AddRoleQueryPage({ searchParams }: Props) {
   return (
     <div className="grid gap-8">
       <div className="space-y-4">
-        <BackButton href={applicationHref('/application/roles', applicationId, { mode: 'root' })} />
+        <BackButton href={applicationHref('/application/roles', applicationId, mode ? { mode } : undefined)} />
         <PrimaryHeader title="Add Role" description={`Create a role for ${details.name}. Permissions are mapped after the role is created.`} />
       </div>
       <RoleCreateForm appId={applicationId} />

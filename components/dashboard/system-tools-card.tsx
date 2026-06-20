@@ -26,7 +26,7 @@ const managementItems = [
         label: 'Applications',
         description: 'Approve, reject, block, or activate applications.',
         icon: AppWindow,
-        permission: 'application.view.scopeRoot',
+        permission: 'application.view',
     },
     {
         href: '/site/config',

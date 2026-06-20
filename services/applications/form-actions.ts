@@ -5,8 +5,12 @@
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { checkPermissions } from '@/services/user';
-import { deleteManagedApplication, getManagedApplications, updateManagedApplicationStatus } from '@/services/applications/manage';
+import {
+  deleteManagedApplication,
+  getManagedApplications,
+  hasRootApplicationPermission,
+  updateManagedApplicationStatus,
+} from '@/services/applications/manage';
 import { getSignedApplications } from '@/services/applications/connected';
 import { getPersonalAccountId } from '@/core/auth/verify';
 import prisma from '@/core/helpers/prisma';
@@ -21,8 +25,6 @@ import {
 } from '@/services/applications/permission-definitions';
 
 export type { FlatAppItem } from '@/services/applications/types';
-
-const ROOT_PERMISSION_SCOPE = 'individual.root';
 
 // Aggregates managed and connected applications for the applications list page.
 export async function getApplicationsPageData() {
@@ -120,7 +122,7 @@ export async function getApplicationsPageDataV2(): Promise<{
     Promise.allSettled([getManagedApplications()]),
     Promise.allSettled([
       (async () => {
-        const isRoot = await checkPermissions([ROOT_APPLICATION_VIEW_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE });
+        const isRoot = await hasRootApplicationPermission(ROOT_APPLICATION_VIEW_PERMISSION);
         if (!isRoot) return null;
         return prisma.application.findMany({ orderBy: { createdAt: 'desc' } });
       })(),
@@ -231,7 +233,7 @@ const updateApplicationInfoSchema = z.object({
 export async function updateApplicationInfo(
   input: z.infer<typeof updateApplicationInfoSchema>,
 ): Promise<{ success: boolean; error?: string; fieldErrors?: Record<string, string> }> {
-  const canEdit = await checkPermissions([ROOT_APPLICATION_EDIT_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE });
+  const canEdit = await hasRootApplicationPermission(ROOT_APPLICATION_EDIT_PERMISSION);
   if (!canEdit) return { success: false, error: 'Permission denied.' };
 
   const parsed = updateApplicationInfoSchema.safeParse(input);
@@ -335,7 +337,7 @@ export async function getApplicationsManagePageData(): Promise<{
     Promise.allSettled([getManagedApplications()]),
     Promise.allSettled([
       (async () => {
-        const isRoot = await checkPermissions([ROOT_APPLICATION_VIEW_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE });
+        const isRoot = await hasRootApplicationPermission(ROOT_APPLICATION_VIEW_PERMISSION);
         if (!isRoot) return null;
         return prisma.application.findMany({ orderBy: { createdAt: 'desc' } });
       })(),

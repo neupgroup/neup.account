@@ -32,7 +32,7 @@ type Props = {
 
 export async function ApplicationDetailPage({ applicationId, mode }: Props) {
   const modeSuffix = mode === 'root' ? '&mode=root' : '';
-  const details = await getApplicationDetailsForViewerV2(applicationId);
+  const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
 
   if (!details) notFound();
 
@@ -102,7 +102,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
           ].map(({ label, value, description, icon: StatIcon }) => (
             <FlowLink
               key={label}
-              href={applicationHref('/application/users', applicationId)}
+              href={applicationHref('/application/users', applicationId, mode ? { mode } : undefined)}
               className="group p-6 transition-colors hover:bg-muted/40"
             >
               <div className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -120,7 +120,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
         <h2 className="text-xl font-semibold tracking-tight">Manage Application</h2>
         <div className="overflow-hidden rounded-2xl border bg-card">
           <FlowLink
-            href={applicationHref('/application/edit', applicationId)}
+            href={applicationHref('/application/edit', applicationId, mode ? { mode } : undefined)}
             className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
           >
             <div className="min-w-0">
@@ -131,7 +131,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
           </FlowLink>
 
           <FlowLink
-            href={applicationHref('/application/config', applicationId)}
+            href={applicationHref('/application/config', applicationId, mode ? { mode } : undefined)}
             className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
           >
             <div className="min-w-0">
@@ -200,7 +200,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
 
           {logPermissions.canViewDevLogs ? (
             <FlowLink
-              href={applicationHref('/application/logs', applicationId)}
+              href={applicationHref('/application/logs', applicationId, mode ? { mode } : undefined)}
               className="group flex items-center justify-between gap-4 border-t px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
             >
               <div className="min-w-0">

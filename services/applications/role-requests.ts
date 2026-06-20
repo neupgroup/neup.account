@@ -8,11 +8,9 @@ import { logError } from '@/core/helpers/logger';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
 import { canAssignRoleScopeToAccount } from '@/services/role-scopes';
 import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';
-import { isApplicationOwnerForAccount } from '@/services/applications/manage';
+import { hasRootApplicationPermission, isApplicationOwnerForAccount } from '@/services/applications/manage';
 import { revalidateApplicationRequestsRoutes, revalidateApplicationUsersRoutes } from '@/services/applications/revalidate-routes';
 import { ROOT_APPLICATION_EDIT_PERMISSION } from '@/services/applications/permission-definitions';
-
-const ROOT_PERMISSION_SCOPE = 'individual.root';
 
 function stringList(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
@@ -24,7 +22,7 @@ export async function approveApplicationRoleRequest(requestId: string): Promise<
   if (!actorAccountId) return { success: false, error: 'Not signed in.' };
 
   const [canRootEdit, canManageRequests] = await Promise.all([
-    checkPermissions([ROOT_APPLICATION_EDIT_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE }),
+    hasRootApplicationPermission(ROOT_APPLICATION_EDIT_PERMISSION),
     checkPermissions(['root.requests.manage']),
   ]);
 
@@ -149,7 +147,7 @@ export async function denyApplicationRoleRequest(requestId: string): Promise<{ s
   if (!actorAccountId) return { success: false, error: 'Not signed in.' };
 
   const [canRootEdit, canManageRequests] = await Promise.all([
-    checkPermissions([ROOT_APPLICATION_EDIT_PERMISSION], undefined, { roleScope: ROOT_PERMISSION_SCOPE }),
+    hasRootApplicationPermission(ROOT_APPLICATION_EDIT_PERMISSION),
     checkPermissions(['root.requests.manage']),
   ]);
 

@@ -6,7 +6,6 @@ import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
 import { dispatchAuthzWebhook } from './authz-webhook';
-import { checkPermissions } from '@/services/user';
 import { dispatchRoleUpdateWebhook, getRolePayload } from './role-update-events';
 import { activeAccessWhere } from '@/services/access-model';
 import {
@@ -15,6 +14,7 @@ import {
   getApplicationPermissionNames,
 } from '@/services/applications/permission-definitions';
 import { getRoleScopeCompatibilityError } from '@/services/applications/role-scope-compatibility';
+import { hasRootApplicationPermission } from '@/services/applications/manage';
 import {
   hasUsablePermissionScopes,
   isKnownPermissionScope,
@@ -66,7 +66,6 @@ export async function getAppDefaultRoleId(appId: string): Promise<string | null>
 // ---------------------------------------------------------------------------
 
 const GLOBAL_AUTHZ_APP_ID = 'neup.account';
-const ROOT_PERMISSION_SCOPE = 'individual.root';
 
 function getSystemRoleScope(roleId: string): string {
   if (roleId === 'application.manage') return 'managable';
@@ -279,7 +278,7 @@ async function assertCanManageAuthz(appId: string): Promise<{ accountId: string 
   await ensureApplicationManagementRoles();
 
   // Root override: global root app editors can manage app roles/permissions.
-  const isRootManager = await checkPermissions([ROOT_APPLICATION_EDIT_PERMISSION], accountId, { roleScope: ROOT_PERMISSION_SCOPE });
+  const isRootManager = await hasRootApplicationPermission(ROOT_APPLICATION_EDIT_PERMISSION);
   if (isRootManager) return { accountId };
 
   const personalAccountId = await getPersonalAccountId();

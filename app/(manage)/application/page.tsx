@@ -21,7 +21,9 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     return createPageMetadata('Application Management');
   }
 
-  const details = await getApplicationDetailsForViewerV2(applicationId);
+  const details = await getApplicationDetailsForViewerV2(applicationId, {
+    rootMode: resolvedSearchParams.mode === 'root',
+  });
   return createPageMetadata(details?.name ? `${details.name}'s Management` : 'Application Management');
 }
 

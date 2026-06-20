@@ -146,6 +146,7 @@ function UsersListInner({ appId }: { appId: string }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const mode = searchParams.get('mode');
 
   const [users, setUsers] = useState<AppUserEntry[]>([]);
   const [total, setTotal] = useState(0);
@@ -177,6 +178,7 @@ function UsersListInner({ appId }: { appId: string }) {
   const syncUrl = useCallback((query: string, status: string, since: string, nextSort: AppUserSortKey) => {
     const params = new URLSearchParams();
     params.set('application', appId);
+    if (mode) params.set('mode', mode);
     if (query.trim()) params.set('q', query.trim());
     if (status !== 'all') params.set('status', status);
     if (since !== 'all') params.set('activeSince', since);
@@ -184,7 +186,7 @@ function UsersListInner({ appId }: { appId: string }) {
     const qs = params.toString();
     if (qs === searchParams.toString()) return;
     redirectInApp(router, `${pathname}${qs ? `?${qs}` : ''}`, { replace: true, scroll: false });
-  }, [appId, router, pathname, searchParams]);
+  }, [appId, mode, router, pathname, searchParams]);
 
   useEffect(() => {
     const t = setTimeout(() => { setDebouncedSearch(search); setPage(1); }, 300);

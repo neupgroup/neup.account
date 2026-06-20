@@ -9,15 +9,15 @@ import { getAllRequests } from '@/services/manage/requests/all';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = {
-  searchParams: Promise<{ application?: string | string[] }>;
+  searchParams: Promise<{ application?: string | string[]; mode?: string }>;
 };
 
 export default async function ApplicationRequestsQueryPage({ searchParams }: Props) {
-  const { application } = await searchParams;
+  const { application, mode } = await searchParams;
   const applicationId = getQueryParam(application);
 
   if (!applicationId) notFound();
-  const details = await getApplicationDetailsForViewerV2(applicationId);
+  const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
   if (!details) notFound();
 
   const requests = await getAllRequests({ type: 'applicationRoleRequest', application: applicationId });
@@ -50,7 +50,7 @@ export default async function ApplicationRequestsQueryPage({ searchParams }: Pro
     <div className="grid gap-6">
       <div>
         <Button variant="ghost" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
-          <FlowLink href={applicationHref('/application', applicationId, { mode: 'root' })}>
+          <FlowLink href={applicationHref('/application', applicationId, mode ? { mode } : undefined)}>
             <ArrowLeft className="h-4 w-4" />
             Back
           </FlowLink>

@@ -18,7 +18,7 @@ export default async function ApplicationPermissionsQueryPage({ searchParams }: 
 
   if (!applicationId) notFound();
   const mode = resolvedSearchParams.mode;
-  const details = await getApplicationDetailsForViewerV2(applicationId);
+  const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
   if (!details) notFound();
 
   const canManagePermissions = await canCurrentAccountManageApplicationRoles(applicationId);

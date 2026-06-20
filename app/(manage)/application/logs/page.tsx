@@ -63,7 +63,7 @@ export default async function ApplicationLogsQueryPage({ searchParams }: Props) 
     redirect(applicationHref('/application/logs', applicationId, Object.fromEntries(canonical.entries())));
   }
 
-  const details = await getApplicationDetailsForViewerV2(applicationId);
+  const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
   if (!details) notFound();
 
   const logPage = await getApplicationDevLogsPaginated({ appId: applicationId, page, pageSize });
@@ -77,7 +77,7 @@ export default async function ApplicationLogsQueryPage({ searchParams }: Props) 
   return (
     <div className="grid gap-6">
       <div className="space-y-4">
-        <BackButton href={applicationHref('/application', applicationId)} />
+        <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
         <PrimaryHeader
           title="Development Logs"
           description={`Request/response debug logs for ${details.name}. Logs are captured only while app status is development.`}

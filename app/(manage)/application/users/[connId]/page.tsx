@@ -15,18 +15,18 @@ import { RoleSelector } from './_components/role-selector';
 
 type Props = {
   params: Promise<{ connId: string }>;
-  searchParams: Promise<{ application?: string | string[] }>;
+  searchParams: Promise<{ application?: string | string[]; mode?: string }>;
 };
 
 export default async function ApplicationUserDetailsQueryPage({ params, searchParams }: Props) {
   const { connId } = await params;
-  const { application } = await searchParams;
+  const { application, mode } = await searchParams;
   const appId = getQueryParam(application);
 
   if (!appId) notFound();
 
   const [applicationDetails, details] = await Promise.all([
-    getApplicationDetailsForViewerV2(appId),
+    getApplicationDetailsForViewerV2(appId, { rootMode: mode === 'root' }),
     getApplicationUserConnectionDetails({ appId, connectionId: connId }),
   ]);
 
@@ -48,7 +48,7 @@ export default async function ApplicationUserDetailsQueryPage({ params, searchPa
     <div className="grid gap-6">
       <div>
         <Button variant="ghost" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
-          <FlowLink href={applicationHref('/application/users', appId, { mode: 'root' })}>
+          <FlowLink href={applicationHref('/application/users', appId, mode ? { mode } : undefined)}>
             <ArrowLeft className="h-4 w-4" />
             Back
           </FlowLink>
@@ -128,7 +128,7 @@ export default async function ApplicationUserDetailsQueryPage({ params, searchPa
 
       <div className="overflow-hidden rounded-2xl border bg-card">
         <FlowLink
-          href={applicationHref(`/application/users/${connId}/delete`, appId, { mode: 'root' })}
+          href={applicationHref(`/application/users/${connId}/delete`, appId, mode ? { mode } : undefined)}
           className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5"
         >
           <div className="min-w-0">
@@ -139,7 +139,7 @@ export default async function ApplicationUserDetailsQueryPage({ params, searchPa
         </FlowLink>
 
         <FlowLink
-          href={applicationHref(`/application/users/${connId}/activity`, appId, { mode: 'root' })}
+          href={applicationHref(`/application/users/${connId}/activity`, appId, mode ? { mode } : undefined)}
           className="group flex items-center justify-between gap-4 px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5"
         >
           <div className="min-w-0">

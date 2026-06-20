@@ -9,34 +9,34 @@ import { UsersList } from './_components/users-list';
 import { createPageMetadata } from '@/core/metadata';
 
 type Props = {
-  searchParams: Promise<{ application?: string | string[] }>;
+  searchParams: Promise<{ application?: string | string[]; mode?: string }>;
 };
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
-  const { application } = await searchParams;
+  const { application, mode } = await searchParams;
   const applicationId = getQueryParam(application);
 
   if (!applicationId) {
     return createPageMetadata('Users', 'Application Management');
   }
 
-  const details = await getApplicationDetailsForViewerV2(applicationId);
+  const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
   return createPageMetadata('Users', details?.name ? `${details.name} Management` : 'Application Management');
 }
 
 export default async function ApplicationUsersQueryPage({ searchParams }: Props) {
-  const { application } = await searchParams;
+  const { application, mode } = await searchParams;
   const applicationId = getQueryParam(application);
 
   if (!applicationId) notFound();
-  const details = await getApplicationDetailsForViewerV2(applicationId);
+  const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
   if (!details) notFound();
 
   return (
     <div className="grid gap-6">
       <div>
         <Button variant="ghost" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
-          <FlowLink href={applicationHref('/application', applicationId)}>
+          <FlowLink href={applicationHref('/application', applicationId, mode ? { mode } : undefined)}>
             <ArrowLeft className="h-4 w-4" />
             Back
           </FlowLink>

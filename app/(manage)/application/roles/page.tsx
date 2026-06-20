@@ -10,15 +10,15 @@ import { RolesPanel } from '@/app/(manage)/application/_components/roles-panel';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = {
-  searchParams: Promise<{ application?: string | string[] }>;
+  searchParams: Promise<{ application?: string | string[]; mode?: string }>;
 };
 
 export default async function ApplicationRolesQueryPage({ searchParams }: Props) {
-  const { application } = await searchParams;
+  const { application, mode } = await searchParams;
   const applicationId = getQueryParam(application);
 
   if (!applicationId) notFound();
-  const details = await getApplicationDetailsForViewerV2(applicationId);
+  const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
   if (!details) notFound();
 
   const canManageRoles = await canCurrentAccountManageApplicationRoles(applicationId);
@@ -26,7 +26,7 @@ export default async function ApplicationRolesQueryPage({ searchParams }: Props)
     return (
       <div className="grid gap-8">
         <div className="space-y-4">
-          <BackButton href={applicationHref('/application', applicationId)} />
+          <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
           <PrimaryHeader
             title="Roles & Permissions"
             description={`Manage permissions and roles for ${details.name}.`}
@@ -50,7 +50,7 @@ export default async function ApplicationRolesQueryPage({ searchParams }: Props)
   return (
     <div className="grid gap-8">
       <div className="space-y-4">
-        <BackButton href={applicationHref('/application', applicationId)} />
+        <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
         <PrimaryHeader
           title="Roles & Permissions"
           description={`Manage roles for ${details.name}. Open a role to assign permissions.`}

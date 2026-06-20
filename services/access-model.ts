@@ -30,8 +30,13 @@ function activeWhere() {
   };
 }
 
-function memberTypeForParent(parent: ParentRef): 'acc_in_acc' | 'acc_in_port' {
-  return 'parentPortfolioId' in parent ? 'acc_in_port' : 'acc_in_acc';
+function isSelfAccountMember(input: ParentRef & { childAccountId: string }) {
+  return 'parentAccountId' in input && input.parentAccountId === input.childAccountId;
+}
+
+function memberTypeForParent(parent: ParentRef & { childAccountId: string }): 'acc_self' | 'acc_in_acc' | 'acc_in_port' {
+  if ('parentPortfolioId' in parent) return 'acc_in_port';
+  return isSelfAccountMember(parent) ? 'acc_self' : 'acc_in_acc';
 }
 
 export function assetTypeForRefs(parent: ParentRef, child: AssetChildRef): AssetType {
@@ -86,10 +91,11 @@ export async function ensureAccessMember(tx: Tx, input: ParentRef & {
   details?: Prisma.InputJsonValue;
 }) {
   const memberType = memberTypeForParent(input);
+  const selfMember = isSelfAccountMember(input);
   const existing = await tx.member.findFirst({
     where: {
       memberType,
-      memberAccountId: input.childAccountId,
+      memberAccountId: selfMember ? null : input.childAccountId,
       parentAccountId: 'parentAccountId' in input ? input.parentAccountId : null,
       parentPortfolioId: 'parentPortfolioId' in input ? input.parentPortfolioId : null,
       ...activeWhere(),
@@ -99,10 +105,39 @@ export async function ensureAccessMember(tx: Tx, input: ParentRef & {
 
   if (existing) return existing;
 
+  if (selfMember) {
+    const legacySelfMember = await tx.member.findFirst({
+      where: {
+        memberType: 'acc_in_acc',
+        memberAccountId: input.childAccountId,
+        parentAccountId: input.parentAccountId,
+        parentPortfolioId: null,
+        ...activeWhere(),
+      },
+      select: { id: true },
+    });
+
+    if (legacySelfMember) {
+      return tx.member.update({
+        where: { id: legacySelfMember.id },
+        data: {
+          memberType: 'acc_self',
+          memberAccountId: null,
+          parentAccountId: input.parentAccountId,
+          parentPortfolioId: null,
+          status: input.status ?? 'active',
+          isTemporary: input.isTemporary ?? null,
+          details: input.details,
+        },
+        select: { id: true },
+      });
+    }
+  }
+
   return tx.member.create({
     data: {
       memberType,
-      memberAccountId: input.childAccountId,
+      memberAccountId: selfMember ? null : input.childAccountId,
       parentAccountId: 'parentAccountId' in input ? input.parentAccountId : null,
       parentPortfolioId: 'parentPortfolioId' in input ? input.parentPortfolioId : null,
       status: input.status ?? 'active',

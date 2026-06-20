@@ -1,12 +1,11 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type KeyboardEvent } from 'react';
 import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, ChevronRight } from '@/components/icons';
+import { Plus, ChevronRight, X } from '@/components/icons';
 import {
   Select,
   SelectContent,
@@ -53,28 +52,82 @@ function PermissionScopeSelector({
   value: string[];
   onChange: (value: string[]) => void;
 }) {
+  const [query, setQuery] = useState('');
   const selected = new Set(value);
+  const normalizedQuery = query.trim().toLowerCase();
+  const filteredScopes = PERMISSION_SCOPE_OPTIONS.filter((scope) => {
+    if (selected.has(scope)) return false;
+    if (!normalizedQuery) return true;
+    return scope.toLowerCase().includes(normalizedQuery);
+  });
+
+  const addScope = (scope: string) => {
+    if (selected.has(scope)) return;
+    onChange([...value, scope]);
+    setQuery('');
+  };
+
+  const removeScope = (scope: string) => {
+    onChange(value.filter((item) => item !== scope));
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Backspace' && !query && value.length > 0) {
+      event.preventDefault();
+      removeScope(value[value.length - 1]);
+      return;
+    }
+
+    if (event.key === 'Enter' && filteredScopes.length > 0) {
+      event.preventDefault();
+      addScope(filteredScopes[0]);
+    }
+  };
 
   return (
     <div className="space-y-2">
       <p className="text-sm font-medium">Scopes</p>
-      <div className="grid gap-2 sm:grid-cols-2">
-        {PERMISSION_SCOPE_OPTIONS.map((scope) => (
-          <label key={scope} className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm">
-            <Checkbox
-              checked={selected.has(scope)}
-              onCheckedChange={(checked) => {
-                if (checked) {
-                  onChange(Array.from(new Set([...value, scope])));
-                  return;
-                }
-
-                onChange(value.filter((item) => item !== scope));
-              }}
-            />
-            <span>{scope}</span>
-          </label>
+      <div className="rounded-md border bg-background px-3 py-2">
+        <div className="flex min-h-8 flex-wrap items-center gap-1.5">
+          {value.map((scope) => (
+            <span
+              key={scope}
+              className="inline-flex h-7 items-center gap-1 rounded-full border bg-muted px-2.5 text-xs"
+            >
+              {scope}
+              <button
+                type="button"
+                className="rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+                onClick={() => removeScope(scope)}
+                aria-label={`Remove ${scope}`}
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </span>
+          ))}
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={value.length === 0 ? 'Type to search scopes' : 'Add more scopes'}
+            className="h-7 min-w-[140px] flex-1 border-0 bg-transparent p-0 text-sm outline-none placeholder:text-muted-foreground"
+          />
+        </div>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {filteredScopes.map((scope) => (
+          <button
+            key={scope}
+            type="button"
+            className="rounded-full border px-3 py-1 text-sm transition-colors hover:bg-muted"
+            onClick={() => addScope(scope)}
+          >
+            {scope}
+          </button>
         ))}
+        {filteredScopes.length === 0 && normalizedQuery ? (
+          <p className="text-xs text-muted-foreground">No scopes match "{query}".</p>
+        ) : null}
       </div>
       <p className="text-xs text-muted-foreground">
         A role can only include this permission when the role scope level appears here.

@@ -10,6 +10,7 @@ import { dispatchRoleUpdateWebhook, getRolePayload } from './role-update-events'
 import { activeAccessWhere } from '@/services/access-model';
 import {
   APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS,
+  APPLICATION_SYSTEM_OWNER_PERMISSION_DEFINITIONS,
   ROOT_APPLICATION_ROLES_MANAGE_PERMISSION,
   ROOT_APPLICATION_ROLES_RESET_PUSH_PERMISSION,
   ROOT_APPLICATION_ROLES_VIEW_PERMISSION,
@@ -352,7 +353,13 @@ async function ensureApplicationManagementRoles(): Promise<void> {
     }
 
     for (const roleId of ['application.owner', 'application.manage']) {
-      const permissionIds = permissions.map((permission) => permission.id);
+      const allowedPermissionNames =
+        roleId === 'application.owner'
+          ? new Set(APPLICATION_SYSTEM_OWNER_PERMISSION_DEFINITIONS.map((permission) => permission.name))
+          : null;
+      const permissionIds = permissions
+        .filter((permission) => !allowedPermissionNames || allowedPermissionNames.has(permission.name))
+        .map((permission) => permission.id);
       await syncRolePermissionMappings(tx, roleId, getSystemRoleScope(roleId), permissionIds);
       await syncRolePermissionsDenormalized(tx, roleId);
     }

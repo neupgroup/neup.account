@@ -177,6 +177,10 @@ export const APPLICATION_MANAGED_PERMISSION_DEFINITIONS = getApplicationPermissi
 export const APPLICATION_ROOT_PERMISSION_DEFINITIONS = getApplicationPermissionDefinitions(['root']);
 export const APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS = getApplicationPermissionDefinitions(['public', 'managed']);
 export const APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS = getApplicationPermissionDefinitions(['public', 'managed', 'root']);
+export const APPLICATION_SYSTEM_OWNER_PERMISSION_DEFINITIONS =
+  APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS.filter(
+    (permission) => permission.name !== 'application.create',
+  );
 
 const BUILT_IN_APPLICATION_MANAGEMENT_PERMISSION_NAMES = new Set(
   APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS.map((permission) => permission.name),

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -9,13 +9,15 @@ import {
   decodeRoleScope,
   emptyScopeAudience,
   encodeRoleScope,
+  expandRoleScope,
   formatScopeAudience,
-  normalizeRoleScope,
+  normalizeAccountTypeForRoleScope,
   type ScopeAudience,
+  type ScopeAccountKey,
   type ScopeMode,
 } from '@/services/role-scopes';
 
-const MODE_OPTIONS: ScopeMode[] = ['managable', 'public', 'toApprove', 'root'];
+const MODE_OPTIONS: ScopeMode[] = ['managed', 'public', 'toApprove', 'root'];
 const ACCOUNT_OPTIONS: Array<{ key: keyof ScopeAudience; label: string }> = [
   { key: 'individual', label: 'Individual' },
   { key: 'dependent', label: 'Dependent' },
@@ -23,17 +25,23 @@ const ACCOUNT_OPTIONS: Array<{ key: keyof ScopeAudience; label: string }> = [
   { key: 'branch', label: 'Branch' },
 ];
 
+function scopeAudienceForAccount(accountKey: ScopeAccountKey): ScopeAudience {
+  return {
+    individual: accountKey === 'individual',
+    dependent: accountKey === 'dependent',
+    brand: accountKey === 'brand',
+    branch: accountKey === 'branch',
+  };
+}
+
 function normalizeAudience(mode: ScopeMode, audience: ScopeAudience): ScopeAudience {
   if (mode === 'root') {
-    return {
-      individual: true,
-      dependent: false,
-      brand: false,
-      branch: false,
-    };
+    return scopeAudienceForAccount('individual');
   }
 
-  return audience;
+  const activeAccount =
+    ACCOUNT_OPTIONS.find((option) => audience[option.key])?.key ?? 'individual';
+  return scopeAudienceForAccount(activeAccount);
 }
 
 function hasAudience(audience: ScopeAudience): boolean {
@@ -92,11 +100,8 @@ function ScopeBuilder({
                   checked={checked}
                   disabled={disabled}
                   onCheckedChange={(nextChecked) => {
-                    const nextAudience = normalizeAudience(mode, {
-                      ...normalizedAudience,
-                      [option.key]: Boolean(nextChecked),
-                    });
-                    onAudienceChange(nextAudience);
+                    if (!nextChecked) return;
+                    onAudienceChange(normalizeAudience(mode, scopeAudienceForAccount(option.key)));
                   }}
                 />
                 <span>{option.label}</span>
@@ -121,10 +126,15 @@ export function RoleScopeSelector({
   onChange: (value: string) => void;
 }) {
   const decoded = useMemo(() => decodeRoleScope(value), [value]);
-  const [mode, setMode] = useState<ScopeMode>(decoded?.mode ?? 'managable');
+  const [mode, setMode] = useState<ScopeMode>(decoded?.mode ?? 'managed');
   const [audience, setAudience] = useState<ScopeAudience>(
     decoded?.audience ?? emptyScopeAudience(),
   );
+
+  useEffect(() => {
+    setMode(decoded?.mode ?? 'managed');
+    setAudience(decoded?.audience ?? emptyScopeAudience());
+  }, [decoded]);
 
   const apply = (nextMode: ScopeMode, nextAudience: ScopeAudience) => {
     const normalizedAudience = normalizeAudience(nextMode, nextAudience);
@@ -160,15 +170,19 @@ export function PermissionScopeSelector({
   value: string[];
   onChange: (value: string[]) => void;
 }) {
-  const [mode, setMode] = useState<ScopeMode>('managable');
+  const [mode, setMode] = useState<ScopeMode>('managed');
   const [audience, setAudience] = useState<ScopeAudience>(emptyScopeAudience());
   const normalizedScopes = useMemo(
     () =>
-      value
-        .map((scope) => normalizeRoleScope(scope))
-        .filter((scope): scope is string => Boolean(scope)),
+      value.flatMap((scope) => expandRoleScope(scope)).filter((scope, index, array) => array.indexOf(scope) === index),
     [value],
   );
+
+  useEffect(() => {
+    const decoded = decodeRoleScope(normalizedScopes[normalizedScopes.length - 1] ?? null);
+    setMode(decoded?.mode ?? 'managed');
+    setAudience(decoded?.audience ?? emptyScopeAudience());
+  }, [normalizedScopes]);
 
   const currentScope = hasAudience(normalizeAudience(mode, audience))
     ? encodeRoleScope(mode, normalizeAudience(mode, audience))

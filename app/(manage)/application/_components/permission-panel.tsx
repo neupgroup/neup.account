@@ -344,7 +344,7 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
           <div className="space-y-3">
             <Input value={addName} onChange={(event) => setAddName(event.target.value)} placeholder="Name, e.g. orders.read" autoFocus />
             <Input value={addDesc} onChange={(event) => setAddDesc(event.target.value)} placeholder="Description (optional)" />
-            <PermissionScopeSelector value={addScope} onChange={setAddScope} />
+            <PermissionScopeSelector key={`add-${addOpen ? 'open' : 'closed'}`} value={addScope} onChange={setAddScope} />
           </div>
           <DialogFooter>
             <DialogClose asChild>
@@ -368,7 +368,7 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
           <div className="space-y-3">
             <Input value={editTarget?.name ?? ''} disabled aria-label="Permission name" />
             <Input value={editDesc} onChange={(event) => setEditDesc(event.target.value)} placeholder="Description (optional)" autoFocus />
-            <PermissionScopeSelector value={editScope} onChange={setEditScope} />
+            <PermissionScopeSelector key={editTarget?.id ?? 'edit-closed'} value={editScope} onChange={setEditScope} />
           </div>
           <DialogFooter>
             <DialogClose asChild>

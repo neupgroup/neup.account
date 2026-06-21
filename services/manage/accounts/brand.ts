@@ -170,7 +170,7 @@ export async function createBrandAccount(data: z.infer<typeof brandCreationSchem
                 update: {
                     name: BRAND_OWNER_ROLE_NAME,
                     description: 'Brand ownership role for brand accounts.',
-                    scope: 'managable.i00b10',
+                    scope: 'managed.0010',
                     appId: 'neup.account',
                     permissions: BRAND_OWNER_PERMISSION_NAMES,
                 },
@@ -178,7 +178,7 @@ export async function createBrandAccount(data: z.infer<typeof brandCreationSchem
                     id: BRAND_OWNER_ROLE_ID,
                     name: BRAND_OWNER_ROLE_NAME,
                     description: 'Brand ownership role for brand accounts.',
-                    scope: 'managable.i00b10',
+                    scope: 'managed.0010',
                     appId: 'neup.account',
                     permissions: BRAND_OWNER_PERMISSION_NAMES,
                 },

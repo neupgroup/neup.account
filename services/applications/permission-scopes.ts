@@ -1,15 +1,15 @@
-import { normalizeRoleScope, type RoleScope } from '@/services/role-scopes';
+import { expandRoleScope, type RoleScope } from '@/services/role-scopes';
 
 export const PERMISSION_SCOPE_OPTIONS = [] as const;
 
 export type PermissionScopeOption = RoleScope;
 
 export function isKnownPermissionScope(scope: string): scope is PermissionScopeOption {
-  return normalizeRoleScope(scope) !== null;
+  return expandRoleScope(scope).length > 0;
 }
 
 export function permissionScopeError() {
-  return 'Permission scope entries must use managable, public, toApprove, or root with the encoded i..b.. account mask.';
+  return 'Permission scope entries must use managed, public, toApprove, or root with a single 4-digit audience mask like managed.1000.';
 }
 
 export function normalizePermissionScopes(value: unknown): PermissionScopeOption[] {
@@ -19,10 +19,11 @@ export function normalizePermissionScopes(value: unknown): PermissionScopeOption
 
   for (const rawValue of rawValues) {
     if (typeof rawValue !== 'string') continue;
-    const next = normalizeRoleScope(rawValue);
-    if (!next || seen.has(next)) continue;
-    seen.add(next);
-    normalized.push(next);
+    for (const next of expandRoleScope(rawValue)) {
+      if (seen.has(next)) continue;
+      seen.add(next);
+      normalized.push(next);
+    }
   }
 
   return normalized;

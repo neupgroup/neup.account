@@ -162,9 +162,9 @@ function slugifyPermission(name: string): string {
 function permissionScopesForNeupAccountPermission(permissionName: string, fallback: string[]): string[] {
   const encodeScopes = (scopes: string[]) =>
     scopes.map((scope) => {
-      if (scope === 'public') return 'public.i10b00';
-      if (scope === 'managable') return 'managable.i10b00';
-      if (scope === 'root') return 'root.i10b00';
+      if (scope === 'public') return 'public.1000';
+      if (scope === 'managed') return 'managed.1000';
+      if (scope === 'root') return 'root.1000';
       return scope;
     });
 
@@ -205,7 +205,7 @@ function permissionScopesForNeupAccountPermission(permissionName: string, fallba
       'account.brand.delete',
     ].includes(permissionName)
   ) {
-    return encodeScopes(['public', 'managable', 'root']);
+    return encodeScopes(['public', 'managed', 'root']);
   }
 
   if (
@@ -354,7 +354,7 @@ async function main() {
       update: {
         name: 'individual.default',
         description: 'Default permission set for individual accounts.',
-        scope: 'public.i10b00',
+        scope: 'public.1000',
         appId: APP_ID,
         permissions: defaultDenormalized,
       },
@@ -362,7 +362,7 @@ async function main() {
         id: ROLE_DEFAULT_ID,
         name: 'individual.default',
         description: 'Default permission set for individual accounts.',
-        scope: 'public.i10b00',
+        scope: 'public.1000',
         appId: APP_ID,
         permissions: defaultDenormalized,
       },
@@ -373,7 +373,7 @@ async function main() {
       update: {
         name: 'individual.root',
         description: 'Root permission set for individual accounts.',
-        scope: 'root.i10b00',
+        scope: 'root.1000',
         appId: APP_ID,
         permissions: rootDenormalized,
       },
@@ -381,7 +381,7 @@ async function main() {
         id: ROLE_ROOT_ID,
         name: 'individual.root',
         description: 'Root permission set for individual accounts.',
-        scope: 'root.i10b00',
+        scope: 'root.1000',
         appId: APP_ID,
         permissions: rootDenormalized,
       },

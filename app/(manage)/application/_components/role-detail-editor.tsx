@@ -17,6 +17,7 @@ import {
 import { redirectInApp } from '@/core/helper/navigation';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { getRoleScopeCompatibilityError, isPermissionScopeAllowedForRoleScope } from '@/services/applications/role-scope-compatibility';
+import { RoleScopeSelector } from './scope-selectors';
 
 type Props = {
   appId: string;
@@ -30,6 +31,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
   const router = useRouter();
   const { toast } = useToast();
   const [description, setDescription] = useState(role.description ?? '');
+  const [scope, setScope] = useState(role.scope);
   const [permissionIds, setPermissionIds] = useState<string[]>(() => {
     const idsFromRole = role.permissions
       .map((permission) => permission.id)
@@ -59,8 +61,8 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
     [permissions, selectedSet],
   );
   const scopeCompatibilityError = useMemo(
-    () => getRoleScopeCompatibilityError(role.scope, selectedPermissions.map((permission) => permission.scope)),
-    [role.scope, selectedPermissions],
+    () => getRoleScopeCompatibilityError(scope, selectedPermissions.map((permission) => permission.scope)),
+    [scope, selectedPermissions],
   );
 
   const visiblePermissions = useMemo(() => {
@@ -84,6 +86,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
       appId,
       roleId: role.id,
       description: description || undefined,
+      scope,
       permissionIds,
     });
     setSavePending(false);
@@ -135,13 +138,11 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
         <div>
           <p className="text-sm font-medium">Role details</p>
           <p className="text-xs text-muted-foreground">
-            Role name and scope are fixed after creation. Update the description and permission mapping here.
+            Role name stays fixed after creation. Update the scope, description, and permission mapping here.
           </p>
         </div>
         <Input value={role.name} disabled aria-label="Role name" />
-        <div className="flex min-h-10 items-center rounded-md border border-input bg-muted/30 px-3 text-sm">
-          {role.scope}
-        </div>
+        <RoleScopeSelector value={scope} onChange={setScope} />
         <Input
           value={description}
           disabled={!canManage}
@@ -168,7 +169,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
           <div className="overflow-hidden rounded-2xl border bg-card">
             {visiblePermissions.map((permission) => {
               const isChecked = selectedSet.has(permission.id);
-              const canAddPermission = isChecked || isPermissionScopeAllowedForRoleScope(permission.scope, role.scope);
+              const canAddPermission = isChecked || isPermissionScopeAllowedForRoleScope(permission.scope, scope);
 
               return (
                 <label

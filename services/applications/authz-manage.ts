@@ -24,13 +24,12 @@ import {
   permissionScopeError,
   type PermissionScopeOption,
 } from '@/services/applications/permission-scopes';
-import { isKnownRoleScope, roleScopeError } from '@/services/role-scopes';
+import { isKnownRoleScope, normalizeRoleScope, roleScopeError } from '@/services/role-scopes';
 import {
   revalidateApplicationConfigRoutes,
   revalidateApplicationPermissionsRoutes,
   revalidateApplicationRoleRoutes,
 } from '@/services/applications/revalidate-routes';
-import { normalizeRoleScope } from '@/services/role-scopes';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -71,9 +70,9 @@ export async function getAppDefaultRoleId(appId: string): Promise<string | null>
 const GLOBAL_AUTHZ_APP_ID = 'neup.account';
 
 function getSystemRoleScope(roleId: string): string {
-  if (roleId === 'application.owner') return 'public.i10b00';
-  if (roleId === 'application.manage') return 'managable.i10b00';
-  return 'public.i10b00';
+  if (roleId === 'application.owner') return 'public.1000';
+  if (roleId === 'application.manage') return 'managed.1000';
+  return 'public.1000';
 }
 
 async function upsertPermissionsForApp(
@@ -791,27 +790,34 @@ export async function updateAppRole(input: {
         select: { id: true, scope: true, name: true },
       });
       if (!role) throw new Error('Role not found.');
-      const scope = role.scope;
-      if (!isKnownRoleScope(scope)) {
+      const currentScope = normalizeRoleScope(role.scope);
+      if (!currentScope || !isKnownRoleScope(currentScope)) {
+        throw new Error(roleScopeError());
+      }
+      const nextScope = typeof input.scope === 'string' && input.scope.trim().length > 0
+        ? normalizeRoleScope(input.scope)
+        : currentScope;
+      if (!nextScope || !isKnownRoleScope(nextScope)) {
         throw new Error(roleScopeError());
       }
       if (typeof input.name === 'string' && input.name.trim() !== role.name) {
         throw new Error('Role name cannot be changed after creation.');
       }
-      if (typeof input.scope === 'string' && input.scope.trim() !== scope) {
-        throw new Error('Role scope cannot be changed. Delete and recreate the role instead.');
+
+      if (input.permissionIds.length > 0) {
+        const selectionError = await validateRolePermissionSelection(tx, input.appId, nextScope, input.permissionIds);
+        if (selectionError) throw new Error(selectionError);
       }
 
       await tx.authzRole.update({
         where: { id: input.roleId },
         data: {
           description: input.description?.trim() || null,
+          scope: nextScope,
         },
       });
 
       if (input.permissionIds.length > 0) {
-        const selectionError = await validateRolePermissionSelection(tx, input.appId, scope, input.permissionIds);
-        if (selectionError) throw new Error(selectionError);
 
         const caps = await tx.authzPermission.findMany({
           where: { id: { in: input.permissionIds }, appId: input.appId },

@@ -72,6 +72,7 @@ export default async function ApplicationPermissionsQueryPage({ searchParams }: 
         canManage={canManagePermissions}
         definedScopeOptions={toApplicationAuthzDefinitionOptions(authzConfig?.definedScopes ?? [])}
         allowMultipleDefinedScopes={Boolean(authzConfig?.allowMultipleDefinedScopes)}
+        applicableForOptions={toApplicationAuthzDefinitionOptions(authzConfig?.applicableForDefinitions ?? [])}
       />
     </div>
   );

@@ -15,6 +15,7 @@ type Props = {
   defaultRoleId?: string | null;
   definedScopeOptions?: ApplicationAuthzDefinitionOption[];
   allowMultipleDefinedScopes?: boolean;
+  applicableForOptions?: ApplicationAuthzDefinitionOption[];
 };
 
 export function AuthzManagementPanel({
@@ -27,6 +28,7 @@ export function AuthzManagementPanel({
   defaultRoleId = null,
   definedScopeOptions = [],
   allowMultipleDefinedScopes = false,
+  applicableForOptions = [],
 }: Props) {
   return (
     <div className="grid gap-6">
@@ -36,6 +38,7 @@ export function AuthzManagementPanel({
         canManage={canManage}
         definedScopeOptions={definedScopeOptions}
         allowMultipleDefinedScopes={allowMultipleDefinedScopes}
+        applicableForOptions={applicableForOptions}
       />
       <RolesPanel
         appId={appId}

@@ -49,6 +49,7 @@ export type AppPermission = {
   description: string | null;
   scope: PermissionScopeOption[];
   definedScopeKeys: string[];
+  applicableFor: string[];
 };
 
 export type AppRole = {
@@ -92,6 +93,18 @@ function normalizePermissionDefinedScopeKeys(
     : [];
 
   return normalizeConfiguredSelection(rawValues, allowedKeys, allowMultiple);
+}
+
+function normalizePermissionApplicableFor(
+  value: Prisma.JsonValue | null | undefined,
+  allowedKeys: string[],
+): string[] {
+  if (!Array.isArray(value)) return [];
+  return normalizeConfiguredSelection(
+    value.filter((item): item is string => typeof item === 'string'),
+    allowedKeys,
+    true,
+  );
 }
 
 async function getApplicationAuthzConfigForValidation(appId: string): Promise<ApplicationAuthzConfig> {
@@ -539,10 +552,11 @@ export async function getAppPermissions(appId: string): Promise<AppPermission[]>
   try {
     const authzConfig = await getApplicationAuthzConfigForValidation(appId);
     const allowedDefinedScopeKeys = authzConfig.definedScopes.map(([, key]) => key);
+    const allowedApplicableForKeys = authzConfig.applicableForDefinitions.map(([, key]) => key);
     const records = await prisma.authzPermission.findMany({
       where: { appId },
       orderBy: { name: 'asc' },
-      select: { id: true, name: true, description: true, scope: true, tag: true },
+      select: { id: true, name: true, description: true, scope: true, permScope: true, permApplicableFor: true, tag: true },
     });
     return records.map((record) => ({
       id: record.id,
@@ -550,10 +564,11 @@ export async function getAppPermissions(appId: string): Promise<AppPermission[]>
       description: record.description,
       scope: normalizePermissionScopes(record.scope),
       definedScopeKeys: normalizePermissionDefinedScopeKeys(
-        record.tag,
+        record.permScope ?? record.tag,
         allowedDefinedScopeKeys,
         authzConfig.allowMultipleDefinedScopes,
       ),
+      applicableFor: normalizePermissionApplicableFor(record.permApplicableFor, allowedApplicableForKeys),
     }));
   } catch (error) {
     await logError('database', error, `getAppPermissions:${appId}`);
@@ -567,6 +582,7 @@ export async function createAppPermission(input: {
   description?: string;
   scope: string[];
   definedScopeKeys?: string[];
+  applicableFor?: string[];
 }): Promise<{ success: boolean; permission?: AppPermission; error?: string }> {
   const auth = await assertCanManageAuthz(input.appId);
   if ('error' in auth) return { success: false, error: auth.error };
@@ -585,6 +601,7 @@ export async function createAppPermission(input: {
   }
   const authzConfig = await getApplicationAuthzConfigForValidation(input.appId);
   const allowedDefinedScopeKeys = authzConfig.definedScopes.map(([, key]) => key);
+  const allowedApplicableForKeys = authzConfig.applicableForDefinitions.map(([, key]) => key);
   const definedScopeKeys = normalizeConfiguredSelection(
     input.definedScopeKeys,
     allowedDefinedScopeKeys,
@@ -592,6 +609,10 @@ export async function createAppPermission(input: {
   );
   if ((input.definedScopeKeys?.length ?? 0) !== definedScopeKeys.length) {
     return { success: false, error: 'Selected defined scopes are invalid for this application.' };
+  }
+  const applicableFor = normalizeConfiguredSelection(input.applicableFor, allowedApplicableForKeys, true);
+  if ((input.applicableFor?.length ?? 0) !== applicableFor.length) {
+    return { success: false, error: 'Selected applicable-for values are invalid for this application.' };
   }
 
   const existing = await prisma.authzPermission.findUnique({
@@ -610,11 +631,10 @@ export async function createAppPermission(input: {
         description: input.description?.trim() || null,
         scope: scopes,
         appId: input.appId,
-        tag: {
-          definedScopeKeys,
-        },
+        permScope: definedScopeKeys,
+        permApplicableFor: applicableFor,
       },
-      select: { id: true, name: true, description: true, scope: true, tag: true },
+      select: { id: true, name: true, description: true, scope: true, permScope: true, permApplicableFor: true },
     });
 
     revalidatePath(`/data/appconnection/${input.appId}`);
@@ -626,10 +646,11 @@ export async function createAppPermission(input: {
         description: record.description,
         scope: normalizePermissionScopes(record.scope),
         definedScopeKeys: normalizePermissionDefinedScopeKeys(
-          record.tag,
+          record.permScope,
           allowedDefinedScopeKeys,
           authzConfig.allowMultipleDefinedScopes,
         ),
+        applicableFor: normalizePermissionApplicableFor(record.permApplicableFor, allowedApplicableForKeys),
       },
     };
   } catch (error) {
@@ -644,6 +665,7 @@ export async function updateAppPermission(input: {
   description?: string;
   scope: string[];
   definedScopeKeys?: string[];
+  applicableFor?: string[];
   confirmScopeRemoval?: boolean;
 }): Promise<{
   success: boolean;
@@ -661,6 +683,7 @@ export async function updateAppPermission(input: {
   }
   const authzConfig = await getApplicationAuthzConfigForValidation(input.appId);
   const allowedDefinedScopeKeys = authzConfig.definedScopes.map(([, key]) => key);
+  const allowedApplicableForKeys = authzConfig.applicableForDefinitions.map(([, key]) => key);
   const definedScopeKeys = normalizeConfiguredSelection(
     input.definedScopeKeys,
     allowedDefinedScopeKeys,
@@ -668,6 +691,10 @@ export async function updateAppPermission(input: {
   );
   if ((input.definedScopeKeys?.length ?? 0) !== definedScopeKeys.length) {
     return { success: false, error: 'Selected defined scopes are invalid for this application.' };
+  }
+  const applicableFor = normalizeConfiguredSelection(input.applicableFor, allowedApplicableForKeys, true);
+  if ((input.applicableFor?.length ?? 0) !== applicableFor.length) {
+    return { success: false, error: 'Selected applicable-for values are invalid for this application.' };
   }
 
   try {
@@ -714,11 +741,10 @@ export async function updateAppPermission(input: {
         data: {
           description: input.description?.trim() || null,
           scope: scopes,
-          tag: {
-            definedScopeKeys,
-          },
+          permScope: definedScopeKeys,
+          permApplicableFor: applicableFor,
         },
-        select: { id: true, name: true, description: true, scope: true, tag: true },
+        select: { id: true, name: true, description: true, scope: true, permScope: true, permApplicableFor: true },
       });
 
       return updated;
@@ -738,10 +764,11 @@ export async function updateAppPermission(input: {
         description: record.description,
         scope: normalizePermissionScopes(record.scope),
         definedScopeKeys: normalizePermissionDefinedScopeKeys(
-          record.tag,
+          record.permScope,
           allowedDefinedScopeKeys,
           authzConfig.allowMultipleDefinedScopes,
         ),
+        applicableFor: normalizePermissionApplicableFor(record.permApplicableFor, allowedApplicableForKeys),
       },
     };
   } catch (error) {
@@ -793,6 +820,7 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
   try {
     const authzConfig = await getApplicationAuthzConfigForValidation(appId);
     const allowedDefinedScopeKeys = authzConfig.definedScopes.map(([, key]) => key);
+    const allowedApplicableForKeys = authzConfig.applicableForDefinitions.map(([, key]) => key);
     const roles = await prisma.authzRole.findMany({
       where: { appId },
       orderBy: { name: 'asc' },
@@ -811,6 +839,8 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
                 name: true,
                 description: true,
                 scope: true,
+                permScope: true,
+                permApplicableFor: true,
                 tag: true,
               },
             },
@@ -834,10 +864,11 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
           description: permission.description ?? null,
           scope: normalizePermissionScopes(permission.scope),
           definedScopeKeys: normalizePermissionDefinedScopeKeys(
-            permission.tag,
+            permission.permScope ?? permission.tag,
             allowedDefinedScopeKeys,
             authzConfig.allowMultipleDefinedScopes,
           ),
+          applicableFor: normalizePermissionApplicableFor(permission.permApplicableFor, allowedApplicableForKeys),
         }];
       }),
     }));

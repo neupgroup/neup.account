@@ -44,6 +44,7 @@ type Props = {
   canManage: boolean;
   definedScopeOptions: ApplicationAuthzDefinitionOption[];
   allowMultipleDefinedScopes: boolean;
+  applicableForOptions: ApplicationAuthzDefinitionOption[];
 };
 
 type PermissionSearchFilters = {
@@ -125,6 +126,7 @@ export function PermissionPanel({
   canManage,
   definedScopeOptions,
   allowMultipleDefinedScopes,
+  applicableForOptions,
 }: Props) {
   const { toast } = useToast();
   const [permissions, setPermissions] = useState<AppPermission[]>(initialPermissions);
@@ -135,12 +137,14 @@ export function PermissionPanel({
   const [addDesc, setAddDesc] = useState('');
   const [addScope, setAddScope] = useState<string[]>([]);
   const [addDefinedScopeKeys, setAddDefinedScopeKeys] = useState<string[]>([]);
+  const [addApplicableFor, setAddApplicableFor] = useState<string[]>([]);
   const [addPending, setAddPending] = useState(false);
 
   const [editTarget, setEditTarget] = useState<AppPermission | null>(null);
   const [editDesc, setEditDesc] = useState('');
   const [editScope, setEditScope] = useState<string[]>([]);
   const [editDefinedScopeKeys, setEditDefinedScopeKeys] = useState<string[]>([]);
+  const [editApplicableFor, setEditApplicableFor] = useState<string[]>([]);
   const [editPending, setEditPending] = useState(false);
   const [scopeRemovalImpact, setScopeRemovalImpact] = useState<PermissionScopeImpactRole[]>([]);
 
@@ -176,6 +180,7 @@ export function PermissionPanel({
     setEditDesc(permission.description ?? '');
     setEditScope(permission.scope);
     setEditDefinedScopeKeys(permission.definedScopeKeys);
+    setEditApplicableFor(permission.applicableFor);
   };
 
   const closeEdit = () => {
@@ -183,6 +188,7 @@ export function PermissionPanel({
     setEditDesc('');
     setEditScope([]);
     setEditDefinedScopeKeys([]);
+    setEditApplicableFor([]);
     setScopeRemovalImpact([]);
   };
 
@@ -214,6 +220,7 @@ export function PermissionPanel({
       description: addDesc || undefined,
       scope: addScope,
       definedScopeKeys: addDefinedScopeKeys,
+      applicableFor: addApplicableFor,
     });
     setAddPending(false);
 
@@ -228,6 +235,7 @@ export function PermissionPanel({
     setAddDesc('');
     setAddScope([]);
     setAddDefinedScopeKeys([]);
+    setAddApplicableFor([]);
     setAddOpen(false);
     toast({ title: 'Permission created' });
   };
@@ -251,6 +259,7 @@ export function PermissionPanel({
       description: editDesc || undefined,
       scope: editScope,
       definedScopeKeys: editDefinedScopeKeys,
+      applicableFor: editApplicableFor,
     });
     setEditPending(false);
 
@@ -282,6 +291,7 @@ export function PermissionPanel({
       description: editDesc || undefined,
       scope: editScope,
       definedScopeKeys: editDefinedScopeKeys,
+      applicableFor: editApplicableFor,
       confirmScopeRemoval: true,
     });
     setEditPending(false);
@@ -378,6 +388,14 @@ export function PermissionPanel({
                         </Badge>
                       );
                     })}
+                    {permission.applicableFor.map((key) => {
+                      const option = applicableForOptions.find((item) => item.key === key);
+                      return (
+                        <Badge key={`${permission.id}-applicable-${key}`} variant="outline" className="text-xs">
+                          for: {option?.name ?? key}
+                        </Badge>
+                      );
+                    })}
                   </div>
                   {systemManaged ? (
                     <p className="mt-1 text-xs text-muted-foreground">
@@ -416,6 +434,7 @@ export function PermissionPanel({
             setAddDesc('');
             setAddScope([]);
             setAddDefinedScopeKeys([]);
+            setAddApplicableFor([]);
           }
         }}
       >
@@ -438,6 +457,14 @@ export function PermissionPanel({
               onChange={setAddDefinedScopeKeys}
               allowMultiple={allowMultipleDefinedScopes}
               emptyLabel="No app-defined scopes configured on the application configuration page."
+            />
+            <AuthzDefinitionSelector
+              label="Applicable for"
+              description="Application-defined applicable-for values stored on this permission."
+              options={applicableForOptions}
+              value={addApplicableFor}
+              onChange={setAddApplicableFor}
+              emptyLabel="No applicable-for definitions configured on the application configuration page."
             />
           </div>
           <DialogFooter>
@@ -471,6 +498,14 @@ export function PermissionPanel({
               onChange={setEditDefinedScopeKeys}
               allowMultiple={allowMultipleDefinedScopes}
               emptyLabel="No app-defined scopes configured on the application configuration page."
+            />
+            <AuthzDefinitionSelector
+              label="Applicable for"
+              description="Application-defined applicable-for values stored on this permission."
+              options={applicableForOptions}
+              value={editApplicableFor}
+              onChange={setEditApplicableFor}
+              emptyLabel="No applicable-for definitions configured on the application configuration page."
             />
             {scopeRemovalImpact.length > 0 ? (
               <div className="rounded-lg border border-amber-500/40 bg-amber-50 p-3 text-sm text-amber-900">

@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import {
   canCurrentAccountManageApplicationRoles,
   canCurrentAccountViewApplicationRoles,
+  getApplicationAuthzConfig,
   getApplicationDetailsForViewerV2,
 } from '@/services/applications/manage';
 import { getAppDefaultRoleId, getAppPermissions, getAppRoles } from '@/services/applications/authz-manage';
@@ -11,6 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { RoleDetailEditor } from '@/app/(manage)/application/_components/role-detail-editor';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
+import { toApplicationAuthzDefinitionOptions } from '@/services/applications/authz-config';
 
 type Props = {
   params: Promise<{ roleId: string }>;
@@ -46,10 +48,11 @@ export default async function RoleDetailsQueryPage({ params, searchParams }: Pro
     );
   }
 
-  const [roles, permissions, defaultRoleId] = await Promise.all([
+  const [roles, permissions, defaultRoleId, authzConfig] = await Promise.all([
     getAppRoles(applicationId),
     getAppPermissions(applicationId),
     getAppDefaultRoleId(applicationId),
+    getApplicationAuthzConfig(applicationId),
   ]);
   const role = roles.find((item) => item.id === roleId);
   if (!role) notFound();
@@ -63,7 +66,14 @@ export default async function RoleDetailsQueryPage({ params, searchParams }: Pro
           description={role.description || 'No description'}
         />
       </div>
-      <RoleDetailEditor appId={applicationId} role={role} permissions={permissions} defaultRoleId={defaultRoleId} canManage={canManageRoles} />
+      <RoleDetailEditor
+        appId={applicationId}
+        role={role}
+        permissions={permissions}
+        defaultRoleId={defaultRoleId}
+        canManage={canManageRoles}
+        applicableForOptions={toApplicationAuthzDefinitionOptions(authzConfig?.applicableForDefinitions ?? [])}
+      />
     </div>
   );
 }

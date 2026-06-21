@@ -60,18 +60,32 @@ import {
 } from '@/services/applications/types';
 import {
   buildApplicationId,
+  camelCaseApplicationIdSegment,
   generateApplicationIdSuffix,
   isValidApplicationIdPrefix,
+  isValidApplicationIdSegment,
+  normalizeApplicationIdSegment,
   normalizeApplicationIdPrefix,
 } from '@/services/applications/identifiers';
+import {
+  extractApplicationAuthzConfig,
+  normalizeApplicationAuthzDefinitions,
+  type ApplicationAuthzConfig,
+} from '@/services/applications/authz-config';
 
 const responseAccessSet = new Set<ApplicationAccessField>(applicationResponseFields);
 const tokenFieldSet = new Set<ApplicationAccessField>(applicationTokenFields);
 const ROOT_PERMISSION_SCOPE = 'root.individual';
+const applicationAuthzDefinitionTupleSchema = z.tuple([
+  z.string().trim().min(1, 'Name is required.'),
+  z.string().trim().min(1, 'Key is required.'),
+  z.string().trim(),
+]);
 
 const createApplicationSchema = z.object({
   name: z.string().trim().min(1, 'Application name is required.').max(120, 'Application name is too long.'),
   idPrefix: z.string().trim().min(1, 'Application identifier is required.').max(80, 'Application identifier is too long.'),
+  idSuffix: z.string().trim().min(1, 'Application suffix is required.').max(120, 'Application suffix is too long.'),
 });
 
 const saveSecretSchema = z.object({
@@ -143,6 +157,91 @@ export async function hasRootApplicationPermission(permissionName: string): Prom
   const personalAccountId = await getPersonalAccountId();
   if (!personalAccountId) return false;
   return checkPermissions([permissionName], personalAccountId, { roleScope: ROOT_PERMISSION_SCOPE });
+}
+
+async function canCurrentAccountCreateApplication(): Promise<boolean> {
+  return hasRootApplicationPermission(ROOT_APPLICATION_CREATE_PERMISSION);
+}
+
+async function reserveAvailableApplicationId(
+  tx: Prisma.TransactionClient,
+  idPrefix: string,
+  requestedSuffix: string,
+): Promise<{ appId: string; resolvedSuffix: string; appendedRandom: boolean }> {
+  const normalizedPrefix = normalizeApplicationIdPrefix(idPrefix.trim());
+  const normalizedBaseSuffix = normalizeApplicationIdSegment(requestedSuffix.trim());
+  if (!normalizedPrefix || !normalizedBaseSuffix) {
+    throw new Error('Application identifier parts are required.');
+  }
+
+  const attemptedSuffixes = new Set<string>();
+
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    const nextSuffix =
+      attempt === 0 ? normalizedBaseSuffix : `${normalizedBaseSuffix}${generateApplicationIdSuffix()}`;
+    if (attemptedSuffixes.has(nextSuffix)) continue;
+    attemptedSuffixes.add(nextSuffix);
+
+    const nextId = buildApplicationId(normalizedPrefix, nextSuffix);
+    const existing = await tx.application.findUnique({
+      where: { id: nextId },
+      select: { id: true },
+    });
+    if (existing) continue;
+
+    return {
+      appId: nextId,
+      resolvedSuffix: nextSuffix,
+      appendedRandom: attempt > 0,
+    };
+  }
+
+  throw new Error('Could not reserve a unique application identifier.');
+}
+
+export async function resolveAvailableApplicationId(input: {
+  idPrefix: string;
+  name?: string;
+  customSuffix?: string;
+}): Promise<{
+  success: boolean;
+  appId?: string;
+  resolvedSuffix?: string;
+  usedCustomSuffix?: boolean;
+  error?: string;
+}> {
+  const canCreateApplication = await canCurrentAccountCreateApplication();
+  if (!canCreateApplication) {
+    return { success: false, error: 'Permission denied.' };
+  }
+
+  const normalizedIdPrefix = normalizeApplicationIdPrefix(input.idPrefix.trim());
+  if (!normalizedIdPrefix || !isValidApplicationIdPrefix(normalizedIdPrefix)) {
+    return { success: false, error: 'Application identifier may only contain letters and numbers.' };
+  }
+
+  const baseSuffix = input.customSuffix?.trim()
+    ? normalizeApplicationIdSegment(input.customSuffix)
+    : camelCaseApplicationIdSegment(input.name ?? '');
+  if (!baseSuffix || !isValidApplicationIdSegment(baseSuffix)) {
+    return { success: false, error: 'Application ID suffix may only contain letters and numbers.' };
+  }
+
+  try {
+    const resolved = await prisma.$transaction((tx) =>
+      reserveAvailableApplicationId(tx, normalizedIdPrefix, baseSuffix),
+    );
+
+    return {
+      success: true,
+      appId: resolved.appId,
+      resolvedSuffix: resolved.resolvedSuffix,
+      usedCustomSuffix: Boolean(input.customSuffix?.trim()),
+    };
+  } catch (error) {
+    await logError('database', error, `resolveAvailableApplicationId:${normalizedIdPrefix}:${baseSuffix}`);
+    return { success: false, error: 'Could not resolve an application identifier.' };
+  }
 }
 
 export async function canCurrentAccountUseRootApplicationMode(): Promise<boolean> {
@@ -507,7 +606,7 @@ export async function deleteManagedApplication(appId: string): Promise<{ success
 /**
  * Function createManagedApplication.
  */
-export async function createManagedApplication(input: { name: string; idPrefix: string }) {
+export async function createManagedApplication(input: { name: string; idPrefix: string; idSuffix: string }) {
   const parsed = createApplicationSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: 'Invalid application details.' };
@@ -518,7 +617,7 @@ export async function createManagedApplication(input: { name: string; idPrefix: 
     return { success: false, error: 'Application identifier may only contain letters and numbers.' };
   }
 
-  const canCreateApplication = await hasRootApplicationPermission(ROOT_APPLICATION_CREATE_PERMISSION);
+  const canCreateApplication = await canCurrentAccountCreateApplication();
   if (!canCreateApplication) {
     return { success: false, error: 'Permission denied.' };
   }
@@ -564,21 +663,8 @@ export async function createManagedApplication(input: { name: string; idPrefix: 
           permissions: permissions.map((permission) => permission.name),
         },
       });
-      let applicationId = '';
-      for (let attempt = 0; attempt < 5; attempt += 1) {
-        const nextId = buildApplicationId(normalizedIdPrefix, generateApplicationIdSuffix());
-        const existing = await tx.application.findUnique({
-          where: { id: nextId },
-          select: { id: true },
-        });
-        if (existing) continue;
-        applicationId = nextId;
-        break;
-      }
-
-      if (!applicationId) {
-        throw new Error('Could not reserve a unique application identifier.');
-      }
+      const reservedId = await reserveAvailableApplicationId(tx, normalizedIdPrefix, parsed.data.idSuffix);
+      const applicationId = reservedId.appId;
 
       const createdApp = await tx.application.create({
         data: {
@@ -2710,6 +2796,9 @@ const saveAppConfigSchema = z.object({
   party: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]).default(1),
   allowDevMode: z.boolean().optional().default(false),
   allowDevIpMode: z.boolean().optional().default(false),
+  definedScopes: z.array(applicationAuthzDefinitionTupleSchema).default([]),
+  allowMultipleDefinedScopes: z.boolean().optional().default(false),
+  applicableForDefinitions: z.array(applicationAuthzDefinitionTupleSchema).default([]),
 });
 
 function enforcePartyFieldRules(
@@ -2747,12 +2836,24 @@ export async function saveAppConfig(
     return { success: false, fieldErrors };
   }
 
-  const { appId, secretKey, access, party, allowDevMode, allowDevIpMode } = parsed.data;
+  const {
+    appId,
+    secretKey,
+    access,
+    party,
+    allowDevMode,
+    allowDevIpMode,
+    definedScopes,
+    allowMultipleDefinedScopes,
+    applicableForDefinitions,
+  } = parsed.data;
   const sanitizedAccess = enforcePartyFieldRules(
     party,
     access.filter((field) => responseAccessSet.has(field)),
   );
   const fixedTokenFields: ApplicationAccessField[] = [];
+  const normalizedDefinedScopes = normalizeApplicationAuthzDefinitions(definedScopes);
+  const normalizedApplicableForDefinitions = normalizeApplicationAuthzDefinitions(applicableForDefinitions);
 
   const canEdit = await canCurrentAccountUpdateApplicationConfig(appId);
   if (!canEdit) return { success: false, error: 'You do not have permission to configure this application.' };
@@ -2779,6 +2880,9 @@ export async function saveAppConfig(
         token_fields: fixedTokenFields,
         allowDevMode,
         allowDevIpMode,
+        definedScopes: normalizedDefinedScopes,
+        allowMultipleDefinedScopes,
+        applicableForDefinitions: normalizedApplicableForDefinitions,
       },
     };
     if (secretKey && secretKey.trim().length >= 16) {
@@ -2814,6 +2918,9 @@ export async function getAppConfigData(appId: string, options?: { rootMode?: boo
   roleUpdateWebhookUrl: string | null;
   allowDevMode: boolean;
   allowDevIpMode: boolean;
+  definedScopes: ApplicationAuthzConfig['definedScopes'];
+  allowMultipleDefinedScopes: boolean;
+  applicableForDefinitions: ApplicationAuthzConfig['applicableForDefinitions'];
   status: string;
 } | null> {
   const accountId = await getActiveAccountId();
@@ -2854,6 +2961,7 @@ export async function getAppConfigData(appId: string, options?: { rootMode?: boo
     const legacyDetails = app.details && typeof app.details === 'object'
       ? (app.details as Record<string, unknown>)
       : {};
+    const authzConfig = extractApplicationAuthzConfig(app.details);
 
     const responseFieldSource =
       app.responseFields.length > 0 ? app.responseFields : (legacyDetails as any).access ?? [];
@@ -2882,10 +2990,28 @@ export async function getAppConfigData(appId: string, options?: { rootMode?: boo
       roleUpdateWebhookUrl: roleUpdateWebhookRecord?.value ?? null,
       allowDevMode,
       allowDevIpMode,
+      definedScopes: authzConfig.definedScopes,
+      allowMultipleDefinedScopes: authzConfig.allowMultipleDefinedScopes,
+      applicableForDefinitions: authzConfig.applicableForDefinitions,
       status: app.status ?? 'development',
     };
   } catch (error) {
     await logError('database', error, `getAppConfigData:${appId}`);
+    return null;
+  }
+}
+
+export async function getApplicationAuthzConfig(appId: string): Promise<ApplicationAuthzConfig | null> {
+  try {
+    const app = await prisma.application.findUnique({
+      where: { id: appId },
+      select: { details: true },
+    });
+
+    if (!app) return null;
+    return extractApplicationAuthzConfig(app.details);
+  } catch (error) {
+    await logError('database', error, `getApplicationAuthzConfig:${appId}`);
     return null;
   }
 }

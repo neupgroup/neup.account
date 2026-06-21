@@ -78,6 +78,9 @@ export default async function ApplicationConfigQueryPage({ searchParams }: Props
         initialRoleUpdateWebhookUrl={config.roleUpdateWebhookUrl}
         initialAllowDevMode={config.allowDevMode}
         initialAllowDevIpMode={config.allowDevIpMode}
+        initialDefinedScopes={config.definedScopes}
+        initialAllowMultipleDefinedScopes={config.allowMultipleDefinedScopes}
+        initialApplicableForDefinitions={config.applicableForDefinitions}
       />
     </div>
   );

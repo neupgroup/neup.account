@@ -3,6 +3,7 @@ import {
   canCurrentAccountManageApplicationRoles,
   canCurrentAccountViewApplicationRoles,
   getApplicationDetailsForViewerV2,
+  getApplicationAuthzConfig,
 } from '@/services/applications/manage';
 import { getAppPermissions } from '@/services/applications/authz-manage';
 import { BackButton } from '@/components/ui/back-button';
@@ -11,6 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { PermissionPanel } from '@/app/(manage)/application/_components/permission-panel';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
+import { toApplicationAuthzDefinitionOptions } from '@/services/applications/authz-config';
 
 type Props = {
   searchParams: Promise<{ application?: string | string[]; mode?: string }>;
@@ -49,7 +51,10 @@ export default async function ApplicationPermissionsQueryPage({ searchParams }: 
     );
   }
 
-  const permissions = await getAppPermissions(applicationId);
+  const [permissions, authzConfig] = await Promise.all([
+    getAppPermissions(applicationId),
+    getApplicationAuthzConfig(applicationId),
+  ]);
 
   return (
     <div className="grid gap-8">
@@ -61,7 +66,13 @@ export default async function ApplicationPermissionsQueryPage({ searchParams }: 
         />
       </div>
 
-      <PermissionPanel appId={applicationId} initialPermissions={permissions} canManage={canManagePermissions} />
+      <PermissionPanel
+        appId={applicationId}
+        initialPermissions={permissions}
+        canManage={canManagePermissions}
+        definedScopeOptions={toApplicationAuthzDefinitionOptions(authzConfig?.definedScopes ?? [])}
+        allowMultipleDefinedScopes={Boolean(authzConfig?.allowMultipleDefinedScopes)}
+      />
     </div>
   );
 }

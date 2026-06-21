@@ -35,11 +35,15 @@ import {
 import { isBuiltInApplicationManagementPermissionName } from '@/services/applications/permission-definitions';
 import { formatRoleScopeForDisplay, normalizeRoleScope } from '@/services/role-scopes';
 import { PermissionScopeSelector } from './scope-selectors';
+import { AuthzDefinitionSelector } from './authz-definition-selector';
+import type { ApplicationAuthzDefinitionOption } from '@/services/applications/authz-config';
 
 type Props = {
   appId: string;
   initialPermissions: AppPermission[];
   canManage: boolean;
+  definedScopeOptions: ApplicationAuthzDefinitionOption[];
+  allowMultipleDefinedScopes: boolean;
 };
 
 type PermissionSearchFilters = {
@@ -115,7 +119,13 @@ function parsePermissionSearch(input: string): PermissionSearchFilters {
   return filters;
 }
 
-export function PermissionPanel({ appId, initialPermissions, canManage }: Props) {
+export function PermissionPanel({
+  appId,
+  initialPermissions,
+  canManage,
+  definedScopeOptions,
+  allowMultipleDefinedScopes,
+}: Props) {
   const { toast } = useToast();
   const [permissions, setPermissions] = useState<AppPermission[]>(initialPermissions);
   const [search, setSearch] = useState('');
@@ -124,11 +134,13 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
   const [addName, setAddName] = useState('');
   const [addDesc, setAddDesc] = useState('');
   const [addScope, setAddScope] = useState<string[]>([]);
+  const [addDefinedScopeKeys, setAddDefinedScopeKeys] = useState<string[]>([]);
   const [addPending, setAddPending] = useState(false);
 
   const [editTarget, setEditTarget] = useState<AppPermission | null>(null);
   const [editDesc, setEditDesc] = useState('');
   const [editScope, setEditScope] = useState<string[]>([]);
+  const [editDefinedScopeKeys, setEditDefinedScopeKeys] = useState<string[]>([]);
   const [editPending, setEditPending] = useState(false);
   const [scopeRemovalImpact, setScopeRemovalImpact] = useState<PermissionScopeImpactRole[]>([]);
 
@@ -163,12 +175,14 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
     setEditTarget(permission);
     setEditDesc(permission.description ?? '');
     setEditScope(permission.scope);
+    setEditDefinedScopeKeys(permission.definedScopeKeys);
   };
 
   const closeEdit = () => {
     setEditTarget(null);
     setEditDesc('');
     setEditScope([]);
+    setEditDefinedScopeKeys([]);
     setScopeRemovalImpact([]);
   };
 
@@ -199,6 +213,7 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
       name: trimmed,
       description: addDesc || undefined,
       scope: addScope,
+      definedScopeKeys: addDefinedScopeKeys,
     });
     setAddPending(false);
 
@@ -212,6 +227,7 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
     setAddName('');
     setAddDesc('');
     setAddScope([]);
+    setAddDefinedScopeKeys([]);
     setAddOpen(false);
     toast({ title: 'Permission created' });
   };
@@ -234,6 +250,7 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
       permissionId: editTarget.id,
       description: editDesc || undefined,
       scope: editScope,
+      definedScopeKeys: editDefinedScopeKeys,
     });
     setEditPending(false);
 
@@ -264,6 +281,7 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
       permissionId: editTarget.id,
       description: editDesc || undefined,
       scope: editScope,
+      definedScopeKeys: editDefinedScopeKeys,
       confirmScopeRemoval: true,
     });
     setEditPending(false);
@@ -352,6 +370,14 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
                         {formatRoleScopeForDisplay(scope)}
                       </Badge>
                     ))}
+                    {permission.definedScopeKeys.map((key) => {
+                      const option = definedScopeOptions.find((item) => item.key === key);
+                      return (
+                        <Badge key={`${permission.id}-${key}`} variant="outline" className="text-xs">
+                          {option?.name ?? key}
+                        </Badge>
+                      );
+                    })}
                   </div>
                   {systemManaged ? (
                     <p className="mt-1 text-xs text-muted-foreground">
@@ -389,6 +415,7 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
             setAddName('');
             setAddDesc('');
             setAddScope([]);
+            setAddDefinedScopeKeys([]);
           }
         }}
       >
@@ -403,6 +430,15 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
             <Input value={addName} onChange={(event) => setAddName(event.target.value)} placeholder="Title, e.g. Orders Read" autoFocus />
             <Input value={addDesc} onChange={(event) => setAddDesc(event.target.value)} placeholder="Description (optional)" />
             <PermissionScopeSelector key={`add-${addOpen ? 'open' : 'closed'}`} value={addScope} onChange={setAddScope} />
+            <AuthzDefinitionSelector
+              label="Defined scopes"
+              description="Application-defined scopes stored in permission metadata."
+              options={definedScopeOptions}
+              value={addDefinedScopeKeys}
+              onChange={setAddDefinedScopeKeys}
+              allowMultiple={allowMultipleDefinedScopes}
+              emptyLabel="No app-defined scopes configured on the application configuration page."
+            />
           </div>
           <DialogFooter>
             <DialogClose asChild>
@@ -427,6 +463,15 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
             <Input value={editTarget?.name ?? ''} disabled aria-label="Permission title" />
             <Input value={editDesc} onChange={(event) => setEditDesc(event.target.value)} placeholder="Description (optional)" autoFocus />
             <PermissionScopeSelector key={editTarget?.id ?? 'edit-closed'} value={editScope} onChange={setEditScope} />
+            <AuthzDefinitionSelector
+              label="Defined scopes"
+              description="Application-defined scopes stored in permission metadata."
+              options={definedScopeOptions}
+              value={editDefinedScopeKeys}
+              onChange={setEditDefinedScopeKeys}
+              allowMultiple={allowMultipleDefinedScopes}
+              emptyLabel="No app-defined scopes configured on the application configuration page."
+            />
             {scopeRemovalImpact.length > 0 ? (
               <div className="rounded-lg border border-amber-500/40 bg-amber-50 p-3 text-sm text-amber-900">
                 Saving will remove this permission from {scopeRemovalImpact.length} incompatible {scopeRemovalImpact.length === 1 ? 'role' : 'roles'}.

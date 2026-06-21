@@ -27,7 +27,7 @@ export default async function AddApplicationPage() {
       <Card className="max-w-2xl">
         <CardHeader>
           <CardTitle>Name your application</CardTitle>
-          <CardDescription>Enter only the application name to create it.</CardDescription>
+          <CardDescription>Choose the fixed app ID prefix, then confirm the generated or custom second part before creating.</CardDescription>
         </CardHeader>
         <CardContent>
           <ApplicationCreateForm />

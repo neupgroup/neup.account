@@ -18,7 +18,8 @@ import { redirectInApp } from '@/core/helper/navigation';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { getRoleScopeCompatibilityError, isPermissionScopeAllowedForRoleScope } from '@/services/applications/role-scope-compatibility';
 import { isBuiltInApplicationManagementPermissionName } from '@/services/applications/permission-definitions';
-import { StringTagInput } from './string-tag-input';
+import { AuthzDefinitionSelector } from './authz-definition-selector';
+import type { ApplicationAuthzDefinitionOption } from '@/services/applications/authz-config';
 
 type Props = {
   appId: string;
@@ -26,9 +27,17 @@ type Props = {
   permissions: AppPermission[];
   defaultRoleId: string | null;
   canManage: boolean;
+  applicableForOptions: ApplicationAuthzDefinitionOption[];
 };
 
-export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: initialDefaultRoleId, canManage }: Props) {
+export function RoleDetailEditor({
+  appId,
+  role,
+  permissions,
+  defaultRoleId: initialDefaultRoleId,
+  canManage,
+  applicableForOptions,
+}: Props) {
   const router = useRouter();
   const { toast } = useToast();
   const [description, setDescription] = useState(role.description ?? '');
@@ -262,13 +271,14 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
             onChange={(event) => setDescription(event.target.value)}
             placeholder="Description (optional)"
           />
-          <StringTagInput
+          <AuthzDefinitionSelector
             label="Applicable for"
+            description="Choose the configured applicable-for targets for this role."
+            options={applicableForOptions}
             value={applicableFor}
             onChange={setApplicableFor}
             disabled={!canManage || isSystemRole}
-            placeholder="application"
-            hint='Custom string tags such as "application", "portfolio", "account", or "account.brand".'
+            emptyLabel="No applicable-for definitions configured on the application configuration page."
           />
           {isSystemRole ? (
             <p className="text-xs text-muted-foreground">

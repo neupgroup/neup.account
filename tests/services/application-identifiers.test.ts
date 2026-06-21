@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest';
 import {
   buildApplicationId,
   buildAuthzEntityId,
+  camelCaseApplicationIdSegment,
   humanizeIdentifier,
   normalizeApplicationIdPrefix,
+  normalizeApplicationIdSegment,
   slugifyAuthzTitle,
 } from '@/services/applications/identifiers';
 import { extractRolePermissionNames } from '@/services/access-model';
@@ -15,6 +17,11 @@ describe('application identifiers', () => {
 
   it('builds application ids with a fixed suffix shape', () => {
     expect(buildApplicationId('AcmePortal', 'abc123xyz')).toBe('AcmePortal.abc123xyz');
+  });
+
+  it('builds camelCase application suffixes without special characters', () => {
+    expect(camelCaseApplicationIdSegment('My sample app')).toBe('mySampleApp');
+    expect(normalizeApplicationIdSegment('my Sample-App_01')).toBe('mySampleApp01');
   });
 
   it('slugifies authz titles for deterministic ids', () => {

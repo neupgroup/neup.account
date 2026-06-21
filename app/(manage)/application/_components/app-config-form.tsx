@@ -21,6 +21,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, Eye, EyeOff, Plus, Trash2, KeyRound, Database, Globe } from 'lucide-react';
+import { AuthzDefinitionEditor } from './authz-definition-editor';
+import type { ApplicationAuthzDefinitionTuple } from '@/services/applications/authz-config';
 
 // ---------------------------------------------------------------------------
 // Field labels
@@ -66,6 +68,9 @@ const schema = z.object({
   party: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]).default(1),
   allowDevMode: z.boolean().default(false),
   allowDevIpMode: z.boolean().default(false),
+  definedScopes: z.array(z.tuple([z.string(), z.string(), z.string()])).default([]),
+  allowMultipleDefinedScopes: z.boolean().default(false),
+  applicableForDefinitions: z.array(z.tuple([z.string(), z.string(), z.string()])).default([]),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -90,6 +95,9 @@ type Props = {
   initialRoleUpdateWebhookUrl: string | null;
   initialAllowDevMode: boolean;
   initialAllowDevIpMode: boolean;
+  initialDefinedScopes: ApplicationAuthzDefinitionTuple[];
+  initialAllowMultipleDefinedScopes: boolean;
+  initialApplicableForDefinitions: ApplicationAuthzDefinitionTuple[];
 };
 
 // ---------------------------------------------------------------------------
@@ -109,6 +117,9 @@ export function AppConfigForm({
   initialRoleUpdateWebhookUrl,
   initialAllowDevMode,
   initialAllowDevIpMode,
+  initialDefinedScopes,
+  initialAllowMultipleDefinedScopes,
+  initialApplicableForDefinitions,
 }: Props) {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
@@ -130,6 +141,9 @@ export function AppConfigForm({
       party: initialParty,
       allowDevMode: initialAllowDevMode,
       allowDevIpMode: initialAllowDevIpMode,
+      definedScopes: initialDefinedScopes,
+      allowMultipleDefinedScopes: initialAllowMultipleDefinedScopes,
+      applicableForDefinitions: initialApplicableForDefinitions,
     },
   });
 
@@ -200,6 +214,9 @@ export function AppConfigForm({
         party: values.party,
         allowDevMode: values.allowDevMode,
         allowDevIpMode: values.allowDevIpMode,
+        definedScopes: values.definedScopes,
+        allowMultipleDefinedScopes: values.allowMultipleDefinedScopes,
+        applicableForDefinitions: values.applicableForDefinitions,
       });
       if (result.success) {
         toast({ title: 'Saved', description: 'Configuration updated.' });
@@ -480,6 +497,63 @@ export function AppConfigForm({
                   </pre>
                 ) : null}
               </div>
+            </CardContent>
+            <CardFooter>
+              <Button type="submit" disabled={isPending}>
+                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Configuration
+              </Button>
+            </CardFooter>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Database className="h-4 w-4 text-muted-foreground" />
+                <CardTitle>Authorization Definitions</CardTitle>
+              </div>
+              <CardDescription>
+                Define reusable scope and applicable-for options for permission and role setup.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              <AuthzDefinitionEditor
+                label="Defined scopes"
+                description='Saved as JSON rows in the format `["name", "key", "description"]`.'
+                value={form.watch('definedScopes')}
+                onChange={(value) => form.setValue('definedScopes', value, { shouldDirty: true })}
+                disabled={!canUpdate}
+                emptyLabel="No scope definitions configured yet."
+              />
+              <FormField
+                control={form.control}
+                name="allowMultipleDefinedScopes"
+                render={({ field }) => (
+                  <FormItem className="flex items-start gap-3 rounded-lg border p-4">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={(checked) => field.onChange(Boolean(checked))}
+                        disabled={!canUpdate}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>Allow multiple defined scopes per permission</FormLabel>
+                      <p className="text-xs text-muted-foreground">
+                        If disabled, permission creation can select only one of the configured defined scopes.
+                      </p>
+                    </div>
+                  </FormItem>
+                )}
+              />
+              <AuthzDefinitionEditor
+                label="Applicable for"
+                description='Saved as JSON rows in the format `["name", "key", "description"]`.'
+                value={form.watch('applicableForDefinitions')}
+                onChange={(value) => form.setValue('applicableForDefinitions', value, { shouldDirty: true })}
+                disabled={!canUpdate}
+                emptyLabel="No applicable-for definitions configured yet."
+              />
             </CardContent>
             <CardFooter>
               <Button type="submit" disabled={isPending}>

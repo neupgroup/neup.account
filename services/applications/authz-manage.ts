@@ -33,6 +33,11 @@ import {
   revalidateApplicationRoleRoutes,
 } from '@/services/applications/revalidate-routes';
 import { buildAuthzEntityId } from '@/services/applications/identifiers';
+import {
+  extractApplicationAuthzConfig,
+  normalizeConfiguredSelection,
+  type ApplicationAuthzConfig,
+} from '@/services/applications/authz-config';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -43,6 +48,7 @@ export type AppPermission = {
   name: string;
   description: string | null;
   scope: PermissionScopeOption[];
+  definedScopeKeys: string[];
 };
 
 export type AppRole = {
@@ -73,6 +79,30 @@ function normalizeApplicableFor(value: Prisma.JsonValue | null | undefined): str
   );
 }
 
+function normalizePermissionDefinedScopeKeys(
+  value: Prisma.JsonValue | null | undefined,
+  allowedKeys: string[],
+  allowMultiple: boolean,
+): string[] {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return [];
+
+  const record = value as Record<string, unknown>;
+  const rawValues = Array.isArray(record.definedScopeKeys)
+    ? record.definedScopeKeys.filter((item): item is string => typeof item === 'string')
+    : [];
+
+  return normalizeConfiguredSelection(rawValues, allowedKeys, allowMultiple);
+}
+
+async function getApplicationAuthzConfigForValidation(appId: string): Promise<ApplicationAuthzConfig> {
+  const application = await prisma.application.findUnique({
+    where: { id: appId },
+    select: { details: true },
+  });
+
+  return extractApplicationAuthzConfig(application?.details);
+}
+
 export async function getAppDefaultRoleId(appId: string): Promise<string | null> {
   try {
     const app = await prisma.application.findUnique({
@@ -92,6 +122,10 @@ export async function getAppDefaultRoleId(appId: string): Promise<string | null>
 
 const GLOBAL_AUTHZ_APP_ID = 'neup.account';
 const GLOBAL_AUTHZ_SYSTEM_ROLE_IDS = new Set(['application.owner', 'application.manage']);
+const AUTHZ_SYSTEM_SYNC_TRANSACTION_OPTIONS = {
+  maxWait: 10_000,
+  timeout: 20_000,
+} as const;
 
 function getSystemRoleScope(roleId: string): string {
   if (roleId === 'application.owner') return 'public.individual';
@@ -370,7 +404,7 @@ async function ensureApplicationManagementRoles(): Promise<void> {
       await syncRolePermissionMappings(tx, roleId, getSystemRoleScope(roleId), permissionIds);
       await syncRolePermissionsDenormalized(tx, roleId);
     }
-  });
+  }, AUTHZ_SYSTEM_SYNC_TRANSACTION_OPTIONS);
 }
 
 async function assertCanViewAuthz(appId: string): Promise<{ accountId: string } | { error: string }> {
@@ -503,16 +537,23 @@ export async function getAppPermissions(appId: string): Promise<AppPermission[]>
   if ('error' in auth) return [];
 
   try {
+    const authzConfig = await getApplicationAuthzConfigForValidation(appId);
+    const allowedDefinedScopeKeys = authzConfig.definedScopes.map(([, key]) => key);
     const records = await prisma.authzPermission.findMany({
       where: { appId },
       orderBy: { name: 'asc' },
-      select: { id: true, name: true, description: true, scope: true },
+      select: { id: true, name: true, description: true, scope: true, tag: true },
     });
     return records.map((record) => ({
       id: record.id,
       name: record.name,
       description: record.description,
       scope: normalizePermissionScopes(record.scope),
+      definedScopeKeys: normalizePermissionDefinedScopeKeys(
+        record.tag,
+        allowedDefinedScopeKeys,
+        authzConfig.allowMultipleDefinedScopes,
+      ),
     }));
   } catch (error) {
     await logError('database', error, `getAppPermissions:${appId}`);
@@ -525,6 +566,7 @@ export async function createAppPermission(input: {
   name: string;
   description?: string;
   scope: string[];
+  definedScopeKeys?: string[];
 }): Promise<{ success: boolean; permission?: AppPermission; error?: string }> {
   const auth = await assertCanManageAuthz(input.appId);
   if ('error' in auth) return { success: false, error: auth.error };
@@ -540,6 +582,16 @@ export async function createAppPermission(input: {
   const scopes = validatePermissionScopes(input.scope);
   if (!scopes) {
     return { success: false, error: permissionScopeError() };
+  }
+  const authzConfig = await getApplicationAuthzConfigForValidation(input.appId);
+  const allowedDefinedScopeKeys = authzConfig.definedScopes.map(([, key]) => key);
+  const definedScopeKeys = normalizeConfiguredSelection(
+    input.definedScopeKeys,
+    allowedDefinedScopeKeys,
+    authzConfig.allowMultipleDefinedScopes,
+  );
+  if ((input.definedScopeKeys?.length ?? 0) !== definedScopeKeys.length) {
+    return { success: false, error: 'Selected defined scopes are invalid for this application.' };
   }
 
   const existing = await prisma.authzPermission.findUnique({
@@ -558,8 +610,11 @@ export async function createAppPermission(input: {
         description: input.description?.trim() || null,
         scope: scopes,
         appId: input.appId,
+        tag: {
+          definedScopeKeys,
+        },
       },
-      select: { id: true, name: true, description: true, scope: true },
+      select: { id: true, name: true, description: true, scope: true, tag: true },
     });
 
     revalidatePath(`/data/appconnection/${input.appId}`);
@@ -570,6 +625,11 @@ export async function createAppPermission(input: {
         name: record.name,
         description: record.description,
         scope: normalizePermissionScopes(record.scope),
+        definedScopeKeys: normalizePermissionDefinedScopeKeys(
+          record.tag,
+          allowedDefinedScopeKeys,
+          authzConfig.allowMultipleDefinedScopes,
+        ),
       },
     };
   } catch (error) {
@@ -583,6 +643,7 @@ export async function updateAppPermission(input: {
   permissionId: string;
   description?: string;
   scope: string[];
+  definedScopeKeys?: string[];
   confirmScopeRemoval?: boolean;
 }): Promise<{
   success: boolean;
@@ -597,6 +658,16 @@ export async function updateAppPermission(input: {
   const scopes = validatePermissionScopes(input.scope);
   if (!scopes) {
     return { success: false, error: permissionScopeError() };
+  }
+  const authzConfig = await getApplicationAuthzConfigForValidation(input.appId);
+  const allowedDefinedScopeKeys = authzConfig.definedScopes.map(([, key]) => key);
+  const definedScopeKeys = normalizeConfiguredSelection(
+    input.definedScopeKeys,
+    allowedDefinedScopeKeys,
+    authzConfig.allowMultipleDefinedScopes,
+  );
+  if ((input.definedScopeKeys?.length ?? 0) !== definedScopeKeys.length) {
+    return { success: false, error: 'Selected defined scopes are invalid for this application.' };
   }
 
   try {
@@ -643,8 +714,11 @@ export async function updateAppPermission(input: {
         data: {
           description: input.description?.trim() || null,
           scope: scopes,
+          tag: {
+            definedScopeKeys,
+          },
         },
-        select: { id: true, name: true, description: true, scope: true },
+        select: { id: true, name: true, description: true, scope: true, tag: true },
       });
 
       return updated;
@@ -663,6 +737,11 @@ export async function updateAppPermission(input: {
         name: record.name,
         description: record.description,
         scope: normalizePermissionScopes(record.scope),
+        definedScopeKeys: normalizePermissionDefinedScopeKeys(
+          record.tag,
+          allowedDefinedScopeKeys,
+          authzConfig.allowMultipleDefinedScopes,
+        ),
       },
     };
   } catch (error) {
@@ -712,6 +791,8 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
   if ('error' in auth) return [];
 
   try {
+    const authzConfig = await getApplicationAuthzConfigForValidation(appId);
+    const allowedDefinedScopeKeys = authzConfig.definedScopes.map(([, key]) => key);
     const roles = await prisma.authzRole.findMany({
       where: { appId },
       orderBy: { name: 'asc' },
@@ -730,6 +811,7 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
                 name: true,
                 description: true,
                 scope: true,
+                tag: true,
               },
             },
           },
@@ -751,6 +833,11 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
           name: permission.name,
           description: permission.description ?? null,
           scope: normalizePermissionScopes(permission.scope),
+          definedScopeKeys: normalizePermissionDefinedScopeKeys(
+            permission.tag,
+            allowedDefinedScopeKeys,
+            authzConfig.allowMultipleDefinedScopes,
+          ),
         }];
       }),
     }));
@@ -793,7 +880,14 @@ export async function createAppRole(input: {
     if (!isKnownRoleScope(scope)) {
       return { success: false, error: roleScopeError() };
     }
-    const applicableFor = Array.from(new Set((input.applicableFor ?? []).map((item) => item.trim()).filter(Boolean)));
+    const authzConfig = await getApplicationAuthzConfigForValidation(input.appId);
+    const allowedApplicableForKeys = authzConfig.applicableForDefinitions.map(([, key]) => key);
+    const applicableFor = allowedApplicableForKeys.length > 0
+      ? normalizeConfiguredSelection(input.applicableFor, allowedApplicableForKeys, true)
+      : Array.from(new Set((input.applicableFor ?? []).map((item) => item.trim()).filter(Boolean)));
+    if (allowedApplicableForKeys.length > 0 && (input.applicableFor?.length ?? 0) !== applicableFor.length) {
+      return { success: false, error: 'Selected applicable-for values are invalid for this application.' };
+    }
 
     const role = await prisma.$transaction(async (tx) => {
       const created = await tx.authzRole.create({
@@ -926,6 +1020,14 @@ export async function updateAppRole(input: {
     if (input.appId === GLOBAL_AUTHZ_APP_ID && isGlobalAuthzSystemRole(input.roleId)) {
       return { success: false, error: 'This system role cannot be modified.' };
     }
+    const authzConfig = await getApplicationAuthzConfigForValidation(input.appId);
+    const allowedApplicableForKeys = authzConfig.applicableForDefinitions.map(([, key]) => key);
+    const applicableFor = allowedApplicableForKeys.length > 0
+      ? normalizeConfiguredSelection(input.applicableFor, allowedApplicableForKeys, true)
+      : Array.from(new Set((input.applicableFor ?? []).map((item) => item.trim()).filter(Boolean)));
+    if (allowedApplicableForKeys.length > 0 && (input.applicableFor?.length ?? 0) !== applicableFor.length) {
+      return { success: false, error: 'Selected applicable-for values are invalid for this application.' };
+    }
 
     await prisma.$transaction(async (tx) => {
       const role = await tx.authzRole.findFirst({
@@ -943,7 +1045,6 @@ export async function updateAppRole(input: {
       if (!nextScope || !isKnownRoleScope(nextScope)) {
         throw new Error(roleScopeError());
       }
-      const applicableFor = Array.from(new Set((input.applicableFor ?? []).map((item) => item.trim()).filter(Boolean)));
       if (typeof input.name === 'string' && input.name.trim() !== role.name) {
         throw new Error('Role title cannot be changed after creation.');
       }

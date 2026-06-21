@@ -9,13 +9,15 @@ import { createAppRole } from '@/services/applications/authz-manage';
 import { redirectInApp } from '@/core/helper/navigation';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { RoleScopeSelector } from './scope-selectors';
-import { StringTagInput } from './string-tag-input';
+import { AuthzDefinitionSelector } from './authz-definition-selector';
+import type { ApplicationAuthzDefinitionOption } from '@/services/applications/authz-config';
 
 type Props = {
   appId: string;
+  applicableForOptions: ApplicationAuthzDefinitionOption[];
 };
 
-export function RoleCreateForm({ appId }: Props) {
+export function RoleCreateForm({ appId, applicableForOptions }: Props) {
   const router = useRouter();
   const { toast } = useToast();
   const [name, setName] = useState('');
@@ -54,12 +56,13 @@ export function RoleCreateForm({ appId }: Props) {
       <Input value={name} onChange={(event) => setName(event.target.value)} placeholder="Role title, e.g. Viewer" />
       <Input value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Description (optional)" />
       <RoleScopeSelector value={scope} onChange={setScope} />
-      <StringTagInput
+      <AuthzDefinitionSelector
         label="Applicable for"
+        description="Choose the configured applicable-for targets for this role."
+        options={applicableForOptions}
         value={applicableFor}
         onChange={setApplicableFor}
-        placeholder="application"
-        hint='Custom string tags such as "application", "portfolio", or "account.brand".'
+        emptyLabel="No applicable-for definitions configured on the application configuration page."
       />
 
       <div className="flex justify-end gap-2">

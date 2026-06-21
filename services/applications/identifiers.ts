@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 
 const APPLICATION_ID_PREFIX_PATTERN = /^[0-9A-Za-z]+$/;
+const APPLICATION_ID_SEGMENT_PATTERN = /^[0-9A-Za-z]+$/;
 
 export function normalizeApplicationIdPrefix(value: string): string {
   return value.replace(/[^0-9A-Za-z]/g, '');
@@ -18,6 +19,32 @@ export function generateApplicationIdSuffix(): string {
 
 export function buildApplicationId(prefix: string, suffix = generateApplicationIdSuffix()): string {
   return `${prefix}.${suffix}`;
+}
+
+export function normalizeApplicationIdSegment(value: string): string {
+  return value.replace(/[^0-9A-Za-z]/g, '');
+}
+
+export function isValidApplicationIdSegment(value: string): boolean {
+  return APPLICATION_ID_SEGMENT_PATTERN.test(value);
+}
+
+export function camelCaseApplicationIdSegment(value: string): string {
+  const parts = value
+    .trim()
+    .split(/[^0-9A-Za-z]+/)
+    .map((part) => part.replace(/[^0-9A-Za-z]/g, ''))
+    .filter(Boolean);
+
+  if (parts.length === 0) return '';
+
+  return parts
+    .map((part, index) => {
+      const lower = part.toLowerCase();
+      if (index === 0) return lower;
+      return lower.charAt(0).toUpperCase() + lower.slice(1);
+    })
+    .join('');
 }
 
 export function slugifyAuthzTitle(value: string): string {

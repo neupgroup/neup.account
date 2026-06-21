@@ -11,6 +11,12 @@ const LEGACY_ENCODED_SCOPE_PATTERN =
   /^(managable|managed|public|toApprove|root)\.i([01])([01])b([01])([01])$/;
 
 const ACCOUNT_KEYS: ScopeAccountKey[] = ['individual', 'dependent', 'brand', 'branch'];
+const SCOPE_AUDIENCE_LABELS: Record<ScopeAccountKey, string> = {
+  individual: 'individual',
+  dependent: 'dependent',
+  brand: 'brand',
+  branch: 'branch',
+};
 
 const LEGACY_SCOPE_MAP: Record<string, string[]> = {
   root: ['root.1000'],
@@ -235,3 +241,30 @@ export function formatScopeAudience(scope: string | null | undefined): string {
   return firstEnabledAccountKey(decoded.audience) ?? '';
 }
 
+export function formatMergedScopeLabels(
+  scopes: Array<string | null | undefined>,
+): string[] {
+  const grouped = new Map<ScopeMode, Set<string>>();
+
+  for (const scope of scopes) {
+    const expandedScopes = expandRoleScope(scope);
+    for (const expandedScope of expandedScopes) {
+      const decoded = decodeRoleScope(expandedScope);
+      if (!decoded) continue;
+
+      const audienceKey = firstEnabledAccountKey(decoded.audience);
+      if (!audienceKey) continue;
+
+      const labels = grouped.get(decoded.mode) ?? new Set<string>();
+      labels.add(SCOPE_AUDIENCE_LABELS[audienceKey]);
+      grouped.set(decoded.mode, labels);
+    }
+  }
+
+  return ROLE_SCOPE_MODES
+    .filter((mode) => grouped.has(mode))
+    .map((mode) => {
+      const labels = Array.from(grouped.get(mode) ?? []).sort((a, b) => a.localeCompare(b));
+      return `${mode}(${labels.join(',')})`;
+    });
+}

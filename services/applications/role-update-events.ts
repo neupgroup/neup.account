@@ -14,6 +14,7 @@ type RolePayload = {
   name: string;
   description: string | null;
   scope: string | null;
+  applicableFor: string[];
   permissions: string[];
 };
 
@@ -56,6 +57,18 @@ function extractPermissionNames(raw: unknown): string[] {
   return Array.from(new Set(out));
 }
 
+function extractApplicableFor(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  return Array.from(
+    new Set(
+      raw
+        .filter((item): item is string => typeof item === 'string')
+        .map((item) => item.trim())
+        .filter(Boolean),
+    ),
+  );
+}
+
 export async function dispatchRoleUpdateWebhook(input: {
   appId: string;
   eventType: RoleEventType;
@@ -94,6 +107,7 @@ export async function dispatchRoleUpdateWebhook(input: {
         name: input.role.name,
         description: input.role.description,
         scope: input.role.scope,
+        applicableFor: input.role.applicableFor,
         permissions: input.role.permissions,
       };
     }
@@ -165,7 +179,7 @@ export async function getRolePayload(appId: string, roleId: string): Promise<Rol
   try {
     const role = await prisma.authzRole.findFirst({
       where: { id: roleId, appId },
-      select: { id: true, name: true, description: true, scope: true, permissions: true },
+      select: { id: true, name: true, description: true, scope: true, applicableFor: true, permissions: true },
     });
     if (!role) return null;
     return {
@@ -173,6 +187,7 @@ export async function getRolePayload(appId: string, roleId: string): Promise<Rol
       name: role.name,
       description: role.description ?? null,
       scope: role.scope ?? null,
+      applicableFor: extractApplicableFor(role.applicableFor),
       permissions: extractPermissionNames(role.permissions),
     };
   } catch (error) {

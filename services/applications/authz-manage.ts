@@ -48,6 +48,7 @@ export type AppRole = {
   name: string;
   description: string | null;
   scope: string;
+  applicableFor: string[];
   permissions: AppPermission[];
 };
 
@@ -56,6 +57,19 @@ export type PermissionScopeImpactRole = {
   roleName: string;
   roleScope: string;
 };
+
+function normalizeApplicableFor(value: Prisma.JsonValue | null | undefined): string[] {
+  if (!Array.isArray(value)) return [];
+
+  return Array.from(
+    new Set(
+      value
+        .filter((item): item is string => typeof item === 'string')
+        .map((item) => item.trim())
+        .filter(Boolean),
+    ),
+  );
+}
 
 export async function getAppDefaultRoleId(appId: string): Promise<string | null> {
   try {
@@ -688,6 +702,7 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
         name: true,
         description: true,
         scope: true,
+        applicableFor: true,
         permissions: true,
       },
     });
@@ -697,6 +712,7 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
       name: role.name,
       description: role.description,
       scope: normalizeRoleScope(role.scope) ?? role.scope,
+      applicableFor: normalizeApplicableFor(role.applicableFor),
       permissions: Array.isArray(role.permissions)
         ? role.permissions
             .flatMap((p): AppPermission[] => {
@@ -742,6 +758,7 @@ export async function createAppRole(input: {
   name: string;
   description?: string;
   scope?: string;
+  applicableFor?: string[];
   permissionIds?: string[];
 }): Promise<{ success: boolean; role?: AppRole; error?: string }> {
   const auth = await assertCanManageAuthz(input.appId);
@@ -767,6 +784,7 @@ export async function createAppRole(input: {
     if (!isKnownRoleScope(scope)) {
       return { success: false, error: roleScopeError() };
     }
+    const applicableFor = Array.from(new Set((input.applicableFor ?? []).map((item) => item.trim()).filter(Boolean)));
 
     const role = await prisma.$transaction(async (tx) => {
       const created = await tx.authzRole.create({
@@ -775,8 +793,9 @@ export async function createAppRole(input: {
           description: input.description?.trim() || null,
           scope,
           appId: input.appId,
+          applicableFor,
         },
-        select: { id: true, name: true, description: true, scope: true },
+        select: { id: true, name: true, description: true, scope: true, applicableFor: true },
       });
 
       const permissionIds = input.permissionIds ?? [];
@@ -789,11 +808,11 @@ export async function createAppRole(input: {
           select: { id: true, name: true },
         });
 
-      await syncRolePermissionMappings(tx, created.id, scope, caps.map((cap) => cap.id));
-      await syncRolePermissionsDenormalized(tx, created.id);
-    } else {
-      await syncRolePermissionMappings(tx, created.id, scope, []);
-      await syncRolePermissionsDenormalized(tx, created.id);
+        await syncRolePermissionMappings(tx, created.id, scope, caps.map((cap) => cap.id));
+        await syncRolePermissionsDenormalized(tx, created.id);
+      } else {
+        await syncRolePermissionMappings(tx, created.id, scope, []);
+        await syncRolePermissionsDenormalized(tx, created.id);
       }
 
       return created;
@@ -801,7 +820,7 @@ export async function createAppRole(input: {
 
     // Dispatch webhook
     const fullRole = await getAppRoles(input.appId).then((roles) =>
-      roles.find((r) => r.id === role.id) ?? { ...role, permissions: [] }
+      roles.find((r) => r.id === role.id) ?? { ...role, applicableFor: normalizeApplicableFor(role.applicableFor), permissions: [] }
     );
 
     await dispatchRoleUpdateWebhook({
@@ -812,6 +831,7 @@ export async function createAppRole(input: {
         name: fullRole.name,
         description: fullRole.description,
         scope: fullRole.scope,
+        applicableFor: fullRole.applicableFor,
         permissions: fullRole.permissions.map((p) => p.name),
       },
     });
@@ -886,6 +906,7 @@ export async function updateAppRole(input: {
   name?: string;
   description?: string;
   scope?: string;
+  applicableFor?: string[];
   permissionIds: string[];
 }): Promise<{ success: boolean; role?: AppRole; error?: string }> {
   const auth = await assertCanManageAuthz(input.appId);
@@ -912,6 +933,7 @@ export async function updateAppRole(input: {
       if (!nextScope || !isKnownRoleScope(nextScope)) {
         throw new Error(roleScopeError());
       }
+      const applicableFor = Array.from(new Set((input.applicableFor ?? []).map((item) => item.trim()).filter(Boolean)));
       if (typeof input.name === 'string' && input.name.trim() !== role.name) {
         throw new Error('Role name cannot be changed after creation.');
       }
@@ -926,6 +948,7 @@ export async function updateAppRole(input: {
         data: {
           description: input.description?.trim() || null,
           scope: nextScope,
+          applicableFor,
         },
       });
 

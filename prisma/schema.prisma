@@ -608,6 +608,7 @@ model AuthzRole {
   appId                  String?                  @map("app_id")
   scope                  String
   pushed                 Boolean                  @default(false)
+  applicableFor          Json                     @default("[]") @map("applicable_for")
   permissions            Json?
   application            Application?             @relation(fields: [appId], references: [id])
   assetsGrants           AuthzAssetsAccessGrant[]

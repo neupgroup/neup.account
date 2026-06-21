@@ -9,6 +9,7 @@ import { createAppRole } from '@/services/applications/authz-manage';
 import { redirectInApp } from '@/core/helper/navigation';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { RoleScopeSelector } from './scope-selectors';
+import { StringTagInput } from './string-tag-input';
 
 type Props = {
   appId: string;
@@ -20,6 +21,7 @@ export function RoleCreateForm({ appId }: Props) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [scope, setScope] = useState('');
+  const [applicableFor, setApplicableFor] = useState<string[]>([]);
   const [pending, setPending] = useState(false);
 
   const handleSubmit = async () => {
@@ -32,6 +34,7 @@ export function RoleCreateForm({ appId }: Props) {
       name: roleName,
       description: description || undefined,
       scope,
+      applicableFor,
       permissionIds: [],
     });
     setPending(false);
@@ -51,6 +54,13 @@ export function RoleCreateForm({ appId }: Props) {
       <Input value={name} onChange={(event) => setName(event.target.value)} placeholder="Role name, e.g. viewer" />
       <Input value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Description (optional)" />
       <RoleScopeSelector value={scope} onChange={setScope} />
+      <StringTagInput
+        label="Applicable for"
+        value={applicableFor}
+        onChange={setApplicableFor}
+        placeholder="application"
+        hint='Custom string tags such as "application", "portfolio", or "account.brand".'
+      />
 
       <div className="flex justify-end gap-2">
         <Button variant="outline" onClick={() => redirectInApp(router, applicationHref('/application/roles', appId, { mode: 'root' }))}>

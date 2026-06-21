@@ -19,6 +19,8 @@ import { redirectInApp } from '@/core/helper/navigation';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { getRoleScopeCompatibilityError, isPermissionScopeAllowedForRoleScope } from '@/services/applications/role-scope-compatibility';
 import { isBuiltInApplicationManagementPermissionName } from '@/services/applications/permission-definitions';
+import { formatMergedScopeLabels } from '@/services/role-scopes';
+import { StringTagInput } from './string-tag-input';
 
 type Props = {
   appId: string;
@@ -32,6 +34,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
   const router = useRouter();
   const { toast } = useToast();
   const [description, setDescription] = useState(role.description ?? '');
+  const [applicableFor, setApplicableFor] = useState<string[]>(role.applicableFor);
   const [showDetailsEditor, setShowDetailsEditor] = useState(false);
   const [permissionIds, setPermissionIds] = useState<string[]>(() => {
     const idsFromRole = role.permissions
@@ -92,6 +95,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
       appId,
       roleId: role.id,
       description: description || undefined,
+      applicableFor,
       permissionIds,
     });
     setSavePending(false);
@@ -162,6 +166,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
               const isInvalidSelectedPermission = isChecked && !isScopeCompatible;
               const isSystemPermission = appId === 'neup.account' && isBuiltInApplicationManagementPermissionName(permission.name);
               const isLockedSystemAssignment = isSystemRole && isSystemPermission;
+              const scopeLabels = formatMergedScopeLabels(permission.scope);
 
               return (
                 <label
@@ -185,9 +190,9 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className={`truncate text-base font-medium leading-6 ${isInvalidSelectedPermission ? 'text-destructive' : ''}`}>{permission.name}</p>
-                      {permission.scope.map((scope) => (
-                        <Badge key={`${permission.id}-${scope}`} variant="secondary" className="text-xs">
-                          {scope}
+                      {scopeLabels.map((scopeLabel) => (
+                        <Badge key={`${permission.id}-${scopeLabel}`} variant="secondary" className="text-xs">
+                          {scopeLabel}
                         </Badge>
                       ))}
                     </div>
@@ -270,6 +275,14 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
             disabled={!canManage || isSystemRole}
             onChange={(event) => setDescription(event.target.value)}
             placeholder="Description (optional)"
+          />
+          <StringTagInput
+            label="Applicable for"
+            value={applicableFor}
+            onChange={setApplicableFor}
+            disabled={!canManage || isSystemRole}
+            placeholder="application"
+            hint='Custom string tags such as "application", "portfolio", "account", or "account.brand".'
           />
           {isSystemRole ? (
             <p className="text-xs text-muted-foreground">

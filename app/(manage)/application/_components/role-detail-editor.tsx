@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   deleteAppRole,
   setAppDefaultRole,
@@ -18,7 +19,6 @@ import { redirectInApp } from '@/core/helper/navigation';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { getRoleScopeCompatibilityError, isPermissionScopeAllowedForRoleScope } from '@/services/applications/role-scope-compatibility';
 import { isBuiltInApplicationManagementPermissionName } from '@/services/applications/permission-definitions';
-import { RoleScopeSelector } from './scope-selectors';
 
 type Props = {
   appId: string;
@@ -32,7 +32,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
   const router = useRouter();
   const { toast } = useToast();
   const [description, setDescription] = useState(role.description ?? '');
-  const [scope, setScope] = useState(role.scope);
+  const [showDetailsEditor, setShowDetailsEditor] = useState(false);
   const [permissionIds, setPermissionIds] = useState<string[]>(() => {
     const idsFromRole = role.permissions
       .map((permission) => permission.id)
@@ -62,20 +62,24 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
     [permissions, selectedSet],
   );
   const scopeCompatibilityError = useMemo(
-    () => getRoleScopeCompatibilityError(scope, selectedPermissions.map((permission) => permission.scope)),
-    [scope, selectedPermissions],
+    () => getRoleScopeCompatibilityError(role.scope, selectedPermissions.map((permission) => permission.scope)),
+    [role.scope, selectedPermissions],
   );
 
   const visiblePermissions = useMemo(() => {
     const query = search.trim().toLowerCase();
     const filtered = permissions.filter((permission) => {
+      const isChecked = selectedSet.has(permission.id);
+      const isScopeCompatible = isPermissionScopeAllowedForRoleScope(permission.scope, role.scope);
+      if (!isChecked && !isScopeCompatible) return false;
+
       if (!query) return true;
       const haystack = `${permission.name} ${permission.description || ''}`.toLowerCase();
       return haystack.includes(query);
     });
 
     return filtered.sort((a, b) => a.name.localeCompare(b.name));
-  }, [permissions, search]);
+  }, [permissions, role.scope, search, selectedSet]);
 
   const isDefaultRole = defaultRoleId === role.id;
   const isSystemRole = appId === 'neup.account' && (role.id === 'application.owner' || role.id === 'application.manage');
@@ -88,7 +92,6 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
       appId,
       roleId: role.id,
       description: description || undefined,
-      scope,
       permissionIds,
     });
     setSavePending(false);
@@ -136,28 +139,6 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
 
   return (
     <div className="grid gap-4">
-      <div className="grid gap-3 rounded-2xl border bg-card p-5">
-        <div>
-          <p className="text-sm font-medium">Role details</p>
-          <p className="text-xs text-muted-foreground">
-            Role name stays fixed after creation. Update the scope, description, and permission mapping here.
-          </p>
-        </div>
-        <Input value={role.name} disabled aria-label="Role name" />
-        <RoleScopeSelector value={scope} onChange={setScope} disabled={!canManage || isSystemRole} />
-        <Input
-          value={description}
-          disabled={!canManage || isSystemRole}
-          onChange={(event) => setDescription(event.target.value)}
-          placeholder="Description (optional)"
-        />
-        {isSystemRole ? (
-          <p className="text-xs text-muted-foreground">
-            This is a system-managed role for the authz app and cannot be edited here.
-          </p>
-        ) : null}
-      </div>
-
       <div className="grid gap-2 rounded-2xl bg-card">
         <Input
           placeholder="Search permissions..."
@@ -176,7 +157,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
           <div className="overflow-hidden rounded-2xl border bg-card">
             {visiblePermissions.map((permission) => {
               const isChecked = selectedSet.has(permission.id);
-              const isScopeCompatible = isPermissionScopeAllowedForRoleScope(permission.scope, scope);
+              const isScopeCompatible = isPermissionScopeAllowedForRoleScope(permission.scope, role.scope);
               const canAddPermission = isChecked || isScopeCompatible;
               const isInvalidSelectedPermission = isChecked && !isScopeCompatible;
               const isSystemPermission = appId === 'neup.account' && isBuiltInApplicationManagementPermissionName(permission.name);
@@ -271,14 +252,46 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
         </div>
       </div>
 
-      <div className="flex justify-end gap-2">
-        <Button variant="outline" onClick={() => redirectInApp(router, applicationHref('/application/roles', appId, { mode: 'root' }))}>
-          Back
-        </Button>
-        <Button onClick={handleSave} disabled={savePending || !!scopeCompatibilityError || !canManage || isSystemRole}>
-          {savePending ? 'Saving...' : 'Save Role'}
-        </Button>
-      </div>
+      <Collapsible open={showDetailsEditor} onOpenChange={setShowDetailsEditor} className="grid gap-3">
+        <CollapsibleContent className="grid gap-3 rounded-2xl border bg-card p-5">
+          <div>
+            <p className="text-sm font-medium">Role details</p>
+            <p className="text-xs text-muted-foreground">
+              Role name and scope are fixed after creation. Only the description can be updated here.
+            </p>
+          </div>
+          <Input value={role.name} disabled aria-label="Role name" />
+          <div className="grid gap-1">
+            <p className="text-xs font-medium text-muted-foreground">Role scope</p>
+            <p className="text-sm">{role.scope}</p>
+          </div>
+          <Input
+            value={description}
+            disabled={!canManage || isSystemRole}
+            onChange={(event) => setDescription(event.target.value)}
+            placeholder="Description (optional)"
+          />
+          {isSystemRole ? (
+            <p className="text-xs text-muted-foreground">
+              This is a system-managed role for the authz app and cannot be edited here.
+            </p>
+          ) : null}
+        </CollapsibleContent>
+
+        <div className="flex justify-end gap-2">
+          <Button variant="outline" onClick={() => redirectInApp(router, applicationHref('/application/roles', appId, { mode: 'root' }))}>
+            Back
+          </Button>
+          <CollapsibleTrigger asChild>
+            <Button type="button" variant="outline">
+              {showDetailsEditor ? 'Hide info' : 'Edit info'}
+            </Button>
+          </CollapsibleTrigger>
+          <Button onClick={handleSave} disabled={savePending || !!scopeCompatibilityError || !canManage || isSystemRole}>
+            {savePending ? 'Saving...' : 'Save Role'}
+          </Button>
+        </div>
+      </Collapsible>
     </div>
   );
 }

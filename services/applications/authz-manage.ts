@@ -9,7 +9,7 @@ import { dispatchAuthzWebhook } from './authz-webhook';
 import { dispatchRoleUpdateWebhook, getRolePayload } from './role-update-events';
 import { activeAccessWhere } from '@/services/access-model';
 import {
-  APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS,
+  APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS,
   ROOT_APPLICATION_ROLES_MANAGE_PERMISSION,
   ROOT_APPLICATION_ROLES_RESET_PUSH_PERMISSION,
   ROOT_APPLICATION_ROLES_VIEW_PERMISSION,
@@ -304,7 +304,7 @@ async function validateRolePermissionSelection(
 }
 
 async function ensureApplicationManagementRoles(): Promise<void> {
-  const permissionDefinitions = APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS.map((permission, index) => ({
+  const permissionDefinitions = APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS.map((permission, index) => ({
     id: `cap-appmanage-${index + 1}-${permission.name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}`,
     ...permission,
   }));

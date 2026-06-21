@@ -176,9 +176,10 @@ export const APPLICATION_PUBLIC_PERMISSION_DEFINITIONS = getApplicationPermissio
 export const APPLICATION_MANAGED_PERMISSION_DEFINITIONS = getApplicationPermissionDefinitions(['managed']);
 export const APPLICATION_ROOT_PERMISSION_DEFINITIONS = getApplicationPermissionDefinitions(['root']);
 export const APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS = getApplicationPermissionDefinitions(['public', 'managed']);
+export const APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS = getApplicationPermissionDefinitions(['public', 'managed', 'root']);
 
 const BUILT_IN_APPLICATION_MANAGEMENT_PERMISSION_NAMES = new Set(
-  APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS.map((permission) => permission.name),
+  APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS.map((permission) => permission.name),
 );
 
 export function isBuiltInApplicationManagementPermissionName(name: string): boolean {

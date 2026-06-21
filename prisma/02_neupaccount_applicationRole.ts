@@ -16,7 +16,7 @@
 
 import 'dotenv/config';
 import prisma from '../core/helpers/prisma';
-import { APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS } from '../services/applications/permission-definitions';
+import { APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS } from '../services/applications/permission-definitions';
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not set.');
@@ -27,7 +27,7 @@ const APP_ID = 'neup.account';
 // ---------------------------------------------------------------------------
 // Permission definitions
 // ---------------------------------------------------------------------------
-const CAPABILITIES = APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS.map((permission, index) => ({
+const CAPABILITIES = APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS.map((permission, index) => ({
   id: `cap-appowner-${index + 1}-${permission.name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}`,
   name: permission.name,
   description: permission.description,
@@ -111,6 +111,7 @@ async function main() {
       create: {
         roleId: ROLE.id,
         permissionId: cap.id,
+        scope: 'application',
       },
     });
     console.log(`  ✓ Role-permission map upserted: ${ROLE.id} → ${cap.id}`);

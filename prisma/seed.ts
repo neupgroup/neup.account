@@ -408,6 +408,7 @@ async function main() {
         create: {
           roleId: ROLE_DEFAULT_ID,
           permissionId: permission.id,
+          scope: 'public.1000',
         },
       });
     }
@@ -433,6 +434,7 @@ async function main() {
         create: {
           roleId: ROLE_ROOT_ID,
           permissionId: permission.id,
+          scope: 'root.1000',
         },
       });
     }

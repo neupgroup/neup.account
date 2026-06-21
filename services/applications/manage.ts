@@ -16,7 +16,7 @@ import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
 import { activeAccessWhere, cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
 import {
-  APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS,
+  APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS,
   ROOT_APPLICATION_BASICS_EDIT_PERMISSION,
   ROOT_APPLICATION_CONFIG_UPDATE_PERMISSION,
   ROOT_APPLICATION_CONFIG_VIEW_PERMISSION,
@@ -520,7 +520,7 @@ export async function createManagedApplication(input: { name: string }) {
     const application = await prisma.$transaction(async (tx) => {
       // Ensure the application.owner role and its permissions exist before creating grants.
       // This makes createManagedApplication self-contained regardless of seed state.
-      const permissionDefinitions = APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS.map((permission, index) => ({
+      const permissionDefinitions = APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS.map((permission, index) => ({
         id: `cap-appowner-${index + 1}-${permission.name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}`,
         ...permission,
       }));

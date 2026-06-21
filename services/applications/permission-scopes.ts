@@ -9,7 +9,7 @@ export function isKnownPermissionScope(scope: string): scope is PermissionScopeO
 }
 
 export function permissionScopeError() {
-  return 'Permission scope entries must use managed, public, toApprove, or root with a single 4-digit audience mask like managed.1000.';
+  return 'Permission scope entries must use managed, public, toApprove, or root with a named audience like managed.brand.';
 }
 
 export function normalizePermissionScopes(value: unknown): PermissionScopeOption[] {

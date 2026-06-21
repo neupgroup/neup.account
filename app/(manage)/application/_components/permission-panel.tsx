@@ -33,7 +33,7 @@ import {
   type PermissionScopeImpactRole,
 } from '@/services/applications/authz-manage';
 import { isBuiltInApplicationManagementPermissionName } from '@/services/applications/permission-definitions';
-import { normalizeRoleScope } from '@/services/role-scopes';
+import { formatRoleScopeForDisplay, normalizeRoleScope } from '@/services/role-scopes';
 import { PermissionScopeSelector } from './scope-selectors';
 
 type Props = {
@@ -349,7 +349,7 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
                   <div className="mt-1 flex flex-wrap gap-1">
                     {permission.scope.map((scope) => (
                       <Badge key={`${permission.id}-${scope}`} variant="secondary" className="text-xs">
-                        {scope}
+                        {formatRoleScopeForDisplay(scope)}
                       </Badge>
                     ))}
                   </div>
@@ -477,7 +477,7 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
             {scopeRemovalImpact.map((role) => (
               <div key={`${role.roleId}-${role.roleScope}`} className="rounded-md border px-3 py-2 text-sm">
                 <div className="font-medium">{role.roleName}</div>
-                <div className="text-muted-foreground">{role.roleScope}</div>
+                <div className="text-muted-foreground">{formatRoleScopeForDisplay(role.roleScope)}</div>
               </div>
             ))}
           </div>

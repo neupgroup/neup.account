@@ -92,9 +92,9 @@ const GLOBAL_AUTHZ_APP_ID = 'neup.account';
 const GLOBAL_AUTHZ_SYSTEM_ROLE_IDS = new Set(['application.owner', 'application.manage']);
 
 function getSystemRoleScope(roleId: string): string {
-  if (roleId === 'application.owner') return 'public.1000';
-  if (roleId === 'application.manage') return 'managed.1000';
-  return 'public.1000';
+  if (roleId === 'application.owner') return 'public.individual';
+  if (roleId === 'application.manage') return 'managed.individual';
+  return 'public.individual';
 }
 
 function isGlobalAuthzSystemRole(roleId: string): boolean {

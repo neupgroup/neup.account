@@ -11,6 +11,7 @@ import {
   type AppRole,
 } from '@/services/applications/authz-manage';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
+import { formatRoleScopeForDisplay } from '@/services/role-scopes';
 
 type Props = {
   appId: string;
@@ -83,7 +84,7 @@ export function RolesPanel({ appId, canManage, canResetPush, initialRoles, hasWe
                   <div className="flex items-center gap-2">
                     <p className="truncate text-base font-medium leading-6">{role.name}</p>
                     {role.scope && (
-                      <Badge variant="outline" className="text-xs">{role.scope}</Badge>
+                      <Badge variant="outline" className="text-xs">{formatRoleScopeForDisplay(role.scope)}</Badge>
                     )}
                     {defaultRoleId === role.id ? (
                       <Badge className="text-xs">Default</Badge>

@@ -6,7 +6,8 @@ export type ScopeAccountKey = 'individual' | 'dependent' | 'brand' | 'branch';
 export type ScopeAudience = Record<ScopeAccountKey, boolean>;
 export type RoleScope = string;
 
-const CURRENT_SCOPE_PATTERN = /^(managed|public|toApprove|root)\.([01]{4})$/;
+const CANONICAL_SCOPE_PATTERN = /^(managed|public|toApprove|root)\.(individual|dependent|brand|branch)$/;
+const LEGACY_BITMASK_SCOPE_PATTERN = /^(managed|public|toApprove|root)\.([01]{4})$/;
 const LEGACY_ENCODED_SCOPE_PATTERN =
   /^(managable|managed|public|toApprove|root)\.i([01])([01])b([01])([01])$/;
 
@@ -17,37 +18,47 @@ const SCOPE_AUDIENCE_LABELS: Record<ScopeAccountKey, string> = {
   brand: 'brand',
   branch: 'branch',
 };
+const ACCOUNT_BITS: Record<ScopeAccountKey, string> = {
+  individual: '1000',
+  dependent: '0100',
+  brand: '0010',
+  branch: '0001',
+};
+
+function canonicalScope(mode: ScopeMode, accountKey: ScopeAccountKey): string {
+  return `${mode}.${mode === 'root' ? 'individual' : accountKey}`;
+}
 
 const LEGACY_SCOPE_MAP: Record<string, string[]> = {
-  root: ['root.1000'],
-  'individual.root': ['root.1000'],
-  public: ['public.1000', 'public.0100', 'public.0010', 'public.0001'],
-  default: ['public.1000'],
-  application: ['public.1000', 'public.0100', 'public.0010', 'public.0001'],
-  brand: ['managed.0010'],
-  managed: ['managed.1000', 'managed.0100', 'managed.0010', 'managed.0001'],
-  manageable: ['managed.1000', 'managed.0100', 'managed.0010', 'managed.0001'],
-  managable: ['managed.1000', 'managed.0100', 'managed.0010', 'managed.0001'],
-  toApprove: ['toApprove.1000', 'toApprove.0100', 'toApprove.0010', 'toApprove.0001'],
-  'brand.managable': ['managed.0010'],
-  'branch.brand.managable': ['managed.0001'],
-  'individual.managable': ['managed.1000'],
-  'dependent.individual.managable': ['managed.0100'],
-  'individual.public': ['public.1000'],
-  'brand.public': ['public.0010'],
-  'branch.brand.public': ['public.0001'],
-  'dependent.individual.public': ['public.0100'],
-  'individual.toApprove': ['toApprove.1000'],
-  'dependent.individual.toApprove': ['toApprove.0100'],
-  'brand.toApprove': ['toApprove.0010'],
-  'branch.brand.toApprove': ['toApprove.0001'],
+  root: [canonicalScope('root', 'individual')],
+  'individual.root': [canonicalScope('root', 'individual')],
+  public: ACCOUNT_KEYS.map((key) => canonicalScope('public', key)),
+  default: [canonicalScope('public', 'individual')],
+  application: ACCOUNT_KEYS.map((key) => canonicalScope('public', key)),
+  brand: [canonicalScope('managed', 'brand')],
+  managed: ACCOUNT_KEYS.map((key) => canonicalScope('managed', key)),
+  manageable: ACCOUNT_KEYS.map((key) => canonicalScope('managed', key)),
+  managable: ACCOUNT_KEYS.map((key) => canonicalScope('managed', key)),
+  toApprove: ACCOUNT_KEYS.map((key) => canonicalScope('toApprove', key)),
+  'brand.managable': [canonicalScope('managed', 'brand')],
+  'branch.brand.managable': [canonicalScope('managed', 'branch')],
+  'individual.managable': [canonicalScope('managed', 'individual')],
+  'dependent.individual.managable': [canonicalScope('managed', 'dependent')],
+  'individual.public': [canonicalScope('public', 'individual')],
+  'brand.public': [canonicalScope('public', 'brand')],
+  'branch.brand.public': [canonicalScope('public', 'branch')],
+  'dependent.individual.public': [canonicalScope('public', 'dependent')],
+  'individual.toApprove': [canonicalScope('toApprove', 'individual')],
+  'dependent.individual.toApprove': [canonicalScope('toApprove', 'dependent')],
+  'brand.toApprove': [canonicalScope('toApprove', 'brand')],
+  'branch.brand.toApprove': [canonicalScope('toApprove', 'branch')],
 };
 
 const ROLE_SCOPE_SET = new Set<string>(
   ROLE_SCOPE_MODES.flatMap((mode) =>
     mode === 'root'
-      ? ['root.1000']
-      : ['1000', '0100', '0010', '0001'].map((bits) => `${mode}.${bits}`),
+      ? [canonicalScope('root', 'individual')]
+      : ACCOUNT_KEYS.map((key) => canonicalScope(mode, key)),
   ),
 );
 
@@ -58,35 +69,21 @@ function normalizeMode(mode: string): ScopeMode | null {
   return ROLE_SCOPE_MODES.includes(normalized as ScopeMode) ? (normalized as ScopeMode) : null;
 }
 
-function audienceFromBits(bits: string): ScopeAudience {
-  return {
-    individual: bits[0] === '1',
-    dependent: bits[1] === '1',
-    brand: bits[2] === '1',
-    branch: bits[3] === '1',
-  };
-}
-
-function bitsFromAudience(audience: ScopeAudience): string {
-  return [
-    audience.individual ? '1' : '0',
-    audience.dependent ? '1' : '0',
-    audience.brand ? '1' : '0',
-    audience.branch ? '1' : '0',
-  ].join('');
-}
-
-function firstEnabledAccountKey(audience: ScopeAudience): ScopeAccountKey | null {
-  return ACCOUNT_KEYS.find((key) => audience[key]) ?? null;
-}
-
-function singleAudience(accountKey: ScopeAccountKey): ScopeAudience {
+function audienceFromAccountKey(accountKey: ScopeAccountKey): ScopeAudience {
   return {
     individual: accountKey === 'individual',
     dependent: accountKey === 'dependent',
     brand: accountKey === 'brand',
     branch: accountKey === 'branch',
   };
+}
+
+function firstEnabledAccountKey(audience: ScopeAudience): ScopeAccountKey | null {
+  return ACCOUNT_KEYS.find((key) => audience[key]) ?? null;
+}
+
+function bitsToAccountKeys(bits: string): ScopeAccountKey[] {
+  return ACCOUNT_KEYS.filter((key, index) => bits[index] === '1');
 }
 
 export function normalizeAccountTypeForRoleScope(
@@ -110,39 +107,38 @@ export function emptyScopeAudience(): ScopeAudience {
 }
 
 export function encodeRoleScope(mode: ScopeMode, audience: ScopeAudience): string {
-  if (mode === 'root') {
-    return 'root.1000';
-  }
-
-  const accountKey = firstEnabledAccountKey(audience);
-  const normalizedAudience = accountKey ? singleAudience(accountKey) : emptyScopeAudience();
-  return `${mode}.${bitsFromAudience(normalizedAudience)}`;
+  const accountKey = firstEnabledAccountKey(audience) ?? 'individual';
+  return canonicalScope(mode, accountKey);
 }
 
 export function expandRoleScope(scope: string | null | undefined): string[] {
   const normalized = (scope ?? '').trim();
   if (!normalized) return [];
 
-  const currentMatch = CURRENT_SCOPE_PATTERN.exec(normalized);
-  if (currentMatch) {
-    const mode = normalizeMode(currentMatch[1]);
+  const canonicalMatch = CANONICAL_SCOPE_PATTERN.exec(normalized);
+  if (canonicalMatch) {
+    const mode = normalizeMode(canonicalMatch[1]);
+    const accountKey = canonicalMatch[2] as ScopeAccountKey;
     if (!mode) return [];
-    const bits = currentMatch[2];
-    if (mode === 'root') return bits === '1000' ? ['root.1000'] : [];
-    return ACCOUNT_KEYS
-      .map((key, index) => (bits[index] === '1' ? `${mode}.${bitsFromAudience(singleAudience(key))}` : null))
-      .filter((value): value is string => Boolean(value));
+    if (mode === 'root') return accountKey === 'individual' ? [canonicalScope('root', 'individual')] : [];
+    return [canonicalScope(mode, accountKey)];
+  }
+
+  const bitmaskMatch = LEGACY_BITMASK_SCOPE_PATTERN.exec(normalized);
+  if (bitmaskMatch) {
+    const mode = normalizeMode(bitmaskMatch[1]);
+    if (!mode) return [];
+    if (mode === 'root') return bitmaskMatch[2] === '1000' ? [canonicalScope('root', 'individual')] : [];
+    return bitsToAccountKeys(bitmaskMatch[2]).map((accountKey) => canonicalScope(mode, accountKey));
   }
 
   const legacyEncodedMatch = LEGACY_ENCODED_SCOPE_PATTERN.exec(normalized);
   if (legacyEncodedMatch) {
     const mode = normalizeMode(legacyEncodedMatch[1]);
     if (!mode) return [];
-    if (mode === 'root') return ['root.1000'];
+    if (mode === 'root') return [canonicalScope('root', 'individual')];
     const bits = `${legacyEncodedMatch[2]}${legacyEncodedMatch[3]}${legacyEncodedMatch[4]}${legacyEncodedMatch[5]}`;
-    return ACCOUNT_KEYS
-      .map((key, index) => (bits[index] === '1' ? `${mode}.${bitsFromAudience(singleAudience(key))}` : null))
-      .filter((value): value is string => Boolean(value));
+    return bitsToAccountKeys(bits).map((accountKey) => canonicalScope(mode, accountKey));
   }
 
   return LEGACY_SCOPE_MAP[normalized] ?? [];
@@ -158,16 +154,17 @@ export function decodeRoleScope(
   const normalized = normalizeRoleScope(scope);
   if (!normalized) return null;
 
-  const match = CURRENT_SCOPE_PATTERN.exec(normalized);
+  const match = CANONICAL_SCOPE_PATTERN.exec(normalized);
   if (!match) return null;
 
   const mode = normalizeMode(match[1]);
+  const accountKey = match[2] as ScopeAccountKey;
   if (!mode) return null;
 
   return {
     mode,
     normalized,
-    audience: audienceFromBits(match[2]),
+    audience: audienceFromAccountKey(accountKey),
   };
 }
 
@@ -177,7 +174,7 @@ export function isKnownRoleScope(scope: string): scope is RoleScope {
 }
 
 export function roleScopeError() {
-  return 'Role scope must use managed, public, toApprove, or root with a single 4-digit audience mask like managed.1000.';
+  return 'Role scope must use managed, public, toApprove, or root with a named audience like managed.brand.';
 }
 
 export function expectedRoleScopeForAccount(
@@ -195,11 +192,11 @@ export function expectedRoleScopeForAccount(
       : 'root';
 
   if (normalizedMode === 'root') {
-    return normalizedAccountType === 'individual' ? 'root.1000' : null;
+    return normalizedAccountType === 'individual' ? canonicalScope('root', 'individual') : null;
   }
 
   if (normalizedAccountType === 'other') return null;
-  return encodeRoleScope(normalizedMode, singleAudience(normalizedAccountType));
+  return canonicalScope(normalizedMode, normalizedAccountType);
 }
 
 export function expectedRoleScopesForAccount(
@@ -225,7 +222,7 @@ export function canAssignRoleScopeToAccount(
 }
 
 export function isRootRoleScope(scope: string | null | undefined): boolean {
-  return normalizeRoleScope(scope) === 'root.1000';
+  return normalizeRoleScope(scope) === canonicalScope('root', 'individual');
 }
 
 export function scopeCoversRoleScope(
@@ -239,6 +236,18 @@ export function formatScopeAudience(scope: string | null | undefined): string {
   const decoded = decodeRoleScope(scope);
   if (!decoded) return scope?.trim() || '';
   return firstEnabledAccountKey(decoded.audience) ?? '';
+}
+
+export function formatRoleScopeForDisplay(scope: string | null | undefined): string {
+  const normalized = normalizeRoleScope(scope);
+  if (!normalized) return scope?.trim() || '';
+
+  const decoded = decodeRoleScope(normalized);
+  if (!decoded) return normalized;
+
+  const accountKey = firstEnabledAccountKey(decoded.audience);
+  if (!accountKey) return normalized;
+  return `${decoded.mode}.${ACCOUNT_BITS[accountKey]}`;
 }
 
 export function formatMergedScopeLabels(

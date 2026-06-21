@@ -162,9 +162,9 @@ function slugifyPermission(name: string): string {
 function permissionScopesForNeupAccountPermission(permissionName: string, fallback: string[]): string[] {
   const encodeScopes = (scopes: string[]) =>
     scopes.map((scope) => {
-      if (scope === 'public') return 'public.1000';
-      if (scope === 'managed') return 'managed.1000';
-      if (scope === 'root') return 'root.1000';
+      if (scope === 'public') return 'public.individual';
+      if (scope === 'managed') return 'managed.individual';
+      if (scope === 'root') return 'root.individual';
       return scope;
     });
 
@@ -354,7 +354,7 @@ async function main() {
       update: {
         name: 'individual.default',
         description: 'Default permission set for individual accounts.',
-        scope: 'public.1000',
+        scope: 'public.individual',
         appId: APP_ID,
         permissions: defaultDenormalized,
       },
@@ -362,7 +362,7 @@ async function main() {
         id: ROLE_DEFAULT_ID,
         name: 'individual.default',
         description: 'Default permission set for individual accounts.',
-        scope: 'public.1000',
+        scope: 'public.individual',
         appId: APP_ID,
         permissions: defaultDenormalized,
       },
@@ -373,7 +373,7 @@ async function main() {
       update: {
         name: 'individual.root',
         description: 'Root permission set for individual accounts.',
-        scope: 'root.1000',
+        scope: 'root.individual',
         appId: APP_ID,
         permissions: rootDenormalized,
       },
@@ -381,7 +381,7 @@ async function main() {
         id: ROLE_ROOT_ID,
         name: 'individual.root',
         description: 'Root permission set for individual accounts.',
-        scope: 'root.1000',
+        scope: 'root.individual',
         appId: APP_ID,
         permissions: rootDenormalized,
       },
@@ -408,7 +408,7 @@ async function main() {
         create: {
           roleId: ROLE_DEFAULT_ID,
           permissionId: permission.id,
-          scope: 'public.1000',
+          scope: 'public.individual',
         },
       });
     }
@@ -434,7 +434,7 @@ async function main() {
         create: {
           roleId: ROLE_ROOT_ID,
           permissionId: permission.id,
-          scope: 'root.1000',
+          scope: 'root.individual',
         },
       });
     }

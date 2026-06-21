@@ -61,7 +61,7 @@ import {
 
 const responseAccessSet = new Set<ApplicationAccessField>(applicationResponseFields);
 const tokenFieldSet = new Set<ApplicationAccessField>(applicationTokenFields);
-const ROOT_PERMISSION_SCOPE = 'root.1000';
+const ROOT_PERMISSION_SCOPE = 'root.individual';
 
 const createApplicationSchema = z.object({
   name: z.string().trim().min(1, 'Application name is required.').max(120, 'Application name is too long.'),
@@ -536,14 +536,14 @@ export async function createManagedApplication(input: { name: string }) {
       }
       await tx.authzRole.upsert({
         where: { id: 'application.owner' },
-        update: { name: 'application.owner', description: 'Full ownership of an application.', appId: 'neup.account', scope: 'public.1000' },
-        create: { id: 'application.owner', name: 'application.owner', description: 'Full ownership of an application.', appId: 'neup.account', scope: 'public.1000' },
+        update: { name: 'application.owner', description: 'Full ownership of an application.', appId: 'neup.account', scope: 'public.individual' },
+        create: { id: 'application.owner', name: 'application.owner', description: 'Full ownership of an application.', appId: 'neup.account', scope: 'public.individual' },
       });
       await tx.authzRolePermissionMap.deleteMany({
         where: { roleId: 'application.owner' },
       });
       await tx.authzRolePermissionMap.createMany({
-        data: permissions.map((cap) => ({ roleId: 'application.owner', permissionId: cap.id, scope: 'public.1000' })),
+        data: permissions.map((cap) => ({ roleId: 'application.owner', permissionId: cap.id, scope: 'public.individual' })),
         skipDuplicates: true,
       });
       await tx.authzRole.update({

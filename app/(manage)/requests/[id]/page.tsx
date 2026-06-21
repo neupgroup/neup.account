@@ -8,6 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
 import { RequestActionForm } from './form';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
+import { formatRoleScopeForDisplay } from '@/services/role-scopes';
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -189,7 +190,7 @@ function RequestDetailBody({ request }: { request: Awaited<ReturnType<typeof get
                       <p className="text-sm font-medium">{role.name ?? role.id}</p>
                       <p className="text-xs text-muted-foreground">{role.id}</p>
                     </div>
-                    {role.scope ? <Badge variant="outline">{role.scope}</Badge> : null}
+                    {role.scope ? <Badge variant="outline">{formatRoleScopeForDisplay(role.scope)}</Badge> : null}
                   </CardContent>
                 </Card>
               )) : (

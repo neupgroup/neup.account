@@ -40,7 +40,7 @@ function extractPermissionNames(value: unknown): string[] {
 
 async function main() {
   const roles = await prisma.authzRole.findMany({
-    select: { id: true, name: true, appId: true, permissions: true },
+    select: { id: true, name: true, appId: true, scope: true, permissions: true },
     orderBy: { name: 'asc' },
   });
 
@@ -93,6 +93,7 @@ async function main() {
             data: permissionIds.map((permissionId) => ({
               roleId: role.id,
               permissionId,
+              scope: role.scope,
             })),
             skipDuplicates: true,
           });

@@ -40969,6 +40969,7 @@ export namespace Prisma {
     id: string | null
     roleId: string | null
     permissionId: string | null
+    scope: string | null
     createdAt: Date | null
   }
 
@@ -40976,6 +40977,7 @@ export namespace Prisma {
     id: string | null
     roleId: string | null
     permissionId: string | null
+    scope: string | null
     createdAt: Date | null
   }
 
@@ -40983,6 +40985,7 @@ export namespace Prisma {
     id: number
     roleId: number
     permissionId: number
+    scope: number
     createdAt: number
     _all: number
   }
@@ -40992,6 +40995,7 @@ export namespace Prisma {
     id?: true
     roleId?: true
     permissionId?: true
+    scope?: true
     createdAt?: true
   }
 
@@ -40999,6 +41003,7 @@ export namespace Prisma {
     id?: true
     roleId?: true
     permissionId?: true
+    scope?: true
     createdAt?: true
   }
 
@@ -41006,6 +41011,7 @@ export namespace Prisma {
     id?: true
     roleId?: true
     permissionId?: true
+    scope?: true
     createdAt?: true
     _all?: true
   }
@@ -41086,6 +41092,7 @@ export namespace Prisma {
     id: string
     roleId: string
     permissionId: string
+    scope: string
     createdAt: Date
     _count: AuthzRolePermissionMapCountAggregateOutputType | null
     _min: AuthzRolePermissionMapMinAggregateOutputType | null
@@ -41110,6 +41117,7 @@ export namespace Prisma {
     id?: boolean
     roleId?: boolean
     permissionId?: boolean
+    scope?: boolean
     createdAt?: boolean
     role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
     permission?: boolean | AuthzPermissionDefaultArgs<ExtArgs>
@@ -41119,6 +41127,7 @@ export namespace Prisma {
     id?: boolean
     roleId?: boolean
     permissionId?: boolean
+    scope?: boolean
     createdAt?: boolean
     role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
     permission?: boolean | AuthzPermissionDefaultArgs<ExtArgs>
@@ -41128,6 +41137,7 @@ export namespace Prisma {
     id?: boolean
     roleId?: boolean
     permissionId?: boolean
+    scope?: boolean
     createdAt?: boolean
     role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
     permission?: boolean | AuthzPermissionDefaultArgs<ExtArgs>
@@ -41137,10 +41147,11 @@ export namespace Prisma {
     id?: boolean
     roleId?: boolean
     permissionId?: boolean
+    scope?: boolean
     createdAt?: boolean
   }
 
-  export type AuthzRolePermissionMapOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "roleId" | "permissionId" | "createdAt", ExtArgs["result"]["authzRolePermissionMap"]>
+  export type AuthzRolePermissionMapOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "roleId" | "permissionId" | "scope" | "createdAt", ExtArgs["result"]["authzRolePermissionMap"]>
   export type AuthzRolePermissionMapInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
     permission?: boolean | AuthzPermissionDefaultArgs<ExtArgs>
@@ -41164,6 +41175,7 @@ export namespace Prisma {
       id: string
       roleId: string
       permissionId: string
+      scope: string
       createdAt: Date
     }, ExtArgs["result"]["authzRolePermissionMap"]>
     composites: {}
@@ -41593,6 +41605,7 @@ export namespace Prisma {
     readonly id: FieldRef<"AuthzRolePermissionMap", 'String'>
     readonly roleId: FieldRef<"AuthzRolePermissionMap", 'String'>
     readonly permissionId: FieldRef<"AuthzRolePermissionMap", 'String'>
+    readonly scope: FieldRef<"AuthzRolePermissionMap", 'String'>
     readonly createdAt: FieldRef<"AuthzRolePermissionMap", 'DateTime'>
   }
     
@@ -45767,6 +45780,7 @@ export namespace Prisma {
     id: 'id',
     roleId: 'roleId',
     permissionId: 'permissionId',
+    scope: 'scope',
     createdAt: 'createdAt'
   };
 
@@ -48369,6 +48383,7 @@ export namespace Prisma {
     id?: StringFilter<"AuthzRolePermissionMap"> | string
     roleId?: StringFilter<"AuthzRolePermissionMap"> | string
     permissionId?: StringFilter<"AuthzRolePermissionMap"> | string
+    scope?: StringFilter<"AuthzRolePermissionMap"> | string
     createdAt?: DateTimeFilter<"AuthzRolePermissionMap"> | Date | string
     role?: XOR<AuthzRoleScalarRelationFilter, AuthzRoleWhereInput>
     permission?: XOR<AuthzPermissionScalarRelationFilter, AuthzPermissionWhereInput>
@@ -48378,6 +48393,7 @@ export namespace Prisma {
     id?: SortOrder
     roleId?: SortOrder
     permissionId?: SortOrder
+    scope?: SortOrder
     createdAt?: SortOrder
     role?: AuthzRoleOrderByWithRelationInput
     permission?: AuthzPermissionOrderByWithRelationInput
@@ -48391,6 +48407,7 @@ export namespace Prisma {
     NOT?: AuthzRolePermissionMapWhereInput | AuthzRolePermissionMapWhereInput[]
     roleId?: StringFilter<"AuthzRolePermissionMap"> | string
     permissionId?: StringFilter<"AuthzRolePermissionMap"> | string
+    scope?: StringFilter<"AuthzRolePermissionMap"> | string
     createdAt?: DateTimeFilter<"AuthzRolePermissionMap"> | Date | string
     role?: XOR<AuthzRoleScalarRelationFilter, AuthzRoleWhereInput>
     permission?: XOR<AuthzPermissionScalarRelationFilter, AuthzPermissionWhereInput>
@@ -48400,6 +48417,7 @@ export namespace Prisma {
     id?: SortOrder
     roleId?: SortOrder
     permissionId?: SortOrder
+    scope?: SortOrder
     createdAt?: SortOrder
     _count?: AuthzRolePermissionMapCountOrderByAggregateInput
     _max?: AuthzRolePermissionMapMaxOrderByAggregateInput
@@ -48413,6 +48431,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"AuthzRolePermissionMap"> | string
     roleId?: StringWithAggregatesFilter<"AuthzRolePermissionMap"> | string
     permissionId?: StringWithAggregatesFilter<"AuthzRolePermissionMap"> | string
+    scope?: StringWithAggregatesFilter<"AuthzRolePermissionMap"> | string
     createdAt?: DateTimeWithAggregatesFilter<"AuthzRolePermissionMap"> | Date | string
   }
 
@@ -51151,6 +51170,7 @@ export namespace Prisma {
 
   export type AuthzRolePermissionMapCreateInput = {
     id?: string
+    scope: string
     createdAt?: Date | string
     role: AuthzRoleCreateNestedOneWithoutPermissionMappingsInput
     permission: AuthzPermissionCreateNestedOneWithoutRoleMappingsInput
@@ -51160,11 +51180,13 @@ export namespace Prisma {
     id?: string
     roleId: string
     permissionId: string
+    scope: string
     createdAt?: Date | string
   }
 
   export type AuthzRolePermissionMapUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    scope?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     role?: AuthzRoleUpdateOneRequiredWithoutPermissionMappingsNestedInput
     permission?: AuthzPermissionUpdateOneRequiredWithoutRoleMappingsNestedInput
@@ -51174,6 +51196,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     roleId?: StringFieldUpdateOperationsInput | string
     permissionId?: StringFieldUpdateOperationsInput | string
+    scope?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -51181,11 +51204,13 @@ export namespace Prisma {
     id?: string
     roleId: string
     permissionId: string
+    scope: string
     createdAt?: Date | string
   }
 
   export type AuthzRolePermissionMapUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    scope?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -51193,6 +51218,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     roleId?: StringFieldUpdateOperationsInput | string
     permissionId?: StringFieldUpdateOperationsInput | string
+    scope?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -53052,6 +53078,7 @@ export namespace Prisma {
     id?: SortOrder
     roleId?: SortOrder
     permissionId?: SortOrder
+    scope?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -53059,6 +53086,7 @@ export namespace Prisma {
     id?: SortOrder
     roleId?: SortOrder
     permissionId?: SortOrder
+    scope?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -53066,6 +53094,7 @@ export namespace Prisma {
     id?: SortOrder
     roleId?: SortOrder
     permissionId?: SortOrder
+    scope?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -67382,6 +67411,7 @@ export namespace Prisma {
 
   export type AuthzRolePermissionMapCreateWithoutPermissionInput = {
     id?: string
+    scope: string
     createdAt?: Date | string
     role: AuthzRoleCreateNestedOneWithoutPermissionMappingsInput
   }
@@ -67389,6 +67419,7 @@ export namespace Prisma {
   export type AuthzRolePermissionMapUncheckedCreateWithoutPermissionInput = {
     id?: string
     roleId: string
+    scope: string
     createdAt?: Date | string
   }
 
@@ -67492,6 +67523,7 @@ export namespace Prisma {
     id?: StringFilter<"AuthzRolePermissionMap"> | string
     roleId?: StringFilter<"AuthzRolePermissionMap"> | string
     permissionId?: StringFilter<"AuthzRolePermissionMap"> | string
+    scope?: StringFilter<"AuthzRolePermissionMap"> | string
     createdAt?: DateTimeFilter<"AuthzRolePermissionMap"> | Date | string
   }
 
@@ -67632,6 +67664,7 @@ export namespace Prisma {
 
   export type AuthzRolePermissionMapCreateWithoutRoleInput = {
     id?: string
+    scope: string
     createdAt?: Date | string
     permission: AuthzPermissionCreateNestedOneWithoutRoleMappingsInput
   }
@@ -67639,6 +67672,7 @@ export namespace Prisma {
   export type AuthzRolePermissionMapUncheckedCreateWithoutRoleInput = {
     id?: string
     permissionId: string
+    scope: string
     createdAt?: Date | string
   }
 
@@ -71694,11 +71728,13 @@ export namespace Prisma {
   export type AuthzRolePermissionMapCreateManyPermissionInput = {
     id?: string
     roleId: string
+    scope: string
     createdAt?: Date | string
   }
 
   export type AuthzRolePermissionMapUpdateWithoutPermissionInput = {
     id?: StringFieldUpdateOperationsInput | string
+    scope?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     role?: AuthzRoleUpdateOneRequiredWithoutPermissionMappingsNestedInput
   }
@@ -71706,12 +71742,14 @@ export namespace Prisma {
   export type AuthzRolePermissionMapUncheckedUpdateWithoutPermissionInput = {
     id?: StringFieldUpdateOperationsInput | string
     roleId?: StringFieldUpdateOperationsInput | string
+    scope?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AuthzRolePermissionMapUncheckedUpdateManyWithoutPermissionInput = {
     id?: StringFieldUpdateOperationsInput | string
     roleId?: StringFieldUpdateOperationsInput | string
+    scope?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -71745,6 +71783,7 @@ export namespace Prisma {
   export type AuthzRolePermissionMapCreateManyRoleInput = {
     id?: string
     permissionId: string
+    scope: string
     createdAt?: Date | string
   }
 
@@ -71872,6 +71911,7 @@ export namespace Prisma {
 
   export type AuthzRolePermissionMapUpdateWithoutRoleInput = {
     id?: StringFieldUpdateOperationsInput | string
+    scope?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     permission?: AuthzPermissionUpdateOneRequiredWithoutRoleMappingsNestedInput
   }
@@ -71879,12 +71919,14 @@ export namespace Prisma {
   export type AuthzRolePermissionMapUncheckedUpdateWithoutRoleInput = {
     id?: StringFieldUpdateOperationsInput | string
     permissionId?: StringFieldUpdateOperationsInput | string
+    scope?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AuthzRolePermissionMapUncheckedUpdateManyWithoutRoleInput = {
     id?: StringFieldUpdateOperationsInput | string
     permissionId?: StringFieldUpdateOperationsInput | string
+    scope?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

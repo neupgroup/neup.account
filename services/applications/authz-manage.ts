@@ -14,6 +14,7 @@ import {
   ROOT_APPLICATION_ROLES_RESET_PUSH_PERMISSION,
   ROOT_APPLICATION_ROLES_VIEW_PERMISSION,
   getApplicationPermissionNames,
+  isBuiltInApplicationManagementPermissionName,
 } from '@/services/applications/permission-definitions';
 import { getRoleScopeCompatibilityError } from '@/services/applications/role-scope-compatibility';
 import { hasRootApplicationPermission } from '@/services/applications/manage';
@@ -50,6 +51,12 @@ export type AppRole = {
   permissions: AppPermission[];
 };
 
+export type PermissionScopeImpactRole = {
+  roleId: string;
+  roleName: string;
+  roleScope: string;
+};
+
 export async function getAppDefaultRoleId(appId: string): Promise<string | null> {
   try {
     const app = await prisma.application.findUnique({
@@ -68,11 +75,27 @@ export async function getAppDefaultRoleId(appId: string): Promise<string | null>
 // ---------------------------------------------------------------------------
 
 const GLOBAL_AUTHZ_APP_ID = 'neup.account';
+const GLOBAL_AUTHZ_SYSTEM_ROLE_IDS = new Set(['application.owner', 'application.manage']);
 
 function getSystemRoleScope(roleId: string): string {
   if (roleId === 'application.owner') return 'public.1000';
   if (roleId === 'application.manage') return 'managed.1000';
   return 'public.1000';
+}
+
+function isGlobalAuthzSystemRole(roleId: string): boolean {
+  return GLOBAL_AUTHZ_SYSTEM_ROLE_IDS.has(roleId);
+}
+
+async function isSystemManagedPermission(appId: string, permissionId: string): Promise<boolean> {
+  if (appId !== GLOBAL_AUTHZ_APP_ID) return false;
+
+  const permission = await prisma.authzPermission.findFirst({
+    where: { id: permissionId, appId },
+    select: { name: true },
+  });
+
+  return !!permission && isBuiltInApplicationManagementPermissionName(permission.name);
 }
 
 async function upsertPermissionsForApp(
@@ -110,12 +133,12 @@ async function upsertPermissionsForApp(
   return persistedPermissions;
 }
 
-async function syncRolePermissionMappings(tx: any, roleId: string, permissionIds: string[]): Promise<void> {
+async function syncRolePermissionMappings(tx: any, roleId: string, roleScope: string, permissionIds: string[]): Promise<void> {
   await tx.authzRolePermissionMap.deleteMany({ where: { roleId } });
   if (permissionIds.length === 0) return;
 
   await tx.authzRolePermissionMap.createMany({
-    data: permissionIds.map((permissionId) => ({ roleId, permissionId })),
+    data: permissionIds.map((permissionId) => ({ roleId, permissionId, scope: roleScope })),
     skipDuplicates: true,
   });
 }
@@ -173,6 +196,56 @@ async function getMappedRoleIdsForPermission(permissionId: string): Promise<stri
 async function syncRolePermissionsForRoleIds(roleIds: string[]): Promise<void> {
   for (const roleId of Array.from(new Set(roleIds))) {
     await syncRolePermissionsDenormalized(prisma, roleId);
+  }
+}
+
+async function getImpactedRoleMappingsForPermissionScopes(
+  tx: any,
+  appId: string,
+  permissionId: string,
+  nextScopes: PermissionScopeOption[],
+): Promise<PermissionScopeImpactRole[]> {
+  const mappings = await tx.authzRolePermissionMap.findMany({
+    where: {
+      permissionId,
+      role: { appId },
+    },
+    select: {
+      roleId: true,
+      scope: true,
+      role: {
+        select: {
+          name: true,
+          scope: true,
+        },
+      },
+    },
+  });
+
+  return mappings
+    .filter((mapping: { scope: string | null | undefined }) => !!getRoleScopeCompatibilityError(mapping.scope, [nextScopes]))
+    .map((mapping: { roleId: string; scope: string; role: { name: string | null; scope: string } | null }) => ({
+      roleId: mapping.roleId,
+      roleName: mapping.role?.name?.trim() || mapping.roleId,
+      roleScope: normalizeRoleScope(mapping.scope) ?? mapping.role?.scope ?? mapping.scope,
+    }))
+    .sort((a: PermissionScopeImpactRole, b: PermissionScopeImpactRole) => {
+      const nameCompare = a.roleName.localeCompare(b.roleName, undefined, { sensitivity: 'base' });
+      if (nameCompare !== 0) return nameCompare;
+      return a.roleScope.localeCompare(b.roleScope, undefined, { sensitivity: 'base' });
+    });
+}
+
+async function dispatchRoleUpdatesForRoleIds(appId: string, roleIds: string[]): Promise<void> {
+  for (const roleId of Array.from(new Set(roleIds))) {
+    const rolePayload = await getRolePayload(appId, roleId);
+    if (!rolePayload) continue;
+
+    await dispatchRoleUpdateWebhook({
+      appId,
+      eventType: 'role.updated',
+      role: rolePayload,
+    });
   }
 }
 
@@ -266,7 +339,7 @@ async function ensureApplicationManagementRoles(): Promise<void> {
 
     for (const roleId of ['application.owner', 'application.manage']) {
       const permissionIds = permissions.map((permission) => permission.id);
-      await syncRolePermissionMappings(tx, roleId, permissionIds);
+      await syncRolePermissionMappings(tx, roleId, getSystemRoleScope(roleId), permissionIds);
       await syncRolePermissionsDenormalized(tx, roleId);
     }
   });
@@ -478,7 +551,14 @@ export async function updateAppPermission(input: {
   permissionId: string;
   description?: string;
   scope: string[];
-}): Promise<{ success: boolean; permission?: AppPermission; error?: string }> {
+  confirmScopeRemoval?: boolean;
+}): Promise<{
+  success: boolean;
+  permission?: AppPermission;
+  error?: string;
+  requiresConfirmation?: boolean;
+  impactedRoles?: PermissionScopeImpactRole[];
+}> {
   const auth = await assertCanManageAuthz(input.appId);
   if ('error' in auth) return { success: false, error: auth.error };
 
@@ -488,7 +568,26 @@ export async function updateAppPermission(input: {
   }
 
   try {
+    if (await isSystemManagedPermission(input.appId, input.permissionId)) {
+      return {
+        success: false,
+        error: 'This system-managed permission cannot be edited.',
+      };
+    }
+
     const affectedRoleIds = await getMappedRoleIdsForPermission(input.permissionId);
+    const impactedRoles = await prisma.$transaction((tx) =>
+      getImpactedRoleMappingsForPermissionScopes(tx, input.appId, input.permissionId, scopes),
+    );
+
+    if (impactedRoles.length > 0 && !input.confirmScopeRemoval) {
+      return {
+        success: false,
+        error: 'Updating this permission scope will remove it from incompatible roles.',
+        requiresConfirmation: true,
+        impactedRoles,
+      };
+    }
 
     const record = await prisma.$transaction(async (tx) => {
       const existing = await tx.authzPermission.findFirst({
@@ -497,19 +596,14 @@ export async function updateAppPermission(input: {
       });
       if (!existing) throw new Error('Permission not found.');
 
-      const affectedRoles = await tx.authzRole.findMany({
-        where: {
-          appId: input.appId,
-          permissionMappings: { some: { permissionId: input.permissionId } },
-        },
-        select: { id: true, name: true, scope: true },
-      });
-
-      for (const role of affectedRoles) {
-        const compatibilityError = getRoleScopeCompatibilityError(role.scope, [scopes]);
-        if (compatibilityError) {
-          throw new Error(`Permission scope update would invalidate role "${role.name ?? role.id}". Remove that permission from the role first.`);
-        }
+      if (impactedRoles.length > 0) {
+        await tx.authzRolePermissionMap.deleteMany({
+          where: {
+            permissionId: input.permissionId,
+            roleId: { in: impactedRoles.map((role) => role.roleId) },
+            scope: { in: impactedRoles.map((role) => role.roleScope) },
+          },
+        });
       }
 
       const updated = await tx.authzPermission.update({
@@ -525,6 +619,9 @@ export async function updateAppPermission(input: {
     });
 
     await syncRolePermissionsForRoleIds(affectedRoleIds);
+    if (impactedRoles.length > 0) {
+      await dispatchRoleUpdatesForRoleIds(input.appId, impactedRoles.map((role) => role.roleId));
+    }
 
     revalidatePath(`/data/appconnection/${input.appId}`);
     return {
@@ -551,6 +648,13 @@ export async function deleteAppPermission(input: {
   if ('error' in auth) return { success: false, error: auth.error };
 
   try {
+    if (await isSystemManagedPermission(input.appId, input.permissionId)) {
+      return {
+        success: false,
+        error: 'This system-managed permission cannot be removed.',
+      };
+    }
+
     const affectedRoleIds = await getMappedRoleIdsForPermission(input.permissionId);
 
     await prisma.$transaction(async (tx) => {
@@ -685,11 +789,11 @@ export async function createAppRole(input: {
           select: { id: true, name: true },
         });
 
-        await syncRolePermissionMappings(tx, created.id, caps.map((cap) => cap.id));
-        await syncRolePermissionsDenormalized(tx, created.id);
-      } else {
-        await syncRolePermissionMappings(tx, created.id, []);
-        await syncRolePermissionsDenormalized(tx, created.id);
+      await syncRolePermissionMappings(tx, created.id, scope, caps.map((cap) => cap.id));
+      await syncRolePermissionsDenormalized(tx, created.id);
+    } else {
+      await syncRolePermissionMappings(tx, created.id, scope, []);
+      await syncRolePermissionsDenormalized(tx, created.id);
       }
 
       return created;
@@ -730,6 +834,10 @@ export async function updateAppRolePermissions(input: {
   if ('error' in auth) return { success: false, error: auth.error };
 
   try {
+    if (input.appId === GLOBAL_AUTHZ_APP_ID && isGlobalAuthzSystemRole(input.roleId)) {
+      return { success: false, error: 'This system role cannot be modified.' };
+    }
+
     await prisma.$transaction(async (tx) => {
       const role = await tx.authzRole.findFirst({
         where: { id: input.roleId, appId: input.appId },
@@ -746,10 +854,10 @@ export async function updateAppRolePermissions(input: {
           select: { id: true, name: true },
         });
 
-        await syncRolePermissionMappings(tx, input.roleId, caps.map((cap) => cap.id));
+        await syncRolePermissionMappings(tx, input.roleId, normalizeRoleScope(role.scope) ?? role.scope, caps.map((cap) => cap.id));
         await syncRolePermissionsDenormalized(tx, input.roleId);
       } else {
-        await syncRolePermissionMappings(tx, input.roleId, []);
+        await syncRolePermissionMappings(tx, input.roleId, normalizeRoleScope(role.scope) ?? role.scope, []);
         await syncRolePermissionsDenormalized(tx, input.roleId);
       }
     });
@@ -784,6 +892,10 @@ export async function updateAppRole(input: {
   if ('error' in auth) return { success: false, error: auth.error };
 
   try {
+    if (input.appId === GLOBAL_AUTHZ_APP_ID && isGlobalAuthzSystemRole(input.roleId)) {
+      return { success: false, error: 'This system role cannot be modified.' };
+    }
+
     await prisma.$transaction(async (tx) => {
       const role = await tx.authzRole.findFirst({
         where: { id: input.roleId, appId: input.appId },
@@ -823,9 +935,9 @@ export async function updateAppRole(input: {
           where: { id: { in: input.permissionIds }, appId: input.appId },
           select: { id: true },
         });
-        await syncRolePermissionMappings(tx, input.roleId, caps.map((cap) => cap.id));
+        await syncRolePermissionMappings(tx, input.roleId, nextScope, caps.map((cap) => cap.id));
       } else {
-        await syncRolePermissionMappings(tx, input.roleId, []);
+        await syncRolePermissionMappings(tx, input.roleId, nextScope, []);
       }
 
       await syncRolePermissionsDenormalized(tx, input.roleId);
@@ -858,7 +970,7 @@ export async function deleteAppRole(input: {
   if ('error' in auth) return { success: false, error: auth.error };
 
   try {
-    if (input.appId === GLOBAL_AUTHZ_APP_ID && ['application.owner', 'application.manage'].includes(input.roleId)) {
+    if (input.appId === GLOBAL_AUTHZ_APP_ID && isGlobalAuthzSystemRole(input.roleId)) {
       return { success: false, error: 'This system role cannot be deleted.' };
     }
 
@@ -991,6 +1103,7 @@ export async function pushAuthzToWebhook(appId: string): Promise<{
       select: {
         roleId: true,
         permissionId: true,
+        scope: true,
         permission: {
           select: {
             name: true,
@@ -1010,7 +1123,7 @@ export async function pushAuthzToWebhook(appId: string): Promise<{
         data: {
           roleId: map.roleId,
           permissionId: map.permissionId,
-          scope: role.scope ?? null,
+          scope: map.scope ?? role.scope ?? null,
           denormalizedPermission: map.permission?.name ? [map.permission.name] : [],
           roleName: role.name ?? null,
         },

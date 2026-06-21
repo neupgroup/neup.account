@@ -118,6 +118,23 @@ async function syncAffectedRoleSnapshots(tx: any, roleIds: string[]): Promise<vo
   }
 }
 
+async function resolveRolePermissionScope(
+  tx: any,
+  roleId: string,
+  fallbackScope?: string | null,
+): Promise<string | null> {
+  if (typeof fallbackScope === 'string' && fallbackScope.trim().length > 0) {
+    return fallbackScope.trim();
+  }
+
+  const role = await tx.authzRole.findUnique({
+    where: { id: roleId },
+    select: { scope: true },
+  });
+
+  return typeof role?.scope === 'string' && role.scope.trim().length > 0 ? role.scope.trim() : null;
+}
+
 // ---------------------------------------------------------------------------
 // Table handlers
 // ---------------------------------------------------------------------------
@@ -142,6 +159,11 @@ async function handleRolePermission(operation: Operation, body: WebhookBody): Pr
 
       const id = crypto.randomUUID();
       await prisma.$transaction(async (tx) => {
+        const scope = await resolveRolePermissionScope(tx, d.roleId as string, typeof d.scope === 'string' ? d.scope : null);
+        if (!scope) {
+          throw new Error('Role scope not found for mapping insert.');
+        }
+
         await tx.authzRolePermissionMap.deleteMany({
           where: {
             roleId: d.roleId as string,
@@ -154,6 +176,7 @@ async function handleRolePermission(operation: Operation, body: WebhookBody): Pr
             id,
             roleId: d.roleId as string,
             permissionId: d.permissionId as string,
+            scope,
           },
         });
 
@@ -171,20 +194,25 @@ async function handleRolePermission(operation: Operation, body: WebhookBody): Pr
       await prisma.$transaction(async (tx) => {
         const existing = await tx.authzRolePermissionMap.findUnique({
           where: { id: body.id as string },
-          select: { roleId: true, permissionId: true },
+          select: { roleId: true, permissionId: true, scope: true },
         });
         if (!existing) return;
 
         const nextRoleId = typeof d.roleId === 'string' && d.roleId.trim() ? d.roleId.trim() : existing.roleId;
         const nextPermissionId =
           typeof d.permissionId === 'string' && d.permissionId.trim() ? d.permissionId.trim() : existing.permissionId;
+        const nextScope = await resolveRolePermissionScope(tx, nextRoleId, typeof d.scope === 'string' ? d.scope : null);
+        if (!nextScope) {
+          throw new Error('Role scope not found for mapping update.');
+        }
 
-        if (nextRoleId !== existing.roleId || nextPermissionId !== existing.permissionId) {
+        if (nextRoleId !== existing.roleId || nextPermissionId !== existing.permissionId || nextScope !== existing.scope) {
           await tx.authzRolePermissionMap.update({
             where: { id: body.id as string },
             data: {
               roleId: nextRoleId,
               permissionId: nextPermissionId,
+              scope: nextScope,
             },
           });
           await syncAffectedRoleSnapshots(tx, [existing.roleId, nextRoleId]);
@@ -205,22 +233,27 @@ async function handleRolePermission(operation: Operation, body: WebhookBody): Pr
           const id = typeof record.id === 'string' ? record.id.trim() : '';
           const roleId = typeof record.roleId === 'string' ? record.roleId.trim() : '';
           const permissionId = typeof record.permissionId === 'string' ? record.permissionId.trim() : '';
+          const providedScope = typeof record.scope === 'string' ? record.scope.trim() : '';
 
           if (id) {
             const existing = await tx.authzRolePermissionMap.findUnique({
               where: { id },
-              select: { roleId: true, permissionId: true },
+              select: { roleId: true, permissionId: true, scope: true },
             });
             if (!existing) continue;
 
             const nextRoleId = roleId || existing.roleId;
             const nextPermissionId = permissionId || existing.permissionId;
-            if (nextRoleId !== existing.roleId || nextPermissionId !== existing.permissionId) {
+            const nextScope = await resolveRolePermissionScope(tx, nextRoleId, providedScope || existing.scope);
+            if (!nextScope) continue;
+
+            if (nextRoleId !== existing.roleId || nextPermissionId !== existing.permissionId || nextScope !== existing.scope) {
               await tx.authzRolePermissionMap.update({
                 where: { id },
                 data: {
                   ...(roleId ? { roleId } : {}),
                   ...(permissionId ? { permissionId } : {}),
+                  ...(nextScope !== existing.scope ? { scope: nextScope } : {}),
                 },
               });
               touchedRoles.push(existing.roleId, nextRoleId);
@@ -229,6 +262,8 @@ async function handleRolePermission(operation: Operation, body: WebhookBody): Pr
           }
 
           if (!roleId || !permissionId) continue;
+          const scope = await resolveRolePermissionScope(tx, roleId, providedScope);
+          if (!scope) continue;
           await tx.authzRolePermissionMap.deleteMany({
             where: { roleId, permissionId },
           });
@@ -237,6 +272,7 @@ async function handleRolePermission(operation: Operation, body: WebhookBody): Pr
               id: crypto.randomUUID(),
               roleId,
               permissionId,
+              scope,
             },
           });
           touchedRoles.push(roleId);

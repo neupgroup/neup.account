@@ -53,11 +53,13 @@ function ScopeBuilder({
   audience,
   onModeChange,
   onAudienceChange,
+  disabled = false,
 }: {
   mode: ScopeMode;
   audience: ScopeAudience;
   onModeChange: (mode: ScopeMode) => void;
   onAudienceChange: (audience: ScopeAudience) => void;
+  disabled?: boolean;
 }) {
   const normalizedAudience = normalizeAudience(mode, audience);
   const encodedScope = hasAudience(normalizedAudience)
@@ -76,6 +78,7 @@ function ScopeBuilder({
               size="sm"
               variant={mode === option ? 'default' : 'outline'}
               onClick={() => onModeChange(option)}
+              disabled={disabled}
             >
               {option}
             </Button>
@@ -88,17 +91,17 @@ function ScopeBuilder({
         <div className="grid gap-2 sm:grid-cols-2">
           {ACCOUNT_OPTIONS.map((option) => {
             const checked = normalizedAudience[option.key];
-            const disabled = mode === 'root' && option.key !== 'individual';
+            const optionDisabled = disabled || (mode === 'root' && option.key !== 'individual');
             return (
               <label
                 key={option.key}
                 className={`flex items-center gap-2 rounded-md border px-3 py-2 text-sm ${
-                  disabled ? 'opacity-60' : 'cursor-pointer'
+                  optionDisabled ? 'opacity-60' : 'cursor-pointer'
                 }`}
               >
                 <Checkbox
                   checked={checked}
-                  disabled={disabled}
+                  disabled={optionDisabled}
                   onCheckedChange={(nextChecked) => {
                     if (!nextChecked) return;
                     onAudienceChange(normalizeAudience(mode, scopeAudienceForAccount(option.key)));
@@ -121,9 +124,11 @@ function ScopeBuilder({
 export function RoleScopeSelector({
   value,
   onChange,
+  disabled = false,
 }: {
   value: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
 }) {
   const decoded = useMemo(() => decodeRoleScope(value), [value]);
   const [mode, setMode] = useState<ScopeMode>(decoded?.mode ?? 'managed');
@@ -149,6 +154,7 @@ export function RoleScopeSelector({
     <ScopeBuilder
       mode={mode}
       audience={audience}
+      disabled={disabled}
       onModeChange={(nextMode) => {
         setMode(nextMode);
         const nextAudience = normalizeAudience(nextMode, audience);

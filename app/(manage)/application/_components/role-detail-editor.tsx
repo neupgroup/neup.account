@@ -17,6 +17,7 @@ import {
 import { redirectInApp } from '@/core/helper/navigation';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { getRoleScopeCompatibilityError, isPermissionScopeAllowedForRoleScope } from '@/services/applications/role-scope-compatibility';
+import { isBuiltInApplicationManagementPermissionName } from '@/services/applications/permission-definitions';
 import { RoleScopeSelector } from './scope-selectors';
 
 type Props = {
@@ -77,6 +78,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
   }, [permissions, search]);
 
   const isDefaultRole = defaultRoleId === role.id;
+  const isSystemRole = appId === 'neup.account' && (role.id === 'application.owner' || role.id === 'application.manage');
 
   const handleSave = async () => {
     if (scopeCompatibilityError) return;
@@ -142,13 +144,18 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
           </p>
         </div>
         <Input value={role.name} disabled aria-label="Role name" />
-        <RoleScopeSelector value={scope} onChange={setScope} />
+        <RoleScopeSelector value={scope} onChange={setScope} disabled={!canManage || isSystemRole} />
         <Input
           value={description}
-          disabled={!canManage}
+          disabled={!canManage || isSystemRole}
           onChange={(event) => setDescription(event.target.value)}
           placeholder="Description (optional)"
         />
+        {isSystemRole ? (
+          <p className="text-xs text-muted-foreground">
+            This is a system-managed role for the authz app and cannot be edited here.
+          </p>
+        ) : null}
       </div>
 
       <div className="grid gap-2 rounded-2xl bg-card">
@@ -170,6 +177,8 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
             {visiblePermissions.map((permission) => {
               const isChecked = selectedSet.has(permission.id);
               const canAddPermission = isChecked || isPermissionScopeAllowedForRoleScope(permission.scope, scope);
+              const isSystemPermission = appId === 'neup.account' && isBuiltInApplicationManagementPermissionName(permission.name);
+              const isLockedSystemAssignment = isSystemRole && isSystemPermission;
 
               return (
                 <label
@@ -180,7 +189,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
                 >
                   <Checkbox
                     checked={isChecked}
-                    disabled={!canManage || !canAddPermission}
+                    disabled={!canManage || !canAddPermission || isSystemRole}
                     onCheckedChange={() =>
                       setPermissionIds((prev) =>
                         prev.includes(permission.id)
@@ -205,6 +214,11 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
                     {!canAddPermission ? (
                       <p className="text-xs text-muted-foreground">
                         This permission does not include the role scope level required by this role.
+                      </p>
+                    ) : null}
+                    {isLockedSystemAssignment ? (
+                      <p className="text-xs text-muted-foreground">
+                        This permission is managed automatically for this system role.
                       </p>
                     ) : null}
                   </div>
@@ -244,7 +258,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
           </p>
         </div>
         <div>
-          <Button type="button" variant="destructive" onClick={handleDelete} disabled={deletePending || !canManage}>
+          <Button type="button" variant="destructive" onClick={handleDelete} disabled={deletePending || !canManage || isSystemRole}>
             {deletePending ? 'Deleting...' : 'Delete Role'}
           </Button>
         </div>
@@ -254,7 +268,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
         <Button variant="outline" onClick={() => redirectInApp(router, applicationHref('/application/roles', appId, { mode: 'root' }))}>
           Back
         </Button>
-        <Button onClick={handleSave} disabled={savePending || !!scopeCompatibilityError || !canManage}>
+        <Button onClick={handleSave} disabled={savePending || !!scopeCompatibilityError || !canManage || isSystemRole}>
           {savePending ? 'Saving...' : 'Save Role'}
         </Button>
       </div>

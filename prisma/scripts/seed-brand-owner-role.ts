@@ -86,6 +86,7 @@ async function main() {
         create: {
           roleId: BRAND_OWNER_ROLE_ID,
           permissionId: permission.id,
+          scope: 'managed.0010',
         },
       });
     }

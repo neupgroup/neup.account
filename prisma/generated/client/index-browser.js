@@ -455,6 +455,7 @@ exports.Prisma.AuthzRolePermissionMapScalarFieldEnum = {
   id: 'id',
   roleId: 'roleId',
   permissionId: 'permissionId',
+  scope: 'scope',
   createdAt: 'createdAt'
 };
 

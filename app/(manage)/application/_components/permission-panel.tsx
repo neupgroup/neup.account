@@ -30,7 +30,9 @@ import {
   updateAppPermission,
   deleteAppPermission,
   type AppPermission,
+  type PermissionScopeImpactRole,
 } from '@/services/applications/authz-manage';
+import { isBuiltInApplicationManagementPermissionName } from '@/services/applications/permission-definitions';
 import { normalizeRoleScope } from '@/services/role-scopes';
 import { PermissionScopeSelector } from './scope-selectors';
 
@@ -49,6 +51,10 @@ type PermissionSearchFilters = {
 
 function normalizeScopeFilter(value: string): string | null {
   return normalizeRoleScope(value);
+}
+
+function isSystemManagedPermission(appId: string, permissionName: string): boolean {
+  return appId === 'neup.account' && isBuiltInApplicationManagementPermissionName(permissionName);
 }
 
 function parsePermissionSearch(input: string): PermissionSearchFilters {
@@ -124,6 +130,7 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
   const [editDesc, setEditDesc] = useState('');
   const [editScope, setEditScope] = useState<string[]>([]);
   const [editPending, setEditPending] = useState(false);
+  const [scopeRemovalImpact, setScopeRemovalImpact] = useState<PermissionScopeImpactRole[]>([]);
 
   const [removeTarget, setRemoveTarget] = useState<AppPermission | null>(null);
   const [removePending, setRemovePending] = useState(false);
@@ -152,6 +159,7 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
 
   const openEdit = (permission: AppPermission) => {
     if (!canManage) return;
+    if (isSystemManagedPermission(appId, permission.name)) return;
     setEditTarget(permission);
     setEditDesc(permission.description ?? '');
     setEditScope(permission.scope);
@@ -161,6 +169,7 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
     setEditTarget(null);
     setEditDesc('');
     setEditScope([]);
+    setScopeRemovalImpact([]);
   };
 
   const handleAdd = async () => {
@@ -228,6 +237,11 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
     });
     setEditPending(false);
 
+    if (result.requiresConfirmation && result.impactedRoles?.length) {
+      setScopeRemovalImpact(result.impactedRoles);
+      return;
+    }
+
     if (!result.success || !result.permission) {
       toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not update permission.' });
       return;
@@ -237,6 +251,35 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
     setPermissions((prev) => prev.map((permission) => (permission.id === editTarget.id ? updatedPermission : permission)));
     closeEdit();
     toast({ title: 'Permission updated' });
+  };
+
+  const handleConfirmScopeRemoval = async () => {
+    if (!canManage) return;
+    if (!editTarget) return;
+    if (editScope.length === 0) return;
+
+    setEditPending(true);
+    const result = await updateAppPermission({
+      appId,
+      permissionId: editTarget.id,
+      description: editDesc || undefined,
+      scope: editScope,
+      confirmScopeRemoval: true,
+    });
+    setEditPending(false);
+
+    if (!result.success || !result.permission) {
+      toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not update permission.' });
+      return;
+    }
+
+    const updatedPermission = result.permission;
+    setPermissions((prev) => prev.map((permission) => (permission.id === editTarget.id ? updatedPermission : permission)));
+    closeEdit();
+    toast({
+      title: 'Permission updated',
+      description: 'Incompatible role mappings were removed and recalculated.',
+    });
   };
 
   const handleRemoveConfirm = async () => {
@@ -285,37 +328,52 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
         ) : null}
 
         {filteredPermissions.length > 0 ? (
-          filteredPermissions.map((permission) => (
-            <div
-              key={permission.id}
-              className="group flex items-center justify-between gap-4 border-b px-4 py-4 last:border-b-0 transition-colors hover:bg-muted/40 sm:px-5"
-            >
-              <button type="button" className="min-w-0 flex-1 text-left" onClick={() => openEdit(permission)}>
-                <p className="truncate text-base font-medium leading-6">{permission.name}</p>
-                {permission.description ? (
-                  <p className="truncate text-sm text-muted-foreground">{permission.description}</p>
-                ) : null}
-                <div className="mt-1 flex flex-wrap gap-1">
-                  {permission.scope.map((scope) => (
-                    <Badge key={`${permission.id}-${scope}`} variant="secondary" className="text-xs">
-                      {scope}
-                    </Badge>
-                  ))}
-                </div>
-              </button>
-              {canManage ? (
-                <Button
+          filteredPermissions.map((permission) => {
+            const systemManaged = isSystemManagedPermission(appId, permission.name);
+
+            return (
+              <div
+                key={permission.id}
+                className="group flex items-center justify-between gap-4 border-b px-4 py-4 last:border-b-0 transition-colors hover:bg-muted/40 sm:px-5"
+              >
+                <button
                   type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="shrink-0 text-muted-foreground"
-                  onClick={() => setRemoveTarget(permission)}
+                  className="min-w-0 flex-1 text-left disabled:cursor-default"
+                  onClick={() => openEdit(permission)}
+                  disabled={!canManage || systemManaged}
                 >
-                  Remove
-                </Button>
-              ) : null}
-            </div>
-          ))
+                  <p className="truncate text-base font-medium leading-6">{permission.name}</p>
+                  {permission.description ? (
+                    <p className="truncate text-sm text-muted-foreground">{permission.description}</p>
+                  ) : null}
+                  <div className="mt-1 flex flex-wrap gap-1">
+                    {permission.scope.map((scope) => (
+                      <Badge key={`${permission.id}-${scope}`} variant="secondary" className="text-xs">
+                        {scope}
+                      </Badge>
+                    ))}
+                  </div>
+                  {systemManaged ? (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      This is a system-managed permission for the authz app and cannot be edited here.
+                    </p>
+                  ) : null}
+                </button>
+                {canManage ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="shrink-0 text-muted-foreground"
+                    onClick={() => setRemoveTarget(permission)}
+                    disabled={systemManaged}
+                  >
+                    Remove
+                  </Button>
+                ) : null}
+              </div>
+            );
+          })
         ) : (
           <div className="px-4 py-8 text-center text-sm text-muted-foreground sm:px-5">
             {permissions.length === 0 ? 'No permissions defined yet.' : 'No permissions match your search.'}
@@ -369,6 +427,11 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
             <Input value={editTarget?.name ?? ''} disabled aria-label="Permission name" />
             <Input value={editDesc} onChange={(event) => setEditDesc(event.target.value)} placeholder="Description (optional)" autoFocus />
             <PermissionScopeSelector key={editTarget?.id ?? 'edit-closed'} value={editScope} onChange={setEditScope} />
+            {scopeRemovalImpact.length > 0 ? (
+              <div className="rounded-lg border border-amber-500/40 bg-amber-50 p-3 text-sm text-amber-900">
+                Saving will remove this permission from {scopeRemovalImpact.length} incompatible {scopeRemovalImpact.length === 1 ? 'role' : 'roles'}.
+              </div>
+            ) : null}
           </div>
           <DialogFooter>
             <DialogClose asChild>
@@ -397,6 +460,35 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
               disabled={removePending}
             >
               {removePending ? 'Removing...' : 'Remove'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={scopeRemovalImpact.length > 0} onOpenChange={(open) => { if (!open) setScopeRemovalImpact([]); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove incompatible role mappings?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Removing one or more scopes from <strong>{editTarget?.name}</strong> will also remove this permission from the following roles because their mapped scope is no longer allowed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="max-h-64 space-y-2 overflow-y-auto">
+            {scopeRemovalImpact.map((role) => (
+              <div key={`${role.roleId}-${role.roleScope}`} className="rounded-md border px-3 py-2 text-sm">
+                <div className="font-medium">{role.roleName}</div>
+                <div className="text-muted-foreground">{role.roleScope}</div>
+              </div>
+            ))}
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={editPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleConfirmScopeRemoval}
+              disabled={editPending}
+            >
+              {editPending ? 'Updating...' : 'Remove And Recalculate'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

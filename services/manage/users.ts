@@ -432,6 +432,7 @@ export async function grantManagedAccountAccess(input: {
           data: permissionRows.map((permission) => ({
             roleId,
             permissionId: permission.id,
+            scope: 'account',
           })),
         });
       }

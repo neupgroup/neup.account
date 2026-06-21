@@ -261,7 +261,12 @@ export function extractRolePermissionNames(value: Prisma.JsonValue | null | unde
     }
 
     if (!item || typeof item !== 'object' || Array.isArray(item)) return [];
-    const name = typeof item.name === 'string' ? item.name.trim() : '';
+    const name =
+      typeof item.id === 'string'
+        ? item.id.trim()
+        : typeof item.name === 'string'
+        ? item.name.trim()
+        : '';
     return name ? [name] : [];
   })));
 }

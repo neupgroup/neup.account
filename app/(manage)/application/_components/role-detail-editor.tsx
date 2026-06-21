@@ -252,10 +252,10 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
           <div>
             <p className="text-sm font-medium">Role details</p>
             <p className="text-xs text-muted-foreground">
-              Role name is fixed after creation. Only the description and applicable targets can be updated here.
+              Role title is fixed after creation. Only the description and applicable targets can be updated here.
             </p>
           </div>
-          <Input value={role.name} disabled aria-label="Role name" />
+          <Input value={role.name} disabled aria-label="Role title" />
           <Input
             value={description}
             disabled={!canManage || isSystemRole}

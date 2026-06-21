@@ -148,6 +148,12 @@ function hasPermission(granted: Set<string>, required: string): boolean {
 	const normalizedRequired = normalizePermission(required);
 	if (granted.has(normalizedRequired)) return true;
 
+	for (const grantedValue of granted) {
+		if (grantedValue.endsWith(`.${normalizedRequired}`)) {
+			return true;
+		}
+	}
+
 	if (normalizedRequired.startsWith('app.') || normalizedRequired.startsWith('application.')) {
 		for (const alias of ['owner', 'manage', 'edit', 'view', 'application.owner', 'application.manage', 'application.edit', 'application.view', 'app.owner', 'app.manage', 'app.edit', 'app.view']) {
 			if (granted.has(alias)) {

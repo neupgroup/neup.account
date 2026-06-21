@@ -1,6 +1,5 @@
 'use server';
 
-import { randomUUID } from 'crypto';
 import { isIP } from 'node:net';
 import { revalidatePath } from 'next/cache';
 import { notFound } from 'next/navigation';
@@ -59,6 +58,12 @@ import {
   applicationPartyValues,
   type ApplicationParty,
 } from '@/services/applications/types';
+import {
+  buildApplicationId,
+  generateApplicationIdSuffix,
+  isValidApplicationIdPrefix,
+  normalizeApplicationIdPrefix,
+} from '@/services/applications/identifiers';
 
 const responseAccessSet = new Set<ApplicationAccessField>(applicationResponseFields);
 const tokenFieldSet = new Set<ApplicationAccessField>(applicationTokenFields);
@@ -66,6 +71,7 @@ const ROOT_PERMISSION_SCOPE = 'root.individual';
 
 const createApplicationSchema = z.object({
   name: z.string().trim().min(1, 'Application name is required.').max(120, 'Application name is too long.'),
+  idPrefix: z.string().trim().min(1, 'Application identifier is required.').max(80, 'Application identifier is too long.'),
 });
 
 const saveSecretSchema = z.object({
@@ -501,10 +507,15 @@ export async function deleteManagedApplication(appId: string): Promise<{ success
 /**
  * Function createManagedApplication.
  */
-export async function createManagedApplication(input: { name: string }) {
+export async function createManagedApplication(input: { name: string; idPrefix: string }) {
   const parsed = createApplicationSchema.safeParse(input);
   if (!parsed.success) {
-    return { success: false, error: 'Invalid application name.' };
+    return { success: false, error: 'Invalid application details.' };
+  }
+
+  const normalizedIdPrefix = normalizeApplicationIdPrefix(parsed.data.idPrefix);
+  if (!normalizedIdPrefix || !isValidApplicationIdPrefix(normalizedIdPrefix)) {
+    return { success: false, error: 'Application identifier may only contain letters and numbers.' };
   }
 
   const canCreateApplication = await hasRootApplicationPermission(ROOT_APPLICATION_CREATE_PERMISSION);
@@ -553,9 +564,25 @@ export async function createManagedApplication(input: { name: string }) {
           permissions: permissions.map((permission) => permission.name),
         },
       });
+      let applicationId = '';
+      for (let attempt = 0; attempt < 5; attempt += 1) {
+        const nextId = buildApplicationId(normalizedIdPrefix, generateApplicationIdSuffix());
+        const existing = await tx.application.findUnique({
+          where: { id: nextId },
+          select: { id: true },
+        });
+        if (existing) continue;
+        applicationId = nextId;
+        break;
+      }
+
+      if (!applicationId) {
+        throw new Error('Could not reserve a unique application identifier.');
+      }
+
       const createdApp = await tx.application.create({
         data: {
-          id: randomUUID(),
+          id: applicationId,
           name: parsed.data.name,
           status: 'development',
         },

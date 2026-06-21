@@ -155,7 +155,7 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
       });
   }, [permissions, search]);
 
-  const isValidName = (value: string) => /^[a-zA-Z0-9._]+$/.test(value.trim());
+  const isValidName = (value: string) => value.trim().length > 0;
 
   const openEdit = (permission: AppPermission) => {
     if (!canManage) return;
@@ -179,8 +179,8 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
     if (!isValidName(trimmed)) {
       toast({
         variant: 'destructive',
-        title: 'Invalid name',
-        description: 'Permission name may only contain letters, numbers, dots (.), and underscores (_).',
+        title: 'Invalid title',
+        description: 'Permission title must include at least one visible character.',
       });
       return;
     }
@@ -396,11 +396,11 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
           <DialogHeader>
             <DialogTitle>New Permission</DialogTitle>
             <DialogDescription>
-              Use letters, numbers, dots, or underscores for the permission name and choose the role scope levels that can use it.
+              Enter a readable permission title. The technical permission ID is generated automatically from the application ID and title.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
-            <Input value={addName} onChange={(event) => setAddName(event.target.value)} placeholder="Name, e.g. orders.read" autoFocus />
+            <Input value={addName} onChange={(event) => setAddName(event.target.value)} placeholder="Title, e.g. Orders Read" autoFocus />
             <Input value={addDesc} onChange={(event) => setAddDesc(event.target.value)} placeholder="Description (optional)" />
             <PermissionScopeSelector key={`add-${addOpen ? 'open' : 'closed'}`} value={addScope} onChange={setAddScope} />
           </div>
@@ -420,11 +420,11 @@ export function PermissionPanel({ appId, initialPermissions, canManage }: Props)
           <DialogHeader>
             <DialogTitle>Edit Permission</DialogTitle>
             <DialogDescription>
-              Update the description and scope list for this permission. The name stays fixed after creation.
+              Update the description and scope list for this permission. The title stays fixed after creation.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
-            <Input value={editTarget?.name ?? ''} disabled aria-label="Permission name" />
+            <Input value={editTarget?.name ?? ''} disabled aria-label="Permission title" />
             <Input value={editDesc} onChange={(event) => setEditDesc(event.target.value)} placeholder="Description (optional)" autoFocus />
             <PermissionScopeSelector key={editTarget?.id ?? 'edit-closed'} value={editScope} onChange={setEditScope} />
             {scopeRemovalImpact.length > 0 ? (

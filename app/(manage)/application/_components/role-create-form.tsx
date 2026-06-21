@@ -25,13 +25,13 @@ export function RoleCreateForm({ appId }: Props) {
   const [pending, setPending] = useState(false);
 
   const handleSubmit = async () => {
-    const roleName = name.trim();
-    if (!roleName || !scope) return;
+    const roleTitle = name.trim();
+    if (!roleTitle || !scope) return;
 
     setPending(true);
     const result = await createAppRole({
       appId,
-      name: roleName,
+      name: roleTitle,
       description: description || undefined,
       scope,
       applicableFor,
@@ -51,7 +51,7 @@ export function RoleCreateForm({ appId }: Props) {
 
   return (
     <div className="grid gap-4 rounded-2xl border bg-card p-5">
-      <Input value={name} onChange={(event) => setName(event.target.value)} placeholder="Role name, e.g. viewer" />
+      <Input value={name} onChange={(event) => setName(event.target.value)} placeholder="Role title, e.g. Viewer" />
       <Input value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Description (optional)" />
       <RoleScopeSelector value={scope} onChange={setScope} />
       <StringTagInput

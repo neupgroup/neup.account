@@ -32,6 +32,7 @@ import {
   revalidateApplicationPermissionsRoutes,
   revalidateApplicationRoleRoutes,
 } from '@/services/applications/revalidate-routes';
+import { buildAuthzEntityId } from '@/services/applications/identifiers';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -159,6 +160,10 @@ async function syncRolePermissionMappings(tx: any, roleId: string, roleScope: st
 }
 
 async function syncRolePermissionsDenormalized(tx: any, roleId: string): Promise<void> {
+  const roleRecord = await tx.authzRole.findUnique({
+    where: { id: roleId },
+    select: { appId: true },
+  });
   const mappedPermissions = await tx.authzRolePermissionMap.findMany({
     where: { roleId },
     select: {
@@ -172,8 +177,10 @@ async function syncRolePermissionsDenormalized(tx: any, roleId: string): Promise
   const permissions = Array.from(
     new Set(
       mappedPermissions
-        .map((row: { permission: { name: string } }) => row.permission?.name)
-        .filter((permissionName: unknown): permissionName is string => typeof permissionName === 'string' && permissionName.length > 0),
+        .map((row: { permission: { id: string; name: string } }) =>
+          roleRecord?.appId === GLOBAL_AUTHZ_APP_ID ? row.permission?.name : row.permission?.id
+        )
+        .filter((permissionValue: unknown): permissionValue is string => typeof permissionValue === 'string' && permissionValue.length > 0),
     ),
   );
 
@@ -523,26 +530,30 @@ export async function createAppPermission(input: {
   if ('error' in auth) return { success: false, error: auth.error };
 
   const name = input.name.trim();
-  if (!name) return { success: false, error: 'Permission name is required.' };
-  if (!/^[a-zA-Z0-9._]+$/.test(name)) {
-    return { success: false, error: 'Permission name may only contain letters, numbers, dots (.), and underscores (_).' };
+  if (!name) return { success: false, error: 'Permission title is required.' };
+  let permissionId = '';
+  try {
+    permissionId = buildAuthzEntityId(input.appId, name);
+  } catch {
+    return { success: false, error: 'Permission title must include letters or numbers.' };
   }
   const scopes = validatePermissionScopes(input.scope);
   if (!scopes) {
     return { success: false, error: permissionScopeError() };
   }
 
-  const existing = await prisma.authzPermission.findFirst({
-    where: { appId: input.appId, name },
+  const existing = await prisma.authzPermission.findUnique({
+    where: { id: permissionId },
     select: { id: true },
   });
   if (existing) {
-    return { success: false, error: `A permission named "${name}" already exists for this application.` };
+    return { success: false, error: `A permission with this title already exists for this application.` };
   }
 
   try {
     const record = await prisma.authzPermission.create({
       data: {
+        id: permissionId,
         name,
         description: input.description?.trim() || null,
         scope: scopes,
@@ -710,7 +721,19 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
         description: true,
         scope: true,
         applicableFor: true,
-        permissions: true,
+        permissionMappings: {
+          orderBy: { createdAt: 'asc' },
+          select: {
+            permission: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+                scope: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -720,39 +743,16 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
       description: role.description,
       scope: normalizeRoleScope(role.scope) ?? role.scope,
       applicableFor: normalizeApplicableFor(role.applicableFor),
-      permissions: Array.isArray(role.permissions)
-        ? role.permissions
-            .flatMap((p): AppPermission[] => {
-              if (typeof p === 'string') {
-                return [{
-                  id: '',
-                  name: p,
-                  description: null,
-                  scope: [],
-                }];
-              }
-
-              if (!p || typeof p !== 'object') return [];
-
-              const obj = p as {
-                  id?: string;
-                  name?: string;
-                  description?: string | null;
-                  scope?: Prisma.JsonValue;
-              };
-
-              const name = typeof obj.name === 'string' ? obj.name : '';
-              const id = typeof obj.id === 'string' ? obj.id : '';
-              if (!name) return [];
-
-              return [{
-                id,
-                name,
-                description: typeof obj.description === 'string' ? obj.description : null,
-                scope: normalizePermissionScopes(obj.scope),
-              }];
-            })
-        : [],
+      permissions: role.permissionMappings.flatMap((mapping): AppPermission[] => {
+        const permission = mapping.permission;
+        if (!permission?.id || !permission?.name) return [];
+        return [{
+          id: permission.id,
+          name: permission.name,
+          description: permission.description ?? null,
+          scope: normalizePermissionScopes(permission.scope),
+        }];
+      }),
     }));
   } catch (error) {
     await logError('database', error, `getAppRoles:${appId}`);
@@ -772,18 +772,20 @@ export async function createAppRole(input: {
   if ('error' in auth) return { success: false, error: auth.error };
 
   const name = input.name.trim();
-  if (!name) return { success: false, error: 'Role name is required.' };
-  if (!/^[A-Za-z0-9._]+$/.test(name)) {
-    return { success: false, error: 'Role name may only contain letters, numbers, dots (.) and underscores (_).' };
+  if (!name) return { success: false, error: 'Role title is required.' };
+  let roleId = '';
+  try {
+    roleId = buildAuthzEntityId(input.appId, name);
+  } catch {
+    return { success: false, error: 'Role title must include letters or numbers.' };
   }
 
-  // Enforce uniqueness: one role per name per app
-  const existing = await prisma.authzRole.findFirst({
-    where: { name, appId: input.appId },
+  const existing = await prisma.authzRole.findUnique({
+    where: { id: roleId },
     select: { id: true },
   });
   if (existing) {
-    return { success: false, error: `A role named "${name}" already exists for this application.` };
+    return { success: false, error: `A role with this title already exists for this application.` };
   }
 
   try {
@@ -796,6 +798,7 @@ export async function createAppRole(input: {
     const role = await prisma.$transaction(async (tx) => {
       const created = await tx.authzRole.create({
         data: {
+          id: roleId,
           name,
           description: input.description?.trim() || null,
           scope,
@@ -942,7 +945,7 @@ export async function updateAppRole(input: {
       }
       const applicableFor = Array.from(new Set((input.applicableFor ?? []).map((item) => item.trim()).filter(Boolean)));
       if (typeof input.name === 'string' && input.name.trim() !== role.name) {
-        throw new Error('Role name cannot be changed after creation.');
+        throw new Error('Role title cannot be changed after creation.');
       }
 
       if (input.permissionIds.length > 0) {
@@ -1154,7 +1157,7 @@ export async function pushAuthzToWebhook(appId: string): Promise<{
           roleId: map.roleId,
           permissionId: map.permissionId,
           scope: map.scope ?? role.scope ?? null,
-          denormalizedPermission: map.permission?.name ? [map.permission.name] : [],
+          denormalizedPermission: map.permissionId ? [map.permissionId] : [],
           roleName: role.name ?? null,
         },
       });

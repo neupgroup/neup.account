@@ -6,7 +6,6 @@ import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   deleteAppRole,
@@ -19,7 +18,6 @@ import { redirectInApp } from '@/core/helper/navigation';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { getRoleScopeCompatibilityError, isPermissionScopeAllowedForRoleScope } from '@/services/applications/role-scope-compatibility';
 import { isBuiltInApplicationManagementPermissionName } from '@/services/applications/permission-definitions';
-import { formatMergedScopeLabels } from '@/services/role-scopes';
 import { StringTagInput } from './string-tag-input';
 
 type Props = {
@@ -166,7 +164,6 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
               const isInvalidSelectedPermission = isChecked && !isScopeCompatible;
               const isSystemPermission = appId === 'neup.account' && isBuiltInApplicationManagementPermissionName(permission.name);
               const isLockedSystemAssignment = isSystemRole && isSystemPermission;
-              const scopeLabels = formatMergedScopeLabels(permission.scope);
 
               return (
                 <label
@@ -188,17 +185,15 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
                     className="mt-0.5"
                   />
                   <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className={`truncate text-base font-medium leading-6 ${isInvalidSelectedPermission ? 'text-destructive' : ''}`}>{permission.name}</p>
-                      {scopeLabels.map((scopeLabel) => (
-                        <Badge key={`${permission.id}-${scopeLabel}`} variant="secondary" className="text-xs">
-                          {scopeLabel}
-                        </Badge>
-                      ))}
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {permission.description || 'No description'}
+                    <p className={`truncate text-base font-medium leading-6 ${isInvalidSelectedPermission ? 'text-destructive' : ''}`}>
+                      {permission.name}
+                      {isLockedSystemAssignment ? ' (Sys)' : ''}
                     </p>
+                    {permission.description ? (
+                      <p className="text-sm text-muted-foreground">
+                        {permission.description}
+                      </p>
+                    ) : null}
                     {!canAddPermission ? (
                       <p className="text-xs text-muted-foreground">
                         This permission does not include the role scope level required by this role.
@@ -207,11 +202,6 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
                     {isInvalidSelectedPermission ? (
                       <p className="text-xs text-destructive">
                         This selected permission no longer belongs to this role scope.
-                      </p>
-                    ) : null}
-                    {isLockedSystemAssignment ? (
-                      <p className="text-xs text-muted-foreground">
-                        This permission is managed automatically for this system role.
                       </p>
                     ) : null}
                   </div>
@@ -262,14 +252,10 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
           <div>
             <p className="text-sm font-medium">Role details</p>
             <p className="text-xs text-muted-foreground">
-              Role name and scope are fixed after creation. Only the description can be updated here.
+              Role name is fixed after creation. Only the description and applicable targets can be updated here.
             </p>
           </div>
           <Input value={role.name} disabled aria-label="Role name" />
-          <div className="grid gap-1">
-            <p className="text-xs font-medium text-muted-foreground">Role scope</p>
-            <p className="text-sm">{role.scope}</p>
-          </div>
           <Input
             value={description}
             disabled={!canManage || isSystemRole}

@@ -343,12 +343,30 @@ export async function getAllAccountsPaginated(params: {
         if (parsedSearch.roleName) {
             where.denormRoles = {
                 some: {
-                    authzRole: {
-                        name: {
-                            equals: parsedSearch.roleName,
-                            mode: 'insensitive',
+                    OR: [
+                        {
+                            roleId: {
+                                equals: parsedSearch.roleName,
+                                mode: 'insensitive',
+                            },
                         },
-                    },
+                        {
+                            authzRole: {
+                                id: {
+                                    equals: parsedSearch.roleName,
+                                    mode: 'insensitive',
+                                },
+                            },
+                        },
+                        {
+                            authzRole: {
+                                name: {
+                                    equals: parsedSearch.roleName,
+                                    mode: 'insensitive',
+                                },
+                            },
+                        },
+                    ],
                 },
             };
         }

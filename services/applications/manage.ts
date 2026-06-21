@@ -2106,22 +2106,93 @@ export async function getApplicationUsersPaginated(params: {
     }
 
     if (parsedSearch.roleName) {
-      connectionWhere.OR = [
-        {
-          role: {
-            name: {
-              equals: parsedSearch.roleName,
-              mode: 'insensitive',
+      const [directRoleConnections, grantedRoleAccessRows] = await Promise.all([
+        prisma.connection.findMany({
+          where: {
+            appId,
+            OR: [
+              {
+                role: {
+                  id: {
+                    equals: parsedSearch.roleName,
+                    mode: 'insensitive',
+                  },
+                },
+              },
+              {
+                role: {
+                  name: {
+                    equals: parsedSearch.roleName,
+                    mode: 'insensitive',
+                  },
+                },
+              },
+              {
+                roleId: {
+                  equals: parsedSearch.roleName,
+                  mode: 'insensitive',
+                },
+              },
+            ],
+          },
+          select: { accountId: true },
+        }),
+        prisma.access.findMany({
+          where: {
+            memberAccountId: { not: null },
+            accessApplicationId: appId,
+            ...activeAccessWhere(),
+            role: {
+              appId,
+              OR: [
+                {
+                  id: {
+                    equals: parsedSearch.roleName,
+                    mode: 'insensitive',
+                  },
+                },
+                {
+                  name: {
+                    equals: parsedSearch.roleName,
+                    mode: 'insensitive',
+                  },
+                },
+              ],
             },
           },
-        },
-        {
-          roleId: {
-            equals: parsedSearch.roleName,
-            mode: 'insensitive',
-          },
-        },
-      ];
+          select: { memberAccountId: true },
+          distinct: ['memberAccountId'],
+        }),
+      ]);
+
+      const matchingAccountIds = Array.from(new Set([
+        ...directRoleConnections.map((row) => row.accountId),
+        ...grantedRoleAccessRows.map((row) => row.memberAccountId).filter((value): value is string => typeof value === 'string' && value.length > 0),
+      ]));
+
+      if (matchingAccountIds.length === 0) {
+        return { users: [], total: 0, page, pageSize, totalPages: 0 };
+      }
+
+      const currentAccountWhere = (connectionWhere.account as Record<string, unknown> | undefined) ?? {};
+      const currentAccountIdFilter = currentAccountWhere.id;
+      let narrowedAccountIds = matchingAccountIds;
+
+      if (currentAccountIdFilter && typeof currentAccountIdFilter === 'object' && currentAccountIdFilter !== null && 'in' in currentAccountIdFilter) {
+        const existingIds = Array.isArray((currentAccountIdFilter as { in?: unknown }).in)
+          ? (currentAccountIdFilter as { in: unknown[] }).in.filter((value): value is string => typeof value === 'string')
+          : [];
+        narrowedAccountIds = matchingAccountIds.filter((id) => existingIds.includes(id));
+      }
+
+      if (narrowedAccountIds.length === 0) {
+        return { users: [], total: 0, page, pageSize, totalPages: 0 };
+      }
+
+      connectionWhere.account = {
+        ...currentAccountWhere,
+        id: { in: narrowedAccountIds },
+      };
     }
 
     if (parsedSearch.activeSince) {

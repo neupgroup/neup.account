@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import { getApplicationsManagePageData } from '@/services/applications/form-actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle } from '@/components/icons';
@@ -6,7 +7,7 @@ import { Suspense } from 'react';
 import { ApplicationsPillView } from '@/app/(manage)/application/_components/applications-pill-view';
 import { ApplicationDetailPage } from '@/app/(manage)/application/_components/application-detail-page';
 import { getQueryParam } from '@/app/(manage)/application/_lib/query-param';
-import { getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
+import { canCurrentAccountUseRootApplicationMode, getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
 import { createPageMetadata } from '@/core/metadata';
 
 type Props = {
@@ -16,13 +17,21 @@ type Props = {
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const resolvedSearchParams = await searchParams;
   const applicationId = getQueryParam(resolvedSearchParams.application);
+  const rootMode = resolvedSearchParams.mode === 'root';
+
+  if (rootMode) {
+    const canUseRootMode = await canCurrentAccountUseRootApplicationMode();
+    if (!canUseRootMode) {
+      return createPageMetadata('Application Management');
+    }
+  }
 
   if (!applicationId) {
     return createPageMetadata('Application Management');
   }
 
   const details = await getApplicationDetailsForViewerV2(applicationId, {
-    rootMode: resolvedSearchParams.mode === 'root',
+    rootMode,
   });
   return createPageMetadata(details?.name ? `${details.name}'s Management` : 'Application Management');
 }
@@ -30,12 +39,21 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 export default async function ApplicationsManagePage({ searchParams }: Props) {
   const resolvedSearchParams = await searchParams;
   const applicationId = getQueryParam(resolvedSearchParams.application);
+  const rootMode = resolvedSearchParams.mode === 'root';
+
+  if (rootMode) {
+    const canUseRootMode = await canCurrentAccountUseRootApplicationMode();
+    if (!canUseRootMode) notFound();
+  }
 
   if (applicationId) {
     return <ApplicationDetailPage applicationId={applicationId} mode={resolvedSearchParams.mode} />;
   }
 
-  const { sections, canCreateApplication, hasPartialError } = await getApplicationsManagePageData();
+  const pageData = await getApplicationsManagePageData({ rootMode });
+  if (!pageData) notFound();
+
+  const { sections, canCreateApplication, hasPartialError } = pageData;
 
   return (
     <div className="grid gap-6">

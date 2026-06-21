@@ -326,11 +326,16 @@ export async function getConnectedApplicationsPageData(): Promise<{
  * Development is shown when the user has managed apps.
  * Root is shown when the user has the scoped root application view permission.
  */
-export async function getApplicationsManagePageData(): Promise<{
+export async function getApplicationsManagePageData(options?: { rootMode?: boolean }): Promise<{
   sections: ApplicationSection[];
   canCreateApplication: boolean;
   hasPartialError: boolean;
-}> {
+} | null> {
+  if (options?.rootMode) {
+    const canUseRootMode = await hasRootApplicationPermission(ROOT_APPLICATION_VIEW_PERMISSION);
+    if (!canUseRootMode) return null;
+  }
+
   const [devResult, rootResult, canCreateApplication] = await Promise.all([
     Promise.allSettled([getManagedApplications()]),
     Promise.allSettled([

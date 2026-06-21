@@ -137,6 +137,15 @@ export async function hasRootApplicationPermission(permissionName: string): Prom
   return checkPermissions([permissionName], personalAccountId, { roleScope: ROOT_PERMISSION_SCOPE });
 }
 
+export async function canCurrentAccountUseRootApplicationMode(): Promise<boolean> {
+  return hasRootApplicationPermission(ROOT_APPLICATION_VIEW_PERMISSION);
+}
+
+async function canAccessRootApplicationMode(rootMode?: boolean): Promise<boolean> {
+  if (!rootMode) return true;
+  return canCurrentAccountUseRootApplicationMode();
+}
+
 function extractPermissionNames(raw: unknown): string[] {
   if (!Array.isArray(raw)) return [];
   const out: string[] = [];
@@ -1238,7 +1247,11 @@ export async function getApplicationDetailsForViewerV2(
   appId: string,
   options?: { rootMode?: boolean },
 ): Promise<ApplicationDetailsV2 | null> {
-  const isRootViewer = await hasRootApplicationPermission(ROOT_APPLICATION_VIEW_PERMISSION);
+  const [isRootViewer, canUseRootMode] = await Promise.all([
+    hasRootApplicationPermission(ROOT_APPLICATION_VIEW_PERMISSION),
+    canAccessRootApplicationMode(options?.rootMode),
+  ]);
+  if (!canUseRootMode) return null;
 
   const activeAccountId = await getActiveAccountId();
   if (!activeAccountId) return null;
@@ -2631,7 +2644,7 @@ export async function saveAppConfig(
  *
  * Returns the data needed to render the config page.
  */
-export async function getAppConfigData(appId: string): Promise<{
+export async function getAppConfigData(appId: string, options?: { rootMode?: boolean }): Promise<{
   hasSecretKey: boolean;
   access: ApplicationAccessField[];
   tokenFields: ApplicationAccessField[];
@@ -2646,6 +2659,7 @@ export async function getAppConfigData(appId: string): Promise<{
 } | null> {
   const accountId = await getActiveAccountId();
   if (!accountId) return null;
+  if (!(await canAccessRootApplicationMode(options?.rootMode))) return null;
 
   const canEdit = await canCurrentAccountViewApplicationConfig(appId);
   if (!canEdit) return null;

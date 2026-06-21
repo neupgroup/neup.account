@@ -176,7 +176,9 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
           <div className="overflow-hidden rounded-2xl border bg-card">
             {visiblePermissions.map((permission) => {
               const isChecked = selectedSet.has(permission.id);
-              const canAddPermission = isChecked || isPermissionScopeAllowedForRoleScope(permission.scope, scope);
+              const isScopeCompatible = isPermissionScopeAllowedForRoleScope(permission.scope, scope);
+              const canAddPermission = isChecked || isScopeCompatible;
+              const isInvalidSelectedPermission = isChecked && !isScopeCompatible;
               const isSystemPermission = appId === 'neup.account' && isBuiltInApplicationManagementPermissionName(permission.name);
               const isLockedSystemAssignment = isSystemRole && isSystemPermission;
 
@@ -201,7 +203,7 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
                   />
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <p className="truncate text-base font-medium leading-6">{permission.name}</p>
+                      <p className={`truncate text-base font-medium leading-6 ${isInvalidSelectedPermission ? 'text-destructive' : ''}`}>{permission.name}</p>
                       {permission.scope.map((scope) => (
                         <Badge key={`${permission.id}-${scope}`} variant="secondary" className="text-xs">
                           {scope}
@@ -214,6 +216,11 @@ export function RoleDetailEditor({ appId, role, permissions, defaultRoleId: init
                     {!canAddPermission ? (
                       <p className="text-xs text-muted-foreground">
                         This permission does not include the role scope level required by this role.
+                      </p>
+                    ) : null}
+                    {isInvalidSelectedPermission ? (
+                      <p className="text-xs text-destructive">
+                        This selected permission no longer belongs to this role scope.
                       </p>
                     ) : null}
                     {isLockedSystemAssignment ? (

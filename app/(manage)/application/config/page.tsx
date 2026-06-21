@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import {
+  canCurrentAccountUseRootApplicationMode,
   canCurrentAccountUpdateApplicationConfig,
   canCurrentAccountViewApplicationConfig,
   getApplicationDetailsForViewerV2,
@@ -19,9 +20,15 @@ type Props = {
 export default async function ApplicationConfigQueryPage({ searchParams }: Props) {
   const { application, mode } = await searchParams;
   const applicationId = getQueryParam(application);
+  const rootMode = mode === 'root';
 
   if (!applicationId) notFound();
-  const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
+  if (rootMode) {
+    const canUseRootMode = await canCurrentAccountUseRootApplicationMode();
+    if (!canUseRootMode) notFound();
+  }
+
+  const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode });
   if (!details) notFound();
 
   const [canViewConfig, canUpdateConfig] = await Promise.all([
@@ -45,7 +52,7 @@ export default async function ApplicationConfigQueryPage({ searchParams }: Props
     );
   }
 
-  const config = await getAppConfigData(applicationId);
+  const config = await getAppConfigData(applicationId, { rootMode });
   if (!config) notFound();
 
   return (

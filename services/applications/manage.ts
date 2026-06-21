@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { Prisma } from '@/prisma/generated/client/client';
 import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
+import { ACCESS_APPLICATION_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
 import { checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';
@@ -1342,6 +1343,48 @@ export async function getApplicationDetailsForViewerV2(
   }
 }
 
+export async function getApplicationDetailPageData(
+  appId: string,
+  options?: { rootMode?: boolean },
+): Promise<ApplicationDetailPageData | null> {
+  const details = await getApplicationDetailsForViewerV2(appId, options);
+  if (!details) return null;
+
+  const [
+    canEditBasics,
+    canViewConfig,
+    canViewRoles,
+    canViewUsers,
+    canDeleteApplication,
+    canViewApplicationAccess,
+    logPermissions,
+  ] = await Promise.all([
+    canCurrentAccountEditApplicationBasics(appId),
+    canCurrentAccountViewApplicationConfig(appId),
+    canCurrentAccountViewApplicationRoles(appId),
+    canCurrentAccountViewApplicationUsers(appId),
+    canCurrentAccountDeleteApplication(appId),
+    checkPermissions([...ACCESS_APPLICATION_VIEW_PERMISSIONS]),
+    getApplicationLogPermissions(appId),
+  ]);
+
+  const userStats = canViewUsers ? await getApplicationUserStats(appId) : null;
+
+  return {
+    details,
+    userStats,
+    logPermissions,
+    permissions: {
+      canEditBasics,
+      canViewConfig,
+      canViewRoles,
+      canViewUsers,
+      canDeleteApplication,
+      canViewApplicationAccess,
+    },
+  };
+}
+
 export async function canCurrentAccountManageApplicationRoles(appId: string): Promise<boolean> {
   return canCurrentAccountAccessApplicationByBase(appId, ['roles.manage'], ROOT_APPLICATION_ROLES_MANAGE_PERMISSION);
 }
@@ -1792,6 +1835,23 @@ export type ApplicationUserStats = {
   last24h: number;
   lastWeek: number;
   lastMonth: number;
+};
+
+export type ApplicationDetailPageData = {
+  details: ApplicationDetailsV2;
+  userStats: ApplicationUserStats | null;
+  logPermissions: {
+    canViewLogs: boolean;
+    canViewDevLogs: boolean;
+  };
+  permissions: {
+    canEditBasics: boolean;
+    canViewConfig: boolean;
+    canViewRoles: boolean;
+    canViewUsers: boolean;
+    canDeleteApplication: boolean;
+    canViewApplicationAccess: boolean;
+  };
 };
 
 /**

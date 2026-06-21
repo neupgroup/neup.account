@@ -4,14 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  canCurrentAccountDeleteApplication,
-  canCurrentAccountEditApplicationBasics,
-  canCurrentAccountViewApplicationConfig,
-  canCurrentAccountViewApplicationRoles,
-  canCurrentAccountViewApplicationUsers,
-  getApplicationDetailsForViewerV2,
-  getApplicationLogPermissions,
-  getApplicationUserStats,
+  getApplicationDetailPageData,
 } from '@/services/applications/manage';
 import { deleteManagedApplicationFromDetailsPage } from '@/services/applications/form-actions';
 import { AppWindow, Building, BarChart, Share2, ExternalLink, ChevronRight, Users, UserPlus, ArrowLeft, type LucideIcon } from '@/components/icons';
@@ -41,9 +34,9 @@ type Props = {
 
 export async function ApplicationDetailPage({ applicationId, mode }: Props) {
   const modeSuffix = mode === 'root' ? '&mode=root' : '';
-  const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
-
-  if (!details) notFound();
+  const pageData = await getApplicationDetailPageData(applicationId, { rootMode: mode === 'root' });
+  if (!pageData) notFound();
+  const { details, userStats, logPermissions, permissions } = pageData;
 
   const Icon = iconFor(details.icon);
   const deleteAction = deleteManagedApplicationFromDetailsPage.bind(
@@ -52,15 +45,72 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
     mode === 'root' ? '/application?mode=root' : '/application',
   );
 
-  const [userStats, logPermissions, canEditBasics, canViewConfig, canViewRoles, canViewUsers, canDeleteApplication] = await Promise.all([
-    getApplicationUserStats(applicationId),
-    getApplicationLogPermissions(applicationId),
-    canCurrentAccountEditApplicationBasics(applicationId),
-    canCurrentAccountViewApplicationConfig(applicationId),
-    canCurrentAccountViewApplicationRoles(applicationId),
-    canCurrentAccountViewApplicationUsers(applicationId),
-    canCurrentAccountDeleteApplication(applicationId),
-  ]);
+  const managementCards = [
+    permissions.canEditBasics
+      ? {
+          key: 'basics',
+          href: applicationHref('/application/edit', applicationId, mode ? { mode } : undefined),
+          title: 'Basic Information',
+          description: 'Update name, description, icon, website, and status.',
+        }
+      : null,
+    permissions.canViewConfig
+      ? {
+          key: 'config',
+          href: applicationHref('/application/config', applicationId, mode ? { mode } : undefined),
+          title: 'Configuration',
+          description: 'API secret, response fields, and silent SSO origins.',
+        }
+      : null,
+    permissions.canViewRoles
+      ? {
+          key: 'roles',
+          href: applicationHref('/application/roles', applicationId, { mode: 'root' }),
+          title: 'Roles & Permissions',
+          description: 'Define permissions and group them into roles for access grants.',
+        }
+      : null,
+    permissions.canViewRoles
+      ? {
+          key: 'permissions',
+          href: applicationHref('/application/permissions', applicationId, { mode: 'root' }),
+          title: 'Permissions',
+          description: 'Create and manage permission definitions for this application.',
+        }
+      : null,
+    permissions.canViewRoles
+      ? {
+          key: 'requests',
+          href: applicationHref('/application/requests', applicationId, { mode: 'root' }),
+          title: 'Requests',
+          description: 'Review role assignment requests waiting for approval.',
+        }
+      : null,
+    permissions.canViewApplicationAccess
+      ? {
+          key: 'access',
+          href: `/access/application?application=${applicationId}${modeSuffix}`,
+          title: 'Access',
+          description: 'View who owns and has access to this application.',
+        }
+      : null,
+    logPermissions.canViewLogs
+        ? {
+          key: 'logs',
+          href: `/data/activity?application=${applicationId}`,
+          title: 'Application Logs',
+          description: 'View activity and change history for this application.',
+        }
+      : null,
+    logPermissions.canViewDevLogs
+        ? {
+          key: 'dev-logs',
+          href: applicationHref('/application/logs', applicationId, mode ? { mode } : undefined),
+          title: 'Development API Logs',
+          description: 'Inspect request and response logs captured while app status is development.',
+        }
+      : null,
+  ].filter((card): card is { key: string; href: string; title: string; description: string } => card !== null);
 
   return (
     <div className="grid gap-6">
@@ -106,15 +156,15 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
         </div>
       </div>
 
-      <Card>
-        <CardContent className="grid p-0 md:grid-cols-2 lg:grid-cols-4 divide-y md:divide-y-0 md:divide-x">
-          {[
-            { label: 'Total Users', value: userStats?.total ?? 0, description: 'All connected accounts', icon: Users },
-            { label: 'Last 24 Hours', value: userStats?.last24h ?? 0, description: 'New connections today', icon: UserPlus },
-            { label: 'Last 7 Days', value: userStats?.lastWeek ?? 0, description: 'New connections this week', icon: UserPlus },
-            { label: 'Last 30 Days', value: userStats?.lastMonth ?? 0, description: 'New connections this month', icon: UserPlus },
-          ].map(({ label, value, description, icon: StatIcon }) =>
-            canViewUsers ? (
+      {permissions.canViewUsers ? (
+        <Card>
+          <CardContent className="grid divide-y p-0 md:grid-cols-2 md:divide-x md:divide-y-0 lg:grid-cols-4">
+            {[
+              { label: 'Total Users', value: userStats?.total ?? 0, description: 'All connected accounts', icon: Users },
+              { label: 'Last 24 Hours', value: userStats?.last24h ?? 0, description: 'New connections today', icon: UserPlus },
+              { label: 'Last 7 Days', value: userStats?.lastWeek ?? 0, description: 'New connections this week', icon: UserPlus },
+              { label: 'Last 30 Days', value: userStats?.lastMonth ?? 0, description: 'New connections this month', icon: UserPlus },
+            ].map(({ label, value, description, icon: StatIcon }) => (
               <FlowLink
                 key={label}
                 href={applicationHref('/application/users', applicationId, mode ? { mode } : undefined)}
@@ -127,126 +177,35 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
                 <div className="text-2xl font-bold">{value.toLocaleString()}</div>
                 <p className="text-xs text-muted-foreground">{description}</p>
               </FlowLink>
-            ) : (
-              <div key={label} className="p-6">
-                <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <h3 className="text-sm font-medium">{label}</h3>
-                  <StatIcon className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <div className="text-2xl font-bold">{value.toLocaleString()}</div>
-                <p className="text-xs text-muted-foreground">{description}</p>
-              </div>
-            ),
-          )}
-        </CardContent>
-      </Card>
+            ))}
+          </CardContent>
+        </Card>
+      ) : null}
 
-      <div className="grid gap-3">
-        <h2 className="text-xl font-semibold tracking-tight">Manage Application</h2>
-        <div className="overflow-hidden rounded-2xl border bg-card">
-          {canEditBasics ? (
-            <FlowLink
-              href={applicationHref('/application/edit', applicationId, mode ? { mode } : undefined)}
-              className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
-            >
-              <div className="min-w-0">
-                <p className="font-medium">Basic Information</p>
-                <p className="text-sm text-muted-foreground">Update name, description, icon, website, and status.</p>
-              </div>
-              <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-            </FlowLink>
-          ) : null}
-
-          {canViewConfig ? (
-            <FlowLink
-              href={applicationHref('/application/config', applicationId, mode ? { mode } : undefined)}
-              className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
-            >
-              <div className="min-w-0">
-                <p className="font-medium">Configuration</p>
-                <p className="text-sm text-muted-foreground">API secret, response fields, and silent SSO origins.</p>
-              </div>
-              <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-            </FlowLink>
-          ) : null}
-
-          {canViewRoles ? (
-            <>
+      {managementCards.length > 0 ? (
+        <div className="grid gap-3">
+          <h2 className="text-xl font-semibold tracking-tight">Manage Application</h2>
+          <div className="overflow-hidden rounded-2xl border bg-card">
+            {managementCards.map((card, index) => (
               <FlowLink
-                href={applicationHref('/application/roles', applicationId, { mode: 'root' })}
-                className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
+                key={card.key}
+                href={card.href}
+                className={`group flex items-center justify-between gap-4 px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5 ${
+                  index < managementCards.length - 1 ? 'border-b' : ''
+                }`}
               >
                 <div className="min-w-0">
-                  <p className="font-medium">Roles &amp; Permissions</p>
-                  <p className="text-sm text-muted-foreground">Define permissions and group them into roles for access grants.</p>
+                  <p className="font-medium">{card.title}</p>
+                  <p className="text-sm text-muted-foreground">{card.description}</p>
                 </div>
                 <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
               </FlowLink>
-
-              <FlowLink
-                href={applicationHref('/application/permissions', applicationId, { mode: 'root' })}
-                className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
-              >
-                <div className="min-w-0">
-                  <p className="font-medium">Permissions</p>
-                  <p className="text-sm text-muted-foreground">Create and manage permission definitions for this application.</p>
-                </div>
-                <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-              </FlowLink>
-
-              <FlowLink
-                href={applicationHref('/application/requests', applicationId, { mode: 'root' })}
-                className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
-              >
-                <div className="min-w-0">
-                  <p className="font-medium">Requests</p>
-                  <p className="text-sm text-muted-foreground">Review role assignment requests waiting for approval.</p>
-                </div>
-                <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-              </FlowLink>
-            </>
-          ) : null}
-
-          <FlowLink
-            href={`/access/application?application=${applicationId}${modeSuffix}`}
-            className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5"
-          >
-            <div className="min-w-0">
-              <p className="font-medium">Access</p>
-              <p className="text-sm text-muted-foreground">View who owns and has access to this application.</p>
-            </div>
-            <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-          </FlowLink>
-
-          {logPermissions.canViewLogs ? (
-            <FlowLink
-              href={`/data/activity?application=${applicationId}`}
-              className="group flex items-center justify-between gap-4 px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
-            >
-              <div className="min-w-0">
-                <p className="font-medium">Application Logs</p>
-                <p className="text-sm text-muted-foreground">View activity and change history for this application.</p>
-              </div>
-              <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-            </FlowLink>
-          ) : null}
-
-          {logPermissions.canViewDevLogs ? (
-            <FlowLink
-              href={applicationHref('/application/logs', applicationId, mode ? { mode } : undefined)}
-              className="group flex items-center justify-between gap-4 border-t px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
-            >
-              <div className="min-w-0">
-                <p className="font-medium">Development API Logs</p>
-                <p className="text-sm text-muted-foreground">Inspect request and response logs captured while app status is development.</p>
-              </div>
-              <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-            </FlowLink>
-          ) : null}
+            ))}
+          </div>
         </div>
-      </div>
+      ) : null}
 
-      {canDeleteApplication && (
+      {permissions.canDeleteApplication && (
         <Card className="border-destructive">
           <CardHeader>
             <CardTitle>Danger Zone</CardTitle>

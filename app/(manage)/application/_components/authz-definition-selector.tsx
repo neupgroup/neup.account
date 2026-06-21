@@ -1,8 +1,6 @@
 'use client';
 
-import { Checkbox } from '@/components/ui/checkbox';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
+import { cn } from '@/core/helpers/utils';
 import type { ApplicationAuthzDefinitionOption } from '@/services/applications/authz-config';
 
 type Props = {
@@ -42,18 +40,27 @@ export function AuthzDefinitionSelector({
           <p className="text-sm font-medium">{label}</p>
           <p className="text-xs text-muted-foreground">{description}</p>
         </div>
-        <RadioGroup value={value[0] ?? ''} onValueChange={(nextValue) => onChange(nextValue ? [nextValue] : [])}>
+        <div className="flex flex-wrap gap-2">
           {options.map((option) => (
-            <div key={option.key} className="flex items-start gap-3 rounded-lg border p-3">
-              <RadioGroupItem id={`${label}-${option.key}`} value={option.key} disabled={disabled} className="mt-0.5" />
-              <Label htmlFor={`${label}-${option.key}`} className="grid gap-1">
-                <span className="font-medium">{option.name}</span>
-                <span className="text-xs text-muted-foreground">{option.key}</span>
-                {option.description ? <span className="text-xs text-muted-foreground">{option.description}</span> : null}
-              </Label>
-            </div>
+            <button
+              key={option.key}
+              type="button"
+              disabled={disabled}
+              title={option.description || option.name || option.key}
+              aria-pressed={value[0] === option.key}
+              onClick={() => onChange(value[0] === option.key ? [] : [option.key])}
+              className={cn(
+                'rounded-full border px-3 py-1.5 text-sm transition-colors',
+                value[0] === option.key
+                  ? 'border-foreground bg-foreground text-background'
+                  : 'border-border bg-background text-foreground hover:bg-muted',
+                disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
+              )}
+            >
+              {option.key}
+            </button>
           ))}
-        </RadioGroup>
+        </div>
       </div>
     );
   }
@@ -64,30 +71,34 @@ export function AuthzDefinitionSelector({
         <p className="text-sm font-medium">{label}</p>
         <p className="text-xs text-muted-foreground">{description}</p>
       </div>
-      <div className="grid gap-3">
+      <div className="flex flex-wrap gap-2">
         {options.map((option) => {
           const checked = value.includes(option.key);
 
           return (
-            <label key={option.key} className="flex items-start gap-3 rounded-lg border p-3">
-              <Checkbox
-                checked={checked}
-                disabled={disabled}
-                onCheckedChange={(nextChecked) => {
-                  onChange(
-                    nextChecked
-                      ? [...value, option.key]
-                      : value.filter((selectedValue) => selectedValue !== option.key),
-                  );
-                }}
-                className="mt-0.5"
-              />
-              <span className="grid gap-1">
-                <span className="font-medium">{option.name}</span>
-                <span className="text-xs text-muted-foreground">{option.key}</span>
-                {option.description ? <span className="text-xs text-muted-foreground">{option.description}</span> : null}
-              </span>
-            </label>
+            <button
+              key={option.key}
+              type="button"
+              disabled={disabled}
+              title={option.description || option.name || option.key}
+              aria-pressed={checked}
+              onClick={() => {
+                onChange(
+                  checked
+                    ? value.filter((selectedValue) => selectedValue !== option.key)
+                    : [...value, option.key],
+                );
+              }}
+              className={cn(
+                'rounded-full border px-3 py-1.5 text-sm transition-colors',
+                checked
+                  ? 'border-foreground bg-foreground text-background'
+                  : 'border-border bg-background text-foreground hover:bg-muted',
+                disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
+              )}
+            >
+              {option.key}
+            </button>
           );
         })}
       </div>

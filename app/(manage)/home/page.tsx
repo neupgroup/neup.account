@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
-import { checkPermissions, getHomeSelectedAccountAccessLog, getAccountType } from '@/services/user';
+import { checkPermissions, getAccountType } from '@/services/user';
 import { notFound } from 'next/navigation';
 import { DashboardHeader } from '@/components/dashboard/dashboard-header';
 import { BillingCard } from '@/components/dashboard/billing-card';
 import { SettingsCard } from '@/components/dashboard/settings-card';
 import { WarningDisplay } from '@/components/warning-display';
-import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
+import { getActiveAccountId } from '@/core/auth/verify';
 import { NotificationsCard } from '@/components/dashboard/notifications-card';
 import { ManageStatsCard } from '@/components/dashboard/manage-stats-card';
 import { FindUserCard } from '@/components/dashboard/find-user-card';
@@ -16,33 +16,13 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = createPageMetadata('Homepage');
 
 export default async function HomePage() {
-    const [accountId, personalAccountId] = await Promise.all([
-      getActiveAccountId(),
-      getPersonalAccountId(),
-    ]);
+    const accountId = await getActiveAccountId();
 
-    if (!accountId || !personalAccountId) {
+    if (!accountId) {
       notFound();
     }
 
-    const [accountType, accessLog] = await Promise.all([
-      getAccountType(accountId),
-      getHomeSelectedAccountAccessLog(),
-    ]);
-
-    console.info(
-      '[home] selected account access',
-      JSON.stringify(
-        accessLog ?? {
-          personalAccountId,
-          activeAccountId: accountId,
-          isManaging: personalAccountId !== accountId,
-          grants: [],
-        },
-        null,
-        2,
-      ),
-    );
+    const accountType = await getAccountType(accountId);
 
     const showPersonalSettings = accountType === 'individual';
 

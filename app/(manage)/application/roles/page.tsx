@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import {
   canCurrentAccountManageApplicationRoles,
@@ -13,10 +14,26 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { RolesPanel } from '@/app/(manage)/application/_components/roles-panel';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
+import { createPageMetadata } from '@/core/metadata';
 
 type Props = {
   searchParams: Promise<{ application?: string | string[]; mode?: string }>;
 };
+
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const { application, mode } = await searchParams;
+  const applicationId = getQueryParam(application);
+
+  if (!applicationId) {
+    return createPageMetadata('Roles & Permissions', 'Application Management');
+  }
+
+  const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
+  return createPageMetadata(
+    'Roles & Permissions',
+    details?.name ? `${details.name} Management` : 'Application Management',
+  );
+}
 
 export default async function ApplicationRolesQueryPage({ searchParams }: Props) {
   const { application, mode } = await searchParams;

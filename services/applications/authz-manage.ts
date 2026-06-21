@@ -85,12 +85,13 @@ function normalizePermissionDefinedScopeKeys(
   allowedKeys: string[],
   allowMultiple: boolean,
 ): string[] {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return [];
-
-  const record = value as Record<string, unknown>;
-  const rawValues = Array.isArray(record.definedScopeKeys)
-    ? record.definedScopeKeys.filter((item): item is string => typeof item === 'string')
-    : [];
+  const rawValues = Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === 'string')
+    : value && typeof value === 'object'
+      ? Array.isArray((value as Record<string, unknown>).definedScopeKeys)
+        ? (value as Record<string, unknown>).definedScopeKeys.filter((item): item is string => typeof item === 'string')
+        : []
+      : [];
 
   return normalizeConfiguredSelection(rawValues, allowedKeys, allowMultiple);
 }
@@ -1174,9 +1175,24 @@ export async function deleteAppRole(input: {
 
       const totalAssignments = connectionCount + accessCount + memberRoleCount + assetGrantCount;
       if (totalAssignments > 0) {
+        const blockers = [
+          connectionCount > 0
+            ? `${connectionCount} connection assignment${connectionCount === 1 ? '' : 's'}`
+            : null,
+          accessCount > 0
+            ? `${accessCount} access row${accessCount === 1 ? '' : 's'}`
+            : null,
+          memberRoleCount > 0
+            ? `${memberRoleCount} member-role row${memberRoleCount === 1 ? '' : 's'}`
+            : null,
+          assetGrantCount > 0
+            ? `${assetGrantCount} asset access grant${assetGrantCount === 1 ? '' : 's'}`
+            : null,
+        ].filter((value): value is string => Boolean(value));
+
         return {
           canDelete: false as const,
-          error: 'This role is still assigned to members, connections, or access grants. Reassign or remove those usages first.',
+          error: `This role is still referenced by ${blockers.join(', ')}. Remove those references first.`,
         };
       }
 

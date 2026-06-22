@@ -85,13 +85,17 @@ function normalizePermissionDefinedScopeKeys(
   allowedKeys: string[],
   allowMultiple: boolean,
 ): string[] {
-  const rawValues = Array.isArray(value)
-    ? value.filter((item): item is string => typeof item === 'string')
-    : value && typeof value === 'object'
-      ? Array.isArray((value as Record<string, unknown>).definedScopeKeys)
-        ? (value as Record<string, unknown>).definedScopeKeys.filter((item): item is string => typeof item === 'string')
-        : []
-      : [];
+  let rawValues: string[] = [];
+
+  if (Array.isArray(value)) {
+    rawValues = value.filter((item): item is string => typeof item === 'string');
+  } else if (value && typeof value === 'object') {
+    const record = value as Record<string, unknown>;
+    const definedScopeKeys = record.definedScopeKeys;
+    if (Array.isArray(definedScopeKeys)) {
+      rawValues = definedScopeKeys.filter((item): item is string => typeof item === 'string');
+    }
+  }
 
   return normalizeConfiguredSelection(rawValues, allowedKeys, allowMultiple);
 }

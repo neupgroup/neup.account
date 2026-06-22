@@ -4,21 +4,29 @@
 import * as React from 'react';
 import { cn } from '@/core/helpers/utils';
 
+const fieldOutlineClassName =
+  'rounded-xl border border-input bg-background transition-colors hover:border-foreground/30 focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/20 focus-visible:ring-offset-0';
+
 const Textarea = React.forwardRef<
   HTMLTextAreaElement,
   React.ComponentProps<'textarea'>
->(({ className, onChange, placeholder, value, defaultValue, ...props }, ref) => {
+>(({ className, onChange, placeholder, style, value, defaultValue, ...props }, ref) => {
   const localRef = React.useRef<HTMLTextAreaElement>(null);
   const [hasValue, setHasValue] = React.useState(
     () => String(value ?? defaultValue ?? '').length > 0
   );
 
+  const updateTextareaHeight = React.useCallback(() => {
+    if (!localRef.current) return;
+
+    const element = localRef.current;
+    element.style.height = 'auto';
+    element.style.height = `${element.scrollHeight}px`;
+  }, []);
+
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (localRef.current) {
-      localRef.current.style.height = 'auto';
-      localRef.current.style.height = `${localRef.current.scrollHeight}px`;
-    }
     setHasValue(event.target.value.length > 0);
+    updateTextareaHeight();
     if (onChange) {
       onChange(event);
     }
@@ -27,12 +35,20 @@ const Textarea = React.forwardRef<
   React.useImperativeHandle(ref, () => localRef.current!);
 
   React.useEffect(() => {
-    if (localRef.current) {
-      localRef.current.style.height = 'auto';
-      localRef.current.style.height = `${localRef.current.scrollHeight}px`;
-    }
     setHasValue(String(value ?? defaultValue ?? '').length > 0);
-  }, [defaultValue, value]);
+    updateTextareaHeight();
+  }, [defaultValue, updateTextareaHeight, value]);
+
+  React.useEffect(() => {
+    if (!localRef.current || typeof ResizeObserver === 'undefined') return;
+
+    const observer = new ResizeObserver(() => {
+      updateTextareaHeight();
+    });
+
+    observer.observe(localRef.current);
+    return () => observer.disconnect();
+  }, [updateTextareaHeight]);
 
   const shouldFloatLabel =
     typeof placeholder === 'string' && placeholder.trim().length > 0;
@@ -41,9 +57,10 @@ const Textarea = React.forwardRef<
     <div className="relative w-full">
       <textarea
         className={cn(
-          'flex min-h-[80px] w-full rounded-xl border border-input bg-background px-5 py-3 text-base leading-6 ring-offset-background focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/30 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-none overflow-y-hidden transition-colors',
+          'peer flex min-h-0 w-full px-5 py-3 text-base leading-6 ring-offset-background focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-none overflow-y-hidden',
+          fieldOutlineClassName,
           shouldFloatLabel
-            ? 'min-h-[64px] pt-5 pb-2 placeholder:text-transparent'
+            ? 'h-14 min-h-[56px] pt-5 pb-2 placeholder:text-transparent align-top'
             : 'placeholder:text-muted-foreground',
           className
         )}
@@ -52,6 +69,7 @@ const Textarea = React.forwardRef<
         placeholder={shouldFloatLabel ? ' ' : placeholder}
         value={value}
         defaultValue={defaultValue}
+        style={style}
         {...props}
       />
       {shouldFloatLabel ? (

@@ -7,6 +7,9 @@ import { Check, ChevronDown, ChevronUp } from "@/components/icons"
 
 import { cn } from "@/core/helpers/utils"
 
+const fieldOutlineClassName =
+  "rounded-xl border border-input bg-background transition-colors hover:border-foreground/30 focus:border-ring focus:ring-1 focus:ring-ring/20 focus:ring-offset-0"
+
 const Select = SelectPrimitive.Root
 
 const SelectGroup = SelectPrimitive.Group
@@ -20,7 +23,8 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+      "flex h-10 w-full items-center justify-between px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+      fieldOutlineClassName,
       className
     )}
     {...props}

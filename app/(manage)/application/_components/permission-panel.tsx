@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Plus, ChevronRight } from '@/components/icons';
 import {
@@ -261,7 +262,7 @@ export function PermissionPanel({
           </DialogHeader>
           <div className="space-y-3">
             <Input value={addName} onChange={(event) => setAddName(event.target.value)} placeholder="Title, e.g. Orders Read" autoFocus />
-            <Input value={addDesc} onChange={(event) => setAddDesc(event.target.value)} placeholder="Description (optional)" />
+            <Textarea value={addDesc} onChange={(event) => setAddDesc(event.target.value)} placeholder="Description (optional)" />
             <Input value={addScope} onChange={(event) => setAddScope(event.target.value)} placeholder="Scope (optional)" />
             <Input value={addRules} onChange={(event) => setAddRules(event.target.value)} placeholder="Rules (optional)" />
             <Input value={addStatus} onChange={(event) => setAddStatus(event.target.value)} placeholder="Status (optional)" />

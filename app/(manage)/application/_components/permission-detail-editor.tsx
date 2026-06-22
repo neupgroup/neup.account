@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { TokenField } from '@/components/ui/token-field';
 import {
   deleteAppPermission,
@@ -115,7 +116,7 @@ export function PermissionDetailEditor({
   return (
     <>
       <div className="grid gap-4">
-        <Input
+        <Textarea
           value={description}
           disabled={!canManage}
           onChange={(event) => setDescription(event.target.value)}

@@ -4,6 +4,9 @@ import { useState, type ReactNode } from 'react';
 import { X } from '@/components/icons';
 import { cn } from '@/core/helpers/utils';
 
+const fieldOutlineClassName =
+  'rounded-xl border border-input bg-background transition-colors hover:border-foreground/30';
+
 type TokenFieldProps = {
   label: string;
   values: string[];
@@ -37,10 +40,11 @@ export function TokenField({
   return (
     <div
       className={cn(
-        'relative w-full rounded-xl border bg-background px-4 pb-2 pt-3 text-base ring-offset-background transition-all',
+        'relative w-full px-4 pb-2 pt-3 text-base ring-offset-background transition-all',
+        fieldOutlineClassName,
         isFocused
-          ? 'border-ring ring-2 ring-ring/20 ring-offset-0'
-          : 'border-input hover:border-foreground/30',
+          ? 'border-ring ring-1 ring-ring/20 ring-offset-0'
+          : '',
         disabled && 'cursor-not-allowed opacity-70',
         className
       )}
@@ -65,7 +69,7 @@ export function TokenField({
           values.map((value) => (
             <div
               key={value}
-              className="group inline-flex h-8 cursor-default items-center gap-2 rounded-full border border-border bg-background px-3 text-sm font-medium text-foreground shadow-sm transition-colors duration-150 hover:bg-primary/15"
+              className="group inline-flex h-7 cursor-default items-center gap-1.5 rounded-full border border-border/60 bg-background px-2.5 text-sm font-medium text-foreground transition-colors duration-150 hover:bg-primary/15"
             >
               <span>{renderValue ? renderValue(value) : value}</span>
               <button

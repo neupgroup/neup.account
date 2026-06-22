@@ -20,21 +20,16 @@ import {
   createAppPermission,
   type AppPermission,
 } from '@/services/applications/authz-manage';
-import { normalizeRoleScope } from '@/services/role-scopes';
-import { AuthzDefinitionSelector } from './authz-definition-selector';
-import type { ApplicationAuthzDefinitionOption } from '@/services/applications/authz-config';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { redirectInApp } from '@/core/helper/navigation';
 import { FlowLink } from '@/components/ui/flow-link';
+import { PermissionScopeBadges } from './permission-scope-badges';
 
 type Props = {
   appId: string;
   initialPermissions: AppPermission[];
   canManage: boolean;
   mode?: string;
-  definedScopeOptions: ApplicationAuthzDefinitionOption[];
-  allowMultipleDefinedScopes: boolean;
-  applicableForOptions: ApplicationAuthzDefinitionOption[];
 };
 
 type PermissionSearchFilters = {
@@ -43,12 +38,6 @@ type PermissionSearchFilters = {
   scopes: string[];
   sort: 'asc' | 'desc';
 };
-
-const DEFAULT_PERMISSION_SCOPE = ['managed.individual'];
-
-function normalizeScopeFilter(value: string): string | null {
-  return normalizeRoleScope(value);
-}
 
 function parsePermissionSearch(input: string): PermissionSearchFilters {
   const filters: PermissionSearchFilters = {
@@ -89,7 +78,7 @@ function parsePermissionSearch(input: string): PermissionSearchFilters {
 
     if (key === 'scope') {
       for (const part of rawValue.split('||')) {
-        const normalizedScope = normalizeScopeFilter(part);
+        const normalizedScope = part.trim().toLowerCase();
         if (normalizedScope && !filters.scopes.includes(normalizedScope)) {
           filters.scopes.push(normalizedScope);
         }
@@ -113,9 +102,6 @@ export function PermissionPanel({
   initialPermissions,
   canManage,
   mode,
-  definedScopeOptions,
-  allowMultipleDefinedScopes,
-  applicableForOptions,
 }: Props) {
   const router = useRouter();
   const { toast } = useToast();
@@ -125,9 +111,9 @@ export function PermissionPanel({
   const [addOpen, setAddOpen] = useState(false);
   const [addName, setAddName] = useState('');
   const [addDesc, setAddDesc] = useState('');
-  const [addScope, setAddScope] = useState<string[]>(DEFAULT_PERMISSION_SCOPE);
-  const [addDefinedScopeKeys, setAddDefinedScopeKeys] = useState<string[]>([]);
-  const [addApplicableFor, setAddApplicableFor] = useState<string[]>([]);
+  const [addScope, setAddScope] = useState('');
+  const [addRules, setAddRules] = useState('');
+  const [addStatus, setAddStatus] = useState('');
   const [addPending, setAddPending] = useState(false);
 
   const filteredPermissions = useMemo(() => {
@@ -140,7 +126,8 @@ export function PermissionPanel({
         const matchesName = filters.nameTerms.every((term) => nameHaystack.includes(term));
         const matchesPlain = filters.plainTerms.every((term) => plainHaystack.includes(term));
         const matchesScope =
-          filters.scopes.length === 0 || permission.scope.some((scope) => filters.scopes.includes(scope));
+          filters.scopes.length === 0 ||
+          filters.scopes.includes((permission.scope ?? '').trim().toLowerCase());
 
         return matchesName && matchesPlain && matchesScope;
       })
@@ -164,23 +151,14 @@ export function PermissionPanel({
       });
       return;
     }
-    if (addScope.length === 0) {
-      toast({
-        variant: 'destructive',
-        title: 'Missing scope',
-        description: 'Select at least one scope.',
-      });
-      return;
-    }
-
     setAddPending(true);
     const result = await createAppPermission({
       appId,
       name: trimmed,
       description: addDesc || undefined,
-      scope: addScope,
-      definedScopeKeys: addDefinedScopeKeys,
-      applicableFor: addApplicableFor,
+      scope: addScope || undefined,
+      rules: addRules || undefined,
+      status: addStatus || undefined,
     });
     setAddPending(false);
 
@@ -193,9 +171,9 @@ export function PermissionPanel({
     setPermissions((prev) => [...prev, createdPermission]);
     setAddName('');
     setAddDesc('');
-    setAddScope(DEFAULT_PERMISSION_SCOPE);
-    setAddDefinedScopeKeys([]);
-    setAddApplicableFor([]);
+    setAddScope('');
+    setAddRules('');
+    setAddStatus('');
     setAddOpen(false);
     toast({ title: 'Permission created' });
     redirectInApp(router, applicationHref('/application/permissions', appId, { permission: createdPermission.id, mode }));
@@ -242,20 +220,12 @@ export function PermissionPanel({
                     <p className="truncate text-sm text-muted-foreground">{permission.description}</p>
                   ) : null}
                   <div className="mt-1 flex flex-wrap gap-1">
-                    {permission.definedScopeKeys.map((key) => {
-                      return (
-                        <Badge key={`${permission.id}-${key}`} variant="outline" className="text-xs">
-                          {key}
-                        </Badge>
-                      );
-                    })}
-                    {permission.applicableFor.map((key) => {
-                      return (
-                        <Badge key={`${permission.id}-applicable-${key}`} variant="outline" className="text-xs">
-                          {key}
-                        </Badge>
-                      );
-                    })}
+                    <PermissionScopeBadges scope={permission.scope} />
+                    {permission.status ? (
+                      <Badge variant="outline" className="text-xs">
+                        status:{permission.status}
+                      </Badge>
+                    ) : null}
                   </div>
                 </div>
                 <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
@@ -276,9 +246,9 @@ export function PermissionPanel({
           if (!open) {
             setAddName('');
             setAddDesc('');
-            setAddScope(DEFAULT_PERMISSION_SCOPE);
-            setAddDefinedScopeKeys([]);
-            setAddApplicableFor([]);
+            setAddScope('');
+            setAddRules('');
+            setAddStatus('');
           }
         }}
       >
@@ -292,23 +262,9 @@ export function PermissionPanel({
           <div className="space-y-3">
             <Input value={addName} onChange={(event) => setAddName(event.target.value)} placeholder="Title, e.g. Orders Read" autoFocus />
             <Input value={addDesc} onChange={(event) => setAddDesc(event.target.value)} placeholder="Description (optional)" />
-            <AuthzDefinitionSelector
-              label="Defined scopes"
-              description="Application-defined scopes stored in permission metadata."
-              options={definedScopeOptions}
-              value={addDefinedScopeKeys}
-              onChange={setAddDefinedScopeKeys}
-              allowMultiple={allowMultipleDefinedScopes}
-              emptyLabel="No app-defined scopes configured on the application configuration page."
-            />
-            <AuthzDefinitionSelector
-              label="Applicable for"
-              description="Application-defined applicable-for values stored on this permission."
-              options={applicableForOptions}
-              value={addApplicableFor}
-              onChange={setAddApplicableFor}
-              emptyLabel="No applicable-for definitions configured on the application configuration page."
-            />
+            <Input value={addScope} onChange={(event) => setAddScope(event.target.value)} placeholder="Scope (optional)" />
+            <Input value={addRules} onChange={(event) => setAddRules(event.target.value)} placeholder="Rules (optional)" />
+            <Input value={addStatus} onChange={(event) => setAddStatus(event.target.value)} placeholder="Status (optional)" />
           </div>
           <DialogFooter>
             <DialogClose asChild>

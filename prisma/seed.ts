@@ -159,14 +159,14 @@ function slugifyPermission(name: string): string {
   return name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase();
 }
 
-function permissionScopesForNeupAccountPermission(permissionName: string, fallback: string[]): string[] {
+function permissionScopesForNeupAccountPermission(permissionName: string, fallback: string[]): string {
   const encodeScopes = (scopes: string[]) =>
     scopes.map((scope) => {
       if (scope === 'public') return 'public.individual';
       if (scope === 'managed') return 'managed.individual';
       if (scope === 'root') return 'root.individual';
       return scope;
-    });
+    }).join(',');
 
   if (
     permissionName === 'access.view' ||

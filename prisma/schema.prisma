@@ -592,9 +592,9 @@ model AuthzPermission {
   name         String
   description  String?
   appId        String?                  @map("app_id")
-  scope        Json
-  permScope    Json                     @default("[]") @map("perm_scope")
-  permApplicableFor Json               @default("[]") @map("perm_applicable_for")
+  scope        Json?
+  rules        String?
+  status       String?
   tag          Json?
   application  Application?             @relation(fields: [appId], references: [id])
   roleMappings AuthzRolePermissionMap[]

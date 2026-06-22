@@ -5,35 +5,28 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { X } from '@/components/icons';
 import {
   deleteAppPermission,
   updateAppPermission,
   type AppPermission,
-  type PermissionScopeImpactRole,
 } from '@/services/applications/authz-manage';
-import { AuthzDefinitionSelector } from './authz-definition-selector';
-import type { ApplicationAuthzDefinitionOption } from '@/services/applications/authz-config';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { redirectInApp } from '@/core/helper/navigation';
+import { toScopeTokens } from './permission-scope-badges';
+
+const SCOPE_TOKEN_PATTERN = /^[A-Za-z0-9_.-]+$/;
+
+function sanitizeScopeInput(value: string): string {
+  return value.replace(/[^A-Za-z0-9_.\-,]/g, '');
+}
 
 type Props = {
   appId: string;
   permission: AppPermission;
   canManage: boolean;
   mode?: string;
-  allowMultipleDefinedScopes: boolean;
-  definedScopeOptions: ApplicationAuthzDefinitionOption[];
-  applicableForOptions: ApplicationAuthzDefinitionOption[];
 };
 
 export function PermissionDetailEditor({
@@ -41,52 +34,68 @@ export function PermissionDetailEditor({
   permission,
   canManage,
   mode,
-  allowMultipleDefinedScopes,
-  definedScopeOptions,
-  applicableForOptions,
 }: Props) {
   const router = useRouter();
   const { toast } = useToast();
   const [description, setDescription] = useState(permission.description ?? '');
-  const [definedScopeKeys, setDefinedScopeKeys] = useState<string[]>(permission.definedScopeKeys);
-  const [applicableFor, setApplicableFor] = useState<string[]>(permission.applicableFor);
+  const [scopeTokens, setScopeTokens] = useState<string[]>(() => toScopeTokens(permission.scope));
+  const [scopeInput, setScopeInput] = useState('');
+  const [rules, setRules] = useState(permission.rules ?? '');
+  const [status, setStatus] = useState(permission.status ?? '');
   const [savePending, setSavePending] = useState(false);
   const [deletePending, setDeletePending] = useState(false);
-  const [scopeRemovalImpact, setScopeRemovalImpact] = useState<PermissionScopeImpactRole[]>([]);
   const [showDeleteSection, setShowDeleteSection] = useState(false);
-
   const goBack = () => {
     redirectInApp(router, applicationHref('/application/permissions', appId, { mode }));
   };
 
-  const handleSave = async (confirmScopeRemoval = false) => {
+  const buildScopeTokens = (rawInput: string, currentTokens: string[]) => {
+    const nextTokens = rawInput
+      .split(',')
+      .map((token) => token.trim())
+      .filter((token) => token.length > 0 && SCOPE_TOKEN_PATTERN.test(token));
+    if (nextTokens.length === 0) return currentTokens;
+
+    const seen = new Set(currentTokens);
+    const merged = [...currentTokens];
+    for (const token of nextTokens) {
+      if (seen.has(token)) continue;
+      seen.add(token);
+      merged.push(token);
+    }
+    return merged;
+  };
+
+  const commitScopeInput = () => {
+    setScopeTokens((current) => buildScopeTokens(scopeInput, current));
+    setScopeInput('');
+  };
+
+  const removeScopeToken = (tokenToRemove: string) => {
+    setScopeTokens((current) => current.filter((token) => token !== tokenToRemove));
+  };
+
+  const handleSave = async () => {
+    const finalScopeTokens = buildScopeTokens(scopeInput, scopeTokens);
+    setScopeTokens(finalScopeTokens);
+    setScopeInput('');
     setSavePending(true);
     const result = await updateAppPermission({
       appId,
       permissionId: permission.id,
       description: description || undefined,
-      scope: permission.scope,
-      definedScopeKeys,
-      applicableFor,
-      confirmScopeRemoval,
+      scope: finalScopeTokens.length > 0 ? JSON.stringify(finalScopeTokens) : undefined,
+      rules: rules || undefined,
+      status: status || undefined,
     });
     setSavePending(false);
-
-    if (result.requiresConfirmation && result.impactedRoles?.length) {
-      setScopeRemovalImpact(result.impactedRoles);
-      return;
-    }
 
     if (!result.success || !result.permission) {
       toast({ variant: 'destructive', title: 'Failed', description: result.error || 'Could not update permission.' });
       return;
     }
 
-    setScopeRemovalImpact([]);
-    toast({
-      title: 'Permission updated',
-      description: confirmScopeRemoval ? 'Incompatible role mappings were removed and recalculated.' : undefined,
-    });
+    toast({ title: 'Permission updated' });
     router.refresh();
   };
 
@@ -107,33 +116,59 @@ export function PermissionDetailEditor({
   return (
     <>
       <div className="grid gap-4">
-        <Input value={permission.name} disabled aria-label="Permission title" />
         <Input
           value={description}
           disabled={!canManage}
           onChange={(event) => setDescription(event.target.value)}
           placeholder="Description (optional)"
         />
+        <div className="flex min-h-12 w-full flex-wrap items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 lg:text-sm">
+          {scopeTokens.map((token) => (
+            <Badge key={token} variant="outline" className="flex items-center gap-1 px-3 py-1 text-xs">
+              <span>{token}</span>
+              <button
+                type="button"
+                onClick={() => removeScopeToken(token)}
+                disabled={!canManage}
+                className="rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label={`Remove ${token}`}
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </Badge>
+          ))}
+          <input
+            value={scopeInput}
+            disabled={!canManage}
+            onChange={(event) => setScopeInput(sanitizeScopeInput(event.target.value))}
+            onBlur={commitScopeInput}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ',') {
+                event.preventDefault();
+                commitScopeInput();
+                return;
+              }
 
-        <AuthzDefinitionSelector
-          label="Defined scopes"
-          description="Application-defined scopes stored in permission metadata."
-          options={definedScopeOptions}
-          value={definedScopeKeys}
-          onChange={setDefinedScopeKeys}
-          allowMultiple={allowMultipleDefinedScopes}
+              if (event.key === 'Backspace' && !scopeInput && scopeTokens.length > 0) {
+                event.preventDefault();
+                setScopeTokens((current) => current.slice(0, -1));
+              }
+            }}
+            placeholder={scopeTokens.length === 0 ? 'Scope (optional)' : 'Add scope'}
+            className="min-w-32 flex-1 border-0 bg-transparent p-0 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed"
+          />
+        </div>
+        <Input
+          value={rules}
           disabled={!canManage}
-          emptyLabel="No app-defined scopes configured on the application configuration page."
+          onChange={(event) => setRules(event.target.value)}
+          placeholder="Rules (optional)"
         />
-
-        <AuthzDefinitionSelector
-          label="Applicable for"
-          description="Application-defined applicable-for values stored on this permission."
-          options={applicableForOptions}
-          value={applicableFor}
-          onChange={setApplicableFor}
+        <Input
+          value={status}
           disabled={!canManage}
-          emptyLabel="No applicable-for definitions configured on the application configuration page."
+          onChange={(event) => setStatus(event.target.value)}
+          placeholder="Status (optional)"
         />
 
         {showDeleteSection ? (
@@ -177,41 +212,11 @@ export function PermissionDetailEditor({
           >
             Delete
           </Button>
-          <Button type="button" onClick={() => handleSave(false)} disabled={savePending || !canManage}>
+          <Button type="button" onClick={handleSave} disabled={savePending || !canManage}>
             {savePending ? 'Saving...' : 'Save Permission'}
           </Button>
         </div>
       </div>
-
-      <AlertDialog open={scopeRemovalImpact.length > 0} onOpenChange={(open) => { if (!open) setScopeRemovalImpact([]); }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Remove incompatible role mappings?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Saving <strong>{permission.name}</strong> will remove this permission from the following roles because their mapped scope is no longer allowed.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="max-h-64 space-y-2 overflow-y-auto">
-            {scopeRemovalImpact.map((role) => (
-              <div key={`${role.roleId}-${role.roleScope}`} className="rounded-md border px-3 py-2 text-sm">
-                <div className="font-medium">{role.roleName}</div>
-                <div className="text-muted-foreground">{role.roleScope}</div>
-              </div>
-            ))}
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={savePending}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={() => handleSave(true)}
-              disabled={savePending}
-            >
-              {savePending ? 'Updating...' : 'Remove And Recalculate'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
     </>
   );
 }

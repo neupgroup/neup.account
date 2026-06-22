@@ -14,7 +14,7 @@ function slugifyPermission(permission: string): string {
   return permission.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
-function permissionScopesForBrandOwnerPermission(permissionName: string): string[] {
+function permissionScopesForBrandOwnerPermission(permissionName: string): string {
   if (
     permissionName === 'access.view' ||
     [
@@ -24,10 +24,10 @@ function permissionScopesForBrandOwnerPermission(permissionName: string): string
       'account.brand.delete',
     ].includes(permissionName)
   ) {
-    return ['public.brand', 'managed.brand', 'root.individual'];
+    return 'public.brand,managed.brand,root.individual';
   }
 
-  return ['public.brand'];
+  return 'public.brand';
 }
 
 async function main() {
@@ -98,13 +98,13 @@ async function main() {
         update: {
           name: permissionName,
           appId: APP_ID,
-          scope: ['root.individual'],
+          scope: 'root.individual',
         },
         create: {
           id: permissionId,
           name: permissionName,
           appId: APP_ID,
-          scope: ['root.individual'],
+          scope: 'root.individual',
         },
       });
     }

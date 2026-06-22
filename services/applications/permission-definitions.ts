@@ -1,5 +1,3 @@
-import { type PermissionScopeOption } from '@/services/applications/permission-scopes';
-
 export type ApplicationPermissionBase =
   | 'basics.edit'
   | 'config.update'
@@ -104,7 +102,7 @@ function permissionDescription(base: ApplicationPermissionBase, audience: Applic
   return baseDescription;
 }
 
-function permissionScope(audience: ApplicationPermissionAudience): PermissionScopeOption {
+function permissionScope(audience: ApplicationPermissionAudience): string {
   if (audience === 'root') return 'root.individual';
   if (audience === 'managed') return 'managed.individual';
   return 'public.individual';
@@ -128,8 +126,8 @@ export function getApplicationPermissionNames(
 
 export function getApplicationPermissionDefinitions(
   audiences: readonly ApplicationPermissionAudience[],
-): Array<{ name: string; description: string; scope: PermissionScopeOption[] }> {
-  const definitions = new Map<string, { name: string; description: string; scope: PermissionScopeOption[] }>();
+): Array<{ name: string; description: string; scope: string }> {
+  const definitions = new Map<string, { name: string; description: string; scope: string }>();
 
   for (const audience of audiences) {
     for (const base of Object.keys(APPLICATION_PERMISSION_DEFINITION_MAP) as ApplicationPermissionBase[]) {
@@ -138,16 +136,13 @@ export function getApplicationPermissionDefinitions(
       const existing = definitions.get(name);
 
       if (existing) {
-        if (!existing.scope.includes(scope)) {
-          existing.scope.push(scope);
-        }
         continue;
       }
 
       definitions.set(name, {
         name,
         description: permissionDescription(base, audience),
-        scope: [scope],
+        scope,
       });
     }
   }

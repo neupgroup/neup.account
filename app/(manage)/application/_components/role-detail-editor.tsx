@@ -16,10 +16,10 @@ import {
 } from '@/services/applications/authz-manage';
 import { redirectInApp } from '@/core/helper/navigation';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
-import { getRoleScopeCompatibilityError, isPermissionScopeAllowedForRoleScope } from '@/services/applications/role-scope-compatibility';
 import { isBuiltInApplicationManagementPermissionName } from '@/services/applications/permission-definitions';
 import { AuthzDefinitionSelector } from './authz-definition-selector';
 import type { ApplicationAuthzDefinitionOption } from '@/services/applications/authz-config';
+import { PermissionScopeBadges } from './permission-scope-badges';
 
 type Props = {
   appId: string;
@@ -67,36 +67,22 @@ export function RoleDetailEditor({
   const [deletePending, setDeletePending] = useState(false);
 
   const selectedSet = useMemo(() => new Set(permissionIds), [permissionIds]);
-  const selectedPermissions = useMemo(
-    () => permissions.filter((permission) => selectedSet.has(permission.id)),
-    [permissions, selectedSet],
-  );
-  const scopeCompatibilityError = useMemo(
-    () => getRoleScopeCompatibilityError(role.scope, selectedPermissions.map((permission) => permission.scope)),
-    [role.scope, selectedPermissions],
-  );
 
   const visiblePermissions = useMemo(() => {
     const query = search.trim().toLowerCase();
     const filtered = permissions.filter((permission) => {
-      const isChecked = selectedSet.has(permission.id);
-      const isScopeCompatible = isPermissionScopeAllowedForRoleScope(permission.scope, role.scope);
-      if (!isChecked && !isScopeCompatible) return false;
-
       if (!query) return true;
       const haystack = `${permission.name} ${permission.description || ''}`.toLowerCase();
       return haystack.includes(query);
     });
 
     return filtered.sort((a, b) => a.name.localeCompare(b.name));
-  }, [permissions, role.scope, search, selectedSet]);
+  }, [permissions, search]);
 
   const isDefaultRole = defaultRoleId === role.id;
   const isSystemRole = appId === 'neup.account' && (role.id === 'application.owner' || role.id === 'application.manage');
 
   const handleSave = async () => {
-    if (scopeCompatibilityError) return;
-
     setSavePending(true);
     const result = await updateAppRole({
       appId,
@@ -159,31 +145,23 @@ export function RoleDetailEditor({
         <p className="text-xs text-muted-foreground">
           Selected: {permissionIds.length} of {permissions.length}
         </p>
-        {scopeCompatibilityError ? (
-          <p className="text-xs text-destructive">{scopeCompatibilityError}</p>
-        ) : null}
         {permissions.length === 0 ? (
           <p className="text-sm text-muted-foreground">No permissions defined yet.</p>
         ) : (
           <div className="overflow-hidden rounded-2xl border bg-card">
             {visiblePermissions.map((permission) => {
               const isChecked = selectedSet.has(permission.id);
-              const isScopeCompatible = isPermissionScopeAllowedForRoleScope(permission.scope, role.scope);
-              const canAddPermission = isChecked || isScopeCompatible;
-              const isInvalidSelectedPermission = isChecked && !isScopeCompatible;
               const isSystemPermission = appId === 'neup.account' && isBuiltInApplicationManagementPermissionName(permission.name);
               const isLockedSystemAssignment = isSystemRole && isSystemPermission;
 
               return (
                 <label
                   key={permission.id}
-                  className={`group flex items-start gap-3 border-b px-4 py-4 transition-colors last:border-b-0 sm:px-5 ${
-                    canAddPermission ? 'cursor-pointer hover:bg-muted/40' : 'cursor-not-allowed opacity-60'
-                  }`}
+                  className="group flex items-start gap-3 border-b px-4 py-4 transition-colors last:border-b-0 hover:bg-muted/40 sm:px-5"
                 >
                   <Checkbox
                     checked={isChecked}
-                    disabled={!canManage || !canAddPermission || isSystemRole}
+                    disabled={!canManage || isSystemRole}
                     onCheckedChange={() =>
                       setPermissionIds((prev) =>
                         prev.includes(permission.id)
@@ -194,7 +172,7 @@ export function RoleDetailEditor({
                     className="mt-0.5"
                   />
                   <div className="min-w-0">
-                    <p className={`truncate text-base font-medium leading-6 ${isInvalidSelectedPermission ? 'text-destructive' : ''}`}>
+                    <p className="truncate text-base font-medium leading-6">
                       {permission.name}
                       {isLockedSystemAssignment ? ' (Sys)' : ''}
                     </p>
@@ -203,16 +181,7 @@ export function RoleDetailEditor({
                         {permission.description}
                       </p>
                     ) : null}
-                    {!canAddPermission ? (
-                      <p className="text-xs text-muted-foreground">
-                        This permission does not include the role scope level required by this role.
-                      </p>
-                    ) : null}
-                    {isInvalidSelectedPermission ? (
-                      <p className="text-xs text-destructive">
-                        This selected permission no longer belongs to this role scope.
-                      </p>
-                    ) : null}
+                    <PermissionScopeBadges scope={permission.scope} className="mt-1 flex flex-wrap gap-1" />
                   </div>
                 </label>
               );
@@ -296,7 +265,7 @@ export function RoleDetailEditor({
               {showDetailsEditor ? 'Hide info' : 'Edit info'}
             </Button>
           </CollapsibleTrigger>
-          <Button onClick={handleSave} disabled={savePending || !!scopeCompatibilityError || !canManage || isSystemRole}>
+          <Button onClick={handleSave} disabled={savePending || !canManage || isSystemRole}>
             {savePending ? 'Saving...' : 'Save Role'}
           </Button>
         </div>

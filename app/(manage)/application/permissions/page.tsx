@@ -4,7 +4,6 @@ import {
   canCurrentAccountManageApplicationRoles,
   canCurrentAccountViewApplicationRoles,
   getApplicationDetailsForViewerV2,
-  getApplicationAuthzConfig,
 } from '@/services/applications/manage';
 import { getAppPermissions } from '@/services/applications/authz-manage';
 import { BackButton } from '@/components/ui/back-button';
@@ -13,7 +12,6 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { PermissionPanel } from '@/app/(manage)/application/_components/permission-panel';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
-import { toApplicationAuthzDefinitionOptions } from '@/services/applications/authz-config';
 import { createPageMetadata } from '@/core/metadata';
 import { PermissionDetailEditor } from '@/app/(manage)/application/_components/permission-detail-editor';
 import { isBuiltInApplicationManagementPermissionName } from '@/services/applications/permission-definitions';
@@ -81,15 +79,10 @@ export default async function ApplicationPermissionsQueryPage({ searchParams }: 
     );
   }
 
-  const [rawPermissions, authzConfig] = await Promise.all([
-    getAppPermissions(applicationId),
-    getApplicationAuthzConfig(applicationId),
-  ]);
+  const rawPermissions = await getAppPermissions(applicationId);
   const permissions = rawPermissions.filter(
     (permission) => !(applicationId === 'neup.account' && isBuiltInApplicationManagementPermissionName(permission.name)),
   );
-  const definedScopeOptions = toApplicationAuthzDefinitionOptions(authzConfig?.definedScopes ?? []);
-  const applicableForOptions = toApplicationAuthzDefinitionOptions(authzConfig?.applicableForDefinitions ?? []);
 
   if (permissionId) {
     const permission = permissions.find((item) => item.id === permissionId);
@@ -110,9 +103,6 @@ export default async function ApplicationPermissionsQueryPage({ searchParams }: 
           permission={permission}
           canManage={canManagePermissions}
           mode={mode}
-          definedScopeOptions={definedScopeOptions}
-          allowMultipleDefinedScopes={Boolean(authzConfig?.allowMultipleDefinedScopes)}
-          applicableForOptions={applicableForOptions}
         />
       </div>
     );
@@ -133,9 +123,6 @@ export default async function ApplicationPermissionsQueryPage({ searchParams }: 
         initialPermissions={permissions}
         canManage={canManagePermissions}
         mode={mode}
-        definedScopeOptions={definedScopeOptions}
-        allowMultipleDefinedScopes={Boolean(authzConfig?.allowMultipleDefinedScopes)}
-        applicableForOptions={applicableForOptions}
       />
     </div>
   );

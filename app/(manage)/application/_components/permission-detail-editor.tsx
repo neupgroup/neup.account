@@ -5,8 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { X } from '@/components/icons';
+import { TokenField } from '@/components/ui/token-field';
 import {
   deleteAppPermission,
   updateAppPermission,
@@ -122,42 +121,15 @@ export function PermissionDetailEditor({
           onChange={(event) => setDescription(event.target.value)}
           placeholder="Description (optional)"
         />
-        <div className="flex min-h-12 w-full flex-wrap items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 lg:text-sm">
-          {scopeTokens.map((token) => (
-            <Badge key={token} variant="outline" className="flex items-center gap-1 px-3 py-1 text-xs">
-              <span>{token}</span>
-              <button
-                type="button"
-                onClick={() => removeScopeToken(token)}
-                disabled={!canManage}
-                className="rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
-                aria-label={`Remove ${token}`}
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </Badge>
-          ))}
-          <input
-            value={scopeInput}
-            disabled={!canManage}
-            onChange={(event) => setScopeInput(sanitizeScopeInput(event.target.value))}
-            onBlur={commitScopeInput}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.key === ',') {
-                event.preventDefault();
-                commitScopeInput();
-                return;
-              }
-
-              if (event.key === 'Backspace' && !scopeInput && scopeTokens.length > 0) {
-                event.preventDefault();
-                setScopeTokens((current) => current.slice(0, -1));
-              }
-            }}
-            placeholder={scopeTokens.length === 0 ? 'Scope (optional)' : 'Add scope'}
-            className="min-w-32 flex-1 border-0 bg-transparent p-0 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed"
-          />
-        </div>
+        <TokenField
+          label="Scope (optional)"
+          values={scopeTokens}
+          inputValue={scopeInput}
+          disabled={!canManage}
+          onInputValueChange={(value) => setScopeInput(sanitizeScopeInput(value))}
+          onCommitInput={commitScopeInput}
+          onRemoveValue={removeScopeToken}
+        />
         <Input
           value={rules}
           disabled={!canManage}

@@ -40,7 +40,7 @@ This guide documents the public payload contract for `account.updated` events.
 - `changedFields`: list of logical fields that changed.
 - `account`: always present; always includes `id`.
 - `profile`: present only if one or more profile fields changed.
-- `role`: present only if role changed for this app connection.
+- `account.roles`: present only if role changed for this app connection, and contains the full current role state for that app.
 - `access`: present only if access changes are included for this event type in future/active integrations.
 
 ## Presence Rules (What Will Be There / Not There)
@@ -50,6 +50,7 @@ This guide documents the public payload contract for `account.updated` events.
 - Unchanged sections are omitted, not sent as `null`.
 - Unchanged keys inside a sent section are omitted.
 - `changedFields` reflects only changed logical fields.
+- When `changedFields` includes `role`, `account.roles` is sent as the full replacement set for that app context. Consumers should replace prior role state with this array.
 
 ## Supported `changedFields`
 
@@ -129,11 +130,23 @@ Not included:
   "connectionId": "conn_1",
   "changedFields": ["role"],
   "account": {
-    "id": "f18af8c5-5099-4234-8f78-10cf52f08038"
-  },
-  "role": {
-    "id": "0f299f90-dc73-4f87-a800-8bdb61c806cc",
-    "name": "root.full"
+    "id": "f18af8c5-5099-4234-8f78-10cf52f08038",
+    "roles": [
+      {
+        "id": "0f299f90-dc73-4f87-a800-8bdb61c806cc",
+        "name": "root.full",
+        "description": "Full application access",
+        "scope": "global",
+        "acquisitionType": "direct",
+        "approvalPolicy": "auto",
+        "applicableFor": ["individual", "brand"],
+        "permissions": [
+          "my.app.manage-listing-create",
+          "my.app.manage-listing-update",
+          "my.app.manage-listing-delete"
+        ]
+      }
+    ]
   }
 }
 ```
@@ -141,6 +154,7 @@ Not included:
 Not included:
 - `profile`
 - other account keys unless they changed in same event
+- a top-level `role` key
 
 ### 4) Multiple fields changed together
 
@@ -170,3 +184,4 @@ Not included:
 - Use `eventId` for idempotency.
 - Update only the keys present in payload.
 - Do not clear fields just because they are absent.
+- When `account.roles` is present, treat it as the full current state for that app and replace your stored roles for that account/app pair.

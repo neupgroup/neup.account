@@ -13,4 +13,5 @@
 - `docs/application.md` — external app application APIs (users/roles/access index).
 - `docs/auth.md` — auth endpoint reference (what to call when).
 - `docs/account-update-webhook.md` — account update webhook integration (verify signature, decrypt payload, return `{ success: true|false }`).
+- `docs/account-access-client-guide.md` — recommended client-side storage model for persisting account/app access from webhook payloads.
 - `docs/role-update-webhook.md` — role update webhook integration (event mapping, payload schema, verify signature, decrypt payload).

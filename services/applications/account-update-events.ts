@@ -3,6 +3,12 @@
 import { createCipheriv, createHash, createHmac, randomBytes, randomUUID } from 'crypto';
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
+import { activeAccessWhere } from '@/services/access-model';
+import {
+  normalizeRoleAcquisitionType,
+  normalizeRoleApprovalPolicy,
+  normalizeRoleScope,
+} from '@/services/role-scopes';
 
 const ACCOUNT_UPDATE_WEBHOOK_TYPE = 'accountUpdateWebhook';
 const SOURCE_APP_ID = 'neup.account';
@@ -91,6 +97,18 @@ function signEnvelope(envelope: { iv: string; tag: string; data: string }, appSe
   return createHmac('sha256', appSecret).update(signingInput, 'utf8').digest('hex');
 }
 
+function extractApplicableFor(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  return Array.from(
+    new Set(
+      raw
+        .filter((item): item is string => typeof item === 'string')
+        .map((item) => item.trim())
+        .filter(Boolean),
+    ),
+  );
+}
+
 export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise<{
   sent: number;
   delivered: number;
@@ -154,15 +172,83 @@ export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise
         ? (account.details as Record<string, unknown>)
         : {};
 
+    const activeRoleRows = changedFields.includes('role')
+      ? await prisma.access.findMany({
+          where: {
+            memberAccountId: input.accountId,
+            accessApplicationId: { in: Array.from(new Set(account.connections.map((connection) => connection.appId))) },
+            ...activeAccessWhere(),
+          },
+          select: {
+            accessApplicationId: true,
+            role: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+                scope: true,
+                acquisitionType: true,
+                approvalPolicy: true,
+                applicableFor: true,
+                permissionMappings: {
+                  orderBy: { createdAt: 'asc' },
+                  select: {
+                    permission: {
+                      select: {
+                        name: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        })
+      : [];
+
+    const rolesByAppId = new Map<string, Array<{
+      id: string;
+      name: string;
+      description: string | null;
+      scope: string | null;
+      acquisitionType: string;
+      approvalPolicy: string;
+      applicableFor: string[];
+      permissions: string[];
+    }>>();
+
+    for (const row of activeRoleRows) {
+      if (!row.role || !row.accessApplicationId) continue;
+      const current = rolesByAppId.get(row.accessApplicationId) ?? [];
+      current.push({
+        id: row.role.id,
+        name: row.role.name,
+        description: row.role.description ?? null,
+        scope: normalizeRoleScope(row.role.scope) ?? row.role.scope ?? null,
+        acquisitionType: normalizeRoleAcquisitionType(row.role.acquisitionType),
+        approvalPolicy: normalizeRoleApprovalPolicy(row.role.approvalPolicy),
+        applicableFor: extractApplicableFor(row.role.applicableFor),
+        permissions: Array.from(
+          new Set(
+            row.role.permissionMappings
+              .map((mapping) => mapping.permission?.name?.trim() ?? '')
+              .filter(Boolean),
+          ),
+        ),
+      });
+      rolesByAppId.set(row.accessApplicationId, current);
+    }
+
+    for (const [appId, roles] of rolesByAppId) {
+      rolesByAppId.set(
+        appId,
+        Array.from(new Map(roles.map((role) => [role.id, role])).values()).sort((a, b) => a.name.localeCompare(b.name)),
+      );
+    }
+
     const scannedTargets = account.connections.map((connection) => ({
         connectionId: connection.id,
         appId: connection.appId,
-        role: connection.role
-          ? {
-              id: connection.role.id,
-              name: connection.role.name,
-            }
-          : null,
         appSecret: connection.application.appSecret?.trim() ?? '',
         appStatus: connection.application.status,
         webhookUrl: connection.application.bridge[0]?.value?.trim() ?? '',
@@ -240,7 +326,12 @@ export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise
           };
         }
         if (Object.keys(profileChanges).length > 0) payload.profile = profileChanges;
-        if (changedFields.includes('role') && target.role) payload.role = target.role;
+        if (changedFields.includes('role')) {
+          payload.account = {
+            ...(payload.account as Record<string, unknown>),
+            roles: rolesByAppId.get(target.appId) ?? [],
+          };
+        }
         const encrypted = encryptForApp(JSON.stringify(payload), target.appSecret);
         const signature = signEnvelope(encrypted, target.appSecret);
         const requestBody = {

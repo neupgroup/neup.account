@@ -57,12 +57,10 @@ export default async function ApplicationLogsQueryPage({ searchParams }: Props) 
   const getLogPresentation = (log: { endpoint: string; requestMeta: unknown }) => {
     const requestMeta = asObject(log.requestMeta);
     const webhookUrl = typeof requestMeta?.webhookUrl === 'string' ? requestMeta.webhookUrl.trim() : '';
-    const eventType = typeof requestMeta?.eventType === 'string' ? requestMeta.eventType.trim() : '';
     const isWebhook = webhookUrl.length > 0;
 
     return {
       displayUrl: webhookUrl || log.endpoint,
-      eventType,
       isWebhook,
     };
   };
@@ -149,7 +147,6 @@ export default async function ApplicationLogsQueryPage({ searchParams }: Props) 
                     {log.method} {presentation.displayUrl}
                   </CardTitle>
                   {presentation.isWebhook ? <Badge variant="outline">webhook</Badge> : null}
-                  {presentation.eventType ? <Badge variant="outline">{presentation.eventType}</Badge> : null}
                   <Badge variant={log.statusCode >= 400 ? 'destructive' : 'secondary'}>{log.statusCode}</Badge>
                 </div>
                 <CardDescription>
@@ -167,19 +164,19 @@ export default async function ApplicationLogsQueryPage({ searchParams }: Props) 
 
                 <details>
                   <summary className="cursor-pointer font-medium">Request Body</summary>
-                  <pre className="mt-2 max-h-80 overflow-auto rounded-md border bg-muted p-3 text-xs">{pretty(log.requestBody)}</pre>
+                  <pre className="mt-2 max-h-80 overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted p-3 text-xs">{pretty(log.requestBody)}</pre>
                 </details>
                 <details>
                   <summary className="cursor-pointer font-medium">Query</summary>
-                  <pre className="mt-2 max-h-80 overflow-auto rounded-md border bg-muted p-3 text-xs">{pretty(log.query)}</pre>
+                  <pre className="mt-2 max-h-80 overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted p-3 text-xs">{pretty(log.query)}</pre>
                 </details>
                 <details>
                   <summary className="cursor-pointer font-medium">Request Meta</summary>
-                  <pre className="mt-2 max-h-80 overflow-auto rounded-md border bg-muted p-3 text-xs">{pretty(log.requestMeta)}</pre>
+                  <pre className="mt-2 max-h-80 overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted p-3 text-xs">{pretty(log.requestMeta)}</pre>
                 </details>
                 <details>
                   <summary className="cursor-pointer font-medium">Response Body</summary>
-                  <pre className="mt-2 max-h-80 overflow-auto rounded-md border bg-muted p-3 text-xs">{pretty(log.responseBody)}</pre>
+                  <pre className="mt-2 max-h-80 overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted p-3 text-xs">{pretty(log.responseBody)}</pre>
                 </details>
               </CardContent>
             </Card>

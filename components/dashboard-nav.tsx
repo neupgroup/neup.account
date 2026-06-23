@@ -59,6 +59,7 @@ export function DashboardNav() {
                 { href: "/notifications", label: "Notifications", description: "View and manage account notifications.", requiredPermissions: ['notification.read', 'notification.delete'] },
                 { href: "/data", label: "Data & Privacy", description: "View data access, activity, and privacy controls for this account.", requiredPermissions: DATA_PRIVACY_NAV_PERMISSIONS },
                 { href: "/access", label: "Access & Control", description: "Manage access, people, and linked accounts for this brand.", requiredPermissions: [...ACCESS_VIEW_PERMISSIONS] },
+                { href: "/application", label: "Applications", description: "Manage applications owned by this brand account.", requiredPermissions: ['application.view'] },
                 { href: "/payment", label: "Payment & Subscription", description: "Manage billing and subscriptions for this account.", requiredPermissions: ['payment.method.show', 'payment.transactions.show', 'payment.subscriptions.show', 'payment.purchase_neup_pro.view'] },
             ].filter((item) => hasAnyPermission(permissions, item.requiredPermissions));
 

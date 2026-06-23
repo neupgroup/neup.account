@@ -17,6 +17,19 @@ function slugifyPermission(permission: string): string {
 function permissionScopesForBrandOwnerPermission(permissionName: string): string {
   if (
     permissionName === 'access.view' ||
+    permissionName === 'access.connection.view' ||
+    permissionName === 'access.application.view' ||
+    permissionName === 'application.view' ||
+    permissionName === 'data.agreed_terms.view' ||
+    permissionName === 'data.delete_account.start' ||
+    permissionName === 'data.deactivate_account.start' ||
+    permissionName === 'data.materialization.view' ||
+    permissionName === 'data.materialization.modify' ||
+    permissionName === 'security.recent_activities.view' ||
+    permissionName === 'payment.method.show' ||
+    permissionName === 'payment.transactions.show' ||
+    permissionName === 'payment.subscriptions.show' ||
+    permissionName === 'payment.purchase_neup_pro.view' ||
     [
       'account.brand.members.manage',
       'account.brand.kyc.view',
@@ -36,24 +49,49 @@ async function main() {
   }
 
   await prisma.$transaction(async (tx) => {
-    await tx.authzRole.upsert({
-      where: { id: BRAND_OWNER_ROLE_ID },
-      update: {
-        name: BRAND_OWNER_ROLE_NAME,
-        description: 'Brand ownership role for brand accounts.',
-        appId: APP_ID,
-        scope: 'managed.brand',
-        permissions: BRAND_OWNER_PERMISSION_NAMES,
-      },
-      create: {
-        id: BRAND_OWNER_ROLE_ID,
-        name: BRAND_OWNER_ROLE_NAME,
-        description: 'Brand ownership role for brand accounts.',
-        appId: APP_ID,
-        scope: 'managed.brand',
-        permissions: BRAND_OWNER_PERMISSION_NAMES,
-      },
-    });
+    const [existingBrandOwnerRole, legacyBrandOwnerRole] = await Promise.all([
+      tx.authzRole.findUnique({
+        where: { id: BRAND_OWNER_ROLE_ID },
+        select: { id: true },
+      }),
+      tx.authzRole.findUnique({
+        where: { id: LEGACY_ROLE_ID },
+        select: { id: true },
+      }),
+    ]);
+
+    if (!existingBrandOwnerRole && legacyBrandOwnerRole) {
+      await tx.authzRole.update({
+        where: { id: LEGACY_ROLE_ID },
+        data: {
+          id: BRAND_OWNER_ROLE_ID,
+          name: BRAND_OWNER_ROLE_NAME,
+          description: 'Brand ownership role for brand accounts.',
+          appId: APP_ID,
+          scope: 'managed.brand',
+          permissions: BRAND_OWNER_PERMISSION_NAMES,
+        },
+      });
+    } else {
+      await tx.authzRole.upsert({
+        where: { id: BRAND_OWNER_ROLE_ID },
+        update: {
+          name: BRAND_OWNER_ROLE_NAME,
+          description: 'Brand ownership role for brand accounts.',
+          appId: APP_ID,
+          scope: 'managed.brand',
+          permissions: BRAND_OWNER_PERMISSION_NAMES,
+        },
+        create: {
+          id: BRAND_OWNER_ROLE_ID,
+          name: BRAND_OWNER_ROLE_NAME,
+          description: 'Brand ownership role for brand accounts.',
+          appId: APP_ID,
+          scope: 'managed.brand',
+          permissions: BRAND_OWNER_PERMISSION_NAMES,
+        },
+      });
+    }
 
     for (const permissionName of BRAND_OWNER_PERMISSION_NAMES) {
       const permissionId = `cap-brand-owner-${slugifyPermission(permissionName)}`;
@@ -128,6 +166,9 @@ async function main() {
         },
       });
     }
+  }, {
+    maxWait: 10_000,
+    timeout: 20_000,
   });
 
   console.log(

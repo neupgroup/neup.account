@@ -13,6 +13,7 @@ import {
 import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/core/auth/linked-account-permissions';
 
 type SettingsItem = {
+    id: string;
     href: string;
     icon: ElementType;
     title: string;
@@ -23,6 +24,7 @@ type SettingsItem = {
 
 const SETTINGS_ITEMS: SettingsItem[] = [
     {
+        id: 'password-security',
         href: '/security/password',
         icon: ShieldCheck,
         title: 'Password and Security',
@@ -31,6 +33,7 @@ const SETTINGS_ITEMS: SettingsItem[] = [
         accountTypes: ['individual'],
     },
     {
+        id: 'security-sessions',
         href: '/security/devices',
         icon: Laptop,
         title: 'Security and Session',
@@ -39,6 +42,7 @@ const SETTINGS_ITEMS: SettingsItem[] = [
         accountTypes: ['individual'],
     },
     {
+        id: 'linked-accounts',
         href: '/access',
         icon: Link,
         title: 'Linked Accounts',
@@ -47,6 +51,7 @@ const SETTINGS_ITEMS: SettingsItem[] = [
         accountTypes: ['individual'],
     },
     {
+        id: 'access-control',
         href: '/access',
         icon: AppWindow,
         title: 'Access and Control',
@@ -83,7 +88,7 @@ export function SettingsCard() {
             <Card>
                 <CardContent className="divide-y p-2">
                      {visibleItems.map((item) => (
-                        <ListItem key={item.href} icon={item.icon} href={item.href} title={item.title} description={item.description} />
+                        <ListItem key={item.id} icon={item.icon} href={item.href} title={item.title} description={item.description} />
                     ))}
                 </CardContent>
             </Card>

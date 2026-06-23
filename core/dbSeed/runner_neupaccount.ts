@@ -375,6 +375,8 @@ INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-brand-settings-edit',     'brand.settings.edit',           '${APP_ID}', 'brand'),
   ('cap-brand-members-view',      'brand.members.view',            '${APP_ID}', 'brand'),
   ('cap-brand-access-view',       'access.view',                   '${APP_ID}', 'brand.managable'),
+  ('cap-brand-access-connection-view', 'access.connection.view',   '${APP_ID}', 'brand.managable'),
+  ('cap-brand-access-application-view','access.application.view',  '${APP_ID}', 'brand.managable'),
   ('cap-brand-members-manage',    'account.brand.members.manage',             '${APP_ID}', 'brand.managable'),
   ('cap-brand-branches-view',     'linked_accounts.brand.view',         '${APP_ID}', 'brand'),
   ('cap-brand-branches-manage',   'linked_accounts.brand.manage',       '${APP_ID}', 'brand'),
@@ -383,6 +385,17 @@ INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-brand-kyc-submit',        'account.brand.kyc.submit',               '${APP_ID}', 'brand.managable'),
   ('cap-brand-platforms-view',    'brand.platforms.view',          '${APP_ID}', 'brand'),
   ('cap-brand-platforms-manage',  'brand.platforms.manage',        '${APP_ID}', 'brand'),
+  ('cap-brand-data-terms-view',   'data.agreed_terms.view',        '${APP_ID}', 'brand.managable'),
+  ('cap-brand-data-delete-start', 'data.delete_account.start',     '${APP_ID}', 'brand.managable'),
+  ('cap-brand-data-deactivate-start','data.deactivate_account.start','${APP_ID}', 'brand.managable'),
+  ('cap-brand-data-materialization-view', 'data.materialization.view', '${APP_ID}', 'brand.managable'),
+  ('cap-brand-data-materialization-modify','data.materialization.modify','${APP_ID}', 'brand.managable'),
+  ('cap-brand-recent-activity-view','security.recent_activities.view','${APP_ID}', 'brand.managable'),
+  ('cap-brand-payment-method-show', 'payment.method.show',         '${APP_ID}', 'brand.managable'),
+  ('cap-brand-payment-transactions-show', 'payment.transactions.show', '${APP_ID}', 'brand.managable'),
+  ('cap-brand-payment-subscriptions-show', 'payment.subscriptions.show', '${APP_ID}', 'brand.managable'),
+  ('cap-brand-payment-neup-pro-view', 'payment.purchase_neup_pro.view', '${APP_ID}', 'brand.managable'),
+  ('cap-brand-application-view',  'application.view',             '${APP_ID}', 'brand.managable'),
   ('cap-brand-delete',            'account.brand.delete',                   '${APP_ID}', 'brand.managable')
 ON CONFLICT ("id") DO NOTHING;
 
@@ -399,7 +412,7 @@ SELECT
   '${JSON.stringify(BRAND_OWNER_PERMISSION_NAMES)}'::jsonb
 FROM "authz_capability" c
 WHERE c."app_id" = '${APP_ID}'
-  AND c."scope"  = 'brand'
+  AND c."scope" IN ('brand', 'brand.managable')
 ON CONFLICT ("id") DO NOTHING;
 
 -- 3e. Role — branch.owner (same scope as brand so the role picker shows it for branch_account assets)

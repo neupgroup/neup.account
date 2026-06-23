@@ -2,8 +2,7 @@ import { notFound } from 'next/navigation';
 import { redirect } from 'next/navigation';
 import { BackButton } from '@/components/ui/back-button';
 import { PrimaryHeader } from '@/components/ui/primary-header';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FlowLink } from '@/components/ui/flow-link';
 import {
@@ -13,6 +12,7 @@ import {
   getApplicationDevLogsPaginated,
 } from '@/services/applications/manage';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
+import { LogsAccordion } from './logs-accordion';
 
 type Props = {
   searchParams: Promise<{
@@ -43,28 +43,6 @@ export default async function ApplicationLogsQueryPage({ searchParams }: Props) 
     if (parsed < MIN_PAGE_SIZE || parsed > MAX_PAGE_SIZE) return 10;
     return parsed;
   };
-  const pretty = (value: unknown): string => {
-    try {
-      return JSON.stringify(value ?? null, null, 2);
-    } catch {
-      return String(value);
-    }
-  };
-  const asObject = (value: unknown): Record<string, unknown> | null => {
-    if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
-    return value as Record<string, unknown>;
-  };
-  const getLogPresentation = (log: { endpoint: string; requestMeta: unknown }) => {
-    const requestMeta = asObject(log.requestMeta);
-    const webhookUrl = typeof requestMeta?.webhookUrl === 'string' ? requestMeta.webhookUrl.trim() : '';
-    const isWebhook = webhookUrl.length > 0;
-
-    return {
-      displayUrl: webhookUrl || log.endpoint,
-      isWebhook,
-    };
-  };
-
   const page = normalizePositiveInt(resolvedSearchParams.page, DEFAULT_PAGE);
   const pageSize = normalizePageSize(resolvedSearchParams.pageSize);
   const mode = resolvedSearchParams.mode?.trim();
@@ -135,52 +113,7 @@ export default async function ApplicationLogsQueryPage({ searchParams }: Props) 
             </div>
           </div>
 
-          {logs.map((log) => (
-            <Card key={log.id}>
-              {(() => {
-                const presentation = getLogPresentation(log);
-
-                return (
-              <CardHeader>
-                <div className="flex flex-wrap items-center gap-2">
-                  <CardTitle className="text-base">
-                    {log.method} {presentation.displayUrl}
-                  </CardTitle>
-                  {presentation.isWebhook ? <Badge variant="outline">webhook</Badge> : null}
-                  <Badge variant={log.statusCode >= 400 ? 'destructive' : 'secondary'}>{log.statusCode}</Badge>
-                </div>
-                <CardDescription>
-                  {new Date(log.createdAt).toLocaleString()} | IP: {log.requesterIp ?? 'N/A'} | Origin: {log.origin ?? 'N/A'}
-                </CardDescription>
-              </CardHeader>
-                );
-              })()}
-              <CardContent className="space-y-3 text-sm">
-                <div className="grid gap-1">
-                  <p><span className="font-medium">Referer:</span> {log.referer ?? 'N/A'}</p>
-                  <p><span className="font-medium">User-Agent:</span> {log.userAgent ?? 'N/A'}</p>
-                  {log.error ? <p className="text-destructive"><span className="font-medium">Error:</span> {log.error}</p> : null}
-                </div>
-
-                <details>
-                  <summary className="cursor-pointer font-medium">Request Body</summary>
-                  <pre className="mt-2 max-h-80 overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted p-3 text-xs">{pretty(log.requestBody)}</pre>
-                </details>
-                <details>
-                  <summary className="cursor-pointer font-medium">Query</summary>
-                  <pre className="mt-2 max-h-80 overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted p-3 text-xs">{pretty(log.query)}</pre>
-                </details>
-                <details>
-                  <summary className="cursor-pointer font-medium">Request Meta</summary>
-                  <pre className="mt-2 max-h-80 overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted p-3 text-xs">{pretty(log.requestMeta)}</pre>
-                </details>
-                <details>
-                  <summary className="cursor-pointer font-medium">Response Body</summary>
-                  <pre className="mt-2 max-h-80 overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted p-3 text-xs">{pretty(log.responseBody)}</pre>
-                </details>
-              </CardContent>
-            </Card>
-          ))}
+          <LogsAccordion logs={logs} />
         </div>
       )}
 

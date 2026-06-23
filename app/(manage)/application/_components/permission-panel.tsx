@@ -31,6 +31,7 @@ type Props = {
   initialPermissions: AppPermission[];
   canManage: boolean;
   mode?: string;
+  scopeHint?: string;
 };
 
 type PermissionSearchFilters = {
@@ -103,6 +104,7 @@ export function PermissionPanel({
   initialPermissions,
   canManage,
   mode,
+  scopeHint,
 }: Props) {
   const router = useRouter();
   const { toast } = useToast();
@@ -264,6 +266,9 @@ export function PermissionPanel({
             <Input value={addName} onChange={(event) => setAddName(event.target.value)} placeholder="Title, e.g. Orders Read" autoFocus />
             <Textarea value={addDesc} onChange={(event) => setAddDesc(event.target.value)} placeholder="Description (optional)" />
             <Input value={addScope} onChange={(event) => setAddScope(event.target.value)} placeholder="Scope (optional)" />
+            {scopeHint ? (
+              <p className="text-xs text-muted-foreground">{scopeHint}</p>
+            ) : null}
             <Input value={addRules} onChange={(event) => setAddRules(event.target.value)} placeholder="Rules (optional)" />
             <Input value={addStatus} onChange={(event) => setAddStatus(event.target.value)} placeholder="Status (optional)" />
           </div>

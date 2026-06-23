@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import {
   updateAppPermission,
   type AppPermission,
 } from '@/services/applications/authz-manage';
+import type { ApplicationAuthzDefinitionOption } from '@/services/applications/authz-config';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { redirectInApp } from '@/core/helper/navigation';
 import { toScopeTokens } from './permission-scope-badges';
@@ -27,6 +28,8 @@ type Props = {
   permission: AppPermission;
   canManage: boolean;
   mode?: string;
+  definedScopeOptions?: ApplicationAuthzDefinitionOption[];
+  allowMultipleDefinedScopes?: boolean;
 };
 
 export function PermissionDetailEditor({
@@ -34,6 +37,8 @@ export function PermissionDetailEditor({
   permission,
   canManage,
   mode,
+  definedScopeOptions = [],
+  allowMultipleDefinedScopes = false,
 }: Props) {
   const router = useRouter();
   const { toast } = useToast();
@@ -45,6 +50,10 @@ export function PermissionDetailEditor({
   const [savePending, setSavePending] = useState(false);
   const [deletePending, setDeletePending] = useState(false);
   const [showDeleteSection, setShowDeleteSection] = useState(false);
+  const allowedScopeKeys = useMemo(
+    () => new Set(definedScopeOptions.map((option) => option.key)),
+    [definedScopeOptions],
+  );
   const goBack = () => {
     redirectInApp(router, applicationHref('/application/permissions', appId, { mode }));
   };
@@ -53,8 +62,12 @@ export function PermissionDetailEditor({
     const nextTokens = rawInput
       .split(',')
       .map((token) => token.trim())
-      .filter((token) => token.length > 0 && SCOPE_TOKEN_PATTERN.test(token));
+      .filter((token) => token.length > 0 && SCOPE_TOKEN_PATTERN.test(token) && allowedScopeKeys.has(token));
     if (nextTokens.length === 0) return currentTokens;
+
+    if (!allowMultipleDefinedScopes) {
+      return currentTokens.length > 0 ? currentTokens : [nextTokens[0]];
+    }
 
     const seen = new Set(currentTokens);
     const merged = [...currentTokens];
@@ -73,6 +86,31 @@ export function PermissionDetailEditor({
 
   const removeScopeToken = (tokenToRemove: string) => {
     setScopeTokens((current) => current.filter((token) => token !== tokenToRemove));
+  };
+
+  const showDefinedScopeSuggestions = allowMultipleDefinedScopes || scopeTokens.length === 0;
+  const filteredDefinedScopeOptions = useMemo(() => {
+    if (!showDefinedScopeSuggestions) return [];
+
+    const query = scopeInput.trim().toLowerCase();
+
+    return definedScopeOptions.filter((option) => {
+      if (scopeTokens.includes(option.key)) return false;
+      if (!query) return true;
+
+      return [option.key, option.name, option.description]
+        .filter(Boolean)
+        .some((value) => value.toLowerCase().includes(query));
+    });
+  }, [definedScopeOptions, scopeInput, scopeTokens, showDefinedScopeSuggestions]);
+
+  const addDefinedScopeToken = (token: string) => {
+    setScopeTokens((current) => {
+      if (current.includes(token)) return current;
+      if (!allowMultipleDefinedScopes) return [token];
+      return [...current, token];
+    });
+    setScopeInput('');
   };
 
   const handleSave = async () => {
@@ -122,15 +160,33 @@ export function PermissionDetailEditor({
           onChange={(event) => setDescription(event.target.value)}
           placeholder="Description (optional)"
         />
-        <TokenField
-          label="Scope (optional)"
-          values={scopeTokens}
-          inputValue={scopeInput}
-          disabled={!canManage}
-          onInputValueChange={(value) => setScopeInput(sanitizeScopeInput(value))}
-          onCommitInput={commitScopeInput}
-          onRemoveValue={removeScopeToken}
-        />
+        <div className="grid gap-2">
+          <TokenField
+            label="Scope (optional)"
+            values={scopeTokens}
+            inputValue={scopeInput}
+            disabled={!canManage}
+            onInputValueChange={(value) => setScopeInput(sanitizeScopeInput(value))}
+            onCommitInput={commitScopeInput}
+            onRemoveValue={removeScopeToken}
+          />
+          {filteredDefinedScopeOptions.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {filteredDefinedScopeOptions.map((option) => (
+                <button
+                  key={option.key}
+                  type="button"
+                  disabled={!canManage}
+                  title={option.description || option.name || option.key}
+                  onClick={() => addDefinedScopeToken(option.key)}
+                  className="inline-flex h-7 items-center rounded-full border border-border/60 bg-background px-2.5 text-sm font-medium text-foreground transition-colors duration-150 hover:bg-primary/15 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {option.key}
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </div>
         <Input
           value={rules}
           disabled={!canManage}

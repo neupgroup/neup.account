@@ -88,6 +88,73 @@ function parsePermissionScopeInput(value: string | undefined): Prisma.InputJsonV
   }
 }
 
+function parsePermissionScopeTokens(value: string | undefined): string[] {
+  const trimmed = value?.trim();
+  if (!trimmed) return [];
+
+  try {
+    const parsed = JSON.parse(trimmed) as unknown;
+
+    if (typeof parsed === 'string') {
+      return parsed.trim() ? [parsed.trim()] : [];
+    }
+
+    if (!Array.isArray(parsed)) {
+      throw new Error('Permission scope must be a string or string array.');
+    }
+
+    const tokens = parsed.map((item) => {
+      if (typeof item !== 'string') {
+        throw new Error('Permission scope entries must be strings.');
+      }
+
+      const token = item.trim();
+      if (!token) {
+        throw new Error('Permission scope entries cannot be empty.');
+      }
+
+      return token;
+    });
+
+    return Array.from(new Set(tokens));
+  } catch (error) {
+    if (error instanceof Error && error.message.startsWith('Permission scope')) {
+      throw error;
+    }
+
+    return Array.from(
+      new Set(
+        trimmed
+          .split(',')
+          .map((token) => token.trim())
+          .filter(Boolean),
+      ),
+    );
+  }
+}
+
+async function validatePermissionScopeInput(appId: string, value: string | undefined): Promise<void> {
+  const tokens = parsePermissionScopeTokens(value);
+  if (tokens.length === 0) return;
+
+  const authzConfig = await getApplicationAuthzConfigForValidation(appId);
+  const allowedKeys = authzConfig.definedScopes.map(([, key]) => key);
+  const allowedSet = new Set(allowedKeys);
+
+  if (allowedSet.size === 0) {
+    throw new Error('No scopes are configured for this application.');
+  }
+
+  if (!authzConfig.allowMultipleDefinedScopes && tokens.length > 1) {
+    throw new Error('Only one configured scope is allowed for this permission.');
+  }
+
+  const invalidTokens = tokens.filter((token) => !allowedSet.has(token));
+  if (invalidTokens.length > 0) {
+    throw new Error('Scope must use only configured application scopes.');
+  }
+}
+
 async function getApplicationAuthzConfigForValidation(appId: string): Promise<ApplicationAuthzConfig> {
   const application = await prisma.application.findUnique({
     where: { id: appId },
@@ -503,6 +570,8 @@ export async function createAppPermission(input: {
   }
 
   try {
+    await validatePermissionScopeInput(input.appId, input.scope);
+
     const record = await prisma.authzPermission.create({
       data: {
         id: permissionId,
@@ -556,6 +625,8 @@ export async function updateAppPermission(input: {
         error: 'This system-managed permission cannot be edited.',
       };
     }
+
+    await validatePermissionScopeInput(input.appId, input.scope);
 
     const record = await prisma.$transaction(async (tx) => {
       const existing = await tx.authzPermission.findFirst({

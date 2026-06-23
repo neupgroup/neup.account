@@ -15,9 +15,10 @@ import type { ApplicationAuthzDefinitionOption } from '@/services/applications/a
 type Props = {
   appId: string;
   applicableForOptions: ApplicationAuthzDefinitionOption[];
+  scopeHint?: string;
 };
 
-export function RoleCreateForm({ appId, applicableForOptions }: Props) {
+export function RoleCreateForm({ appId, applicableForOptions, scopeHint }: Props) {
   const router = useRouter();
   const { toast } = useToast();
   const [name, setName] = useState('');
@@ -56,6 +57,9 @@ export function RoleCreateForm({ appId, applicableForOptions }: Props) {
       <Input value={name} onChange={(event) => setName(event.target.value)} placeholder="Role title, e.g. Viewer" />
       <Input value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Description (optional)" />
       <RoleScopeSelector value={scope} onChange={setScope} />
+      {scopeHint ? (
+        <p className="text-xs text-muted-foreground">{scopeHint}</p>
+      ) : null}
       <AuthzDefinitionSelector
         label="Applicable for"
         description="Choose the configured applicable-for targets for this role."

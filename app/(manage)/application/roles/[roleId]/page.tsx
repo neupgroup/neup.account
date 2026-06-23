@@ -12,7 +12,10 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { RoleDetailEditor } from '@/app/(manage)/application/_components/role-detail-editor';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
-import { toApplicationAuthzDefinitionOptions } from '@/services/applications/authz-config';
+import {
+  formatApplicationAuthzScopeHint,
+  toApplicationAuthzDefinitionOptions,
+} from '@/services/applications/authz-config';
 
 type Props = {
   params: Promise<{ roleId: string }>;
@@ -73,6 +76,10 @@ export default async function RoleDetailsQueryPage({ params, searchParams }: Pro
         defaultRoleId={defaultRoleId}
         canManage={canManageRoles}
         applicableForOptions={toApplicationAuthzDefinitionOptions(authzConfig?.applicableForDefinitions ?? [])}
+        scopeHint={formatApplicationAuthzScopeHint(
+          toApplicationAuthzDefinitionOptions(authzConfig?.definedScopes ?? []),
+          authzConfig?.allowMultipleDefinedScopes ?? false,
+        )}
       />
     </div>
   );

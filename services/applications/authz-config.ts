@@ -43,6 +43,22 @@ export function toApplicationAuthzDefinitionOptions(
   return definitions.map(([name, key, description]) => ({ name, key, description }));
 }
 
+export function formatApplicationAuthzScopeHint(
+  options: ApplicationAuthzDefinitionOption[],
+  allowMultiple: boolean,
+): string {
+  if (options.length === 0) {
+    return 'No configured scopes on the application configuration page yet.';
+  }
+
+  const configuredScopes = options.map((option) => option.key).join(', ');
+  const selectionHint = allowMultiple
+    ? 'Multiple configured scopes are allowed.'
+    : 'Use one configured scope per permission.';
+
+  return `Configured scopes: ${configuredScopes}. ${selectionHint}`;
+}
+
 export function extractApplicationAuthzConfig(details: unknown): ApplicationAuthzConfig {
   const record = details && typeof details === 'object' ? (details as Record<string, unknown>) : {};
 

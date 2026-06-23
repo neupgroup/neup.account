@@ -28,6 +28,7 @@ type Props = {
   defaultRoleId: string | null;
   canManage: boolean;
   applicableForOptions: ApplicationAuthzDefinitionOption[];
+  scopeHint?: string;
 };
 
 export function RoleDetailEditor({
@@ -37,6 +38,7 @@ export function RoleDetailEditor({
   defaultRoleId: initialDefaultRoleId,
   canManage,
   applicableForOptions,
+  scopeHint,
 }: Props) {
   const router = useRouter();
   const { toast } = useToast();
@@ -145,6 +147,9 @@ export function RoleDetailEditor({
         <p className="text-xs text-muted-foreground">
           Selected: {permissionIds.length} of {permissions.length}
         </p>
+        {scopeHint ? (
+          <p className="text-xs text-muted-foreground">{scopeHint}</p>
+        ) : null}
         {permissions.length === 0 ? (
           <p className="text-sm text-muted-foreground">No permissions defined yet.</p>
         ) : (

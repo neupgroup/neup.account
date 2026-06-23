@@ -10,7 +10,10 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { RoleCreateForm } from '@/app/(manage)/application/_components/role-create-form';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
-import { toApplicationAuthzDefinitionOptions } from '@/services/applications/authz-config';
+import {
+  formatApplicationAuthzScopeHint,
+  toApplicationAuthzDefinitionOptions,
+} from '@/services/applications/authz-config';
 
 type Props = {
   searchParams: Promise<{ application?: string | string[]; mode?: string }>;
@@ -52,6 +55,10 @@ export default async function AddRoleQueryPage({ searchParams }: Props) {
       <RoleCreateForm
         appId={applicationId}
         applicableForOptions={toApplicationAuthzDefinitionOptions(authzConfig?.applicableForDefinitions ?? [])}
+        scopeHint={formatApplicationAuthzScopeHint(
+          toApplicationAuthzDefinitionOptions(authzConfig?.definedScopes ?? []),
+          authzConfig?.allowMultipleDefinedScopes ?? false,
+        )}
       />
     </div>
   );

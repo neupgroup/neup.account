@@ -18,7 +18,13 @@ import {
   isBuiltInApplicationManagementPermissionName,
 } from '@/services/applications/permission-definitions';
 import { hasRootApplicationPermission } from '@/services/applications/manage';
-import { isKnownRoleScope, normalizeRoleScope, roleScopeError } from '@/services/role-scopes';
+import {
+  isKnownRoleScope,
+  normalizeRoleAcquisitionType,
+  normalizeRoleApprovalPolicy,
+  normalizeRoleScope,
+  roleScopeError,
+} from '@/services/role-scopes';
 import {
   revalidateApplicationConfigRoutes,
   revalidateApplicationPermissionsRoutes,
@@ -49,6 +55,8 @@ export type AppRole = {
   name: string;
   description: string | null;
   scope: string;
+  acquisitionType: string;
+  approvalPolicy: string;
   applicableFor: string[];
   permissions: AppPermission[];
 };
@@ -189,9 +197,8 @@ const AUTHZ_SYSTEM_SYNC_TRANSACTION_OPTIONS = {
 } as const;
 
 function getSystemRoleScope(roleId: string): string {
-  if (roleId === 'application.owner') return 'public.individual';
-  if (roleId === 'application.manage') return 'managed.individual';
-  return 'public.individual';
+  if (roleId === 'application.manage') return 'rootMgmt.self';
+  return 'acMgmt.self';
 }
 
 function isGlobalAuthzSystemRole(roleId: string): boolean {
@@ -364,6 +371,8 @@ async function ensureApplicationManagementRoles(): Promise<void> {
               : 'Manage application settings, roles, and permissions.',
           appId: GLOBAL_AUTHZ_APP_ID,
           scope: getSystemRoleScope(roleId),
+          acquisitionType: 'system_generated',
+          approvalPolicy: 'none',
         },
         create: {
           id: roleId,
@@ -374,6 +383,8 @@ async function ensureApplicationManagementRoles(): Promise<void> {
               : 'Manage application settings, roles, and permissions.',
           appId: GLOBAL_AUTHZ_APP_ID,
           scope: getSystemRoleScope(roleId),
+          acquisitionType: 'system_generated',
+          approvalPolicy: 'none',
         },
       });
     }
@@ -716,6 +727,8 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
         name: true,
         description: true,
         scope: true,
+        acquisitionType: true,
+        approvalPolicy: true,
         applicableFor: true,
         permissionMappings: {
           orderBy: { createdAt: 'asc' },
@@ -740,6 +753,8 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
       name: role.name,
       description: role.description,
       scope: normalizeRoleScope(role.scope) ?? role.scope,
+      acquisitionType: normalizeRoleAcquisitionType(role.acquisitionType),
+      approvalPolicy: normalizeRoleApprovalPolicy(role.approvalPolicy),
       applicableFor: normalizeApplicableFor(role.applicableFor),
       permissions: role.permissionMappings.flatMap((mapping): AppPermission[] => {
         const permission = mapping.permission;
@@ -765,6 +780,8 @@ export async function createAppRole(input: {
   name: string;
   description?: string;
   scope?: string;
+  acquisitionType?: string;
+  approvalPolicy?: string;
   applicableFor?: string[];
   permissionIds?: string[];
 }): Promise<{ success: boolean; role?: AppRole; error?: string }> {
@@ -793,6 +810,8 @@ export async function createAppRole(input: {
     if (!isKnownRoleScope(scope)) {
       return { success: false, error: roleScopeError() };
     }
+    const acquisitionType = normalizeRoleAcquisitionType(input.acquisitionType);
+    const approvalPolicy = normalizeRoleApprovalPolicy(input.approvalPolicy);
     const authzConfig = await getApplicationAuthzConfigForValidation(input.appId);
     const allowedApplicableForKeys = authzConfig.applicableForDefinitions.map(([, key]) => key);
     const applicableFor = allowedApplicableForKeys.length > 0
@@ -809,10 +828,20 @@ export async function createAppRole(input: {
           name,
           description: input.description?.trim() || null,
           scope,
+          acquisitionType,
+          approvalPolicy,
           appId: input.appId,
           applicableFor,
         },
-        select: { id: true, name: true, description: true, scope: true, applicableFor: true },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          scope: true,
+          acquisitionType: true,
+          approvalPolicy: true,
+          applicableFor: true,
+        },
       });
 
       const permissionIds = input.permissionIds ?? [];
@@ -837,7 +866,14 @@ export async function createAppRole(input: {
 
     // Dispatch webhook
     const fullRole = await getAppRoles(input.appId).then((roles) =>
-      roles.find((r) => r.id === role.id) ?? { ...role, applicableFor: normalizeApplicableFor(role.applicableFor), permissions: [] }
+      roles.find((r) => r.id === role.id) ?? {
+        ...role,
+        scope: normalizeRoleScope(role.scope) ?? role.scope,
+        acquisitionType: normalizeRoleAcquisitionType(role.acquisitionType),
+        approvalPolicy: normalizeRoleApprovalPolicy(role.approvalPolicy),
+        applicableFor: normalizeApplicableFor(role.applicableFor),
+        permissions: [],
+      }
     );
 
     await dispatchRoleUpdateWebhook({
@@ -848,6 +884,8 @@ export async function createAppRole(input: {
         name: fullRole.name,
         description: fullRole.description,
         scope: fullRole.scope,
+        acquisitionType: fullRole.acquisitionType,
+        approvalPolicy: fullRole.approvalPolicy,
         applicableFor: fullRole.applicableFor,
         permissions: fullRole.permissions.map((p) => p.name),
       },
@@ -923,6 +961,8 @@ export async function updateAppRole(input: {
   name?: string;
   description?: string;
   scope?: string;
+  acquisitionType?: string;
+  approvalPolicy?: string;
   applicableFor?: string[];
   permissionIds: string[];
 }): Promise<{ success: boolean; role?: AppRole; error?: string }> {
@@ -934,6 +974,8 @@ export async function updateAppRole(input: {
       return { success: false, error: 'This system role cannot be modified.' };
     }
     const authzConfig = await getApplicationAuthzConfigForValidation(input.appId);
+    const nextAcquisitionType = normalizeRoleAcquisitionType(input.acquisitionType);
+    const nextApprovalPolicy = normalizeRoleApprovalPolicy(input.approvalPolicy);
     const allowedApplicableForKeys = authzConfig.applicableForDefinitions.map(([, key]) => key);
     const applicableFor = allowedApplicableForKeys.length > 0
       ? normalizeConfiguredSelection(input.applicableFor, allowedApplicableForKeys, true)
@@ -972,6 +1014,8 @@ export async function updateAppRole(input: {
         data: {
           description: input.description?.trim() || null,
           scope: nextScope,
+          acquisitionType: nextAcquisitionType,
+          approvalPolicy: nextApprovalPolicy,
           applicableFor,
         },
       });

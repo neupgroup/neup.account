@@ -10,7 +10,12 @@ import { dispatchAccountUpdatedEvent } from '@/services/applications/account-upd
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
-import { canAssignRoleScopeToAccount, expectedRoleScopesForAccount } from '@/services/role-scopes';
+import {
+  canAssignRoleScopeToAccount,
+  expectedRoleScopesForAccount,
+  isSelfRequestableRoleAcquisitionType,
+  roleApprovalRequiresRequest,
+} from '@/services/role-scopes';
 import { revalidateApplicationRequestsRoutes } from '@/services/applications/revalidate-routes';
 
 const manageApplicationSchema = z.object({
@@ -67,7 +72,7 @@ export async function assignOwnApplicationRole(input: {
           appId,
           OR: [{ id: roleReference }, { name: roleReference }],
         },
-        select: { id: true, name: true, scope: true },
+        select: { id: true, name: true, scope: true, acquisitionType: true, approvalPolicy: true },
       }),
     ]);
 
@@ -75,8 +80,10 @@ export async function assignOwnApplicationRole(input: {
     if (!application) return { success: false, error: 'Application not found.' };
     if (!role) return { success: false, error: 'Role not found for this application.' };
 
-    const canAssignImmediately = canAssignRoleScopeToAccount(role.scope, account.accountType, ['public']);
-    const requiresApproval = canAssignRoleScopeToAccount(role.scope, account.accountType, ['toApprove']);
+    const canSelfRequest = isSelfRequestableRoleAcquisitionType(role.acquisitionType) &&
+      canAssignRoleScopeToAccount(role.scope, account.accountType, ['public']);
+    const canAssignImmediately = canSelfRequest && !roleApprovalRequiresRequest(role.approvalPolicy);
+    const requiresApproval = canSelfRequest && roleApprovalRequiresRequest(role.approvalPolicy);
 
     if (!canAssignImmediately && !requiresApproval) {
       return { success: false, error: 'This role scope cannot be requested by this account type.' };
@@ -264,20 +271,20 @@ export async function addUserApplicationAccess(input: { appId: string; permissio
     const selectedRoles = permissions.length
       ? await prisma.authzRole.findMany({
           where: { id: { in: permissions }, appId },
-          select: { id: true, name: true, scope: true },
+          select: { id: true, name: true, scope: true, acquisitionType: true, approvalPolicy: true },
         })
       : [];
     if (selectedRoles.length !== permissions.length) {
       return { success: false, error: 'One or more roles were not found for this application.' };
     }
 
-    const immediateRoles = selectedRoles.filter((role) =>
+    const requestableRoles = selectedRoles.filter((role) =>
+      isSelfRequestableRoleAcquisitionType(role.acquisitionType) &&
       canAssignRoleScopeToAccount(role.scope, account.accountType, ['public']),
     );
-    const approvalRoles = selectedRoles.filter((role) =>
-      canAssignRoleScopeToAccount(role.scope, account.accountType, ['toApprove']),
-    );
-    if (immediateRoles.length + approvalRoles.length !== selectedRoles.length) {
+    const immediateRoles = requestableRoles.filter((role) => !roleApprovalRequiresRequest(role.approvalPolicy));
+    const approvalRoles = requestableRoles.filter((role) => roleApprovalRequiresRequest(role.approvalPolicy));
+    if (requestableRoles.length !== selectedRoles.length) {
       return { success: false, error: 'One or more roles cannot be requested by this account type.' };
     }
 
@@ -393,20 +400,20 @@ export async function updateUserApplicationPermissions(input: { appId: string; p
     const selectedRoles = permissions.length
       ? await prisma.authzRole.findMany({
           where: { id: { in: permissions }, appId },
-          select: { id: true, name: true, scope: true },
+          select: { id: true, name: true, scope: true, acquisitionType: true, approvalPolicy: true },
         })
       : [];
     if (selectedRoles.length !== permissions.length) {
       return { success: false, error: 'One or more roles were not found for this application.' };
     }
 
-    const immediateRoles = selectedRoles.filter((role) =>
+    const requestableRoles = selectedRoles.filter((role) =>
+      isSelfRequestableRoleAcquisitionType(role.acquisitionType) &&
       canAssignRoleScopeToAccount(role.scope, account.accountType, ['public']),
     );
-    const approvalRoles = selectedRoles.filter((role) =>
-      canAssignRoleScopeToAccount(role.scope, account.accountType, ['toApprove']),
-    );
-    if (immediateRoles.length + approvalRoles.length !== selectedRoles.length) {
+    const immediateRoles = requestableRoles.filter((role) => !roleApprovalRequiresRequest(role.approvalPolicy));
+    const approvalRoles = requestableRoles.filter((role) => roleApprovalRequiresRequest(role.approvalPolicy));
+    if (requestableRoles.length !== selectedRoles.length) {
       return { success: false, error: 'One or more roles cannot be requested by this account type.' };
     }
 

@@ -3,6 +3,11 @@
 import { createCipheriv, createHash, createHmac, randomBytes, randomUUID } from 'crypto';
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
+import {
+  normalizeRoleAcquisitionType,
+  normalizeRoleApprovalPolicy,
+  normalizeRoleScope,
+} from '@/services/role-scopes';
 
 const BRIDGE_TYPE = 'roleUpdateWebhook';
 const SOURCE_APP_ID = 'neup.account';
@@ -14,6 +19,8 @@ type RolePayload = {
   name: string;
   description: string | null;
   scope: string | null;
+  acquisitionType: string;
+  approvalPolicy: string;
   applicableFor: string[];
   permissions: string[];
 };
@@ -107,6 +114,8 @@ export async function dispatchRoleUpdateWebhook(input: {
         name: input.role.name,
         description: input.role.description,
         scope: input.role.scope,
+        acquisitionType: input.role.acquisitionType,
+        approvalPolicy: input.role.approvalPolicy,
         applicableFor: input.role.applicableFor,
         permissions: input.role.permissions,
       };
@@ -179,14 +188,25 @@ export async function getRolePayload(appId: string, roleId: string): Promise<Rol
   try {
     const role = await prisma.authzRole.findFirst({
       where: { id: roleId, appId },
-      select: { id: true, name: true, description: true, scope: true, applicableFor: true, permissions: true },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        scope: true,
+        acquisitionType: true,
+        approvalPolicy: true,
+        applicableFor: true,
+        permissions: true,
+      },
     });
     if (!role) return null;
     return {
       id: role.id,
       name: role.name,
       description: role.description ?? null,
-      scope: role.scope ?? null,
+      scope: normalizeRoleScope(role.scope) ?? role.scope ?? null,
+      acquisitionType: normalizeRoleAcquisitionType(role.acquisitionType),
+      approvalPolicy: normalizeRoleApprovalPolicy(role.approvalPolicy),
       applicableFor: extractApplicableFor(role.applicableFor),
       permissions: extractPermissionNames(role.permissions),
     };

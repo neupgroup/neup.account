@@ -5,6 +5,13 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
@@ -28,7 +35,6 @@ type Props = {
   defaultRoleId: string | null;
   canManage: boolean;
   applicableForOptions: ApplicationAuthzDefinitionOption[];
-  scopeHint?: string;
 };
 
 export function RoleDetailEditor({
@@ -38,11 +44,12 @@ export function RoleDetailEditor({
   defaultRoleId: initialDefaultRoleId,
   canManage,
   applicableForOptions,
-  scopeHint,
 }: Props) {
   const router = useRouter();
   const { toast } = useToast();
   const [description, setDescription] = useState(role.description ?? '');
+  const [acquisitionType, setAcquisitionType] = useState(role.acquisitionType);
+  const [approvalPolicy, setApprovalPolicy] = useState(role.approvalPolicy);
   const [applicableFor, setApplicableFor] = useState<string[]>(role.applicableFor);
   const [showDetailsEditor, setShowDetailsEditor] = useState(false);
   const [permissionIds, setPermissionIds] = useState<string[]>(() => {
@@ -90,6 +97,8 @@ export function RoleDetailEditor({
       appId,
       roleId: role.id,
       description: description || undefined,
+      acquisitionType,
+      approvalPolicy,
       applicableFor,
       permissionIds,
     });
@@ -147,9 +156,6 @@ export function RoleDetailEditor({
         <p className="text-xs text-muted-foreground">
           Selected: {permissionIds.length} of {permissions.length}
         </p>
-        {scopeHint ? (
-          <p className="text-xs text-muted-foreground">{scopeHint}</p>
-        ) : null}
         {permissions.length === 0 ? (
           <p className="text-sm text-muted-foreground">No permissions defined yet.</p>
         ) : (
@@ -235,16 +241,47 @@ export function RoleDetailEditor({
           <div>
             <p className="text-sm font-medium">Role details</p>
             <p className="text-xs text-muted-foreground">
-              Role title is fixed after creation. Only the description and applicable targets can be updated here.
+              Role title is fixed after creation. Description, acquisition policy, approval policy, and applicable targets can be updated here.
             </p>
           </div>
           <Input value={role.name} disabled aria-label="Role title" />
+          <Input value={role.scope} disabled aria-label="Role scope" />
           <Input
             value={description}
             disabled={!canManage || isSystemRole}
             onChange={(event) => setDescription(event.target.value)}
             placeholder="Description (optional)"
           />
+          <div className="grid gap-2 sm:grid-cols-2">
+            <Select
+              value={acquisitionType}
+              onValueChange={(value) => setAcquisitionType(value)}
+              disabled={!canManage || isSystemRole}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Acquisition type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="assignment">assignment</SelectItem>
+                <SelectItem value="public_request">public_request</SelectItem>
+                <SelectItem value="invitation">invitation</SelectItem>
+                <SelectItem value="system_generated">system_generated</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select
+              value={approvalPolicy}
+              onValueChange={(value) => setApprovalPolicy(value)}
+              disabled={!canManage || isSystemRole}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Approval policy" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">none</SelectItem>
+                <SelectItem value="approval_required">approval_required</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <AuthzDefinitionSelector
             label="Applicable for"
             description="Choose the configured applicable-for targets for this role."

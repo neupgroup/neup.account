@@ -1,92 +1,103 @@
-export const ROLE_SCOPE_MODES = ['managed', 'public', 'toApprove', 'root'] as const;
+export const ROLE_SCOPE_KEYS = [
+  'acMgmt.self',
+  'acMgmt.brand',
+  'acMgmt.brandBranch',
+  'acMgmt.branch',
+  'rootMgmt.self',
+] as const;
 
+export const ROLE_ACQUISITION_TYPES = [
+  'assignment',
+  'public_request',
+  'invitation',
+  'system_generated',
+] as const;
+
+export const ROLE_APPROVAL_POLICIES = [
+  'none',
+  'approval_required',
+] as const;
+
+export type RoleScope = (typeof ROLE_SCOPE_KEYS)[number];
+export type RoleAcquisitionType = (typeof ROLE_ACQUISITION_TYPES)[number];
+export type RoleApprovalPolicy = (typeof ROLE_APPROVAL_POLICIES)[number];
 export type RoleAssignmentMode = 'manageable' | 'public' | 'toApprove' | 'root';
-export type ScopeMode = (typeof ROLE_SCOPE_MODES)[number];
+export type ScopeMode = 'acMgmt' | 'rootMgmt';
 export type ScopeAccountKey = 'individual' | 'dependent' | 'brand' | 'branch';
 export type ScopeAudience = Record<ScopeAccountKey, boolean>;
-export type RoleScope = string;
 
-const CANONICAL_SCOPE_PATTERN = /^(managed|public|toApprove|root)\.(individual|dependent|brand|branch)$/;
-const LEGACY_BITMASK_SCOPE_PATTERN = /^(managed|public|toApprove|root)\.([01]{4})$/;
-const LEGACY_ENCODED_SCOPE_PATTERN =
-  /^(managable|managed|public|toApprove|root)\.i([01])([01])b([01])([01])$/;
+const ROLE_SCOPE_SET = new Set<string>(ROLE_SCOPE_KEYS);
+const NON_ROOT_ASSIGNMENT_MODES = new Set<RoleAssignmentMode>(['manageable', 'public', 'toApprove']);
 
-const ACCOUNT_KEYS: ScopeAccountKey[] = ['individual', 'dependent', 'brand', 'branch'];
-const SCOPE_AUDIENCE_LABELS: Record<ScopeAccountKey, string> = {
-  individual: 'individual',
-  dependent: 'dependent',
-  brand: 'brand',
-  branch: 'branch',
+const LEGACY_SCOPE_MAP: Record<string, RoleScope> = {
+  root: 'rootMgmt.self',
+  'individual.root': 'rootMgmt.self',
+  'root.individual': 'rootMgmt.self',
+  'root.1000': 'rootMgmt.self',
+  'root.i1000': 'rootMgmt.self',
+  public: 'acMgmt.self',
+  default: 'acMgmt.self',
+  application: 'acMgmt.self',
+  managed: 'acMgmt.self',
+  manageable: 'acMgmt.self',
+  managable: 'acMgmt.self',
+  toApprove: 'acMgmt.self',
+  'public.individual': 'acMgmt.self',
+  'public.dependent': 'acMgmt.self',
+  'managed.individual': 'acMgmt.self',
+  'managed.dependent': 'acMgmt.self',
+  'toApprove.individual': 'acMgmt.self',
+  'toApprove.dependent': 'acMgmt.self',
+  'individual.public': 'acMgmt.self',
+  'dependent.individual.public': 'acMgmt.self',
+  'individual.managable': 'acMgmt.self',
+  'dependent.individual.managable': 'acMgmt.self',
+  'individual.toApprove': 'acMgmt.self',
+  'dependent.individual.toApprove': 'acMgmt.self',
+  'managed.1000': 'acMgmt.self',
+  'managed.0100': 'acMgmt.self',
+  'managed.i1000': 'acMgmt.self',
+  'managed.i0100': 'acMgmt.self',
+  'managable.i1000': 'acMgmt.self',
+  'managable.i0100': 'acMgmt.self',
+  'public.1000': 'acMgmt.self',
+  'public.0100': 'acMgmt.self',
+  'public.i1000': 'acMgmt.self',
+  'public.i0100': 'acMgmt.self',
+  'toApprove.1000': 'acMgmt.self',
+  'toApprove.0100': 'acMgmt.self',
+  'toApprove.i1000': 'acMgmt.self',
+  'toApprove.i0100': 'acMgmt.self',
+  brand: 'acMgmt.brand',
+  'managed.brand': 'acMgmt.brand',
+  'public.brand': 'acMgmt.brand',
+  'toApprove.brand': 'acMgmt.brand',
+  'brand.managable': 'acMgmt.brand',
+  'brand.public': 'acMgmt.brand',
+  'brand.toApprove': 'acMgmt.brand',
+  'managed.0010': 'acMgmt.brand',
+  'managed.i0010': 'acMgmt.brand',
+  'managable.i0010': 'acMgmt.brand',
+  'public.0010': 'acMgmt.brand',
+  'public.i0010': 'acMgmt.brand',
+  'toApprove.0010': 'acMgmt.brand',
+  'toApprove.i0010': 'acMgmt.brand',
+  'managed.branch': 'acMgmt.branch',
+  'public.branch': 'acMgmt.branch',
+  'toApprove.branch': 'acMgmt.branch',
+  'branch.brand.managable': 'acMgmt.branch',
+  'branch.brand.public': 'acMgmt.branch',
+  'branch.brand.toApprove': 'acMgmt.branch',
+  'managed.0001': 'acMgmt.branch',
+  'managed.i0001': 'acMgmt.branch',
+  'managable.i0001': 'acMgmt.branch',
+  'public.0001': 'acMgmt.branch',
+  'public.i0001': 'acMgmt.branch',
+  'toApprove.0001': 'acMgmt.branch',
+  'toApprove.i0001': 'acMgmt.branch',
 };
-const ACCOUNT_BITS: Record<ScopeAccountKey, string> = {
-  individual: '1000',
-  dependent: '0100',
-  brand: '0010',
-  branch: '0001',
-};
 
-function canonicalScope(mode: ScopeMode, accountKey: ScopeAccountKey): string {
-  return `${mode}.${mode === 'root' ? 'individual' : accountKey}`;
-}
-
-const LEGACY_SCOPE_MAP: Record<string, string[]> = {
-  root: [canonicalScope('root', 'individual')],
-  'individual.root': [canonicalScope('root', 'individual')],
-  public: ACCOUNT_KEYS.map((key) => canonicalScope('public', key)),
-  default: [canonicalScope('public', 'individual')],
-  application: ACCOUNT_KEYS.map((key) => canonicalScope('public', key)),
-  brand: [canonicalScope('managed', 'brand')],
-  managed: ACCOUNT_KEYS.map((key) => canonicalScope('managed', key)),
-  manageable: ACCOUNT_KEYS.map((key) => canonicalScope('managed', key)),
-  managable: ACCOUNT_KEYS.map((key) => canonicalScope('managed', key)),
-  toApprove: ACCOUNT_KEYS.map((key) => canonicalScope('toApprove', key)),
-  'brand.managable': [canonicalScope('managed', 'brand')],
-  'branch.brand.managable': [canonicalScope('managed', 'branch')],
-  'individual.managable': [canonicalScope('managed', 'individual')],
-  'dependent.individual.managable': [canonicalScope('managed', 'dependent')],
-  'individual.public': [canonicalScope('public', 'individual')],
-  'brand.public': [canonicalScope('public', 'brand')],
-  'branch.brand.public': [canonicalScope('public', 'branch')],
-  'dependent.individual.public': [canonicalScope('public', 'dependent')],
-  'individual.toApprove': [canonicalScope('toApprove', 'individual')],
-  'dependent.individual.toApprove': [canonicalScope('toApprove', 'dependent')],
-  'brand.toApprove': [canonicalScope('toApprove', 'brand')],
-  'branch.brand.toApprove': [canonicalScope('toApprove', 'branch')],
-};
-
-const ROLE_SCOPE_SET = new Set<string>(
-  ROLE_SCOPE_MODES.flatMap((mode) =>
-    mode === 'root'
-      ? [canonicalScope('root', 'individual')]
-      : ACCOUNT_KEYS.map((key) => canonicalScope(mode, key)),
-  ),
-);
-
-function normalizeMode(mode: string): ScopeMode | null {
-  const normalized = mode.trim();
-  if (normalized === 'managable') return 'managed';
-  if (normalized === 'manageable') return 'managed';
-  return ROLE_SCOPE_MODES.includes(normalized as ScopeMode) ? (normalized as ScopeMode) : null;
-}
-
-function audienceFromAccountKey(accountKey: ScopeAccountKey): ScopeAudience {
-  return {
-    individual: accountKey === 'individual',
-    dependent: accountKey === 'dependent',
-    brand: accountKey === 'brand',
-    branch: accountKey === 'branch',
-  };
-}
-
-function firstEnabledAccountKey(audience: ScopeAudience): ScopeAccountKey | null {
-  return ACCOUNT_KEYS.find((key) => audience[key]) ?? null;
-}
-
-function bitsToAccountKeys(bits: string): ScopeAccountKey[] {
-  return ACCOUNT_KEYS.filter((key, index) => bits[index] === '1');
-}
-
-export function normalizeAccountTypeForRoleScope(
+function normalizedAccountType(
   accountType: string | null | undefined,
 ): 'brand' | 'branch' | 'dependent' | 'individual' | 'other' {
   const normalized = (accountType ?? '').trim().toLowerCase();
@@ -95,6 +106,24 @@ export function normalizeAccountTypeForRoleScope(
   if (normalized === 'dependent') return 'dependent';
   if (normalized === 'individual') return 'individual';
   return 'other';
+}
+
+export function normalizeAccountTypeForRoleScope(
+  accountType: string | null | undefined,
+): 'brand' | 'branch' | 'dependent' | 'individual' | 'other' {
+  return normalizedAccountType(accountType);
+}
+
+export function normalizeRoleScope(scope: string | null | undefined): RoleScope | null {
+  const trimmed = (scope ?? '').trim();
+  if (!trimmed) return null;
+  if (ROLE_SCOPE_SET.has(trimmed)) return trimmed as RoleScope;
+  return LEGACY_SCOPE_MAP[trimmed] ?? null;
+}
+
+export function expandRoleScope(scope: string | null | undefined): RoleScope[] {
+  const normalized = normalizeRoleScope(scope);
+  return normalized ? [normalized] : [];
 }
 
 export function emptyScopeAudience(): ScopeAudience {
@@ -106,105 +135,113 @@ export function emptyScopeAudience(): ScopeAudience {
   };
 }
 
-export function encodeRoleScope(mode: ScopeMode, audience: ScopeAudience): string {
-  const accountKey = firstEnabledAccountKey(audience) ?? 'individual';
-  return canonicalScope(mode, accountKey);
-}
-
-export function expandRoleScope(scope: string | null | undefined): string[] {
-  const normalized = (scope ?? '').trim();
-  if (!normalized) return [];
-
-  const canonicalMatch = CANONICAL_SCOPE_PATTERN.exec(normalized);
-  if (canonicalMatch) {
-    const mode = normalizeMode(canonicalMatch[1]);
-    const accountKey = canonicalMatch[2] as ScopeAccountKey;
-    if (!mode) return [];
-    if (mode === 'root') return accountKey === 'individual' ? [canonicalScope('root', 'individual')] : [];
-    return [canonicalScope(mode, accountKey)];
-  }
-
-  const bitmaskMatch = LEGACY_BITMASK_SCOPE_PATTERN.exec(normalized);
-  if (bitmaskMatch) {
-    const mode = normalizeMode(bitmaskMatch[1]);
-    if (!mode) return [];
-    if (mode === 'root') return bitmaskMatch[2] === '1000' ? [canonicalScope('root', 'individual')] : [];
-    return bitsToAccountKeys(bitmaskMatch[2]).map((accountKey) => canonicalScope(mode, accountKey));
-  }
-
-  const legacyEncodedMatch = LEGACY_ENCODED_SCOPE_PATTERN.exec(normalized);
-  if (legacyEncodedMatch) {
-    const mode = normalizeMode(legacyEncodedMatch[1]);
-    if (!mode) return [];
-    if (mode === 'root') return [canonicalScope('root', 'individual')];
-    const bits = `${legacyEncodedMatch[2]}${legacyEncodedMatch[3]}${legacyEncodedMatch[4]}${legacyEncodedMatch[5]}`;
-    return bitsToAccountKeys(bits).map((accountKey) => canonicalScope(mode, accountKey));
-  }
-
-  return LEGACY_SCOPE_MAP[normalized] ?? [];
-}
-
-export function normalizeRoleScope(scope: string | null | undefined): string | null {
-  return expandRoleScope(scope)[0] ?? null;
-}
-
 export function decodeRoleScope(
   scope: string | null | undefined,
-): { mode: ScopeMode; audience: ScopeAudience; normalized: string } | null {
+): { mode: ScopeMode; audience: ScopeAudience; normalized: RoleScope } | null {
   const normalized = normalizeRoleScope(scope);
   if (!normalized) return null;
 
-  const match = CANONICAL_SCOPE_PATTERN.exec(normalized);
-  if (!match) return null;
-
-  const mode = normalizeMode(match[1]);
-  const accountKey = match[2] as ScopeAccountKey;
-  if (!mode) return null;
-
-  return {
-    mode,
-    normalized,
-    audience: audienceFromAccountKey(accountKey),
-  };
+  switch (normalized) {
+    case 'acMgmt.self':
+      return {
+        mode: 'acMgmt',
+        normalized,
+        audience: { individual: true, dependent: false, brand: false, branch: false },
+      };
+    case 'acMgmt.brand':
+      return {
+        mode: 'acMgmt',
+        normalized,
+        audience: { individual: false, dependent: false, brand: true, branch: false },
+      };
+    case 'acMgmt.brandBranch':
+      return {
+        mode: 'acMgmt',
+        normalized,
+        audience: { individual: false, dependent: false, brand: true, branch: true },
+      };
+    case 'acMgmt.branch':
+      return {
+        mode: 'acMgmt',
+        normalized,
+        audience: { individual: false, dependent: false, brand: false, branch: true },
+      };
+    case 'rootMgmt.self':
+      return {
+        mode: 'rootMgmt',
+        normalized,
+        audience: { individual: true, dependent: false, brand: false, branch: false },
+      };
+    default:
+      return null;
+  }
 }
 
 export function isKnownRoleScope(scope: string): scope is RoleScope {
-  const normalized = normalizeRoleScope(scope);
-  return normalized !== null && ROLE_SCOPE_SET.has(normalized);
+  return normalizeRoleScope(scope) !== null;
 }
 
 export function roleScopeError() {
-  return 'Role scope must use managed, public, toApprove, or root with a named audience like managed.brand.';
+  return 'Role scope must use one of: acMgmt.self, acMgmt.brand, acMgmt.brandBranch, acMgmt.branch, rootMgmt.self.';
+}
+
+export function encodeRoleScope(mode: ScopeMode, audience: ScopeAudience): RoleScope {
+  if (mode === 'rootMgmt') return 'rootMgmt.self';
+  if (audience.brand && audience.branch) return 'acMgmt.brandBranch';
+  if (audience.brand) return 'acMgmt.brand';
+  if (audience.branch) return 'acMgmt.branch';
+  return 'acMgmt.self';
+}
+
+function roleScopeMatchesAccountType(scope: RoleScope, accountType: string | null | undefined): boolean {
+  const normalizedType = normalizedAccountType(accountType);
+
+  switch (scope) {
+    case 'acMgmt.self':
+      return normalizedType === 'individual' || normalizedType === 'dependent';
+    case 'acMgmt.brand':
+      return normalizedType === 'brand';
+    case 'acMgmt.brandBranch':
+      return normalizedType === 'brand' || normalizedType === 'branch';
+    case 'acMgmt.branch':
+      return normalizedType === 'branch';
+    case 'rootMgmt.self':
+      return normalizedType === 'individual';
+    default:
+      return false;
+  }
 }
 
 export function expectedRoleScopeForAccount(
   accountType: string | null | undefined,
   mode: RoleAssignmentMode,
 ): RoleScope | null {
-  const normalizedAccountType = normalizeAccountTypeForRoleScope(accountType);
-  const normalizedMode: ScopeMode =
-    mode === 'manageable'
-      ? 'managed'
-      : mode === 'public'
-      ? 'public'
-      : mode === 'toApprove'
-      ? 'toApprove'
-      : 'root';
-
-  if (normalizedMode === 'root') {
-    return normalizedAccountType === 'individual' ? canonicalScope('root', 'individual') : null;
-  }
-
-  if (normalizedAccountType === 'other') return null;
-  return canonicalScope(normalizedMode, normalizedAccountType);
+  return expectedRoleScopesForAccount(accountType, mode)[0] ?? null;
 }
 
 export function expectedRoleScopesForAccount(
   accountType: string | null | undefined,
   mode: RoleAssignmentMode,
 ): RoleScope[] {
-  const specificScope = expectedRoleScopeForAccount(accountType, mode);
-  return specificScope ? [specificScope] : [];
+  const normalizedType = normalizedAccountType(accountType);
+
+  if (mode === 'root') {
+    return normalizedType === 'individual' ? ['rootMgmt.self'] : [];
+  }
+
+  if (normalizedType === 'individual' || normalizedType === 'dependent') {
+    return ['acMgmt.self'];
+  }
+
+  if (normalizedType === 'brand') {
+    return ['acMgmt.brand', 'acMgmt.brandBranch'];
+  }
+
+  if (normalizedType === 'branch') {
+    return ['acMgmt.branch', 'acMgmt.brandBranch'];
+  }
+
+  return [];
 }
 
 export function canAssignRoleScopeToAccount(
@@ -212,17 +249,19 @@ export function canAssignRoleScopeToAccount(
   accountType: string | null | undefined,
   modes: RoleAssignmentMode[],
 ): boolean {
-  const normalizedRoleScope = normalizeRoleScope(scope);
-  if (!normalizedRoleScope) return false;
+  const normalizedScope = normalizeRoleScope(scope);
+  if (!normalizedScope) return false;
 
-  const targetAccountType = normalizeAccountTypeForRoleScope(accountType);
-  if (targetAccountType === 'other') return false;
+  if (normalizedScope === 'rootMgmt.self') {
+    return modes.includes('root') && roleScopeMatchesAccountType(normalizedScope, accountType);
+  }
 
-  return modes.some((mode) => expectedRoleScopeForAccount(targetAccountType, mode) === normalizedRoleScope);
+  return modes.some((mode) => NON_ROOT_ASSIGNMENT_MODES.has(mode)) &&
+    roleScopeMatchesAccountType(normalizedScope, accountType);
 }
 
 export function isRootRoleScope(scope: string | null | undefined): boolean {
-  return normalizeRoleScope(scope) === canonicalScope('root', 'individual');
+  return normalizeRoleScope(scope) === 'rootMgmt.self';
 }
 
 export function scopeCoversRoleScope(
@@ -233,47 +272,57 @@ export function scopeCoversRoleScope(
 }
 
 export function formatScopeAudience(scope: string | null | undefined): string {
-  const decoded = decodeRoleScope(scope);
-  if (!decoded) return scope?.trim() || '';
-  return firstEnabledAccountKey(decoded.audience) ?? '';
+  const normalized = normalizeRoleScope(scope);
+  if (!normalized) return (scope ?? '').trim();
+  if (normalized === 'acMgmt.brandBranch') return 'brand, branch';
+  if (normalized === 'acMgmt.brand') return 'brand';
+  if (normalized === 'acMgmt.branch') return 'branch';
+  return 'self';
 }
 
 export function formatRoleScopeForDisplay(scope: string | null | undefined): string {
-  const normalized = normalizeRoleScope(scope);
-  if (!normalized) return scope?.trim() || '';
-
-  const decoded = decodeRoleScope(normalized);
-  if (!decoded) return normalized;
-
-  const accountKey = firstEnabledAccountKey(decoded.audience);
-  if (!accountKey) return normalized;
-  return `${decoded.mode}.${ACCOUNT_BITS[accountKey]}`;
+  return normalizeRoleScope(scope) ?? (scope ?? '').trim();
 }
 
 export function formatMergedScopeLabels(
   scopes: Array<string | null | undefined>,
 ): string[] {
-  const grouped = new Map<ScopeMode, Set<string>>();
+  return Array.from(
+    new Set(
+      scopes
+        .map((scope) => normalizeRoleScope(scope) ?? (scope ?? '').trim())
+        .filter(Boolean),
+    ),
+  );
+}
 
-  for (const scope of scopes) {
-    const expandedScopes = expandRoleScope(scope);
-    for (const expandedScope of expandedScopes) {
-      const decoded = decodeRoleScope(expandedScope);
-      if (!decoded) continue;
+export function normalizeRoleAcquisitionType(
+  value: string | null | undefined,
+): RoleAcquisitionType {
+  const normalized = (value ?? '').trim();
+  return ROLE_ACQUISITION_TYPES.includes(normalized as RoleAcquisitionType)
+    ? (normalized as RoleAcquisitionType)
+    : 'assignment';
+}
 
-      const audienceKey = firstEnabledAccountKey(decoded.audience);
-      if (!audienceKey) continue;
+export function normalizeRoleApprovalPolicy(
+  value: string | null | undefined,
+): RoleApprovalPolicy {
+  const normalized = (value ?? '').trim();
+  return ROLE_APPROVAL_POLICIES.includes(normalized as RoleApprovalPolicy)
+    ? (normalized as RoleApprovalPolicy)
+    : 'none';
+}
 
-      const labels = grouped.get(decoded.mode) ?? new Set<string>();
-      labels.add(SCOPE_AUDIENCE_LABELS[audienceKey]);
-      grouped.set(decoded.mode, labels);
-    }
-  }
+export function isDirectlyAssignableRoleAcquisitionType(value: string | null | undefined): boolean {
+  const normalized = normalizeRoleAcquisitionType(value);
+  return normalized === 'assignment' || normalized === 'public_request';
+}
 
-  return ROLE_SCOPE_MODES
-    .filter((mode) => grouped.has(mode))
-    .map((mode) => {
-      const labels = Array.from(grouped.get(mode) ?? []).sort((a, b) => a.localeCompare(b));
-      return `${mode}(${labels.join(',')})`;
-    });
+export function isSelfRequestableRoleAcquisitionType(value: string | null | undefined): boolean {
+  return normalizeRoleAcquisitionType(value) === 'public_request';
+}
+
+export function roleApprovalRequiresRequest(value: string | null | undefined): boolean {
+  return normalizeRoleApprovalPolicy(value) === 'approval_required';
 }

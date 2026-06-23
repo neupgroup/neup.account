@@ -155,6 +155,8 @@ export async function getApplicationRoles(params: {
           name: true,
           description: true,
           scope: true,
+          acquisitionType: true,
+          approvalPolicy: true,
           pushed: true,
           permissions: true,
         },
@@ -177,6 +179,8 @@ export async function getApplicationRoles(params: {
       'roleName',
       'roleDescription',
       'roleScope',
+      'roleAcquisitionType',
+      'roleApprovalPolicy',
       'pushed',
       'permissions',
     ];
@@ -186,6 +190,8 @@ export async function getApplicationRoles(params: {
       roleName: r.name,
       roleDescription: r.description,
       roleScope: r.scope,
+      roleAcquisitionType: r.acquisitionType,
+      roleApprovalPolicy: r.approvalPolicy,
       pushed: true,
       permissions: Array.isArray(r.permissions)
         ? r.permissions.flatMap((p) => {

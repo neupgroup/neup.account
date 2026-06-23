@@ -36,7 +36,11 @@ import {
   type ApplicationPermissionBase,
   type ApplicationPermissionAudience,
 } from '@/services/applications/permission-definitions';
-import { canAssignRoleScopeToAccount } from '@/services/role-scopes';
+import {
+  canAssignRoleScopeToAccount,
+  isDirectlyAssignableRoleAcquisitionType,
+  roleApprovalRequiresRequest,
+} from '@/services/role-scopes';
 import {
   revalidateApplicationConfigRoutes,
   revalidateApplicationDetailRoutes,
@@ -2116,6 +2120,8 @@ export type AppRoleOption = {
   name: string;
   description: string | null;
   scope: string | null;
+  acquisitionType: string;
+  approvalPolicy: string;
 };
 
 function hasUsableRoleScope(scope: string | null | undefined): boolean {
@@ -2517,13 +2523,20 @@ export async function getApplicationRoleOptions(appId: string, targetAccountType
         name: true,
         description: true,
         scope: true,
+        acquisitionType: true,
+        approvalPolicy: true,
       },
     });
 
-    if (!targetAccountType) return roles.filter((role) => hasUsableRoleScope(role.scope));
+    if (!targetAccountType) {
+      return roles.filter(
+        (role) => hasUsableRoleScope(role.scope) && isDirectlyAssignableRoleAcquisitionType(role.acquisitionType),
+      );
+    }
 
     return roles.filter((role) => {
       if (!hasUsableRoleScope(role.scope)) return false;
+      if (!isDirectlyAssignableRoleAcquisitionType(role.acquisitionType)) return false;
       const modes = isRootEditor
         ? ['public', 'toApprove', 'root'] as const
         : ['public', 'toApprove'] as const;
@@ -2565,7 +2578,7 @@ export async function assignApplicationConnectionRole(input: {
       }),
       prisma.authzRole.findMany({
         where: { id: { in: uniqueRoleIds }, appId: input.appId },
-        select: { id: true, name: true, scope: true },
+        select: { id: true, name: true, scope: true, acquisitionType: true, approvalPolicy: true },
       }),
       prisma.request.findMany({
         where: {
@@ -2584,16 +2597,17 @@ export async function assignApplicationConnectionRole(input: {
       return { success: false, error: 'Roles without a scope cannot be assigned to a user.' };
     }
 
-    const immediateRoles = roles.filter((role) =>
-      canAssignRoleScopeToAccount(role.scope, connection.account.accountType, ['public']) ||
-      (isRootEditor && canAssignRoleScopeToAccount(role.scope, connection.account.accountType, ['root'])),
+    const assignableRoles = roles.filter((role) =>
+      isDirectlyAssignableRoleAcquisitionType(role.acquisitionType) &&
+      (
+        canAssignRoleScopeToAccount(role.scope, connection.account.accountType, ['public']) ||
+        (isRootEditor && canAssignRoleScopeToAccount(role.scope, connection.account.accountType, ['root']))
+      ),
     );
-    const approvableRoles = roles.filter((role) =>
-      !immediateRoles.some((candidate) => candidate.id === role.id) &&
-      canAssignRoleScopeToAccount(role.scope, connection.account.accountType, ['toApprove']),
-    );
+    const immediateRoles = assignableRoles.filter((role) => !roleApprovalRequiresRequest(role.approvalPolicy));
+    const approvableRoles = assignableRoles.filter((role) => roleApprovalRequiresRequest(role.approvalPolicy));
 
-    if (immediateRoles.length + approvableRoles.length !== roles.length) {
+    if (assignableRoles.length !== roles.length) {
       return { success: false, error: 'One or more selected roles cannot be assigned from this page.' };
     }
 
@@ -2610,6 +2624,7 @@ export async function assignApplicationConnectionRole(input: {
           select: {
             scope: true,
             appId: true,
+            acquisitionType: true,
           },
         },
       },
@@ -2619,6 +2634,7 @@ export async function assignApplicationConnectionRole(input: {
       new Set(
         existingAssignedRows
           .filter((row) => row.role.appId === input.appId)
+          .filter((row) => isDirectlyAssignableRoleAcquisitionType(row.role.acquisitionType))
           .filter((row) =>
             canAssignRoleScopeToAccount(row.role.scope, connection.account.accountType, ['public']) ||
             (isRootEditor && canAssignRoleScopeToAccount(row.role.scope, connection.account.accountType, ['root'])),

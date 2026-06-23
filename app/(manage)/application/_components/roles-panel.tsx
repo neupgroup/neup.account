@@ -86,6 +86,8 @@ export function RolesPanel({ appId, canManage, canResetPush, initialRoles, hasWe
                     {role.scope && (
                       <Badge variant="outline" className="text-xs">{formatRoleScopeForDisplay(role.scope)}</Badge>
                     )}
+                    <Badge variant="outline" className="text-xs">{role.acquisitionType}</Badge>
+                    <Badge variant="outline" className="text-xs">{role.approvalPolicy}</Badge>
                     {defaultRoleId === role.id ? (
                       <Badge className="text-xs">Default</Badge>
                     ) : null}

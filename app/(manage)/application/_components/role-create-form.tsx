@@ -5,6 +5,13 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { createAppRole } from '@/services/applications/authz-manage';
 import { redirectInApp } from '@/core/helper/navigation';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
@@ -15,15 +22,16 @@ import type { ApplicationAuthzDefinitionOption } from '@/services/applications/a
 type Props = {
   appId: string;
   applicableForOptions: ApplicationAuthzDefinitionOption[];
-  scopeHint?: string;
 };
 
-export function RoleCreateForm({ appId, applicableForOptions, scopeHint }: Props) {
+export function RoleCreateForm({ appId, applicableForOptions }: Props) {
   const router = useRouter();
   const { toast } = useToast();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [scope, setScope] = useState('');
+  const [acquisitionType, setAcquisitionType] = useState<'assignment' | 'public_request' | 'invitation' | 'system_generated'>('assignment');
+  const [approvalPolicy, setApprovalPolicy] = useState<'none' | 'approval_required'>('none');
   const [applicableFor, setApplicableFor] = useState<string[]>([]);
   const [pending, setPending] = useState(false);
 
@@ -37,6 +45,8 @@ export function RoleCreateForm({ appId, applicableForOptions, scopeHint }: Props
       name: roleTitle,
       description: description || undefined,
       scope,
+      acquisitionType,
+      approvalPolicy,
       applicableFor,
       permissionIds: [],
     });
@@ -57,9 +67,28 @@ export function RoleCreateForm({ appId, applicableForOptions, scopeHint }: Props
       <Input value={name} onChange={(event) => setName(event.target.value)} placeholder="Role title, e.g. Viewer" />
       <Input value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Description (optional)" />
       <RoleScopeSelector value={scope} onChange={setScope} />
-      {scopeHint ? (
-        <p className="text-xs text-muted-foreground">{scopeHint}</p>
-      ) : null}
+      <div className="grid gap-2 sm:grid-cols-2">
+        <Select value={acquisitionType} onValueChange={(value) => setAcquisitionType(value as typeof acquisitionType)}>
+          <SelectTrigger>
+            <SelectValue placeholder="Acquisition type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="assignment">assignment</SelectItem>
+            <SelectItem value="public_request">public_request</SelectItem>
+            <SelectItem value="invitation">invitation</SelectItem>
+            <SelectItem value="system_generated">system_generated</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={approvalPolicy} onValueChange={(value) => setApprovalPolicy(value as typeof approvalPolicy)}>
+          <SelectTrigger>
+            <SelectValue placeholder="Approval policy" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">none</SelectItem>
+            <SelectItem value="approval_required">approval_required</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
       <AuthzDefinitionSelector
         label="Applicable for"
         description="Choose the configured applicable-for targets for this role."

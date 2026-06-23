@@ -6,7 +6,7 @@ import { getActiveAccountId } from '@/core/auth/verify';
 import { checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
-import { canAssignRoleScopeToAccount } from '@/services/role-scopes';
+import { canAssignRoleScopeToAccount, roleApprovalRequiresRequest } from '@/services/role-scopes';
 import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';
 import { canCurrentAccountManageApplicationRoles, hasRootApplicationPermission } from '@/services/applications/manage';
 import { revalidateApplicationRequestsRoutes, revalidateApplicationUsersRoutes } from '@/services/applications/revalidate-routes';
@@ -52,7 +52,7 @@ export async function approveApplicationRoleRequest(requestId: string): Promise<
       prisma.account.findUnique({ where: { id: accountId }, select: { accountType: true } }),
       prisma.authzRole.findMany({
         where: { id: { in: roleIds }, appId },
-        select: { id: true, scope: true },
+        select: { id: true, scope: true, approvalPolicy: true },
       }),
     ]);
     if (!account) return { success: false, error: 'Target account not found.' };
@@ -65,7 +65,10 @@ export async function approveApplicationRoleRequest(requestId: string): Promise<
       });
       if (!connection) return { success: false, error: 'Connection not found.' };
 
-      const invalidRole = roles.find((role) => !canAssignRoleScopeToAccount(role.scope, account.accountType, ['toApprove']));
+      const invalidRole = roles.find((role) =>
+        !roleApprovalRequiresRequest(role.approvalPolicy) ||
+        !canAssignRoleScopeToAccount(role.scope, account.accountType, ['public']),
+      );
       if (invalidRole) {
         return { success: false, error: 'One or more requested role scopes are not approvable for this account type.' };
       }
@@ -94,7 +97,10 @@ export async function approveApplicationRoleRequest(requestId: string): Promise<
         });
       });
     } else {
-      const invalidRole = roles.find((role) => !canAssignRoleScopeToAccount(role.scope, account.accountType, ['toApprove']));
+      const invalidRole = roles.find((role) =>
+        !roleApprovalRequiresRequest(role.approvalPolicy) ||
+        !canAssignRoleScopeToAccount(role.scope, account.accountType, ['public']),
+      );
       if (invalidRole) {
         return { success: false, error: 'One or more requested role scopes are not approvable for this account type.' };
       }

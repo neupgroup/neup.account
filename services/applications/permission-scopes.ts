@@ -9,7 +9,7 @@ export function isKnownPermissionScope(scope: string): scope is PermissionScopeO
 }
 
 export function permissionScopeError() {
-  return 'Permission scope entries must use managed, public, toApprove, or root with a named audience like managed.brand.';
+  return 'Permission scope entries must use one of the known role scopes such as acMgmt.self or rootMgmt.self.';
 }
 
 export function normalizePermissionScopes(value: unknown): PermissionScopeOption[] {

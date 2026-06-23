@@ -1,7 +1,7 @@
 import { normalizePermissionScopes, type PermissionScopeOption } from '@/services/applications/permission-scopes';
 import { decodeRoleScope, normalizeRoleScope, scopeCoversRoleScope } from '@/services/role-scopes';
 
-export type ProgressiveScopeLevel = 'toApprove' | 'managed' | 'public' | 'root' | 'unknown';
+export type ProgressiveScopeLevel = 'acMgmt' | 'rootMgmt' | 'unknown';
 
 function normalizeScope(scope: string | null | undefined): string {
   return normalizeRoleScope(scope) ?? (scope ?? '').trim();

@@ -11,6 +11,11 @@ import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
 import { activityAction } from '@/services/activity-action';
 import { ensureAccessGrant } from '@/services/access-model';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import {
+    BRAND_OWNER_PERMISSION_NAMES,
+    BRAND_OWNER_ROLE_ID,
+    BRAND_OWNER_ROLE_NAME,
+} from '@/core/auth/brand-roles';
 
 /**
  * Type BranchAccount.
@@ -106,18 +111,31 @@ export async function createBranchAccount(data: z.infer<typeof formSchema>, geol
                 }
             });
 
-            // Grant brand.owner on the branch to the personal account (same role as brand)
+            // Grant the canonical managed brand owner role on the branch.
             await tx.authzRole.upsert({
-                where: { id: 'brand-owner-neup-account' },
-                update: { name: 'brand.owner', scope: 'managed.brand', appId: 'neup.account' },
-                create: { id: 'brand-owner-neup-account', name: 'brand.owner', scope: 'managed.brand', appId: 'neup.account' },
+                where: { id: BRAND_OWNER_ROLE_ID },
+                update: {
+                    name: BRAND_OWNER_ROLE_NAME,
+                    description: 'Brand ownership role for brand accounts.',
+                    scope: 'managed.brand',
+                    appId: 'neup.account',
+                    permissions: BRAND_OWNER_PERMISSION_NAMES,
+                },
+                create: {
+                    id: BRAND_OWNER_ROLE_ID,
+                    name: BRAND_OWNER_ROLE_NAME,
+                    description: 'Brand ownership role for brand accounts.',
+                    scope: 'managed.brand',
+                    appId: 'neup.account',
+                    permissions: BRAND_OWNER_PERMISSION_NAMES,
+                },
             });
             await ensureAccessGrant(tx, {
                 memberAccountId: personalAccountId,
                 parentAccountId: branchAccountId,
                 childAccountId: branchAccountId,
                 accessApplicationId: 'neup.account',
-                roleId: 'brand-owner-neup-account',
+                roleId: BRAND_OWNER_ROLE_ID,
             });
 
             await tx.neupId.create({

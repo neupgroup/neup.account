@@ -10,7 +10,11 @@ import { extractGenderFromDetails, resolveDisplayImage } from "@/core/helpers/di
 import { getAccountSelectorContext } from "@/core/auth/accountSelector";
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from "@/services/access-model";
 import { isRootRoleScope, normalizeRoleScope } from '@/services/role-scopes';
-import { resolveNeupAccountPermissionCandidates } from '@/services/neup-account/permission-catalog';
+import {
+  getCanonicalPermissionAudience,
+  resolveNeupAccountPermissionCandidates,
+  stripPermissionAudience,
+} from '@/services/neup-account/permission-catalog';
 
 // --- Types ---
 
@@ -100,7 +104,13 @@ function permissionMatches(
   requiredPermission: string,
   context: PermissionMatchContext,
 ): boolean {
-  return resolveNeupAccountPermissionCandidates(requiredPermission, context).includes(grantedPermission);
+  const requiredAudience = getCanonicalPermissionAudience(requiredPermission);
+  const contextualRequiredPermission =
+    context === 'managed' && requiredAudience === 'self'
+      ? stripPermissionAudience(requiredPermission)
+      : requiredPermission;
+
+  return resolveNeupAccountPermissionCandidates(contextualRequiredPermission, context).includes(grantedPermission);
 }
 
 function roleScopeToPermissionContext(
@@ -712,9 +722,14 @@ export async function checkPermissions(
   const userPermissions = accountId
     ? await getAccountPermission(accountId)
     : await getCurrentAccountPermission();
+  const permissionContext: PermissionMatchContext = accountId
+    ? 'selfOrRoot'
+    : (await getAccountSelectorContext()).isManagingOtherAccount
+      ? 'managed'
+      : 'selfOrRoot';
 
   return requiredPermissions.every((requiredPermission) =>
-    userPermissions.some((grantedPermission) => permissionMatches(grantedPermission, requiredPermission, 'selfOrRoot')),
+    userPermissions.some((grantedPermission) => permissionMatches(grantedPermission, requiredPermission, permissionContext)),
   );
 }
 

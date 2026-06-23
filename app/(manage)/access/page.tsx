@@ -16,6 +16,7 @@ import { getCurrentAccountPermission, getUserProfile } from '@/services/user';
 import { getAccessibleAccounts } from '@/services/manage/accounts';
 import { getAccountSelectorContext } from '@/core/auth/accountSelector';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { hasAnyPermission } from '@/core/auth/profile-permissions';
 import {
   ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS,
   ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS,
@@ -147,9 +148,9 @@ async function PortfolioDetail({ id }: { id: string }) {
       membersHref={`/access/team?portfolio=${id}`}
       connectionsHref="/access/connection"
       applicationsHref="/access/application"
-      showMembers={ACCESS_TEAM_VIEW_PERMISSIONS.some((permission) => permissions.includes(permission))}
-      showConnections={ACCESS_CONNECTION_VIEW_PERMISSIONS.some((permission) => permissions.includes(permission))}
-      showApplications={ACCESS_APPLICATION_VIEW_PERMISSIONS.some((permission) => permissions.includes(permission))}
+      showMembers={hasAnyPermission(permissions, ACCESS_TEAM_VIEW_PERMISSIONS)}
+      showConnections={hasAnyPermission(permissions, ACCESS_CONNECTION_VIEW_PERMISSIONS)}
+      showApplications={hasAnyPermission(permissions, ACCESS_APPLICATION_VIEW_PERMISSIONS)}
     />
   );
 }
@@ -180,35 +181,19 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
   ]);
   const allowsFamilySettings =
     activeProfile?.accountType === 'individual' || activeProfile?.accountType === 'dependent';
-  const canViewTeam = ACCESS_TEAM_VIEW_PERMISSIONS.some((permission) => permissions.includes(permission));
-  const canViewConnections = ACCESS_CONNECTION_VIEW_PERMISSIONS.some((permission) => permissions.includes(permission));
-  const canViewApplications = ACCESS_APPLICATION_VIEW_PERMISSIONS.some((permission) => permissions.includes(permission));
-  const showLinkedAccounts = LINKED_ACCOUNT_NAV_PERMISSIONS.some((permission) =>
-    permissions.includes(permission),
-  );
-  const canCreateBrand = ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS.some((permission) =>
-    permissions.includes(permission),
-  );
-  const canCreateDependent = ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS.some((permission) =>
-    permissions.includes(permission),
-  );
+  const canViewTeam = hasAnyPermission(permissions, ACCESS_TEAM_VIEW_PERMISSIONS);
+  const canViewConnections = hasAnyPermission(permissions, ACCESS_CONNECTION_VIEW_PERMISSIONS);
+  const canViewApplications = hasAnyPermission(permissions, ACCESS_APPLICATION_VIEW_PERMISSIONS);
+  const showLinkedAccounts = hasAnyPermission(permissions, LINKED_ACCOUNT_NAV_PERMISSIONS);
+  const canCreateBrand = hasAnyPermission(permissions, ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS);
+  const canCreateDependent = hasAnyPermission(permissions, ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS);
   const canViewFamily =
     allowsFamilySettings &&
-    [...ACCESS_FAMILY_MEMBER_UPDATE_PERMISSIONS, ...ACCESS_FAMILY_PARTNER_UPDATE_PERMISSIONS].some(
-      (permission) => permissions.includes(permission),
-    );
-  const canViewInvitations = ACCESS_INVITATIONS_VIEW_PERMISSIONS.some((permission) =>
-    permissions.includes(permission),
-  );
-  const canBlockUsers = ACCESS_BLOCK_VIEW_PERMISSIONS.some((permission) =>
-    permissions.includes(permission),
-  );
-  const canSwitchAccounts = ACCESS_ACCOUNTS_SWITCH_PERMISSIONS.some((permission) =>
-    permissions.includes(permission),
-  );
-  const canCreatePortfolios = ACCESS_PORTFOLIO_CREATE_PERMISSIONS.some((permission) =>
-    permissions.includes(permission),
-  );
+    hasAnyPermission(permissions, [...ACCESS_FAMILY_MEMBER_UPDATE_PERMISSIONS, ...ACCESS_FAMILY_PARTNER_UPDATE_PERMISSIONS]);
+  const canViewInvitations = hasAnyPermission(permissions, ACCESS_INVITATIONS_VIEW_PERMISSIONS);
+  const canBlockUsers = hasAnyPermission(permissions, ACCESS_BLOCK_VIEW_PERMISSIONS);
+  const canSwitchAccounts = hasAnyPermission(permissions, ACCESS_ACCOUNTS_SWITCH_PERMISSIONS);
+  const canCreatePortfolios = hasAnyPermission(permissions, ACCESS_PORTFOLIO_CREATE_PERMISSIONS);
   const accountsToShow =
     showLinkedAccounts && canSwitchAccounts && !isManagingOtherAccount
       ? await getAccessibleAccounts()

@@ -16,10 +16,7 @@ function slugifyPermission(permission: string): string {
 
 function permissionScopesForBrandOwnerPermission(permissionName: string): string {
   if (
-    permissionName === 'access.view' ||
-    permissionName === 'access.connection.view' ||
-    permissionName === 'access.application.view' ||
-    permissionName === 'application.view' ||
+    permissionName.endsWith('.managed') ||
     permissionName === 'data.agreed_terms.view' ||
     permissionName === 'data.delete_account.start' ||
     permissionName === 'data.deactivate_account.start' ||
@@ -29,15 +26,9 @@ function permissionScopesForBrandOwnerPermission(permissionName: string): string
     permissionName === 'payment.method.show' ||
     permissionName === 'payment.transactions.show' ||
     permissionName === 'payment.subscriptions.show' ||
-    permissionName === 'payment.purchase_neup_pro.view' ||
-    [
-      'account.brand.members.manage',
-      'account.brand.kyc.view',
-      'account.brand.kyc.submit',
-      'account.brand.delete',
-    ].includes(permissionName)
+    permissionName === 'payment.purchase_neup_pro.view'
   ) {
-    return 'public.brand,managed.brand,root.individual';
+    return 'managed.brand';
   }
 
   return 'public.brand';
@@ -128,6 +119,23 @@ async function main() {
         },
       });
     }
+
+    const brandOwnerPermissionIds = await tx.authzPermission.findMany({
+      where: {
+        appId: APP_ID,
+        name: { in: [...BRAND_OWNER_PERMISSION_NAMES] },
+      },
+      select: { id: true },
+    });
+
+    await tx.authzRolePermissionMap.deleteMany({
+      where: {
+        roleId: BRAND_OWNER_ROLE_ID,
+        permissionId: {
+          notIn: brandOwnerPermissionIds.map((permission) => permission.id),
+        },
+      },
+    });
 
     for (const permissionName of BRAND_ROOT_PERMISSION_NAMES) {
       const permissionId = `cap-brand-root-${slugifyPermission(permissionName)}`;

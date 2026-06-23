@@ -374,15 +374,20 @@ INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-brand-settings-view',     'brand.settings.view',           '${APP_ID}', 'brand'),
   ('cap-brand-settings-edit',     'brand.settings.edit',           '${APP_ID}', 'brand'),
   ('cap-brand-members-view',      'brand.members.view',            '${APP_ID}', 'brand'),
-  ('cap-brand-access-view',       'access.view',                   '${APP_ID}', 'brand.managable'),
-  ('cap-brand-access-connection-view', 'access.connection.view',   '${APP_ID}', 'brand.managable'),
-  ('cap-brand-access-application-view','access.application.view',  '${APP_ID}', 'brand.managable'),
-  ('cap-brand-members-manage',    'account.brand.members.manage',             '${APP_ID}', 'brand.managable'),
+  ('cap-brand-notification-read', 'notification.read.managed',     '${APP_ID}', 'brand.managable'),
+  ('cap-brand-notification-delete','notification.delete.managed',  '${APP_ID}', 'brand.managable'),
+  ('cap-brand-access-view',       'access.view.managed',           '${APP_ID}', 'brand.managable'),
+  ('cap-brand-access-team-view',  'access.team.view.managed',      '${APP_ID}', 'brand.managable'),
+  ('cap-brand-access-team-add',   'access.team.add.managed',       '${APP_ID}', 'brand.managable'),
+  ('cap-brand-access-team-remove','access.team.remove.managed',    '${APP_ID}', 'brand.managable'),
+  ('cap-brand-access-connection-view', 'access.connection.view.managed',   '${APP_ID}', 'brand.managable'),
+  ('cap-brand-access-application-view','access.application.view.managed',  '${APP_ID}', 'brand.managable'),
+  ('cap-brand-members-manage',    'account.brand.members.manage.managed',     '${APP_ID}', 'brand.managable'),
   ('cap-brand-branches-view',     'linked_accounts.brand.view',         '${APP_ID}', 'brand'),
   ('cap-brand-branches-manage',   'linked_accounts.brand.manage',       '${APP_ID}', 'brand'),
   ('cap-brand-branches-manager',  'linked_accounts.brand.manager',      '${APP_ID}', 'brand'),
-  ('cap-brand-kyc-view',          'account.brand.kyc.view',                 '${APP_ID}', 'brand.managable'),
-  ('cap-brand-kyc-submit',        'account.brand.kyc.submit',               '${APP_ID}', 'brand.managable'),
+  ('cap-brand-kyc-view',          'account.brand.kyc.view.managed',           '${APP_ID}', 'brand.managable'),
+  ('cap-brand-kyc-submit',        'account.brand.kyc.submit.managed',         '${APP_ID}', 'brand.managable'),
   ('cap-brand-platforms-view',    'brand.platforms.view',          '${APP_ID}', 'brand'),
   ('cap-brand-platforms-manage',  'brand.platforms.manage',        '${APP_ID}', 'brand'),
   ('cap-brand-data-terms-view',   'data.agreed_terms.view',        '${APP_ID}', 'brand.managable'),
@@ -395,8 +400,8 @@ INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-brand-payment-transactions-show', 'payment.transactions.show', '${APP_ID}', 'brand.managable'),
   ('cap-brand-payment-subscriptions-show', 'payment.subscriptions.show', '${APP_ID}', 'brand.managable'),
   ('cap-brand-payment-neup-pro-view', 'payment.purchase_neup_pro.view', '${APP_ID}', 'brand.managable'),
-  ('cap-brand-application-view',  'application.view',             '${APP_ID}', 'brand.managable'),
-  ('cap-brand-delete',            'account.brand.delete',                   '${APP_ID}', 'brand.managable')
+  ('cap-brand-application-view',  'application.view.managed',     '${APP_ID}', 'brand.managable'),
+  ('cap-brand-delete',            'account.brand.delete.managed',             '${APP_ID}', 'brand.managable')
 ON CONFLICT ("id") DO NOTHING;
 
 INSERT INTO "authz_role_capability" (

@@ -178,6 +178,8 @@ const ROOT_LEGACY_PERMISSIONS = [
 ] as const;
 
 const SELF_MANAGED_ROOT_LEGACY_PERMISSION_SET = new Set<string>([
+  'notification.read',
+  'notification.delete',
   'access.view',
   'access.team.view',
   'access.team.add',

@@ -7,6 +7,7 @@ import { getPersonalAccountId, getActiveAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
 import { assignAssetMemberRole, getRolesForAsset } from '@/services/manage/access/assets';
 import { BRAND_OWNER_ROLE_ID } from '@/core/auth/brand-roles';
+import { resolveNeupAccountPermissionCandidates } from '@/services/neup-account/permission-catalog';
 import {
   ACCESS_TEAM_ADD_PERMISSIONS,
   ACCESS_TEAM_REMOVE_PERMISSIONS,
@@ -389,7 +390,13 @@ export async function updateDirectMemberAccess(input: {
       }
     }
 
-    const disallowed = Array.from(requestedPermissionNames).filter((permissionName) => !currentPermissionSet.has(permissionName));
+    const disallowed = Array.from(requestedPermissionNames).filter((permissionName) => {
+      const candidates = new Set([
+        ...resolveNeupAccountPermissionCandidates(permissionName, 'managed'),
+        ...resolveNeupAccountPermissionCandidates(permissionName, 'selfOrRoot'),
+      ]);
+      return !Array.from(candidates).some((candidate) => currentPermissionSet.has(candidate));
+    });
     if (disallowed.length > 0) {
       return { success: false, error: `You cannot grant permissions you do not hold: ${disallowed.join(', ')}` };
     }

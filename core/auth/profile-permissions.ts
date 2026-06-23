@@ -1,7 +1,11 @@
 import { checkGrantedPermissions, checkPermissions, getAccountPermission, getCurrentAccountPermission } from '@/services/user';
 import { notFound } from 'next/navigation';
 import { getAccountSelectorContext } from '@/core/auth/accountSelector';
-import { resolveNeupAccountPermissionCandidates } from '@/services/neup-account/permission-catalog';
+import {
+  getCanonicalPermissionAudience,
+  resolveNeupAccountPermissionCandidates,
+  stripPermissionAudience,
+} from '@/services/neup-account/permission-catalog';
 
 export const PROFILE_DISPLAY_PERMISSION_GROUPS = {
   self: ['profile.display.view.self', 'profile.display.update.self'],
@@ -39,12 +43,18 @@ export function hasAnyPermission(
   if (!grantedPermissions) return false;
 
   const granted = new Set(grantedPermissions);
-  return requiredPermissions.some((permission) =>
-    Array.from(new Set([
-      ...resolveNeupAccountPermissionCandidates(permission, 'selfOrRoot'),
-      ...resolveNeupAccountPermissionCandidates(permission, 'managed'),
-    ])).some((candidate) => granted.has(candidate))
-  );
+  return requiredPermissions.some((permission) => {
+    const permissionBase =
+      getCanonicalPermissionAudience(permission) === 'self'
+        ? stripPermissionAudience(permission)
+        : permission;
+    return (
+      Array.from(new Set([
+        ...resolveNeupAccountPermissionCandidates(permissionBase, 'selfOrRoot'),
+        ...resolveNeupAccountPermissionCandidates(permissionBase, 'managed'),
+      ])).some((candidate) => granted.has(candidate))
+    );
+  });
 }
 
 export async function assertHasAnyPermission(

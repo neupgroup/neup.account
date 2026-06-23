@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 import { z } from 'zod';
 import { Prisma } from '@/prisma/generated/client/client';
 import prisma from '@/core/helpers/prisma';
+import { getAccountSelectorContext } from '@/core/auth/accountSelector';
 import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
 import { ACCESS_APPLICATION_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
 import { checkPermissions } from '@/services/user';
@@ -158,8 +159,8 @@ const APPLICATION_MUTATION_BASES: ApplicationPermissionBase[] = [
 ];
 
 export async function hasRootApplicationPermission(permissionName: string): Promise<boolean> {
-  const personalAccountId = await getPersonalAccountId();
-  if (!personalAccountId) return false;
+  const { personalAccountId, isManagingOtherAccount } = await getAccountSelectorContext();
+  if (!personalAccountId || isManagingOtherAccount) return false;
   return checkPermissions([permissionName], personalAccountId, { roleScope: ROOT_PERMISSION_SCOPE });
 }
 

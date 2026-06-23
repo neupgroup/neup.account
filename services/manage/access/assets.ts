@@ -361,6 +361,17 @@ export async function addAssetGroupMember(input: {
       return { success: false, error: 'You cannot invite yourself.' };
     }
 
+    const targetAccount = await prisma.account.findUnique({
+      where: { id: normalizedMemberId },
+      select: { accountType: true },
+    });
+    if (!targetAccount) {
+      return { success: false, error: 'Account not found.' };
+    }
+    if (targetAccount.accountType !== 'individual') {
+      return { success: false, error: 'Only individual accounts can be invited to a team.' };
+    }
+
     // Prevent duplicate — any existing row (active, invited, or expired)
     const existing = await prisma.member.findFirst({
       where: { parentPortfolioId: input.groupId, memberAccountId: normalizedMemberId },
@@ -381,19 +392,45 @@ export async function addAssetGroupMember(input: {
     const expiresOn = new Date();
     expiresOn.setDate(expiresOn.getDate() + 7);
 
-    await prisma.member.create({
-      data: {
-        memberType: 'acc_in_port',
-        parentPortfolioId: input.groupId,
-        memberAccountId: normalizedMemberId,
-        status: 'invited',
-        isTemporary: expiresOn,
-        details: {
-          isPermanent: false,
-          hasFullAccess: false,
-          expiresOn: expiresOn.toISOString(),
+    await prisma.$transaction(async (tx) => {
+      await tx.member.create({
+        data: {
+          memberType: 'acc_in_port',
+          parentPortfolioId: input.groupId,
+          memberAccountId: normalizedMemberId,
+          status: 'invited',
+          isTemporary: expiresOn,
+          details: {
+            isPermanent: false,
+            hasFullAccess: false,
+            expiresOn: expiresOn.toISOString(),
+          },
         },
-      },
+      });
+      const request = await tx.request.create({
+        data: {
+          action: 'access_invitation',
+          senderId: accountId,
+          recipientId: normalizedMemberId,
+          status: 'pending',
+          data: {
+            parentPortfolioId: input.groupId,
+            expiresOn: expiresOn.toISOString(),
+          },
+        },
+      });
+      await tx.notification.create({
+        data: {
+          accountId: normalizedMemberId,
+          action: 'access_invitation',
+          title: 'Team Invitation',
+          message: 'You have received a team invitation.',
+          type: 'info',
+          read: false,
+          deletableOn: expiresOn,
+          detail: { requestId: request.id },
+        },
+      });
     });
 
     revalidatePath('/access');
@@ -1044,6 +1081,7 @@ export async function assignAssetMemberRole(input: {
           where: {
             id: input.assetMember,
             parentPortfolioId: groupId,
+            status: 'active',
           },
           select: { id: true, memberAccountId: true },
         })
@@ -1307,6 +1345,7 @@ export async function bulkAssignAssetRoles(input: {
           where: {
             id: input.memberId,
             parentPortfolioId: groupId,
+            status: 'active',
           },
           select: { id: true, memberAccountId: true },
         })

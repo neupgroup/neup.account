@@ -8,6 +8,7 @@ import { logError } from '@/core/helpers/logger';
 import { assignAssetMemberRole, getRolesForAsset } from '@/services/manage/access/assets';
 import { BRAND_OWNER_ROLE_ID } from '@/core/auth/brand-roles';
 import { resolveNeupAccountPermissionCandidates } from '@/services/neup-account/permission-catalog';
+import { canAssignRoleScopeToAccount } from '@/services/role-scopes';
 import {
   ACCESS_TEAM_ADD_PERMISSIONS,
   ACCESS_TEAM_REMOVE_PERMISSIONS,
@@ -28,11 +29,17 @@ export async function resolveNeupId(
 
   const record = await prisma.neupId.findUnique({
     where: { id: normalized },
-    select: { accountId: true },
+    select: {
+      accountId: true,
+      account: { select: { accountType: true } },
+    },
   });
 
   if (!record) {
     return { success: false, error: 'No account found with that NeupID.' };
+  }
+  if (record.account.accountType !== 'individual') {
+    return { success: false, error: 'Only individual accounts can be invited to a team.' };
   }
 
   const profile = await getUserProfile(record.accountId);
@@ -302,18 +309,42 @@ export async function getDirectAccessAssignmentOptions(): Promise<{
       return { roles: [] };
     }
 
+    const account = await prisma.account.findUnique({
+      where: { id: accountId },
+      select: { accountType: true },
+    });
+    if (!account) return { roles: [] };
+
     const roles = await prisma.authzRole.findMany({
       where: {
         appId: 'neup.account',
         name: { not: { startsWith: DIRECT_CUSTOM_ROLE_PREFIX } },
         ...(allowedRoleIds ? { id: { in: Array.from(allowedRoleIds) } } : {}),
       },
-      select: { id: true, name: true, description: true },
+      select: { id: true, name: true, description: true, scope: true, permissions: true },
       orderBy: [{ scope: 'asc' }, { name: 'asc' }],
     });
 
+    const roleMapPermissions = await rolePermissionNames(roles.map((role) => role.id));
+    const assignableRoles = [];
+    for (const role of roles) {
+      if (!canAssignRoleScopeToAccount(role.scope, account.accountType, ['manageable'])) {
+        continue;
+      }
+
+      const permissionNames = Array.from(new Set([
+        ...extractRolePermissionNames(role.permissions),
+        ...(roleMapPermissions.get(role.id) ?? []),
+      ]));
+      if (!(await checkPermissions(permissionNames))) {
+        continue;
+      }
+
+      assignableRoles.push(role);
+    }
+
     return {
-      roles: roles.map((role) => ({
+      roles: assignableRoles.map((role) => ({
         id: role.id,
         name: role.name,
         description: role.description ?? undefined,
@@ -354,9 +385,19 @@ export async function updateDirectMemberAccess(input: {
       }
     }
 
-    const [targetMember, selectedRoles, currentPermissionNames] = await Promise.all([
+    const [targetMember, activeMembership, selectedRoles, currentPermissionNames, parentAccount] = await Promise.all([
       prisma.account.findUnique({
         where: { id: input.memberAccountId },
+        select: { id: true, accountType: true },
+      }),
+      prisma.member.findFirst({
+        where: {
+          memberType: 'acc_in_acc',
+          memberAccountId: input.memberAccountId,
+          parentAccountId: accountId,
+          parentPortfolioId: null,
+          status: 'active',
+        },
         select: { id: true },
       }),
       roleIds.length > 0
@@ -368,15 +409,30 @@ export async function updateDirectMemberAccess(input: {
             },
             select: {
               id: true,
+              scope: true,
               permissions: true,
             },
           })
         : Promise.resolve([]),
       getCurrentAccountPermission(),
+      prisma.account.findUnique({
+        where: { id: accountId },
+        select: { accountType: true },
+      }),
     ]);
 
     if (!targetMember) return { success: false, error: 'Member account not found.' };
+    if (targetMember.accountType !== 'individual') {
+      return { success: false, error: 'Only individual accounts can be team members.' };
+    }
+    if (!activeMembership) {
+      return { success: false, error: 'The invitation must be accepted before roles can be assigned.' };
+    }
+    if (!parentAccount) return { success: false, error: 'Selected account not found.' };
     if (selectedRoles.length !== roleIds.length) return { success: false, error: 'One or more roles are invalid.' };
+    if (selectedRoles.some((role) => !canAssignRoleScopeToAccount(role.scope, parentAccount.accountType, ['manageable']))) {
+      return { success: false, error: 'One or more roles cannot be assigned for this account type.' };
+    }
 
     const currentPermissionSet = new Set(currentPermissionNames);
     const requestedPermissionNames = new Set<string>();
@@ -549,14 +605,30 @@ export async function cancelDirectInvitation(
   if (!canRemove) return { success: false, error: 'Permission denied.' };
 
   try {
-    await prisma.request.deleteMany({
+    const requests = await prisma.request.findMany({
       where: {
         action: 'access_invitation',
         senderId: senderAccountId,
         recipientId: recipientAccountId,
         status: 'pending',
       },
+      select: { id: true, data: true },
     });
+    const directRequestIds = requests
+      .filter((request) => !(request.data as Record<string, unknown> | null)?.parentPortfolioId)
+      .map((request) => request.id);
+    if (directRequestIds.length > 0) {
+      await prisma.$transaction([
+        prisma.request.deleteMany({ where: { id: { in: directRequestIds } } }),
+        prisma.notification.deleteMany({
+          where: {
+            OR: directRequestIds.map((requestId) => ({
+              detail: { path: ['requestId'], equals: requestId },
+            })),
+          },
+        }),
+      ]);
+    }
 
     revalidatePath('/access');
     revalidatePath('/access/team');
@@ -605,19 +677,42 @@ export async function cancelPortfolioInvitation(
   if (!canRemove) return { success: false, error: 'Permission denied.' };
 
   try {
-    const member = await prisma.member.findFirst({
+    const pendingRequests = await prisma.request.findMany({
       where: {
-        parentPortfolioId,
-        memberAccountId: recipientAccountId,
-        memberType: 'account',
-        status: { in: ['paused', 'removed'] },
+        action: 'access_invitation',
+        senderId: senderAccountId,
+        recipientId: recipientAccountId,
+        status: 'pending',
       },
-      select: { id: true },
+      select: { id: true, data: true },
     });
+    const requestIds = pendingRequests
+      .filter(
+        (request) =>
+          (request.data as Record<string, unknown> | null)?.parentPortfolioId === parentPortfolioId,
+      )
+      .map((request) => request.id);
 
-    if (member) {
-      await prisma.member.delete({ where: { id: member.id } });
-    }
+    await prisma.$transaction(async (tx) => {
+      await tx.member.deleteMany({
+        where: {
+          parentPortfolioId,
+          memberAccountId: recipientAccountId,
+          memberType: 'acc_in_port',
+          status: 'invited',
+        },
+      });
+      if (requestIds.length > 0) {
+        await tx.request.deleteMany({ where: { id: { in: requestIds } } });
+        await tx.notification.deleteMany({
+          where: {
+            OR: requestIds.map((requestId) => ({
+              detail: { path: ['requestId'], equals: requestId },
+            })),
+          },
+        });
+      }
+    });
 
     revalidatePath('/access');
     revalidatePath(`/access/team?portfolio=${parentPortfolioId}`);
@@ -658,6 +753,15 @@ export async function inviteDirectMember(
     // Prevent inviting self
     if (recipientAccountId === senderAccountId) {
       return { success: false, error: 'You cannot invite yourself.' };
+    }
+
+    const recipient = await prisma.account.findUnique({
+      where: { id: recipientAccountId },
+      select: { accountType: true },
+    });
+    if (!recipient) return { success: false, error: 'Account not found.' };
+    if (recipient.accountType !== 'individual') {
+      return { success: false, error: 'Only individual accounts can be invited to a team.' };
     }
 
     // Check for existing grants

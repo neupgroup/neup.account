@@ -353,7 +353,8 @@ async function MemberDirectRolesView({ memberAccountId }: { memberAccountId: str
   const ownerName = ownerProfile?.nameDisplay ?? accountId;
   const isOwnerAccount = memberAccountId === accountId;
   const visibleRoles = detail.roles.filter((role) => !role.roleId.startsWith(DIRECT_CUSTOM_ROLE_PREFIX));
-  const hasNoAccess = visibleRoles.length === 0 && !isPendingInvitation;
+  const isActiveMember = detail.membershipStatus === 'active';
+  const hasNoAccess = detail.membershipStatus === 'none';
 
   const avatar = (
     <PlatformAvatar userPhoto={userPhoto} platformLogo={NEUPID_LOGO} platformName="NeupID" />
@@ -386,7 +387,7 @@ async function MemberDirectRolesView({ memberAccountId }: { memberAccountId: str
         />
       )}
 
-      {!isOwnerAccount && (
+      {!isOwnerAccount && isActiveMember && (
         <DirectMemberAccessForm
           memberAccountId={memberAccountId}
           memberDisplayName={detail.displayName}
@@ -426,7 +427,7 @@ async function MemberDirectRolesView({ memberAccountId }: { memberAccountId: str
               action={inviteDirectMember.bind(null, memberAccountId)}
               redirectTo="/access/team"
             />
-          ) : isPendingInvitation ? (
+          ) : isPendingInvitation || detail.membershipStatus === 'invited' ? (
             <RemoveMemberButton
               label="Cancel Invitation"
               confirmTitle="Cancel invitation?"

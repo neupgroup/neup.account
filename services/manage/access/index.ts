@@ -330,7 +330,7 @@ export async function getDirectMembers(accountId: string): Promise<{ accountName
   if (!canView) return { accountName: accountId, members: [] };
 
   try {
-    const [accountProfile, grants, pendingInvitations] = await Promise.all([
+    const [accountProfile, grants, activeMemberships, pendingInvitations] = await Promise.all([
       getUserProfile(accountId),
       prisma.access.findMany({
         where: {
@@ -340,13 +340,23 @@ export async function getDirectMembers(accountId: string): Promise<{ accountName
         },
         select: { memberAccountId: true, status: true, isTemporary: true },
       }),
+      prisma.member.findMany({
+        where: {
+          memberType: 'acc_in_acc',
+          parentAccountId: accountId,
+          parentPortfolioId: null,
+          memberAccountId: { not: null },
+          status: 'active',
+        },
+        select: { memberAccountId: true, isTemporary: true },
+      }),
       prisma.request.findMany({
         where: {
           action: 'access_invitation',
           senderId: accountId,
           status: 'pending',
         },
-        select: { recipientId: true },
+        select: { recipientId: true, data: true },
       }),
     ]);
 
@@ -373,8 +383,18 @@ export async function getDirectMembers(accountId: string): Promise<{ accountName
       }
     }
 
+    for (const membership of activeMemberships) {
+      if (!membership.memberAccountId || grantMap.has(membership.memberAccountId)) continue;
+      grantMap.set(membership.memberAccountId, {
+        roleCount: 0,
+        status: 'active',
+        isPermanent: membership.isTemporary == null,
+      });
+    }
+
     // Collect invited account IDs that don't already have a confirmed grant
     const invitedIds = pendingInvitations
+      .filter((request) => !(request.data as Record<string, unknown> | null)?.parentPortfolioId)
       .map((r) => r.recipientId)
       .filter((id) => !grantMap.has(id));
 
@@ -713,6 +733,7 @@ export type DirectMemberDetail = {
   displayName: string;
   accountPhoto?: string;
   roles: { roleId: string; roleName: string; roleDescription?: string }[];
+  membershipStatus: 'active' | 'invited' | 'none';
 };
 
 /**
@@ -729,7 +750,7 @@ export async function getDirectMemberDetail(
   if (!canView) return null;
 
   try {
-    const [profile, grants] = await Promise.all([
+    const [profile, grants, membership, pendingInvitation] = await Promise.all([
       getUserProfile(memberAccountId),
       prisma.access.findMany({
         where: {
@@ -742,6 +763,25 @@ export async function getDirectMemberDetail(
           roleId: true,
           role: { select: { name: true, description: true } },
         },
+      }),
+      prisma.member.findFirst({
+        where: {
+          memberType: 'acc_in_acc',
+          memberAccountId,
+          parentAccountId: accessTo,
+          parentPortfolioId: null,
+          status: 'active',
+        },
+        select: { id: true },
+      }),
+      prisma.request.findFirst({
+        where: {
+          action: 'access_invitation',
+          senderId: accessTo,
+          recipientId: memberAccountId,
+          status: 'pending',
+        },
+        select: { data: true },
       }),
     ]);
 
@@ -756,6 +796,12 @@ export async function getDirectMemberDetail(
       accountId: memberAccountId,
       displayName,
       accountPhoto: profile.accountPhoto,
+      membershipStatus: membership
+        ? 'active'
+        : pendingInvitation &&
+            !(pendingInvitation.data as Record<string, unknown> | null)?.parentPortfolioId
+          ? 'invited'
+          : 'none',
       roles: grants.map((grant) => ({
         roleId: grant.roleId,
         roleName: grant.role?.name ?? grant.roleId,

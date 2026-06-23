@@ -6,7 +6,7 @@ import { getUserProfile, checkPermissions, getUserNeupIds } from '@/services/use
 import { getActiveAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
-import { ensureAccessGrant } from '@/services/access-model';
+import { ensureAccessMember } from '@/services/access-model';
 import {
   ACCESS_INVITATION_APPROVE_PERMISSIONS,
   ACCESS_INVITATIONS_VIEW_PERMISSIONS,
@@ -102,6 +102,16 @@ export async function acceptRequest(requestId: string, notificationId: string): 
         if (request.recipientId !== inviteeId) {
             return { success: false, error: 'This invitation is not for you.' };
         }
+        if (request.status !== 'pending') {
+            return { success: false, error: 'This invitation has already been processed.' };
+        }
+        const requestData = request.data as Record<string, unknown> | null;
+        if (typeof requestData?.expiresOn === 'string') {
+            const expiresOn = new Date(requestData.expiresOn);
+            if (!Number.isNaN(expiresOn.getTime()) && expiresOn <= new Date()) {
+                return { success: false, error: 'This invitation has expired.' };
+            }
+        }
 
         await prisma.$transaction(async (tx) => {
             if (request.action === 'family_invitation') {
@@ -142,19 +152,44 @@ export async function acceptRequest(requestId: string, notificationId: string): 
                 }
 
             } else if (request.action === 'access_invitation') {
-                // Ensure the direct-access role exists
-                await tx.authzRole.upsert({
-                    where: { id: 'access.member' },
-                    update: { name: 'access.member', scope: 'public.individual', appId: 'neup.account' },
-                    create: { id: 'access.member', name: 'access.member', scope: 'public.individual', appId: 'neup.account' },
-                });
-                await ensureAccessGrant(tx, {
-                    memberAccountId: inviteeId,
-                    parentAccountId: request.senderId,
-                    childAccountId: request.senderId,
-                    accessApplicationId: 'neup.account',
-                    roleId: 'access.member',
-                });
+                const data = request.data as Record<string, unknown> | null;
+                const parentPortfolioId =
+                    typeof data?.parentPortfolioId === 'string' ? data.parentPortfolioId : null;
+
+                if (parentPortfolioId) {
+                    const invitedMember = await tx.member.findFirst({
+                        where: {
+                            parentPortfolioId,
+                            memberAccountId: inviteeId,
+                            status: 'invited',
+                        },
+                        select: { id: true, details: true },
+                    });
+                    if (!invitedMember) {
+                        throw new Error('Portfolio invitation membership was not found.');
+                    }
+                    const details = invitedMember.details as Record<string, unknown> | null;
+                    await tx.member.update({
+                        where: { id: invitedMember.id },
+                        data: {
+                            status: 'active',
+                            isTemporary: null,
+                            details: {
+                                ...(details ?? {}),
+                                isPermanent: false,
+                                hasFullAccess: false,
+                                acceptedAt: new Date().toISOString(),
+                                expiresOn: null,
+                            },
+                        },
+                    });
+                } else {
+                    await ensureAccessMember(tx, {
+                        childAccountId: inviteeId,
+                        parentAccountId: request.senderId,
+                        status: 'active',
+                    });
+                }
             }
 
             await tx.request.update({
@@ -180,6 +215,7 @@ export async function acceptRequest(requestId: string, notificationId: string): 
         revalidatePath('/access/invitations');
         revalidatePath('/manage/notifications');
         revalidatePath('/manage/access');
+        revalidatePath('/access/team');
         revalidatePath('/access/family');
         return { success: true };
     } catch (error) {
@@ -208,12 +244,26 @@ export async function rejectRequest(requestId: string, notificationId: string): 
             return { success: false, error: 'Request not found or you do not have permission to reject it.' };
         }
 
-        await prisma.$transaction([
-            prisma.request.update({
+        await prisma.$transaction(async (tx) => {
+            const data = request.data as Record<string, unknown> | null;
+            const parentPortfolioId =
+                typeof data?.parentPortfolioId === 'string' ? data.parentPortfolioId : null;
+
+            if (request.action === 'access_invitation' && parentPortfolioId) {
+                await tx.member.deleteMany({
+                    where: {
+                        parentPortfolioId,
+                        memberAccountId: inviteeId,
+                        status: 'invited',
+                    },
+                });
+            }
+
+            await tx.request.update({
                 where: { id: requestId },
                 data: { status: 'rejected' }
-            }),
-            prisma.notification.deleteMany({
+            });
+            await tx.notification.deleteMany({
                 where: {
                     OR: [
                         { id: notificationId },
@@ -225,8 +275,8 @@ export async function rejectRequest(requestId: string, notificationId: string): 
                         },
                     ],
                 },
-            })
-        ]);
+            });
+        });
 
         revalidatePath('/access/invitations');
         revalidatePath('/manage/notifications');

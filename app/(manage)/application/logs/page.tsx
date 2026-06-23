@@ -50,6 +50,22 @@ export default async function ApplicationLogsQueryPage({ searchParams }: Props) 
       return String(value);
     }
   };
+  const asObject = (value: unknown): Record<string, unknown> | null => {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+    return value as Record<string, unknown>;
+  };
+  const getLogPresentation = (log: { endpoint: string; requestMeta: unknown }) => {
+    const requestMeta = asObject(log.requestMeta);
+    const webhookUrl = typeof requestMeta?.webhookUrl === 'string' ? requestMeta.webhookUrl.trim() : '';
+    const eventType = typeof requestMeta?.eventType === 'string' ? requestMeta.eventType.trim() : '';
+    const isWebhook = webhookUrl.length > 0;
+
+    return {
+      displayUrl: webhookUrl || log.endpoint,
+      eventType,
+      isWebhook,
+    };
+  };
 
   const page = normalizePositiveInt(resolvedSearchParams.page, DEFAULT_PAGE);
   const pageSize = normalizePageSize(resolvedSearchParams.pageSize);
@@ -123,15 +139,25 @@ export default async function ApplicationLogsQueryPage({ searchParams }: Props) 
 
           {logs.map((log) => (
             <Card key={log.id}>
+              {(() => {
+                const presentation = getLogPresentation(log);
+
+                return (
               <CardHeader>
                 <div className="flex flex-wrap items-center gap-2">
-                  <CardTitle className="text-base">{log.method} {log.endpoint}</CardTitle>
+                  <CardTitle className="text-base">
+                    {log.method} {presentation.displayUrl}
+                  </CardTitle>
+                  {presentation.isWebhook ? <Badge variant="outline">webhook</Badge> : null}
+                  {presentation.eventType ? <Badge variant="outline">{presentation.eventType}</Badge> : null}
                   <Badge variant={log.statusCode >= 400 ? 'destructive' : 'secondary'}>{log.statusCode}</Badge>
                 </div>
                 <CardDescription>
                   {new Date(log.createdAt).toLocaleString()} | IP: {log.requesterIp ?? 'N/A'} | Origin: {log.origin ?? 'N/A'}
                 </CardDescription>
               </CardHeader>
+                );
+              })()}
               <CardContent className="space-y-3 text-sm">
                 <div className="grid gap-1">
                   <p><span className="font-medium">Referer:</span> {log.referer ?? 'N/A'}</p>

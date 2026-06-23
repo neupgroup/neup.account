@@ -161,7 +161,7 @@ export async function dispatchRoleUpdateWebhook(input: {
       await prisma.applicationDevLog.create({
         data: {
           appId: input.appId,
-          endpoint: '/bridge/webhook.v1/role/updated',
+          endpoint: `/bridge/webhook.v1/role/${input.eventType}`,
           method: 'POST',
           statusCode: response.status,
           requestBody: requestBody as any,

@@ -196,7 +196,16 @@ export async function getRolePayload(appId: string, roleId: string): Promise<Rol
         acquisitionType: true,
         approvalPolicy: true,
         applicableFor: true,
-        permissions: true,
+        permissionMappings: {
+          orderBy: { createdAt: 'asc' },
+          select: {
+            permission: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
     if (!role) return null;
@@ -208,7 +217,13 @@ export async function getRolePayload(appId: string, roleId: string): Promise<Rol
       acquisitionType: normalizeRoleAcquisitionType(role.acquisitionType),
       approvalPolicy: normalizeRoleApprovalPolicy(role.approvalPolicy),
       applicableFor: extractApplicableFor(role.applicableFor),
-      permissions: extractPermissionNames(role.permissions),
+      permissions: Array.from(
+        new Set(
+          role.permissionMappings
+            .map((mapping) => mapping.permission?.name?.trim() ?? '')
+            .filter(Boolean),
+        ),
+      ),
     };
   } catch (error) {
     await logError('database', error, `getRolePayload:${appId}:${roleId}`);

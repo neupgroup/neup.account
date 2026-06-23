@@ -286,15 +286,11 @@ async function syncRolePermissionMappings(tx: any, roleId: string, roleScope: st
 }
 
 async function syncRolePermissionsDenormalized(tx: any, roleId: string): Promise<void> {
-  const roleRecord = await tx.authzRole.findUnique({
-    where: { id: roleId },
-    select: { appId: true },
-  });
   const mappedPermissions = await tx.authzRolePermissionMap.findMany({
     where: { roleId },
     select: {
       permission: {
-        select: { id: true, name: true, description: true, scope: true },
+        select: { name: true },
       },
     },
     orderBy: { createdAt: 'asc' },
@@ -303,9 +299,7 @@ async function syncRolePermissionsDenormalized(tx: any, roleId: string): Promise
   const permissions = Array.from(
     new Set(
       mappedPermissions
-        .map((row: { permission: { id: string; name: string } }) =>
-          roleRecord?.appId === GLOBAL_AUTHZ_APP_ID ? row.permission?.name : row.permission?.id
-        )
+        .map((row: { permission: { name: string } }) => row.permission?.name)
         .filter((permissionValue: unknown): permissionValue is string => typeof permissionValue === 'string' && permissionValue.length > 0),
     ),
   );

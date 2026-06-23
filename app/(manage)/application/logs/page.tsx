@@ -91,39 +91,41 @@ export default async function ApplicationLogsQueryPage({ searchParams }: Props) 
         </Card>
       ) : (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              Showing {(logPage.page - 1) * logPage.pageSize + 1}-
-              {Math.min(logPage.page * logPage.pageSize, logPage.total)} of {logPage.total}
-            </p>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" asChild disabled={logPage.page <= 1}>
-                <FlowLink href={applicationHref('/application/logs', applicationId, { ...(mode ? { mode } : {}), page: String(logPage.page - 1), pageSize: String(logPage.pageSize) })}>
-                  Previous
-                </FlowLink>
-              </Button>
-              <span className="text-sm text-muted-foreground">
-                Page {logPage.page} of {logPage.totalPages}
-              </span>
-              <Button variant="outline" size="sm" asChild disabled={logPage.page >= logPage.totalPages}>
-                <FlowLink href={applicationHref('/application/logs', applicationId, { ...(mode ? { mode } : {}), page: String(logPage.page + 1), pageSize: String(logPage.pageSize) })}>
-                  Next
-                </FlowLink>
-              </Button>
-            </div>
-          </div>
+          <p className="text-sm text-muted-foreground">
+            Showing {(logPage.page - 1) * logPage.pageSize + 1}-
+            {Math.min(logPage.page * logPage.pageSize, logPage.total)} of {logPage.total}
+          </p>
 
           <LogsAccordion logs={logs} />
         </div>
       )}
 
-      {canClearDevLogs ? (
-        <div className="flex justify-start">
-          <form action={clearLogsAction}>
-            <Button type="submit" variant="destructive">
-              Clear All Logs
+      {logs.length > 0 ? (
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex justify-start">
+            {canClearDevLogs ? (
+              <form action={clearLogsAction}>
+                <Button type="submit" variant="destructive">
+                  Clear All Logs
+                </Button>
+              </form>
+            ) : null}
+          </div>
+          <div className="flex items-center justify-end gap-2">
+            <Button variant="outline" size="sm" asChild disabled={logPage.page <= 1}>
+              <FlowLink href={applicationHref('/application/logs', applicationId, { ...(mode ? { mode } : {}), page: String(logPage.page - 1), pageSize: String(logPage.pageSize) })}>
+                Previous
+              </FlowLink>
             </Button>
-          </form>
+            <span className="text-sm text-muted-foreground">
+              Page {logPage.page} of {logPage.totalPages}
+            </span>
+            <Button variant="outline" size="sm" asChild disabled={logPage.page >= logPage.totalPages}>
+              <FlowLink href={applicationHref('/application/logs', applicationId, { ...(mode ? { mode } : {}), page: String(logPage.page + 1), pageSize: String(logPage.pageSize) })}>
+                Next
+              </FlowLink>
+            </Button>
+          </div>
         </div>
       ) : null}
     </div>

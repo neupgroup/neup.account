@@ -17,6 +17,10 @@ import {
   getApplicationPermissionNames,
   isBuiltInApplicationManagementPermissionName,
 } from '@/services/applications/permission-definitions';
+import {
+  PERMISSION_ACQUISITION_TYPES,
+  PERMISSION_APPROVAL_POLICIES,
+} from '@/services/neup-account/permission-catalog';
 import { hasRootApplicationPermission } from '@/services/applications/manage';
 import {
   isKnownRoleScope,
@@ -46,6 +50,8 @@ export type AppPermission = {
   name: string;
   description: string | null;
   scope: string | null;
+  acquisitionType: string | null;
+  approvalPolicy: string | null;
   rules: string | null;
   status: string | null;
 };
@@ -94,6 +100,20 @@ function parsePermissionScopeInput(value: string | undefined): Prisma.InputJsonV
   } catch {
     return trimmed;
   }
+}
+
+function normalizePermissionAcquisitionType(value: string | null | undefined): string {
+  const normalized = (value ?? '').trim();
+  return PERMISSION_ACQUISITION_TYPES.includes(normalized as (typeof PERMISSION_ACQUISITION_TYPES)[number])
+    ? normalized
+    : 'assignment';
+}
+
+function normalizePermissionApprovalPolicy(value: string | null | undefined): string {
+  const normalized = (value ?? '').trim();
+  return PERMISSION_APPROVAL_POLICIES.includes(normalized as (typeof PERMISSION_APPROVAL_POLICIES)[number])
+    ? normalized
+    : 'none';
 }
 
 function parsePermissionScopeTokens(value: string | undefined): string[] {
@@ -219,7 +239,7 @@ async function isSystemManagedPermission(appId: string, permissionId: string): P
 async function upsertPermissionsForApp(
   tx: any,
   appId: string,
-  definitions: Array<{ id: string; name: string; description: string; scope: string }>,
+  definitions: Array<{ id: string; name: string; description: string; scope: string[]; acquisitionType?: string; approvalPolicy?: string }>,
 ): Promise<Array<{ id: string; name: string }>> {
   const persistedPermissions: Array<{ id: string; name: string }> = [];
 
@@ -231,6 +251,8 @@ async function upsertPermissionsForApp(
         description: definition.description,
         appId,
         scope: definition.scope,
+        acquisitionType: normalizePermissionAcquisitionType(definition.acquisitionType),
+        approvalPolicy: normalizePermissionApprovalPolicy(definition.approvalPolicy),
       },
       create: {
         id: definition.id,
@@ -238,6 +260,8 @@ async function upsertPermissionsForApp(
         description: definition.description,
         appId,
         scope: definition.scope,
+        acquisitionType: normalizePermissionAcquisitionType(definition.acquisitionType),
+        approvalPolicy: normalizePermissionApprovalPolicy(definition.approvalPolicy),
       },
       select: {
         id: true,
@@ -536,13 +560,15 @@ export async function getAppPermissions(appId: string): Promise<AppPermission[]>
     const records = await prisma.authzPermission.findMany({
       where: { appId },
       orderBy: { name: 'asc' },
-      select: { id: true, name: true, description: true, scope: true, rules: true, status: true },
-    });
+      select: { id: true, name: true, description: true, scope: true, acquisitionType: true, approvalPolicy: true, rules: true, status: true } as any,
+    }) as Array<any>;
     return records.map((record) => ({
       id: record.id,
       name: record.name,
       description: record.description,
       scope: formatPermissionScope(record.scope),
+      acquisitionType: record.acquisitionType ?? 'assignment',
+      approvalPolicy: record.approvalPolicy ?? 'none',
       rules: record.rules ?? null,
       status: record.status ?? null,
     }));
@@ -557,6 +583,8 @@ export async function createAppPermission(input: {
   name: string;
   description?: string;
   scope?: string;
+  acquisitionType?: string;
+  approvalPolicy?: string;
   rules?: string;
   status?: string;
 }): Promise<{ success: boolean; permission?: AppPermission; error?: string }> {
@@ -589,12 +617,14 @@ export async function createAppPermission(input: {
         name,
         description: input.description?.trim() || null,
         scope: parsePermissionScopeInput(input.scope),
+        acquisitionType: normalizePermissionAcquisitionType(input.acquisitionType),
+        approvalPolicy: normalizePermissionApprovalPolicy(input.approvalPolicy),
         rules: input.rules?.trim() || null,
         status: input.status?.trim() || null,
         appId: input.appId,
-      },
-      select: { id: true, name: true, description: true, scope: true, rules: true, status: true },
-    });
+      } as any,
+      select: { id: true, name: true, description: true, scope: true, acquisitionType: true, approvalPolicy: true, rules: true, status: true } as any,
+    }) as any;
 
     revalidatePath(`/data/appconnection/${input.appId}`);
     return {
@@ -604,6 +634,8 @@ export async function createAppPermission(input: {
         name: record.name,
         description: record.description,
         scope: formatPermissionScope(record.scope),
+        acquisitionType: record.acquisitionType ?? 'assignment',
+        approvalPolicy: record.approvalPolicy ?? 'none',
         rules: record.rules ?? null,
         status: record.status ?? null,
       },
@@ -619,6 +651,8 @@ export async function updateAppPermission(input: {
   permissionId: string;
   description?: string;
   scope?: string;
+  acquisitionType?: string;
+  approvalPolicy?: string;
   rules?: string;
   status?: string;
 }): Promise<{
@@ -651,11 +685,13 @@ export async function updateAppPermission(input: {
         data: {
           description: input.description?.trim() || null,
           scope: parsePermissionScopeInput(input.scope),
+          acquisitionType: normalizePermissionAcquisitionType(input.acquisitionType),
+          approvalPolicy: normalizePermissionApprovalPolicy(input.approvalPolicy),
           rules: input.rules?.trim() || null,
           status: input.status?.trim() || null,
-        },
-        select: { id: true, name: true, description: true, scope: true, rules: true, status: true },
-      });
+        } as any,
+        select: { id: true, name: true, description: true, scope: true, acquisitionType: true, approvalPolicy: true, rules: true, status: true } as any,
+      }) as any;
 
       return updated;
     });
@@ -668,6 +704,8 @@ export async function updateAppPermission(input: {
         name: record.name,
         description: record.description,
         scope: formatPermissionScope(record.scope),
+        acquisitionType: record.acquisitionType ?? 'assignment',
+        approvalPolicy: record.approvalPolicy ?? 'none',
         rules: record.rules ?? null,
         status: record.status ?? null,
       },
@@ -739,6 +777,8 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
                 name: true,
                 description: true,
                 scope: true,
+                acquisitionType: true,
+                approvalPolicy: true,
                 rules: true,
                 status: true,
               },
@@ -746,7 +786,7 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
           },
         },
       },
-    });
+    }) as Array<any>;
 
     return roles.map((role) => ({
       id: role.id,
@@ -756,7 +796,7 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
       acquisitionType: normalizeRoleAcquisitionType(role.acquisitionType),
       approvalPolicy: normalizeRoleApprovalPolicy(role.approvalPolicy),
       applicableFor: normalizeApplicableFor(role.applicableFor),
-      permissions: role.permissionMappings.flatMap((mapping): AppPermission[] => {
+      permissions: role.permissionMappings.flatMap((mapping: any): AppPermission[] => {
         const permission = mapping.permission;
         if (!permission?.id || !permission?.name) return [];
         return [{
@@ -764,6 +804,8 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
           name: permission.name,
           description: permission.description ?? null,
           scope: formatPermissionScope(permission.scope),
+          acquisitionType: permission.acquisitionType ?? 'assignment',
+          approvalPolicy: permission.approvalPolicy ?? 'none',
           rules: permission.rules ?? null,
           status: permission.status ?? null,
         }];

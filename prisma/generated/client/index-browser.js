@@ -438,6 +438,8 @@ exports.Prisma.AuthzPermissionScalarFieldEnum = {
   description: 'description',
   appId: 'appId',
   scope: 'scope',
+  acquisitionType: 'acquisitionType',
+  approvalPolicy: 'approvalPolicy',
   rules: 'rules',
   status: 'status',
   tag: 'tag'

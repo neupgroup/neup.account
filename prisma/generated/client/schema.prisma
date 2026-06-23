@@ -588,16 +588,18 @@ model Role {
 }
 
 model AuthzPermission {
-  id           String                   @id @default(uuid())
-  name         String
-  description  String?
-  appId        String?                  @map("app_id")
-  scope        Json?
-  rules        String?
-  status       String?
-  tag          Json?
-  application  Application?             @relation(fields: [appId], references: [id])
-  roleMappings AuthzRolePermissionMap[]
+  id              String                   @id @default(uuid())
+  name            String
+  description     String?
+  appId           String?                  @map("app_id")
+  scope           Json?
+  acquisitionType String?                  @default("assignment") @map("acquisition_type")
+  approvalPolicy  String?                  @default("none") @map("approval_policy")
+  rules           String?
+  status          String?
+  tag             Json?
+  application     Application?             @relation(fields: [appId], references: [id])
+  roleMappings    AuthzRolePermissionMap[]
 
   @@unique([name, appId], map: "authz_permission_name_app_id_key")
   @@map("authz_permission")

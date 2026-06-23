@@ -5,6 +5,13 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { TokenField } from '@/components/ui/token-field';
 import {
@@ -45,6 +52,8 @@ export function PermissionDetailEditor({
   const [description, setDescription] = useState(permission.description ?? '');
   const [scopeTokens, setScopeTokens] = useState<string[]>(() => toScopeTokens(permission.scope));
   const [scopeInput, setScopeInput] = useState('');
+  const [acquisitionType, setAcquisitionType] = useState(permission.acquisitionType ?? 'assignment');
+  const [approvalPolicy, setApprovalPolicy] = useState(permission.approvalPolicy ?? 'none');
   const [rules, setRules] = useState(permission.rules ?? '');
   const [status, setStatus] = useState(permission.status ?? '');
   const [savePending, setSavePending] = useState(false);
@@ -123,6 +132,8 @@ export function PermissionDetailEditor({
       permissionId: permission.id,
       description: description || undefined,
       scope: finalScopeTokens.length > 0 ? JSON.stringify(finalScopeTokens) : undefined,
+      acquisitionType,
+      approvalPolicy,
       rules: rules || undefined,
       status: status || undefined,
     });
@@ -186,6 +197,28 @@ export function PermissionDetailEditor({
               ))}
             </div>
           ) : null}
+        </div>
+        <div className="grid gap-2 sm:grid-cols-2">
+          <Select value={acquisitionType} onValueChange={setAcquisitionType} disabled={!canManage}>
+            <SelectTrigger>
+              <SelectValue placeholder="Acquisition type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="assignment">assignment</SelectItem>
+              <SelectItem value="public_request">public_request</SelectItem>
+              <SelectItem value="invitation">invitation</SelectItem>
+              <SelectItem value="system_generated">system_generated</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={approvalPolicy} onValueChange={setApprovalPolicy} disabled={!canManage}>
+            <SelectTrigger>
+              <SelectValue placeholder="Approval policy" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">none</SelectItem>
+              <SelectItem value="approval_required">approval_required</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <Input
           value={rules}

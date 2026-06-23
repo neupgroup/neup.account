@@ -2,225 +2,22 @@ import 'dotenv/config';
 import bcrypt from 'bcryptjs';
 import prisma from '../core/helpers/prisma';
 import { ensureAccessGrant } from '../services/access-model';
-import { BRAND_ROOT_PERMISSION_NAMES } from '../core/auth/brand-roles';
+import {
+  NEUP_ACCOUNT_APP_ID,
+  NEUP_ACCOUNT_DEFAULT_ROLE_PERMISSION_NAMES,
+  NEUP_ACCOUNT_PERMISSION_DEFINITIONS,
+  NEUP_ACCOUNT_ROOT_ROLE_PERMISSION_NAMES,
+} from '../services/neup-account/permission-catalog';
 
 // Root permissions are now managed via authz_role_capability in the database.
 // This legacy seed writes to the Permit table for backward compatibility.
 const ROOT_PERMISSIONS: string[] = [];
-const APP_ID = 'neup.account';
+const APP_ID = NEUP_ACCOUNT_APP_ID;
 const ROLE_DEFAULT_ID = 'individual-default-neup-account';
 const ROLE_ROOT_ID = 'root-full-neup-account';
 
-const DEFAULT_CAPABILITIES = [
-  'profile.display.name',
-  'profile.display.update',
-  'profile.display.view',
-  'profile.display.view.root',
-  'profile.display.update.root',
-  'profile.legal.view',
-  'profile.legal.update',
-  'profile.demographics.view',
-  'profile.demographics.update',
-  'profile.neupid.view',
-  'profile.neupid.update',
-  'profile.neupid.request',
-  'profile.neupid.remove',
-  'profile.contact.view',
-  'profile.contact.update',
-  'profile.kyc.view',
-  'profile.kyc.update',
-  'notification.read',
-  'notification.delete',
-  'security.pass.modify',
-  'security.totp.add',
-  'security.totp.remove',
-  'security.backup_codes.view',
-  'security.backup_codes.create',
-  'security.recovery_accounts.view',
-  'security.recovery_accounts.add',
-  'security.recovery_accounts.remove',
-  'security.recovery_phone.view',
-  'security.recovery_phone.add',
-  'security.recovery_phone.remove',
-  'security.recovery_email.view',
-  'security.recovery_email.add',
-  'security.recovery_email.remove',
-  'security.login_devices.view',
-  'linked_accounts.brand.view',
-  'data.agreed_terms.view',
-  'data.delete_account.start',
-  'data.deactivate_account.start',
-  'data.materialization.view',
-  'data.materialization.modify',
-  'access.view',
-  'access.team.view',
-  'access.team.add',
-  'access.team.remove',
-  'access.connection.view',
-  'access.connection.add',
-  'access.connection.remove',
-  'access.application.view',
-  'access.application.add',
-  'access.application.remove',
-  'access.linked_account.view',
-  'access.linked_account.add',
-  'access.linked_account.remove',
-  'access.linked_account.approve',
-  'access.account.brand.create',
-  'access.account.dependent.create',
-  'access.account.dependent.unlink',
-  'access.accounts.switch',
-  'access.family.member.update',
-  'access.family.partner.update',
-  'access.invitations.view',
-  'access.invitation.approve',
-  'access.block.view',
-  'access.block.update',
-  'access.portfolio.create',
-  'access.portfolio.update',
-  'access.portfolio.delete',
-  'security.recent_activities.view',
-  'payment.method.show',
-  'payment.transactions.show',
-  'payment.subscriptions.show',
-  'payment.purchase_neup_pro.view',
-  'linked_accounts.brand.manage',
-  'linked_accounts.brand.manager',
-] as const;
-
-const ROOT_CAPABILITIES = [
-  'root.account.view',
-  'root.account.modify',
-  'root.account.delete',
-  'root.account.search',
-  'root.account.create_individual',
-  'root.account.access.view',
-  'root.account.access.edit',
-  'access.view',
-  'access.team.view',
-  'access.team.add',
-  'access.team.remove',
-  'access.connection.view',
-  'access.connection.add',
-  'access.connection.remove',
-  'access.application.view',
-  'access.application.add',
-  'access.application.remove',
-  'access.linked_account.view',
-  'access.linked_account.add',
-  'access.linked_account.remove',
-  'access.linked_account.approve',
-  'access.account.brand.create',
-  'access.account.dependent.create',
-  'access.account.dependent.unlink',
-  'access.accounts.switch',
-  'access.family.member.update',
-  'access.family.partner.update',
-  'access.invitations.view',
-  'access.invitation.approve',
-  'access.block.view',
-  'access.block.update',
-  'access.portfolio.create',
-  'access.portfolio.update',
-  'access.portfolio.delete',
-  'root.account.send_warning',
-  'root.account.give_block_account',
-  'root.account.remove_block_account',
-  'root.account.impersonate',
-  'root.account.edit_pro_status',
-  'root.account.edit_neupid',
-  'application.view',
-  'application.edit',
-  'application.delete',
-  'application.logs.view',
-  'application.devlogs.view',
-  'application.roles.view',
-  'application.roles.manage',
-  'root.permission.view',
-  'root.permission.edit',
-  'root.requests.view',
-  'root.requests.approve',
-  'root.requests.deny',
-  'root.dashboard.view',
-  'root.payment_config.view',
-  'root.errors.view',
-  'root.site.social_accounts.read',
-  'root.site.social_accounts.add',
-  'root.site.social_accounts.edit',
-  'root.site.social_accounts.delete',
-  'root.display_images.view',
-  'root.display_images.add',
-  'root.display_images.update',
-  'root.display_images.delete',
-  ...BRAND_ROOT_PERMISSION_NAMES,
-] as const;
-
 function slugifyPermission(name: string): string {
   return name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase();
-}
-
-function permissionScopesForNeupAccountPermission(permissionName: string, fallback: string[]): string {
-  const encodeScopes = (scopes: string[]) =>
-    scopes.map((scope) => {
-      if (scope === 'public') return 'public.individual';
-      if (scope === 'managed') return 'managed.individual';
-      if (scope === 'root') return 'root.individual';
-      return scope;
-    }).join(',');
-
-  if (
-    permissionName === 'access.view' ||
-    [
-      'access.team.view',
-      'access.team.add',
-      'access.team.remove',
-      'access.connection.view',
-      'access.connection.add',
-      'access.connection.remove',
-      'access.application.view',
-      'access.application.add',
-      'access.application.remove',
-      'access.linked_account.view',
-      'access.linked_account.add',
-      'access.linked_account.remove',
-      'access.linked_account.approve',
-      'access.account.brand.create',
-      'access.account.dependent.create',
-      'access.account.dependent.unlink',
-      'access.accounts.switch',
-      'access.invitations.view',
-      'access.invitation.approve',
-      'access.block.view',
-      'access.block.update',
-      'application.view',
-      'application.edit',
-      'application.delete',
-      'application.logs.view',
-      'application.devlogs.view',
-      'application.roles.view',
-      'application.roles.manage',
-      'account.brand.members.manage',
-      'account.brand.kyc.view',
-      'account.brand.kyc.submit',
-      'account.brand.delete',
-    ].includes(permissionName)
-  ) {
-    return encodeScopes(['public', 'managed', 'root']);
-  }
-
-  if (
-    [
-      'access.family.member.update',
-      'access.family.partner.update',
-      'access.portfolio.create',
-      'access.portfolio.update',
-      'access.portfolio.delete',
-    ].includes(permissionName)
-  ) {
-    return encodeScopes(['public', 'root']);
-  }
-
-  return encodeScopes(fallback);
 }
 
 if (!process.env.DATABASE_URL) {
@@ -337,10 +134,8 @@ async function main() {
   }
 
   if (accountId) {
-    const rootDenormalized = Array.from(
-      new Set([...DEFAULT_CAPABILITIES, ...ROOT_CAPABILITIES]),
-    );
-    const defaultDenormalized = Array.from(new Set(DEFAULT_CAPABILITIES));
+    const rootDenormalized = Array.from(new Set(NEUP_ACCOUNT_ROOT_ROLE_PERMISSION_NAMES));
+    const defaultDenormalized = Array.from(new Set(NEUP_ACCOUNT_DEFAULT_ROLE_PERMISSION_NAMES));
 
     await prisma.application.upsert({
       where: { id: APP_ID },
@@ -387,13 +182,28 @@ async function main() {
       },
     });
 
-    for (const permissionName of DEFAULT_CAPABILITIES) {
+    for (const permissionDefinition of NEUP_ACCOUNT_PERMISSION_DEFINITIONS.filter((permission) => permission.audience === 'self')) {
+      const permissionName = permissionDefinition.name;
       const permissionId = `cap-def-${slugifyPermission(permissionName)}`;
-      const permissionScope = permissionScopesForNeupAccountPermission(permissionName, ['public']);
       const permission = await prisma.authzPermission.upsert({
-        where: { name_appId: { name: permissionName, appId: APP_ID } },
-        update: { name: permissionName, appId: APP_ID, scope: permissionScope },
-        create: { id: permissionId, name: permissionName, appId: APP_ID, scope: permissionScope },
+        where: { id: permissionId },
+        update: {
+          name: permissionName,
+          description: permissionDefinition.description,
+          appId: APP_ID,
+          scope: permissionDefinition.scope,
+          acquisitionType: permissionDefinition.acquisitionType,
+          approvalPolicy: permissionDefinition.approvalPolicy,
+        },
+        create: {
+          id: permissionId,
+          name: permissionName,
+          description: permissionDefinition.description,
+          appId: APP_ID,
+          scope: permissionDefinition.scope,
+          acquisitionType: permissionDefinition.acquisitionType,
+          approvalPolicy: permissionDefinition.approvalPolicy,
+        },
         select: { id: true },
       });
 
@@ -413,13 +223,28 @@ async function main() {
       });
     }
 
-    for (const permissionName of ROOT_CAPABILITIES) {
+    for (const permissionDefinition of NEUP_ACCOUNT_PERMISSION_DEFINITIONS.filter((permission) => permission.audience === 'root')) {
+      const permissionName = permissionDefinition.name;
       const permissionId = `cap-root-${slugifyPermission(permissionName)}`;
-      const permissionScope = permissionScopesForNeupAccountPermission(permissionName, ['root']);
       const permission = await prisma.authzPermission.upsert({
-        where: { name_appId: { name: permissionName, appId: APP_ID } },
-        update: { name: permissionName, appId: APP_ID, scope: permissionScope },
-        create: { id: permissionId, name: permissionName, appId: APP_ID, scope: permissionScope },
+        where: { id: permissionId },
+        update: {
+          name: permissionName,
+          description: permissionDefinition.description,
+          appId: APP_ID,
+          scope: permissionDefinition.scope,
+          acquisitionType: permissionDefinition.acquisitionType,
+          approvalPolicy: permissionDefinition.approvalPolicy,
+        },
+        create: {
+          id: permissionId,
+          name: permissionName,
+          description: permissionDefinition.description,
+          appId: APP_ID,
+          scope: permissionDefinition.scope,
+          acquisitionType: permissionDefinition.acquisitionType,
+          approvalPolicy: permissionDefinition.approvalPolicy,
+        },
         select: { id: true },
       });
 

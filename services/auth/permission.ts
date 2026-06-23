@@ -3,6 +3,7 @@
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { activeAccessWhere, extractRolePermissionNames } from '@/services/access-model';
+import { resolveNeupAccountPermissionCandidates } from '@/services/neup-account/permission-catalog';
 
 /**
  * Reasons returned when permission lookup fails.
@@ -143,15 +144,21 @@ function normalizePermission(value: string): string {
  * Checks whether one granted permission implies a required permission.
  */
 function hasPermission(granted: Set<string>, required: string): boolean {
-	if (granted.has('*')) return true;
+  if (granted.has('*')) return true;
 
-	const normalizedRequired = normalizePermission(required);
-	if (granted.has(normalizedRequired)) return true;
+  const normalizedRequired = normalizePermission(required);
+  if (granted.has(normalizedRequired)) return true;
 
-	for (const grantedValue of granted) {
-		if (grantedValue.endsWith(`.${normalizedRequired}`)) {
-			return true;
-		}
+  for (const candidate of resolveNeupAccountPermissionCandidates(normalizedRequired, 'selfOrRoot')) {
+    if (granted.has(candidate)) {
+      return true;
+    }
+  }
+
+  for (const grantedValue of granted) {
+    if (grantedValue.endsWith(`.${normalizedRequired}`)) {
+      return true;
+    }
 	}
 
 	if (normalizedRequired.startsWith('app.') || normalizedRequired.startsWith('application.')) {

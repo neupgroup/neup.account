@@ -10,6 +10,7 @@ import { extractGenderFromDetails, resolveDisplayImage } from "@/core/helpers/di
 import { getAccountSelectorContext } from "@/core/auth/accountSelector";
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from "@/services/access-model";
 import { isRootRoleScope, normalizeRoleScope } from '@/services/role-scopes';
+import { resolveNeupAccountPermissionCandidates } from '@/services/neup-account/permission-catalog';
 
 // --- Types ---
 
@@ -70,6 +71,8 @@ type PermissionGrantEntry = {
 
 export type AccountRolePermissionsEntry = [roleId: string, roleName: string | null, permissionNames: string[]];
 
+type PermissionMatchContext = 'managed' | 'root' | 'self' | 'selfOrRoot';
+
 function shouldIgnoreManagedRoleScope(scope: string | null | undefined): boolean {
   return isRootRoleScope(scope);
 }
@@ -90,6 +93,24 @@ function matchesRoleScope(
   return allowedScopes
     .map((scope) => normalizeRoleScope(scope) ?? scope.trim())
     .includes(normalizedRoleScope);
+}
+
+function permissionMatches(
+  grantedPermission: string,
+  requiredPermission: string,
+  context: PermissionMatchContext,
+): boolean {
+  return resolveNeupAccountPermissionCandidates(requiredPermission, context).includes(grantedPermission);
+}
+
+function roleScopeToPermissionContext(
+  roleScope?: readonly string[] | string,
+): PermissionMatchContext {
+  if (!roleScope) return 'selfOrRoot';
+  const scopes = Array.isArray(roleScope) ? roleScope : [roleScope];
+  return scopes.some((scope) => isRootRoleScope(scope))
+    ? 'root'
+    : 'self';
 }
 
 type AppAccessGrantQuery = {
@@ -656,10 +677,11 @@ export async function checkGrantedPermissions(
 ): Promise<boolean> {
   if (!requiredPermissions || requiredPermissions.length === 0) return true;
 
-  const userPermissions = await getGrantedAccountPermission(memberAccountId, parentAccountId);
-  const permissionsSet = new Set(userPermissions);
+  const entries = await getGrantedAccountPermissionEntries(memberAccountId, parentAccountId);
 
-  return requiredPermissions.every((p) => permissionsSet.has(p));
+  return requiredPermissions.every((requiredPermission) =>
+    entries.some((entry) => permissionMatches(entry.name, requiredPermission, 'managed')),
+  );
 }
 
 // Returns true if the active account has all of the required permissions.
@@ -676,11 +698,12 @@ export async function checkPermissions(
     const entries = accountId
       ? await getAccountPermissionEntries(accountId)
       : await getCurrentAccountPermissionEntries();
+    const permissionContext = roleScopeToPermissionContext(options.roleScope);
 
     return requiredPermissions.every((permission) =>
       entries.some(
         (entry) =>
-          entry.name === permission &&
+          permissionMatches(entry.name, permission, permissionContext) &&
           matchesRoleScope(entry.roleScope, options.roleScope),
       )
     );
@@ -689,9 +712,10 @@ export async function checkPermissions(
   const userPermissions = accountId
     ? await getAccountPermission(accountId)
     : await getCurrentAccountPermission();
-  const permissionsSet = new Set(userPermissions);
 
-  return requiredPermissions.every((p) => permissionsSet.has(p));
+  return requiredPermissions.every((requiredPermission) =>
+    userPermissions.some((grantedPermission) => permissionMatches(grantedPermission, requiredPermission, 'selfOrRoot')),
+  );
 }
 
 export async function getHomeSelectedAccountAccessLog(): Promise<HomeSelectedAccountAccessLog | null> {

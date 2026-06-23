@@ -593,6 +593,8 @@ model AuthzPermission {
   description  String?
   appId        String?                  @map("app_id")
   scope        Json?
+  acquisitionType String?               @default("assignment") @map("acquisition_type")
+  approvalPolicy  String?               @default("none") @map("approval_policy")
   rules        String?
   status       String?
   tag          Json?

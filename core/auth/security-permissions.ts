@@ -8,26 +8,26 @@ import {
 } from '@/core/auth/access-view-permissions';
 
 export const SECURITY_PERMISSION_GROUPS = {
-  password: ['security.pass.modify'],
-  totp: ['security.totp.add', 'security.totp.remove'],
-  backup: ['security.backup_codes.view', 'security.backup_codes.create'],
+  password: ['security.pass.modify.self'],
+  totp: ['security.totp.add.self', 'security.totp.remove.self'],
+  backup: ['security.backup_codes.view.self', 'security.backup_codes.create.self'],
   recoveryAccounts: [
-    'security.recovery_accounts.view',
-    'security.recovery_accounts.add',
-    'security.recovery_accounts.remove',
+    'security.recovery_accounts.view.self',
+    'security.recovery_accounts.add.self',
+    'security.recovery_accounts.remove.self',
   ],
   recoveryPhone: [
-    'security.recovery_phone.view',
-    'security.recovery_phone.add',
-    'security.recovery_phone.remove',
+    'security.recovery_phone.view.self',
+    'security.recovery_phone.add.self',
+    'security.recovery_phone.remove.self',
   ],
   recoveryEmail: [
-    'security.recovery_email.view',
-    'security.recovery_email.add',
-    'security.recovery_email.remove',
+    'security.recovery_email.view.self',
+    'security.recovery_email.add.self',
+    'security.recovery_email.remove.self',
   ],
-  devices: ['security.login_devices.view'],
-  recentActivities: ['security.recent_activities.view'],
+  devices: ['security.login_devices.view.self'],
+  recentActivities: ['security.recent_activities.view.self'],
   thirdParty: [
     ...ACCESS_CONNECTION_VIEW_PERMISSIONS,
     ...ACCESS_CONNECTION_ADD_PERMISSIONS,

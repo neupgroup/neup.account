@@ -41,8 +41,8 @@ export function useSession() {
 
 export const SessionProvider = ({ children }: { children: ReactNode }) => {
     const searchParams = useSearchParams();
-    const selectedAccountId = searchParams.get('selectedAccount');
-    const selectedAccountRef = useRef<string | null>(selectedAccountId);
+    const workingProfileId = searchParams.get('workingProfile');
+    const workingProfileRef = useRef<string | null>(workingProfileId);
     const [sessionState, setSessionState] = useState<SessionState>({
         loading: true,
         profile: null,
@@ -57,7 +57,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     fetchDataRef.current = async (forceRefresh = false) => {
         setSessionState(s => ({ ...s, loading: true }));
 
-        const result = await checkSession(selectedAccountId);
+        const result = await checkSession(workingProfileId);
 
         if (!result.valid) {
             // Clear any stale cached data on invalid session
@@ -124,14 +124,14 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     useEffect(() => {
-        if (selectedAccountRef.current === selectedAccountId) {
+        if (workingProfileRef.current === workingProfileId) {
             return;
         }
 
-        selectedAccountRef.current = selectedAccountId;
+        workingProfileRef.current = workingProfileId;
         clearCacheAndRefetch();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedAccountId]);
+    }, [workingProfileId]);
 
     return (
         <SessionContext.Provider value={{ ...sessionState, refetch: clearCacheAndRefetch }}>

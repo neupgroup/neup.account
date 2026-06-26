@@ -141,7 +141,7 @@ function redirectToStart(request: NextRequest, pathname: string) {
 
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const selectedAccountId = request.nextUrl.searchParams.get('selectedAccount')?.trim();
+  const selectedAccountId = request.nextUrl.searchParams.get('workingProfile')?.trim();
 
   // 1. Prepare headers.
   const requestHeaders = new Headers(request.headers);

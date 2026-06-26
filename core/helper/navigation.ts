@@ -25,7 +25,7 @@ type BrowserRedirectOptions = {
   preserveFlowParams?: boolean; // Whether to preserve backsTo and steps params (default: true)
 };
 
-const STICKY_QUERY_KEYS = ['selectedAccount'] as const;
+const STICKY_QUERY_KEYS = ['workingProfile'] as const;
 
 export function appendStickyQueryParams(targetHref: string, currentParams: URLSearchParams) {
   const [basePath, existingQuery = ''] = targetHref.split('?');

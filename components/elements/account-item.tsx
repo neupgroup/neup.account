@@ -30,7 +30,7 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
     const [isSwitching, startSwitchTransition] = useTransition();
     const router = useRouter();
     const searchParams = useSearchParams();
-    const selectedAccountId = searchParams.get('selectedAccount');
+    const workingProfileId = searchParams.get('workingProfile');
 
     useEffect(() => {
         let isMounted = true;
@@ -76,7 +76,7 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
     const finalAccount = { ...account, ...details };
     const currentAccountId = finalAccount.aid || finalAccount.accountId || '';
     const isOwnerAccount = Boolean(finalAccount.def === 1);
-    const effectiveSelectedAccountId = selectedAccountId || (isOwnerAccount ? currentAccountId : null);
+    const effectiveWorkingProfileId = workingProfileId || (isOwnerAccount ? currentAccountId : null);
 
     const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
         // Prevent navigation if the click is on a button inside AccountActions
@@ -88,8 +88,8 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
             const targetAccountId = currentAccountId;
             if (!targetAccountId) return;
 
-            const currentlySelectedAccountId = effectiveSelectedAccountId;
-            if (currentlySelectedAccountId === targetAccountId) {
+            const currentWorkingProfileId = effectiveWorkingProfileId;
+            if (currentWorkingProfileId === targetAccountId) {
                 return;
             }
 
@@ -100,7 +100,7 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
             }
 
             const params = new URLSearchParams(searchParams.toString());
-            params.set('selectedAccount', targetAccountId);
+            params.set('workingProfile', targetAccountId);
 
             const query = params.toString();
             router.push(query ? `/home?${query}` : '/home');
@@ -122,7 +122,7 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
     }
 
     const isSelected =
-        Boolean(currentAccountId && effectiveSelectedAccountId === currentAccountId) ||
+        Boolean(currentAccountId && effectiveWorkingProfileId === currentAccountId) ||
         Boolean(isActive);
 
     return (

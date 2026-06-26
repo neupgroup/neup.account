@@ -15,7 +15,7 @@ export type AccountSelectorContext = {
 async function resolveRequestedSelectedAccountId(
   selectedAccountId?: string | null,
 ): Promise<string | null> {
-  return getUrlParam('selectedAccount', selectedAccountId);
+  return getUrlParam('workingProfile', selectedAccountId);
 }
 
 async function canManageSelectedAccount(

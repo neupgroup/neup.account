@@ -4,6 +4,26 @@ import { issueAccountToken } from '@/services/auth/accountJwt';
 export const dynamic = 'force-dynamic';
 
 /**
+ * ::neup.documentation::bridge-auth-token-endpoint
+ * ::api POST /bridge/api.v1/auth/token
+ *
+ * Issues an application bearer token from a validated session triplet.
+ *
+ * ::public
+ *
+ * The issued token is app-scoped and can be used with bearer-token bridge APIs.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The route owns JSON parsing and `app` versus `appId` validation, then delegates to `issueAccountToken()`.
+ *
+ * ::private end
+ *
+ * ::end
+ */
+/**
  * POST /account/bridge/api.v1/auth/token
  *
  * Issues a signed JWT for external API access.

@@ -5,6 +5,27 @@ import jwt from 'jsonwebtoken';
 import { verifyAccountToken } from '@/core/auth/accountToken';
 import { validateAuthSession, expireSession } from '@/services/auth/session';
 
+/*
+::neup.documentation::bridge-token-service
+::title Bridge Token Service
+
+Validation and expiry helpers for first-party and app-scoped auth tokens.
+
+::public
+
+This file supports both base account tokens and external-app tokens depending on whether an `app` scope is provided.
+
+::public end
+
+::private
+
+The service chooses between RS256 base-account token handling and HS256 app-token handling, then validates or expires the backing session accordingly.
+
+::private end
+
+::end
+*/
+
 const EXTERNAL_LOGIN_PREFIX = 'external_app:';
 function externalLoginType(appId: string) {
   return `${EXTERNAL_LOGIN_PREFIX}${appId}`;
@@ -19,6 +40,26 @@ function resolveAppId(input: { app?: string }): string | null {
 // Validate
 // ---------------------------------------------------------------------------
 
+/*
+::neup.documentation::bridge-validate-token-service
+::function bridgeValidateToken(input)
+
+Validates a first-party or app-scoped token.
+
+::public
+
+Without `app`, the token is treated as the base account token. With `app`, it is treated as an app-scoped HS256 token.
+
+::public end
+
+::private
+
+Base tokens are validated through `verifyAccountToken()` and `validateAuthSession()`. App tokens are verified against `Application.appSecret` and the backing app session.
+
+::private end
+
+::end
+*/
 export async function bridgeValidateToken(input: {
   token?: string;
   app?: string;
@@ -99,6 +140,26 @@ export async function bridgeValidateToken(input: {
 // Expire
 // ---------------------------------------------------------------------------
 
+/*
+::neup.documentation::bridge-expire-token-service
+::function bridgeExpireToken(input)
+
+Expires a first-party or app-scoped token.
+
+::public
+
+Without `app`, the token is treated as the base account token. With `app`, it is treated as an app-scoped HS256 token.
+
+::public end
+
+::private
+
+Base-token expiry delegates to `expireSession()`. App-token expiry updates the matching external app session row directly.
+
+::private end
+
+::end
+*/
 export async function bridgeExpireToken(input: {
   token?: string;
   app?: string;

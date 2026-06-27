@@ -4,6 +4,32 @@ import { bridgeExpireToken } from '@/services/auth/bridgeToken';
 export const dynamic = 'force-dynamic';
 
 /**
+ * ::neup.documentation::bridge-auth-expire-endpoint
+ * ::api POST /bridge/api.v1/auth/expire
+ *
+ * Expires a first-party or app-scoped auth token.
+ *
+ * ::public
+ *
+ * If `app` is provided, the token is treated as an external-app HS256 token. Without `app`, the token is treated as the base account token.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The route owns JSON parsing and `app` versus `appId` validation, then delegates to `bridgeExpireToken()`.
+ *
+ * ::private end
+ *
+ * ::param external token
+ * ::datatype string
+ * ::required true
+ *
+ * Token to expire.
+ *
+ * ::end
+ */
+/**
  * POST /bridge/api.v1/auth/expire
  *
  * Expires the session associated with the provided token.

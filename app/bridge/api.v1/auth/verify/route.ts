@@ -4,6 +4,26 @@ import { validateSession } from '@/services/auth/session';
 export const dynamic = 'force-dynamic';
 
 /**
+ * ::neup.documentation::bridge-auth-verify-endpoint
+ * ::api POST /bridge/api.v1/auth/verify
+ *
+ * Verifies a session triplet against the database.
+ *
+ * ::public
+ *
+ * Use this endpoint when a caller already has `sessionId`, `sessionKey`, and `accountId` and only needs a validity check.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The route delegates the actual verification to `validateSession()` in `services/auth/session.ts`.
+ *
+ * ::private end
+ *
+ * ::end
+ */
+/**
  * POST /api.v1/auth/verify
  * Validates a session against session ID, session key, and account ID.
  * Returns { valid: true } if the session is valid, { valid: false } otherwise.

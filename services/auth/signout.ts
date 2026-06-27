@@ -2,12 +2,53 @@
 
 import prisma from '@/core/helpers/prisma';
 
+/*
+::neup.documentation::signout-service
+::title External Signout Service
+
+Invalidates external application session values.
+
+::public
+
+This file is used when an external application wants Neup.Account to expire an app session by its session value.
+
+::public end
+
+::private
+
+The session lookup is keyed by the stored auth session `key`, with optional `appId` scoping for authorization.
+
+::private end
+
+::end
+*/
+
 const EXTERNAL_LOGIN_PREFIX = 'external_app:';
 function externalLoginType(appId: string) {
     return `${EXTERNAL_LOGIN_PREFIX}${appId}`;
 }
 
 
+/**
+ * ::neup.documentation::bridge-signout-external-session
+ * ::function bridgeSignoutExternalSession(input)
+ *
+ * Invalidates an external application session value.
+ *
+ * ::public
+ *
+ * Use this helper to expire a previously issued external app session by its `sessionValue`.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * If `appId` is supplied, the service verifies that the session belongs to that app-specific login type before expiring it.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 /**
  * Function bridgeSignoutExternalSession.
  */

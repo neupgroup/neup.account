@@ -4,6 +4,32 @@ import { bridgeValidateToken } from '@/services/auth/bridgeToken';
 export const dynamic = 'force-dynamic';
 
 /**
+ * ::neup.documentation::bridge-auth-validate-endpoint
+ * ::api POST /bridge/api.v1/auth/validate
+ *
+ * Validates a first-party or app-scoped auth token.
+ *
+ * ::public
+ *
+ * If `app` is provided, the token is treated as an external-app HS256 token. Without `app`, the token is treated as the base account token.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The route owns JSON parsing and `app` versus `appId` validation, then delegates to `bridgeValidateToken()`.
+ *
+ * ::private end
+ *
+ * ::param external token
+ * ::datatype string
+ * ::required true
+ *
+ * Token to validate.
+ *
+ * ::end
+ */
+/**
  * POST /bridge/api.v1/auth/validate
  *
  * Validates an auth token.

@@ -2,6 +2,27 @@ import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { extractGenderFromDetails, resolveDisplayImage } from '@/core/helpers/display-image';
 
+/*
+::neup.documentation::whoami-service
+::title WhoAmI Resolution Service
+
+Resolves a session triplet into the current account identity payload.
+
+::public
+
+This file is shared by the REST identity endpoint and the gRPC verification surface.
+
+::public end
+
+::private
+
+The service validates the session first, then shapes the account identity payload with block-state checks and display-image resolution.
+
+::private end
+
+::end
+*/
+
 export type WhoAmIResult =
   | {
       status: 200;
@@ -20,6 +41,26 @@ export type WhoAmIResult =
       body: { error: string; error_description?: string };
     };
 
+/**
+ * ::neup.documentation::resolve-whoami
+ * ::function resolveWhoAmI(input)
+ *
+ * Resolves the current account identity from a session triplet.
+ *
+ * ::public
+ *
+ * The response includes `accountId`, `neupId`, `displayName`, `displayImage`, `accountType`, and `verified`.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The service validates session existence and expiry, blocks blocked accounts, and computes display fields from both account and profile records.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 /**
  * Resolves a session triplet (accountId + sessionId + sessionKey) to a user identity.
  * Used by both the REST whoami endpoint and the gRPC Verify RPC.

@@ -2,6 +2,27 @@
 
 import prisma from '@/core/helpers/prisma';
 
+/*
+::neup.documentation::verify-service
+::title Active Session Verification Service
+
+Low-level active-session verification helper.
+
+::public
+
+This file performs the authoritative database-backed check for an active session triplet.
+
+::public end
+
+::private
+
+The helper is intentionally lower level than the bridge route services and is used where a boolean validity result is enough.
+
+::private end
+
+::end
+*/
+
 export type SessionVerifyResult =
     | { valid: true; accountId: string; isGuest: boolean }
     | { valid: false };
@@ -13,6 +34,26 @@ type VerifyActiveSessionOptions = {
     expectedGuest?: boolean;
 };
 
+/**
+ * ::neup.documentation::verify-active-session
+ * ::function verifyActiveSession(options)
+ *
+ * Verifies an active session triplet.
+ *
+ * ::public
+ *
+ * Returns either `{ valid: true, accountId, isGuest }` or `{ valid: false }`.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * Verification checks account/key matching, expiry, optional guest expectation, and active account block state.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 /**
  * Verifies the active session against the database.
  * This is the authoritative check — it cannot be bypassed by client-side cache.

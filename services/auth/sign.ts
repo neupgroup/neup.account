@@ -8,10 +8,52 @@ import { applicationPartyValues, type ApplicationParty } from '@/services/applic
 import { verifyAccountToken } from '@/core/auth/accountToken';
 import { validateAuthSession } from '@/services/auth/session';
 
+/*
+::neup.documentation::sign-service
+::title Application Sign Service
+
+Application sign-in helpers used by bridge auth routes.
+
+::public
+
+This file owns application-specific sign-in responses and the `sign&get` flow used by trusted applications.
+
+::public end
+
+::private
+
+Route files own the HTTP contract. This file owns app validation, connection creation, response shaping, and token issuance for these flows.
+
+::private end
+
+::end
+*/
+
 const EXTERNAL_LOGIN_PREFIX = 'external_app:';
 function externalLoginType(appId: string) {
 	return `${EXTERNAL_LOGIN_PREFIX}${appId}`;
 }
+
+/*
+::neup.documentation::bridge-sign-into-application
+::function bridgeSignIntoApplication(input)
+
+Signs a validated account into an application context.
+
+::public
+
+Returns application-facing identity data and, for external apps, creates an app-scoped session value.
+
+::public end
+
+::private
+
+The function validates the upstream request, ensures the application connection exists, and conditionally creates an external app session for `appType === external`.
+
+::private end
+
+::end
+*/
 export async function bridgeSignIntoApplication(input: { appId?: string; appType?: string; [key: string]: any }): Promise<{ status: number; body: Record<string, any> }> {
 	try {
 		const appId = input?.appId;
@@ -97,6 +139,26 @@ export async function bridgeSignIntoApplication(input: { appId?: string; appType
 	}
 }
 
+/*
+::neup.documentation::bridge-connection-sign-and-get
+::function bridgeConnectionSignAndGet(input)
+
+Returns a trusted-app sign-and-get response for an authenticated account.
+
+::public
+
+This flow validates the `auth_account` cookie session, ensures the target application connection exists, and returns only the configured response fields plus an app token.
+
+::public end
+
+::private
+
+The response shape is driven by `Application.responseFields`, and token signing uses the target application's secret.
+
+::private end
+
+::end
+*/
 export async function bridgeConnectionSignAndGet(input: {
   appId?: string;
   appSecret?: string;

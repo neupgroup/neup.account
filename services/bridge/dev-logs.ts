@@ -1,6 +1,27 @@
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 
+/*
+::neup.documentation::bridge-dev-log-service
+::title Bridge Development Log Service
+
+Writes sanitized bridge request/response diagnostics for development applications.
+
+::public
+
+This file is used to persist development-only request and response logs for bridge endpoints.
+
+::public end
+
+::private
+
+Secret-bearing keys such as `appSecret`, `authorization`, and `token` are redacted before persistence.
+
+::private end
+
+::end
+*/
+
 type JsonLike = Record<string, unknown> | unknown[] | string | number | boolean | null;
 
 const SECRET_KEYS = new Set(['appsecret', 'app_secret', 'secret', 'authorization', 'token']);
@@ -33,6 +54,26 @@ function getClientIp(headers: Record<string, string | null | undefined>): string
   return null;
 }
 
+/*
+::neup.documentation::write-application-dev-log
+::function writeApplicationDevLog(input)
+
+Writes a sanitized application development log row.
+
+::public
+
+Logging occurs only when the target application is in `development` status.
+
+::public end
+
+::private
+
+This helper redacts known secret fields from headers, query data, request bodies, and response bodies before writing to `applicationDevLog`.
+
+::private end
+
+::end
+*/
 export async function writeApplicationDevLog(input: {
   appId: string | null | undefined;
   endpoint: string;

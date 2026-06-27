@@ -18,6 +18,27 @@ import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from '@/services/access-model';
 
+/*
+::neup.documentation::application-access-service
+::title Application Access Export Service
+
+Builds the paginated access-grant export for an application.
+
+::public
+
+This file owns active-grant filtering, relationship narrowing, pagination, and denormalized permission shaping for access export.
+
+::public end
+
+::private
+
+The route owns the GET versus POST contract. This file owns the query semantics for `accountId` and `forAccount`.
+
+::private end
+
+::end
+*/
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -57,6 +78,26 @@ function clampLimit(raw: string | null): number {
 // Service
 // ---------------------------------------------------------------------------
 
+/*
+::neup.documentation::get-application-access
+::function getApplicationAccess(params)
+
+Returns paginated access-grant export rows for an application.
+
+::public
+
+The function can return the full app-wide export or a narrowed relationship export depending on `accountId` and `forAccount`.
+
+::public end
+
+::private
+
+Only active and nonexpired grants are included. Expired access-model rows are cleaned up before the export query runs.
+
+::private end
+
+::end
+*/
 export async function getApplicationAccess(params: {
   appId: string | null;
   appSecret: string | null;

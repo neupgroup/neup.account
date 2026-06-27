@@ -17,6 +17,27 @@ import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { extractGenderFromDetails, resolveDisplayImage } from '@/core/helpers/display-image';
 
+/*
+::neup.documentation::application-users-service
+::title Application Users Export Service
+
+Builds the paginated connected-user export for an application.
+
+::public
+
+This file owns pagination, date filtering, profile shaping, and response-row structure for the application users export.
+
+::public end
+
+::private
+
+The route file owns the HTTP/body/origin contract. This file owns credential checks and export semantics.
+
+::private end
+
+::end
+*/
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -56,6 +77,26 @@ function clampLimit(raw: string | null): number {
 // Service
 // ---------------------------------------------------------------------------
 
+/*
+::neup.documentation::get-application-users
+::function getApplicationUsers(params)
+
+Returns paginated connected-user export rows for an application.
+
+::public
+
+Supports both offset and cursor pagination, plus optional `connectedAt` date filtering.
+
+::public end
+
+::private
+
+The implementation validates app credentials, counts matching connections, joins account profile fields, and returns stable column metadata for downstream consumers.
+
+::private end
+
+::end
+*/
 export async function getApplicationUsers(params: {
   appId: string | null;
   appSecret: string | null;

@@ -4,6 +4,54 @@ import { exchangeSilentAuthCode, validateSilentSsoOrigin } from '@/services/auth
 export const dynamic = 'force-dynamic';
 
 /**
+ * ::neup.documentation::silent-auth-exchange-endpoint
+ * ::api POST /bridge/silent.v1/auth/exchange
+ *
+ * Exchanges a `silent_auth_code` for app-scoped identity and session data.
+ *
+ * ::public
+ *
+ * This endpoint is for server-to-server exchange after a client receives a silent-auth code.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * Browser origins registered as `silentSsoOrigin` are rejected here on purpose. The exchange must happen on the app backend.
+ *
+ * ::private end
+ *
+ * ::param external app
+ * ::datatype string
+ * ::required true
+ *
+ * Application identifier. Use `app`, not `appId`.
+ *
+ * ::param external appSecret
+ * ::datatype string
+ * ::required true
+ *
+ * Application secret used to authenticate the exchange request.
+ *
+ * ::param external code
+ * ::datatype string
+ * ::required true
+ *
+ * Short-lived silent auth code issued by the iframe flow.
+ *
+ * ::param external codeVerifier
+ * ::datatype string
+ * ::required false
+ *
+ * Optional verifier if the caller binds the exchange to a verifier value.
+ *
+ * ::details
+ *
+ * The route performs request-shape validation and browser-origin rejection, then delegates the actual exchange to `exchangeSilentAuthCode()` in `services/auth/silent-sso.ts`.
+ *
+ * ::end
+ */
+/**
  * POST /bridge/silent.v1/auth/exchange
  *
  * Server-to-server endpoint. Exchanges a silent_auth_code for a verified

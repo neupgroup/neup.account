@@ -12,6 +12,37 @@ import {
 const BRIDGE_TYPE = 'roleUpdateWebhook';
 const SOURCE_APP_ID = 'neup.account';
 
+/*
+::neup.documentation::role-updated-webhook-dispatcher
+::function dispatchRoleUpdateWebhook(input)
+
+Builds and dispatches encrypted `role.updated` and `role.deleted` webhook payloads.
+
+::public
+
+`role.updated` carries the full role shape, including denormalized permissions. `role.deleted` carries the role identity needed for receiver-side deletion.
+
+::public end
+
+::private
+
+The dispatcher encrypts the payload with AES-256-GCM using `Application.appSecret`, signs the envelope with HMAC-SHA256, and stores delivery logs for development apps.
+
+::private end
+
+::param external input
+::datatype object
+::required true
+
+Dispatch input containing `appId`, `eventType`, and the role payload.
+
+::details
+
+The public contract is defined by the payload construction in this file. Receiver-facing documentation should be generated from here rather than maintained in a parallel markdown document.
+
+::end
+*/
+
 type RoleEventType = 'role.updated' | 'role.deleted';
 
 type RolePayload = {

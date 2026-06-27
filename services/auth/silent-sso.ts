@@ -6,6 +6,27 @@ import type { Identity } from '@/prisma/generated/client';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import { extractGenderFromDetails, resolveDisplayImage } from '@/core/helpers/display-image';
 
+/*
+::neup.documentation::silent-sso-service
+::title Silent SSO Service
+
+Service helpers for the hidden-iframe silent sign-in flow.
+
+::public
+
+This file owns origin validation, rate limiting, guest-identity resolution, JWT signing for iframe responses, and server-side exchange of silent auth codes.
+
+::public end
+
+::private
+
+Route files under `app/bridge/silent.v1` should document the HTTP contract. This file should document the underlying auth behavior and shared helper semantics.
+
+::private end
+
+::end
+*/
+
 // ---------------------------------------------------------------------------
 // Rate limiting
 // ---------------------------------------------------------------------------
@@ -41,6 +62,32 @@ export function checkRateLimit(origin: string): boolean {
 // Origin validation
 // ---------------------------------------------------------------------------
 
+/**
+ * ::neup.documentation::silent-sso-origin-validation
+ * ::function validateSilentSsoOrigin(origin)
+ *
+ * Validates whether an origin is registered for silent SSO.
+ *
+ * ::public
+ *
+ * Matching is based on scheme plus host, ignoring path and query string.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The function reads `ApplicationBridge` rows of type `silentSsoOrigin` and returns the matching `appId` when found.
+ *
+ * ::private end
+ *
+ * ::param external origin
+ * ::datatype string
+ * ::required true
+ *
+ * Candidate origin to validate.
+ *
+ * ::end
+ */
 /**
  * Validates an incoming origin against ApplicationBridge records of type 'silentSsoOrigin'.
  * Matches by scheme + host only (ignoring path and query string).
@@ -110,6 +157,38 @@ export async function resolveOrCreateIdentity(
 
 export type IdentityDetail = { key: string; value: string };
 
+/**
+ * ::neup.documentation::silent-sso-jwt-signing
+ * ::function signIdentityJwt(identity, appId, details)
+ *
+ * Signs the app-scoped JWT returned by the silent SSO flow.
+ *
+ * ::public
+ *
+ * The signed payload contains `ssid`, `expires_on`, `refreshes_on`, and `details`.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * Signing uses `Application.appSecret` with HS256. The `details` array is computed at request time and is not persisted back to the `Identity` row.
+ *
+ * ::private end
+ *
+ * ::param external identity
+ * ::datatype Identity
+ * ::required true
+ *
+ * Resolved identity row for the guest/application pair.
+ *
+ * ::param external appId
+ * ::datatype string
+ * ::required true
+ *
+ * Application identifier used to resolve the signing secret.
+ *
+ * ::end
+ */
 /**
  * Signs a JWT with the application's appSecret (HS256).
  *
@@ -251,6 +330,44 @@ export async function ensureApplicationConnection(
 // Silent auth code issuance
 // ---------------------------------------------------------------------------
 
+/**
+ * ::neup.documentation::silent-sso-code-exchange-service
+ * ::function exchangeSilentAuthCode(appId, appSecret, code, codeVerifier)
+ *
+ * Exchanges a silent auth code for authenticated application data.
+ *
+ * ::public
+ *
+ * This is the server-side counterpart to the hidden iframe flow.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The function verifies the app credentials, consumes the auth code, validates optional verifier data, and returns the app-scoped response used by the exchange route.
+ *
+ * ::private end
+ *
+ * ::param external appId
+ * ::datatype string
+ * ::required true
+ *
+ * Application identifier.
+ *
+ * ::param external appSecret
+ * ::datatype string
+ * ::required true
+ *
+ * Application secret.
+ *
+ * ::param external code
+ * ::datatype string
+ * ::required true
+ *
+ * Short-lived silent auth code.
+ *
+ * ::end
+ */
 /**
  * Issues a short-lived silent_auth_code stored in AuthnRequest.
  * Returns the code and the resolved Identity.

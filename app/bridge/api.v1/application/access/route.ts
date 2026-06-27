@@ -4,6 +4,42 @@ import { getApplicationAccess } from '@/services/bridge/application-access';
 export const dynamic = 'force-dynamic';
 
 /**
+ * ::neup.documentation::application-access-get-endpoint
+ * ::api GET /bridge/api.v1/application/access
+ *
+ * Returns active access grants for an application.
+ *
+ * ::public
+ *
+ * Use this endpoint from an application backend when you need the app-wide access-grant export.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The route rejects the legacy `appId` name and the query-level `account` filter. Filtering behavior is documented in the POST variant and implemented in `services/bridge/application-access.ts`.
+ *
+ * ::private end
+ *
+ * ::param external app
+ * ::datatype string
+ * ::required true
+ *
+ * Application identifier. `appId` is rejected.
+ *
+ * ::param external appSecret
+ * ::datatype string
+ * ::required true
+ *
+ * Application secret.
+ *
+ * ::details
+ *
+ * This GET variant is the unfiltered app-wide export.
+ *
+ * ::end
+ */
+/**
  * GET /bridge/api.v1/application/access
  *
  * Returns access grants (AuthzAppAccessGrant) for the given application —
@@ -75,6 +111,42 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(result.body, { status: result.status });
 }
 
+/**
+ * ::neup.documentation::application-access-post-endpoint
+ * ::api POST /bridge/api.v1/application/access
+ *
+ * Returns filtered access grants for an application.
+ *
+ * ::public
+ *
+ * Use this endpoint when you need grants involving a specific account, optionally narrowed to another account relationship.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * This route keeps the filter contract at the HTTP layer while leaving grant-query semantics in `services/bridge/application-access.ts`.
+ *
+ * ::private end
+ *
+ * ::param external accountId
+ * ::datatype string
+ * ::required true
+ *
+ * Required filter account.
+ *
+ * ::param external forAccount
+ * ::datatype string
+ * ::required false
+ *
+ * Optional second account that limits results to the relationship between `accountId` and `forAccount`.
+ *
+ * ::details
+ *
+ * Query-string `account` is intentionally rejected. Filter inputs belong in the JSON body.
+ *
+ * ::end
+ */
 /**
  * POST /bridge/api.v1/application/access?app=[id]
  *

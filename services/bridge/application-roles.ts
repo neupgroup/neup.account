@@ -17,6 +17,27 @@ import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { activeAccessWhere } from '@/services/access-model';
 
+/*
+::neup.documentation::application-roles-service
+::title Application Roles Export Service
+
+Builds the paginated role export for an application.
+
+::public
+
+This file owns credential validation, role pagination, optional account scoping, and denormalized permission shaping for role export.
+
+::public end
+
+::private
+
+The export marks returned roles as pushed inside the transaction. That behavior should be documented here instead of only in route prose.
+
+::private end
+
+::end
+*/
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -56,6 +77,26 @@ function clampLimit(raw: string | null): number {
 // Service
 // ---------------------------------------------------------------------------
 
+/*
+::neup.documentation::get-application-roles
+::function getApplicationRoles(params)
+
+Returns paginated role export rows for an application.
+
+::public
+
+The response includes role metadata and inline permission objects.
+
+::public end
+
+::private
+
+When an `account` filter is provided, the export is narrowed to roles actually granted to that account in the target app.
+
+::private end
+
+::end
+*/
 export async function getApplicationRoles(params: {
   appId: string | null;
   appSecret: string | null;

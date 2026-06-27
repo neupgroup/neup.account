@@ -2,6 +2,27 @@ import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { cleanupExpiredAccessModel, ensureAccessGrant, extractRolePermissionNames } from '@/services/access-model';
 
+/*
+::neup.documentation::auth-access-service
+::title Auth Access Service
+
+Shared auth-access snapshot and mutation helpers used by `/bridge/api.v1/auth/access`.
+
+::public
+
+This file resolves current roles and permission names for an app scope and applies access-member role grants or removals.
+
+::public end
+
+::private
+
+The route file owns HTTP shape. This file owns session validation, shared access-model cleanup, and grant mutation semantics.
+
+::private end
+
+::end
+*/
+
 const INTERNAL_APP_PREFIX = 'neup.';
 
 function isInternalApp(appId: string) {
@@ -22,6 +43,26 @@ async function resolveSession(input: { aid?: string | null; sid?: string | null;
   });
 }
 
+/*
+::neup.documentation::auth-access-snapshot
+::function bridgeGetAuthAccess(input)
+
+Returns the current auth-access snapshot for an account and app.
+
+::public
+
+The response includes `roles`, `permissions`, `isInternal`, and timestamp metadata for the requested app scope.
+
+::public end
+
+::private
+
+The implementation validates the `aid/sid/skey` triplet, defaults the app scope to `neup.account`, and reads active grants from the shared `access` table.
+
+::private end
+
+::end
+*/
 export async function bridgeGetAuthAccess(input: {
   aid?: string | null;
   sid?: string | null;
@@ -93,6 +134,26 @@ export async function bridgeGetAuthAccess(input: {
   }
 }
 
+/*
+::neup.documentation::auth-access-create
+::function bridgeCreateAuthAccess(input)
+
+Creates the default auth access-member grant for a recipient.
+
+::public
+
+This mutation is used to add a recipient into the auth access model.
+
+::public end
+
+::private
+
+The function ensures the `access.member` role exists and then applies the grant through `ensureAccessGrant()` inside a transaction.
+
+::private end
+
+::end
+*/
 export async function bridgeCreateAuthAccess(input: Record<string, any>): Promise<{ status: number; body: Record<string, any> }> {
   const { aid, sid, skey, recipientId, isPermanent, appId: appIdOverride } = input;
 
@@ -131,6 +192,26 @@ export async function bridgeCreateAuthAccess(input: Record<string, any>): Promis
   }
 }
 
+/*
+::neup.documentation::auth-access-update
+::function bridgeUpdateAuthAccess(input)
+
+Adds or removes app-scoped auth access roles for a recipient.
+
+::public
+
+Use this mutation to apply role additions or removals within the shared auth access model.
+
+::public end
+
+::private
+
+The function accepts `add` and `remove`, normalizes them to arrays, and mutates the shared `access` table inside a transaction after session validation.
+
+::private end
+
+::end
+*/
 export async function bridgeUpdateAuthAccess(input: Record<string, any>): Promise<{ status: number; body: Record<string, any> }> {
   const { aid, sid, skey, add, remove, appId: appIdOverride, recipientId: targetId } = input;
 

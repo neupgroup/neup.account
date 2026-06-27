@@ -17,6 +17,27 @@ import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 
+/*
+::neup.documentation::account-jwt-service
+::title Account JWT Service
+
+Issues app-scoped bearer tokens for account-based bridge API access.
+
+::public
+
+The token shape is intentionally minimal: `{ cid, iat, exp }`.
+
+::public end
+
+::private
+
+The service validates the session triplet, ensures the account-to-app connection row exists, and signs the token with `Application.appSecret`.
+
+::private end
+
+::end
+*/
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -69,6 +90,32 @@ async function validateSession(aid: string, sid: string, skey: string): Promise<
 // Issue token
 // ---------------------------------------------------------------------------
 
+/**
+ * ::neup.documentation::issue-account-token
+ * ::function issueAccountToken(input)
+ *
+ * Issues an application bearer token from a validated session triplet.
+ *
+ * ::public
+ *
+ * The returned token can be used for app-scoped bridge APIs that accept bearer-token auth.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The function does not embed full account data. It only embeds the stable connection id and expiry timestamps.
+ *
+ * ::private end
+ *
+ * ::param external input
+ * ::datatype object
+ * ::required true
+ *
+ * Token-issuance input containing `aid`, `sid`, `skey`, and `appId`.
+ *
+ * ::end
+ */
 /**
  * Validates the session triplet (aid, sid, skey) against the database,
  * ensures a Connection exists, then issues a JWT containing

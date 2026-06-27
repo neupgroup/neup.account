@@ -70,6 +70,36 @@ const TOKEN_TTL_SECONDS = 60 * 60 * 24 * 7;
 // ---------------------------------------------------------------------------
 
 /**
+ * ::neup.documentation::silent-whoisthis-endpoint
+ * ::api GET /bridge/silent.v1/whoisthis
+ *
+ * Silent iframe endpoint that posts app-scoped auth state back to the parent window.
+ *
+ * ::public
+ *
+ * Third-party apps load this route in a hidden iframe and listen for a `postMessage` payload instead of a JSON response.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * This route owns the HTML response contract. Origin validation, rate limiting, identity resolution, and token helpers are delegated to `services/auth/silent-sso.ts`.
+ *
+ * ::private end
+ *
+ * ::param external app
+ * ::datatype string
+ * ::required false
+ *
+ * Application identifier. If omitted, the route falls back to the base account app.
+ *
+ * ::details
+ *
+ * The route rejects `appId`, validates the caller origin, ensures a guest identity exists, optionally upgrades to the authenticated account context, and returns an HTML document that sends a `neupid:silentAuth` message to the parent window.
+ *
+ * ::end
+ */
+/**
  * GET /bridge/silent.v1/whoisthis?app=[id]
  *
  * Single silent-auth entry point. No separate init step needed — guest

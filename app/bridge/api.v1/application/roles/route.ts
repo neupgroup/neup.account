@@ -4,6 +4,42 @@ import { getApplicationRoles } from '@/services/bridge/application-roles';
 export const dynamic = 'force-dynamic';
 
 /**
+ * ::neup.documentation::application-roles-endpoint
+ * ::api GET /bridge/api.v1/application/roles
+ *
+ * Returns application roles with inline permission data.
+ *
+ * ::public
+ *
+ * Use this endpoint from an application backend when you need the current role catalog for an app.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * This route owns the query contract. Pagination and denormalized permission shaping are delegated to `services/bridge/application-roles.ts`.
+ *
+ * ::private end
+ *
+ * ::param external app
+ * ::datatype string
+ * ::required true
+ *
+ * Application identifier. `appId` is rejected.
+ *
+ * ::param external appSecret
+ * ::datatype string
+ * ::required true
+ *
+ * Application secret.
+ *
+ * ::details
+ *
+ * The route supports both offset and cursor pagination and passes through the optional `account` filter for account-scoped role export.
+ *
+ * ::end
+ */
+/**
  * GET /bridge/api.v1/application/roles
  *
  * Returns roles defined for the given application, with permissions

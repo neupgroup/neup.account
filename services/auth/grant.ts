@@ -6,6 +6,27 @@ import { makeNotification } from '@/services/notifications';
 import { getAccountPermission, isRootUser } from '@/services/user';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 
+/*
+::neup.documentation::grant-service
+::title External Grant Service
+
+Exchange, refresh, and validation helpers for external application grant flows.
+
+::public
+
+This file owns the backend behavior behind redirect-handshake grant exchange and later grant refresh or validity checks.
+
+::public end
+
+::private
+
+Route files own the HTTP surface. This file owns one-time token consumption, app-session creation, and app-token refresh semantics.
+
+::private end
+
+::end
+*/
+
 const EXTERNAL_LOGIN_PREFIX = 'external_app:';
 function externalLoginType(appId: string) {
   return `${EXTERNAL_LOGIN_PREFIX}${appId}`;
@@ -28,6 +49,26 @@ async function resolveAccountGrant(accountId: string, appId: string): Promise<{ 
   return { role, permissions };
 }
 
+/**
+ * ::neup.documentation::bridge-issue-grant-service
+ * ::function bridgeIssueGrant(input)
+ *
+ * Exchanges a one-time grant token for an external app session.
+ *
+ * ::public
+ *
+ * The returned payload includes `aid`, `sid`, `skey`, `token`, `exp`, and the resolved role context.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The function atomically consumes the pending auth request, validates app scope, creates an app-scoped session, ensures the app connection exists, and signs the response token with `Application.appSecret`.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 /**
  * Function bridgeIssueGrant.
  */
@@ -185,6 +226,26 @@ export async function bridgeIssueGrant(input: {
 
 
 /**
+ * ::neup.documentation::bridge-refresh-grant-service
+ * ::function bridgeRefreshGrant(input)
+ *
+ * Refreshes an external app grant.
+ *
+ * ::public
+ *
+ * The function supports token-based refresh and session-triplet-based refresh for app grants.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The implementation resolves the target app scope, verifies the existing grant/session state, and issues a replacement short-lived token while extending the backing app session.
+ *
+ * ::private end
+ *
+ * ::end
+ */
+/**
  * Function bridgeRefreshGrant.
  */
 export async function bridgeRefreshGrant(input: {
@@ -203,7 +264,7 @@ export async function bridgeRefreshGrant(input: {
   const appId = resolveAppId(input);
 
   try {
-    // Token-based refresh (docs/authentication.md): { token } (+ optional ?app=)
+    // Token-based refresh for app-issued bearer tokens: { token } (+ optional ?app=)
     if (input.token) {
       // Accept token-only by decoding appId without verification first.
       let resolvedAppId = appId;

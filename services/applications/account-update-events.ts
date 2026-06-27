@@ -13,6 +13,37 @@ import {
 const ACCOUNT_UPDATE_WEBHOOK_TYPE = 'accountUpdateWebhook';
 const SOURCE_APP_ID = 'neup.account';
 
+/*
+::neup.documentation::account-updated-webhook-dispatcher
+::function dispatchAccountUpdatedEvent(input)
+
+Builds and dispatches encrypted `account.updated` webhook payloads to connected applications.
+
+::public
+
+The webhook event includes `success`, `eventId`, `eventType`, `sourceAppId`, `occurredAt`, `appId`, `connectionId`, `changedFields`, `account`, and `profile`.
+
+::public end
+
+::private
+
+The payload is encrypted with AES-256-GCM derived from `Application.appSecret`, signed with `x-bridge-signature`, and optionally dev-logged through `applicationDevLog`.
+
+::private end
+
+::param external input
+::datatype object
+::required true
+
+Dispatch input containing the changed account id and changed field list.
+
+::details
+
+The implementation gathers the receiving app connections, resolves role state when needed, shapes the public payload, encrypts it per target application, and records delivery diagnostics for development apps.
+
+::end
+*/
+
 export type AccountUpdateEventField =
   | 'neupId'
   | 'displayName'

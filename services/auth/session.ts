@@ -7,6 +7,27 @@ import { makeNotification } from '@/services/notifications';
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
 
+/*
+::neup.documentation::auth-session-service
+::title Auth Session Service
+
+Session validation, expiry, creation, and bridge-session helpers.
+
+::public
+
+This file owns the service-layer behavior behind internal keepalive, logout, refresh, and low-level session checks.
+
+::public end
+
+::private
+
+Route files own the HTTP contract. This file owns the database checks, block-state handling, and cookie-session refresh helpers.
+
+::private end
+
+::end
+*/
+
 /**
  * Reasons returned when auth validation fails.
  */
@@ -127,6 +148,26 @@ function hasActiveBlock(block: BlockInfo, now: Date): boolean {
 }
 
 
+/**
+ * ::neup.documentation::validate-auth-session
+ * ::function validateAuthSession(input)
+ *
+ * Validates an auth session triplet.
+ *
+ * ::public
+ *
+ * The function returns whether the session is `valid`, `invalid`, or `expired`.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * Validation checks the session row, matching account/key values, expiry, and account block state.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 /**
  * Validates the provided auth session values against the database.
  */
@@ -271,6 +312,26 @@ export async function makeSession(input: MakeSessionInput): Promise<MakeSessionR
 
 
 /**
+ * ::neup.documentation::bridge-session-refresh
+ * ::function bridgeValidateAndRefreshSession(input)
+ *
+ * Validates and extends a bridge session.
+ *
+ * ::public
+ *
+ * This is the service used by the bridge session keepalive endpoint.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The function validates the session triplet, optionally updates session metadata, and extends expiry when the session remains valid.
+ *
+ * ::private end
+ *
+ * ::end
+ */
+/**
  * Function bridgeValidateAndRefreshSession.
  */
 export async function bridgeValidateAndRefreshSession(input: {
@@ -339,10 +400,30 @@ export async function bridgeValidateAndRefreshSession(input: {
 
 
 /**
+ * ::neup.documentation::bridge-session-invalidate
+ * ::function bridgeInvalidateSession(input)
+ *
+ * Invalidates a bridge session.
+ *
+ * ::public
+ *
+ * This is the service used by the bridge logout endpoint.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The function validates the caller-provided session triplet and expires the matching session row.
+ *
+ * ::private end
+ *
+ * ::end
+ */
+/**
  * Function bridgeInvalidateSession.
  */
 export async function bridgeInvalidateSession(input: {
-	aid?: string;
+  aid?: string;
 	sid?: string;
 	skey?: string;
 }): Promise<{ status: number; body: BridgeAuthSessionError | { success: true; message: string } }> {

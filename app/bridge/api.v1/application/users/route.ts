@@ -36,6 +36,54 @@ export async function OPTIONS(request: NextRequest) {
 }
 
 /**
+ * ::neup.documentation::application-users-endpoint
+ * ::api POST /bridge/api.v1/application/users
+ *
+ * Returns accounts connected to an application.
+ *
+ * ::public
+ *
+ * Use this endpoint from an application backend when you need a paginated export of connected users.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The HTTP contract lives here. Row shaping, pagination semantics, and filters are implemented in `services/bridge/application-users.ts`.
+ *
+ * ::private end
+ *
+ * ::param external app
+ * ::datatype string
+ * ::required true
+ *
+ * Application identifier. The route accepts body key variants that normalize to `app`.
+ *
+ * ::param external appSecret
+ * ::datatype string
+ * ::required true
+ *
+ * Application secret. The route accepts body key variants that normalize to `appSecret`.
+ *
+ * ::param external offset
+ * ::datatype integer
+ * ::required false
+ *
+ * Offset pagination start.
+ *
+ * ::param external startFrom
+ * ::datatype string
+ * ::required false
+ *
+ * Cursor pagination start token.
+ *
+ * ::details
+ *
+ * This route allows origin-based or server-IP-based caller validation depending on application bridge configuration, then delegates to `getApplicationUsers()`.
+ *
+ * ::end
+ */
+/**
  * POST /bridge/api.v1/application/users
  *
  * Returns accounts (users) that have connected to the given application,

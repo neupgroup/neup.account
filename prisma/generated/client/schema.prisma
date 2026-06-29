@@ -610,7 +610,7 @@ model AuthzRole {
   name                   String
   description            String?
   appId                  String?                  @map("app_id")
-  scope                  String
+  scope                  Json
   acquisitionType        String                   @default("assignment") @map("acquisition_type")
   approvalPolicy         String                   @default("none") @map("approval_policy")
   pushed                 Boolean                  @default(false)
@@ -632,7 +632,7 @@ model AuthzRolePermissionMap {
   id           String          @id @default(uuid())
   roleId       String          @map("role_id")
   permissionId String          @map("permission_id")
-  scope        String
+  scope        Json
   createdAt    DateTime        @default(now()) @map("created_at")
   role         AuthzRole       @relation(fields: [roleId], references: [id], onDelete: Cascade, map: "authz_role_permission_map_role_id_fkey")
   permission   AuthzPermission @relation(fields: [permissionId], references: [id], onDelete: Cascade, map: "authz_role_permission_map_permission_id_fkey")

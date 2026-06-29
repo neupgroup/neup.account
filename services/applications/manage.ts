@@ -39,8 +39,9 @@ import {
 } from '@/services/applications/permission-definitions';
 import {
   canAssignRoleScopeToAccount,
-  isDirectlyAssignableRoleAcquisitionType,
-  roleApprovalRequiresRequest,
+  isRoleDirectlyAssignable,
+  normalizeRoleScopes,
+  roleRequestTarget,
 } from '@/services/role-scopes';
 import {
   revalidateApplicationConfigRoutes,
@@ -2120,13 +2121,13 @@ export type AppRoleOption = {
   id: string;
   name: string;
   description: string | null;
-  scope: string | null;
+  scope: string[];
   acquisitionType: string;
   approvalPolicy: string;
 };
 
-function hasUsableRoleScope(scope: string | null | undefined): boolean {
-  return typeof scope === 'string' && scope.trim().length > 0;
+function hasUsableRoleScope(scope: unknown): boolean {
+  return normalizeRoleScopes(scope).length > 0;
 }
 
 function stringList(value: unknown): string[] {
@@ -2528,16 +2529,20 @@ export async function getApplicationRoleOptions(appId: string, targetAccountType
         approvalPolicy: true,
       },
     });
+    const normalizedRoles: AppRoleOption[] = roles.map((role) => ({
+      ...role,
+      scope: normalizeRoleScopes(role.scope),
+    }));
 
     if (!targetAccountType) {
-      return roles.filter(
-        (role) => hasUsableRoleScope(role.scope) && isDirectlyAssignableRoleAcquisitionType(role.acquisitionType),
+      return normalizedRoles.filter(
+        (role) => hasUsableRoleScope(role.scope) && isRoleDirectlyAssignable(role.acquisitionType, role.approvalPolicy, 'manager'),
       );
     }
 
-    return roles.filter((role) => {
+    return normalizedRoles.filter((role) => {
       if (!hasUsableRoleScope(role.scope)) return false;
-      if (!isDirectlyAssignableRoleAcquisitionType(role.acquisitionType)) return false;
+      if (!isRoleDirectlyAssignable(role.acquisitionType, role.approvalPolicy, isRootEditor ? 'root' : 'manager')) return false;
       const modes = isRootEditor
         ? ['public', 'toApprove', 'root'] as const
         : ['public', 'toApprove'] as const;
@@ -2599,14 +2604,14 @@ export async function assignApplicationConnectionRole(input: {
     }
 
     const assignableRoles = roles.filter((role) =>
-      isDirectlyAssignableRoleAcquisitionType(role.acquisitionType) &&
+      isRoleDirectlyAssignable(role.acquisitionType, role.approvalPolicy, isRootEditor ? 'root' : 'manager') &&
       (
         canAssignRoleScopeToAccount(role.scope, connection.account.accountType, ['public']) ||
         (isRootEditor && canAssignRoleScopeToAccount(role.scope, connection.account.accountType, ['root']))
       ),
     );
-    const immediateRoles = assignableRoles.filter((role) => !roleApprovalRequiresRequest(role.approvalPolicy));
-    const approvableRoles = assignableRoles.filter((role) => roleApprovalRequiresRequest(role.approvalPolicy));
+    const immediateRoles = assignableRoles.filter((role) => roleRequestTarget(role.acquisitionType, role.approvalPolicy) === null);
+    const approvableRoles = assignableRoles.filter((role) => roleRequestTarget(role.acquisitionType, role.approvalPolicy) !== null);
 
     if (assignableRoles.length !== roles.length) {
       return { success: false, error: 'One or more selected roles cannot be assigned from this page.' };
@@ -2626,6 +2631,7 @@ export async function assignApplicationConnectionRole(input: {
             scope: true,
             appId: true,
             acquisitionType: true,
+            approvalPolicy: true,
           },
         },
       },
@@ -2635,7 +2641,7 @@ export async function assignApplicationConnectionRole(input: {
       new Set(
         existingAssignedRows
           .filter((row) => row.role.appId === input.appId)
-          .filter((row) => isDirectlyAssignableRoleAcquisitionType(row.role.acquisitionType))
+          .filter((row) => isRoleDirectlyAssignable(row.role.acquisitionType, row.role.approvalPolicy, isRootEditor ? 'root' : 'manager'))
           .filter((row) =>
             canAssignRoleScopeToAccount(row.role.scope, connection.account.accountType, ['public']) ||
             (isRootEditor && canAssignRoleScopeToAccount(row.role.scope, connection.account.accountType, ['root'])),
@@ -2708,6 +2714,7 @@ export async function assignApplicationConnectionRole(input: {
               roleIds: requestedRoles.map((role) => role.id),
               roles: requestedRoles.map((role) => ({ id: role.id, name: role.name, scope: role.scope })),
               assignmentKind: 'connectionRole',
+              requestTarget: 'admin',
             },
           },
         });

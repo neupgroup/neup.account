@@ -9,3 +9,16 @@
 - [x] Update portfolio asset access services to use `access`, not `authzAssetsAccessGrant`.
 - [x] Update bridge/API service responses so apps receive consistent access, asset, and permission data from the new model.
 - [x] Run Prisma generation and a type-oriented check if available, without running a build.
+
+## Documentation Follow-Ups
+
+- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/role-create-form.tsx`.
+- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/role-detail-editor.tsx`.
+- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/permission-detail-editor.tsx`.
+- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/permission-panel.tsx`.
+- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/roles-panel.tsx`.
+
+## Migration Follow-Ups
+
+- [ ] Fix `20260629120000_rename_branch_to_subbrand` so it tolerates databases without legacy tables like `account_ownership`.
+- [ ] Add a Prisma migration for the `AuthzRole.scope` and `AuthzRolePermissionMap.scope` move to native JSON arrays.

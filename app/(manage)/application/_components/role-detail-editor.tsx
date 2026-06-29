@@ -27,6 +27,8 @@ import { isBuiltInApplicationManagementPermissionName } from '@/services/applica
 import { AuthzDefinitionSelector } from './authz-definition-selector';
 import type { ApplicationAuthzDefinitionOption } from '@/services/applications/authz-config';
 import { PermissionScopeBadges } from './permission-scope-badges';
+import { ACCESS_FLAG_MODE_OPTIONS, getAccessFlagMode, getAccessFlagPayload, type AccessFlagMode } from './access-flag-mode';
+import { RoleScopeSelector } from './scope-selectors';
 
 type Props = {
   appId: string;
@@ -48,8 +50,8 @@ export function RoleDetailEditor({
   const router = useRouter();
   const { toast } = useToast();
   const [description, setDescription] = useState(role.description ?? '');
-  const [acquisitionType, setAcquisitionType] = useState(role.acquisitionType);
-  const [approvalPolicy, setApprovalPolicy] = useState(role.approvalPolicy);
+  const [scope, setScope] = useState<string[]>(role.scope);
+  const [accessMode, setAccessMode] = useState<AccessFlagMode>(getAccessFlagMode(role));
   const [applicableFor, setApplicableFor] = useState<string[]>(role.applicableFor);
   const [showDetailsEditor, setShowDetailsEditor] = useState(false);
   const [permissionIds, setPermissionIds] = useState<string[]>(() => {
@@ -97,8 +99,8 @@ export function RoleDetailEditor({
       appId,
       roleId: role.id,
       description: description || undefined,
-      acquisitionType,
-      approvalPolicy,
+      scope,
+      ...getAccessFlagPayload(accessMode),
       applicableFor,
       permissionIds,
     });
@@ -241,46 +243,35 @@ export function RoleDetailEditor({
           <div>
             <p className="text-sm font-medium">Role details</p>
             <p className="text-xs text-muted-foreground">
-              Role title is fixed after creation. Description, acquisition policy, approval policy, and applicable targets can be updated here.
+              Role title is fixed after creation. Description, access mode, and applicable targets can be updated here.
             </p>
           </div>
           <Input value={role.name} disabled aria-label="Role title" />
-          <Input value={role.scope} disabled aria-label="Role scope" />
+          <RoleScopeSelector value={scope} onChange={setScope} disabled={!canManage || isSystemRole} />
           <Input
             value={description}
             disabled={!canManage || isSystemRole}
             onChange={(event) => setDescription(event.target.value)}
             placeholder="Description (optional)"
           />
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="grid gap-2">
             <Select
-              value={acquisitionType}
-              onValueChange={(value) => setAcquisitionType(value)}
+              value={accessMode}
+              onValueChange={(value) => setAccessMode(value as AccessFlagMode)}
               disabled={!canManage || isSystemRole}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Acquisition type" />
+                <SelectValue placeholder="Role access mode" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="assignment">assignment</SelectItem>
-                <SelectItem value="public_request">public_request</SelectItem>
-                <SelectItem value="invitation">invitation</SelectItem>
-                <SelectItem value="system_generated">system_generated</SelectItem>
+                {ACCESS_FLAG_MODE_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
-            <Select
-              value={approvalPolicy}
-              onValueChange={(value) => setApprovalPolicy(value)}
-              disabled={!canManage || isSystemRole}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Approval policy" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">none</SelectItem>
-                <SelectItem value="approval_required">approval_required</SelectItem>
-              </SelectContent>
-            </Select>
+            <p className="text-xs text-muted-foreground">
+              {ACCESS_FLAG_MODE_OPTIONS.find((option) => option.value === accessMode)?.description}
+            </p>
           </div>
           <AuthzDefinitionSelector
             label="Applicable for"

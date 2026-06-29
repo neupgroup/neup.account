@@ -32,6 +32,7 @@ import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { redirectInApp } from '@/core/helper/navigation';
 import { FlowLink } from '@/components/ui/flow-link';
 import { PermissionScopeBadges } from './permission-scope-badges';
+import { ACCESS_FLAG_MODE_OPTIONS, getAccessFlagPayload, getEnabledAccessFlagLabels, type AccessFlagMode } from './access-flag-mode';
 
 type Props = {
   appId: string;
@@ -122,8 +123,7 @@ export function PermissionPanel({
   const [addName, setAddName] = useState('');
   const [addDesc, setAddDesc] = useState('');
   const [addScope, setAddScope] = useState('');
-  const [addAcquisitionType, setAddAcquisitionType] = useState<'assignment' | 'public_request' | 'invitation' | 'system_generated'>('assignment');
-  const [addApprovalPolicy, setAddApprovalPolicy] = useState<'none' | 'approval_required'>('none');
+  const [addAccessMode, setAddAccessMode] = useState<AccessFlagMode>('assignable');
   const [addRules, setAddRules] = useState('');
   const [addStatus, setAddStatus] = useState('');
   const [addPending, setAddPending] = useState(false);
@@ -169,8 +169,7 @@ export function PermissionPanel({
       name: trimmed,
       description: addDesc || undefined,
       scope: addScope || undefined,
-      acquisitionType: addAcquisitionType,
-      approvalPolicy: addApprovalPolicy,
+      ...getAccessFlagPayload(addAccessMode),
       rules: addRules || undefined,
       status: addStatus || undefined,
     });
@@ -186,8 +185,7 @@ export function PermissionPanel({
     setAddName('');
     setAddDesc('');
     setAddScope('');
-    setAddAcquisitionType('assignment');
-    setAddApprovalPolicy('none');
+    setAddAccessMode('assignable');
     setAddRules('');
     setAddStatus('');
     setAddOpen(false);
@@ -237,16 +235,11 @@ export function PermissionPanel({
                   ) : null}
                   <div className="mt-1 flex flex-wrap gap-1">
                     <PermissionScopeBadges scope={permission.scope} />
-                    {permission.acquisitionType ? (
-                      <Badge variant="outline" className="text-xs">
-                        acquisition:{permission.acquisitionType}
+                    {getEnabledAccessFlagLabels(permission).map((label) => (
+                      <Badge key={label} variant="outline" className="text-xs">
+                        {label}
                       </Badge>
-                    ) : null}
-                    {permission.approvalPolicy ? (
-                      <Badge variant="outline" className="text-xs">
-                        approval:{permission.approvalPolicy}
-                      </Badge>
-                    ) : null}
+                    ))}
                     {permission.status ? (
                       <Badge variant="outline" className="text-xs">
                         status:{permission.status}
@@ -273,8 +266,7 @@ export function PermissionPanel({
             setAddName('');
             setAddDesc('');
             setAddScope('');
-            setAddAcquisitionType('assignment');
-            setAddApprovalPolicy('none');
+            setAddAccessMode('assignable');
             setAddRules('');
             setAddStatus('');
           }
@@ -294,27 +286,20 @@ export function PermissionPanel({
             {scopeHint ? (
               <p className="text-xs text-muted-foreground">{scopeHint}</p>
             ) : null}
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Select value={addAcquisitionType} onValueChange={(value) => setAddAcquisitionType(value as typeof addAcquisitionType)}>
+            <div className="grid gap-3">
+              <Select value={addAccessMode} onValueChange={(value) => setAddAccessMode(value as AccessFlagMode)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Acquisition type" />
+                  <SelectValue placeholder="Permission access mode" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="assignment">assignment</SelectItem>
-                  <SelectItem value="public_request">public_request</SelectItem>
-                  <SelectItem value="invitation">invitation</SelectItem>
-                  <SelectItem value="system_generated">system_generated</SelectItem>
+                  {ACCESS_FLAG_MODE_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
-              <Select value={addApprovalPolicy} onValueChange={(value) => setAddApprovalPolicy(value as typeof addApprovalPolicy)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Approval policy" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">none</SelectItem>
-                  <SelectItem value="approval_required">approval_required</SelectItem>
-                </SelectContent>
-              </Select>
+              <p className="text-xs text-muted-foreground">
+                {ACCESS_FLAG_MODE_OPTIONS.find((option) => option.value === addAccessMode)?.description}
+              </p>
             </div>
             <Input value={addRules} onChange={(event) => setAddRules(event.target.value)} placeholder="Rules (optional)" />
             <Input value={addStatus} onChange={(event) => setAddStatus(event.target.value)} placeholder="Status (optional)" />

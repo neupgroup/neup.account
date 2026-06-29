@@ -23,6 +23,15 @@ type ApplicationPermissionDefinition = {
   suffix: string;
 };
 
+type ApplicationPermissionAccessDefinition = {
+  assignable: boolean;
+  publiclyEnrollable: boolean;
+  selfAssigned: boolean;
+  rootManaged: boolean;
+  publiclyRequestable: boolean;
+  requestableToOwner: boolean;
+};
+
 const APPLICATION_PERMISSION_DEFINITION_MAP: Record<ApplicationPermissionBase, ApplicationPermissionDefinition> = {
   'basics.edit': {
     suffix: 'basics.edit',
@@ -109,6 +118,39 @@ function permissionScope(audience: ApplicationPermissionAudience): string {
   return 'public.individual';
 }
 
+function permissionAccessDefinition(audience: ApplicationPermissionAudience): ApplicationPermissionAccessDefinition {
+  if (audience === 'root') {
+    return {
+      assignable: false,
+      publiclyEnrollable: false,
+      selfAssigned: false,
+      rootManaged: true,
+      publiclyRequestable: false,
+      requestableToOwner: false,
+    };
+  }
+
+  if (audience === 'managed') {
+    return {
+      assignable: true,
+      publiclyEnrollable: false,
+      selfAssigned: false,
+      rootManaged: false,
+      publiclyRequestable: false,
+      requestableToOwner: false,
+    };
+  }
+
+  return {
+    assignable: false,
+    publiclyEnrollable: true,
+    selfAssigned: false,
+    rootManaged: false,
+    publiclyRequestable: false,
+    requestableToOwner: false,
+  };
+}
+
 export function getApplicationPermissionName(
   base: ApplicationPermissionBase,
   audience: ApplicationPermissionAudience,
@@ -127,13 +169,38 @@ export function getApplicationPermissionNames(
 
 export function getApplicationPermissionDefinitions(
   audiences: readonly ApplicationPermissionAudience[],
-): Array<{ name: string; description: string; scope: string[]; acquisitionType: string; approvalPolicy: string }> {
-  const definitions = new Map<string, { name: string; description: string; scope: string[]; acquisitionType: string; approvalPolicy: string }>();
+): Array<{
+  name: string;
+  description: string;
+  scope: string[];
+  acquisitionType: string;
+  approvalPolicy: string;
+  assignable: boolean;
+  publiclyEnrollable: boolean;
+  selfAssigned: boolean;
+  rootManaged: boolean;
+  publiclyRequestable: boolean;
+  requestableToOwner: boolean;
+}> {
+  const definitions = new Map<string, {
+    name: string;
+    description: string;
+    scope: string[];
+    acquisitionType: string;
+    approvalPolicy: string;
+    assignable: boolean;
+    publiclyEnrollable: boolean;
+    selfAssigned: boolean;
+    rootManaged: boolean;
+    publiclyRequestable: boolean;
+    requestableToOwner: boolean;
+  }>();
 
   for (const audience of audiences) {
     for (const base of Object.keys(APPLICATION_PERMISSION_DEFINITION_MAP) as ApplicationPermissionBase[]) {
       const name = permissionName(base, audience);
       const scope = permissionScope(audience);
+      const access = permissionAccessDefinition(audience);
       const existing = definitions.get(name);
 
       if (existing) {
@@ -144,8 +211,15 @@ export function getApplicationPermissionDefinitions(
         name,
         description: permissionDescription(base, audience),
         scope: [scope],
-        acquisitionType: 'assignment',
-        approvalPolicy: 'none',
+        acquisitionType: access.selfAssigned
+          ? 'system_generated'
+          : access.rootManaged || access.requestableToOwner
+            ? 'invitation'
+            : access.publiclyEnrollable || access.publiclyRequestable
+              ? 'public_request'
+              : 'assignment',
+        approvalPolicy: access.publiclyRequestable || access.requestableToOwner ? 'approval_required' : 'none',
+        ...access,
       });
     }
   }

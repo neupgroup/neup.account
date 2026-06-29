@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { assignApplicationConnectionRole, type AppRoleOption } from '@/services/applications/manage';
+import { normalizeRoleScopes } from '@/services/role-scopes';
 
 type RoleSelectorProps = {
   appId: string;
@@ -25,7 +26,7 @@ export function RoleSelector({ appId, connectionId, roles, currentRoleIds, pendi
   const [pendingSelections, setPendingSelections] = useState<string[]>(pendingRoleIds);
   const [message, setMessage] = useState<string>('');
   const [pending, startTransition] = useTransition();
-  const hasUsableScope = (value: string | null | undefined) => typeof value === 'string' && value.trim().length > 0;
+  const hasUsableScope = (value: unknown) => normalizeRoleScopes(value).length > 0;
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();

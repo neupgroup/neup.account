@@ -53,7 +53,7 @@ export function assetTypeForRefs(parent: ParentRef, child: AssetChildRef): Asset
   return 'port_in_acc';
 }
 
-function accessTypeForGrant(input: AccessGrantInput, roleScope: string | null): AccessType {
+function accessTypeForGrant(input: AccessGrantInput, roleScope: unknown): AccessType {
   const isSelfGrant = 'parentAccountId' in input && input.parentAccountId === input.memberAccountId;
   if (!isSelfGrant) return assetTypeForRefs(input, input);
 

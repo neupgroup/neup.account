@@ -3,6 +3,9 @@ import {
   encodeRoleScope,
   expandRoleScope,
   formatRoleScopeForDisplay,
+  getRoleAccessFlags,
+  normalizeRoleScopes,
+  getStoredRoleAccessPolicy,
   isKnownRoleScope,
   normalizeRoleScope,
 } from '@/services/role-scopes';
@@ -38,6 +41,14 @@ describe('role scope normalization', () => {
     expect(formatRoleScopeForDisplay('root.individual')).toBe('rootMgmt.self');
   });
 
+  it('normalizes and formats multiple role scopes from json arrays', () => {
+    expect(normalizeRoleScopes(['managed.brand', 'public.branch'])).toEqual([
+      'acMgmt.brand',
+      'acMgmt.subbrand',
+    ]);
+    expect(formatRoleScopeForDisplay(['managed.brand', 'public.branch'])).toBe('acMgmt.brand, acMgmt.subbrand');
+  });
+
   it('validates named scopes as known role scopes', () => {
     expect(isKnownRoleScope('managed.brand')).toBe(true);
     expect(isKnownRoleScope('managed.0010')).toBe(true);
@@ -51,5 +62,35 @@ describe('permission scope normalization', () => {
       'acMgmt.brand',
       'acMgmt.self',
     ]);
+  });
+});
+
+describe('role access flag mapping', () => {
+  it('maps persisted role policies into the new access flags', () => {
+    expect(getRoleAccessFlags('assignment', 'none')).toMatchObject({ assignable: true });
+    expect(getRoleAccessFlags('public_request', 'none')).toMatchObject({ publiclyEnrollable: true });
+    expect(getRoleAccessFlags('system_generated', 'none')).toMatchObject({ selfAssigned: true });
+    expect(getRoleAccessFlags('invitation', 'none')).toMatchObject({ rootManaged: true });
+    expect(getRoleAccessFlags('public_request', 'approval_required')).toMatchObject({ publiclyRequestable: true });
+    expect(getRoleAccessFlags('invitation', 'approval_required')).toMatchObject({ requestableToOwner: true });
+  });
+
+  it('stores the new flag payloads with backward-compatible legacy columns', () => {
+    expect(getStoredRoleAccessPolicy({ assignable: true })).toMatchObject({
+      acquisitionType: 'assignment',
+      approvalPolicy: 'none',
+    });
+    expect(getStoredRoleAccessPolicy({ publiclyEnrollable: true })).toMatchObject({
+      acquisitionType: 'public_request',
+      approvalPolicy: 'none',
+    });
+    expect(getStoredRoleAccessPolicy({ publiclyRequestable: true })).toMatchObject({
+      acquisitionType: 'public_request',
+      approvalPolicy: 'approval_required',
+    });
+    expect(getStoredRoleAccessPolicy({ requestableToOwner: true })).toMatchObject({
+      acquisitionType: 'invitation',
+      approvalPolicy: 'approval_required',
+    });
   });
 });

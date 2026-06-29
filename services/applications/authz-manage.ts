@@ -23,11 +23,15 @@ import {
 } from '@/services/neup-account/permission-catalog';
 import { hasRootApplicationPermission } from '@/services/applications/manage';
 import {
+  getRoleAccessFlags,
+  getStoredRoleAccessPolicy,
   isKnownRoleScope,
   normalizeRoleAcquisitionType,
   normalizeRoleApprovalPolicy,
   normalizeRoleScope,
+  normalizeRoleScopes,
   roleScopeError,
+  type RoleAccessFlags,
 } from '@/services/role-scopes';
 import {
   revalidateApplicationConfigRoutes,
@@ -52,6 +56,12 @@ export type AppPermission = {
   scope: string | null;
   acquisitionType: string | null;
   approvalPolicy: string | null;
+  assignable: boolean;
+  publiclyEnrollable: boolean;
+  selfAssigned: boolean;
+  rootManaged: boolean;
+  publiclyRequestable: boolean;
+  requestableToOwner: boolean;
   rules: string | null;
   status: string | null;
 };
@@ -60,12 +70,25 @@ export type AppRole = {
   id: string;
   name: string;
   description: string | null;
-  scope: string;
+  scope: string[];
   acquisitionType: string;
   approvalPolicy: string;
+  assignable: boolean;
+  publiclyEnrollable: boolean;
+  selfAssigned: boolean;
+  rootManaged: boolean;
+  publiclyRequestable: boolean;
+  requestableToOwner: boolean;
   applicableFor: string[];
   permissions: AppPermission[];
 };
+
+function withRoleAccessFlags(
+  acquisitionType: string | null | undefined,
+  approvalPolicy: string | null | undefined,
+): RoleAccessFlags {
+  return getRoleAccessFlags(acquisitionType, approvalPolicy);
+}
 
 function normalizeApplicableFor(value: Prisma.JsonValue | null | undefined): string[] {
   if (!Array.isArray(value)) return [];
@@ -91,6 +114,10 @@ function formatPermissionScope(value: Prisma.JsonValue | null | undefined): stri
   }
 }
 
+function formatRoleScope(value: Prisma.JsonValue | null | undefined): string[] {
+  return normalizeRoleScopes(value);
+}
+
 function parsePermissionScopeInput(value: string | undefined): Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput | undefined {
   const trimmed = value?.trim();
   if (!trimmed) return undefined;
@@ -100,6 +127,28 @@ function parsePermissionScopeInput(value: string | undefined): Prisma.InputJsonV
   } catch {
     return trimmed;
   }
+}
+
+function parseRoleScopeTokens(value: string[] | undefined): string[] {
+  return Array.from(
+    new Set(
+      (value ?? [])
+        .map((scope) => scope.trim())
+        .filter((scope) => isKnownRoleScope(scope)),
+    ),
+  );
+}
+
+function parseRoleScopeInput(value: string[] | undefined): Prisma.InputJsonValue {
+  return parseRoleScopeTokens(value);
+}
+
+function validateRoleScopeInput(value: string[] | undefined): string[] {
+  const tokens = parseRoleScopeTokens(value);
+  if (tokens.length === 0) {
+    throw new Error(roleScopeError());
+  }
+  return tokens;
 }
 
 function normalizePermissionAcquisitionType(value: string | null | undefined): string {
@@ -239,11 +288,25 @@ async function isSystemManagedPermission(appId: string, permissionId: string): P
 async function upsertPermissionsForApp(
   tx: any,
   appId: string,
-  definitions: Array<{ id: string; name: string; description: string; scope: string[]; acquisitionType?: string; approvalPolicy?: string }>,
+  definitions: Array<{
+    id: string;
+    name: string;
+    description: string;
+    scope: string[];
+    acquisitionType?: string;
+    approvalPolicy?: string;
+    assignable?: boolean;
+    publiclyEnrollable?: boolean;
+    selfAssigned?: boolean;
+    rootManaged?: boolean;
+    publiclyRequestable?: boolean;
+    requestableToOwner?: boolean;
+  }>,
 ): Promise<Array<{ id: string; name: string }>> {
   const persistedPermissions: Array<{ id: string; name: string }> = [];
 
   for (const definition of definitions) {
+    const storedPolicy = getStoredRoleAccessPolicy(definition);
     const permission = await tx.authzPermission.upsert({
       where: { name_appId: { name: definition.name, appId } },
       update: {
@@ -251,8 +314,8 @@ async function upsertPermissionsForApp(
         description: definition.description,
         appId,
         scope: definition.scope,
-        acquisitionType: normalizePermissionAcquisitionType(definition.acquisitionType),
-        approvalPolicy: normalizePermissionApprovalPolicy(definition.approvalPolicy),
+        acquisitionType: storedPolicy.acquisitionType,
+        approvalPolicy: storedPolicy.approvalPolicy,
       },
       create: {
         id: definition.id,
@@ -260,8 +323,8 @@ async function upsertPermissionsForApp(
         description: definition.description,
         appId,
         scope: definition.scope,
-        acquisitionType: normalizePermissionAcquisitionType(definition.acquisitionType),
-        approvalPolicy: normalizePermissionApprovalPolicy(definition.approvalPolicy),
+        acquisitionType: storedPolicy.acquisitionType,
+        approvalPolicy: storedPolicy.approvalPolicy,
       },
       select: {
         id: true,
@@ -275,7 +338,7 @@ async function upsertPermissionsForApp(
   return persistedPermissions;
 }
 
-async function syncRolePermissionMappings(tx: any, roleId: string, roleScope: string, permissionIds: string[]): Promise<void> {
+async function syncRolePermissionMappings(tx: any, roleId: string, roleScope: Prisma.InputJsonValue, permissionIds: string[]): Promise<void> {
   await tx.authzRolePermissionMap.deleteMany({ where: { roleId } });
   if (permissionIds.length === 0) return;
 
@@ -563,6 +626,7 @@ export async function getAppPermissions(appId: string): Promise<AppPermission[]>
       scope: formatPermissionScope(record.scope),
       acquisitionType: record.acquisitionType ?? 'assignment',
       approvalPolicy: record.approvalPolicy ?? 'none',
+      ...withRoleAccessFlags(record.acquisitionType, record.approvalPolicy),
       rules: record.rules ?? null,
       status: record.status ?? null,
     }));
@@ -579,6 +643,12 @@ export async function createAppPermission(input: {
   scope?: string;
   acquisitionType?: string;
   approvalPolicy?: string;
+  assignable?: boolean;
+  publiclyEnrollable?: boolean;
+  selfAssigned?: boolean;
+  rootManaged?: boolean;
+  publiclyRequestable?: boolean;
+  requestableToOwner?: boolean;
   rules?: string;
   status?: string;
 }): Promise<{ success: boolean; permission?: AppPermission; error?: string }> {
@@ -604,6 +674,7 @@ export async function createAppPermission(input: {
 
   try {
     await validatePermissionScopeInput(input.appId, input.scope);
+    const storedPolicy = getStoredRoleAccessPolicy(input);
 
     const record = await prisma.authzPermission.create({
       data: {
@@ -611,8 +682,8 @@ export async function createAppPermission(input: {
         name,
         description: input.description?.trim() || null,
         scope: parsePermissionScopeInput(input.scope),
-        acquisitionType: normalizePermissionAcquisitionType(input.acquisitionType),
-        approvalPolicy: normalizePermissionApprovalPolicy(input.approvalPolicy),
+        acquisitionType: storedPolicy.acquisitionType,
+        approvalPolicy: storedPolicy.approvalPolicy,
         rules: input.rules?.trim() || null,
         status: input.status?.trim() || null,
         appId: input.appId,
@@ -630,6 +701,7 @@ export async function createAppPermission(input: {
         scope: formatPermissionScope(record.scope),
         acquisitionType: record.acquisitionType ?? 'assignment',
         approvalPolicy: record.approvalPolicy ?? 'none',
+        ...withRoleAccessFlags(record.acquisitionType, record.approvalPolicy),
         rules: record.rules ?? null,
         status: record.status ?? null,
       },
@@ -647,6 +719,12 @@ export async function updateAppPermission(input: {
   scope?: string;
   acquisitionType?: string;
   approvalPolicy?: string;
+  assignable?: boolean;
+  publiclyEnrollable?: boolean;
+  selfAssigned?: boolean;
+  rootManaged?: boolean;
+  publiclyRequestable?: boolean;
+  requestableToOwner?: boolean;
   rules?: string;
   status?: string;
 }): Promise<{
@@ -666,6 +744,7 @@ export async function updateAppPermission(input: {
     }
 
     await validatePermissionScopeInput(input.appId, input.scope);
+    const storedPolicy = getStoredRoleAccessPolicy(input);
 
     const record = await prisma.$transaction(async (tx) => {
       const existing = await tx.authzPermission.findFirst({
@@ -679,8 +758,8 @@ export async function updateAppPermission(input: {
         data: {
           description: input.description?.trim() || null,
           scope: parsePermissionScopeInput(input.scope),
-          acquisitionType: normalizePermissionAcquisitionType(input.acquisitionType),
-          approvalPolicy: normalizePermissionApprovalPolicy(input.approvalPolicy),
+          acquisitionType: storedPolicy.acquisitionType,
+          approvalPolicy: storedPolicy.approvalPolicy,
           rules: input.rules?.trim() || null,
           status: input.status?.trim() || null,
         } as any,
@@ -700,6 +779,7 @@ export async function updateAppPermission(input: {
         scope: formatPermissionScope(record.scope),
         acquisitionType: record.acquisitionType ?? 'assignment',
         approvalPolicy: record.approvalPolicy ?? 'none',
+        ...withRoleAccessFlags(record.acquisitionType, record.approvalPolicy),
         rules: record.rules ?? null,
         status: record.status ?? null,
       },
@@ -786,9 +866,10 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
       id: role.id,
       name: role.name,
       description: role.description,
-      scope: normalizeRoleScope(role.scope) ?? role.scope,
+      scope: formatRoleScope(role.scope),
       acquisitionType: normalizeRoleAcquisitionType(role.acquisitionType),
       approvalPolicy: normalizeRoleApprovalPolicy(role.approvalPolicy),
+      ...withRoleAccessFlags(role.acquisitionType, role.approvalPolicy),
       applicableFor: normalizeApplicableFor(role.applicableFor),
       permissions: role.permissionMappings.flatMap((mapping: any): AppPermission[] => {
         const permission = mapping.permission;
@@ -800,6 +881,7 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
           scope: formatPermissionScope(permission.scope),
           acquisitionType: permission.acquisitionType ?? 'assignment',
           approvalPolicy: permission.approvalPolicy ?? 'none',
+          ...withRoleAccessFlags(permission.acquisitionType, permission.approvalPolicy),
           rules: permission.rules ?? null,
           status: permission.status ?? null,
         }];
@@ -815,9 +897,15 @@ export async function createAppRole(input: {
   appId: string;
   name: string;
   description?: string;
-  scope?: string;
+  scope?: string[];
   acquisitionType?: string;
   approvalPolicy?: string;
+  assignable?: boolean;
+  publiclyEnrollable?: boolean;
+  selfAssigned?: boolean;
+  rootManaged?: boolean;
+  publiclyRequestable?: boolean;
+  requestableToOwner?: boolean;
   applicableFor?: string[];
   permissionIds?: string[];
 }): Promise<{ success: boolean; role?: AppRole; error?: string }> {
@@ -842,12 +930,8 @@ export async function createAppRole(input: {
   }
 
   try {
-    const scope = input.scope?.trim() || '';
-    if (!isKnownRoleScope(scope)) {
-      return { success: false, error: roleScopeError() };
-    }
-    const acquisitionType = normalizeRoleAcquisitionType(input.acquisitionType);
-    const approvalPolicy = normalizeRoleApprovalPolicy(input.approvalPolicy);
+    const scope = validateRoleScopeInput(input.scope);
+    const storedPolicy = getStoredRoleAccessPolicy(input);
     const authzConfig = await getApplicationAuthzConfigForValidation(input.appId);
     const allowedApplicableForKeys = authzConfig.applicableForDefinitions.map(([, key]) => key);
     const applicableFor = allowedApplicableForKeys.length > 0
@@ -863,9 +947,9 @@ export async function createAppRole(input: {
           id: roleId,
           name,
           description: input.description?.trim() || null,
-          scope,
-          acquisitionType,
-          approvalPolicy,
+          scope: parseRoleScopeInput(scope) as any,
+          acquisitionType: storedPolicy.acquisitionType,
+          approvalPolicy: storedPolicy.approvalPolicy,
           appId: input.appId,
           applicableFor,
         },
@@ -890,10 +974,10 @@ export async function createAppRole(input: {
           select: { id: true, name: true },
         });
 
-        await syncRolePermissionMappings(tx, created.id, scope, caps.map((cap) => cap.id));
+        await syncRolePermissionMappings(tx, created.id, parseRoleScopeInput(scope), caps.map((cap) => cap.id));
         await syncRolePermissionsDenormalized(tx, created.id);
       } else {
-        await syncRolePermissionMappings(tx, created.id, scope, []);
+        await syncRolePermissionMappings(tx, created.id, parseRoleScopeInput(scope), []);
         await syncRolePermissionsDenormalized(tx, created.id);
       }
 
@@ -904,9 +988,10 @@ export async function createAppRole(input: {
     const fullRole = await getAppRoles(input.appId).then((roles) =>
       roles.find((r) => r.id === role.id) ?? {
         ...role,
-        scope: normalizeRoleScope(role.scope) ?? role.scope,
+        scope: formatRoleScope(role.scope),
         acquisitionType: normalizeRoleAcquisitionType(role.acquisitionType),
         approvalPolicy: normalizeRoleApprovalPolicy(role.approvalPolicy),
+        ...withRoleAccessFlags(role.acquisitionType, role.approvalPolicy),
         applicableFor: normalizeApplicableFor(role.applicableFor),
         permissions: [],
       }
@@ -922,6 +1007,12 @@ export async function createAppRole(input: {
         scope: fullRole.scope,
         acquisitionType: fullRole.acquisitionType,
         approvalPolicy: fullRole.approvalPolicy,
+        assignable: fullRole.assignable,
+        publiclyEnrollable: fullRole.publiclyEnrollable,
+        selfAssigned: fullRole.selfAssigned,
+        rootManaged: fullRole.rootManaged,
+        publiclyRequestable: fullRole.publiclyRequestable,
+        requestableToOwner: fullRole.requestableToOwner,
         applicableFor: fullRole.applicableFor,
         permissions: fullRole.permissions.map((p) => p.name),
       },
@@ -965,10 +1056,10 @@ export async function updateAppRolePermissions(input: {
           select: { id: true, name: true },
         });
 
-        await syncRolePermissionMappings(tx, input.roleId, normalizeRoleScope(role.scope) ?? role.scope, caps.map((cap) => cap.id));
+        await syncRolePermissionMappings(tx, input.roleId, role.scope as Prisma.InputJsonValue, caps.map((cap) => cap.id));
         await syncRolePermissionsDenormalized(tx, input.roleId);
       } else {
-        await syncRolePermissionMappings(tx, input.roleId, normalizeRoleScope(role.scope) ?? role.scope, []);
+        await syncRolePermissionMappings(tx, input.roleId, role.scope as Prisma.InputJsonValue, []);
         await syncRolePermissionsDenormalized(tx, input.roleId);
       }
     });
@@ -996,9 +1087,15 @@ export async function updateAppRole(input: {
   roleId: string;
   name?: string;
   description?: string;
-  scope?: string;
+  scope?: string[];
   acquisitionType?: string;
   approvalPolicy?: string;
+  assignable?: boolean;
+  publiclyEnrollable?: boolean;
+  selfAssigned?: boolean;
+  rootManaged?: boolean;
+  publiclyRequestable?: boolean;
+  requestableToOwner?: boolean;
   applicableFor?: string[];
   permissionIds: string[];
 }): Promise<{ success: boolean; role?: AppRole; error?: string }> {
@@ -1010,8 +1107,7 @@ export async function updateAppRole(input: {
       return { success: false, error: 'This system role cannot be modified.' };
     }
     const authzConfig = await getApplicationAuthzConfigForValidation(input.appId);
-    const nextAcquisitionType = normalizeRoleAcquisitionType(input.acquisitionType);
-    const nextApprovalPolicy = normalizeRoleApprovalPolicy(input.approvalPolicy);
+    const storedPolicy = getStoredRoleAccessPolicy(input);
     const allowedApplicableForKeys = authzConfig.applicableForDefinitions.map(([, key]) => key);
     const applicableFor = allowedApplicableForKeys.length > 0
       ? normalizeConfiguredSelection(input.applicableFor, allowedApplicableForKeys, true)
@@ -1026,14 +1122,14 @@ export async function updateAppRole(input: {
         select: { id: true, scope: true, name: true },
       });
       if (!role) throw new Error('Role not found.');
-      const currentScope = normalizeRoleScope(role.scope);
-      if (!currentScope || !isKnownRoleScope(currentScope)) {
+      const currentScope = validateRoleScopeInput(formatRoleScope(role.scope));
+      if (currentScope.length === 0) {
         throw new Error(roleScopeError());
       }
-      const nextScope = typeof input.scope === 'string' && input.scope.trim().length > 0
-        ? normalizeRoleScope(input.scope)
+      const nextScope = Array.isArray(input.scope) && input.scope.length > 0
+        ? validateRoleScopeInput(input.scope)
         : currentScope;
-      if (!nextScope || !isKnownRoleScope(nextScope)) {
+      if (nextScope.length === 0) {
         throw new Error(roleScopeError());
       }
       if (typeof input.name === 'string' && input.name.trim() !== role.name) {
@@ -1049,9 +1145,9 @@ export async function updateAppRole(input: {
         where: { id: input.roleId },
         data: {
           description: input.description?.trim() || null,
-          scope: nextScope,
-          acquisitionType: nextAcquisitionType,
-          approvalPolicy: nextApprovalPolicy,
+          scope: parseRoleScopeInput(nextScope) as any,
+          acquisitionType: storedPolicy.acquisitionType,
+          approvalPolicy: storedPolicy.approvalPolicy,
           applicableFor,
         },
       });
@@ -1062,9 +1158,9 @@ export async function updateAppRole(input: {
           where: { id: { in: input.permissionIds }, appId: input.appId },
           select: { id: true },
         });
-        await syncRolePermissionMappings(tx, input.roleId, nextScope, caps.map((cap) => cap.id));
+        await syncRolePermissionMappings(tx, input.roleId, parseRoleScopeInput(nextScope), caps.map((cap) => cap.id));
       } else {
-        await syncRolePermissionMappings(tx, input.roleId, nextScope, []);
+        await syncRolePermissionMappings(tx, input.roleId, parseRoleScopeInput(nextScope), []);
       }
 
       await syncRolePermissionsDenormalized(tx, input.roleId);

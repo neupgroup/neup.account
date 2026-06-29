@@ -29,7 +29,7 @@ export async function approveApplicationRoleRequest(requestId: string): Promise<
   try {
     const request = await prisma.request.findUnique({
       where: { id: requestId },
-      select: { id: true, status: true, data: true },
+      select: { id: true, status: true, data: true, recipientId: true },
     });
     if (!request) return { success: false, error: 'Request not found.' };
     if (request.status !== 'pending') return { success: false, error: 'Request is not pending.' };
@@ -39,9 +39,12 @@ export async function approveApplicationRoleRequest(requestId: string): Promise<
     const accountId = typeof data.accountId === 'string' ? data.accountId : '';
     const connectionId = typeof data.connectionId === 'string' ? data.connectionId : '';
     const assignmentKind = typeof data.assignmentKind === 'string' ? data.assignmentKind : '';
+    const requestTarget = typeof data.requestTarget === 'string' ? data.requestTarget : 'admin';
     const roleIds = stringList(data.roleIds);
     const canManageAppRoles = appId ? await canCurrentAccountManageApplicationRoles(appId) : false;
-    const canApprove = (canRootEdit && canManageRequests) || canManageAppRoles;
+    const canApprove =
+      (canRootEdit && canManageRequests) ||
+      (requestTarget === 'owner' ? request.recipientId === actorAccountId : canManageAppRoles);
     if (!canApprove) return { success: false, error: 'Permission denied.' };
 
     if (!appId || !accountId || roleIds.length === 0) {
@@ -160,14 +163,17 @@ export async function denyApplicationRoleRequest(requestId: string): Promise<{ s
   try {
     const request = await prisma.request.findUnique({
       where: { id: requestId },
-      select: { data: true },
+      select: { data: true, recipientId: true },
     });
     if (!request) return { success: false, error: 'Request not found.' };
 
     const data = request.data && typeof request.data === 'object' ? request.data as Record<string, unknown> : {};
     const appId = typeof data.appId === 'string' ? data.appId : '';
+    const requestTarget = typeof data.requestTarget === 'string' ? data.requestTarget : 'admin';
     const canManageAppRoles = appId ? await canCurrentAccountManageApplicationRoles(appId) : false;
-    const canDeny = (canRootEdit && canManageRequests) || canManageAppRoles;
+    const canDeny =
+      (canRootEdit && canManageRequests) ||
+      (requestTarget === 'owner' ? request.recipientId === actorAccountId : canManageAppRoles);
     if (!canDeny) return { success: false, error: 'Permission denied.' };
 
     await prisma.request.update({

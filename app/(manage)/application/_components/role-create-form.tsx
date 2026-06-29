@@ -17,6 +17,7 @@ import { redirectInApp } from '@/core/helper/navigation';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { RoleScopeSelector } from './scope-selectors';
 import { AuthzDefinitionSelector } from './authz-definition-selector';
+import { ACCESS_FLAG_MODE_OPTIONS, getAccessFlagPayload, type AccessFlagMode } from './access-flag-mode';
 import type { ApplicationAuthzDefinitionOption } from '@/services/applications/authz-config';
 
 type Props = {
@@ -29,15 +30,14 @@ export function RoleCreateForm({ appId, applicableForOptions }: Props) {
   const { toast } = useToast();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [scope, setScope] = useState('');
-  const [acquisitionType, setAcquisitionType] = useState<'assignment' | 'public_request' | 'invitation' | 'system_generated'>('assignment');
-  const [approvalPolicy, setApprovalPolicy] = useState<'none' | 'approval_required'>('none');
+  const [scope, setScope] = useState<string[]>([]);
+  const [accessMode, setAccessMode] = useState<AccessFlagMode>('assignable');
   const [applicableFor, setApplicableFor] = useState<string[]>([]);
   const [pending, setPending] = useState(false);
 
   const handleSubmit = async () => {
     const roleTitle = name.trim();
-    if (!roleTitle || !scope) return;
+    if (!roleTitle || scope.length === 0) return;
 
     setPending(true);
     const result = await createAppRole({
@@ -45,8 +45,7 @@ export function RoleCreateForm({ appId, applicableForOptions }: Props) {
       name: roleTitle,
       description: description || undefined,
       scope,
-      acquisitionType,
-      approvalPolicy,
+      ...getAccessFlagPayload(accessMode),
       applicableFor,
       permissionIds: [],
     });
@@ -67,27 +66,20 @@ export function RoleCreateForm({ appId, applicableForOptions }: Props) {
       <Input value={name} onChange={(event) => setName(event.target.value)} placeholder="Role title, e.g. Viewer" />
       <Input value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Description (optional)" />
       <RoleScopeSelector value={scope} onChange={setScope} />
-      <div className="grid gap-2 sm:grid-cols-2">
-        <Select value={acquisitionType} onValueChange={(value) => setAcquisitionType(value as typeof acquisitionType)}>
+      <div className="grid gap-2">
+        <Select value={accessMode} onValueChange={(value) => setAccessMode(value as AccessFlagMode)}>
           <SelectTrigger>
-            <SelectValue placeholder="Acquisition type" />
+            <SelectValue placeholder="Role access mode" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="assignment">assignment</SelectItem>
-            <SelectItem value="public_request">public_request</SelectItem>
-            <SelectItem value="invitation">invitation</SelectItem>
-            <SelectItem value="system_generated">system_generated</SelectItem>
+            {ACCESS_FLAG_MODE_OPTIONS.map((option) => (
+              <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
-        <Select value={approvalPolicy} onValueChange={(value) => setApprovalPolicy(value as typeof approvalPolicy)}>
-          <SelectTrigger>
-            <SelectValue placeholder="Approval policy" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">none</SelectItem>
-            <SelectItem value="approval_required">approval_required</SelectItem>
-          </SelectContent>
-        </Select>
+        <p className="text-xs text-muted-foreground">
+          {ACCESS_FLAG_MODE_OPTIONS.find((option) => option.value === accessMode)?.description}
+        </p>
       </div>
       <AuthzDefinitionSelector
         label="Applicable for"
@@ -102,7 +94,7 @@ export function RoleCreateForm({ appId, applicableForOptions }: Props) {
         <Button variant="outline" onClick={() => redirectInApp(router, applicationHref('/application/roles', appId, { mode: 'root' }))}>
           Cancel
         </Button>
-        <Button onClick={handleSubmit} disabled={pending || !name.trim() || !scope}>
+        <Button onClick={handleSubmit} disabled={pending || !name.trim() || scope.length === 0}>
           {pending ? 'Creating...' : 'Create Role'}
         </Button>
       </div>

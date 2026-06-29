@@ -1,0 +1,3 @@
+-- This migration directory existed without a migration.sql file.
+-- No schema change is currently associated with `create_site_request_log`,
+-- so this no-op file preserves migration history integrity for deploys.

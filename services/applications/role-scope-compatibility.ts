@@ -1,39 +1,43 @@
 import { normalizePermissionScopes, type PermissionScopeOption } from '@/services/applications/permission-scopes';
-import { decodeRoleScope, normalizeRoleScope, scopeCoversRoleScope } from '@/services/role-scopes';
+import { decodeRoleScope, normalizeRoleScopes, scopeCoversRoleScope } from '@/services/role-scopes';
 
 export type ProgressiveScopeLevel = 'acMgmt' | 'rootMgmt' | 'unknown';
 
-function normalizeScope(scope: string | null | undefined): string {
-  return normalizeRoleScope(scope) ?? (scope ?? '').trim();
+function normalizeScope(scope: unknown): string {
+  const normalized = normalizeRoleScopes(scope);
+  if (normalized.length > 0) return normalized.join(', ');
+  return typeof scope === 'string' ? scope.trim() : '';
 }
 
-export function getProgressiveScopeLevel(scope: string | null | undefined): ProgressiveScopeLevel {
-  const decoded = decodeRoleScope(scope);
-  return decoded?.mode ?? 'unknown';
+export function getProgressiveScopeLevel(scope: unknown): ProgressiveScopeLevel {
+  const normalized = normalizeRoleScopes(scope);
+  const decoded = normalized.map((item) => decodeRoleScope(item)?.mode ?? 'unknown');
+  if (decoded.includes('rootMgmt')) return 'rootMgmt';
+  if (decoded.includes('acMgmt')) return 'acMgmt';
+  return 'unknown';
 }
 
 export function getAllowedPermissionLevelsForRoleScope(
-  scope: string | null | undefined,
+  scope: unknown,
 ): PermissionScopeOption[] {
-  const normalized = normalizeRoleScope(scope);
-  return normalized ? [normalized] : [];
+  return normalizeRoleScopes(scope);
 }
 
 export function isPermissionScopeAllowedForRoleScope(
   permissionScopes: unknown,
-  roleScope: string | null | undefined,
+  roleScope: unknown,
 ): boolean {
-  const normalizedRoleScope = normalizeRoleScope(roleScope);
-  if (!normalizedRoleScope) return false;
+  const normalizedRoleScopes = normalizeRoleScopes(roleScope);
+  if (normalizedRoleScopes.length === 0) return false;
 
   return normalizePermissionScopes(permissionScopes).some((scope) =>
-    scopeCoversRoleScope(scope, normalizedRoleScope),
+    scopeCoversRoleScope(scope, normalizedRoleScopes),
   );
 }
 
 export function getInvalidPermissionScopesForRoleScope(
   permissionScopes: readonly unknown[],
-  roleScope: string | null | undefined,
+  roleScope: unknown,
 ): string[] {
   return permissionScopes
     .map((scope) => normalizePermissionScopes(scope))
@@ -42,7 +46,7 @@ export function getInvalidPermissionScopesForRoleScope(
 }
 
 export function getRoleScopeCompatibilityError(
-  roleScope: string | null | undefined,
+  roleScope: unknown,
   permissionScopes: readonly unknown[],
 ): string | null {
   const invalidScopes = getInvalidPermissionScopesForRoleScope(permissionScopes, roleScope);

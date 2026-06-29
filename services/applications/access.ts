@@ -13,10 +13,29 @@ import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-
 import {
   canAssignRoleScopeToAccount,
   expectedRoleScopesForAccount,
-  isSelfRequestableRoleAcquisitionType,
-  roleApprovalRequiresRequest,
+  getRoleAccessFlags,
+  normalizeRoleScopes,
+  roleRequestTarget,
 } from '@/services/role-scopes';
 import { revalidateApplicationRequestsRoutes } from '@/services/applications/revalidate-routes';
+
+async function findRoleIdsForScopes(
+  tx: any,
+  appId: string,
+  scopes: string[],
+): Promise<string[]> {
+  const roles = await tx.authzRole.findMany({
+    where: { appId },
+    select: { id: true, scope: true },
+  });
+
+  return roles
+    .filter((role: { scope: unknown }) => {
+      const roleScopes = normalizeRoleScopes(role.scope);
+      return roleScopes.some((scope) => scopes.includes(scope));
+    })
+    .map((role: { id: string }) => role.id);
+}
 
 const manageApplicationSchema = z.object({
   appId: z.string().min(1, 'Application ID is required.'),
@@ -39,8 +58,8 @@ function isInternalApp(appId: string) {
 }
 
 export type AssignOwnApplicationRoleResult =
-  | { success: true; mode: 'assigned'; appId: string; roleId: string; roleName: string; scope: string }
-  | { success: true; mode: 'requested'; appId: string; roleId: string; roleName: string; scope: string; requestId: string }
+  | { success: true; mode: 'assigned'; appId: string; roleId: string; roleName: string; scope: string[] }
+  | { success: true; mode: 'requested'; appId: string; roleId: string; roleName: string; scope: string[]; requestId: string }
   | { success: false; error: string };
 
 export async function assignOwnApplicationRole(input: {
@@ -80,10 +99,11 @@ export async function assignOwnApplicationRole(input: {
     if (!application) return { success: false, error: 'Application not found.' };
     if (!role) return { success: false, error: 'Role not found for this application.' };
 
-    const canSelfRequest = isSelfRequestableRoleAcquisitionType(role.acquisitionType) &&
-      canAssignRoleScopeToAccount(role.scope, account.accountType, ['public']);
-    const canAssignImmediately = canSelfRequest && !roleApprovalRequiresRequest(role.approvalPolicy);
-    const requiresApproval = canSelfRequest && roleApprovalRequiresRequest(role.approvalPolicy);
+    const accessFlags = getRoleAccessFlags(role.acquisitionType, role.approvalPolicy);
+    const canUsePublicScope = canAssignRoleScopeToAccount(role.scope, account.accountType, ['public']);
+    const canAssignImmediately = accessFlags.publiclyEnrollable && canUsePublicScope;
+    const requestTarget = canUsePublicScope ? roleRequestTarget(role.acquisitionType, role.approvalPolicy) : null;
+    const requiresApproval = requestTarget !== null;
 
     if (!canAssignImmediately && !requiresApproval) {
       return { success: false, error: 'This role scope cannot be requested by this account type.' };
@@ -107,12 +127,13 @@ export async function assignOwnApplicationRole(input: {
       if (canAssignImmediately) {
         const publicScopes = expectedRoleScopesForAccount(account.accountType, 'public');
         if (publicScopes.length > 0) {
+          const publicRoleIds = await findRoleIdsForScopes(tx, appId, publicScopes);
           await tx.access.deleteMany({
             where: {
               memberAccountId: accountId,
               parentAccountId: accountId,
               assetApplicationId: appId,
-              role: { scope: { in: publicScopes } },
+              ...(publicRoleIds.length > 0 ? { roleId: { in: publicRoleIds } } : { roleId: '__none__' }),
             },
           });
         }
@@ -132,19 +153,21 @@ export async function assignOwnApplicationRole(input: {
         return { connectionId: connection.id, requestId: null as string | null };
       }
 
-      const ownerGrant = await tx.access.findFirst({
-        where: {
-          assetApplicationId: appId,
-          roleId: 'application.owner',
-          status: 'active',
-        },
-        select: { memberAccountId: true },
-      });
+      const ownerGrant = requestTarget === 'owner'
+        ? await tx.access.findFirst({
+            where: {
+              assetApplicationId: appId,
+              roleId: 'application.owner',
+              status: 'active',
+            },
+            select: { memberAccountId: true },
+          })
+        : null;
 
       const request = await tx.request.create({
         data: {
           senderId: accountId,
-          recipientId: ownerGrant?.memberAccountId ?? accountId,
+          recipientId: requestTarget === 'owner' ? ownerGrant?.memberAccountId ?? accountId : accountId,
           action: 'applicationRoleRequest',
           type: 'applicationRoleRequest',
           data: {
@@ -155,6 +178,7 @@ export async function assignOwnApplicationRole(input: {
             roleIds: [role.id],
             roles: [{ id: role.id, name: role.name, scope: role.scope }],
             assignmentKind: 'publicApplicationAccess',
+            requestTarget,
             requestSource: input.requestSource ?? 'assignOwnApplicationRole',
           },
         },
@@ -176,7 +200,7 @@ export async function assignOwnApplicationRole(input: {
         appId,
         roleId: role.id,
         roleName: role.name,
-        scope: role.scope,
+        scope: normalizeRoleScopes(role.scope),
       };
     }
 
@@ -186,7 +210,7 @@ export async function assignOwnApplicationRole(input: {
       appId,
       roleId: role.id,
       roleName: role.name,
-      scope: role.scope,
+      scope: normalizeRoleScopes(role.scope),
       requestId: connectionDetails.requestId!,
     };
   } catch (error) {
@@ -279,11 +303,14 @@ export async function addUserApplicationAccess(input: { appId: string; permissio
     }
 
     const requestableRoles = selectedRoles.filter((role) =>
-      isSelfRequestableRoleAcquisitionType(role.acquisitionType) &&
-      canAssignRoleScopeToAccount(role.scope, account.accountType, ['public']),
+      canAssignRoleScopeToAccount(role.scope, account.accountType, ['public']) &&
+      (() => {
+        const flags = getRoleAccessFlags(role.acquisitionType, role.approvalPolicy);
+        return flags.publiclyEnrollable || flags.publiclyRequestable || flags.requestableToOwner;
+      })(),
     );
-    const immediateRoles = requestableRoles.filter((role) => !roleApprovalRequiresRequest(role.approvalPolicy));
-    const approvalRoles = requestableRoles.filter((role) => roleApprovalRequiresRequest(role.approvalPolicy));
+    const immediateRoles = requestableRoles.filter((role) => getRoleAccessFlags(role.acquisitionType, role.approvalPolicy).publiclyEnrollable);
+    const approvalRoles = requestableRoles.filter((role) => roleRequestTarget(role.acquisitionType, role.approvalPolicy) !== null);
     if (requestableRoles.length !== selectedRoles.length) {
       return { success: false, error: 'One or more roles cannot be requested by this account type.' };
     }
@@ -313,12 +340,13 @@ export async function addUserApplicationAccess(input: { appId: string; permissio
 
       const publicScopes = expectedRoleScopesForAccount(account.accountType, 'public');
       if (publicScopes.length > 0) {
+        const publicRoleIds = await findRoleIdsForScopes(tx, appId, publicScopes);
         await tx.access.deleteMany({
           where: {
             memberAccountId: accountId,
             parentAccountId: accountId,
             assetApplicationId: appId,
-            role: { scope: { in: publicScopes } },
+            ...(publicRoleIds.length > 0 ? { roleId: { in: publicRoleIds } } : { roleId: '__none__' }),
           },
         });
       }
@@ -339,30 +367,58 @@ export async function addUserApplicationAccess(input: { appId: string; permissio
       }
 
       if (approvalRoles.length > 0) {
-        const ownerGrant = await tx.access.findFirst({
-          where: {
-            assetApplicationId: appId,
-            roleId: 'application.owner',
-            status: 'active',
-          },
-          select: { memberAccountId: true },
-        });
-        await tx.request.create({
-          data: {
-            senderId: accountId,
-            recipientId: ownerGrant?.memberAccountId ?? accountId,
-            action: 'applicationRoleRequest',
-            type: 'applicationRoleRequest',
+        const ownerRequestedRoles = approvalRoles.filter((role) => roleRequestTarget(role.acquisitionType, role.approvalPolicy) === 'owner');
+        const adminRequestedRoles = approvalRoles.filter((role) => roleRequestTarget(role.acquisitionType, role.approvalPolicy) === 'admin');
+        const ownerGrant = ownerRequestedRoles.length > 0
+          ? await tx.access.findFirst({
+              where: {
+                assetApplicationId: appId,
+                roleId: 'application.owner',
+                status: 'active',
+              },
+              select: { memberAccountId: true },
+            })
+          : null;
+
+        if (ownerRequestedRoles.length > 0) {
+          await tx.request.create({
             data: {
-              appId,
-              accountId,
-              connectionId: connection.id,
-              roleIds: approvalRoles.map((role) => role.id),
-              roles: approvalRoles.map((role) => ({ id: role.id, name: role.name, scope: role.scope })),
-              assignmentKind: 'publicApplicationAccess',
+              senderId: accountId,
+              recipientId: ownerGrant?.memberAccountId ?? accountId,
+              action: 'applicationRoleRequest',
+              type: 'applicationRoleRequest',
+              data: {
+                appId,
+                accountId,
+                connectionId: connection.id,
+                roleIds: ownerRequestedRoles.map((role) => role.id),
+                roles: ownerRequestedRoles.map((role) => ({ id: role.id, name: role.name, scope: role.scope })),
+                assignmentKind: 'publicApplicationAccess',
+                requestTarget: 'owner',
+              },
             },
-          },
-        });
+          });
+        }
+
+        if (adminRequestedRoles.length > 0) {
+          await tx.request.create({
+            data: {
+              senderId: accountId,
+              recipientId: accountId,
+              action: 'applicationRoleRequest',
+              type: 'applicationRoleRequest',
+              data: {
+                appId,
+                accountId,
+                connectionId: connection.id,
+                roleIds: adminRequestedRoles.map((role) => role.id),
+                roles: adminRequestedRoles.map((role) => ({ id: role.id, name: role.name, scope: role.scope })),
+                assignmentKind: 'publicApplicationAccess',
+                requestTarget: 'admin',
+              },
+            },
+          });
+        }
       }
     });
 
@@ -408,11 +464,14 @@ export async function updateUserApplicationPermissions(input: { appId: string; p
     }
 
     const requestableRoles = selectedRoles.filter((role) =>
-      isSelfRequestableRoleAcquisitionType(role.acquisitionType) &&
-      canAssignRoleScopeToAccount(role.scope, account.accountType, ['public']),
+      canAssignRoleScopeToAccount(role.scope, account.accountType, ['public']) &&
+      (() => {
+        const flags = getRoleAccessFlags(role.acquisitionType, role.approvalPolicy);
+        return flags.publiclyEnrollable || flags.publiclyRequestable || flags.requestableToOwner;
+      })(),
     );
-    const immediateRoles = requestableRoles.filter((role) => !roleApprovalRequiresRequest(role.approvalPolicy));
-    const approvalRoles = requestableRoles.filter((role) => roleApprovalRequiresRequest(role.approvalPolicy));
+    const immediateRoles = requestableRoles.filter((role) => getRoleAccessFlags(role.acquisitionType, role.approvalPolicy).publiclyEnrollable);
+    const approvalRoles = requestableRoles.filter((role) => roleRequestTarget(role.acquisitionType, role.approvalPolicy) !== null);
     if (requestableRoles.length !== selectedRoles.length) {
       return { success: false, error: 'One or more roles cannot be requested by this account type.' };
     }
@@ -422,12 +481,13 @@ export async function updateUserApplicationPermissions(input: { appId: string; p
 
       const publicScopes = expectedRoleScopesForAccount(account.accountType, 'public');
       if (publicScopes.length > 0) {
+        const publicRoleIds = await findRoleIdsForScopes(tx, appId, publicScopes);
         await tx.access.deleteMany({
           where: {
             memberAccountId: accountId,
             parentAccountId: accountId,
             assetApplicationId: appId,
-            role: { scope: { in: publicScopes } },
+            ...(publicRoleIds.length > 0 ? { roleId: { in: publicRoleIds } } : { roleId: '__none__' }),
           },
         });
       }
@@ -457,30 +517,58 @@ export async function updateUserApplicationPermissions(input: { appId: string; p
           where: { accountId_appId: { accountId, appId } },
           select: { id: true },
         });
-        const ownerGrant = await tx.access.findFirst({
-          where: {
-            assetApplicationId: appId,
-            roleId: 'application.owner',
-            status: 'active',
-          },
-          select: { memberAccountId: true },
-        });
-        await tx.request.create({
-          data: {
-            senderId: accountId,
-            recipientId: ownerGrant?.memberAccountId ?? accountId,
-            action: 'applicationRoleRequest',
-            type: 'applicationRoleRequest',
+        const ownerRequestedRoles = approvalRoles.filter((role) => roleRequestTarget(role.acquisitionType, role.approvalPolicy) === 'owner');
+        const adminRequestedRoles = approvalRoles.filter((role) => roleRequestTarget(role.acquisitionType, role.approvalPolicy) === 'admin');
+        const ownerGrant = ownerRequestedRoles.length > 0
+          ? await tx.access.findFirst({
+              where: {
+                assetApplicationId: appId,
+                roleId: 'application.owner',
+                status: 'active',
+              },
+              select: { memberAccountId: true },
+            })
+          : null;
+
+        if (ownerRequestedRoles.length > 0) {
+          await tx.request.create({
             data: {
-              appId,
-              accountId,
-              connectionId: connection?.id ?? null,
-              roleIds: approvalRoles.map((role) => role.id),
-              roles: approvalRoles.map((role) => ({ id: role.id, name: role.name, scope: role.scope })),
-              assignmentKind: 'publicApplicationAccess',
+              senderId: accountId,
+              recipientId: ownerGrant?.memberAccountId ?? accountId,
+              action: 'applicationRoleRequest',
+              type: 'applicationRoleRequest',
+              data: {
+                appId,
+                accountId,
+                connectionId: connection?.id ?? null,
+                roleIds: ownerRequestedRoles.map((role) => role.id),
+                roles: ownerRequestedRoles.map((role) => ({ id: role.id, name: role.name, scope: role.scope })),
+                assignmentKind: 'publicApplicationAccess',
+                requestTarget: 'owner',
+              },
             },
-          },
-        });
+          });
+        }
+
+        if (adminRequestedRoles.length > 0) {
+          await tx.request.create({
+            data: {
+              senderId: accountId,
+              recipientId: accountId,
+              action: 'applicationRoleRequest',
+              type: 'applicationRoleRequest',
+              data: {
+                appId,
+                accountId,
+                connectionId: connection?.id ?? null,
+                roleIds: adminRequestedRoles.map((role) => role.id),
+                roles: adminRequestedRoles.map((role) => ({ id: role.id, name: role.name, scope: role.scope })),
+                assignmentKind: 'publicApplicationAccess',
+                requestTarget: 'admin',
+              },
+            },
+          });
+        }
       }
     });
 

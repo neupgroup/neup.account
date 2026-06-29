@@ -12,6 +12,7 @@ import {
 } from '@/services/applications/authz-manage';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { formatRoleScopeForDisplay } from '@/services/role-scopes';
+import { getEnabledAccessFlagLabels } from './access-flag-mode';
 
 type Props = {
   appId: string;
@@ -86,8 +87,9 @@ export function RolesPanel({ appId, canManage, canResetPush, initialRoles, hasWe
                     {role.scope && (
                       <Badge variant="outline" className="text-xs">{formatRoleScopeForDisplay(role.scope)}</Badge>
                     )}
-                    <Badge variant="outline" className="text-xs">{role.acquisitionType}</Badge>
-                    <Badge variant="outline" className="text-xs">{role.approvalPolicy}</Badge>
+                    {getEnabledAccessFlagLabels(role).map((label) => (
+                      <Badge key={label} variant="outline" className="text-xs">{label}</Badge>
+                    ))}
                     {defaultRoleId === role.id ? (
                       <Badge className="text-xs">Default</Badge>
                     ) : null}

@@ -168,7 +168,7 @@ function RequestDetailBody({ request }: { request: Awaited<ReturnType<typeof get
 
     case 'applicationRoleRequest': {
       const roles = Array.isArray(d.roles)
-        ? d.roles as Array<{ id?: string; name?: string; scope?: string }>
+        ? d.roles as Array<{ id?: string; name?: string; scope?: unknown }>
         : [];
       return (
         <div className="space-y-3">

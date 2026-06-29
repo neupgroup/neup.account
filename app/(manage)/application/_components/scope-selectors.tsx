@@ -3,7 +3,7 @@
 import { cn } from '@/core/helpers/utils';
 import {
   ROLE_SCOPE_KEYS,
-  normalizeRoleScope,
+  normalizeRoleScopes,
   type RoleScope,
 } from '@/services/role-scopes';
 
@@ -35,23 +35,23 @@ export function RoleScopeSelector({
   onChange,
   disabled = false,
 }: {
-  value: string;
-  onChange: (value: string) => void;
+  value: string[];
+  onChange: (value: string[]) => void;
   disabled?: boolean;
 }) {
-  const selectedScope = normalizeRoleScope(value);
+  const selectedScopes = new Set(normalizeRoleScopes(value));
 
   return (
     <div className="grid gap-3 rounded-xl border bg-card p-4">
       <div>
         <p className="text-sm font-medium">Role scope</p>
         <p className="text-xs text-muted-foreground">
-          Choose what kind of account-management role this is for.
+          Choose one or more account-management scopes for this role.
         </p>
       </div>
       <div className="grid gap-2">
         {ROLE_SCOPE_KEYS.map((scope) => {
-          const checked = selectedScope === scope;
+          const checked = selectedScopes.has(scope);
           const meta = ROLE_SCOPE_META[scope];
 
           return (
@@ -59,7 +59,11 @@ export function RoleScopeSelector({
               key={scope}
               type="button"
               disabled={disabled}
-              onClick={() => onChange(scope)}
+              onClick={() => onChange(
+                checked
+                  ? Array.from(selectedScopes).filter((item) => item !== scope)
+                  : [...Array.from(selectedScopes), scope],
+              )}
               className={cn(
                 'grid gap-1 rounded-xl border px-4 py-3 text-left transition-colors',
                 checked

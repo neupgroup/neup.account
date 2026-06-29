@@ -18,6 +18,32 @@ export const ROLE_APPROVAL_POLICIES = [
   'approval_required',
 ] as const;
 
+/*
+::neup.documentation::role-access-flags
+::title Role Access Flags
+
+Defines the semantic role and permission access flags used across authz management.
+
+::public
+
+The helpers in this module translate between the current persisted acquisition and approval columns and the higher-level flags used by role and permission editors.
+
+::public end
+
+::private
+
+The storage mapping intentionally remains backward-compatible:
+- `assignment` + `none` => `assignable`
+- `public_request` + `none` => `publiclyEnrollable`
+- `system_generated` => `selfAssigned`
+- `invitation` + `none` => `rootManaged`
+- `public_request` + `approval_required` => `publiclyRequestable`
+- `invitation` + `approval_required` => `requestableToOwner`
+
+::private end
+
+::end
+*/
 export type RoleScope = (typeof ROLE_SCOPE_KEYS)[number];
 export type RoleAcquisitionType = (typeof ROLE_ACQUISITION_TYPES)[number];
 export type RoleApprovalPolicy = (typeof ROLE_APPROVAL_POLICIES)[number];
@@ -25,6 +51,15 @@ export type RoleAssignmentMode = 'manageable' | 'public' | 'toApprove' | 'root';
 export type ScopeMode = 'acMgmt' | 'rootMgmt';
 export type ScopeAccountKey = 'individual' | 'dependent' | 'brand' | 'subbrand';
 export type ScopeAudience = Record<ScopeAccountKey, boolean>;
+export type RoleRequestTarget = 'admin' | 'owner';
+export type RoleAccessFlags = {
+  assignable: boolean;
+  publiclyEnrollable: boolean;
+  selfAssigned: boolean;
+  rootManaged: boolean;
+  publiclyRequestable: boolean;
+  requestableToOwner: boolean;
+};
 
 const ROLE_SCOPE_SET = new Set<string>(ROLE_SCOPE_KEYS);
 const NON_ROOT_ASSIGNMENT_MODES = new Set<RoleAssignmentMode>(['manageable', 'public', 'toApprove']);
@@ -120,16 +155,56 @@ export function normalizeAccountTypeForRoleScope(
   return normalizedAccountType(accountType);
 }
 
-export function normalizeRoleScope(scope: string | null | undefined): RoleScope | null {
+function normalizeScopeToken(scope: string | null | undefined): RoleScope | null {
   const trimmed = (scope ?? '').trim();
   if (!trimmed) return null;
   if (ROLE_SCOPE_SET.has(trimmed)) return trimmed as RoleScope;
   return LEGACY_SCOPE_MAP[trimmed] ?? null;
 }
 
-export function expandRoleScope(scope: string | null | undefined): RoleScope[] {
-  const normalized = normalizeRoleScope(scope);
+function expandStringRoleScope(scope: string): RoleScope[] {
+  const trimmed = scope.trim();
+  if (!trimmed) return [];
+
+  if ((trimmed.startsWith('[') && trimmed.endsWith(']')) || (trimmed.startsWith('"') && trimmed.endsWith('"'))) {
+    try {
+      const parsed = JSON.parse(trimmed) as unknown;
+      return normalizeRoleScopes(parsed);
+    } catch {
+      // Fall through to single-token normalization when legacy rows contain plain strings.
+    }
+  }
+
+  const normalized = normalizeScopeToken(trimmed);
   return normalized ? [normalized] : [];
+}
+
+export function normalizeRoleScopes(scope: unknown): RoleScope[] {
+  const values = Array.isArray(scope)
+    ? scope
+    : typeof scope === 'string'
+      ? expandStringRoleScope(scope)
+      : [];
+  const normalized: RoleScope[] = [];
+  const seen = new Set<string>();
+
+  for (const value of values) {
+    if (typeof value !== 'string') continue;
+    const next = normalizeScopeToken(value);
+    if (!next || seen.has(next)) continue;
+    seen.add(next);
+    normalized.push(next);
+  }
+
+  return normalized;
+}
+
+export function normalizeRoleScope(scope: unknown): RoleScope | null {
+  return normalizeRoleScopes(scope)[0] ?? null;
+}
+
+export function expandRoleScope(scope: unknown): RoleScope[] {
+  return normalizeRoleScopes(scope);
 }
 
 export function emptyScopeAudience(): ScopeAudience {
@@ -142,7 +217,7 @@ export function emptyScopeAudience(): ScopeAudience {
 }
 
 export function decodeRoleScope(
-  scope: string | null | undefined,
+  scope: unknown,
 ): { mode: ScopeMode; audience: ScopeAudience; normalized: RoleScope } | null {
   const normalized = normalizeRoleScope(scope);
   if (!normalized) return null;
@@ -184,7 +259,7 @@ export function decodeRoleScope(
 }
 
 export function isKnownRoleScope(scope: string): scope is RoleScope {
-  return normalizeRoleScope(scope) !== null;
+  return normalizeScopeToken(scope) !== null;
 }
 
 export function roleScopeError() {
@@ -251,52 +326,65 @@ export function expectedRoleScopesForAccount(
 }
 
 export function canAssignRoleScopeToAccount(
-  scope: string | null | undefined,
+  scope: unknown,
   accountType: string | null | undefined,
   modes: RoleAssignmentMode[],
 ): boolean {
-  const normalizedScope = normalizeRoleScope(scope);
-  if (!normalizedScope) return false;
+  const normalizedScopes = normalizeRoleScopes(scope);
+  if (normalizedScopes.length === 0) return false;
 
-  if (normalizedScope === 'rootMgmt.self') {
-    return modes.includes('root') && roleScopeMatchesAccountType(normalizedScope, accountType);
-  }
+  return normalizedScopes.some((normalizedScope) => {
+    if (normalizedScope === 'rootMgmt.self') {
+      return modes.includes('root') && roleScopeMatchesAccountType(normalizedScope, accountType);
+    }
 
-  return modes.some((mode) => NON_ROOT_ASSIGNMENT_MODES.has(mode)) &&
-    roleScopeMatchesAccountType(normalizedScope, accountType);
+    return modes.some((mode) => NON_ROOT_ASSIGNMENT_MODES.has(mode)) &&
+      roleScopeMatchesAccountType(normalizedScope, accountType);
+  });
 }
 
-export function isRootRoleScope(scope: string | null | undefined): boolean {
-  return normalizeRoleScope(scope) === 'rootMgmt.self';
+export function isRootRoleScope(scope: unknown): boolean {
+  return normalizeRoleScopes(scope).includes('rootMgmt.self');
 }
 
 export function scopeCoversRoleScope(
-  grantedScope: string | null | undefined,
-  roleScope: string | null | undefined,
+  grantedScope: unknown,
+  roleScope: unknown,
 ): boolean {
-  return normalizeRoleScope(grantedScope) === normalizeRoleScope(roleScope);
+  const granted = new Set(normalizeRoleScopes(grantedScope));
+  return normalizeRoleScopes(roleScope).some((scope) => granted.has(scope));
 }
 
-export function formatScopeAudience(scope: string | null | undefined): string {
-  const normalized = normalizeRoleScope(scope);
-  if (!normalized) return (scope ?? '').trim();
-  if (normalized === 'acMgmt.brandSubbrand') return 'brand, subbrand';
-  if (normalized === 'acMgmt.brand') return 'brand';
-  if (normalized === 'acMgmt.subbrand') return 'subbrand';
+function formatSingleScopeAudience(scope: RoleScope): string {
+  if (scope === 'acMgmt.brandSubbrand') return 'brand, subbrand';
+  if (scope === 'acMgmt.brand') return 'brand';
+  if (scope === 'acMgmt.subbrand') return 'subbrand';
   return 'self';
 }
 
-export function formatRoleScopeForDisplay(scope: string | null | undefined): string {
-  return normalizeRoleScope(scope) ?? (scope ?? '').trim();
+export function formatScopeAudience(scope: unknown): string {
+  const normalized = normalizeRoleScopes(scope);
+  if (normalized.length === 0) {
+    if (typeof scope === 'string') return scope.trim();
+    return '';
+  }
+  return normalized.map((item) => formatSingleScopeAudience(item)).join(' + ');
+}
+
+export function formatRoleScopeForDisplay(scope: unknown): string {
+  const normalized = normalizeRoleScopes(scope);
+  if (normalized.length > 0) return normalized.join(', ');
+  if (typeof scope === 'string') return scope.trim();
+  return '';
 }
 
 export function formatMergedScopeLabels(
-  scopes: Array<string | null | undefined>,
+  scopes: unknown[],
 ): string[] {
   return Array.from(
     new Set(
       scopes
-        .map((scope) => normalizeRoleScope(scope) ?? (scope ?? '').trim())
+        .flatMap((scope) => normalizeRoleScopes(scope))
         .filter(Boolean),
     ),
   );
@@ -320,15 +408,134 @@ export function normalizeRoleApprovalPolicy(
     : 'none';
 }
 
+export function emptyRoleAccessFlags(): RoleAccessFlags {
+  return {
+    assignable: false,
+    publiclyEnrollable: false,
+    selfAssigned: false,
+    rootManaged: false,
+    publiclyRequestable: false,
+    requestableToOwner: false,
+  };
+}
+
+export function normalizeRoleAccessFlags(
+  value: Partial<RoleAccessFlags> | null | undefined,
+): RoleAccessFlags {
+  return {
+    assignable: value?.assignable === true,
+    publiclyEnrollable: value?.publiclyEnrollable === true,
+    selfAssigned: value?.selfAssigned === true,
+    rootManaged: value?.rootManaged === true,
+    publiclyRequestable: value?.publiclyRequestable === true,
+    requestableToOwner: value?.requestableToOwner === true,
+  };
+}
+
+export function getRoleAccessFlags(
+  acquisitionType: string | null | undefined,
+  approvalPolicy: string | null | undefined,
+): RoleAccessFlags {
+  const normalizedAcquisitionType = normalizeRoleAcquisitionType(acquisitionType);
+  const normalizedApprovalPolicy = normalizeRoleApprovalPolicy(approvalPolicy);
+
+  if (normalizedAcquisitionType === 'system_generated') {
+    return { ...emptyRoleAccessFlags(), selfAssigned: true };
+  }
+
+  if (normalizedAcquisitionType === 'invitation' && normalizedApprovalPolicy === 'approval_required') {
+    return { ...emptyRoleAccessFlags(), requestableToOwner: true };
+  }
+
+  if (normalizedAcquisitionType === 'invitation') {
+    return { ...emptyRoleAccessFlags(), rootManaged: true };
+  }
+
+  if (normalizedAcquisitionType === 'public_request' && normalizedApprovalPolicy === 'approval_required') {
+    return { ...emptyRoleAccessFlags(), publiclyRequestable: true };
+  }
+
+  if (normalizedAcquisitionType === 'public_request') {
+    return { ...emptyRoleAccessFlags(), publiclyEnrollable: true };
+  }
+
+  return { ...emptyRoleAccessFlags(), assignable: true };
+}
+
+export function getStoredRoleAccessPolicy(
+  input: Partial<RoleAccessFlags> | { acquisitionType?: string | null; approvalPolicy?: string | null } | null | undefined,
+): { acquisitionType: RoleAcquisitionType; approvalPolicy: RoleApprovalPolicy; flags: RoleAccessFlags } {
+  const hasExplicitFlags = !!input && (
+    'assignable' in input ||
+    'publiclyEnrollable' in input ||
+    'selfAssigned' in input ||
+    'rootManaged' in input ||
+    'publiclyRequestable' in input ||
+    'requestableToOwner' in input
+  );
+
+  const flags = hasExplicitFlags
+    ? normalizeRoleAccessFlags(input as Partial<RoleAccessFlags>)
+    : getRoleAccessFlags(
+        (input as { acquisitionType?: string | null } | null | undefined)?.acquisitionType,
+        (input as { approvalPolicy?: string | null } | null | undefined)?.approvalPolicy,
+      );
+
+  if (flags.selfAssigned) {
+    return { acquisitionType: 'system_generated', approvalPolicy: 'none', flags };
+  }
+  if (flags.requestableToOwner) {
+    return { acquisitionType: 'invitation', approvalPolicy: 'approval_required', flags };
+  }
+  if (flags.rootManaged) {
+    return { acquisitionType: 'invitation', approvalPolicy: 'none', flags };
+  }
+  if (flags.publiclyRequestable) {
+    return { acquisitionType: 'public_request', approvalPolicy: 'approval_required', flags };
+  }
+  if (flags.publiclyEnrollable) {
+    return { acquisitionType: 'public_request', approvalPolicy: 'none', flags };
+  }
+
+  return { acquisitionType: 'assignment', approvalPolicy: 'none', flags: { ...emptyRoleAccessFlags(), assignable: true } };
+}
+
+export function isRoleDirectlyAssignable(
+  acquisitionType: string | null | undefined,
+  approvalPolicy: string | null | undefined,
+  actor: 'manager' | 'root' = 'manager',
+): boolean {
+  const flags = getRoleAccessFlags(acquisitionType, approvalPolicy);
+  return flags.assignable || (actor === 'root' && flags.rootManaged);
+}
+
 export function isDirectlyAssignableRoleAcquisitionType(value: string | null | undefined): boolean {
-  const normalized = normalizeRoleAcquisitionType(value);
-  return normalized === 'assignment' || normalized === 'public_request';
+  return isRoleDirectlyAssignable(value, 'none', 'manager');
 }
 
 export function isSelfRequestableRoleAcquisitionType(value: string | null | undefined): boolean {
-  return normalizeRoleAcquisitionType(value) === 'public_request';
+  const flags = getRoleAccessFlags(value, 'none');
+  return flags.publiclyEnrollable || flags.publiclyRequestable || flags.requestableToOwner;
 }
 
 export function roleApprovalRequiresRequest(value: string | null | undefined): boolean {
   return normalizeRoleApprovalPolicy(value) === 'approval_required';
+}
+
+export function roleRequiresApproval(
+  acquisitionType: string | null | undefined,
+  approvalPolicy: string | null | undefined,
+): boolean {
+  const flags = getRoleAccessFlags(acquisitionType, approvalPolicy);
+  return flags.publiclyRequestable || flags.requestableToOwner;
+}
+
+export function roleRequestTarget(
+  acquisitionType: string | null | undefined,
+  approvalPolicy: string | null | undefined,
+): RoleRequestTarget | null {
+  const flags = getRoleAccessFlags(acquisitionType, approvalPolicy);
+  if (flags.requestableToOwner) return 'owner';
+  if (flags.publiclyRequestable) return 'admin';
+  return null;
 }

@@ -3,12 +3,18 @@
 import { Badge } from '@/components/ui/badge';
 
 type Props = {
-  scope: string | null | undefined;
+  scope: unknown;
   className?: string;
 };
 
-export function toScopeTokens(scope: string | null | undefined): string[] {
-  const trimmed = scope?.trim();
+export function toScopeTokens(scope: unknown): string[] {
+  if (Array.isArray(scope)) {
+    return scope
+      .map((item) => (typeof item === 'string' ? item.trim() : ''))
+      .filter(Boolean);
+  }
+
+  const trimmed = typeof scope === 'string' ? scope.trim() : '';
   if (!trimmed) return [];
 
   try {

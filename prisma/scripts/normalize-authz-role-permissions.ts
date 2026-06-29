@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { Prisma } from '../../prisma/generated/client/client';
 import prisma from '../../core/helpers/prisma';
 
 if (!process.env.DATABASE_URL) {
@@ -93,7 +94,7 @@ async function main() {
             data: permissionIds.map((permissionId) => ({
               roleId: role.id,
               permissionId,
-              scope: role.scope,
+              scope: role.scope as Prisma.InputJsonValue,
             })),
             skipDuplicates: true,
           });

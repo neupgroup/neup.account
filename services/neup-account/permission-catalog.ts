@@ -28,6 +28,12 @@ export type NeupAccountPermissionDefinition = {
   scope: string[];
   acquisitionType: PermissionAcquisitionType;
   approvalPolicy: PermissionApprovalPolicy;
+  assignable: boolean;
+  publiclyEnrollable: boolean;
+  selfAssigned: boolean;
+  rootManaged: boolean;
+  publiclyRequestable: boolean;
+  requestableToOwner: boolean;
 };
 
 const DEFAULT_LEGACY_PERMISSIONS = [
@@ -364,6 +370,45 @@ function scopeForAudience(audience: PermissionAudience): string[] {
   return ['public.individual'];
 }
 
+function permissionAccessForAudience(audience: PermissionAudience) {
+  if (audience === 'root') {
+    return {
+      acquisitionType: 'invitation' as PermissionAcquisitionType,
+      approvalPolicy: 'none' as PermissionApprovalPolicy,
+      assignable: false,
+      publiclyEnrollable: false,
+      selfAssigned: false,
+      rootManaged: true,
+      publiclyRequestable: false,
+      requestableToOwner: false,
+    };
+  }
+
+  if (audience === 'managed') {
+    return {
+      acquisitionType: 'assignment' as PermissionAcquisitionType,
+      approvalPolicy: 'none' as PermissionApprovalPolicy,
+      assignable: true,
+      publiclyEnrollable: false,
+      selfAssigned: false,
+      rootManaged: false,
+      publiclyRequestable: false,
+      requestableToOwner: false,
+    };
+  }
+
+  return {
+    acquisitionType: 'system_generated' as PermissionAcquisitionType,
+    approvalPolicy: 'none' as PermissionApprovalPolicy,
+    assignable: false,
+    publiclyEnrollable: false,
+    selfAssigned: true,
+    rootManaged: false,
+    publiclyRequestable: false,
+    requestableToOwner: false,
+  };
+}
+
 export function stripPermissionAudience(name: string): string {
   return name.replace(/\.(self|managed|root)$/u, '');
 }
@@ -381,14 +426,21 @@ export const NEUP_ACCOUNT_PERMISSION_DEFINITIONS: NeupAccountPermissionDefinitio
       .flatMap((legacyName) =>
         audiencesForLegacyPermission(legacyName).map((audience) => {
           const name = canonicalNameFromLegacy(legacyName, audience);
+          const access = permissionAccessForAudience(audience);
           const definition: NeupAccountPermissionDefinition = {
             legacyName,
             name,
             audience,
             description: permissionDescription(name, audience),
             scope: scopeForAudience(audience),
-            acquisitionType: 'assignment',
-            approvalPolicy: 'none',
+            acquisitionType: access.acquisitionType,
+            approvalPolicy: access.approvalPolicy,
+            assignable: access.assignable,
+            publiclyEnrollable: access.publiclyEnrollable,
+            selfAssigned: access.selfAssigned,
+            rootManaged: access.rootManaged,
+            publiclyRequestable: access.publiclyRequestable,
+            requestableToOwner: access.requestableToOwner,
           };
           return [name, definition] as const;
         }),

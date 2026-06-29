@@ -23,6 +23,7 @@ import type { ApplicationAuthzDefinitionOption } from '@/services/applications/a
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { redirectInApp } from '@/core/helper/navigation';
 import { toScopeTokens } from './permission-scope-badges';
+import { ACCESS_FLAG_MODE_OPTIONS, getAccessFlagMode, getAccessFlagPayload, type AccessFlagMode } from './access-flag-mode';
 
 const SCOPE_TOKEN_PATTERN = /^[A-Za-z0-9_.-]+$/;
 
@@ -52,8 +53,7 @@ export function PermissionDetailEditor({
   const [description, setDescription] = useState(permission.description ?? '');
   const [scopeTokens, setScopeTokens] = useState<string[]>(() => toScopeTokens(permission.scope));
   const [scopeInput, setScopeInput] = useState('');
-  const [acquisitionType, setAcquisitionType] = useState(permission.acquisitionType ?? 'assignment');
-  const [approvalPolicy, setApprovalPolicy] = useState(permission.approvalPolicy ?? 'none');
+  const [accessMode, setAccessMode] = useState<AccessFlagMode>(getAccessFlagMode(permission));
   const [rules, setRules] = useState(permission.rules ?? '');
   const [status, setStatus] = useState(permission.status ?? '');
   const [savePending, setSavePending] = useState(false);
@@ -132,8 +132,7 @@ export function PermissionDetailEditor({
       permissionId: permission.id,
       description: description || undefined,
       scope: finalScopeTokens.length > 0 ? JSON.stringify(finalScopeTokens) : undefined,
-      acquisitionType,
-      approvalPolicy,
+      ...getAccessFlagPayload(accessMode),
       rules: rules || undefined,
       status: status || undefined,
     });
@@ -198,27 +197,20 @@ export function PermissionDetailEditor({
             </div>
           ) : null}
         </div>
-        <div className="grid gap-2 sm:grid-cols-2">
-          <Select value={acquisitionType} onValueChange={setAcquisitionType} disabled={!canManage}>
+        <div className="grid gap-2">
+          <Select value={accessMode} onValueChange={(value) => setAccessMode(value as AccessFlagMode)} disabled={!canManage}>
             <SelectTrigger>
-              <SelectValue placeholder="Acquisition type" />
+              <SelectValue placeholder="Permission access mode" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="assignment">assignment</SelectItem>
-              <SelectItem value="public_request">public_request</SelectItem>
-              <SelectItem value="invitation">invitation</SelectItem>
-              <SelectItem value="system_generated">system_generated</SelectItem>
+              {ACCESS_FLAG_MODE_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
-          <Select value={approvalPolicy} onValueChange={setApprovalPolicy} disabled={!canManage}>
-            <SelectTrigger>
-              <SelectValue placeholder="Approval policy" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">none</SelectItem>
-              <SelectItem value="approval_required">approval_required</SelectItem>
-            </SelectContent>
-          </Select>
+          <p className="text-xs text-muted-foreground">
+            {ACCESS_FLAG_MODE_OPTIONS.find((option) => option.value === accessMode)?.description}
+          </p>
         </div>
         <Input
           value={rules}

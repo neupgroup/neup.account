@@ -16,6 +16,7 @@
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { activeAccessWhere } from '@/services/access-model';
+import { getRoleAccessFlags } from '@/services/role-scopes';
 
 /*
 ::neup.documentation::application-roles-service
@@ -222,6 +223,12 @@ export async function getApplicationRoles(params: {
       'roleScope',
       'roleAcquisitionType',
       'roleApprovalPolicy',
+      'assignable',
+      'publiclyEnrollable',
+      'selfAssigned',
+      'rootManaged',
+      'publiclyRequestable',
+      'requestableToOwner',
       'pushed',
       'permissions',
     ];
@@ -233,6 +240,7 @@ export async function getApplicationRoles(params: {
       roleScope: r.scope,
       roleAcquisitionType: r.acquisitionType,
       roleApprovalPolicy: r.approvalPolicy,
+      ...getRoleAccessFlags(r.acquisitionType, r.approvalPolicy),
       pushed: true,
       permissions: Array.isArray(r.permissions)
         ? r.permissions.flatMap((p) => {

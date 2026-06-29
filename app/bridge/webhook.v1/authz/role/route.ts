@@ -121,10 +121,14 @@ async function syncAffectedRoleSnapshots(tx: any, roleIds: string[]): Promise<vo
 async function resolveRolePermissionScope(
   tx: any,
   roleId: string,
-  fallbackScope?: string | null,
-): Promise<string | null> {
+  fallbackScope?: unknown,
+): Promise<unknown> {
+  if (Array.isArray(fallbackScope) && fallbackScope.length > 0) {
+    return fallbackScope;
+  }
+
   if (typeof fallbackScope === 'string' && fallbackScope.trim().length > 0) {
-    return fallbackScope.trim();
+    return [fallbackScope.trim()];
   }
 
   const role = await tx.authzRole.findUnique({
@@ -132,7 +136,7 @@ async function resolveRolePermissionScope(
     select: { scope: true },
   });
 
-  return typeof role?.scope === 'string' && role.scope.trim().length > 0 ? role.scope.trim() : null;
+  return role?.scope ?? null;
 }
 
 // ---------------------------------------------------------------------------
@@ -176,7 +180,7 @@ async function handleRolePermission(operation: Operation, body: WebhookBody): Pr
             id,
             roleId: d.roleId as string,
             permissionId: d.permissionId as string,
-            scope,
+            scope: scope as any,
           },
         });
 
@@ -272,7 +276,7 @@ async function handleRolePermission(operation: Operation, body: WebhookBody): Pr
               id: crypto.randomUUID(),
               roleId,
               permissionId,
-              scope,
+              scope: scope as any,
             },
           });
           touchedRoles.push(roleId);

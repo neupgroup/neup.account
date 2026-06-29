@@ -5,13 +5,14 @@ import { verifyAccountToken } from '@/core/auth/accountToken';
 import { logError } from '@/core/helpers/logger';
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from '@/services/access-model';
 import { validateAuthSession } from '@/services/auth/session';
+import { normalizeRoleScopes } from '@/services/role-scopes';
 import { checkGrantedPermissions, getUserNeupIds, getUserProfile } from '@/services/user';
 
 type ApplicationTeamMemberRole = {
   roleId: string;
   roleName: string | null;
   roleDescription: string | null;
-  roleScope: string | null;
+  roleScope: string[] | null;
   permissions: string[];
   grantCount: number;
 };
@@ -234,7 +235,7 @@ export async function getApplicationTeamMembers(input: {
             roleId: row.role.id,
             roleName: row.role.name,
             roleDescription: row.role.description ?? null,
-            roleScope: row.role.scope ?? null,
+            roleScope: normalizeRoleScopes(row.role.scope),
             permissions: Array.from(new Set(permissionNames)),
             grantCount: 1,
           });

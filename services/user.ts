@@ -4,12 +4,13 @@
 // for a given account. All functions fall back to the active account if no ID is passed.
 
 import prisma from "@/core/helpers/prisma";
+import { Prisma } from "@/prisma/generated/client/client";
 import { logError } from "@/core/helpers/logger";
 import { getActiveAccountId, getPersonalAccountId } from "@/core/auth/verify";
 import { extractGenderFromDetails, resolveDisplayImage } from "@/core/helpers/display-image";
 import { getAccountSelectorContext } from "@/core/auth/accountSelector";
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from "@/services/access-model";
-import { isRootRoleScope, normalizeRoleScope } from '@/services/role-scopes';
+import { isRootRoleScope, normalizeRoleScope, normalizeRoleScopes } from '@/services/role-scopes';
 import {
   getCanonicalPermissionAudience,
   resolveNeupAccountPermissionCandidates,
@@ -62,7 +63,7 @@ export type HomeSelectedAccountAccessLog = {
     status: string;
     roleId: string;
     roleName: string | null;
-    roleScope: string | null;
+    roleScope: string[] | null;
     permissions: string[];
     expiresAt: string | null;
   }>;
@@ -70,19 +71,19 @@ export type HomeSelectedAccountAccessLog = {
 
 type PermissionGrantEntry = {
   name: string;
-  roleScope: string | null;
+  roleScope: string[] | null;
 };
 
 export type AccountRolePermissionsEntry = [roleId: string, roleName: string | null, permissionNames: string[]];
 
 type PermissionMatchContext = 'managed' | 'root' | 'self' | 'selfOrRoot';
 
-function shouldIgnoreManagedRoleScope(scope: string | null | undefined): boolean {
+function shouldIgnoreManagedRoleScope(scope: unknown): boolean {
   return isRootRoleScope(scope);
 }
 
 function matchesRoleScope(
-  roleScope: string | null,
+  roleScope: unknown,
   expectedRoleScopes?: readonly string[] | string,
 ): boolean {
   if (!expectedRoleScopes) return true;
@@ -130,50 +131,70 @@ type AppAccessGrantQuery = {
   parentAccountId?: string;
 };
 
+type RawAccessRoleRow = {
+  accessId: string;
+  accessType: string;
+  status: string;
+  roleId: string;
+  roleName: string | null;
+  roleScopeText: string | null;
+  rolePermissions: Prisma.JsonValue | null;
+  expiresAt: Date | null;
+};
+
+async function queryAccessRoleRows(input: {
+  memberAccountId: string;
+  appId: string;
+  accessType?: 'acc_self' | 'acc_self_root';
+  parentAccountId?: string;
+}): Promise<RawAccessRoleRow[]> {
+  const rows = await prisma.$queryRaw<RawAccessRoleRow[]>(Prisma.sql`
+    SELECT
+      a."id" AS "accessId",
+      a."access_type" AS "accessType",
+      a."status" AS "status",
+      a."role_id" AS "roleId",
+      r."name" AS "roleName",
+      r."scope"::text AS "roleScopeText",
+      r."permissions" AS "rolePermissions",
+      a."is_temporary" AS "expiresAt"
+    FROM "access" a
+    INNER JOIN "authz_role" r ON r."id" = a."role_id"
+    WHERE a."member_account_id" = ${input.memberAccountId}
+      AND a."access_application_id" = ${input.appId}
+      AND a."status" = 'active'
+      AND (a."is_temporary" IS NULL OR a."is_temporary" > NOW())
+      AND r."app_id" = ${input.appId}
+      ${input.accessType ? Prisma.sql`AND a."access_type" = ${input.accessType}` : Prisma.empty}
+      ${input.parentAccountId ? Prisma.sql`AND a."parent_account_id" = ${input.parentAccountId}` : Prisma.empty}
+    ORDER BY a."role_id" ASC, a."id" ASC
+  `);
+
+  return rows;
+}
+
 async function getAppAccessRoleRows({
   memberAccountId,
   appId,
   accessType,
   parentAccountId,
-}: AppAccessGrantQuery): Promise<Array<{ roleId: string; roleName: string | null; roleScope: string | null; permissionNames: string[] }>> {
+}: AppAccessGrantQuery): Promise<Array<{ roleId: string; roleName: string | null; roleScope: string[] | null; permissionNames: string[] }>> {
   if (!memberAccountId || !appId) return [];
 
   try {
     await cleanupExpiredAccessModel();
-
-    const accessRows = await prisma.access.findMany({
-      where: {
-        memberAccountId,
-        accessApplicationId: appId,
-        ...(accessType ? { accessType } : {}),
-        ...(parentAccountId ? { parentAccountId } : {}),
-        status: 'active',
-        OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
-        role: {
-          appId,
-        },
-      },
-      select: {
-        roleId: true,
-        role: {
-          select: {
-            name: true,
-            scope: true,
-            permissions: true,
-          },
-        },
-      },
-      orderBy: [
-        { roleId: 'asc' },
-        { id: 'asc' },
-      ],
+    const accessRows = await queryAccessRoleRows({
+      memberAccountId,
+      appId,
+      accessType,
+      parentAccountId,
     });
 
     return accessRows.map((row) => ({
       roleId: row.roleId,
-      roleName: row.role.name ?? null,
-      roleScope: row.role.scope ?? null,
-      permissionNames: extractRolePermissionNames(row.role.permissions),
+      roleName: row.roleName,
+      roleScope: normalizeRoleScopes(row.roleScopeText),
+      permissionNames: extractRolePermissionNames(row.rolePermissions),
     }));
   } catch (error) {
     const scopeLabel = accessType ?? 'all';
@@ -188,7 +209,7 @@ async function getAppAccessRoleRows({
 }
 
 function flattenPermissionNames(
-  rows: Array<{ roleScope: string | null; permissionNames: string[] }>,
+  rows: Array<{ roleScope: string[] | null; permissionNames: string[] }>,
   options?: { ignoreManagedRootScope?: boolean },
 ): string[] {
   const permissions = rows.flatMap((row) =>
@@ -201,7 +222,7 @@ function flattenPermissionNames(
 }
 
 function toRolePermissionEntries(
-  rows: Array<{ roleId: string; roleName: string | null; roleScope: string | null; permissionNames: string[] }>,
+  rows: Array<{ roleId: string; roleName: string | null; roleScope: string[] | null; permissionNames: string[] }>,
   options?: { ignoreManagedRootScope?: boolean },
 ): AccountRolePermissionsEntry[] {
   const grouped = new Map<string, AccountRolePermissionsEntry>();
@@ -433,30 +454,15 @@ async function getAccountPermissionEntries(
 ): Promise<PermissionGrantEntry[]> {
   try {
     await cleanupExpiredAccessModel();
-
-    const accessRows = await prisma.access.findMany({
-      where: {
-        memberAccountId: accountId,
-        status: 'active',
-        OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
-        role: {
-          appId: 'neup.account',
-        },
-      },
-      select: {
-        role: {
-          select: {
-            scope: true,
-            permissions: true,
-          },
-        },
-      },
+    const accessRows = await queryAccessRoleRows({
+      memberAccountId: accountId,
+      appId: 'neup.account',
     });
 
     return accessRows.flatMap((row) =>
-      extractRolePermissionNames(row.role.permissions).map((name) => ({
+      extractRolePermissionNames(row.rolePermissions).map((name) => ({
         name,
-        roleScope: row.role.scope ?? null,
+        roleScope: normalizeRoleScopes(row.roleScopeText),
       }))
     );
   } catch (error) {
@@ -479,31 +485,16 @@ export async function getGrantedAccountPermission(
 
   try {
     await cleanupExpiredAccessModel();
-
-    const accessRows = await prisma.access.findMany({
-      where: {
-        memberAccountId,
-        parentAccountId,
-        status: 'active',
-        OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
-        role: {
-          appId: 'neup.account',
-        },
-      },
-      select: {
-        role: {
-          select: {
-            scope: true,
-            permissions: true,
-          },
-        },
-      },
+    const accessRows = await queryAccessRoleRows({
+      memberAccountId,
+      parentAccountId,
+      appId: 'neup.account',
     });
 
     const permissions = accessRows.flatMap((row) =>
-      shouldIgnoreManagedRoleScope(row.role.scope)
+      shouldIgnoreManagedRoleScope(row.roleScopeText)
         ? []
-        : extractRolePermissionNames(row.role.permissions)
+        : extractRolePermissionNames(row.rolePermissions)
     );
 
     return Array.from(new Set(permissions));
@@ -605,34 +596,19 @@ async function getGrantedAccountPermissionEntries(
 
   try {
     await cleanupExpiredAccessModel();
-
-    const accessRows = await prisma.access.findMany({
-      where: {
-        memberAccountId,
-        parentAccountId,
-        status: 'active',
-        OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
-        role: {
-          appId: 'neup.account',
-        },
-      },
-      select: {
-        role: {
-          select: {
-            scope: true,
-            permissions: true,
-          },
-        },
-      },
+    const accessRows = await queryAccessRoleRows({
+      memberAccountId,
+      parentAccountId,
+      appId: 'neup.account',
     });
 
     return accessRows.flatMap((row) => {
-      const roleScope = row.role.scope ?? null;
+      const roleScope = normalizeRoleScopes(row.roleScopeText);
       if (shouldIgnoreManagedRoleScope(roleScope)) {
         return [];
       }
 
-      return extractRolePermissionNames(row.role.permissions).map((name) => ({
+      return extractRolePermissionNames(row.rolePermissions).map((name) => ({
         name,
         roleScope,
       }));
@@ -745,34 +721,10 @@ export async function getHomeSelectedAccountAccessLog(): Promise<HomeSelectedAcc
 
   try {
     await cleanupExpiredAccessModel();
-
-    const grants = await prisma.access.findMany({
-      where: {
-        memberAccountId: personalAccountId,
-        parentAccountId: activeAccountId,
-        status: 'active',
-        OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
-        role: {
-          appId: 'neup.account',
-        },
-      },
-      orderBy: {
-        roleId: 'asc',
-      },
-      select: {
-        id: true,
-        accessType: true,
-        status: true,
-        roleId: true,
-        isTemporary: true,
-        role: {
-          select: {
-            name: true,
-            scope: true,
-            permissions: true,
-          },
-        },
-      },
+    const grants = await queryAccessRoleRows({
+      memberAccountId: personalAccountId,
+      parentAccountId: activeAccountId,
+      appId: 'neup.account',
     });
 
     return {
@@ -780,14 +732,14 @@ export async function getHomeSelectedAccountAccessLog(): Promise<HomeSelectedAcc
       activeAccountId,
       isManaging: personalAccountId !== activeAccountId,
       grants: grants.map((grant) => ({
-        accessId: grant.id,
+        accessId: grant.accessId,
         accessType: grant.accessType,
         status: grant.status,
         roleId: grant.roleId,
-        roleName: grant.role.name ?? null,
-        roleScope: grant.role.scope ?? null,
-        permissions: extractRolePermissionNames(grant.role.permissions),
-        expiresAt: grant.isTemporary?.toISOString() ?? null,
+        roleName: grant.roleName,
+        roleScope: normalizeRoleScopes(grant.roleScopeText),
+        permissions: extractRolePermissionNames(grant.rolePermissions),
+        expiresAt: grant.expiresAt?.toISOString() ?? null,
       })),
     };
   } catch (error) {

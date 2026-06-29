@@ -4,9 +4,10 @@ import { createCipheriv, createHash, createHmac, randomBytes, randomUUID } from 
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import {
+  getRoleAccessFlags,
   normalizeRoleAcquisitionType,
   normalizeRoleApprovalPolicy,
-  normalizeRoleScope,
+  normalizeRoleScopes,
 } from '@/services/role-scopes';
 
 const BRIDGE_TYPE = 'roleUpdateWebhook';
@@ -49,9 +50,15 @@ type RolePayload = {
   id: string;
   name: string;
   description: string | null;
-  scope: string | null;
+  scope: string[];
   acquisitionType: string;
   approvalPolicy: string;
+  assignable: boolean;
+  publiclyEnrollable: boolean;
+  selfAssigned: boolean;
+  rootManaged: boolean;
+  publiclyRequestable: boolean;
+  requestableToOwner: boolean;
   applicableFor: string[];
   permissions: string[];
 };
@@ -147,6 +154,12 @@ export async function dispatchRoleUpdateWebhook(input: {
         scope: input.role.scope,
         acquisitionType: input.role.acquisitionType,
         approvalPolicy: input.role.approvalPolicy,
+        assignable: input.role.assignable,
+        publiclyEnrollable: input.role.publiclyEnrollable,
+        selfAssigned: input.role.selfAssigned,
+        rootManaged: input.role.rootManaged,
+        publiclyRequestable: input.role.publiclyRequestable,
+        requestableToOwner: input.role.requestableToOwner,
         applicableFor: input.role.applicableFor,
         permissions: input.role.permissions,
       };
@@ -241,10 +254,11 @@ export async function getRolePayload(appId: string, roleId: string): Promise<Rol
     });
     if (!role) return null;
     return {
+      ...getRoleAccessFlags(role.acquisitionType, role.approvalPolicy),
       id: role.id,
       name: role.name,
       description: role.description ?? null,
-      scope: normalizeRoleScope(role.scope) ?? role.scope ?? null,
+      scope: normalizeRoleScopes(role.scope),
       acquisitionType: normalizeRoleAcquisitionType(role.acquisitionType),
       approvalPolicy: normalizeRoleApprovalPolicy(role.approvalPolicy),
       applicableFor: extractApplicableFor(role.applicableFor),

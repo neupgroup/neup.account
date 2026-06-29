@@ -5,9 +5,10 @@ import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { activeAccessWhere } from '@/services/access-model';
 import {
+  getRoleAccessFlags,
   normalizeRoleAcquisitionType,
   normalizeRoleApprovalPolicy,
-  normalizeRoleScope,
+  normalizeRoleScopes,
 } from '@/services/role-scopes';
 
 const ACCOUNT_UPDATE_WEBHOOK_TYPE = 'accountUpdateWebhook';
@@ -241,9 +242,15 @@ export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise
       id: string;
       name: string;
       description: string | null;
-      scope: string | null;
+      scope: string[];
       acquisitionType: string;
       approvalPolicy: string;
+      assignable: boolean;
+      publiclyEnrollable: boolean;
+      selfAssigned: boolean;
+      rootManaged: boolean;
+      publiclyRequestable: boolean;
+      requestableToOwner: boolean;
       applicableFor: string[];
       permissions: string[];
     }>>();
@@ -252,10 +259,11 @@ export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise
       if (!row.role || !row.accessApplicationId) continue;
       const current = rolesByAppId.get(row.accessApplicationId) ?? [];
       current.push({
+        ...getRoleAccessFlags(row.role.acquisitionType, row.role.approvalPolicy),
         id: row.role.id,
         name: row.role.name,
         description: row.role.description ?? null,
-        scope: normalizeRoleScope(row.role.scope) ?? row.role.scope ?? null,
+        scope: normalizeRoleScopes(row.role.scope),
         acquisitionType: normalizeRoleAcquisitionType(row.role.acquisitionType),
         approvalPolicy: normalizeRoleApprovalPolicy(row.role.approvalPolicy),
         applicableFor: extractApplicableFor(row.role.applicableFor),

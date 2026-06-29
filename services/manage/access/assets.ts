@@ -58,6 +58,7 @@ const ACCESS_APP_ID = 'neup.account';
 const PORTFOLIO_ASSET_TYPE_MAP: Record<string, string> = {
   brand_account: 'acc_in_port',
   branch_account: 'acc_in_port',
+  subbrand_account: 'acc_in_port',
   application: 'app_in_port',
 };
 
@@ -143,7 +144,12 @@ function permissionSetForAssetType(
       ? ACCESS_APPLICATION_ADD_PERMISSIONS
       : ACCESS_APPLICATION_REMOVE_PERMISSIONS;
   }
-  if (normalized === 'brand_account' || normalized === 'branch_account' || normalized === 'acc_in_port') {
+  if (
+    normalized === 'brand_account' ||
+    normalized === 'branch_account' ||
+    normalized === 'subbrand_account' ||
+    normalized === 'acc_in_port'
+  ) {
     return action === 'add'
       ? ACCESS_LINKED_ACCOUNT_ADD_PERMISSIONS
       : ACCESS_LINKED_ACCOUNT_REMOVE_PERMISSIONS;
@@ -1198,10 +1204,12 @@ const ASSET_TYPE_TO_ROLE_SCOPE: Record<string, string> = {
   app:                  '',
   'account.individual': 'acMgmt.self',
   'account.brand':      'acMgmt.brand',
-  'account.branch':     'acMgmt.branch',
+  'account.branch':     'acMgmt.subbrand',
+  'account.subbrand':   'acMgmt.subbrand',
   'account.dependent':  'acMgmt.self',
   brand_account:        'acMgmt.brand',
-  branch_account:       'acMgmt.branch',
+  branch_account:       'acMgmt.subbrand',
+  subbrand_account:     'acMgmt.subbrand',
 };
 
 async function expectedScopeForAssetRow(assetRow: {

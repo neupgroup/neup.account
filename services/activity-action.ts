@@ -27,8 +27,8 @@ export const activityAction = {
   totpDisabled: () => "security.totp.disabled",
   accountDependentCreate: (dependentAccountId: string) =>
     `account.dependent.create(${quote(dependentAccountId)})`,
-  accountBranchCreate: (branchAccountId: string) =>
-    `account.branch.create(${quote(branchAccountId)})`,
+  accountSubbrandCreate: (subbrandAccountId: string) =>
+    `account.subbrand.create(${quote(subbrandAccountId)})`,
   profileDisplayImageChanged: (previousUrl: string, newUrl: string) =>
     `profile.displayImage.changedFrom(${quote(previousUrl)}).changedTo(${quote(newUrl)})`,
   profileDobChanged: (previousDob: string, newDob: string) =>
@@ -131,13 +131,14 @@ export function compileActivityAction(rawAction: string): CompiledActivityAction
     };
   }
 
-  const accountBranchCreateMatch = raw.match(/^account\.branch\.create\((.+)\)$/);
-  if (accountBranchCreateMatch) {
-    const branchAccountId = unquote(accountBranchCreateMatch[1]);
+  const accountSubbrandCreateMatch =
+    raw.match(/^account\.(?:branch|subbrand)\.create\((.+)\)$/);
+  if (accountSubbrandCreateMatch) {
+    const subbrandAccountId = unquote(accountSubbrandCreateMatch[1]);
     return {
       raw,
-      title: "Created a branch account.",
-      details: [`Branch Account ID: ${branchAccountId}`],
+      title: "Created a subbrand account.",
+      details: [`Subbrand Account ID: ${subbrandAccountId}`],
     };
   }
 

@@ -26,13 +26,13 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { useToast } from "@/core/hooks/use-toast"
-import { createBranchAccount, checkBranchNeupIdAvailability } from "@/services/manage/accounts/branches";
+import { createSubbrandAccount, checkSubbrandNeupIdAvailability } from "@/services/manage/accounts/subbrands";
 import { CheckCircle2, XCircle, Loader2 } from "@/components/icons"
 import { BackButton } from "@/components/ui/back-button"
 import { redirectInApp } from "@/core/helper/navigation";
 
 const formSchema = z.object({
-    name: z.string().min(1, "Branch name is required"),
+    name: z.string().min(1, "Subbrand name is required"),
     neupIdSubdomain: z.string()
         .min(3, "Subdomain must be at least 3 characters.")
         .regex(/^[a-z0-9-]+$/, "Subdomain can only contain lowercase letters, numbers, and hyphens."),
@@ -41,7 +41,7 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export default function CreateBranchPageClient() {
+export default function CreateSubbrandPageClient() {
     const router = useRouter()
     const { toast } = useToast()
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -67,7 +67,7 @@ export default function CreateBranchPageClient() {
             return;
         }
         setNeupIdStatus('checking');
-        const { available, fullNeupId } = await checkBranchNeupIdAvailability(subdomain);
+        const { available, fullNeupId } = await checkSubbrandNeupIdAvailability(subdomain);
         setNeupIdStatus(available ? 'available' : 'unavailable');
         setFullNeupIdPreview(fullNeupId || null);
     }, []);
@@ -85,17 +85,17 @@ export default function CreateBranchPageClient() {
     const onSubmit = async (data: FormData) => {
         setIsSubmitting(true);
 
-        const checkResult = await checkBranchNeupIdAvailability(data.neupIdSubdomain);
+        const checkResult = await checkSubbrandNeupIdAvailability(data.neupIdSubdomain);
         if (!checkResult.available) {
              toast({ variant: "destructive", title: "Creation Failed", description: "The chosen NeupID is not available." });
              setIsSubmitting(false);
              return;
         }
 
-        const result = await createBranchAccount(data);
+        const result = await createSubbrandAccount(data);
 
         if (result.success) {
-            toast({ title: "Success", description: "Branch Account created successfully!", className: "bg-accent text-accent-foreground" });
+            toast({ title: "Success", description: "Subbrand account created successfully!", className: "bg-accent text-accent-foreground" });
             redirectInApp(router, '/access');
             router.refresh();
         } else {
@@ -119,7 +119,7 @@ export default function CreateBranchPageClient() {
         <div className="grid gap-6">
             <BackButton href="/access" />
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Create a New Branch</h1>
+                <h1 className="text-3xl font-bold tracking-tight">Create a New Subbrand</h1>
                 <p className="text-muted-foreground">
                     Set up a new sub-brand or location for your main brand.
                 </p>
@@ -128,18 +128,18 @@ export default function CreateBranchPageClient() {
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Branch Details</CardTitle>
+                            <CardTitle>Subbrand Details</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-6 pt-6">
-                            <FormField control={form.control} name="name" render={({ field }) => ( <FormItem><FormLabel>Branch Name</FormLabel><FormControl><Input placeholder="Uptown Branch" {...field} /></FormControl><FormMessage /></FormItem> )} />
+                            <FormField control={form.control} name="name" render={({ field }) => ( <FormItem><FormLabel>Subbrand Name</FormLabel><FormControl><Input placeholder="Uptown Subbrand" {...field} /></FormControl><FormMessage /></FormItem> )} />
                             
                             <FormField control={form.control} name="neupIdSubdomain" render={({ field }) => ( 
                                 <FormItem>
-                                    <FormLabel>Branch NeupID</FormLabel>
+                                    <FormLabel>Subbrand NeupID</FormLabel>
                                     <div className="relative">
                                         <FormControl>
                                             <Input 
-                                                placeholder="uptown-branch" 
+                                                placeholder="uptown-subbrand" 
                                                 {...field}
                                                 onChange={handleNeupIdChange}
                                                 className="pr-10"
@@ -162,7 +162,7 @@ export default function CreateBranchPageClient() {
                         </CardContent>
                         <CardFooter>
                             <Button type="submit" disabled={isSubmitting || neupIdStatus !== 'available'}>
-                                {isSubmitting ? "Creating Branch..." : "Create Branch"}
+                                {isSubmitting ? "Creating Subbrand..." : "Create Subbrand"}
                             </Button>
                         </CardFooter>
                     </Card>

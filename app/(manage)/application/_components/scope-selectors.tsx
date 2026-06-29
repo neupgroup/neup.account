@@ -16,13 +16,13 @@ const ROLE_SCOPE_META: Record<RoleScope, { title: string; description: string }>
     title: 'acMgmt.brand',
     description: 'Manage a brand account by an individual account.',
   },
-  'acMgmt.brandBranch': {
-    title: 'acMgmt.brandBranch',
-    description: 'Account manager scope that can be applied to both brand and branch.',
+  'acMgmt.brandSubbrand': {
+    title: 'acMgmt.brandSubbrand',
+    description: 'Account manager scope that can be applied to both brand and subbrand.',
   },
-  'acMgmt.branch': {
-    title: 'acMgmt.branch',
-    description: 'Manage a branch account by an individual account.',
+  'acMgmt.subbrand': {
+    title: 'acMgmt.subbrand',
+    description: 'Manage a subbrand account by an individual account.',
   },
   'rootMgmt.self': {
     title: 'rootMgmt.self',

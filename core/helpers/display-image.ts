@@ -28,7 +28,7 @@ export function resolveDisplayImage(input: DisplayImageInput): string {
     return DISPLAY_IMAGE_FALLBACK.guest;
   }
 
-  if (accountType === 'brand' || accountType === 'branch') {
+  if (accountType === 'brand' || accountType === 'subbrand') {
     return DISPLAY_IMAGE_FALLBACK.custom;
   }
 

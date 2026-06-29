@@ -1,6 +1,6 @@
 /**
  * Backfill script: create Asset entries for all existing accounts
- * (individual, brand, branch, dependent) and applications that don't
+ * (individual, brand, subbrand, dependent) and applications that don't
  * already have one in the assets table.
  *
  * Run with:
@@ -38,7 +38,7 @@ async function findPersonalPortfolio(accountId: string): Promise<string | null> 
 }
 
 async function backfillAccounts() {
-  const accountTypes = ['individual', 'brand', 'branch', 'dependent'];
+  const accountTypes = ['individual', 'brand', 'subbrand', 'dependent'];
 
   const accounts = await prisma.account.findMany({
     where: { accountType: { in: accountTypes } },
@@ -53,7 +53,7 @@ async function backfillAccounts() {
   for (const account of accounts) {
     // Determine the "owner" of the personal portfolio:
     // - For individual/dependent: the account itself
-    // - For brand/branch/dependent: look up grants from access rows
+    // - For brand/subbrand/dependent: look up grants from access rows
     let portfolioOwnerId = account.id;
 
     if (account.accountType === 'brand') {
@@ -69,7 +69,7 @@ async function backfillAccounts() {
       if (ownerGrant?.memberAccountId) portfolioOwnerId = ownerGrant.memberAccountId;
     }
 
-    if (account.accountType === 'branch') {
+    if (account.accountType === 'subbrand') {
       const ownerGrant = await prisma.access.findFirst({
         where: {
           parentAccountId: account.id,

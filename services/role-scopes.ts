@@ -1,8 +1,8 @@
 export const ROLE_SCOPE_KEYS = [
   'acMgmt.self',
   'acMgmt.brand',
-  'acMgmt.brandBranch',
-  'acMgmt.branch',
+  'acMgmt.brandSubbrand',
+  'acMgmt.subbrand',
   'rootMgmt.self',
 ] as const;
 
@@ -23,7 +23,7 @@ export type RoleAcquisitionType = (typeof ROLE_ACQUISITION_TYPES)[number];
 export type RoleApprovalPolicy = (typeof ROLE_APPROVAL_POLICIES)[number];
 export type RoleAssignmentMode = 'manageable' | 'public' | 'toApprove' | 'root';
 export type ScopeMode = 'acMgmt' | 'rootMgmt';
-export type ScopeAccountKey = 'individual' | 'dependent' | 'brand' | 'branch';
+export type ScopeAccountKey = 'individual' | 'dependent' | 'brand' | 'subbrand';
 export type ScopeAudience = Record<ScopeAccountKey, boolean>;
 
 const ROLE_SCOPE_SET = new Set<string>(ROLE_SCOPE_KEYS);
@@ -82,27 +82,33 @@ const LEGACY_SCOPE_MAP: Record<string, RoleScope> = {
   'public.i0010': 'acMgmt.brand',
   'toApprove.0010': 'acMgmt.brand',
   'toApprove.i0010': 'acMgmt.brand',
-  'managed.branch': 'acMgmt.branch',
-  'public.branch': 'acMgmt.branch',
-  'toApprove.branch': 'acMgmt.branch',
-  'branch.brand.managable': 'acMgmt.branch',
-  'branch.brand.public': 'acMgmt.branch',
-  'branch.brand.toApprove': 'acMgmt.branch',
-  'managed.0001': 'acMgmt.branch',
-  'managed.i0001': 'acMgmt.branch',
-  'managable.i0001': 'acMgmt.branch',
-  'public.0001': 'acMgmt.branch',
-  'public.i0001': 'acMgmt.branch',
-  'toApprove.0001': 'acMgmt.branch',
-  'toApprove.i0001': 'acMgmt.branch',
+  'managed.branch': 'acMgmt.subbrand',
+  'managed.subbrand': 'acMgmt.subbrand',
+  'public.branch': 'acMgmt.subbrand',
+  'public.subbrand': 'acMgmt.subbrand',
+  'toApprove.branch': 'acMgmt.subbrand',
+  'toApprove.subbrand': 'acMgmt.subbrand',
+  'branch.brand.managable': 'acMgmt.subbrand',
+  'branch.brand.public': 'acMgmt.subbrand',
+  'branch.brand.toApprove': 'acMgmt.subbrand',
+  'subbrand.brand.managable': 'acMgmt.subbrand',
+  'subbrand.brand.public': 'acMgmt.subbrand',
+  'subbrand.brand.toApprove': 'acMgmt.subbrand',
+  'managed.0001': 'acMgmt.subbrand',
+  'managed.i0001': 'acMgmt.subbrand',
+  'managable.i0001': 'acMgmt.subbrand',
+  'public.0001': 'acMgmt.subbrand',
+  'public.i0001': 'acMgmt.subbrand',
+  'toApprove.0001': 'acMgmt.subbrand',
+  'toApprove.i0001': 'acMgmt.subbrand',
 };
 
 function normalizedAccountType(
   accountType: string | null | undefined,
-): 'brand' | 'branch' | 'dependent' | 'individual' | 'other' {
+): 'brand' | 'subbrand' | 'dependent' | 'individual' | 'other' {
   const normalized = (accountType ?? '').trim().toLowerCase();
   if (normalized === 'brand') return 'brand';
-  if (normalized === 'branch') return 'branch';
+  if (normalized === 'branch' || normalized === 'subbrand') return 'subbrand';
   if (normalized === 'dependent') return 'dependent';
   if (normalized === 'individual') return 'individual';
   return 'other';
@@ -110,7 +116,7 @@ function normalizedAccountType(
 
 export function normalizeAccountTypeForRoleScope(
   accountType: string | null | undefined,
-): 'brand' | 'branch' | 'dependent' | 'individual' | 'other' {
+): 'brand' | 'subbrand' | 'dependent' | 'individual' | 'other' {
   return normalizedAccountType(accountType);
 }
 
@@ -131,7 +137,7 @@ export function emptyScopeAudience(): ScopeAudience {
     individual: false,
     dependent: false,
     brand: false,
-    branch: false,
+    subbrand: false,
   };
 }
 
@@ -146,31 +152,31 @@ export function decodeRoleScope(
       return {
         mode: 'acMgmt',
         normalized,
-        audience: { individual: true, dependent: false, brand: false, branch: false },
+        audience: { individual: true, dependent: false, brand: false, subbrand: false },
       };
     case 'acMgmt.brand':
       return {
         mode: 'acMgmt',
         normalized,
-        audience: { individual: false, dependent: false, brand: true, branch: false },
+        audience: { individual: false, dependent: false, brand: true, subbrand: false },
       };
-    case 'acMgmt.brandBranch':
+    case 'acMgmt.brandSubbrand':
       return {
         mode: 'acMgmt',
         normalized,
-        audience: { individual: false, dependent: false, brand: true, branch: true },
+        audience: { individual: false, dependent: false, brand: true, subbrand: true },
       };
-    case 'acMgmt.branch':
+    case 'acMgmt.subbrand':
       return {
         mode: 'acMgmt',
         normalized,
-        audience: { individual: false, dependent: false, brand: false, branch: true },
+        audience: { individual: false, dependent: false, brand: false, subbrand: true },
       };
     case 'rootMgmt.self':
       return {
         mode: 'rootMgmt',
         normalized,
-        audience: { individual: true, dependent: false, brand: false, branch: false },
+        audience: { individual: true, dependent: false, brand: false, subbrand: false },
       };
     default:
       return null;
@@ -182,14 +188,14 @@ export function isKnownRoleScope(scope: string): scope is RoleScope {
 }
 
 export function roleScopeError() {
-  return 'Role scope must use one of: acMgmt.self, acMgmt.brand, acMgmt.brandBranch, acMgmt.branch, rootMgmt.self.';
+  return 'Role scope must use one of: acMgmt.self, acMgmt.brand, acMgmt.brandSubbrand, acMgmt.subbrand, rootMgmt.self.';
 }
 
 export function encodeRoleScope(mode: ScopeMode, audience: ScopeAudience): RoleScope {
   if (mode === 'rootMgmt') return 'rootMgmt.self';
-  if (audience.brand && audience.branch) return 'acMgmt.brandBranch';
+  if (audience.brand && audience.subbrand) return 'acMgmt.brandSubbrand';
   if (audience.brand) return 'acMgmt.brand';
-  if (audience.branch) return 'acMgmt.branch';
+  if (audience.subbrand) return 'acMgmt.subbrand';
   return 'acMgmt.self';
 }
 
@@ -201,10 +207,10 @@ function roleScopeMatchesAccountType(scope: RoleScope, accountType: string | nul
       return normalizedType === 'individual' || normalizedType === 'dependent';
     case 'acMgmt.brand':
       return normalizedType === 'brand';
-    case 'acMgmt.brandBranch':
-      return normalizedType === 'brand' || normalizedType === 'branch';
-    case 'acMgmt.branch':
-      return normalizedType === 'branch';
+    case 'acMgmt.brandSubbrand':
+      return normalizedType === 'brand' || normalizedType === 'subbrand';
+    case 'acMgmt.subbrand':
+      return normalizedType === 'subbrand';
     case 'rootMgmt.self':
       return normalizedType === 'individual';
     default:
@@ -234,11 +240,11 @@ export function expectedRoleScopesForAccount(
   }
 
   if (normalizedType === 'brand') {
-    return ['acMgmt.brand', 'acMgmt.brandBranch'];
+    return ['acMgmt.brand', 'acMgmt.brandSubbrand'];
   }
 
-  if (normalizedType === 'branch') {
-    return ['acMgmt.branch', 'acMgmt.brandBranch'];
+  if (normalizedType === 'subbrand') {
+    return ['acMgmt.subbrand', 'acMgmt.brandSubbrand'];
   }
 
   return [];
@@ -274,9 +280,9 @@ export function scopeCoversRoleScope(
 export function formatScopeAudience(scope: string | null | undefined): string {
   const normalized = normalizeRoleScope(scope);
   if (!normalized) return (scope ?? '').trim();
-  if (normalized === 'acMgmt.brandBranch') return 'brand, branch';
+  if (normalized === 'acMgmt.brandSubbrand') return 'brand, subbrand';
   if (normalized === 'acMgmt.brand') return 'brand';
-  if (normalized === 'acMgmt.branch') return 'branch';
+  if (normalized === 'acMgmt.subbrand') return 'subbrand';
   return 'self';
 }
 

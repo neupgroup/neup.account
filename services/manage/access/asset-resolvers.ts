@@ -48,7 +48,7 @@ async function resolvePortfolioAsset(assetId: string): Promise<ResolvedAsset | n
 }
 
 /**
- * Resolves an account asset (individual, brand, branch, dependent) by account ID.
+ * Resolves an account asset (individual, brand, subbrand, dependent) by account ID.
  */
 async function resolveAccountAsset(assetId: string, assetType: string): Promise<ResolvedAsset | null> {
   try {
@@ -80,9 +80,11 @@ const ACCOUNT_TYPES = new Set([
   'account.individual',
   'account.brand',
   'account.branch',
+  'account.subbrand',
   'account.dependent',
   'brand_account',
   'branch_account',
+  'subbrand_account',
 ]);
 const CONNECTION_TYPES = new Set(['conn_in_port', 'conn_in_acc', 'connection']);
 const PORTFOLIO_TYPES = new Set(['port_in_acc', 'portfolio']);

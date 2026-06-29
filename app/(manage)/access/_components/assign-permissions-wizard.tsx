@@ -23,7 +23,7 @@ type Member = { id: string; accountId: string; displayName: string };
 
 const ASSET_TYPES: { type: AssetType; label: string }[] = [
   { type: "brand_account", label: "Brand Account" },
-  { type: "branch_account", label: "Branch Account" },
+  { type: "subbrand_account", label: "Subbrand Account" },
   { type: "application", label: "Application" },
 ];
 

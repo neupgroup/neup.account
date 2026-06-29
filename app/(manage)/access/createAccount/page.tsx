@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import CreateBrandPageClient from './brand-page-client';
 import CreateDependentPageClient from './dependent-page-client';
-import CreateBranchPageClient from './branch-page-client';
+import CreateSubbrandPageClient from './subbrand-page-client';
 import { createPageMetadata } from '@/core/metadata';
 import {
     ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS,
@@ -17,7 +17,7 @@ type PageProps = {
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
     const { type } = await searchParams;
 
-    if (type === 'brand' || type === 'dependent' || type === 'branch') {
+    if (type === 'brand' || type === 'dependent' || type === 'subbrand' || type === 'branch') {
         return createPageMetadata('Create Account');
     }
 
@@ -37,9 +37,9 @@ export default async function CreateAccountPage({ searchParams }: PageProps) {
         return <CreateDependentPageClient />;
     }
 
-    if (type === 'branch') {
+    if (type === 'subbrand' || type === 'branch') {
         await requireAnyPermission404(['linked_accounts.brand.manage']);
-        return <CreateBranchPageClient />;
+        return <CreateSubbrandPageClient />;
     }
 
     notFound();

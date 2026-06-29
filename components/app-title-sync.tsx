@@ -64,7 +64,7 @@ function resolveTitle(pathname: string, searchParams: URLSearchParams) {
   }
 
   if (pathname === '/access/createAccount') {
-    if (type === 'brand' || type === 'dependent' || type === 'branch') {
+    if (type === 'brand' || type === 'dependent' || type === 'subbrand') {
       return formatAppTitle('Create Account');
     }
   }

@@ -11,7 +11,7 @@ import { normalizePermissionScopes } from '@/services/applications/permission-sc
 describe('role scope normalization', () => {
   it('uses named scopes as the canonical form', () => {
     expect(normalizeRoleScope('managed.0010')).toBe('acMgmt.brand');
-    expect(normalizeRoleScope('public.0001')).toBe('acMgmt.branch');
+    expect(normalizeRoleScope('public.0001')).toBe('acMgmt.subbrand');
     expect(normalizeRoleScope('root.1000')).toBe('rootMgmt.self');
   });
 
@@ -27,14 +27,14 @@ describe('role scope normalization', () => {
         individual: false,
         dependent: false,
         brand: true,
-        branch: false,
+        subbrand: false,
       }),
     ).toBe('acMgmt.brand');
   });
 
   it('formats scopes using the current canonical names', () => {
     expect(formatRoleScopeForDisplay('managed.brand')).toBe('acMgmt.brand');
-    expect(formatRoleScopeForDisplay('public.branch')).toBe('acMgmt.branch');
+    expect(formatRoleScopeForDisplay('public.branch')).toBe('acMgmt.subbrand');
     expect(formatRoleScopeForDisplay('root.individual')).toBe('rootMgmt.self');
   });
 

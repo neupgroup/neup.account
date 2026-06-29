@@ -223,7 +223,7 @@ export type AccountsPage = {
 export type AccountFilterTab = 'all' | 'active' | 'guest' | 'brand' | 'individual';
 export type AccountSortKey = 'newest' | 'oldest' | 'name_asc' | 'name_desc' | 'last_active';
 
-const SEARCHABLE_ACCOUNT_TYPES = new Set(['individual', 'brand', 'branch', 'dependent', 'guest', 'root']);
+const SEARCHABLE_ACCOUNT_TYPES = new Set(['individual', 'brand', 'subbrand', 'branch', 'dependent', 'guest', 'root']);
 const ACTIVE_IN_UNITS_MS: Record<string, number> = {
     m: 60 * 1000,
     h: 60 * 60 * 1000,
@@ -251,7 +251,7 @@ function parseAccountSearch(search: string): ParsedAccountSearch {
         if (typeMatch) {
             const accountType = typeMatch[1]?.trim().toLowerCase();
             if (accountType && SEARCHABLE_ACCOUNT_TYPES.has(accountType)) {
-                parsed.accountType = accountType;
+                parsed.accountType = accountType === 'branch' ? 'subbrand' : accountType;
                 continue;
             }
         }
@@ -320,7 +320,7 @@ export async function getAllAccountsPaginated(params: {
         } else if (filter === 'guest') {
             where.accountType = 'guest';
         } else if (filter === 'brand') {
-            where.accountType = { in: ['brand', 'branch'] };
+            where.accountType = { in: ['brand', 'subbrand'] };
         } else if (filter === 'individual') {
             where.accountType = 'individual';
         }
@@ -565,7 +565,7 @@ export async function getAccessableAccounts(accountId: string): Promise<AccountB
  * Function getAccessableBrandAccounts.
  *
  * Calls getAccessableAccountIds, then filters to only accounts whose
- * accountType is 'brand' or 'branch'. Returns AccountBasics[] deduplicated by id.
+ * accountType is 'brand' or 'subbrand'. Returns AccountBasics[] deduplicated by id.
  */
 export async function getAccessableBrandAccounts(accountId: string): Promise<AccountBasics[]> {
     try {
@@ -575,7 +575,7 @@ export async function getAccessableBrandAccounts(accountId: string): Promise<Acc
         const brandAccounts = await prisma.account.findMany({
             where: {
                 id: { in: ids },
-                accountType: { in: ['brand', 'branch'] },
+                accountType: { in: ['brand', 'subbrand'] },
             },
             select: {
                 id: true,
@@ -789,7 +789,7 @@ export async function getAccessableAccountsWithPermissions(
  * Function getAccessableBrandAccountsWithPermissions.
  *
  * Like getAccessableBrandAccounts, but each entry also includes the permissions
- * the caller holds on that specific brand/branch account.
+ * the caller holds on that specific brand/subbrand account.
  */
 export async function getAccessableBrandAccountsWithPermissions(
     accountId: string,
@@ -802,7 +802,7 @@ export async function getAccessableBrandAccountsWithPermissions(
             prisma.account.findMany({
                 where: {
                     id: { in: ids },
-                    accountType: { in: ['brand', 'branch'] },
+                    accountType: { in: ['brand', 'subbrand'] },
                 },
                 select: {
                     id: true,
@@ -836,7 +836,7 @@ export async function getAccessableBrandAccountsWithPermissions(
 
         const brandIds = new Set(brandRows.map((b) => b.id));
 
-        // Only keep grants for brand/branch accounts
+        // Only keep grants for brand/subbrand accounts
         const relevantGrants = allGrants.filter(
             (g) => typeof g.parentAccountId === 'string' && brandIds.has(g.parentAccountId),
         );

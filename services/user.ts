@@ -808,7 +808,7 @@ export async function getHomeSelectedAccountAccessLog(): Promise<HomeSelectedAcc
 // --- Validation ---
 
 // Validates that a NeupID exists, is associated with a valid account,
-// and that the account is not blocked, deleted, or a brand/branch type.
+// and that the account is not blocked, deleted, or a brand/subbrand type.
 export async function validateNeupId(
   neupId: string,
 ): Promise<{ success: boolean; error?: string }> {
@@ -832,8 +832,8 @@ export async function validateNeupId(
       return { success: false, error: "Associated account does not exist." };
     }
 
-    // Brand and branch accounts cannot sign in directly
-    if (account.accountType === "brand" || account.accountType === "branch") {
+    // Brand and subbrand accounts cannot sign in directly
+    if (account.accountType === "brand" || account.accountType === "subbrand") {
       return { success: false, error: "Brand accounts can't be signed in." };
     }
 

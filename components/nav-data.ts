@@ -104,7 +104,7 @@ export const allPermissionsMap: Record<string, string[]> = {
         "root.payment_config.view",
         "root.display_images.view"
     ],
-    "Branches": ['linked_accounts.brand.manage'],
+    "Subbrands": ['linked_accounts.brand.manage'],
     "Blocked Users": [...ACCESS_BLOCK_VIEW_PERMISSIONS],
     // Management nav — "Dashboard" is the admin home, distinct from user "Home"
     "Dashboard": ["root.dashboard.view"],

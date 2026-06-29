@@ -2011,7 +2011,7 @@ export async function getApplicationUserStats(appId: string): Promise<Applicatio
 export type AppUserStatus = 'active' | 'creationRequired' | 'deactivated';
 export type AppUserSortKey = 'newest' | 'oldest' | 'name_asc' | 'name_desc';
 
-const SEARCHABLE_APP_USER_ACCOUNT_TYPES = new Set(['individual', 'brand', 'branch', 'dependent', 'guest', 'root']);
+const SEARCHABLE_APP_USER_ACCOUNT_TYPES = new Set(['individual', 'brand', 'subbrand', 'branch', 'dependent', 'guest', 'root']);
 const APP_USER_ACTIVE_IN_UNITS_MS: Record<string, number> = {
   m: 60 * 1000,
   h: 60 * 60 * 1000,
@@ -2039,7 +2039,7 @@ function parseApplicationUserSearch(search: string): ParsedApplicationUserSearch
     if (typeMatch) {
       const accountType = typeMatch[1]?.trim().toLowerCase();
       if (accountType && SEARCHABLE_APP_USER_ACCOUNT_TYPES.has(accountType)) {
-        parsed.accountType = accountType;
+        parsed.accountType = accountType === 'branch' ? 'subbrand' : accountType;
         continue;
       }
     }

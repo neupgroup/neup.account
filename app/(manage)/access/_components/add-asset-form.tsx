@@ -12,8 +12,8 @@ const ASSET_TYPES: { type: AssetType; label: string; icon: React.ReactNode }[] =
     icon: <Building className="h-4 w-4" />,
   },
   {
-    type: "branch_account",
-    label: "Branch Account",
+    type: "subbrand_account",
+    label: "Subbrand Account",
     icon: <Building className="h-4 w-4" />,
   },
   {

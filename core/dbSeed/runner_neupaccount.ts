@@ -420,39 +420,39 @@ WHERE c."app_id" = '${APP_ID}'
   AND c."scope" IN ('brand', 'brand.managable')
 ON CONFLICT ("id") DO NOTHING;
 
--- 3e. Role — branch.owner (same scope as brand so the role picker shows it for branch_account assets)
+-- 3e. Role — subbrand.owner (same scope as brand so the role picker shows it for subbrand_account assets)
 INSERT INTO "authz_role" ("id", "name", "description", "app_id", "scope") VALUES
-  ('branch-owner-neup-account', 'branch.owner', 'Full ownership role for branch accounts.', '${APP_ID}', 'brand')
+  ('subbrand-owner-neup-account', 'subbrand.owner', 'Full ownership role for subbrand accounts.', '${APP_ID}', 'brand')
 ON CONFLICT ("id") DO NOTHING;
 
 INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
-  ('cap-branch-profile-view',    'branch.profile.view',   '${APP_ID}', 'brand'),
-  ('cap-branch-profile-edit',    'branch.profile.edit',   '${APP_ID}', 'brand'),
-  ('cap-branch-settings-view',   'branch.settings.view',  '${APP_ID}', 'brand'),
-  ('cap-branch-settings-edit',   'branch.settings.edit',  '${APP_ID}', 'brand'),
-  ('cap-branch-members-view',    'branch.members.view',   '${APP_ID}', 'brand'),
-  ('cap-branch-members-manage',  'branch.members.manage', '${APP_ID}', 'brand'),
-  ('cap-branch-delete',          'branch.delete',         '${APP_ID}', 'brand')
+  ('cap-subbrand-profile-view',    'subbrand.profile.view',   '${APP_ID}', 'brand'),
+  ('cap-subbrand-profile-edit',    'subbrand.profile.edit',   '${APP_ID}', 'brand'),
+  ('cap-subbrand-settings-view',   'subbrand.settings.view',  '${APP_ID}', 'brand'),
+  ('cap-subbrand-settings-edit',   'subbrand.settings.edit',  '${APP_ID}', 'brand'),
+  ('cap-subbrand-members-view',    'subbrand.members.view',   '${APP_ID}', 'brand'),
+  ('cap-subbrand-members-manage',  'subbrand.members.manage', '${APP_ID}', 'brand'),
+  ('cap-subbrand-delete',          'subbrand.delete',         '${APP_ID}', 'brand')
 ON CONFLICT ("id") DO NOTHING;
 
 INSERT INTO "authz_role_capability" (
   "id", "role_id", "capability_id", "scope", "app_id", "role_name", "denormalized_capability"
 )
 SELECT
-  'rcp-branchowner-' || c."id",
-  'branch-owner-neup-account',
+  'rcp-subbrandowner-' || c."id",
+  'subbrand-owner-neup-account',
   c."id",
   'brand',
   '${APP_ID}',
-  'branch.owner',
-  '["branch.profile.view","branch.profile.edit","branch.settings.view","branch.settings.edit","branch.members.view","branch.members.manage","branch.delete"]'::jsonb
+  'subbrand.owner',
+  '["subbrand.profile.view","subbrand.profile.edit","subbrand.settings.view","subbrand.settings.edit","subbrand.members.view","subbrand.members.manage","subbrand.delete"]'::jsonb
 FROM "authz_capability" c
 WHERE c."app_id" = '${APP_ID}'
   AND c."id" IN (
-    'cap-branch-profile-view','cap-branch-profile-edit',
-    'cap-branch-settings-view','cap-branch-settings-edit',
-    'cap-branch-members-view','cap-branch-members-manage',
-    'cap-branch-delete'
+    'cap-subbrand-profile-view','cap-subbrand-profile-edit',
+    'cap-subbrand-settings-view','cap-subbrand-settings-edit',
+    'cap-subbrand-members-view','cap-subbrand-members-manage',
+    'cap-subbrand-delete'
   )
 ON CONFLICT ("id") DO NOTHING;
 

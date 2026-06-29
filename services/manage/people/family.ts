@@ -58,8 +58,8 @@ async function createInvite(
     if (inviteeProfile?.accountType === 'brand') {
       return { success: false, error: "It's a brand account, cant send family invitation." };
     }
-    if (inviteeProfile?.accountType === 'branch') {
-      return { success: false, error: "It's a branch account, cant send family invitation." };
+    if (inviteeProfile?.accountType === 'subbrand') {
+      return { success: false, error: "It's a subbrand account, cant send family invitation." };
     }
       
     // Check if user is already in a family with the inviter.

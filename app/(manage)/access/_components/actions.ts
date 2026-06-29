@@ -110,18 +110,17 @@ async function getBrandAssets(): Promise<SelectableAsset[]> {
 }
 
 /**
- * Returns all branch accounts under the currently active brand account.
+ * Returns all subbrand accounts under the currently active brand account.
  */
-async function getBranchAssets(): Promise<SelectableAsset[]> {
+async function getSubbrandAssets(): Promise<SelectableAsset[]> {
   try {
     const activeAccountId = await getActiveAccountId();
     if (!activeAccountId) return [];
 
-    // Branches are owned by the active brand account — find them via AccountOwnership
-    // which maps parentId (brand) → childrenId (branch). Fall back to empty if table missing.
-    const branches = await prisma.account.findMany({
+    // Subbrands are owned by the active brand account — find them via AccountOwnership.
+    const subbrands = await prisma.account.findMany({
       where: {
-        accountType: 'branch',
+        accountType: { in: ['branch', 'subbrand'] },
         parentOwnerships: {
           some: { parentId: activeAccountId },
         },
@@ -129,14 +128,14 @@ async function getBranchAssets(): Promise<SelectableAsset[]> {
       include: { neupIds: { where: { isPrimary: true }, select: { id: true } } },
     });
 
-    return branches.map((a) => ({
+    return subbrands.map((a) => ({
       assetId: a.id,
-      name: a.displayName || 'Unnamed Branch',
-      assetType: 'branch_account',
+      name: a.displayName || 'Unnamed Subbrand',
+      assetType: 'subbrand_account',
       subtitle: a.neupIds[0]?.id,
     }));
   } catch (error) {
-    await logError('database', error, 'getBranchAssets');
+    await logError('database', error, 'getSubbrandAssets');
     return [];
   }
 }
@@ -190,7 +189,7 @@ async function getApplicationAssets(): Promise<SelectableAsset[]> {
   }
 }
 
-export type AssetType = 'brand_account' | 'branch_account' | 'application';
+export type AssetType = 'brand_account' | 'subbrand_account' | 'application';
 
 export async function getSelectableAssets(
   type: AssetType,
@@ -201,8 +200,8 @@ export async function getSelectableAssets(
     case 'brand_account':
       assets = await getBrandAssets();
       break;
-    case 'branch_account':
-      assets = await getBranchAssets();
+    case 'subbrand_account':
+      assets = await getSubbrandAssets();
       break;
     case 'application':
       assets = await getApplicationAssets();

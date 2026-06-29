@@ -27,6 +27,17 @@ const ACCOUNT_CONNECTION_CREATE_PERMISSIONS: Record<string, readonly string[]> =
         'access.application.add.managed',
         'access.application.add.root',
     ],
+    subbrand: [
+        'access.connection.create.brand.self',
+        'access.connection.create.brand.managed',
+        'access.connection.create.brand.root',
+        'brand.platforms.manage',
+        'linked_accounts.brand.manage',
+        'linked_accounts.brand.manager',
+        'access.application.add.self',
+        'access.application.add.managed',
+        'access.application.add.root',
+    ],
     branch: [
         'access.connection.create.brand.self',
         'access.connection.create.brand.managed',
@@ -79,7 +90,7 @@ function canCreateConnectionForAccount(account: {
  * GET /bridge/api.v1/accounts
  *
  * Returns all accounts the authenticated user has been granted access to and
- * can create an application connection for, including brand, branch,
+ * can create an application connection for, including brand, subbrand,
  * dependent, and any other delegated accounts.
  * Each account includes the permissions the caller holds on it.
  *

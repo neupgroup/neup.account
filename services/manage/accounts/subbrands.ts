@@ -18,9 +18,9 @@ import {
 } from '@/core/auth/brand-roles';
 
 /**
- * Type BranchAccount.
+ * Type SubbrandAccount.
  */
-export type BranchAccount = {
+export type SubbrandAccount = {
     id: string;
     name: string;
     neupId: string;
@@ -28,7 +28,7 @@ export type BranchAccount = {
 };
 
 const formSchema = z.object({
-    name: z.string().min(1, 'Branch name is required'),
+    name: z.string().min(1, 'Subbrand name is required'),
     neupIdSubdomain: z
         .string()
         .min(3, 'Subdomain must be at least 3 characters.')
@@ -38,13 +38,13 @@ const formSchema = z.object({
 
 
 /**
- * Function createBranchAccount.
+ * Function createSubbrandAccount.
  */
-export async function createBranchAccount(data: z.infer<typeof formSchema>, geolocation?: string) {
+export async function createSubbrandAccount(data: z.infer<typeof formSchema>, geolocation?: string) {
     await requireAnyPermission404(['linked_accounts.brand.manage']);
     const canManage = await checkPermissions(['linked_accounts.brand.manage']);
     if (!canManage) {
-        return { success: false, error: 'You do not have permission to create branch accounts.' };
+        return { success: false, error: 'You do not have permission to create subbrand accounts.' };
     }
 
     const parentBrandId = await getActiveAccountId();
@@ -78,13 +78,13 @@ export async function createBranchAccount(data: z.infer<typeof formSchema>, geol
         });
         
         if (existingNeupId) {
-            return { success: false, error: 'This Branch NeupID is already taken.' };
+            return { success: false, error: 'This subbrand NeupID is already taken.' };
         }
 
         const result = await prisma.$transaction(async (tx) => {
             const newAccount = await tx.account.create({
                 data: {
-                    accountType: 'branch',
+                    accountType: 'subbrand',
                     status: 'active',
                     isVerified: false,
                     displayName: name,
@@ -98,12 +98,12 @@ export async function createBranchAccount(data: z.infer<typeof formSchema>, geol
                 }
             });
 
-            const branchAccountId = newAccount.id;
+            const subbrandAccountId = newAccount.id;
 
             await tx.permit.create({
                 data: {
                     accountId: personalAccountId,
-                    memberId: branchAccountId,
+                    memberId: subbrandAccountId,
                     forSelf: false,
                     isRoot: false,
                     permissions: ['individual.default'],
@@ -111,7 +111,7 @@ export async function createBranchAccount(data: z.infer<typeof formSchema>, geol
                 }
             });
 
-            // Grant the canonical managed brand owner role on the branch.
+            // Grant the canonical managed brand owner role on the subbrand.
             await tx.authzRole.upsert({
                 where: { id: BRAND_OWNER_ROLE_ID },
                 update: {
@@ -132,8 +132,8 @@ export async function createBranchAccount(data: z.infer<typeof formSchema>, geol
             });
             await ensureAccessGrant(tx, {
                 memberAccountId: personalAccountId,
-                parentAccountId: branchAccountId,
-                childAccountId: branchAccountId,
+                parentAccountId: subbrandAccountId,
+                childAccountId: subbrandAccountId,
                 accessApplicationId: 'neup.account',
                 roleId: BRAND_OWNER_ROLE_ID,
             });
@@ -142,7 +142,7 @@ export async function createBranchAccount(data: z.infer<typeof formSchema>, geol
                 data: {
                     id: fullNeupId,
                     neupId: fullNeupId,
-                    accountId: branchAccountId,
+                    accountId: subbrandAccountId,
                     isPrimary: true
                 }
             });
@@ -150,38 +150,38 @@ export async function createBranchAccount(data: z.infer<typeof formSchema>, geol
             if (location) {
                 await tx.contact.create({
                     data: {
-                        accountId: branchAccountId,
-                        contactType: 'branchLocation',
+                        accountId: subbrandAccountId,
+                        contactType: 'subbrandLocation',
                         value: location,
                     }
                 });
             }
 
-            return branchAccountId;
+            return subbrandAccountId;
         });
 
         await logActivity(
             parentBrandId,
-            activityAction.accountBranchCreate(result),
+            activityAction.accountSubbrandCreate(result),
             'Success',
             undefined,
             personalAccountId,
             geolocation
         );
-        revalidatePath(`/manage/brand/${parentBrandId}/branch`);
+        revalidatePath(`/manage/brand/${parentBrandId}/subbrand`);
 
-        return { success: true, branchId: result };
+        return { success: true, subbrandId: result };
     } catch (error) {
-        await logError('database', error, 'createBranchAccount');
-        return { success: false, error: 'An unexpected error occurred during branch account creation.' };
+        await logError('database', error, 'createSubbrandAccount');
+        return { success: false, error: 'An unexpected error occurred during subbrand account creation.' };
     }
 }
 
 
 /**
- * Function checkBranchNeupIdAvailability.
+ * Function checkSubbrandNeupIdAvailability.
  */
-export async function checkBranchNeupIdAvailability(neupIdSubdomain: string): Promise<{ available: boolean; fullNeupId?: string }> {
+export async function checkSubbrandNeupIdAvailability(neupIdSubdomain: string): Promise<{ available: boolean; fullNeupId?: string }> {
     const parentBrandId = await getActiveAccountId();
     if (!parentBrandId) return { available: false };
 
@@ -205,16 +205,16 @@ export async function checkBranchNeupIdAvailability(neupIdSubdomain: string): Pr
 
         return { available: count === 0, fullNeupId };
     } catch (error) {
-        await logError('database', error, `checkBranchNeupIdAvailability: ${lowerSubdomain}`);
+        await logError('database', error, `checkSubbrandNeupIdAvailability: ${lowerSubdomain}`);
         return { available: false };
     }
 }
 
 
 /**
- * Function getBranches.
+ * Function getSubbrands.
  */
-export async function getBranches(brandId: string): Promise<BranchAccount[]> {
+export async function getSubbrands(brandId: string): Promise<SubbrandAccount[]> {
     if (!brandId) return [];
 
     await requireAnyPermission404(['linked_accounts.brand.manage']);
@@ -222,18 +222,18 @@ export async function getBranches(brandId: string): Promise<BranchAccount[]> {
     if (!canManage) return [];
 
     try {
-        const branches = await prisma.account.findMany({
+        const subbrands = await prisma.account.findMany({
             where: {
                 childOwnerships: {
                     some: {
                         parentId: brandId,
-                        type: 'branch',
+                        type: { in: ['branch', 'subbrand'] },
                     },
                 },
             },
             include: {
                 contacts: {
-                    where: { contactType: 'branchLocation' }
+                    where: { contactType: { in: ['branchLocation', 'subbrandLocation'] } }
                 },
                 neupIds: {
                     where: { isPrimary: true }
@@ -241,14 +241,14 @@ export async function getBranches(brandId: string): Promise<BranchAccount[]> {
             }
         });
 
-        return branches.map(branch => ({
-            id: branch.id,
-            name: branch.displayName || 'Unnamed Branch',
-            neupId: branch.neupIds[0]?.id || 'N/A',
-            location: branch.contacts[0]?.value || undefined,
+        return subbrands.map((subbrand) => ({
+            id: subbrand.id,
+            name: subbrand.displayName || 'Unnamed Subbrand',
+            neupId: subbrand.neupIds[0]?.id || 'N/A',
+            location: subbrand.contacts[0]?.value || undefined,
         }));
     } catch (error) {
-        await logError('database', error, `getBranches for ${brandId}`);
+        await logError('database', error, `getSubbrands for ${brandId}`);
         return [];
     }
 }

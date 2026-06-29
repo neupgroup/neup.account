@@ -8,6 +8,9 @@ export const ACCESS_TEAM_REMOVE_PERMISSIONS = ['access.team.remove.self'] as con
 
 export const ACCESS_CONNECTION_VIEW_PERMISSIONS = ['access.connection.view.self'] as const;
 export const ACCESS_CONNECTION_ADD_PERMISSIONS = ['access.connection.add.self'] as const;
+export const ACCESS_CONNECTION_CREATE_INDIVIDUAL_PERMISSIONS = ['access.connection.create.individual.self'] as const;
+export const ACCESS_CONNECTION_CREATE_BRAND_PERMISSIONS = ['access.connection.create.brand.self'] as const;
+export const ACCESS_CONNECTION_CREATE_DEPENDENT_PERMISSIONS = ['access.connection.create.dependent.self'] as const;
 export const ACCESS_CONNECTION_REMOVE_PERMISSIONS = ['access.connection.remove.self'] as const;
 
 export const ACCESS_APPLICATION_VIEW_PERMISSIONS = ['access.application.view.self'] as const;

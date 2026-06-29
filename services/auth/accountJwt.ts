@@ -9,7 +9,6 @@
  * After obtaining the token, callers use:
  *   GET /account/bridge/api.v1/accounts/lookup  — public profile lookup by accountId or neupId
  *   GET /account/bridge/api.v1/accounts         — all accessible accounts with permissions
- *   GET /account/bridge/api.v1/accounts/brands  — brand/branch accounts with permissions
  */
 
 import jwt from 'jsonwebtoken';

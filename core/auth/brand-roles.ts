@@ -14,6 +14,7 @@ export const BRAND_OWNER_PERMISSION_NAMES = [
   'access.team.add.managed',
   'access.team.remove.managed',
   'access.connection.view.managed',
+  'access.connection.create.brand.managed',
   'access.application.view.managed',
   'account.brand.members.manage.managed',
   'linked_accounts.brand.view',

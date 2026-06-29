@@ -169,13 +169,35 @@ export async function createDependentAccount(data: z.infer<typeof dependentFormS
             // Ensure delegation roles exist
             await tx.authzRole.upsert({
                 where: { id: 'account.guardian' },
-                update: { name: 'account.guardian', scope: 'account', appId: 'neup.account' },
-                create: { id: 'account.guardian', name: 'account.guardian', scope: 'account', appId: 'neup.account' },
+                update: {
+                    name: 'account.guardian',
+                    scope: 'account',
+                    appId: 'neup.account',
+                    permissions: ['access.connection.create.dependent.managed'],
+                },
+                create: {
+                    id: 'account.guardian',
+                    name: 'account.guardian',
+                    scope: 'account',
+                    appId: 'neup.account',
+                    permissions: ['access.connection.create.dependent.managed'],
+                },
             });
             await tx.authzRole.upsert({
                 where: { id: 'account.dependent' },
-                update: { name: 'account.dependent', scope: 'account', appId: 'neup.account' },
-                create: { id: 'account.dependent', name: 'account.dependent', scope: 'account', appId: 'neup.account' },
+                update: {
+                    name: 'account.dependent',
+                    scope: 'account',
+                    appId: 'neup.account',
+                    permissions: ['access.connection.create.dependent.self'],
+                },
+                create: {
+                    id: 'account.dependent',
+                    name: 'account.dependent',
+                    scope: 'account',
+                    appId: 'neup.account',
+                    permissions: ['access.connection.create.dependent.self'],
+                },
             });
 
             await ensureAccessGrant(tx, {

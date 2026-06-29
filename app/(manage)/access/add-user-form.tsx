@@ -21,7 +21,7 @@ export function AddUserForm() {
     startTransition(async () => {
       const result = await resolveNeupId(neupIdInput);
       if (result.success) {
-        redirectInApp(router, `/access/role?member_id=${encodeURIComponent(result.account.accountId)}`);
+        redirectInApp(router, `/access/assign?account=${encodeURIComponent(result.account.accountId)}`);
       } else {
         setLookupError(result.error);
         inputRef.current?.focus();

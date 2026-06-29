@@ -134,7 +134,7 @@ async function PortfolioAccountPage({ id }: { id: string }) {
                   ? 'No roles assigned'
                   : `${member.roleCount} role${member.roleCount !== 1 ? 's' : ''}`,
               status: member.status,
-              actionHref: `/access/role?portfolio=${id}&member_id=${member.accountId}`,
+              actionHref: `/access/assign?portfolio=${id}&account=${member.accountId}`,
             }))}
           />
         ) : (
@@ -169,7 +169,7 @@ async function DirectAccountPage() {
                   : `${member.roleCount} role${member.roleCount !== 1 ? 's' : ''}, ${member.isPermanent ? 'permanent' : 'temporary'} account`,
               status: member.status,
               isSelf: member.accountId === accountId,
-              actionHref: `/access/role?member_id=${member.accountId}`,
+              actionHref: `/access/assign?account=${member.accountId}`,
             }))}
           />
         ) : (

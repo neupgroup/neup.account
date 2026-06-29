@@ -34,11 +34,11 @@ export function AddMemberForm({
     startTransition(async () => {
       const result = await resolveNeupId(neupIdInput);
       if (result.success) {
-        const params = new URLSearchParams({ member: result.account.accountId });
+        const params = new URLSearchParams({ account: result.account.accountId });
         if (parentPortfolioId) params.set("portfolio", parentPortfolioId);
         if (assetId) params.set("asset", assetId);
         if (mode === "root") params.set("mode", "root");
-        redirectInApp(router, `/access/role?${params.toString()}`);
+        redirectInApp(router, `/access/assign?${params.toString()}`);
       } else {
         setLookupError(result.error);
         inputRef.current?.focus();

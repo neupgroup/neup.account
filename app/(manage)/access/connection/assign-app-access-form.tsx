@@ -4,23 +4,50 @@ import { useRef, useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
 import { Check, Loader2, UserCircle, X } from '@/components/icons';
 import { resolveNeupIdForApp, assignAppAccessToAccount, type ResolvedAccount } from './actions';
 
 type Role = { id: string; name: string; description: string | null };
 
+/**
+ * ::neup.documentation::assign-app-access-form
+ * ::title Assign App Access Form
+ *
+ * Client form for granting application access to another already-connected account.
+ *
+ * ::public
+ *
+ * The form looks up a NeupID, confirms the target account has an active connection for the application, then lets the user assign one or more roles.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * Lookup failures intentionally block the role picker and submit button so callers cannot assign access to accounts without an active app connection.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 export function AssignAppAccessForm({
   appId,
+  connectionId,
+  appName,
   availableRoles,
+  initialAccount,
+  initialRoleIds,
 }: {
   appId: string;
+  connectionId?: string;
+  appName?: string;
   availableRoles: Role[];
+  initialAccount?: ResolvedAccount | null;
+  initialRoleIds?: string[];
 }) {
   const [neupIdInput, setNeupIdInput] = useState('');
-  const [resolved, setResolved] = useState<ResolvedAccount | null>(null);
+  const [resolved, setResolved] = useState<ResolvedAccount | null>(initialAccount ?? null);
   const [lookupError, setLookupError] = useState<string | null>(null);
-  const [selectedRoles, setSelectedRoles] = useState<Set<string>>(new Set());
+  const [selectedRoles, setSelectedRoles] = useState<Set<string>>(new Set(initialRoleIds ?? []));
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -30,10 +57,11 @@ export function AssignAppAccessForm({
     if (!neupIdInput.trim()) return;
     setLookupError(null);
     startTransition(async () => {
-      const result = await resolveNeupIdForApp(neupIdInput.trim());
+      const result = await resolveNeupIdForApp(appId, neupIdInput.trim());
       if (result.success) {
         setResolved(result.account);
       } else {
+        setResolved(null);
         setLookupError(result.error);
         inputRef.current?.focus();
       }
@@ -55,6 +83,7 @@ export function AssignAppAccessForm({
     startTransition(async () => {
       const result = await assignAppAccessToAccount({
         appId,
+        connectionId,
         memberId: resolved.accountId,
         roleIds: Array.from(selectedRoles),
       });
@@ -90,6 +119,9 @@ export function AssignAppAccessForm({
 
   return (
     <div className="px-4 py-3 grid gap-3">
+      <p className="text-xs text-muted-foreground">
+        Only accounts with an active {appName ?? 'application'} connection can be granted direct access.
+      </p>
       {/* Step 1 — NeupID lookup */}
       {!resolved ? (
         <div className="grid gap-1.5">
@@ -129,7 +161,9 @@ export function AssignAppAccessForm({
               <UserCircle className="h-4 w-4 shrink-0 text-muted-foreground" />
               <div className="min-w-0">
                 <p className="text-sm font-medium truncate">{resolved.displayName}</p>
-                <p className="text-xs text-muted-foreground truncate">{neupIdInput}</p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {neupIdInput || resolved.accountId}
+                </p>
               </div>
             </div>
             <button

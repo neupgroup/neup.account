@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import Image from 'next/image';
 import { BackButton } from '@/components/ui/back-button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -504,7 +504,7 @@ async function MemberPortfolioRolesView({
             displayName={displayName}
             confirmDescription={`This will invite ${displayName} to portfolio "${portfolioName}". They will join with no roles assigned initially.`}
             action={inviteToPortfolio.bind(null, parentPortfolioId, memberAccountId)}
-            redirectTo={`/access/role?member_id=${memberAccountId}&portfolio=${parentPortfolioId}`}
+            redirectTo={`/access/assign?account=${memberAccountId}&portfolio=${parentPortfolioId}`}
           />
         </div>
       </div>
@@ -560,7 +560,7 @@ async function MemberPortfolioRolesView({
                 : `This will cancel the pending invitation for ${displayName} to join portfolio "${detail.portfolioName}".`
             }
             action={cancelPortfolioInvitation.bind(null, parentPortfolioId, memberAccountId)}
-            redirectTo={`/access/role?member_id=${memberAccountId}&portfolio=${parentPortfolioId}`}
+            redirectTo={`/access/assign?account=${memberAccountId}&portfolio=${parentPortfolioId}`}
             variant="outline"
           />
           {/* Re-invite if expired */}
@@ -569,7 +569,7 @@ async function MemberPortfolioRolesView({
               displayName={displayName}
               confirmDescription={`This will send a new invitation to ${displayName} to join portfolio "${detail.portfolioName}".`}
               action={inviteToPortfolio.bind(null, parentPortfolioId, memberAccountId)}
-              redirectTo={`/access/role?member_id=${memberAccountId}&portfolio=${parentPortfolioId}`}
+              redirectTo={`/access/assign?account=${memberAccountId}&portfolio=${parentPortfolioId}`}
             />
           )}
         </div>
@@ -678,21 +678,17 @@ export default async function RolePage({ searchParams }: PageProps) {
   await requireAnyPermission404([...ACCESS_TEAM_VIEW_PERMISSIONS]);
   const { member_id: memberAccountId, portfolio: parentPortfolioId } = await searchParams;
 
-  // /access/role?member_id=[id]&portfolio=[id]
   if (memberAccountId && parentPortfolioId) {
-    return <MemberPortfolioRolesView memberAccountId={memberAccountId} parentPortfolioId={parentPortfolioId} />;
+    redirect(`/access/assign?account=${encodeURIComponent(memberAccountId)}&portfolio=${encodeURIComponent(parentPortfolioId)}`);
   }
 
-  // /access/role?member_id=[id]
   if (memberAccountId) {
-    return <MemberDirectRolesView memberAccountId={memberAccountId} />;
+    redirect(`/access/assign?account=${encodeURIComponent(memberAccountId)}`);
   }
 
-  // /access/role?portfolio=[id]
   if (parentPortfolioId) {
-    return <MyPortfolioRolesView parentPortfolioId={parentPortfolioId} />;
+    redirect(`/access/assign?portfolio=${encodeURIComponent(parentPortfolioId)}`);
   }
 
-  // /access/role
   return <MyDirectRolesView />;
 }

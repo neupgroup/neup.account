@@ -530,7 +530,7 @@ export async function updateDirectMemberAccess(input: {
 
     revalidatePath('/access');
     revalidatePath('/access/team');
-    revalidatePath(`/access/role?member_id=${input.memberAccountId}`);
+    revalidatePath(`/access/assign?account=${input.memberAccountId}`);
     return { success: true };
   } catch (error) {
     await logError('database', error, `updateDirectMemberAccess:${accountId}:${input.memberAccountId}`);
@@ -715,7 +715,7 @@ export async function cancelPortfolioInvitation(
 
     revalidatePath('/access');
     revalidatePath(`/access/team?portfolio=${parentPortfolioId}`);
-    revalidatePath(`/access/role?portfolio=${parentPortfolioId}&member_id=${recipientAccountId}`);
+    revalidatePath(`/access/assign?portfolio=${parentPortfolioId}&account=${recipientAccountId}`);
     return { success: true };
   } catch (error) {
     await logError('database', error, `cancelPortfolioInvitation:${parentPortfolioId}:${recipientAccountId}`);
@@ -842,7 +842,7 @@ export async function inviteDirectMember(
 
     revalidatePath('/access');
     revalidatePath('/access/team');
-    revalidatePath(`/access/role?member_id=${recipientAccountId}`);
+    revalidatePath(`/access/assign?account=${recipientAccountId}`);
     return { success: true };
   } catch (error) {
     await logError('database', error, `inviteDirectMember:${recipientAccountId}`);

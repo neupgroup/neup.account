@@ -6,7 +6,6 @@ import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
 import { getUserProfile } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
-import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
 import { checkPermissions } from '@/services/user';
 import {
@@ -16,7 +15,26 @@ import {
   ACCESS_CONNECTION_VIEW_PERMISSIONS,
 } from '@/core/auth/access-view-permissions';
 
-// ── Types ─────────────────────────────────────────────────────────────────────
+/*
+::neup.documentation::access-connection-actions
+::title Connection Access Actions
+
+Loads connection-access pages and performs direct application-access assignments from the manage UI.
+
+::public
+
+This module backs the connection access pages by returning connection summaries, resolving NeupID lookups, and assigning or revoking app access for eligible accounts.
+
+::public end
+
+::private
+
+Assignment is intentionally limited to accounts that already have an active connection for the target application. The module no longer creates placeholder connection rows during access assignment.
+
+::private end
+
+::end
+*/
 
 export type AppWithAccess = {
   id: string;
@@ -65,6 +83,17 @@ export type ConnectionAccessMember = {
   }>;
 };
 
+function resolveProfileDisplayName(
+  accountId: string,
+  profile: Awaited<ReturnType<typeof getUserProfile>> | null,
+): string {
+  return (
+    profile?.nameDisplay ||
+    [profile?.nameFirst, profile?.nameLast].filter(Boolean).join(' ').trim() ||
+    accountId
+  );
+}
+
 export type ConnectionDetail = {
   id: string;
   appId: string;
@@ -78,6 +107,12 @@ export type ConnectionDetail = {
   roleName: string | null;
   roleDescription: string | null;
   accessCount: number;
+  availableRoles: Array<{
+    id: string;
+    name: string;
+    description: string | null;
+  }>;
+  canGrantDirectAccess: boolean;
   members: ConnectionAccessMember[];
 };
 
@@ -246,14 +281,25 @@ export async function getConnectionPageData(): Promise<ConnectionPageItem[]> {
     }) as any[];
 
     return Promise.all(connections.map(async (connection) => {
-      const accessCount = await prisma.access.count({
+      const accessRows = await prisma.access.findMany({
         where: {
           parentAccountId: accountId,
           accessApplicationId: connection.application.id,
+          memberAccountId: { not: null },
           status: 'active',
           OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
         },
+        select: {
+          memberAccountId: true,
+        },
       });
+      const memberIds = new Set(
+        accessRows
+          .map((row) => row.memberAccountId)
+          .filter((memberAccountId): memberAccountId is string => Boolean(memberAccountId)),
+      );
+      memberIds.add(accountId);
+
       return {
         id: connection.id,
         appId: connection.application.id,
@@ -266,7 +312,7 @@ export async function getConnectionPageData(): Promise<ConnectionPageItem[]> {
         roleId: connection.role?.id ?? null,
         roleName: connection.role?.name ?? null,
         roleDescription: connection.role?.description ?? null,
-        accessCount,
+        accessCount: memberIds.size,
       };
     }));
   } catch (error) {
@@ -283,7 +329,8 @@ export async function getConnectionDetail(connectionId: string): Promise<Connect
   if (!accountId) return null;
 
   try {
-    const connection = await prisma.connection.findFirst({
+    const [connection, canGrantDirectAccess] = await Promise.all([
+      prisma.connection.findFirst({
       where: {
         id: connectionId,
         accountId,
@@ -310,14 +357,17 @@ export async function getConnectionDetail(connectionId: string): Promise<Connect
           },
         },
       },
-    }) as any;
+      }) as any,
+      checkPermissions([...ACCESS_APPLICATION_ADD_PERMISSIONS]),
+    ]);
 
     if (!connection) return null;
 
-    const accessRows = await prisma.access.findMany({
+    const [accessRows, availableRoles] = await Promise.all([
+      prisma.access.findMany({
       where: {
         parentAccountId: accountId,
-        accessApplicationId: connection.appId,
+        accessApplicationId: connection.application.id,
         status: 'active',
         OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
       },
@@ -339,7 +389,13 @@ export async function getConnectionDetail(connectionId: string): Promise<Connect
         },
       },
       orderBy: { memberAccountId: 'asc' },
-    });
+      }),
+      prisma.authzRole.findMany({
+        where: { appId: connection.application.id },
+        select: { id: true, name: true, description: true },
+        orderBy: { name: 'asc' },
+      }),
+    ]);
 
     const memberMap = new Map<string, ConnectionAccessMember>();
     for (const row of accessRows) {
@@ -371,6 +427,31 @@ export async function getConnectionDetail(connectionId: string): Promise<Connect
       }
     }
 
+    const ownerProfile = await getUserProfile(accountId);
+    const existingOwner = memberMap.get(accountId);
+    const ownerRoles = existingOwner?.roles?.length
+      ? existingOwner.roles
+      : connection.role
+      ? [{
+          roleId: connection.role.id,
+          roleName: connection.role.name ?? connection.role.id,
+          roleDescription: connection.role.description ?? null,
+        }]
+      : [];
+
+    memberMap.set(accountId, {
+      accountId,
+      displayName: resolveProfileDisplayName(accountId, ownerProfile),
+      accountPhoto: ownerProfile?.accountPhoto,
+      roles: ownerRoles,
+    });
+
+    const members = Array.from(memberMap.values()).sort((left, right) => {
+      if (left.accountId === accountId) return -1;
+      if (right.accountId === accountId) return 1;
+      return left.displayName.localeCompare(right.displayName);
+    });
+
     return {
       id: connection.id,
       appId: connection.application.id,
@@ -383,8 +464,10 @@ export async function getConnectionDetail(connectionId: string): Promise<Connect
       roleId: connection.role?.id ?? null,
       roleName: connection.role?.name ?? null,
       roleDescription: connection.role?.description ?? null,
-      accessCount: accessRows.length,
-      members: Array.from(memberMap.values()),
+      accessCount: memberMap.size,
+      availableRoles,
+      canGrantDirectAccess,
+      members,
     };
   } catch (error) {
     await logError('database', error, `getConnectionDetail:${connectionId}`);
@@ -395,28 +478,77 @@ export async function getConnectionDetail(connectionId: string): Promise<Connect
 // ── Resolve NeupID ────────────────────────────────────────────────────────────
 
 export async function resolveNeupIdForApp(
+  appId: string,
   neupId: string,
 ): Promise<{ success: true; account: ResolvedAccount } | { success: false; error: string }> {
+  const currentAccountId = await getActiveAccountId();
+  if (!currentAccountId) {
+    return { success: false, error: 'Not authenticated.' };
+  }
+
+  if (!appId.trim()) {
+    return { success: false, error: 'Application is required.' };
+  }
+
   const normalized = neupId.trim().toLowerCase();
   if (!normalized || normalized.length < 3) {
     return { success: false, error: 'NeupID must be at least 3 characters.' };
   }
 
   try {
-    const record = await prisma.neupId.findUnique({
+    const [app, record] = await Promise.all([
+      prisma.application.findUnique({
+        where: { id: appId },
+        select: { id: true, name: true },
+      }),
+      prisma.neupId.findUnique({
       where: { id: normalized },
       select: { accountId: true },
-    });
+      }),
+    ]);
+
+    if (!app) return { success: false, error: 'Application not found.' };
 
     if (!record) return { success: false, error: 'No account found with that NeupID.' };
+    if (record.accountId === currentAccountId) {
+      return { success: false, error: 'You cannot assign access to yourself.' };
+    }
 
-    const profile = await getUserProfile(record.accountId);
+    const [profile, connection] = await Promise.all([
+      getUserProfile(record.accountId),
+      prisma.connection.findUnique({
+        where: {
+          accountId_appId: {
+            accountId: record.accountId,
+            appId,
+          },
+        },
+        select: {
+          id: true,
+          status: true,
+        },
+      }),
+    ]);
     const displayName =
       profile?.nameDisplay ||
       (profile?.nameFirst || profile?.nameLast
         ? `${profile.nameFirst ?? ''} ${profile.nameLast ?? ''}`.trim()
         : null) ||
       normalized;
+
+    if (!connection) {
+      return {
+        success: false,
+        error: `${displayName} has not connected ${app.name} yet.`,
+      };
+    }
+
+    if (connection.status !== 'active') {
+      return {
+        success: false,
+        error: `${displayName} cannot be assigned access until their ${app.name} connection is active.`,
+      };
+    }
 
     return { success: true, account: { accountId: record.accountId, displayName } };
   } catch (error) {
@@ -429,12 +561,14 @@ export async function resolveNeupIdForApp(
 
 const assignSchema = z.object({
   appId: z.string().min(1),
+  connectionId: z.string().min(1).optional(),
   memberId: z.string().min(1),
   roleIds: z.array(z.string().min(1)).min(1, 'Select at least one role.'),
 });
 
 export async function assignAppAccessToAccount(input: {
   appId: string;
+  connectionId?: string;
   memberId: string;
   roleIds: string[];
 }): Promise<{ success: boolean; invited?: boolean; appName?: string; error?: string }> {
@@ -450,38 +584,38 @@ export async function assignAppAccessToAccount(input: {
   }
 
   const { appId, memberId, roleIds } = parsed.data;
+  if (memberId === accessTo) {
+    return { success: false, error: 'You cannot assign access to yourself.' };
+  }
 
   try {
-    // Verify the app exists
-    const app = await prisma.application.findUnique({ where: { id: appId }, select: { id: true, name: true } });
+    const [app, existingConnection, roles] = await Promise.all([
+      prisma.application.findUnique({
+        where: { id: appId },
+        select: { id: true, name: true },
+      }),
+      prisma.connection.findUnique({
+        where: { accountId_appId: { accountId: memberId, appId } },
+        select: { id: true, status: true },
+      }),
+      prisma.authzRole.findMany({
+        where: { appId, id: { in: roleIds } },
+        select: { id: true },
+      }),
+    ]);
     if (!app) return { success: false, error: 'Application not found.' };
-
-    // Check if the target already has an active connection to this app.
-    // If not, create one with status 'inactive_invited' — they've been granted
-    // access but haven't connected to the app themselves yet.
-    const existingConnection = await prisma.connection.findUnique({
-      where: { accountId_appId: { accountId: memberId, appId } },
-      select: { id: true, status: true },
-    });
-
     if (!existingConnection) {
-      const defaultRoleId = await getApplicationDefaultRoleId(appId);
-      await prisma.connection.create({
-        data: { accountId: memberId, appId, status: 'inactive_invited', roleId: defaultRoleId },
-      });
+      return { success: false, error: 'This account has not connected this application yet.' };
     }
-    // If a connection already exists, leave its status untouched.
+    if (existingConnection.status !== 'active') {
+      return { success: false, error: 'This account must have an active application connection before access can be assigned.' };
+    }
+    if (roles.length !== new Set(roleIds).size) {
+      return { success: false, error: 'One or more selected roles are not valid for this application.' };
+    }
 
-    // Remove existing grants from this owner to this target on this app, then re-create
     await prisma.$transaction(async (tx) => {
       await cleanupExpiredAccessModel(tx);
-      const targetConnection = await tx.connection.findUnique({
-        where: { accountId_appId: { accountId: memberId, appId } },
-        select: { id: true },
-      });
-      if (!targetConnection) {
-        throw new Error('Target connection not found after ensure step.');
-      }
 
       await tx.access.deleteMany({
         where: {
@@ -495,22 +629,25 @@ export async function assignAppAccessToAccount(input: {
         await ensureAccessGrant(tx, {
           memberAccountId: memberId,
           parentAccountId: accessTo,
-          childConnectionId: targetConnection.id,
+          childConnectionId: existingConnection.id,
           accessApplicationId: appId,
           roleId,
           details: {
-            connectionId: targetConnection.id,
+            connectionId: existingConnection.id,
           },
         });
       }
     });
 
     revalidatePath('/access/connection');
-    // Let the caller know if this was a fresh invite (no prior connection)
-    // so the UI can show the "user doesn't have an account on <app> yet" notice.
+    if (input.connectionId) {
+      revalidatePath(`/access/connection/${input.connectionId}`);
+    }
+    revalidatePath('/access/application');
+    revalidatePath(`/access/application?application=${appId}`);
     return {
       success: true,
-      invited: !existingConnection,
+      invited: false,
       appName: app.name,
     };
   } catch (error) {

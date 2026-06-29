@@ -3,9 +3,30 @@ import Image from 'next/image';
 import { BackButton } from '@/components/ui/back-button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { AppWindow, UserCircle, Users } from '@/components/icons';
+import { FlowLink } from '@/components/ui/flow-link';
+import { AppWindow, ChevronRight, Plus, UserCircle, Users } from '@/components/icons';
 import { getConnectionDetail } from '../actions';
 
+/**
+ * ::neup.documentation::connection-detail-page
+ * ::title Connection Detail Page
+ *
+ * Shows the accounts that currently have direct access to one application connection.
+ *
+ * ::public
+ *
+ * The page lists current members and, when permitted, exposes a dedicated card that takes the current profile to the connection access assignment page.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The page stays presentation-only and delegates assignment eligibility plus form behavior to the nested assign route.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 type PageProps = {
   params: Promise<{ id: string }>;
 };
@@ -30,18 +51,25 @@ function StatusDot({ status }: { status: string }) {
 }
 
 function AccessCard({
+  connectionId,
   displayName,
   accountId,
   accountPhoto,
   roles,
+  className,
 }: {
+  connectionId: string;
   displayName: string;
   accountId: string;
   accountPhoto?: string;
   roles: Array<{ roleId: string; roleName: string; roleDescription: string | null }>;
+  className?: string;
 }) {
   return (
-    <div className="rounded-lg border bg-background p-4">
+    <FlowLink
+      href={`/access/assign?connection=${encodeURIComponent(connectionId)}&account=${encodeURIComponent(accountId)}`}
+      className={`block border bg-background p-4 transition-colors duration-200 hover:relative hover:z-10 hover:border-muted-foreground/40 hover:bg-muted/20 ${className ?? ''}`}
+    >
       <div className="flex items-start gap-3">
         <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted">
           {accountPhoto ? (
@@ -64,7 +92,7 @@ function AccessCard({
           ))}
         </div>
       ) : null}
-    </div>
+    </FlowLink>
   );
 }
 
@@ -88,6 +116,7 @@ export default async function ConnectionDetailPage({ params }: PageProps) {
   if (!connection) notFound();
   const hasAccess = connection.members.length > 0;
   const headerStatus = hasAccess ? connection.connectionStatus : 'missing';
+  const stackCount = connection.canGrantDirectAccess ? connection.members.length + 1 : connection.members.length;
 
   return (
     <div className="grid gap-8">
@@ -116,21 +145,56 @@ export default async function ConnectionDetailPage({ params }: PageProps) {
         </div>
       </div>
 
-      <div className="grid gap-3">
+      <div className="overflow-hidden rounded-xl">
+        {connection.canGrantDirectAccess ? (
+          <FlowLink href={`/access/assign?connection=${encodeURIComponent(connection.id)}`} className="block">
+            <Card className="rounded-none border-b-0 transition-colors duration-200 hover:relative hover:z-10 hover:border-muted-foreground/40 hover:bg-muted/20">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted">
+                      <Plus className="h-4 w-4 text-muted-foreground" />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium">Add people to this connection</p>
+                      <p className="text-sm text-muted-foreground">
+                        Grant direct access to accounts that already have an active {connection.appName} connection.
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground/70" />
+                </div>
+              </CardContent>
+            </Card>
+          </FlowLink>
+        ) : null}
+
         {hasAccess ? (
-          <div className="grid gap-3">
-            {connection.members.map((member) => (
+          <div>
+            {connection.members.map((member, index) => {
+              const isLast = index === connection.members.length - 1;
+              const isOnlyCard = stackCount === 1;
+              const className = isOnlyCard
+                ? 'rounded-xl'
+                : isLast
+                ? 'rounded-b-xl'
+                : 'border-b-0 rounded-none';
+
+              return (
               <AccessCard
                 key={member.accountId}
+                connectionId={connection.id}
                 displayName={member.displayName}
                 accountId={member.accountId}
                 accountPhoto={member.accountPhoto}
                 roles={member.roles}
+                className={className}
               />
-            ))}
+              );
+            })}
           </div>
         ) : (
-          <Card>
+          <Card className={connection.canGrantDirectAccess ? 'rounded-b-xl' : 'rounded-xl'}>
             <CardContent className="p-4">
               <AccessEmptyState />
             </CardContent>

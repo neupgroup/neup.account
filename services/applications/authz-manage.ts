@@ -119,6 +119,16 @@ type RawAppRoleRow = {
   applicableForText: string | null;
 };
 
+type RawManagedRoleRecord = {
+  id: string;
+  name: string | null;
+  scopeText: string | null;
+  scopeForText: string | null;
+  scopeLevelText: string | null;
+  acquisitionType: string | null;
+  approvalPolicy: string | null;
+};
+
 type RawAppPermissionRow = {
   roleId: string;
   id: string;
@@ -207,6 +217,105 @@ function formatScopeFor(value: Prisma.JsonValue | null | undefined, allowMultipl
 
 function formatScopeLevels(value: Prisma.JsonValue | null | undefined): AuthzScopeLevel[] {
   return normalizeAuthzScopeLevels(value, true);
+}
+
+/*
+::neup.documentation::application-managed-role-loader
+
+Loads one authz role record for mutation flows.
+
+The loader falls back to raw text reads for `scope`, `scope_for`, and
+`scope_level` when legacy rows still store non-JSON plain strings that Prisma
+cannot deserialize.
+
+::end
+*/
+
+async function loadManagedRoleRecord(
+  tx: any,
+  input: {
+    roleId: string;
+    appId?: string;
+  },
+): Promise<{
+  id: string;
+  name: string | null;
+  scope: Prisma.JsonValue | string | null;
+  scopeFor: Prisma.JsonValue | string | null;
+  scopeLevel: Prisma.JsonValue | string | null;
+  acquisitionType: string | null;
+  approvalPolicy: string | null;
+} | null> {
+  const columnSupport = await getAuthzScopePolicyColumnSupport();
+
+  try {
+    const role = await tx.authzRole.findFirst({
+      where: {
+        id: input.roleId,
+        ...(input.appId ? { appId: input.appId } : {}),
+      },
+      select: columnSupport.role
+        ? {
+            id: true,
+            name: true,
+            scope: true,
+            scopeFor: true,
+            scopeLevel: true,
+            acquisitionType: true,
+            approvalPolicy: true,
+          }
+        : {
+            id: true,
+            name: true,
+            scope: true,
+            acquisitionType: true,
+            approvalPolicy: true,
+          },
+    });
+
+    if (!role) return null;
+
+    return {
+      id: role.id,
+      name: (role as any).name ?? null,
+      scope: role.scope,
+      scopeFor: (role as any).scopeFor ?? null,
+      scopeLevel: (role as any).scopeLevel ?? null,
+      acquisitionType: role.acquisitionType ?? null,
+      approvalPolicy: role.approvalPolicy ?? null,
+    };
+  } catch (error) {
+    if (!isInvalidStoredJsonReadError(error)) throw error;
+
+    const rows = await tx.$queryRaw(Prisma.sql`
+      SELECT
+        r."id",
+        r."name",
+        r."scope"::text AS "scopeText",
+        ${columnSupport.role
+          ? Prisma.sql`r."scope_for"::text AS "scopeForText", r."scope_level"::text AS "scopeLevelText",`
+          : Prisma.sql`NULL::text AS "scopeForText", NULL::text AS "scopeLevelText",`}
+        r."acquisition_type" AS "acquisitionType",
+        r."approval_policy" AS "approvalPolicy"
+      FROM "authz_role" r
+      WHERE r."id" = ${input.roleId}
+        ${input.appId ? Prisma.sql`AND r."app_id" = ${input.appId}` : Prisma.empty}
+      LIMIT 1
+    `) as RawManagedRoleRecord[];
+
+    const row = rows[0];
+    if (!row) return null;
+
+    return {
+      id: row.id,
+      name: row.name,
+      scope: parseStoredJsonText(row.scopeText),
+      scopeFor: parseStoredJsonText(row.scopeForText),
+      scopeLevel: parseStoredJsonText(row.scopeLevelText),
+      acquisitionType: row.acquisitionType,
+      approvalPolicy: row.approvalPolicy,
+    };
+  }
 }
 
 function formatRoleScopeLevel(
@@ -660,12 +769,7 @@ async function upsertPermissionsForApp(
 
 async function syncRolePermissionMappings(tx: any, roleId: string, roleScope: Prisma.InputJsonValue, permissionIds: string[]): Promise<void> {
   const columnSupport = await getAuthzScopePolicyColumnSupport();
-  const role = await tx.authzRole.findUnique({
-    where: { id: roleId },
-    select: columnSupport.role
-      ? { scope: true, scopeFor: true, scopeLevel: true, acquisitionType: true, approvalPolicy: true }
-      : { scope: true, acquisitionType: true, approvalPolicy: true },
-  });
+  const role = await loadManagedRoleRecord(tx, { roleId });
 
   await tx.authzRolePermissionMap.deleteMany({ where: { roleId } });
   if (!role || permissionIds.length === 0) return;
@@ -1484,19 +1588,17 @@ export async function updateAppRolePermissions(input: {
     }
 
     await prisma.$transaction(async (tx) => {
-      const columnSupport = await getAuthzScopePolicyColumnSupport();
-      const role: any = await tx.authzRole.findFirst({
-        where: { id: input.roleId, appId: input.appId },
-        select: columnSupport.role
-          ? { id: true, name: true, scope: true, scopeFor: true, scopeLevel: true, acquisitionType: true, approvalPolicy: true } as any
-          : { id: true, name: true, scope: true, acquisitionType: true, approvalPolicy: true } as any,
-      });
+      const role = await loadManagedRoleRecord(tx, { roleId: input.roleId, appId: input.appId });
       if (!role) throw new Error('Role not found.');
 
       if (input.permissionIds.length > 0) {
         const selectionError = await validateRolePermissionSelection(tx, input.appId, input.permissionIds, {
           scopeFor: getRoleScopeFor(role),
-          scopeLevel: formatRoleScopeLevel(role.scopeLevel, role.acquisitionType, role.approvalPolicy),
+          scopeLevel: formatRoleScopeLevel(
+            typeof role.scopeLevel === 'string' ? role.scopeLevel : null,
+            role.acquisitionType,
+            role.approvalPolicy,
+          ),
         });
         if (selectionError) throw new Error(selectionError);
 
@@ -1560,16 +1662,15 @@ export async function updateAppRole(input: {
 
     await prisma.$transaction(async (tx) => {
       const columnSupport = await getAuthzScopePolicyColumnSupport();
-      const role: any = await tx.authzRole.findFirst({
-        where: { id: input.roleId, appId: input.appId },
-        select: columnSupport.role
-          ? { id: true, scope: true, scopeFor: true, scopeLevel: true, name: true, acquisitionType: true, approvalPolicy: true } as any
-          : { id: true, scope: true, name: true, acquisitionType: true, approvalPolicy: true } as any,
-      });
+      const role = await loadManagedRoleRecord(tx, { roleId: input.roleId, appId: input.appId });
       if (!role) throw new Error('Role not found.');
       const currentScope = validateRoleScopeInput(formatRoleScope(role.scope));
       const currentScopeFor = validateRoleScopeForInput(getRoleScopeFor(role));
-      const currentScopeLevel = formatRoleScopeLevel(role.scopeLevel, role.acquisitionType, role.approvalPolicy);
+      const currentScopeLevel = formatRoleScopeLevel(
+        typeof role.scopeLevel === 'string' ? role.scopeLevel : null,
+        role.acquisitionType,
+        role.approvalPolicy,
+      );
       if (currentScope.length === 0) {
         throw new Error(roleScopeError());
       }

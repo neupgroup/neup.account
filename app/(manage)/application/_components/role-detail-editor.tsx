@@ -21,7 +21,6 @@ import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
   deleteAppRole,
   setAppDefaultRole,
@@ -46,6 +45,8 @@ type Props = {
   defaultRoleId: string | null;
   canManage: boolean;
   applicableForOptions: ApplicationAuthzDefinitionOption[];
+  mode?: string;
+  editingInfo?: boolean;
 };
 
 export function RoleDetailEditor({
@@ -55,6 +56,8 @@ export function RoleDetailEditor({
   defaultRoleId: initialDefaultRoleId,
   canManage,
   applicableForOptions,
+  mode,
+  editingInfo = false,
 }: Props) {
   const router = useRouter();
   const { toast } = useToast();
@@ -63,7 +66,6 @@ export function RoleDetailEditor({
   const [scopeFor, setScopeFor] = useState(role.scopeFor);
   const [scopeLevel, setScopeLevel] = useState<AuthzScopeLevel[]>([role.scopeLevel]);
   const [applicableFor, setApplicableFor] = useState<string[]>(role.applicableFor);
-  const [showDetailsEditor, setShowDetailsEditor] = useState(false);
   const [permissionIds, setPermissionIds] = useState<string[]>(() => {
     const idsFromRole = role.permissions
       .map((permission) => permission.id)
@@ -123,7 +125,10 @@ export function RoleDetailEditor({
     }
 
     toast({ title: 'Role updated' });
-    router.refresh();
+    redirectInApp(
+      router,
+      applicationHref(`/application/roles/${role.id}`, appId, mode ? { mode } : undefined),
+    );
   };
 
   const handleDefaultRole = async () => {
@@ -155,8 +160,56 @@ export function RoleDetailEditor({
     }
 
     toast({ title: 'Role deleted' });
-    redirectInApp(router, applicationHref('/application/roles', appId, { mode: 'root' }));
+    redirectInApp(router, applicationHref('/application/roles', appId, mode ? { mode } : { mode: 'root' }));
   };
+
+  if (editingInfo) {
+    return (
+      <div className="grid gap-3 rounded-2xl border bg-card p-5">
+        <div>
+          <p className="text-sm font-medium">Role details</p>
+          <p className="text-xs text-muted-foreground">
+            Role title is fixed after creation. Description, access mode, and applicable targets can be updated here.
+          </p>
+        </div>
+        <Input value={role.name} disabled aria-label="Role title" />
+        <RoleScopeSelector value={scope} onChange={setScope} disabled={!canManage || isSystemRole} />
+        <Input
+          value={description}
+          disabled={!canManage || isSystemRole}
+          onChange={(event) => setDescription(event.target.value)}
+          placeholder="Description (optional)"
+        />
+        <ScopeForSelector value={scopeFor} onChange={setScopeFor} disabled={!canManage || isSystemRole} />
+        <ScopeLevelSelector value={scopeLevel} onChange={(value) => setScopeLevel([value[0] ?? role.scopeLevel])} allowMultiple={false} disabled={!canManage || isSystemRole} />
+        <AuthzDefinitionSelector
+          label="Applicable for"
+          description="Choose the configured applicable-for targets for this role."
+          options={applicableForOptions}
+          value={applicableFor}
+          onChange={setApplicableFor}
+          disabled={!canManage || isSystemRole}
+          emptyLabel="No applicable-for definitions configured on the application configuration page."
+        />
+        {isSystemRole ? (
+          <p className="text-xs text-muted-foreground">
+            This is a system-managed role for the authz app and cannot be edited here.
+          </p>
+        ) : null}
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="outline"
+            onClick={() => redirectInApp(router, applicationHref(`/application/roles/${role.id}`, appId, mode ? { mode } : undefined))}
+          >
+            Cancel
+          </Button>
+          <Button onClick={handleSave} disabled={savePending || !canManage || isSystemRole}>
+            {savePending ? 'Saving...' : 'Save Role'}
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="grid gap-4">
@@ -249,54 +302,21 @@ export function RoleDetailEditor({
         </div>
       </div>
 
-      <Collapsible open={showDetailsEditor} onOpenChange={setShowDetailsEditor} className="grid gap-3">
-        <CollapsibleContent className="grid gap-3 rounded-2xl border bg-card p-5">
-          <div>
-            <p className="text-sm font-medium">Role details</p>
-            <p className="text-xs text-muted-foreground">
-              Role title is fixed after creation. Description, access mode, and applicable targets can be updated here.
-            </p>
-          </div>
-          <Input value={role.name} disabled aria-label="Role title" />
-          <RoleScopeSelector value={scope} onChange={setScope} disabled={!canManage || isSystemRole} />
-          <Input
-            value={description}
-            disabled={!canManage || isSystemRole}
-            onChange={(event) => setDescription(event.target.value)}
-            placeholder="Description (optional)"
-          />
-          <ScopeForSelector value={scopeFor} onChange={setScopeFor} disabled={!canManage || isSystemRole} />
-          <ScopeLevelSelector value={scopeLevel} onChange={(value) => setScopeLevel([value[0] ?? role.scopeLevel])} allowMultiple={false} disabled={!canManage || isSystemRole} />
-          <AuthzDefinitionSelector
-            label="Applicable for"
-            description="Choose the configured applicable-for targets for this role."
-            options={applicableForOptions}
-            value={applicableFor}
-            onChange={setApplicableFor}
-            disabled={!canManage || isSystemRole}
-            emptyLabel="No applicable-for definitions configured on the application configuration page."
-          />
-          {isSystemRole ? (
-            <p className="text-xs text-muted-foreground">
-              This is a system-managed role for the authz app and cannot be edited here.
-            </p>
-          ) : null}
-        </CollapsibleContent>
-
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={() => redirectInApp(router, applicationHref('/application/roles', appId, { mode: 'root' }))}>
-            Back
-          </Button>
-          <CollapsibleTrigger asChild>
-            <Button type="button" variant="outline">
-              {showDetailsEditor ? 'Hide info' : 'Edit info'}
-            </Button>
-          </CollapsibleTrigger>
-          <Button onClick={handleSave} disabled={savePending || !canManage || isSystemRole}>
-            {savePending ? 'Saving...' : 'Save Role'}
-          </Button>
-        </div>
-      </Collapsible>
+      <div className="flex justify-end gap-2">
+        <Button variant="outline" onClick={() => redirectInApp(router, applicationHref('/application/roles', appId, mode ? { mode } : { mode: 'root' }))}>
+          Back
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => redirectInApp(router, applicationHref(`/application/roles/${role.id}`, appId, { edit: 'info', ...(mode ? { mode } : {}) }))}
+        >
+          Edit info
+        </Button>
+        <Button onClick={handleSave} disabled={savePending || !canManage || isSystemRole}>
+          {savePending ? 'Saving...' : 'Save Role'}
+        </Button>
+      </div>
     </div>
   );
 }

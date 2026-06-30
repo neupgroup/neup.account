@@ -1,3 +1,14 @@
+/*
+::neup.documentation::application-role-details-page
+
+Server-rendered role details page for application authz management.
+
+The page supports a dedicated `edit=info` mode that renders only the role-info
+editor, instead of the full role detail layout.
+
+::end
+*/
+
 import { notFound } from 'next/navigation';
 import {
   canCurrentAccountManageApplicationRoles,
@@ -16,13 +27,14 @@ import { toApplicationAuthzDefinitionOptions } from '@/services/applications/aut
 
 type Props = {
   params: Promise<{ roleId: string }>;
-  searchParams: Promise<{ application?: string | string[]; mode?: string }>;
+  searchParams: Promise<{ application?: string | string[]; mode?: string; edit?: string }>;
 };
 
 export default async function RoleDetailsQueryPage({ params, searchParams }: Props) {
   const { roleId } = await params;
-  const { application, mode } = await searchParams;
+  const { application, mode, edit } = await searchParams;
   const applicationId = getQueryParam(application);
+  const isEditingInfo = edit === 'info';
 
   if (!applicationId) notFound();
   const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
@@ -62,8 +74,8 @@ export default async function RoleDetailsQueryPage({ params, searchParams }: Pro
       <div className="space-y-4">
         <BackButton href={applicationHref('/application/roles', applicationId, mode ? { mode } : undefined)} />
         <PrimaryHeader
-          title={`Role: ${role.name}`}
-          description={role.description || 'No description'}
+          title={isEditingInfo ? `Edit Role Info: ${role.name}` : `Role: ${role.name}`}
+          description={isEditingInfo ? 'Update this role metadata only.' : (role.description || 'No description')}
         />
       </div>
       <RoleDetailEditor
@@ -73,6 +85,8 @@ export default async function RoleDetailsQueryPage({ params, searchParams }: Pro
         defaultRoleId={defaultRoleId}
         canManage={canManageRoles}
         applicableForOptions={toApplicationAuthzDefinitionOptions(authzConfig?.applicableForDefinitions ?? [])}
+        mode={mode}
+        editingInfo={isEditingInfo}
       />
     </div>
   );

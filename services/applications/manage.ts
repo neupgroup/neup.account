@@ -2132,13 +2132,93 @@ export type AppRoleOption = {
   approvalPolicy: string;
 };
 
+type RawAppRoleOptionRow = {
+  id: string;
+  name: string;
+  description: string | null;
+  scopeText: string | null;
+  acquisitionType: string | null;
+  approvalPolicy: string | null;
+};
+
 function hasUsableRoleScope(scope: unknown): boolean {
   return normalizeRoleScopes(scope).length > 0;
+}
+
+function parseStoredJsonText(value: string | null | undefined): Prisma.JsonValue | string | null {
+  const trimmed = value?.trim();
+  if (!trimmed) return null;
+
+  try {
+    return JSON.parse(trimmed) as Prisma.JsonValue;
+  } catch {
+    return trimmed;
+  }
+}
+
+function isInvalidStoredJsonReadError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+
+  return error.message.includes('is not valid JSON')
+    || error.message.includes('Unexpected token');
 }
 
 function stringList(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
   return value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0);
+}
+
+/*
+::neup.documentation::application-role-options-loader
+
+Loads assignable role options for application-user role management.
+
+This loader tolerates legacy rows where `authz_role.scope` still contains plain
+text instead of valid JSON by falling back to a raw text query and normalizing
+the stored scope value in application code.
+
+::end
+*/
+
+async function loadApplicationRoleOptionRows(appId: string) {
+  try {
+    return await prisma.authzRole.findMany({
+      where: { appId },
+      orderBy: { name: 'asc' },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        scope: true,
+        acquisitionType: true,
+        approvalPolicy: true,
+      },
+    });
+  } catch (error) {
+    if (!isInvalidStoredJsonReadError(error)) throw error;
+
+    const rows = await prisma.$queryRaw<RawAppRoleOptionRow[]>(Prisma.sql`
+      SELECT
+        r."id",
+        r."name",
+        r."description",
+        r."scope"::text AS "scopeText",
+        r."acquisition_type" AS "acquisitionType",
+        r."approval_policy" AS "approvalPolicy"
+      FROM "authz_role" r
+      WHERE r."app_id" = ${appId}
+      ORDER BY r."name" ASC
+    `);
+
+    return rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      description: row.description,
+      scope: parseStoredJsonText(row.scopeText),
+      acquisitionType: row.acquisitionType,
+      approvalPolicy: row.approvalPolicy,
+    }));
+  }
 }
 
 /**
@@ -2523,21 +2603,12 @@ export async function getApplicationRoleOptions(appId: string, targetAccountType
   if (!canView) return [];
 
   try {
-    const roles = await prisma.authzRole.findMany({
-      where: { appId },
-      orderBy: { name: 'asc' },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        scope: true,
-        acquisitionType: true,
-        approvalPolicy: true,
-      },
-    });
+    const roles = await loadApplicationRoleOptionRows(appId);
     const normalizedRoles: AppRoleOption[] = roles.map((role) => ({
       ...role,
       scope: normalizeRoleScopes(role.scope),
+      acquisitionType: role.acquisitionType ?? 'assignment',
+      approvalPolicy: role.approvalPolicy ?? 'none',
     }));
 
     if (!targetAccountType) {

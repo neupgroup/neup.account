@@ -29,7 +29,23 @@ import { getConnectionDetail } from '../actions';
  */
 type PageProps = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ workingProfile?: string }>;
 };
+
+function appendWorkingProfile(href: string, workingProfile?: string) {
+  if (!workingProfile) return href;
+
+  const params = new URLSearchParams();
+  const [pathname, query = ''] = href.split('?', 2);
+  const existingParams = new URLSearchParams(query);
+
+  existingParams.forEach((value, key) => {
+    params.append(key, value);
+  });
+  params.set('workingProfile', workingProfile);
+
+  return `${pathname}?${params.toString()}`;
+}
 
 function StatusDot({ status }: { status: string }) {
   const color =
@@ -109,9 +125,10 @@ function AccessEmptyState() {
   );
 }
 
-export default async function ConnectionDetailPage({ params }: PageProps) {
+export default async function ConnectionDetailPage({ params, searchParams }: PageProps) {
   const { id } = await params;
-  const connection = await getConnectionDetail(id);
+  const { workingProfile } = await searchParams;
+  const connection = await getConnectionDetail(id, workingProfile);
 
   if (!connection) notFound();
   const hasAccess = connection.members.length > 0;
@@ -120,7 +137,7 @@ export default async function ConnectionDetailPage({ params }: PageProps) {
 
   return (
     <div className="grid gap-8">
-      <BackButton href="/access/connection" />
+      <BackButton href={appendWorkingProfile('/access/connection', workingProfile)} />
 
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">

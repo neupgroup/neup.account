@@ -119,27 +119,6 @@ async function syncAffectedRoleSnapshots(tx: any, roleIds: string[]): Promise<vo
   }
 }
 
-async function resolveRolePermissionScope(
-  tx: any,
-  roleId: string,
-  fallbackScope?: unknown,
-): Promise<unknown> {
-  if (Array.isArray(fallbackScope) && fallbackScope.length > 0) {
-    return fallbackScope;
-  }
-
-  if (typeof fallbackScope === 'string' && fallbackScope.trim().length > 0) {
-    return [fallbackScope.trim()];
-  }
-
-  const role = await tx.authzRole.findUnique({
-    where: { id: roleId },
-    select: { scope: true },
-  });
-
-  return role?.scope ?? null;
-}
-
 async function resolveRolePermissionPolicy(
   tx: any,
   roleId: string,
@@ -190,11 +169,6 @@ async function handleRolePermission(operation: Operation, body: WebhookBody): Pr
 
       const id = crypto.randomUUID();
       await prisma.$transaction(async (tx) => {
-        const scope = await resolveRolePermissionScope(tx, d.roleId as string, typeof d.scope === 'string' ? d.scope : null);
-        if (!scope) {
-          throw new Error('Role scope not found for mapping insert.');
-        }
-
         const scopePairs = await resolveRolePermissionPolicy(tx, d.roleId as string, d.permissionId as string);
         if (scopePairs.length === 0) {
           throw new Error('Role and permission scope_for/scope_level are incompatible.');
@@ -212,7 +186,6 @@ async function handleRolePermission(operation: Operation, body: WebhookBody): Pr
             id: index === 0 ? id : crypto.randomUUID(),
             roleId: d.roleId as string,
             permissionId: d.permissionId as string,
-            scope: scope as any,
             scopeFor: pair.scopeFor,
             scopeLevel: pair.scopeLevel,
           })),
@@ -233,19 +206,15 @@ async function handleRolePermission(operation: Operation, body: WebhookBody): Pr
       await prisma.$transaction(async (tx) => {
         const existing = await tx.authzRolePermissionMap.findUnique({
           where: { id: body.id as string },
-          select: { roleId: true, permissionId: true, scope: true, scopeFor: true, scopeLevel: true } as any,
+          select: { roleId: true, permissionId: true, scopeFor: true, scopeLevel: true } as any,
         });
         if (!existing) return;
 
         const nextRoleId = typeof d.roleId === 'string' && d.roleId.trim() ? d.roleId.trim() : existing.roleId;
         const nextPermissionId =
           typeof d.permissionId === 'string' && d.permissionId.trim() ? d.permissionId.trim() : existing.permissionId;
-        const nextScope = await resolveRolePermissionScope(tx, nextRoleId, typeof d.scope === 'string' ? d.scope : null);
-        if (!nextScope) {
-          throw new Error('Role scope not found for mapping update.');
-        }
 
-        if (nextRoleId !== existing.roleId || nextPermissionId !== existing.permissionId || nextScope !== existing.scope) {
+        if (nextRoleId !== existing.roleId || nextPermissionId !== existing.permissionId) {
           const scopePairs = await resolveRolePermissionPolicy(tx, nextRoleId, nextPermissionId);
           if (scopePairs.length === 0) {
             throw new Error('Role and permission scope_for/scope_level are incompatible.');
@@ -259,7 +228,6 @@ async function handleRolePermission(operation: Operation, body: WebhookBody): Pr
               id: crypto.randomUUID(),
               roleId: nextRoleId,
               permissionId: nextPermissionId,
-              scope: nextScope,
               scopeFor: pair.scopeFor,
               scopeLevel: pair.scopeLevel,
             })),
@@ -283,21 +251,17 @@ async function handleRolePermission(operation: Operation, body: WebhookBody): Pr
           const id = typeof record.id === 'string' ? record.id.trim() : '';
           const roleId = typeof record.roleId === 'string' ? record.roleId.trim() : '';
           const permissionId = typeof record.permissionId === 'string' ? record.permissionId.trim() : '';
-          const providedScope = typeof record.scope === 'string' ? record.scope.trim() : '';
 
           if (id) {
             const existing = await tx.authzRolePermissionMap.findUnique({
               where: { id },
-              select: { roleId: true, permissionId: true, scope: true, scopeFor: true, scopeLevel: true } as any,
+              select: { roleId: true, permissionId: true, scopeFor: true, scopeLevel: true } as any,
             });
             if (!existing) continue;
 
             const nextRoleId = roleId || existing.roleId;
             const nextPermissionId = permissionId || existing.permissionId;
-            const nextScope = await resolveRolePermissionScope(tx, nextRoleId, providedScope || existing.scope);
-            if (!nextScope) continue;
-
-            if (nextRoleId !== existing.roleId || nextPermissionId !== existing.permissionId || nextScope !== existing.scope) {
+            if (nextRoleId !== existing.roleId || nextPermissionId !== existing.permissionId) {
               const scopePairs = await resolveRolePermissionPolicy(tx, nextRoleId, nextPermissionId);
               if (scopePairs.length === 0) continue;
               await tx.authzRolePermissionMap.deleteMany({
@@ -308,7 +272,6 @@ async function handleRolePermission(operation: Operation, body: WebhookBody): Pr
                   id: crypto.randomUUID(),
                   roleId: nextRoleId,
                   permissionId: nextPermissionId,
-                  scope: nextScope,
                   scopeFor: pair.scopeFor,
                   scopeLevel: pair.scopeLevel,
                 })),
@@ -320,8 +283,6 @@ async function handleRolePermission(operation: Operation, body: WebhookBody): Pr
           }
 
           if (!roleId || !permissionId) continue;
-          const scope = await resolveRolePermissionScope(tx, roleId, providedScope);
-          if (!scope) continue;
           const scopePairs = await resolveRolePermissionPolicy(tx, roleId, permissionId);
           if (scopePairs.length === 0) continue;
           await tx.authzRolePermissionMap.deleteMany({
@@ -332,7 +293,6 @@ async function handleRolePermission(operation: Operation, body: WebhookBody): Pr
               id: crypto.randomUUID(),
               roleId,
               permissionId,
-              scope: scope as any,
               scopeFor: pair.scopeFor,
               scopeLevel: pair.scopeLevel,
             })),

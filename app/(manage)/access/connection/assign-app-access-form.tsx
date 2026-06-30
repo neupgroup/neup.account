@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState, useTransition } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -45,6 +46,7 @@ export function AssignAppAccessForm({
   initialAccount?: ResolvedAccount | null;
   initialRoleIds?: string[];
 }) {
+  const searchParams = useSearchParams();
   const [neupIdInput, setNeupIdInput] = useState('');
   const [resolved, setResolved] = useState<ResolvedAccount | null>(initialAccount ?? null);
   const [lookupError, setLookupError] = useState<string | null>(null);
@@ -59,7 +61,11 @@ export function AssignAppAccessForm({
     if (!neupIdInput.trim()) return;
     setLookupError(null);
     startTransition(async () => {
-      const result = await resolveNeupIdForApp(appId, neupIdInput.trim());
+      const result = await resolveNeupIdForApp(
+        appId,
+        neupIdInput.trim(),
+        searchParams.get('workingProfile'),
+      );
       if (result.success) {
         setResolved(result.account);
         setTeamActionSuccess(null);
@@ -89,6 +95,7 @@ export function AssignAppAccessForm({
         connectionId,
         memberId: resolved.accountId,
         roleIds: Array.from(selectedRoles),
+        selectedAccountId: searchParams.get('workingProfile'),
       });
       if (result.success) {
         setSuccess(true);
@@ -117,7 +124,10 @@ export function AssignAppAccessForm({
     setSubmitError(null);
     setTeamActionSuccess(null);
     startTransition(async () => {
-      const result = await inviteDirectMember(resolved.accountId);
+      const result = await inviteDirectMember(
+        resolved.accountId,
+        searchParams.get('workingProfile'),
+      );
       if (!result.success) {
         setSubmitError(result.error ?? 'Failed to add this person to your team.');
         return;

@@ -23,7 +23,7 @@ import {
   ACCESS_VIEW_PERMISSIONS,
 } from '@/core/auth/access-view-permissions';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
-import { canAssignRoleScopeToAccount, expectedRoleScopeForAccount } from '@/services/role-scopes';
+import { roleMatchesAccountTypeScopePolicy, scopeForForAccountType } from '@/services/applications/authz-scope-policy';
 
 const memberPattern = /^(account:)?[^\s:]+$/;
 
@@ -1153,10 +1153,15 @@ export async function assignAssetMemberRole(input: {
         }),
         prisma.authzRole.findUnique({
           where: { id: input.role },
-          select: { scope: true },
+          select: { scopeFor: true, scopeLevel: true },
         }),
       ]);
-      if (!targetAccount || !role || !canAssignRoleScopeToAccount(role.scope, targetAccount.accountType, ['manageable'])) {
+      if (!targetAccount || !role || !roleMatchesAccountTypeScopePolicy({
+        accountType: targetAccount.accountType,
+        scopeFor: role.scopeFor,
+        scopeLevel: role.scopeLevel,
+        requiredScopeLevel: 'managable',
+      })) {
         return { success: false, error: 'This role scope cannot be assigned to this asset account type.' };
       }
     }
@@ -1190,26 +1195,26 @@ export type AssetRole = {
   description?: string;
 };
 
-// Maps asset.assetType values to the authzRole.scope used for non-account assets.
-const ASSET_TYPE_TO_ROLE_SCOPE: Record<string, string> = {
+// Maps asset.assetType values to the authzRole.scope_for audience used for account assets.
+const ASSET_TYPE_TO_ROLE_SCOPE_FOR: Record<string, string> = {
   app_in_port:          '',
   app_in_acc:           '',
-  acc_in_port:          'acMgmt.self',
-  acc_in_acc:           'acMgmt.self',
-  conn_in_port:         'connection',
-  conn_in_acc:          'connection',
-  port_in_acc:          'portfolio',
+  acc_in_port:          'for_individual',
+  acc_in_acc:           'for_individual',
+  conn_in_port:         '',
+  conn_in_acc:          '',
+  port_in_acc:          '',
   // legacy aliases
   application:          '',
   app:                  '',
-  'account.individual': 'acMgmt.self',
-  'account.brand':      'acMgmt.brand',
-  'account.branch':     'acMgmt.subbrand',
-  'account.subbrand':   'acMgmt.subbrand',
-  'account.dependent':  'acMgmt.self',
-  brand_account:        'acMgmt.brand',
-  branch_account:       'acMgmt.subbrand',
-  subbrand_account:     'acMgmt.subbrand',
+  'account.individual': 'for_individual',
+  'account.brand':      'for_brand',
+  'account.branch':     'for_subBrand',
+  'account.subbrand':   'for_subBrand',
+  'account.dependent':  'for_dependent',
+  brand_account:        'for_brand',
+  branch_account:       'for_subBrand',
+  subbrand_account:     'for_subBrand',
 };
 
 async function expectedScopeForAssetRow(assetRow: {
@@ -1222,11 +1227,11 @@ async function expectedScopeForAssetRow(assetRow: {
       where: { id: assetRow.member_account_id },
       select: { accountType: true },
     });
-    return expectedRoleScopeForAccount(account?.accountType, 'manageable');
+    return scopeForForAccountType(account?.accountType);
   }
 
   const type = (assetRow.access_type ?? '').trim().toLowerCase();
-  return ASSET_TYPE_TO_ROLE_SCOPE[type] || null;
+  return ASSET_TYPE_TO_ROLE_SCOPE_FOR[type] || null;
 }
 
 /**
@@ -1249,13 +1254,14 @@ export async function getRolesForAsset(portfolioAssetId: string): Promise<AssetR
 
     if (!assetRow) return [];
 
-    const roleScope = await expectedScopeForAssetRow(assetRow);
-    if (!roleScope) return [];
+    const roleScopeFor = await expectedScopeForAssetRow(assetRow);
+    if (!roleScopeFor) return [];
 
     const roles = await prisma.authzRole.findMany({
       where: {
         appId: 'neup.account',
-        scope: roleScope,
+        scopeFor: { array_contains: [roleScopeFor] },
+        scopeLevel: 'assignable',
       },
       select: { id: true, name: true, description: true },
       orderBy: { name: 'asc' },
@@ -1284,14 +1290,15 @@ export async function getRolesForAssetType(assetType: string): Promise<AssetRole
 
   try {
     const type = assetType.trim().toLowerCase();
-    const roleScope = ASSET_TYPE_TO_ROLE_SCOPE[type];
+    const roleScopeFor = ASSET_TYPE_TO_ROLE_SCOPE_FOR[type];
 
-    if (!roleScope) return [];
+    if (!roleScopeFor) return [];
 
     const roles = await prisma.authzRole.findMany({
       where: {
         appId: 'neup.account',
-        scope: roleScope,
+        scopeFor: { array_contains: [roleScopeFor] },
+        scopeLevel: 'assignable',
       },
       select: { id: true, name: true, description: true },
       orderBy: { name: 'asc' },
@@ -1453,7 +1460,7 @@ export async function bulkAssignAssetRoles(input: {
         }),
         prisma.authzRole.findMany({
           where: { id: { in: input.roleIds } },
-          select: { id: true, scope: true },
+          select: { id: true, scopeFor: true, scopeLevel: true },
         }),
       ]);
 
@@ -1462,7 +1469,12 @@ export async function bulkAssignAssetRoles(input: {
       }
 
       const invalid = targetAccounts.some((targetAccount) =>
-        roles.some((role) => !canAssignRoleScopeToAccount(role.scope, targetAccount.accountType, ['manageable']))
+        roles.some((role) => !roleMatchesAccountTypeScopePolicy({
+          accountType: targetAccount.accountType,
+          scopeFor: role.scopeFor,
+          scopeLevel: role.scopeLevel,
+          requiredScopeLevel: 'managable',
+        }))
       );
       if (invalid) {
         return { success: false, error: 'One or more role scopes cannot be assigned to the selected account type.' };

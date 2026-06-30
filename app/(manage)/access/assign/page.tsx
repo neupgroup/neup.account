@@ -256,7 +256,7 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
   const accountId = account || member;
 
   if (connectionId) {
-    const connection = await getConnectionDetail(connectionId);
+    const connection = await getConnectionDetail(connectionId, workingProfile);
     if (!connection || !connection.canGrantDirectAccess) notFound();
     const selectedMember = accountId
       ? connection.members.find((item) => item.accountId === accountId) ?? null
@@ -266,7 +266,7 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
 
     return (
       <div className="grid gap-8">
-        <BackButton href={`/access/connection/${connection.id}`} />
+        <BackButton href={workingProfile ? `/access/connection/${connection.id}?workingProfile=${encodeURIComponent(workingProfile)}` : `/access/connection/${connection.id}`} />
         <PrimaryHeader
           title={selectedMember ? 'Edit Connection Access' : 'Add People to This Connection'}
           description={
@@ -574,7 +574,7 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
               <InviteButton
                 displayName={detail.displayName}
                 confirmDescription={`This will send an access invitation to ${detail.displayName}. They will be able to accept or decline it.`}
-                action={inviteDirectMember.bind(null, accountId)}
+                action={inviteDirectMember.bind(null, accountId, workingProfile ?? null)}
                 redirectTo="/access/team"
               />
             ) : isPendingInvitation || detail.membershipStatus === 'invited' ? (
@@ -582,7 +582,7 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
                 label="Cancel Invitation"
                 confirmTitle="Cancel invitation?"
                 confirmDescription={`This will cancel the pending access invitation sent to ${detail.displayName}. They will no longer be able to accept it.`}
-                action={cancelDirectInvitation.bind(null, accountId)}
+                action={cancelDirectInvitation.bind(null, accountId, workingProfile ?? null)}
                 redirectTo="/access/team"
                 variant="outline"
               />
@@ -591,7 +591,7 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
                 label="Remove All Access"
                 confirmTitle="Remove all access?"
                 confirmDescription={`This will remove all roles ${detail.displayName} holds on your account. This cannot be undone.`}
-                action={removeDirectMember.bind(null, accountId)}
+                action={removeDirectMember.bind(null, accountId, workingProfile ?? null)}
                 redirectTo="/access/team"
               />
             )}

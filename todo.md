@@ -20,7 +20,6 @@
 - [ ] Add `::neup.documentation::...` blocks for `services/applications/authz-config.ts`.
 - [ ] Add `::neup.documentation::...` blocks for `services/applications/role-scope-compatibility.ts`.
 - [ ] Add `::neup.documentation::...` blocks for `services/applications/permission-scopes.ts`.
-- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/access/_components/direct-member-access-form.tsx`.
 - [ ] Add `::neup.documentation::...` blocks for `app/(manage)/access/_components/actions.ts`.
 - [ ] Add `::neup.documentation::...` blocks for `services/access-model.ts`.
 - [ ] Add `::neup.documentation::...` blocks for `app/(manage)/application/roles/page.tsx`.
@@ -30,4 +29,3 @@
 ## Migration Follow-Ups
 
 - [ ] Fix `20260629120000_rename_branch_to_subbrand` so it tolerates databases without legacy tables like `account_ownership`.
-- [ ] Add a Prisma migration for the `AuthzRole.scope` and `AuthzRolePermissionMap.scope` move to native JSON arrays.

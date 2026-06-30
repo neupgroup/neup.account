@@ -9,6 +9,7 @@ import { Terminal } from 'lucide-react';
 import { RequestActionForm } from './form';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { formatRoleScopeForDisplay } from '@/services/role-scopes';
+import { deriveLegacyRoleScopesFromPolicy, normalizeAuthzScopeFor, normalizeSingleAuthzScopeLevel } from '@/services/applications/authz-scope-policy';
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -168,7 +169,7 @@ function RequestDetailBody({ request }: { request: Awaited<ReturnType<typeof get
 
     case 'applicationRoleRequest': {
       const roles = Array.isArray(d.roles)
-        ? d.roles as Array<{ id?: string; name?: string; scope?: unknown }>
+        ? d.roles as Array<{ id?: string; name?: string; scope?: unknown; scopeFor?: unknown; scopeLevel?: unknown }>
         : [];
       return (
         <div className="space-y-3">
@@ -190,7 +191,15 @@ function RequestDetailBody({ request }: { request: Awaited<ReturnType<typeof get
                       <p className="text-sm font-medium">{role.name ?? role.id}</p>
                       <p className="text-xs text-muted-foreground">{role.id}</p>
                     </div>
-                    {role.scope ? <Badge variant="outline">{formatRoleScopeForDisplay(role.scope)}</Badge> : null}
+                    {(() => {
+                      const derivedScope = role.scopeFor
+                        ? deriveLegacyRoleScopesFromPolicy(
+                            normalizeAuthzScopeFor(role.scopeFor),
+                            normalizeSingleAuthzScopeLevel(role.scopeLevel),
+                          )
+                        : role.scope;
+                      return derivedScope ? <Badge variant="outline">{formatRoleScopeForDisplay(derivedScope)}</Badge> : null;
+                    })()}
                   </CardContent>
                 </Card>
               )) : (

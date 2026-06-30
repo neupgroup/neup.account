@@ -17,6 +17,7 @@ import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { activeAccessWhere } from '@/services/access-model';
 import { getRoleAccessFlags } from '@/services/role-scopes';
+import { deriveLegacyRoleScopesFromPolicy, normalizeAuthzScopeFor, normalizeSingleAuthzScopeLevel } from '@/services/applications/authz-scope-policy';
 
 /*
 ::neup.documentation::application-roles-service
@@ -196,7 +197,8 @@ export async function getApplicationRoles(params: {
           id: true,
           name: true,
           description: true,
-          scope: true,
+          scopeFor: true,
+          scopeLevel: true,
           acquisitionType: true,
           approvalPolicy: true,
           pushed: true,
@@ -237,7 +239,10 @@ export async function getApplicationRoles(params: {
       roleId: r.id,
       roleName: r.name,
       roleDescription: r.description,
-      roleScope: r.scope,
+      roleScope: deriveLegacyRoleScopesFromPolicy(
+        normalizeAuthzScopeFor(r.scopeFor),
+        normalizeSingleAuthzScopeLevel(r.scopeLevel),
+      ),
       roleAcquisitionType: r.acquisitionType,
       roleApprovalPolicy: r.approvalPolicy,
       ...getRoleAccessFlags(r.acquisitionType, r.approvalPolicy),

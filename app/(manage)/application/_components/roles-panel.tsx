@@ -8,7 +8,7 @@ Lists application roles and the webhook sync actions for authz data.
 
 ::public
 
-The panel shows each role's fixed role scope, `scope_for`, `scope_level`, and default-role state, and also exposes push/reset actions for webhook-based authz sync.
+The panel shows each role's `scope_for`, `scope_level`, and default-role state, and also exposes push/reset actions for webhook-based authz sync.
 
 ::public end
 
@@ -26,7 +26,6 @@ import {
   type AppRole,
 } from '@/services/applications/authz-manage';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
-import { formatRoleScopeForDisplay } from '@/services/role-scopes';
 
 type Props = {
   appId: string;
@@ -87,7 +86,7 @@ export function RolesPanel({ appId, canManage, canResetPush, initialRoles, hasWe
             className="group block border-b px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5"
           >
             <p className="text-base font-medium leading-6">Create a role</p>
-            <p className="text-sm text-muted-foreground">Define the role title, description, and fixed scope.</p>
+            <p className="text-sm text-muted-foreground">Define the role title, description, and scope policy.</p>
           </Link>
         ) : null}
 
@@ -98,9 +97,6 @@ export function RolesPanel({ appId, canManage, canResetPush, initialRoles, hasWe
                 <Link href={applicationHref(`/application/roles/${role.id}`, appId, { mode: 'root' })} className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <p className="truncate text-base font-medium leading-6">{role.name}</p>
-                    {role.scope && (
-                      <Badge variant="outline" className="text-xs">{formatRoleScopeForDisplay(role.scope)}</Badge>
-                    )}
                     {role.scopeFor.map((label) => (
                       <Badge key={label} variant="outline" className="text-xs">{label}</Badge>
                     ))}

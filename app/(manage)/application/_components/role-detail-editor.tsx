@@ -35,7 +35,6 @@ import { AuthzDefinitionSelector } from './authz-definition-selector';
 import type { ApplicationAuthzDefinitionOption } from '@/services/applications/authz-config';
 import type { AuthzScopeLevel } from '@/services/applications/authz-scope-policy';
 import { PermissionScopeBadges } from './permission-scope-badges';
-import { RoleScopeSelector } from './scope-selectors';
 import { ScopeForSelector, ScopeLevelSelector } from './authz-scope-policy-selector';
 
 type Props = {
@@ -62,7 +61,6 @@ export function RoleDetailEditor({
   const router = useRouter();
   const { toast } = useToast();
   const [description, setDescription] = useState(role.description ?? '');
-  const [scope, setScope] = useState<string[]>(role.scope);
   const [scopeFor, setScopeFor] = useState(role.scopeFor);
   const [scopeLevel, setScopeLevel] = useState<AuthzScopeLevel[]>([role.scopeLevel]);
   const [applicableFor, setApplicableFor] = useState<string[]>(role.applicableFor);
@@ -111,7 +109,6 @@ export function RoleDetailEditor({
       appId,
       roleId: role.id,
       description: description || undefined,
-      scope,
       scopeFor,
       scopeLevel: scopeLevel[0],
       applicableFor,
@@ -169,11 +166,10 @@ export function RoleDetailEditor({
         <div>
           <p className="text-sm font-medium">Role details</p>
           <p className="text-xs text-muted-foreground">
-            Role title is fixed after creation. Description, access mode, and applicable targets can be updated here.
+            Role title is fixed after creation. Description, scope policy, and applicable targets can be updated here.
           </p>
         </div>
         <Input value={role.name} disabled aria-label="Role title" />
-        <RoleScopeSelector value={scope} onChange={setScope} disabled={!canManage || isSystemRole} />
         <Input
           value={description}
           disabled={!canManage || isSystemRole}

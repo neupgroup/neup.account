@@ -31,7 +31,7 @@ import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
 
 type PageProps = {
-  searchParams: Promise<{ member_id?: string; portfolio?: string }>;
+  searchParams: Promise<{ member_id?: string; portfolio?: string; workingProfile?: string }>;
 };
 
 const NEUPID_LOGO = 'https://neupgroup.com/assets/branding/neup.group/logo.svg';
@@ -676,18 +676,31 @@ async function MemberPortfolioRolesView({
 
 export default async function RolePage({ searchParams }: PageProps) {
   await requireAnyPermission404([...ACCESS_TEAM_VIEW_PERMISSIONS]);
-  const { member_id: memberAccountId, portfolio: parentPortfolioId } = await searchParams;
+  const { member_id: memberAccountId, portfolio: parentPortfolioId, workingProfile } = await searchParams;
 
   if (memberAccountId && parentPortfolioId) {
-    redirect(`/access/assign?account=${encodeURIComponent(memberAccountId)}&portfolio=${encodeURIComponent(parentPortfolioId)}`);
+    const params = new URLSearchParams({
+      account: memberAccountId,
+      portfolio: parentPortfolioId,
+    });
+    if (workingProfile) params.set('workingProfile', workingProfile);
+    redirect(`/access/assign?${params.toString()}`);
   }
 
   if (memberAccountId) {
-    redirect(`/access/assign?account=${encodeURIComponent(memberAccountId)}`);
+    const params = new URLSearchParams({
+      account: memberAccountId,
+    });
+    if (workingProfile) params.set('workingProfile', workingProfile);
+    redirect(`/access/assign?${params.toString()}`);
   }
 
   if (parentPortfolioId) {
-    redirect(`/access/assign?portfolio=${encodeURIComponent(parentPortfolioId)}`);
+    const params = new URLSearchParams({
+      portfolio: parentPortfolioId,
+    });
+    if (workingProfile) params.set('workingProfile', workingProfile);
+    redirect(`/access/assign?${params.toString()}`);
   }
 
   return <MyDirectRolesView />;

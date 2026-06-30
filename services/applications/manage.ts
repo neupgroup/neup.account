@@ -38,11 +38,15 @@ import {
   type ApplicationPermissionAudience,
 } from '@/services/applications/permission-definitions';
 import {
-  canAssignRoleScopeToAccount,
   isRoleDirectlyAssignable,
-  normalizeRoleScopes,
   roleRequestTarget,
 } from '@/services/role-scopes';
+import {
+  deriveLegacyRoleScopesFromPolicy,
+  normalizeAuthzScopeFor,
+  normalizeSingleAuthzScopeLevel,
+  roleMatchesAssignmentModesPolicy,
+} from '@/services/applications/authz-scope-policy';
 import {
   revalidateApplicationConfigRoutes,
   revalidateApplicationDetailRoutes,
@@ -653,8 +657,21 @@ export async function createManagedApplication(input: { name: string; idPrefix: 
       }
       await tx.authzRole.upsert({
         where: { id: 'application.owner' },
-        update: { name: 'application.owner', description: 'Full ownership of an application.', appId: 'neup.account', scope: 'public.individual' },
-        create: { id: 'application.owner', name: 'application.owner', description: 'Full ownership of an application.', appId: 'neup.account', scope: 'public.individual' },
+        update: {
+          name: 'application.owner',
+          description: 'Full ownership of an application.',
+          appId: 'neup.account',
+          scopeFor: ['for_individual'],
+          scopeLevel: 'selfAssigned',
+        },
+        create: {
+          id: 'application.owner',
+          name: 'application.owner',
+          description: 'Full ownership of an application.',
+          appId: 'neup.account',
+          scopeFor: ['for_individual'],
+          scopeLevel: 'selfAssigned',
+        },
       });
       await tx.authzRolePermissionMap.deleteMany({
         where: { roleId: 'application.owner' },
@@ -663,7 +680,6 @@ export async function createManagedApplication(input: { name: string; idPrefix: 
         data: permissions.map((cap) => ({
           roleId: 'application.owner',
           permissionId: cap.id,
-          scope: 'public.individual',
           scopeFor: 'for_individual',
           scopeLevel: 'selfAssigned',
         })),
@@ -2136,13 +2152,14 @@ type RawAppRoleOptionRow = {
   id: string;
   name: string;
   description: string | null;
-  scopeText: string | null;
+  scopeForText: string | null;
+  scopeLevel: string | null;
   acquisitionType: string | null;
   approvalPolicy: string | null;
 };
 
 function hasUsableRoleScope(scope: unknown): boolean {
-  return normalizeRoleScopes(scope).length > 0;
+  return Array.isArray(scope) && scope.length > 0;
 }
 
 function parseStoredJsonText(value: string | null | undefined): Prisma.JsonValue | string | null {
@@ -2173,9 +2190,7 @@ function stringList(value: unknown): string[] {
 
 Loads assignable role options for application-user role management.
 
-This loader tolerates legacy rows where `authz_role.scope` still contains plain
-text instead of valid JSON by falling back to a raw text query and normalizing
-the stored scope value in application code.
+This loader reads assignable role options from `scope_for` and `scope_level`.
 
 ::end
 */
@@ -2189,7 +2204,8 @@ async function loadApplicationRoleOptionRows(appId: string) {
         id: true,
         name: true,
         description: true,
-        scope: true,
+        scopeFor: true,
+        scopeLevel: true,
         acquisitionType: true,
         approvalPolicy: true,
       },
@@ -2202,7 +2218,8 @@ async function loadApplicationRoleOptionRows(appId: string) {
         r."id",
         r."name",
         r."description",
-        r."scope"::text AS "scopeText",
+        r."scope_for"::text AS "scopeForText",
+        r."scope_level" AS "scopeLevel",
         r."acquisition_type" AS "acquisitionType",
         r."approval_policy" AS "approvalPolicy"
       FROM "authz_role" r
@@ -2214,7 +2231,8 @@ async function loadApplicationRoleOptionRows(appId: string) {
       id: row.id,
       name: row.name,
       description: row.description,
-      scope: parseStoredJsonText(row.scopeText),
+      scopeFor: parseStoredJsonText(row.scopeForText),
+      scopeLevel: row.scopeLevel,
       acquisitionType: row.acquisitionType,
       approvalPolicy: row.approvalPolicy,
     }));
@@ -2537,7 +2555,8 @@ export async function getApplicationUserConnectionDetails(params: {
         role: {
           select: {
             appId: true,
-            scope: true,
+            scopeFor: true,
+            scopeLevel: true,
           },
         },
       },
@@ -2547,13 +2566,14 @@ export async function getApplicationUserConnectionDetails(params: {
       new Set(
         accessRows
           .filter((accessRow) => accessRow.role.appId === params.appId)
-          .filter((accessRow) => {
-            const scope = accessRow.role.scope;
-            return (
-              canAssignRoleScopeToAccount(scope, row.account.accountType, ['public', 'toApprove']) ||
-              canAssignRoleScopeToAccount(scope, row.account.accountType, ['root'])
-            );
-          })
+          .filter((accessRow) =>
+            roleMatchesAssignmentModesPolicy({
+              accountType: row.account.accountType,
+              scopeFor: accessRow.role.scopeFor,
+              scopeLevel: accessRow.role.scopeLevel,
+              modes: ['public', 'toApprove', 'root'],
+            }),
+          )
           .map((accessRow) => accessRow.roleId),
       ),
     );
@@ -2606,7 +2626,10 @@ export async function getApplicationRoleOptions(appId: string, targetAccountType
     const roles = await loadApplicationRoleOptionRows(appId);
     const normalizedRoles: AppRoleOption[] = roles.map((role) => ({
       ...role,
-      scope: normalizeRoleScopes(role.scope),
+      scope: deriveLegacyRoleScopesFromPolicy(
+        normalizeAuthzScopeFor((role as any).scopeFor),
+        normalizeSingleAuthzScopeLevel((role as any).scopeLevel),
+      ),
       acquisitionType: role.acquisitionType ?? 'assignment',
       approvalPolicy: role.approvalPolicy ?? 'none',
     }));
@@ -2623,7 +2646,12 @@ export async function getApplicationRoleOptions(appId: string, targetAccountType
       const modes = isRootEditor
         ? ['public', 'toApprove', 'root'] as const
         : ['public', 'toApprove'] as const;
-      return canAssignRoleScopeToAccount(role.scope, targetAccountType, [...modes]);
+      return roleMatchesAssignmentModesPolicy({
+        accountType: targetAccountType,
+        scopeFor: (role as any).scopeFor ?? [],
+        scopeLevel: (role as any).scopeLevel ?? 'assignable',
+        modes,
+      });
     });
   } catch (error) {
     await logError('database', error, `getApplicationRoleOptions:${appId}`);
@@ -2661,7 +2689,7 @@ export async function assignApplicationConnectionRole(input: {
       }),
       prisma.authzRole.findMany({
         where: { id: { in: uniqueRoleIds }, appId: input.appId },
-        select: { id: true, name: true, scope: true, acquisitionType: true, approvalPolicy: true },
+        select: { id: true, name: true, scopeFor: true, scopeLevel: true, acquisitionType: true, approvalPolicy: true },
       }),
       prisma.request.findMany({
         where: {
@@ -2675,17 +2703,19 @@ export async function assignApplicationConnectionRole(input: {
     if (!connection) return { success: false, error: 'Connection not found.' };
     if (roles.length !== uniqueRoleIds.length) return { success: false, error: 'One or more roles were not found for this application.' };
 
-    const invalidRole = roles.find((role) => !hasUsableRoleScope(role.scope));
+    const invalidRole = roles.find((role) => normalizeAuthzScopeFor(role.scopeFor).length === 0);
     if (invalidRole) {
       return { success: false, error: 'Roles without a scope cannot be assigned to a user.' };
     }
 
     const assignableRoles = roles.filter((role) =>
       isRoleDirectlyAssignable(role.acquisitionType, role.approvalPolicy, isRootEditor ? 'root' : 'manager') &&
-      (
-        canAssignRoleScopeToAccount(role.scope, connection.account.accountType, ['public']) ||
-        (isRootEditor && canAssignRoleScopeToAccount(role.scope, connection.account.accountType, ['root']))
-      ),
+      roleMatchesAssignmentModesPolicy({
+        accountType: connection.account.accountType,
+        scopeFor: role.scopeFor,
+        scopeLevel: role.scopeLevel,
+        modes: isRootEditor ? ['public', 'root'] : ['public'],
+      }),
     );
     const immediateRoles = assignableRoles.filter((role) => roleRequestTarget(role.acquisitionType, role.approvalPolicy) === null);
     const approvableRoles = assignableRoles.filter((role) => roleRequestTarget(role.acquisitionType, role.approvalPolicy) !== null);
@@ -2705,7 +2735,8 @@ export async function assignApplicationConnectionRole(input: {
         roleId: true,
         role: {
           select: {
-            scope: true,
+            scopeFor: true,
+            scopeLevel: true,
             appId: true,
             acquisitionType: true,
             approvalPolicy: true,
@@ -2720,8 +2751,12 @@ export async function assignApplicationConnectionRole(input: {
           .filter((row) => row.role.appId === input.appId)
           .filter((row) => isRoleDirectlyAssignable(row.role.acquisitionType, row.role.approvalPolicy, isRootEditor ? 'root' : 'manager'))
           .filter((row) =>
-            canAssignRoleScopeToAccount(row.role.scope, connection.account.accountType, ['public']) ||
-            (isRootEditor && canAssignRoleScopeToAccount(row.role.scope, connection.account.accountType, ['root'])),
+            roleMatchesAssignmentModesPolicy({
+              accountType: connection.account.accountType,
+              scopeFor: row.role.scopeFor,
+              scopeLevel: row.role.scopeLevel,
+              modes: isRootEditor ? ['public', 'root'] : ['public'],
+            }),
           )
           .map((row) => row.roleId),
       ),
@@ -2789,7 +2824,12 @@ export async function assignApplicationConnectionRole(input: {
               accountId: connection.accountId,
               connectionId: connection.id,
               roleIds: requestedRoles.map((role) => role.id),
-              roles: requestedRoles.map((role) => ({ id: role.id, name: role.name, scope: role.scope })),
+              roles: requestedRoles.map((role) => ({
+                id: role.id,
+                name: role.name,
+                scopeFor: normalizeAuthzScopeFor(role.scopeFor),
+                scopeLevel: normalizeSingleAuthzScopeLevel(role.scopeLevel),
+              })),
               assignmentKind: 'connectionRole',
               requestTarget: 'admin',
             },

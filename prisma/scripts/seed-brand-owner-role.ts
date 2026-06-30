@@ -59,7 +59,8 @@ async function main() {
           name: BRAND_OWNER_ROLE_NAME,
           description: 'Brand ownership role for brand accounts.',
           appId: APP_ID,
-          scope: 'managed.brand',
+          scopeFor: ['for_brand'],
+          scopeLevel: 'assignable',
           permissions: BRAND_OWNER_PERMISSION_NAMES,
         },
       });
@@ -70,7 +71,8 @@ async function main() {
           name: BRAND_OWNER_ROLE_NAME,
           description: 'Brand ownership role for brand accounts.',
           appId: APP_ID,
-          scope: 'managed.brand',
+          scopeFor: ['for_brand'],
+          scopeLevel: 'assignable',
           permissions: BRAND_OWNER_PERMISSION_NAMES,
         },
         create: {
@@ -78,7 +80,8 @@ async function main() {
           name: BRAND_OWNER_ROLE_NAME,
           description: 'Brand ownership role for brand accounts.',
           appId: APP_ID,
-          scope: 'managed.brand',
+          scopeFor: ['for_brand'],
+          scopeLevel: 'assignable',
           permissions: BRAND_OWNER_PERMISSION_NAMES,
         },
       });
@@ -115,7 +118,6 @@ async function main() {
         data: {
           roleId: BRAND_OWNER_ROLE_ID,
           permissionId: permission.id,
-          scope: 'managed.brand',
           scopeFor: 'for_brand',
           scopeLevel: 'assignable',
         } as any,

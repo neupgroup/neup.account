@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,6 +15,20 @@ import {
 
 const CUSTOM_ROLE_PREFIX = "account.access.";
 
+/**
+ * ::neup.documentation::direct-member-access-form
+ * ::title Direct Member Access Form
+ *
+ * Lets an account owner or manager replace the direct-account role set for one member.
+ *
+ * ::public
+ *
+ * The form preserves the current `workingProfile` query param so updates apply to the selected managed profile instead of always defaulting to the signed-in account.
+ *
+ * ::public end
+ *
+ * ::end
+ */
 export function DirectMemberAccessForm({
   memberAccountId,
   memberDisplayName,
@@ -27,6 +41,7 @@ export function DirectMemberAccessForm({
   assignedRoleIds: string[];
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const [selectedRoleIds, setSelectedRoleIds] = useState<Set<string>>(
     () => new Set(assignedRoleIds.filter((roleId) => !roleId.startsWith(CUSTOM_ROLE_PREFIX))),
@@ -47,6 +62,7 @@ export function DirectMemberAccessForm({
       const result = await updateDirectMemberAccess({
         memberAccountId,
         roleIds: Array.from(selectedRoleIds),
+        selectedAccountId: searchParams.get("workingProfile"),
       });
 
       if (result.success) {

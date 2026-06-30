@@ -4,7 +4,7 @@
 ::neup.documentation::application-role-create-form
 ::title Application Role Create Form
 
-Creates a new application role with role scope, `scope_for`, `scope_level`, and applicable-for metadata.
+Creates a new application role with `scope_for`, `scope_level`, and applicable-for metadata.
 
 ::public
 
@@ -23,7 +23,6 @@ import { Input } from '@/components/ui/input';
 import { createAppRole } from '@/services/applications/authz-manage';
 import { redirectInApp } from '@/core/helper/navigation';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
-import { RoleScopeSelector } from './scope-selectors';
 import { AuthzDefinitionSelector } from './authz-definition-selector';
 import type { ApplicationAuthzDefinitionOption } from '@/services/applications/authz-config';
 import { ScopeForSelector, ScopeLevelSelector } from './authz-scope-policy-selector';
@@ -39,7 +38,6 @@ export function RoleCreateForm({ appId, applicableForOptions }: Props) {
   const { toast } = useToast();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [scope, setScope] = useState<string[]>([]);
   const [scopeFor, setScopeFor] = useState<AuthzScopeFor[]>(['for_individual']);
   const [scopeLevel, setScopeLevel] = useState<AuthzScopeLevel[]>(['assignable']);
   const [applicableFor, setApplicableFor] = useState<string[]>([]);
@@ -47,14 +45,13 @@ export function RoleCreateForm({ appId, applicableForOptions }: Props) {
 
   const handleSubmit = async () => {
     const roleTitle = name.trim();
-    if (!roleTitle || scope.length === 0) return;
+    if (!roleTitle) return;
 
     setPending(true);
     const result = await createAppRole({
       appId,
       name: roleTitle,
       description: description || undefined,
-      scope,
       scopeFor: [...scopeFor],
       scopeLevel: scopeLevel[0],
       applicableFor,
@@ -76,7 +73,6 @@ export function RoleCreateForm({ appId, applicableForOptions }: Props) {
     <div className="grid gap-4 rounded-2xl border bg-card p-5">
       <Input value={name} onChange={(event) => setName(event.target.value)} placeholder="Role title, e.g. Viewer" />
       <Input value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Description (optional)" />
-      <RoleScopeSelector value={scope} onChange={setScope} />
       <ScopeForSelector value={scopeFor} onChange={setScopeFor} />
       <ScopeLevelSelector value={scopeLevel} onChange={(value) => setScopeLevel([value[0] ?? 'assignable'])} allowMultiple={false} />
       <AuthzDefinitionSelector
@@ -92,7 +88,7 @@ export function RoleCreateForm({ appId, applicableForOptions }: Props) {
         <Button variant="outline" onClick={() => redirectInApp(router, applicationHref('/application/roles', appId, { mode: 'root' }))}>
           Cancel
         </Button>
-        <Button onClick={handleSubmit} disabled={pending || !name.trim() || scope.length === 0}>
+        <Button onClick={handleSubmit} disabled={pending || !name.trim()}>
           {pending ? 'Creating...' : 'Create Role'}
         </Button>
       </div>

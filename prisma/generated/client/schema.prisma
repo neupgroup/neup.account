@@ -612,7 +612,6 @@ model AuthzRole {
   name                   String
   description            String?
   appId                  String?                  @map("app_id")
-  scope                  Json
   scopeFor               Json                     @default("[]") @map("scope_for")
   scopeLevel             String                   @default("assignable") @map("scope_level")
   acquisitionType        String                   @default("assignment") @map("acquisition_type")
@@ -636,7 +635,6 @@ model AuthzRolePermissionMap {
   id           String          @id @default(uuid())
   roleId       String          @map("role_id")
   permissionId String          @map("permission_id")
-  scope        Json
   scopeFor     String          @map("scope_for")
   scopeLevel   String          @map("scope_level")
   createdAt    DateTime        @default(now()) @map("created_at")

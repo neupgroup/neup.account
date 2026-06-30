@@ -1,7 +1,7 @@
 import prisma from '@/core/helpers/prisma';
-import type { Prisma } from '@/prisma/generated/client/client';
+import { Prisma } from '@/prisma/generated/client/client';
 import type { AccessType, AssetType } from '@/prisma/generated/client';
-import { isRootRoleScope } from '@/services/role-scopes';
+import { normalizeSingleAuthzScopeLevel } from '@/services/applications/authz-scope-policy';
 
 type Tx = Prisma.TransactionClient;
 
@@ -53,11 +53,11 @@ export function assetTypeForRefs(parent: ParentRef, child: AssetChildRef): Asset
   return 'port_in_acc';
 }
 
-function accessTypeForGrant(input: AccessGrantInput, roleScope: unknown): AccessType {
+function accessTypeForGrant(input: AccessGrantInput, roleScopeLevel: unknown): AccessType {
   const isSelfGrant = 'parentAccountId' in input && input.parentAccountId === input.memberAccountId;
   if (!isSelfGrant) return assetTypeForRefs(input, input);
 
-  return isRootRoleScope(roleScope)
+  return normalizeSingleAuthzScopeLevel(roleScopeLevel) === 'rootManaged'
     ? 'acc_self_root'
     : 'acc_self';
 }
@@ -198,11 +198,14 @@ export async function ensureAccessAsset(tx: Tx, input: ParentRef & AssetChildRef
 }
 
 export async function ensureAccessGrant(tx: Tx, input: AccessGrantInput) {
-  const role = await tx.authzRole.findUnique({
-    where: { id: input.roleId },
-    select: { scope: true },
-  });
-  if (!role) {
+  const roleRows = await tx.$queryRaw<Array<{ scopeLevel: string | null }>>(Prisma.sql`
+    SELECT r."scope_level" AS "scopeLevel"
+    FROM "authz_role" r
+    WHERE r."id" = ${input.roleId}
+    LIMIT 1
+  `);
+  const roleScopeLevel = roleRows[0]?.scopeLevel ?? null;
+  if (!roleScopeLevel) {
     throw new Error(`Access role "${input.roleId}" was not found.`);
   }
 
@@ -214,7 +217,7 @@ export async function ensureAccessGrant(tx: Tx, input: AccessGrantInput) {
   } as ParentRef & { childAccountId: string; isTemporary?: Date | null });
 
   const asset = await ensureAccessAsset(tx, input);
-  const accessType = accessTypeForGrant(input, role.scope);
+  const accessType = accessTypeForGrant(input, roleScopeLevel);
 
   const existing = await tx.access.findFirst({
     where: {

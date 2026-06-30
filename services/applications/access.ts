@@ -11,12 +11,16 @@ import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
 import {
-  canAssignRoleScopeToAccount,
   expectedRoleScopesForAccount,
   getRoleAccessFlags,
-  normalizeRoleScopes,
   roleRequestTarget,
 } from '@/services/role-scopes';
+import {
+  deriveLegacyRoleScopesFromPolicy,
+  normalizeAuthzScopeFor,
+  normalizeSingleAuthzScopeLevel,
+  roleMatchesAssignmentModesPolicy,
+} from '@/services/applications/authz-scope-policy';
 import { revalidateApplicationRequestsRoutes } from '@/services/applications/revalidate-routes';
 
 async function findRoleIdsForScopes(
@@ -26,12 +30,15 @@ async function findRoleIdsForScopes(
 ): Promise<string[]> {
   const roles = await tx.authzRole.findMany({
     where: { appId },
-    select: { id: true, scope: true },
+    select: { id: true, scopeFor: true, scopeLevel: true },
   });
 
   return roles
-    .filter((role: { scope: unknown }) => {
-      const roleScopes = normalizeRoleScopes(role.scope);
+    .filter((role: { scopeFor: unknown; scopeLevel: unknown }) => {
+      const roleScopes = deriveLegacyRoleScopesFromPolicy(
+        normalizeAuthzScopeFor(role.scopeFor),
+        normalizeSingleAuthzScopeLevel(role.scopeLevel),
+      );
       return roleScopes.some((scope) => scopes.includes(scope));
     })
     .map((role: { id: string }) => role.id);
@@ -91,7 +98,7 @@ export async function assignOwnApplicationRole(input: {
           appId,
           OR: [{ id: roleReference }, { name: roleReference }],
         },
-        select: { id: true, name: true, scope: true, acquisitionType: true, approvalPolicy: true },
+        select: { id: true, name: true, scopeFor: true, scopeLevel: true, acquisitionType: true, approvalPolicy: true },
       }),
     ]);
 
@@ -100,7 +107,12 @@ export async function assignOwnApplicationRole(input: {
     if (!role) return { success: false, error: 'Role not found for this application.' };
 
     const accessFlags = getRoleAccessFlags(role.acquisitionType, role.approvalPolicy);
-    const canUsePublicScope = canAssignRoleScopeToAccount(role.scope, account.accountType, ['public']);
+    const canUsePublicScope = roleMatchesAssignmentModesPolicy({
+      accountType: account.accountType,
+      scopeFor: role.scopeFor,
+      scopeLevel: role.scopeLevel,
+      modes: ['public'],
+    });
     const canAssignImmediately = accessFlags.publiclyEnrollable && canUsePublicScope;
     const requestTarget = canUsePublicScope ? roleRequestTarget(role.acquisitionType, role.approvalPolicy) : null;
     const requiresApproval = requestTarget !== null;
@@ -176,7 +188,12 @@ export async function assignOwnApplicationRole(input: {
             accountId,
             connectionId: connection.id,
             roleIds: [role.id],
-            roles: [{ id: role.id, name: role.name, scope: role.scope }],
+            roles: [{
+              id: role.id,
+              name: role.name,
+              scopeFor: normalizeAuthzScopeFor(role.scopeFor),
+              scopeLevel: normalizeSingleAuthzScopeLevel(role.scopeLevel),
+            }],
             assignmentKind: 'publicApplicationAccess',
             requestTarget,
             requestSource: input.requestSource ?? 'assignOwnApplicationRole',
@@ -200,7 +217,10 @@ export async function assignOwnApplicationRole(input: {
         appId,
         roleId: role.id,
         roleName: role.name,
-        scope: normalizeRoleScopes(role.scope),
+        scope: deriveLegacyRoleScopesFromPolicy(
+          normalizeAuthzScopeFor(role.scopeFor),
+          normalizeSingleAuthzScopeLevel(role.scopeLevel),
+        ),
       };
     }
 
@@ -210,7 +230,10 @@ export async function assignOwnApplicationRole(input: {
       appId,
       roleId: role.id,
       roleName: role.name,
-      scope: normalizeRoleScopes(role.scope),
+      scope: deriveLegacyRoleScopesFromPolicy(
+        normalizeAuthzScopeFor(role.scopeFor),
+        normalizeSingleAuthzScopeLevel(role.scopeLevel),
+      ),
       requestId: connectionDetails.requestId!,
     };
   } catch (error) {
@@ -295,7 +318,7 @@ export async function addUserApplicationAccess(input: { appId: string; permissio
     const selectedRoles = permissions.length
       ? await prisma.authzRole.findMany({
           where: { id: { in: permissions }, appId },
-          select: { id: true, name: true, scope: true, acquisitionType: true, approvalPolicy: true },
+          select: { id: true, name: true, scopeFor: true, scopeLevel: true, acquisitionType: true, approvalPolicy: true },
         })
       : [];
     if (selectedRoles.length !== permissions.length) {
@@ -303,7 +326,12 @@ export async function addUserApplicationAccess(input: { appId: string; permissio
     }
 
     const requestableRoles = selectedRoles.filter((role) =>
-      canAssignRoleScopeToAccount(role.scope, account.accountType, ['public']) &&
+      roleMatchesAssignmentModesPolicy({
+        accountType: account.accountType,
+        scopeFor: role.scopeFor,
+        scopeLevel: role.scopeLevel,
+        modes: ['public'],
+      }) &&
       (() => {
         const flags = getRoleAccessFlags(role.acquisitionType, role.approvalPolicy);
         return flags.publiclyEnrollable || flags.publiclyRequestable || flags.requestableToOwner;
@@ -392,7 +420,12 @@ export async function addUserApplicationAccess(input: { appId: string; permissio
                 accountId,
                 connectionId: connection.id,
                 roleIds: ownerRequestedRoles.map((role) => role.id),
-                roles: ownerRequestedRoles.map((role) => ({ id: role.id, name: role.name, scope: role.scope })),
+                roles: ownerRequestedRoles.map((role) => ({
+                  id: role.id,
+                  name: role.name,
+                  scopeFor: normalizeAuthzScopeFor(role.scopeFor),
+                  scopeLevel: normalizeSingleAuthzScopeLevel(role.scopeLevel),
+                })),
                 assignmentKind: 'publicApplicationAccess',
                 requestTarget: 'owner',
               },
@@ -412,7 +445,12 @@ export async function addUserApplicationAccess(input: { appId: string; permissio
                 accountId,
                 connectionId: connection.id,
                 roleIds: adminRequestedRoles.map((role) => role.id),
-                roles: adminRequestedRoles.map((role) => ({ id: role.id, name: role.name, scope: role.scope })),
+                roles: adminRequestedRoles.map((role) => ({
+                  id: role.id,
+                  name: role.name,
+                  scopeFor: normalizeAuthzScopeFor(role.scopeFor),
+                  scopeLevel: normalizeSingleAuthzScopeLevel(role.scopeLevel),
+                })),
                 assignmentKind: 'publicApplicationAccess',
                 requestTarget: 'admin',
               },
@@ -456,7 +494,7 @@ export async function updateUserApplicationPermissions(input: { appId: string; p
     const selectedRoles = permissions.length
       ? await prisma.authzRole.findMany({
           where: { id: { in: permissions }, appId },
-          select: { id: true, name: true, scope: true, acquisitionType: true, approvalPolicy: true },
+          select: { id: true, name: true, scopeFor: true, scopeLevel: true, acquisitionType: true, approvalPolicy: true },
         })
       : [];
     if (selectedRoles.length !== permissions.length) {
@@ -464,7 +502,12 @@ export async function updateUserApplicationPermissions(input: { appId: string; p
     }
 
     const requestableRoles = selectedRoles.filter((role) =>
-      canAssignRoleScopeToAccount(role.scope, account.accountType, ['public']) &&
+      roleMatchesAssignmentModesPolicy({
+        accountType: account.accountType,
+        scopeFor: role.scopeFor,
+        scopeLevel: role.scopeLevel,
+        modes: ['public'],
+      }) &&
       (() => {
         const flags = getRoleAccessFlags(role.acquisitionType, role.approvalPolicy);
         return flags.publiclyEnrollable || flags.publiclyRequestable || flags.requestableToOwner;
@@ -542,7 +585,12 @@ export async function updateUserApplicationPermissions(input: { appId: string; p
                 accountId,
                 connectionId: connection?.id ?? null,
                 roleIds: ownerRequestedRoles.map((role) => role.id),
-                roles: ownerRequestedRoles.map((role) => ({ id: role.id, name: role.name, scope: role.scope })),
+                roles: ownerRequestedRoles.map((role) => ({
+                  id: role.id,
+                  name: role.name,
+                  scopeFor: normalizeAuthzScopeFor(role.scopeFor),
+                  scopeLevel: normalizeSingleAuthzScopeLevel(role.scopeLevel),
+                })),
                 assignmentKind: 'publicApplicationAccess',
                 requestTarget: 'owner',
               },
@@ -562,7 +610,12 @@ export async function updateUserApplicationPermissions(input: { appId: string; p
                 accountId,
                 connectionId: connection?.id ?? null,
                 roleIds: adminRequestedRoles.map((role) => role.id),
-                roles: adminRequestedRoles.map((role) => ({ id: role.id, name: role.name, scope: role.scope })),
+                roles: adminRequestedRoles.map((role) => ({
+                  id: role.id,
+                  name: role.name,
+                  scopeFor: normalizeAuthzScopeFor(role.scopeFor),
+                  scopeLevel: normalizeSingleAuthzScopeLevel(role.scopeLevel),
+                })),
                 assignmentKind: 'publicApplicationAccess',
                 requestTarget: 'admin',
               },

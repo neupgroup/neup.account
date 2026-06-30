@@ -149,6 +149,46 @@ export function scopeForForAccountType(accountType: string | null | undefined): 
   return null;
 }
 
+export function deriveLegacyRoleScopesFromPolicy(
+  scopeFor: readonly AuthzScopeFor[],
+  scopeLevel: AuthzScopeLevel,
+): string[] {
+  if (scopeLevel === 'rootManaged' && scopeFor.includes('for_individual')) {
+    return ['rootMgmt.self'];
+  }
+  if (scopeFor.includes('for_brand') && scopeFor.includes('for_subBrand')) {
+    return ['acMgmt.brandSubbrand'];
+  }
+  if (scopeFor.includes('for_subBrand')) {
+    return ['acMgmt.subbrand'];
+  }
+  if (scopeFor.includes('for_brand')) {
+    return ['acMgmt.brand'];
+  }
+
+  return ['acMgmt.self'];
+}
+
+export function roleMatchesAssignmentModesPolicy(input: {
+  accountType: string | null | undefined;
+  scopeFor: unknown;
+  scopeLevel: unknown;
+  modes: readonly ('manageable' | 'public' | 'toApprove' | 'root')[];
+}): boolean {
+  const requiredScopeFor = scopeForForAccountType(input.accountType);
+  if (!requiredScopeFor) return false;
+
+  const roleScopeFor = normalizeAuthzScopeFor(input.scopeFor);
+  const roleScopeLevel = normalizeAssignableScopeLevel(input.scopeLevel);
+  if (!roleScopeFor.includes(requiredScopeFor)) return false;
+
+  if (roleScopeLevel === 'rootManaged') {
+    return input.modes.includes('root');
+  }
+
+  return input.modes.some((mode) => mode === 'manageable' || mode === 'public' || mode === 'toApprove');
+}
+
 export function roleMatchesAccountTypeScopePolicy(input: {
   accountType: string | null | undefined;
   scopeFor: unknown;

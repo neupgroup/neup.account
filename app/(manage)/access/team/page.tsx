@@ -201,7 +201,9 @@ async function DirectAccountPage({ workingProfile }: { workingProfile?: string }
               description:
                 member.accountId === accountId
                   ? 'You have the full access to your account and no one can remove you from your profile.'
-                  : `${member.roleCount} role${member.roleCount !== 1 ? 's' : ''}, ${member.isPermanent ? 'permanent' : 'temporary'} account`,
+                  : member.status === 'invited'
+                    ? 'Invitation pending'
+                    : `${member.roleCount} role${member.roleCount !== 1 ? 's' : ''}, ${member.isPermanent ? 'permanent' : 'temporary'} account`,
               status: member.status,
               isSelf: member.accountId === accountId,
               actionHref: appendWorkingProfile(`/access/assign?account=${member.accountId}`, workingProfile),

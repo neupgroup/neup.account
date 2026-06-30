@@ -1,5 +1,4 @@
 import 'dotenv/config';
-import { Prisma } from '../../prisma/generated/client/client';
 import prisma from '../../core/helpers/prisma';
 
 if (!process.env.DATABASE_URL) {
@@ -41,7 +40,7 @@ function extractPermissionNames(value: unknown): string[] {
 
 async function main() {
   const roles = await prisma.authzRole.findMany({
-    select: { id: true, name: true, appId: true, scope: true, permissions: true },
+    select: { id: true, name: true, appId: true, scopeFor: true, scopeLevel: true, permissions: true },
     orderBy: { name: 'asc' },
   });
 
@@ -94,9 +93,8 @@ async function main() {
             data: permissionIds.map((permissionId) => ({
               roleId: role.id,
               permissionId,
-              scope: role.scope as Prisma.InputJsonValue,
-              scopeFor: 'for_individual',
-              scopeLevel: 'assignable',
+              scopeFor: Array.isArray(role.scopeFor) && role.scopeFor.length > 0 ? String(role.scopeFor[0]) : 'for_individual',
+              scopeLevel: typeof role.scopeLevel === 'string' && role.scopeLevel.trim().length > 0 ? role.scopeLevel : 'assignable',
             })),
             skipDuplicates: true,
           });

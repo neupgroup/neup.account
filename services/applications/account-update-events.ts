@@ -5,10 +5,14 @@ import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { activeAccessWhere } from '@/services/access-model';
 import {
+  deriveLegacyRoleScopesFromPolicy,
+  normalizeAuthzScopeFor,
+  normalizeSingleAuthzScopeLevel,
+} from '@/services/applications/authz-scope-policy';
+import {
   getRoleAccessFlags,
   normalizeRoleAcquisitionType,
   normalizeRoleApprovalPolicy,
-  normalizeRoleScopes,
 } from '@/services/role-scopes';
 
 const ACCOUNT_UPDATE_WEBHOOK_TYPE = 'accountUpdateWebhook';
@@ -218,7 +222,8 @@ export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise
                 id: true,
                 name: true,
                 description: true,
-                scope: true,
+                scopeFor: true,
+                scopeLevel: true,
                 acquisitionType: true,
                 approvalPolicy: true,
                 applicableFor: true,
@@ -263,7 +268,10 @@ export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise
         id: row.role.id,
         name: row.role.name,
         description: row.role.description ?? null,
-        scope: normalizeRoleScopes(row.role.scope),
+        scope: deriveLegacyRoleScopesFromPolicy(
+          normalizeAuthzScopeFor(row.role.scopeFor),
+          normalizeSingleAuthzScopeLevel(row.role.scopeLevel),
+        ),
         acquisitionType: normalizeRoleAcquisitionType(row.role.acquisitionType),
         approvalPolicy: normalizeRoleApprovalPolicy(row.role.approvalPolicy),
         applicableFor: extractApplicableFor(row.role.applicableFor),

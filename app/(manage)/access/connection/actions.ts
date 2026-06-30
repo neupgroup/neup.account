@@ -278,11 +278,11 @@ export async function getApplicationAccessPageData(
   }
 }
 
-export async function getConnectionPageData(): Promise<ConnectionPageItem[]> {
+export async function getConnectionPageData(selectedAccountId?: string | null): Promise<ConnectionPageItem[]> {
   const canView = await checkPermissions([...ACCESS_CONNECTION_VIEW_PERMISSIONS]);
   if (!canView) return [];
 
-  const accountId = await getActiveAccountId();
+  const accountId = await getActiveAccountId(selectedAccountId);
   if (!accountId) return [];
 
   try {
@@ -356,11 +356,14 @@ export async function getConnectionPageData(): Promise<ConnectionPageItem[]> {
   }
 }
 
-export async function getConnectionDetail(connectionId: string): Promise<ConnectionDetail | null> {
+export async function getConnectionDetail(
+  connectionId: string,
+  selectedAccountId?: string | null,
+): Promise<ConnectionDetail | null> {
   const canView = await checkPermissions([...ACCESS_CONNECTION_VIEW_PERMISSIONS]);
   if (!canView) return null;
 
-  const accountId = await getActiveAccountId();
+  const accountId = await getActiveAccountId(selectedAccountId);
   if (!accountId) return null;
 
   try {
@@ -515,8 +518,9 @@ export async function getConnectionDetail(connectionId: string): Promise<Connect
 export async function resolveNeupIdForApp(
   appId: string,
   neupId: string,
+  selectedAccountId?: string | null,
 ): Promise<{ success: true; account: ResolvedAccount } | { success: false; error: string }> {
-  const currentAccountId = await getActiveAccountId();
+  const currentAccountId = await getActiveAccountId(selectedAccountId);
   if (!currentAccountId) {
     return { success: false, error: 'Not authenticated.' };
   }
@@ -614,11 +618,12 @@ export async function assignAppAccessToAccount(input: {
   connectionId?: string;
   memberId: string;
   roleIds: string[];
+  selectedAccountId?: string | null;
 }): Promise<{ success: boolean; invited?: boolean; appName?: string; error?: string }> {
   const canAdd = await checkPermissions([...ACCESS_APPLICATION_ADD_PERMISSIONS]);
   if (!canAdd) return { success: false, error: 'Permission denied.' };
 
-  const accessTo = await getActiveAccountId();
+  const accessTo = await getActiveAccountId(input.selectedAccountId);
   if (!accessTo) return { success: false, error: 'Not authenticated.' };
 
   const parsed = assignSchema.safeParse(input);

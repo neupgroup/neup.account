@@ -4,9 +4,6 @@ import { createCipheriv, createHash, createHmac, randomBytes, randomUUID } from 
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import {
-  normalizeRoleScopes,
-} from '@/services/role-scopes';
-import {
   getScopeLevelsFromStoredPolicy,
   normalizeAuthzScopeFor,
   normalizeSingleAuthzScopeLevel,
@@ -55,7 +52,6 @@ type RolePayload = {
   id: string;
   name: string;
   description: string | null;
-  scope: string[];
   scopeFor: AuthzScopeFor[];
   scopeLevel: AuthzScopeLevel;
   acquisitionType: string;
@@ -115,22 +111,6 @@ function extractApplicableFor(raw: unknown): string[] {
   );
 }
 
-function deriveScopeForFromLegacyScope(raw: unknown): AuthzScopeFor[] {
-  const tokens = normalizeRoleScopes(raw).map((token) => token.toLowerCase());
-  const scopeFor = new Set<AuthzScopeFor>();
-
-  for (const token of tokens) {
-    if (token.includes('subbrand') || token.includes('branch')) scopeFor.add('for_subBrand');
-    if (token.includes('brand')) scopeFor.add('for_brand');
-    if (token.includes('dependent')) scopeFor.add('for_dependent');
-    if (token.includes('individual') || token.includes('self') || token.includes('account') || token.includes('acmgmt')) {
-      scopeFor.add('for_individual');
-    }
-  }
-
-  return scopeFor.size > 0 ? Array.from(scopeFor) : ['for_individual'];
-}
-
 function deriveScopeLevelFromLegacyPolicy(scopeLevel: unknown, acquisitionType: string | null | undefined, approvalPolicy: string | null | undefined): AuthzScopeLevel {
   const normalized = normalizeSingleAuthzScopeLevel(scopeLevel);
   if (normalized !== 'assignable' || scopeLevel === 'assignable') {
@@ -177,7 +157,6 @@ export async function dispatchRoleUpdateWebhook(input: {
         id: input.role.id,
         name: input.role.name,
         description: input.role.description,
-        scope: input.role.scope,
         scopeFor: input.role.scopeFor,
         scopeLevel: input.role.scopeLevel,
         acquisitionType: input.role.acquisitionType,
@@ -259,7 +238,6 @@ export async function getRolePayload(appId: string, roleId: string): Promise<Rol
         id: true,
         name: true,
         description: true,
-        scope: true,
         scopeFor: true,
         scopeLevel: true,
         acquisitionType: true,
@@ -279,7 +257,6 @@ export async function getRolePayload(appId: string, roleId: string): Promise<Rol
         id: true,
         name: true,
         description: true,
-        scope: true,
         acquisitionType: true,
         approvalPolicy: true,
         applicableFor: true,
@@ -300,10 +277,7 @@ export async function getRolePayload(appId: string, roleId: string): Promise<Rol
       id: role.id,
       name: role.name,
       description: role.description ?? null,
-      scope: normalizeRoleScopes(role.scope),
-      scopeFor: normalizeAuthzScopeFor(role.scopeFor).length > 0
-        ? normalizeAuthzScopeFor(role.scopeFor)
-        : deriveScopeForFromLegacyScope(role.scope),
+      scopeFor: normalizeAuthzScopeFor(role.scopeFor),
       scopeLevel: deriveScopeLevelFromLegacyPolicy(role.scopeLevel, role.acquisitionType, role.approvalPolicy),
       acquisitionType: role.acquisitionType ?? 'assignment',
       approvalPolicy: role.approvalPolicy ?? 'none',

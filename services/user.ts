@@ -12,6 +12,11 @@ import { getAccountSelectorContext } from "@/core/auth/accountSelector";
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from "@/services/access-model";
 import { isRootRoleScope, normalizeRoleScope, normalizeRoleScopes } from '@/services/role-scopes';
 import {
+  deriveLegacyRoleScopesFromPolicy,
+  normalizeAuthzScopeFor,
+  normalizeSingleAuthzScopeLevel,
+} from '@/services/applications/authz-scope-policy';
+import {
   getCanonicalPermissionAudience,
   resolveNeupAccountPermissionCandidates,
   stripPermissionAudience,
@@ -137,7 +142,8 @@ type RawAccessRoleRow = {
   status: string;
   roleId: string;
   roleName: string | null;
-  roleScopeText: string | null;
+  roleScopeForText: string | null;
+  roleScopeLevel: string | null;
   rolePermissions: Prisma.JsonValue | null;
   expiresAt: Date | null;
 };
@@ -155,7 +161,8 @@ async function queryAccessRoleRows(input: {
       a."status" AS "status",
       a."role_id" AS "roleId",
       r."name" AS "roleName",
-      r."scope"::text AS "roleScopeText",
+      r."scope_for"::text AS "roleScopeForText",
+      r."scope_level" AS "roleScopeLevel",
       r."permissions" AS "rolePermissions",
       a."is_temporary" AS "expiresAt"
     FROM "access" a
@@ -171,6 +178,13 @@ async function queryAccessRoleRows(input: {
   `);
 
   return rows;
+}
+
+function getRoleScopeFromAccessRow(row: RawAccessRoleRow): string[] {
+  return deriveLegacyRoleScopesFromPolicy(
+    normalizeAuthzScopeFor(row.roleScopeForText),
+    normalizeSingleAuthzScopeLevel(row.roleScopeLevel),
+  );
 }
 
 async function getAppAccessRoleRows({
@@ -193,7 +207,7 @@ async function getAppAccessRoleRows({
     return accessRows.map((row) => ({
       roleId: row.roleId,
       roleName: row.roleName,
-      roleScope: normalizeRoleScopes(row.roleScopeText),
+      roleScope: getRoleScopeFromAccessRow(row),
       permissionNames: extractRolePermissionNames(row.rolePermissions),
     }));
   } catch (error) {
@@ -462,7 +476,7 @@ async function getAccountPermissionEntries(
     return accessRows.flatMap((row) =>
       extractRolePermissionNames(row.rolePermissions).map((name) => ({
         name,
-        roleScope: normalizeRoleScopes(row.roleScopeText),
+        roleScope: getRoleScopeFromAccessRow(row),
       }))
     );
   } catch (error) {
@@ -492,7 +506,7 @@ export async function getGrantedAccountPermission(
     });
 
     const permissions = accessRows.flatMap((row) =>
-      shouldIgnoreManagedRoleScope(row.roleScopeText)
+      shouldIgnoreManagedRoleScope(getRoleScopeFromAccessRow(row))
         ? []
         : extractRolePermissionNames(row.rolePermissions)
     );
@@ -603,7 +617,7 @@ async function getGrantedAccountPermissionEntries(
     });
 
     return accessRows.flatMap((row) => {
-      const roleScope = normalizeRoleScopes(row.roleScopeText);
+      const roleScope = getRoleScopeFromAccessRow(row);
       if (shouldIgnoreManagedRoleScope(roleScope)) {
         return [];
       }
@@ -623,12 +637,12 @@ async function getGrantedAccountPermissionEntries(
   }
 }
 
-export async function getCurrentAccountPermission(): Promise<string[]> {
+export async function getCurrentAccountPermission(selectedAccountId?: string | null): Promise<string[]> {
   const {
     activeAccountId,
     personalAccountId,
     isManagingOtherAccount,
-  } = await getAccountSelectorContext();
+  } = await getAccountSelectorContext(selectedAccountId);
 
   if (!activeAccountId || !personalAccountId) {
     return [];
@@ -737,7 +751,7 @@ export async function getHomeSelectedAccountAccessLog(): Promise<HomeSelectedAcc
         status: grant.status,
         roleId: grant.roleId,
         roleName: grant.roleName,
-        roleScope: normalizeRoleScopes(grant.roleScopeText),
+        roleScope: getRoleScopeFromAccessRow(grant),
         permissions: extractRolePermissionNames(grant.rolePermissions),
         expiresAt: grant.expiresAt?.toISOString() ?? null,
       })),

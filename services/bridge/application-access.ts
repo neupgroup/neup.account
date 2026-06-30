@@ -17,6 +17,7 @@
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from '@/services/access-model';
+import { deriveLegacyRoleScopesFromPolicy, normalizeAuthzScopeFor, normalizeSingleAuthzScopeLevel } from '@/services/applications/authz-scope-policy';
 
 /*
 ::neup.documentation::application-access-service
@@ -210,7 +211,8 @@ export async function getApplicationAccess(params: {
               id: true,
               name: true,
               description: true,
-              scope: true,
+              scopeFor: true,
+              scopeLevel: true,
               permissions: true,
             },
           },
@@ -252,7 +254,12 @@ export async function getApplicationAccess(params: {
       roleId: g.role?.id ?? g.roleId,
       roleName: g.role?.name ?? g.roleId,
       roleDescription: g.role?.description ?? null,
-      roleScope: g.role?.scope ?? null,
+      roleScope: g.role
+        ? deriveLegacyRoleScopesFromPolicy(
+            normalizeAuthzScopeFor(g.role.scopeFor),
+            normalizeSingleAuthzScopeLevel(g.role.scopeLevel),
+          )
+        : null,
       permissions: extractRolePermissionNames(g.role?.permissions).map((name) => ({
         permissionId: null,
         permissionName: name,

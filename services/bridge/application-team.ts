@@ -5,7 +5,7 @@ import { verifyAccountToken } from '@/core/auth/accountToken';
 import { logError } from '@/core/helpers/logger';
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from '@/services/access-model';
 import { validateAuthSession } from '@/services/auth/session';
-import { normalizeRoleScopes } from '@/services/role-scopes';
+import { deriveLegacyRoleScopesFromPolicy, normalizeAuthzScopeFor, normalizeSingleAuthzScopeLevel } from '@/services/applications/authz-scope-policy';
 import { checkGrantedPermissions, getUserNeupIds, getUserProfile } from '@/services/user';
 
 type ApplicationTeamMemberRole = {
@@ -190,7 +190,8 @@ export async function getApplicationTeamMembers(input: {
             id: true,
             name: true,
             description: true,
-            scope: true,
+            scopeFor: true,
+            scopeLevel: true,
             permissions: true,
           },
         },
@@ -235,7 +236,10 @@ export async function getApplicationTeamMembers(input: {
             roleId: row.role.id,
             roleName: row.role.name,
             roleDescription: row.role.description ?? null,
-            roleScope: normalizeRoleScopes(row.role.scope),
+            roleScope: deriveLegacyRoleScopesFromPolicy(
+              normalizeAuthzScopeFor(row.role.scopeFor),
+              normalizeSingleAuthzScopeLevel(row.role.scopeLevel),
+            ),
             permissions: Array.from(new Set(permissionNames)),
             grantCount: 1,
           });

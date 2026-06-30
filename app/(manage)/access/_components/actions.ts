@@ -8,8 +8,7 @@ import { logError } from '@/core/helpers/logger';
 import { assignAssetMemberRole, getRolesForAsset } from '@/services/manage/access/assets';
 import { BRAND_OWNER_ROLE_ID } from '@/core/auth/brand-roles';
 import { resolveNeupAccountPermissionCandidates } from '@/services/neup-account/permission-catalog';
-import { canAssignRoleScopeToAccount } from '@/services/role-scopes';
-import { roleMatchesAccountTypeScopePolicy } from '@/services/applications/authz-scope-policy';
+import { roleMatchesAccountTypeScopePolicy, roleMatchesAssignmentModesPolicy } from '@/services/applications/authz-scope-policy';
 import {
   ACCESS_TEAM_ADD_PERMISSIONS,
   ACCESS_TEAM_REMOVE_PERMISSIONS,
@@ -298,7 +297,6 @@ type RawDirectAssignableRoleRow = {
   id: string;
   name: string;
   description: string | null;
-  scopeText: string | null;
   scopeForText: string | null;
   scopeLevelText: string | null;
   permissionsText: string | null;
@@ -329,7 +327,6 @@ async function loadAuthzRolesWithMalformedJsonFallback(input: {
   id: string;
   name: string;
   description: string | null;
-  scope: Prisma.JsonValue | null;
   scopeFor: Prisma.JsonValue | null;
   scopeLevel: Prisma.JsonValue | null;
   permissions: Prisma.JsonValue | null;
@@ -356,7 +353,6 @@ async function loadAuthzRolesWithMalformedJsonFallback(input: {
       r."id",
       r."name",
       r."description",
-      r."scope"::text AS "scopeText",
       r."scope_for"::text AS "scopeForText",
       r."scope_level"::text AS "scopeLevelText",
       r."permissions"::text AS "permissionsText"
@@ -369,7 +365,6 @@ async function loadAuthzRolesWithMalformedJsonFallback(input: {
     id: row.id,
     name: row.name,
     description: row.description,
-    scope: parseStoredJsonText(row.scopeText),
     scopeFor: parseStoredJsonText(row.scopeForText),
     scopeLevel: parseStoredJsonText(row.scopeLevelText),
     permissions: parseStoredJsonText(row.permissionsText),
@@ -382,7 +377,6 @@ async function loadDirectAccessAssignableRolesWithMalformedJsonFallback(input: {
   id: string;
   name: string;
   description: string | null;
-  scope: Prisma.JsonValue | null;
   scopeFor: Prisma.JsonValue | null;
   scopeLevel: Prisma.JsonValue | null;
   permissions: Prisma.JsonValue | null;
@@ -421,8 +415,8 @@ export async function getDirectAccessAssignmentOptions(selectedAccountId?: strin
             name: { not: { startsWith: DIRECT_CUSTOM_ROLE_PREFIX } },
             ...(allowedRoleIds ? { id: { in: Array.from(allowedRoleIds) } } : {}),
           },
-          select: { id: true, name: true, description: true, scope: true, scopeFor: true, scopeLevel: true, permissions: true },
-          orderBy: [{ scope: 'asc' }, { name: 'asc' }],
+          select: { id: true, name: true, description: true, scopeFor: true, scopeLevel: true, permissions: true },
+          orderBy: [{ name: 'asc' }],
         });
       } catch (error) {
         if (!isInvalidStoredJsonReadError(error)) throw error;
@@ -435,7 +429,12 @@ export async function getDirectAccessAssignmentOptions(selectedAccountId?: strin
     const roleMapPermissions = await rolePermissionNames(roles.map((role) => role.id));
     const assignableRoles = [];
     for (const role of roles) {
-      if (!canAssignRoleScopeToAccount(role.scope, account.accountType, ['manageable'])) {
+      if (!roleMatchesAssignmentModesPolicy({
+        accountType: account.accountType,
+        scopeFor: role.scopeFor,
+        scopeLevel: role.scopeLevel,
+        modes: ['manageable'],
+      })) {
         continue;
       }
       if (!roleMatchesAccountTypeScopePolicy({
@@ -485,7 +484,7 @@ export async function getDirectAccessAssignmentOptions(selectedAccountId?: strin
  *
  * ::private
  *
- * Legacy rows in `authz_role.scope` may still be stored as plain strings like `managed.brand`. When Prisma cannot decode those rows as JSON, this action falls back to a raw SQL reader that normalizes the stored text before evaluating scope rules.
+ * The action uses `scope_for` and `scope_level` to validate whether a role can be assigned to the selected account type.
  *
  * ::private end
  *
@@ -494,8 +493,9 @@ export async function getDirectAccessAssignmentOptions(selectedAccountId?: strin
 export async function updateDirectMemberAccess(input: {
   memberAccountId: string;
   roleIds: string[];
+  selectedAccountId?: string | null;
 }): Promise<{ success: boolean; error?: string }> {
-  const accountId = await getActiveAccountId();
+  const accountId = await getActiveAccountId(input.selectedAccountId);
   if (!accountId) return { success: false, error: 'Not authenticated.' };
 
   const canAdd = await checkPermissions([...ACCESS_TEAM_ADD_PERMISSIONS]);
@@ -536,33 +536,11 @@ export async function updateDirectMemberAccess(input: {
         select: { id: true },
       }),
       roleIds.length > 0
-        ? (async () => {
-            try {
-              return await prisma.authzRole.findMany({
-                where: {
-                  id: { in: roleIds },
-                  appId: 'neup.account',
-                  name: { not: { startsWith: DIRECT_CUSTOM_ROLE_PREFIX } },
-                },
-                select: {
-                  id: true,
-                  name: true,
-                  description: true,
-                  scope: true,
-                  scopeFor: true,
-                  scopeLevel: true,
-                  permissions: true,
-                },
-              });
-            } catch (error) {
-              if (!isInvalidStoredJsonReadError(error)) throw error;
-              return loadAuthzRolesWithMalformedJsonFallback({
-                roleIds,
-              });
-            }
-          })()
+        ? loadAuthzRolesWithMalformedJsonFallback({
+            roleIds,
+          })
         : Promise.resolve([]),
-      getCurrentAccountPermission(),
+      getCurrentAccountPermission(input.selectedAccountId),
       prisma.account.findUnique({
         where: { id: accountId },
         select: { accountType: true },
@@ -578,7 +556,12 @@ export async function updateDirectMemberAccess(input: {
     }
     if (!parentAccount) return { success: false, error: 'Selected account not found.' };
     if (selectedRoles.length !== roleIds.length) return { success: false, error: 'One or more roles are invalid.' };
-    if (selectedRoles.some((role) => !canAssignRoleScopeToAccount(role.scope, parentAccount.accountType, ['manageable']))) {
+    if (selectedRoles.some((role) => !roleMatchesAssignmentModesPolicy({
+      accountType: parentAccount.accountType,
+      scopeFor: role.scopeFor,
+      scopeLevel: role.scopeLevel,
+      modes: ['manageable'],
+    }))) {
       return { success: false, error: 'One or more roles cannot be assigned for this account type.' };
     }
     if (selectedRoles.some((role) => !roleMatchesAccountTypeScopePolicy({
@@ -707,8 +690,9 @@ export async function updateDirectMemberAccess(input: {
  */
 export async function removeDirectMember(
   memberAccountId: string,
+  selectedAccountId?: string | null,
 ): Promise<{ success: boolean; error?: string }> {
-  const accessTo = await getActiveAccountId();
+  const accessTo = await getActiveAccountId(selectedAccountId);
   if (!accessTo) return { success: false, error: 'Not authenticated.' };
 
   const canRemove = await checkPermissions([...ACCESS_TEAM_REMOVE_PERMISSIONS]);
@@ -753,8 +737,9 @@ export async function removeDirectMember(
  */
 export async function cancelDirectInvitation(
   recipientAccountId: string,
+  selectedAccountId?: string | null,
 ): Promise<{ success: boolean; error?: string }> {
-  const senderAccountId = await getActiveAccountId();
+  const senderAccountId = await getActiveAccountId(selectedAccountId);
   if (!senderAccountId) return { success: false, error: 'Not authenticated.' };
 
   const canRemove = await checkPermissions([...ACCESS_TEAM_REMOVE_PERMISSIONS]);
@@ -898,8 +883,9 @@ export async function inviteToPortfolio(
  */
 export async function inviteDirectMember(
   recipientAccountId: string,
+  selectedAccountId?: string | null,
 ): Promise<{ success: boolean; error?: string }> {
-  const senderAccountId = await getActiveAccountId();
+  const senderAccountId = await getActiveAccountId(selectedAccountId);
   if (!senderAccountId) return { success: false, error: 'Not authenticated.' };
 
   const canAdd = await checkPermissions([...ACCESS_TEAM_ADD_PERMISSIONS]);
@@ -976,6 +962,7 @@ export async function inviteDirectMember(
           recipientId: recipientAccountId,
           status: 'pending',
           data: {
+            parentAccountId: senderAccountId,
             expiresOn: expiresOn.toISOString(),
           },
         },

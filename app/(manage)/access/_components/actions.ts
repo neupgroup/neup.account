@@ -322,8 +322,9 @@ function isInvalidStoredJsonReadError(error: unknown): boolean {
     || error.message.includes('Unexpected token');
 }
 
-async function loadDirectAccessAssignableRolesWithMalformedJsonFallback(input: {
-  allowedRoleIds: Set<string> | null;
+async function loadAuthzRolesWithMalformedJsonFallback(input: {
+  roleIds?: string[];
+  allowedRoleIds?: Set<string> | null;
 }): Promise<Array<{
   id: string;
   name: string;
@@ -333,7 +334,22 @@ async function loadDirectAccessAssignableRolesWithMalformedJsonFallback(input: {
   scopeLevel: Prisma.JsonValue | null;
   permissions: Prisma.JsonValue | null;
 }>> {
-  const whereRoleIds = input.allowedRoleIds ? Array.from(input.allowedRoleIds) : [];
+  const filters: Prisma.Sql[] = [
+    Prisma.sql`r."app_id" = 'neup.account'`,
+    Prisma.sql`r."name" NOT LIKE ${`${DIRECT_CUSTOM_ROLE_PREFIX}%`}`,
+  ];
+
+  if (input.roleIds && input.roleIds.length > 0) {
+    filters.push(Prisma.sql`r."id" IN (${Prisma.join(input.roleIds)})`);
+  }
+
+  if (input.allowedRoleIds) {
+    const allowedIds = Array.from(input.allowedRoleIds);
+    if (allowedIds.length === 0) {
+      return [];
+    }
+    filters.push(Prisma.sql`r."id" IN (${Prisma.join(allowedIds)})`);
+  }
 
   const rows = await prisma.$queryRaw<RawDirectAssignableRoleRow[]>(Prisma.sql`
     SELECT
@@ -345,9 +361,7 @@ async function loadDirectAccessAssignableRolesWithMalformedJsonFallback(input: {
       r."scope_level"::text AS "scopeLevelText",
       r."permissions"::text AS "permissionsText"
     FROM "authz_role" r
-    WHERE r."app_id" = 'neup.account'
-      AND r."name" NOT LIKE ${`${DIRECT_CUSTOM_ROLE_PREFIX}%`}
-      ${input.allowedRoleIds ? Prisma.sql`AND r."id" IN (${Prisma.join(whereRoleIds)})` : Prisma.empty}
+    WHERE ${Prisma.join(filters, ' AND ')}
     ORDER BY r."name" ASC
   `);
 
@@ -360,6 +374,22 @@ async function loadDirectAccessAssignableRolesWithMalformedJsonFallback(input: {
     scopeLevel: parseStoredJsonText(row.scopeLevelText),
     permissions: parseStoredJsonText(row.permissionsText),
   }));
+}
+
+async function loadDirectAccessAssignableRolesWithMalformedJsonFallback(input: {
+  allowedRoleIds: Set<string> | null;
+}): Promise<Array<{
+  id: string;
+  name: string;
+  description: string | null;
+  scope: Prisma.JsonValue | null;
+  scopeFor: Prisma.JsonValue | null;
+  scopeLevel: Prisma.JsonValue | null;
+  permissions: Prisma.JsonValue | null;
+}>> {
+  return loadAuthzRolesWithMalformedJsonFallback({
+    allowedRoleIds: input.allowedRoleIds,
+  });
 }
 
 export async function getDirectAccessAssignmentOptions(selectedAccountId?: string | null): Promise<{
@@ -441,6 +471,26 @@ export async function getDirectAccessAssignmentOptions(selectedAccountId?: strin
   }
 }
 
+/**
+ * ::neup.documentation::update-direct-member-access
+ * ::title Update Direct Member Access
+ *
+ * Replaces the direct-account role grants held by one invited or active member on the currently selected profile.
+ *
+ * ::public
+ *
+ * The action validates the selected roles against account type and caller permissions before replacing all direct grants for the member.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * Legacy rows in `authz_role.scope` may still be stored as plain strings like `managed.brand`. When Prisma cannot decode those rows as JSON, this action falls back to a raw SQL reader that normalizes the stored text before evaluating scope rules.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 export async function updateDirectMemberAccess(input: {
   memberAccountId: string;
   roleIds: string[];
@@ -486,20 +536,31 @@ export async function updateDirectMemberAccess(input: {
         select: { id: true },
       }),
       roleIds.length > 0
-        ? prisma.authzRole.findMany({
-            where: {
-              id: { in: roleIds },
-              appId: 'neup.account',
-              name: { not: { startsWith: DIRECT_CUSTOM_ROLE_PREFIX } },
-            },
-            select: {
-              id: true,
-              scope: true,
-              scopeFor: true,
-              scopeLevel: true,
-              permissions: true,
-            },
-          })
+        ? (async () => {
+            try {
+              return await prisma.authzRole.findMany({
+                where: {
+                  id: { in: roleIds },
+                  appId: 'neup.account',
+                  name: { not: { startsWith: DIRECT_CUSTOM_ROLE_PREFIX } },
+                },
+                select: {
+                  id: true,
+                  name: true,
+                  description: true,
+                  scope: true,
+                  scopeFor: true,
+                  scopeLevel: true,
+                  permissions: true,
+                },
+              });
+            } catch (error) {
+              if (!isInvalidStoredJsonReadError(error)) throw error;
+              return loadAuthzRolesWithMalformedJsonFallback({
+                roleIds,
+              });
+            }
+          })()
         : Promise.resolve([]),
       getCurrentAccountPermission(),
       prisma.account.findUnique({

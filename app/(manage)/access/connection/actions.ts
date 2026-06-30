@@ -29,7 +29,7 @@ This module backs the connection access pages by returning connection summaries,
 
 ::private
 
-Assignment is intentionally limited to accounts that already have an active connection for the target application. The module no longer creates placeholder connection rows during access assignment.
+Assignment is intentionally limited to accounts that already have an active connection for the target application and an active direct-team membership on the current account. The module no longer creates placeholder connection rows during access assignment.
 
 ::private end
 
@@ -119,11 +119,46 @@ export type ConnectionDetail = {
 export type ResolvedAccount = {
   accountId: string;
   displayName: string;
+  teamMembershipStatus: 'active' | 'invited' | 'none';
 };
 
 type ApplicationAccessPageOptions = {
   ownerOnly?: boolean;
 };
+
+async function getDirectTeamMembershipStatus(
+  ownerAccountId: string,
+  memberAccountId: string,
+): Promise<'active' | 'invited' | 'none'> {
+  const [membership, pendingInvitation] = await Promise.all([
+    prisma.member.findFirst({
+      where: {
+        memberType: 'acc_in_acc',
+        memberAccountId,
+        parentAccountId: ownerAccountId,
+        parentPortfolioId: null,
+        status: 'active',
+      },
+      select: { id: true },
+    }),
+    prisma.request.findFirst({
+      where: {
+        action: 'access_invitation',
+        senderId: ownerAccountId,
+        recipientId: memberAccountId,
+        status: 'pending',
+      },
+      select: { data: true },
+    }),
+  ]);
+
+  if (membership) return 'active';
+  if (pendingInvitation && !(pendingInvitation.data as Record<string, unknown> | null)?.parentPortfolioId) {
+    return 'invited';
+  }
+
+  return 'none';
+}
 
 // ── Fetch page data ───────────────────────────────────────────────────────────
 
@@ -514,7 +549,7 @@ export async function resolveNeupIdForApp(
       return { success: false, error: 'You cannot assign access to yourself.' };
     }
 
-    const [profile, connection] = await Promise.all([
+    const [profile, connection, teamMembershipStatus] = await Promise.all([
       getUserProfile(record.accountId),
       prisma.connection.findUnique({
         where: {
@@ -528,6 +563,7 @@ export async function resolveNeupIdForApp(
           status: true,
         },
       }),
+      getDirectTeamMembershipStatus(currentAccountId, record.accountId),
     ]);
     const displayName =
       profile?.nameDisplay ||
@@ -550,7 +586,14 @@ export async function resolveNeupIdForApp(
       };
     }
 
-    return { success: true, account: { accountId: record.accountId, displayName } };
+    return {
+      success: true,
+      account: {
+        accountId: record.accountId,
+        displayName,
+        teamMembershipStatus,
+      },
+    };
   } catch (error) {
     await logError('database', error, `resolveNeupIdForApp:${neupId}`);
     return { success: false, error: 'Lookup failed. Please try again.' };
@@ -589,7 +632,7 @@ export async function assignAppAccessToAccount(input: {
   }
 
   try {
-    const [app, existingConnection, roles] = await Promise.all([
+    const [app, existingConnection, roles, teamMembershipStatus] = await Promise.all([
       prisma.application.findUnique({
         where: { id: appId },
         select: { id: true, name: true },
@@ -602,6 +645,7 @@ export async function assignAppAccessToAccount(input: {
         where: { appId, id: { in: roleIds } },
         select: { id: true },
       }),
+      getDirectTeamMembershipStatus(accessTo, memberId),
     ]);
     if (!app) return { success: false, error: 'Application not found.' };
     if (!existingConnection) {
@@ -609,6 +653,9 @@ export async function assignAppAccessToAccount(input: {
     }
     if (existingConnection.status !== 'active') {
       return { success: false, error: 'This account must have an active application connection before access can be assigned.' };
+    }
+    if (teamMembershipStatus !== 'active') {
+      return { success: false, error: 'Add this person to your team first before assigning application permissions.' };
     }
     if (roles.length !== new Set(roleIds).size) {
       return { success: false, error: 'One or more selected roles are not valid for this application.' };

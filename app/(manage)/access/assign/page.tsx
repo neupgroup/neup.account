@@ -34,7 +34,14 @@ import {
 import { DirectMemberAccessForm } from '../_components/direct-member-access-form';
 
 type PageProps = {
-  searchParams: Promise<{ portfolio?: string; connection?: string; account?: string; member?: string; mode?: string }>;
+  searchParams: Promise<{
+    portfolio?: string;
+    connection?: string;
+    account?: string;
+    member?: string;
+    mode?: string;
+    workingProfile?: string;
+  }>;
 };
 
 const NEUPID_LOGO = 'https://neupgroup.com/assets/branding/neup.group/logo.svg';
@@ -245,7 +252,7 @@ function EmptyRoles({ message }: { message: string }) {
  * ::end
  */
 export default async function AssignPermissionsPage({ searchParams }: PageProps) {
-  const { portfolio, connection: connectionId, account, member, mode } = await searchParams;
+  const { portfolio, connection: connectionId, account, member, mode, workingProfile } = await searchParams;
   const accountId = account || member;
 
   if (connectionId) {
@@ -280,6 +287,7 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
                   ? {
                       accountId: selectedMember.accountId,
                       displayName: selectedMember.displayName,
+                      teamMembershipStatus: 'active',
                     }
                   : null
               }
@@ -292,7 +300,7 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
   }
 
   if (portfolio && accountId) {
-    const activeAccountId = await getActiveAccountId();
+    const activeAccountId = await getActiveAccountId(workingProfile);
     if (!activeAccountId) notFound();
 
     const [detail, memberProfile, callerFlags, portfolioName] = await Promise.all([
@@ -489,14 +497,14 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
   }
 
   if (accountId) {
-    const activeAccountId = await getActiveAccountId();
+    const activeAccountId = await getActiveAccountId(workingProfile);
     if (!activeAccountId) notFound();
 
     const [detail, ownerProfile, isPendingInvitation, assignmentOptions] = await Promise.all([
       getDirectMemberDetail(activeAccountId, accountId),
       getUserProfile(activeAccountId),
       hasPendingDirectInvitation(activeAccountId, accountId),
-      getDirectAccessAssignmentOptions(),
+      getDirectAccessAssignmentOptions(workingProfile),
     ]);
 
     if (!detail) notFound();

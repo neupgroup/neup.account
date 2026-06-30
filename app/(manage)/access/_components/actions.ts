@@ -294,10 +294,10 @@ export type DirectAccessAssignableRole = {
   description?: string;
 };
 
-export async function getDirectAccessAssignmentOptions(): Promise<{
+export async function getDirectAccessAssignmentOptions(selectedAccountId?: string | null): Promise<{
   roles: DirectAccessAssignableRole[];
 }> {
-  const accountId = await getActiveAccountId();
+  const accountId = await getActiveAccountId(selectedAccountId);
   if (!accountId) return { roles: [] };
 
   const canAdd = await checkPermissions([...ACCESS_TEAM_ADD_PERMISSIONS]);

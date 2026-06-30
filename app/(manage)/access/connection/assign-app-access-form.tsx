@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Check, Loader2, UserCircle, X } from '@/components/icons';
 import { resolveNeupIdForApp, assignAppAccessToAccount, type ResolvedAccount } from './actions';
+import { inviteDirectMember } from '../_components/actions';
 
 type Role = { id: string; name: string; description: string | null };
 
@@ -17,13 +18,13 @@ type Role = { id: string; name: string; description: string | null };
  *
  * ::public
  *
- * The form looks up a NeupID, confirms the target account has an active connection for the application, then lets the user assign one or more roles.
+ * The form looks up a NeupID, confirms the target account has an active connection for the application, requires active direct-team membership, and then lets the user assign one or more roles.
  *
  * ::public end
  *
  * ::private
  *
- * Lookup failures intentionally block the role picker and submit button so callers cannot assign access to accounts without an active app connection.
+ * Lookup and team-membership failures intentionally block the role picker and submit button so callers cannot assign access before the person is on the team and actively connected to the app.
  *
  * ::private end
  *
@@ -50,6 +51,7 @@ export function AssignAppAccessForm({
   const [selectedRoles, setSelectedRoles] = useState<Set<string>>(new Set(initialRoleIds ?? []));
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [teamActionSuccess, setTeamActionSuccess] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -60,6 +62,7 @@ export function AssignAppAccessForm({
       const result = await resolveNeupIdForApp(appId, neupIdInput.trim());
       if (result.success) {
         setResolved(result.account);
+        setTeamActionSuccess(null);
       } else {
         setResolved(null);
         setLookupError(result.error);
@@ -78,7 +81,7 @@ export function AssignAppAccessForm({
   };
 
   const handleAssign = () => {
-    if (!resolved || selectedRoles.size === 0) return;
+    if (!resolved || resolved.teamMembershipStatus !== 'active' || selectedRoles.size === 0) return;
     setSubmitError(null);
     startTransition(async () => {
       const result = await assignAppAccessToAccount({
@@ -105,7 +108,28 @@ export function AssignAppAccessForm({
     setLookupError(null);
     setSelectedRoles(new Set());
     setSubmitError(null);
+    setTeamActionSuccess(null);
     setTimeout(() => inputRef.current?.focus(), 0);
+  };
+
+  const handleAddToTeam = () => {
+    if (!resolved || resolved.teamMembershipStatus !== 'none') return;
+    setSubmitError(null);
+    setTeamActionSuccess(null);
+    startTransition(async () => {
+      const result = await inviteDirectMember(resolved.accountId);
+      if (!result.success) {
+        setSubmitError(result.error ?? 'Failed to add this person to your team.');
+        return;
+      }
+
+      setResolved((current) => (
+        current
+          ? { ...current, teamMembershipStatus: 'invited' }
+          : current
+      ));
+      setTeamActionSuccess('Team invitation sent. They must accept it before you can assign application permissions.');
+    });
   };
 
   if (success) {
@@ -120,7 +144,7 @@ export function AssignAppAccessForm({
   return (
     <div className="px-4 py-3 grid gap-3">
       <p className="text-xs text-muted-foreground">
-        Only accounts with an active {appName ?? 'application'} connection can be granted direct access.
+        Enter a NeupID first. The account must already be on your team and have an active {appName ?? 'application'} connection before you can grant direct access.
       </p>
       {/* Step 1 — NeupID lookup */}
       {!resolved ? (
@@ -176,59 +200,92 @@ export function AssignAppAccessForm({
             </button>
           </div>
 
-          {/* Role selection */}
-          {availableRoles.length > 0 ? (
-            <div className="grid gap-2">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                Select roles
-              </p>
-              <div className="overflow-hidden rounded-md border divide-y">
-                {availableRoles.map((role) => (
-                  <label
-                    key={role.id}
-                    className="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-muted/40 transition-colors"
-                  >
-                    <Checkbox
-                      id={`role-${appId}-${role.id}`}
-                      checked={selectedRoles.has(role.id)}
-                      onCheckedChange={() => handleRoleToggle(role.id)}
-                    />
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium">{role.name}</p>
-                      {role.description && (
-                        <p className="text-xs text-muted-foreground">{role.description}</p>
-                      )}
-                    </div>
-                  </label>
-                ))}
+          {resolved.teamMembershipStatus !== 'active' ? (
+            <div className="grid gap-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-3 dark:border-amber-800 dark:bg-amber-950/30">
+              <div className="grid gap-1">
+                <p className="text-sm font-medium text-foreground">
+                  {resolved.teamMembershipStatus === 'none' ? 'Add to team first' : 'Waiting for team acceptance'}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {resolved.teamMembershipStatus === 'none'
+                    ? 'This person has an active application connection, but they are not part of your team yet.'
+                    : 'This person has already been invited to your team. They must accept the invitation before application permissions can be assigned.'}
+                </p>
               </div>
+              {resolved.teamMembershipStatus === 'none' && (
+                <div className="flex justify-start">
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={handleAddToTeam}
+                    disabled={isPending}
+                  >
+                    {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : 'Add to Team'}
+                  </Button>
+                </div>
+              )}
+              {teamActionSuccess && (
+                <p className="text-xs text-emerald-700 dark:text-emerald-400">{teamActionSuccess}</p>
+              )}
             </div>
           ) : (
-            <p className="text-xs text-muted-foreground">
-              No roles defined for this application yet.
-            </p>
+            <>
+              {availableRoles.length > 0 ? (
+                <div className="grid gap-2">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    Select roles
+                  </p>
+                  <div className="overflow-hidden rounded-md border divide-y">
+                    {availableRoles.map((role) => (
+                      <label
+                        key={role.id}
+                        className="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-muted/40 transition-colors"
+                      >
+                        <Checkbox
+                          id={`role-${appId}-${role.id}`}
+                          checked={selectedRoles.has(role.id)}
+                          onCheckedChange={() => handleRoleToggle(role.id)}
+                        />
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium">{role.name}</p>
+                          {role.description && (
+                            <p className="text-xs text-muted-foreground">{role.description}</p>
+                          )}
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  No roles defined for this application yet.
+                </p>
+              )}
+            </>
           )}
 
           {submitError && (
             <p className="text-xs text-destructive">{submitError}</p>
           )}
 
-          <div className="flex justify-end">
-            <Button
-              type="button"
-              size="sm"
-              onClick={handleAssign}
-              disabled={isPending || selectedRoles.size === 0}
-              className="gap-1.5"
-            >
-              {isPending ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <Check className="h-3.5 w-3.5" />
-              )}
-              Grant Access
-            </Button>
-          </div>
+          {resolved.teamMembershipStatus === 'active' && (
+            <div className="flex justify-end">
+              <Button
+                type="button"
+                size="sm"
+                onClick={handleAssign}
+                disabled={isPending || selectedRoles.size === 0}
+                className="gap-1.5"
+              >
+                {isPending ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Check className="h-3.5 w-3.5" />
+                )}
+                Grant Access
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </div>

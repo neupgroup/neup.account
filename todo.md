@@ -22,6 +22,11 @@
 - [ ] Add `::neup.documentation::...` blocks for `services/applications/permission-scopes.ts`.
 - [ ] Add `::neup.documentation::...` blocks for `app/(manage)/access/_components/direct-member-access-form.tsx`.
 - [ ] Add `::neup.documentation::...` blocks for `app/(manage)/access/_components/actions.ts`.
+- [ ] Add `::neup.documentation::...` blocks for `services/access-model.ts`.
+- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/application/roles/page.tsx`.
+- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/access/add-user-form.tsx`.
+- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/access/team/page.tsx`.
+- [ ] Add `::neup.documentation::...` blocks for `services/manage/access/index.ts`.
 
 ## Migration Follow-Ups
 

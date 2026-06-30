@@ -95,6 +95,8 @@ async function main() {
               roleId: role.id,
               permissionId,
               scope: role.scope as Prisma.InputJsonValue,
+              scopeFor: 'for_individual',
+              scopeLevel: 'assignable',
             })),
             skipDuplicates: true,
           });

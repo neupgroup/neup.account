@@ -593,6 +593,8 @@ model AuthzPermission {
   description     String?
   appId           String?                  @map("app_id")
   scope           Json?
+  scopeFor        Json?                    @default("[]") @map("scope_for")
+  scopeLevel      Json?                    @default("[]") @map("scope_level")
   acquisitionType String?                  @default("assignment") @map("acquisition_type")
   approvalPolicy  String?                  @default("none") @map("approval_policy")
   rules           String?
@@ -611,6 +613,8 @@ model AuthzRole {
   description            String?
   appId                  String?                  @map("app_id")
   scope                  Json
+  scopeFor               Json                     @default("[]") @map("scope_for")
+  scopeLevel             String                   @default("assignable") @map("scope_level")
   acquisitionType        String                   @default("assignment") @map("acquisition_type")
   approvalPolicy         String                   @default("none") @map("approval_policy")
   pushed                 Boolean                  @default(false)
@@ -633,11 +637,13 @@ model AuthzRolePermissionMap {
   roleId       String          @map("role_id")
   permissionId String          @map("permission_id")
   scope        Json
+  scopeFor     String          @map("scope_for")
+  scopeLevel   String          @map("scope_level")
   createdAt    DateTime        @default(now()) @map("created_at")
   role         AuthzRole       @relation(fields: [roleId], references: [id], onDelete: Cascade, map: "authz_role_permission_map_role_id_fkey")
   permission   AuthzPermission @relation(fields: [permissionId], references: [id], onDelete: Cascade, map: "authz_role_permission_map_permission_id_fkey")
 
-  @@unique([roleId, permissionId], map: "authz_role_permission_map_role_permission_key")
+  @@unique([roleId, permissionId, scopeFor, scopeLevel], map: "authz_role_permission_map_role_permission_scope_key")
   @@index([roleId], map: "authz_role_permission_map_role_id_idx")
   @@index([permissionId], map: "authz_role_permission_map_permission_id_idx")
   @@map("authz_role_permission_map")

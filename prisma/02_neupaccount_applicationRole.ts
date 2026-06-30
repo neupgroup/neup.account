@@ -100,18 +100,19 @@ async function main() {
 
   // 3. Upsert permission-to-role maps
   for (const cap of persistedCapabilities) {
-    await prisma.authzRolePermissionMap.upsert({
+    await prisma.authzRolePermissionMap.deleteMany({
       where: {
-        roleId_permissionId: {
-          roleId: ROLE.id,
-          permissionId: cap.id,
-        },
+        roleId: ROLE.id,
+        permissionId: cap.id,
       },
-      update: {},
-      create: {
+    });
+    await prisma.authzRolePermissionMap.create({
+      data: {
         roleId: ROLE.id,
         permissionId: cap.id,
         scope: 'application',
+        scopeFor: 'for_individual',
+        scopeLevel: 'assignable',
       },
     });
     console.log(`  ✓ Role-permission map upserted: ${ROLE.id} → ${cap.id}`);

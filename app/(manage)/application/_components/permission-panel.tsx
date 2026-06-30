@@ -1,17 +1,25 @@
 'use client';
 
+/*
+::neup.documentation::application-permission-panel
+::title Application Permission Panel
+
+Lists application permissions and provides the inline creation dialog for new permissions.
+
+::public
+
+This panel powers the top-level permissions page, including search, scope badges, and creation of permissions with `scope_for` and `scope_level`.
+
+::public end
+
+::end
+*/
+
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Plus, ChevronRight } from '@/components/icons';
@@ -32,7 +40,7 @@ import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { redirectInApp } from '@/core/helper/navigation';
 import { FlowLink } from '@/components/ui/flow-link';
 import { PermissionScopeBadges } from './permission-scope-badges';
-import { ACCESS_FLAG_MODE_OPTIONS, getAccessFlagPayload, getEnabledAccessFlagLabels, type AccessFlagMode } from './access-flag-mode';
+import { ScopeForSelector, ScopeLevelSelector } from './authz-scope-policy-selector';
 
 type Props = {
   appId: string;
@@ -123,7 +131,8 @@ export function PermissionPanel({
   const [addName, setAddName] = useState('');
   const [addDesc, setAddDesc] = useState('');
   const [addScope, setAddScope] = useState('');
-  const [addAccessMode, setAddAccessMode] = useState<AccessFlagMode>('assignable');
+  const [addScopeFor, setAddScopeFor] = useState<AppPermission['scopeFor']>(['for_individual']);
+  const [addScopeLevel, setAddScopeLevel] = useState<AppPermission['scopeLevel']>(['assignable']);
   const [addRules, setAddRules] = useState('');
   const [addStatus, setAddStatus] = useState('');
   const [addPending, setAddPending] = useState(false);
@@ -169,7 +178,8 @@ export function PermissionPanel({
       name: trimmed,
       description: addDesc || undefined,
       scope: addScope || undefined,
-      ...getAccessFlagPayload(addAccessMode),
+      scopeFor: addScopeFor,
+      scopeLevel: addScopeLevel,
       rules: addRules || undefined,
       status: addStatus || undefined,
     });
@@ -185,7 +195,8 @@ export function PermissionPanel({
     setAddName('');
     setAddDesc('');
     setAddScope('');
-    setAddAccessMode('assignable');
+    setAddScopeFor(['for_individual']);
+    setAddScopeLevel(['assignable']);
     setAddRules('');
     setAddStatus('');
     setAddOpen(false);
@@ -235,7 +246,12 @@ export function PermissionPanel({
                   ) : null}
                   <div className="mt-1 flex flex-wrap gap-1">
                     <PermissionScopeBadges scope={permission.scope} />
-                    {getEnabledAccessFlagLabels(permission).map((label) => (
+                    {permission.scopeFor.map((label) => (
+                      <Badge key={label} variant="outline" className="text-xs">
+                        {label}
+                      </Badge>
+                    ))}
+                    {permission.scopeLevel.map((label) => (
                       <Badge key={label} variant="outline" className="text-xs">
                         {label}
                       </Badge>
@@ -266,7 +282,8 @@ export function PermissionPanel({
             setAddName('');
             setAddDesc('');
             setAddScope('');
-            setAddAccessMode('assignable');
+            setAddScopeFor(['for_individual']);
+            setAddScopeLevel(['assignable']);
             setAddRules('');
             setAddStatus('');
           }
@@ -286,21 +303,8 @@ export function PermissionPanel({
             {scopeHint ? (
               <p className="text-xs text-muted-foreground">{scopeHint}</p>
             ) : null}
-            <div className="grid gap-3">
-              <Select value={addAccessMode} onValueChange={(value) => setAddAccessMode(value as AccessFlagMode)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Permission access mode" />
-                </SelectTrigger>
-                <SelectContent>
-                  {ACCESS_FLAG_MODE_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">
-                {ACCESS_FLAG_MODE_OPTIONS.find((option) => option.value === addAccessMode)?.description}
-              </p>
-            </div>
+            <ScopeForSelector value={addScopeFor} onChange={setAddScopeFor} />
+            <ScopeLevelSelector value={addScopeLevel} onChange={setAddScopeLevel} />
             <Input value={addRules} onChange={(event) => setAddRules(event.target.value)} placeholder="Rules (optional)" />
             <Input value={addStatus} onChange={(event) => setAddStatus(event.target.value)} placeholder="Status (optional)" />
           </div>

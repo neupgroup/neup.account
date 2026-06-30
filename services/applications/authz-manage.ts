@@ -1,5 +1,26 @@
 'use server';
 
+/*
+::neup.documentation::application-authz-manage
+::title Application Authz Management Service
+
+Owns CRUD operations for application roles and permissions, plus the sync path that keeps role-permission snapshots and webhook payloads current.
+
+::public
+
+This service validates authz editor input, persists role and permission metadata, expands compatible role-permission scope rows, and revalidates the related management routes.
+
+::public end
+
+::private
+
+The service stores the new `scope_for` / `scope_level` fields directly while still deriving legacy acquisition and approval columns for compatibility with older consumers.
+
+::private end
+
+::end
+*/
+
 import { revalidatePath } from 'next/cache';
 import { Prisma } from '@/prisma/generated/client/client';
 import prisma from '@/core/helpers/prisma';
@@ -23,15 +44,10 @@ import {
 } from '@/services/neup-account/permission-catalog';
 import { hasRootApplicationPermission } from '@/services/applications/manage';
 import {
-  getRoleAccessFlags,
-  getStoredRoleAccessPolicy,
   isKnownRoleScope,
-  normalizeRoleAcquisitionType,
-  normalizeRoleApprovalPolicy,
   normalizeRoleScope,
   normalizeRoleScopes,
   roleScopeError,
-  type RoleAccessFlags,
 } from '@/services/role-scopes';
 import {
   revalidateApplicationConfigRoutes,
@@ -44,6 +60,22 @@ import {
   normalizeConfiguredSelection,
   type ApplicationAuthzConfig,
 } from '@/services/applications/authz-config';
+import {
+  AUTHZ_SCOPE_FOR_VALUES,
+  AUTHZ_SCOPE_LEVEL_VALUES,
+  getCompatibleRolePermissionScopePairs,
+  getScopeLevelsFromStoredPolicy,
+  getStoredPolicyForScopeLevel,
+  normalizeAuthzScopeFor,
+  normalizeAuthzScopeLevels,
+  normalizeSingleAuthzScopeLevel,
+  type AuthzScopeFor,
+  type AuthzScopeLevel,
+} from '@/services/applications/authz-scope-policy';
+import {
+  getAuthzScopePolicyColumnSupport,
+  isMissingAuthzScopePolicyColumnError,
+} from '@/services/applications/authz-scope-policy-columns';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -54,14 +86,10 @@ export type AppPermission = {
   name: string;
   description: string | null;
   scope: string | null;
+  scopeFor: AuthzScopeFor[];
+  scopeLevel: AuthzScopeLevel[];
   acquisitionType: string | null;
   approvalPolicy: string | null;
-  assignable: boolean;
-  publiclyEnrollable: boolean;
-  selfAssigned: boolean;
-  rootManaged: boolean;
-  publiclyRequestable: boolean;
-  requestableToOwner: boolean;
   rules: string | null;
   status: string | null;
 };
@@ -71,24 +99,13 @@ export type AppRole = {
   name: string;
   description: string | null;
   scope: string[];
+  scopeFor: AuthzScopeFor[];
+  scopeLevel: AuthzScopeLevel;
   acquisitionType: string;
   approvalPolicy: string;
-  assignable: boolean;
-  publiclyEnrollable: boolean;
-  selfAssigned: boolean;
-  rootManaged: boolean;
-  publiclyRequestable: boolean;
-  requestableToOwner: boolean;
   applicableFor: string[];
   permissions: AppPermission[];
 };
-
-function withRoleAccessFlags(
-  acquisitionType: string | null | undefined,
-  approvalPolicy: string | null | undefined,
-): RoleAccessFlags {
-  return getRoleAccessFlags(acquisitionType, approvalPolicy);
-}
 
 function normalizeApplicableFor(value: Prisma.JsonValue | null | undefined): string[] {
   if (!Array.isArray(value)) return [];
@@ -118,6 +135,89 @@ function formatRoleScope(value: Prisma.JsonValue | null | undefined): string[] {
   return normalizeRoleScopes(value);
 }
 
+function deriveScopeForFromLegacyScope(value: Prisma.JsonValue | null | undefined): AuthzScopeFor[] {
+  const tokens = normalizeRoleScopes(value).map((token) => token.toLowerCase());
+  const scopeFor = new Set<AuthzScopeFor>();
+
+  for (const token of tokens) {
+    if (token.includes('subbrand') || token.includes('branch')) {
+      scopeFor.add('for_subBrand');
+    }
+    if (token.includes('brand')) {
+      scopeFor.add('for_brand');
+    }
+    if (token.includes('dependent')) {
+      scopeFor.add('for_dependent');
+    }
+    if (token.includes('individual') || token.includes('self') || token.includes('account') || token.includes('acmgmt')) {
+      scopeFor.add('for_individual');
+    }
+  }
+
+  return scopeFor.size > 0 ? Array.from(scopeFor) : ['for_individual'];
+}
+
+function formatScopeFor(value: Prisma.JsonValue | null | undefined, allowMultiple = true): AuthzScopeFor[] {
+  return normalizeAuthzScopeFor(value, allowMultiple);
+}
+
+function formatScopeLevels(value: Prisma.JsonValue | null | undefined): AuthzScopeLevel[] {
+  return normalizeAuthzScopeLevels(value, true);
+}
+
+function formatRoleScopeLevel(
+  value: string | null | undefined,
+  acquisitionType?: string | null,
+  approvalPolicy?: string | null,
+): AuthzScopeLevel {
+  const normalized = normalizeSingleAuthzScopeLevel(value);
+  if (normalized !== 'assignable' || value === 'assignable') {
+    return normalized;
+  }
+
+  return getScopeLevelsFromStoredPolicy(acquisitionType, approvalPolicy)[0] ?? 'assignable';
+}
+
+function getPermissionScopeFor(record: {
+  scope?: Prisma.JsonValue | null;
+  scopeFor?: Prisma.JsonValue | null;
+}): AuthzScopeFor[] {
+  const parsed = formatScopeFor(record.scopeFor);
+  return parsed.length > 0 ? parsed : deriveScopeForFromLegacyScope(record.scope);
+}
+
+function getPermissionScopeLevel(record: {
+  scopeLevel?: Prisma.JsonValue | null;
+  acquisitionType?: string | null;
+  approvalPolicy?: string | null;
+}): AuthzScopeLevel[] {
+  const parsed = formatScopeLevels(record.scopeLevel);
+  return parsed.length > 0 ? parsed : getScopeLevelsFromStoredPolicy(record.acquisitionType, record.approvalPolicy);
+}
+
+function getRoleScopeFor(record: {
+  scope?: Prisma.JsonValue | null;
+  scopeFor?: Prisma.JsonValue | null;
+}): AuthzScopeFor[] {
+  const parsed = formatScopeFor(record.scopeFor);
+  return parsed.length > 0 ? parsed : deriveScopeForFromLegacyScope(record.scope);
+}
+
+function mapPermissionRecord(record: any): AppPermission {
+  return {
+    id: record.id,
+    name: record.name,
+    description: record.description ?? null,
+    scope: formatPermissionScope(record.scope),
+    scopeFor: getPermissionScopeFor(record),
+    scopeLevel: getPermissionScopeLevel(record),
+    acquisitionType: record.acquisitionType ?? 'assignment',
+    approvalPolicy: record.approvalPolicy ?? 'none',
+    rules: record.rules ?? null,
+    status: record.status ?? null,
+  };
+}
+
 function parsePermissionScopeInput(value: string | undefined): Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput | undefined {
   const trimmed = value?.trim();
   if (!trimmed) return undefined;
@@ -143,12 +243,56 @@ function parseRoleScopeInput(value: string[] | undefined): Prisma.InputJsonValue
   return parseRoleScopeTokens(value);
 }
 
+function parseScopeForInput(value: string[] | undefined, allowMultiple = true): AuthzScopeFor[] {
+  return normalizeAuthzScopeFor(value, allowMultiple);
+}
+
+function parsePermissionScopeLevelInput(value: string[] | undefined): AuthzScopeLevel[] {
+  return normalizeAuthzScopeLevels(value, true);
+}
+
+function parseRoleScopeLevelInput(value: string | undefined): AuthzScopeLevel {
+  return normalizeSingleAuthzScopeLevel(value);
+}
+
 function validateRoleScopeInput(value: string[] | undefined): string[] {
   const tokens = parseRoleScopeTokens(value);
   if (tokens.length === 0) {
     throw new Error(roleScopeError());
   }
   return tokens;
+}
+
+function validatePermissionScopeForInput(value: string[] | undefined): AuthzScopeFor[] {
+  const tokens = parseScopeForInput(value, true);
+  if (tokens.length === 0) {
+    throw new Error(`Permission scope_for must use one or more of: ${AUTHZ_SCOPE_FOR_VALUES.join(', ')}.`);
+  }
+  return tokens;
+}
+
+function validatePermissionScopeLevelInput(value: string[] | undefined): AuthzScopeLevel[] {
+  const tokens = parsePermissionScopeLevelInput(value);
+  if (tokens.length === 0) {
+    throw new Error(`Permission scope_level must use one or more of: ${AUTHZ_SCOPE_LEVEL_VALUES.join(', ')}.`);
+  }
+  return tokens;
+}
+
+function validateRoleScopeForInput(value: string[] | undefined): AuthzScopeFor[] {
+  const tokens = parseScopeForInput(value, true);
+  if (tokens.length === 0) {
+    throw new Error(`Role scope_for must use one or more of: ${AUTHZ_SCOPE_FOR_VALUES.join(', ')}.`);
+  }
+  return tokens;
+}
+
+function validateRoleScopeLevelInput(value: string | undefined): AuthzScopeLevel {
+  const token = parseRoleScopeLevelInput(value);
+  if (!AUTHZ_SCOPE_LEVEL_VALUES.includes(token)) {
+    throw new Error(`Role scope_level must use one of: ${AUTHZ_SCOPE_LEVEL_VALUES.join(', ')}.`);
+  }
+  return token;
 }
 
 function normalizePermissionAcquisitionType(value: string | null | undefined): string {
@@ -270,6 +414,16 @@ function getSystemRoleScope(roleId: string): string {
   return 'acMgmt.self';
 }
 
+function getSystemRoleScopeFor(roleId: string): AuthzScopeFor[] {
+  void roleId;
+  return ['for_individual'];
+}
+
+function getSystemRoleScopeLevel(roleId: string): AuthzScopeLevel {
+  if (roleId === 'application.manage') return 'rootManaged';
+  return 'selfAssigned';
+}
+
 function isGlobalAuthzSystemRole(roleId: string): boolean {
   return GLOBAL_AUTHZ_SYSTEM_ROLE_IDS.has(roleId);
 }
@@ -293,44 +447,61 @@ async function upsertPermissionsForApp(
     name: string;
     description: string;
     scope: string[];
-    acquisitionType?: string;
-    approvalPolicy?: string;
-    assignable?: boolean;
-    publiclyEnrollable?: boolean;
-    selfAssigned?: boolean;
-    rootManaged?: boolean;
-    publiclyRequestable?: boolean;
-    requestableToOwner?: boolean;
+    scopeFor: AuthzScopeFor[];
+    scopeLevel: AuthzScopeLevel[];
   }>,
 ): Promise<Array<{ id: string; name: string }>> {
   const persistedPermissions: Array<{ id: string; name: string }> = [];
+  let columnSupport = await getAuthzScopePolicyColumnSupport();
 
   for (const definition of definitions) {
-    const storedPolicy = getStoredRoleAccessPolicy(definition);
-    const permission = await tx.authzPermission.upsert({
-      where: { name_appId: { name: definition.name, appId } },
-      update: {
-        name: definition.name,
-        description: definition.description,
-        appId,
-        scope: definition.scope,
-        acquisitionType: storedPolicy.acquisitionType,
-        approvalPolicy: storedPolicy.approvalPolicy,
-      },
-      create: {
-        id: definition.id,
-        name: definition.name,
-        description: definition.description,
-        appId,
-        scope: definition.scope,
-        acquisitionType: storedPolicy.acquisitionType,
-        approvalPolicy: storedPolicy.approvalPolicy,
-      },
-      select: {
-        id: true,
-        name: true,
-      },
+    const storedPolicy = getStoredPolicyForScopeLevel(definition.scopeLevel[0] ?? 'assignable');
+    const buildData = (includeScopePolicyColumns: boolean) => ({
+      name: definition.name,
+      description: definition.description,
+      appId,
+      scope: definition.scope,
+      ...(includeScopePolicyColumns ? {
+        scopeFor: definition.scopeFor,
+        scopeLevel: definition.scopeLevel,
+      } : {}),
+      acquisitionType: storedPolicy.acquisitionType,
+      approvalPolicy: storedPolicy.approvalPolicy,
     });
+
+    let permission;
+    try {
+      permission = await tx.authzPermission.upsert({
+        where: { name_appId: { name: definition.name, appId } },
+        update: buildData(columnSupport.permission),
+        create: {
+          id: definition.id,
+          ...buildData(columnSupport.permission),
+        },
+        select: {
+          id: true,
+          name: true,
+        },
+      });
+    } catch (error) {
+      if (!columnSupport.permission || !isMissingAuthzScopePolicyColumnError(error)) {
+        throw error;
+      }
+
+      columnSupport = { ...columnSupport, permission: false };
+      permission = await tx.authzPermission.upsert({
+        where: { name_appId: { name: definition.name, appId } },
+        update: buildData(false),
+        create: {
+          id: definition.id,
+          ...buildData(false),
+        },
+        select: {
+          id: true,
+          name: true,
+        },
+      });
+    }
 
     persistedPermissions.push(permission);
   }
@@ -339,11 +510,57 @@ async function upsertPermissionsForApp(
 }
 
 async function syncRolePermissionMappings(tx: any, roleId: string, roleScope: Prisma.InputJsonValue, permissionIds: string[]): Promise<void> {
+  const columnSupport = await getAuthzScopePolicyColumnSupport();
+  const role = await tx.authzRole.findUnique({
+    where: { id: roleId },
+    select: columnSupport.role
+      ? { scope: true, scopeFor: true, scopeLevel: true, acquisitionType: true, approvalPolicy: true }
+      : { scope: true, acquisitionType: true, approvalPolicy: true },
+  });
+
   await tx.authzRolePermissionMap.deleteMany({ where: { roleId } });
-  if (permissionIds.length === 0) return;
+  if (!role || permissionIds.length === 0) return;
+
+  if (!columnSupport.rolePermissionMap) {
+    await tx.authzRolePermissionMap.createMany({
+      data: permissionIds.map((permissionId) => ({
+        roleId,
+        permissionId,
+        scope: roleScope,
+      })),
+      skipDuplicates: true,
+    });
+    return;
+  }
+
+  const roleScopeFor = getRoleScopeFor(role);
+  const roleScopeLevel = formatRoleScopeLevel((role as any).scopeLevel, role.acquisitionType, role.approvalPolicy);
+  const permissions = await tx.authzPermission.findMany({
+    where: { id: { in: permissionIds } },
+    select: columnSupport.permission
+      ? { id: true, scope: true, scopeFor: true, scopeLevel: true, acquisitionType: true, approvalPolicy: true }
+      : { id: true, scope: true, acquisitionType: true, approvalPolicy: true },
+  });
+
+  const rows = permissions.flatMap((permission: any) =>
+    getCompatibleRolePermissionScopePairs({
+      roleScopeFor,
+      roleScopeLevel,
+      permissionScopeFor: getPermissionScopeFor(permission),
+      permissionScopeLevels: getPermissionScopeLevel(permission),
+    }).map((pair) => ({
+      roleId,
+      permissionId: permission.id,
+      scope: roleScope,
+      scopeFor: pair.scopeFor,
+      scopeLevel: pair.scopeLevel,
+    })),
+  );
+
+  if (rows.length === 0) return;
 
   await tx.authzRolePermissionMap.createMany({
-    data: permissionIds.map((permissionId) => ({ roleId, permissionId, scope: roleScope })),
+    data: rows,
     skipDuplicates: true,
   });
 }
@@ -417,16 +634,35 @@ async function validateRolePermissionSelection(
   tx: any,
   appId: string,
   permissionIds: string[],
+  rolePolicy?: { scopeFor: AuthzScopeFor[]; scopeLevel: AuthzScopeLevel },
 ): Promise<string | null> {
   if (permissionIds.length === 0) return null;
+  const columnSupport = await getAuthzScopePolicyColumnSupport();
 
   const permissions = await tx.authzPermission.findMany({
     where: { id: { in: permissionIds }, appId },
-    select: { id: true },
+    select: columnSupport.permission
+      ? { id: true, name: true, scope: true, scopeFor: true, scopeLevel: true, acquisitionType: true, approvalPolicy: true }
+      : { id: true, name: true, scope: true, acquisitionType: true, approvalPolicy: true },
   });
 
   if (permissions.length !== permissionIds.length) {
     return 'One or more permissions do not belong to this application.';
+  }
+
+  if (!rolePolicy) return null;
+
+  const incompatible = permissions.filter((permission: any) =>
+    getCompatibleRolePermissionScopePairs({
+      roleScopeFor: rolePolicy.scopeFor,
+      roleScopeLevel: rolePolicy.scopeLevel,
+      permissionScopeFor: getPermissionScopeFor(permission),
+      permissionScopeLevels: getPermissionScopeLevel(permission),
+    }).length === 0,
+  );
+
+  if (incompatible.length > 0) {
+    return `Role scope_for and scope_level are incompatible with: ${incompatible.map((permission: any) => permission.name).join(', ')}.`;
   }
 
   return null;
@@ -440,34 +676,49 @@ async function ensureApplicationManagementRoles(): Promise<void> {
 
   await prisma.$transaction(async (tx) => {
     const permissions = await upsertPermissionsForApp(tx, GLOBAL_AUTHZ_APP_ID, permissionDefinitions);
+    let columnSupport = await getAuthzScopePolicyColumnSupport();
 
     for (const roleId of ['application.owner', 'application.manage']) {
-      await tx.authzRole.upsert({
-        where: { id: roleId },
-        update: {
-          name: roleId,
-          description:
-            roleId === 'application.owner'
-              ? 'Full ownership of an application.'
-              : 'Manage application settings, roles, and permissions.',
-          appId: GLOBAL_AUTHZ_APP_ID,
-          scope: getSystemRoleScope(roleId),
-          acquisitionType: 'system_generated',
-          approvalPolicy: 'none',
-        },
-        create: {
-          id: roleId,
-          name: roleId,
-          description:
-            roleId === 'application.owner'
-              ? 'Full ownership of an application.'
-              : 'Manage application settings, roles, and permissions.',
-          appId: GLOBAL_AUTHZ_APP_ID,
-          scope: getSystemRoleScope(roleId),
-          acquisitionType: 'system_generated',
-          approvalPolicy: 'none',
-        },
+      const buildData = (includeScopePolicyColumns: boolean) => ({
+        name: roleId,
+        description:
+          roleId === 'application.owner'
+            ? 'Full ownership of an application.'
+            : 'Manage application settings, roles, and permissions.',
+        appId: GLOBAL_AUTHZ_APP_ID,
+        scope: getSystemRoleScope(roleId),
+        ...(includeScopePolicyColumns ? {
+          scopeFor: getSystemRoleScopeFor(roleId),
+          scopeLevel: getSystemRoleScopeLevel(roleId),
+        } : {}),
+        acquisitionType: 'system_generated',
+        approvalPolicy: 'none',
       });
+
+      try {
+        await tx.authzRole.upsert({
+          where: { id: roleId },
+          update: buildData(columnSupport.role) as any,
+          create: {
+            id: roleId,
+            ...buildData(columnSupport.role),
+          } as any,
+        });
+      } catch (error) {
+        if (!columnSupport.role || !isMissingAuthzScopePolicyColumnError(error)) {
+          throw error;
+        }
+
+        columnSupport = { ...columnSupport, role: false };
+        await tx.authzRole.upsert({
+          where: { id: roleId },
+          update: buildData(false) as any,
+          create: {
+            id: roleId,
+            ...buildData(false),
+          } as any,
+        });
+      }
     }
 
     for (const roleId of ['application.owner', 'application.manage']) {
@@ -614,22 +865,33 @@ export async function getAppPermissions(appId: string): Promise<AppPermission[]>
   if ('error' in auth) return [];
 
   try {
+    const columnSupport = await getAuthzScopePolicyColumnSupport();
     const records = await prisma.authzPermission.findMany({
       where: { appId },
       orderBy: { name: 'asc' },
-      select: { id: true, name: true, description: true, scope: true, acquisitionType: true, approvalPolicy: true, rules: true, status: true } as any,
+      select: columnSupport.permission ? {
+        id: true,
+        name: true,
+        description: true,
+        scope: true,
+        scopeFor: true,
+        scopeLevel: true,
+        acquisitionType: true,
+        approvalPolicy: true,
+        rules: true,
+        status: true,
+      } as any : {
+        id: true,
+        name: true,
+        description: true,
+        scope: true,
+        acquisitionType: true,
+        approvalPolicy: true,
+        rules: true,
+        status: true,
+      } as any,
     }) as Array<any>;
-    return records.map((record) => ({
-      id: record.id,
-      name: record.name,
-      description: record.description,
-      scope: formatPermissionScope(record.scope),
-      acquisitionType: record.acquisitionType ?? 'assignment',
-      approvalPolicy: record.approvalPolicy ?? 'none',
-      ...withRoleAccessFlags(record.acquisitionType, record.approvalPolicy),
-      rules: record.rules ?? null,
-      status: record.status ?? null,
-    }));
+    return records.map(mapPermissionRecord);
   } catch (error) {
     await logError('database', error, `getAppPermissions:${appId}`);
     return [];
@@ -641,14 +903,8 @@ export async function createAppPermission(input: {
   name: string;
   description?: string;
   scope?: string;
-  acquisitionType?: string;
-  approvalPolicy?: string;
-  assignable?: boolean;
-  publiclyEnrollable?: boolean;
-  selfAssigned?: boolean;
-  rootManaged?: boolean;
-  publiclyRequestable?: boolean;
-  requestableToOwner?: boolean;
+  scopeFor?: string[];
+  scopeLevel?: string[];
   rules?: string;
   status?: string;
 }): Promise<{ success: boolean; permission?: AppPermission; error?: string }> {
@@ -674,7 +930,10 @@ export async function createAppPermission(input: {
 
   try {
     await validatePermissionScopeInput(input.appId, input.scope);
-    const storedPolicy = getStoredRoleAccessPolicy(input);
+    const scopeFor = validatePermissionScopeForInput(input.scopeFor);
+    const scopeLevel = validatePermissionScopeLevelInput(input.scopeLevel);
+    const storedPolicy = getStoredPolicyForScopeLevel(scopeLevel[0] ?? 'assignable');
+    const columnSupport = await getAuthzScopePolicyColumnSupport();
 
     const record = await prisma.authzPermission.create({
       data: {
@@ -682,29 +941,40 @@ export async function createAppPermission(input: {
         name,
         description: input.description?.trim() || null,
         scope: parsePermissionScopeInput(input.scope),
+        ...(columnSupport.permission ? { scopeFor, scopeLevel } : {}),
         acquisitionType: storedPolicy.acquisitionType,
         approvalPolicy: storedPolicy.approvalPolicy,
         rules: input.rules?.trim() || null,
         status: input.status?.trim() || null,
         appId: input.appId,
       } as any,
-      select: { id: true, name: true, description: true, scope: true, acquisitionType: true, approvalPolicy: true, rules: true, status: true } as any,
+      select: columnSupport.permission ? {
+        id: true,
+        name: true,
+        description: true,
+        scope: true,
+        scopeFor: true,
+        scopeLevel: true,
+        acquisitionType: true,
+        approvalPolicy: true,
+        rules: true,
+        status: true,
+      } as any : {
+        id: true,
+        name: true,
+        description: true,
+        scope: true,
+        acquisitionType: true,
+        approvalPolicy: true,
+        rules: true,
+        status: true,
+      } as any,
     }) as any;
 
     revalidatePath(`/data/appconnection/${input.appId}`);
     return {
       success: true,
-      permission: {
-        id: record.id,
-        name: record.name,
-        description: record.description,
-        scope: formatPermissionScope(record.scope),
-        acquisitionType: record.acquisitionType ?? 'assignment',
-        approvalPolicy: record.approvalPolicy ?? 'none',
-        ...withRoleAccessFlags(record.acquisitionType, record.approvalPolicy),
-        rules: record.rules ?? null,
-        status: record.status ?? null,
-      },
+      permission: mapPermissionRecord(record),
     };
   } catch (error) {
     await logError('database', error, `createAppPermission:${input.appId}`);
@@ -717,14 +987,8 @@ export async function updateAppPermission(input: {
   permissionId: string;
   description?: string;
   scope?: string;
-  acquisitionType?: string;
-  approvalPolicy?: string;
-  assignable?: boolean;
-  publiclyEnrollable?: boolean;
-  selfAssigned?: boolean;
-  rootManaged?: boolean;
-  publiclyRequestable?: boolean;
-  requestableToOwner?: boolean;
+  scopeFor?: string[];
+  scopeLevel?: string[];
   rules?: string;
   status?: string;
 }): Promise<{
@@ -744,7 +1008,10 @@ export async function updateAppPermission(input: {
     }
 
     await validatePermissionScopeInput(input.appId, input.scope);
-    const storedPolicy = getStoredRoleAccessPolicy(input);
+    const scopeFor = validatePermissionScopeForInput(input.scopeFor);
+    const scopeLevel = validatePermissionScopeLevelInput(input.scopeLevel);
+    const storedPolicy = getStoredPolicyForScopeLevel(scopeLevel[0] ?? 'assignable');
+    const columnSupport = await getAuthzScopePolicyColumnSupport();
 
     const record = await prisma.$transaction(async (tx) => {
       const existing = await tx.authzPermission.findFirst({
@@ -758,12 +1025,33 @@ export async function updateAppPermission(input: {
         data: {
           description: input.description?.trim() || null,
           scope: parsePermissionScopeInput(input.scope),
+          ...(columnSupport.permission ? { scopeFor, scopeLevel } : {}),
           acquisitionType: storedPolicy.acquisitionType,
           approvalPolicy: storedPolicy.approvalPolicy,
           rules: input.rules?.trim() || null,
           status: input.status?.trim() || null,
         } as any,
-        select: { id: true, name: true, description: true, scope: true, acquisitionType: true, approvalPolicy: true, rules: true, status: true } as any,
+        select: columnSupport.permission ? {
+          id: true,
+          name: true,
+          description: true,
+          scope: true,
+          scopeFor: true,
+          scopeLevel: true,
+          acquisitionType: true,
+          approvalPolicy: true,
+          rules: true,
+          status: true,
+        } as any : {
+          id: true,
+          name: true,
+          description: true,
+          scope: true,
+          acquisitionType: true,
+          approvalPolicy: true,
+          rules: true,
+          status: true,
+        } as any,
       }) as any;
 
       return updated;
@@ -772,17 +1060,7 @@ export async function updateAppPermission(input: {
     revalidatePath(`/data/appconnection/${input.appId}`);
     return {
       success: true,
-      permission: {
-        id: record.id,
-        name: record.name,
-        description: record.description,
-        scope: formatPermissionScope(record.scope),
-        acquisitionType: record.acquisitionType ?? 'assignment',
-        approvalPolicy: record.approvalPolicy ?? 'none',
-        ...withRoleAccessFlags(record.acquisitionType, record.approvalPolicy),
-        rules: record.rules ?? null,
-        status: record.status ?? null,
-      },
+      permission: mapPermissionRecord(record),
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : '';
@@ -831,10 +1109,40 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
   if ('error' in auth) return [];
 
   try {
+    const columnSupport = await getAuthzScopePolicyColumnSupport();
     const roles = await prisma.authzRole.findMany({
       where: { appId },
       orderBy: { name: 'asc' },
-      select: {
+      select: columnSupport.role ? {
+        id: true,
+        name: true,
+        description: true,
+        scope: true,
+        scopeFor: true,
+        scopeLevel: true,
+        acquisitionType: true,
+        approvalPolicy: true,
+        applicableFor: true,
+        permissionMappings: {
+          orderBy: { createdAt: 'asc' },
+          select: {
+            permission: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+                scope: true,
+                scopeFor: true,
+                scopeLevel: true,
+                acquisitionType: true,
+                approvalPolicy: true,
+                rules: true,
+                status: true,
+              } as any,
+            },
+          },
+        },
+      } : {
         id: true,
         name: true,
         description: true,
@@ -855,7 +1163,7 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
                 approvalPolicy: true,
                 rules: true,
                 status: true,
-              },
+              } as any,
             },
           },
         },
@@ -867,24 +1175,15 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
       name: role.name,
       description: role.description,
       scope: formatRoleScope(role.scope),
-      acquisitionType: normalizeRoleAcquisitionType(role.acquisitionType),
-      approvalPolicy: normalizeRoleApprovalPolicy(role.approvalPolicy),
-      ...withRoleAccessFlags(role.acquisitionType, role.approvalPolicy),
+      scopeFor: getRoleScopeFor(role),
+      scopeLevel: formatRoleScopeLevel(role.scopeLevel, role.acquisitionType, role.approvalPolicy),
+      acquisitionType: role.acquisitionType ?? 'assignment',
+      approvalPolicy: role.approvalPolicy ?? 'none',
       applicableFor: normalizeApplicableFor(role.applicableFor),
       permissions: role.permissionMappings.flatMap((mapping: any): AppPermission[] => {
         const permission = mapping.permission;
         if (!permission?.id || !permission?.name) return [];
-        return [{
-          id: permission.id,
-          name: permission.name,
-          description: permission.description ?? null,
-          scope: formatPermissionScope(permission.scope),
-          acquisitionType: permission.acquisitionType ?? 'assignment',
-          approvalPolicy: permission.approvalPolicy ?? 'none',
-          ...withRoleAccessFlags(permission.acquisitionType, permission.approvalPolicy),
-          rules: permission.rules ?? null,
-          status: permission.status ?? null,
-        }];
+        return [mapPermissionRecord(permission)];
       }),
     }));
   } catch (error) {
@@ -898,14 +1197,8 @@ export async function createAppRole(input: {
   name: string;
   description?: string;
   scope?: string[];
-  acquisitionType?: string;
-  approvalPolicy?: string;
-  assignable?: boolean;
-  publiclyEnrollable?: boolean;
-  selfAssigned?: boolean;
-  rootManaged?: boolean;
-  publiclyRequestable?: boolean;
-  requestableToOwner?: boolean;
+  scopeFor?: string[];
+  scopeLevel?: string;
   applicableFor?: string[];
   permissionIds?: string[];
 }): Promise<{ success: boolean; role?: AppRole; error?: string }> {
@@ -931,7 +1224,10 @@ export async function createAppRole(input: {
 
   try {
     const scope = validateRoleScopeInput(input.scope);
-    const storedPolicy = getStoredRoleAccessPolicy(input);
+    const scopeFor = validateRoleScopeForInput(input.scopeFor);
+    const scopeLevel = validateRoleScopeLevelInput(input.scopeLevel);
+    const storedPolicy = getStoredPolicyForScopeLevel(scopeLevel);
+    const columnSupport = await getAuthzScopePolicyColumnSupport();
     const authzConfig = await getApplicationAuthzConfigForValidation(input.appId);
     const allowedApplicableForKeys = authzConfig.applicableForDefinitions.map(([, key]) => key);
     const applicableFor = allowedApplicableForKeys.length > 0
@@ -941,19 +1237,30 @@ export async function createAppRole(input: {
       return { success: false, error: 'Selected applicable-for values are invalid for this application.' };
     }
 
-    const role = await prisma.$transaction(async (tx) => {
-      const created = await tx.authzRole.create({
+    const createdRoleRecord: any = await prisma.$transaction(async (tx) => {
+      const created: any = await tx.authzRole.create({
         data: {
           id: roleId,
           name,
           description: input.description?.trim() || null,
           scope: parseRoleScopeInput(scope) as any,
+          ...(columnSupport.role ? { scopeFor, scopeLevel } : {}),
           acquisitionType: storedPolicy.acquisitionType,
           approvalPolicy: storedPolicy.approvalPolicy,
           appId: input.appId,
           applicableFor,
-        },
-        select: {
+        } as any,
+        select: columnSupport.role ? {
+          id: true,
+          name: true,
+          description: true,
+          scope: true,
+          scopeFor: true,
+          scopeLevel: true,
+          acquisitionType: true,
+          approvalPolicy: true,
+          applicableFor: true,
+        } as any : {
           id: true,
           name: true,
           description: true,
@@ -961,12 +1268,12 @@ export async function createAppRole(input: {
           acquisitionType: true,
           approvalPolicy: true,
           applicableFor: true,
-        },
+        } as any,
       });
 
       const permissionIds = input.permissionIds ?? [];
       if (permissionIds.length > 0) {
-        const selectionError = await validateRolePermissionSelection(tx, input.appId, permissionIds);
+        const selectionError = await validateRolePermissionSelection(tx, input.appId, permissionIds, { scopeFor, scopeLevel });
         if (selectionError) throw new Error(selectionError);
 
         const caps = await tx.authzPermission.findMany({
@@ -986,16 +1293,17 @@ export async function createAppRole(input: {
 
     // Dispatch webhook
     const fullRole = await getAppRoles(input.appId).then((roles) =>
-      roles.find((r) => r.id === role.id) ?? {
-        ...role,
-        scope: formatRoleScope(role.scope),
-        acquisitionType: normalizeRoleAcquisitionType(role.acquisitionType),
-        approvalPolicy: normalizeRoleApprovalPolicy(role.approvalPolicy),
-        ...withRoleAccessFlags(role.acquisitionType, role.approvalPolicy),
-        applicableFor: normalizeApplicableFor(role.applicableFor),
+      roles.find((r) => r.id === createdRoleRecord.id) ?? {
+        ...createdRoleRecord,
+        scope: formatRoleScope(createdRoleRecord.scope),
+        scopeFor: getRoleScopeFor(createdRoleRecord),
+        scopeLevel: formatRoleScopeLevel(createdRoleRecord.scopeLevel, createdRoleRecord.acquisitionType, createdRoleRecord.approvalPolicy),
+        acquisitionType: createdRoleRecord.acquisitionType ?? 'assignment',
+        approvalPolicy: createdRoleRecord.approvalPolicy ?? 'none',
+        applicableFor: normalizeApplicableFor(createdRoleRecord.applicableFor),
         permissions: [],
       }
-    );
+    ) as AppRole;
 
     await dispatchRoleUpdateWebhook({
       appId: input.appId,
@@ -1005,14 +1313,10 @@ export async function createAppRole(input: {
         name: fullRole.name,
         description: fullRole.description,
         scope: fullRole.scope,
+        scopeFor: fullRole.scopeFor,
+        scopeLevel: fullRole.scopeLevel,
         acquisitionType: fullRole.acquisitionType,
         approvalPolicy: fullRole.approvalPolicy,
-        assignable: fullRole.assignable,
-        publiclyEnrollable: fullRole.publiclyEnrollable,
-        selfAssigned: fullRole.selfAssigned,
-        rootManaged: fullRole.rootManaged,
-        publiclyRequestable: fullRole.publiclyRequestable,
-        requestableToOwner: fullRole.requestableToOwner,
         applicableFor: fullRole.applicableFor,
         permissions: fullRole.permissions.map((p) => p.name),
       },
@@ -1041,14 +1345,20 @@ export async function updateAppRolePermissions(input: {
     }
 
     await prisma.$transaction(async (tx) => {
-      const role = await tx.authzRole.findFirst({
+      const columnSupport = await getAuthzScopePolicyColumnSupport();
+      const role: any = await tx.authzRole.findFirst({
         where: { id: input.roleId, appId: input.appId },
-        select: { id: true, name: true, scope: true },
+        select: columnSupport.role
+          ? { id: true, name: true, scope: true, scopeFor: true, scopeLevel: true, acquisitionType: true, approvalPolicy: true } as any
+          : { id: true, name: true, scope: true, acquisitionType: true, approvalPolicy: true } as any,
       });
       if (!role) throw new Error('Role not found.');
 
       if (input.permissionIds.length > 0) {
-        const selectionError = await validateRolePermissionSelection(tx, input.appId, input.permissionIds);
+        const selectionError = await validateRolePermissionSelection(tx, input.appId, input.permissionIds, {
+          scopeFor: getRoleScopeFor(role),
+          scopeLevel: formatRoleScopeLevel(role.scopeLevel, role.acquisitionType, role.approvalPolicy),
+        });
         if (selectionError) throw new Error(selectionError);
 
         const caps = await tx.authzPermission.findMany({
@@ -1088,14 +1398,8 @@ export async function updateAppRole(input: {
   name?: string;
   description?: string;
   scope?: string[];
-  acquisitionType?: string;
-  approvalPolicy?: string;
-  assignable?: boolean;
-  publiclyEnrollable?: boolean;
-  selfAssigned?: boolean;
-  rootManaged?: boolean;
-  publiclyRequestable?: boolean;
-  requestableToOwner?: boolean;
+  scopeFor?: string[];
+  scopeLevel?: string;
   applicableFor?: string[];
   permissionIds: string[];
 }): Promise<{ success: boolean; role?: AppRole; error?: string }> {
@@ -1107,7 +1411,6 @@ export async function updateAppRole(input: {
       return { success: false, error: 'This system role cannot be modified.' };
     }
     const authzConfig = await getApplicationAuthzConfigForValidation(input.appId);
-    const storedPolicy = getStoredRoleAccessPolicy(input);
     const allowedApplicableForKeys = authzConfig.applicableForDefinitions.map(([, key]) => key);
     const applicableFor = allowedApplicableForKeys.length > 0
       ? normalizeConfiguredSelection(input.applicableFor, allowedApplicableForKeys, true)
@@ -1117,18 +1420,29 @@ export async function updateAppRole(input: {
     }
 
     await prisma.$transaction(async (tx) => {
-      const role = await tx.authzRole.findFirst({
+      const columnSupport = await getAuthzScopePolicyColumnSupport();
+      const role: any = await tx.authzRole.findFirst({
         where: { id: input.roleId, appId: input.appId },
-        select: { id: true, scope: true, name: true },
+        select: columnSupport.role
+          ? { id: true, scope: true, scopeFor: true, scopeLevel: true, name: true, acquisitionType: true, approvalPolicy: true } as any
+          : { id: true, scope: true, name: true, acquisitionType: true, approvalPolicy: true } as any,
       });
       if (!role) throw new Error('Role not found.');
       const currentScope = validateRoleScopeInput(formatRoleScope(role.scope));
+      const currentScopeFor = validateRoleScopeForInput(getRoleScopeFor(role));
+      const currentScopeLevel = formatRoleScopeLevel(role.scopeLevel, role.acquisitionType, role.approvalPolicy);
       if (currentScope.length === 0) {
         throw new Error(roleScopeError());
       }
       const nextScope = Array.isArray(input.scope) && input.scope.length > 0
         ? validateRoleScopeInput(input.scope)
         : currentScope;
+      const nextScopeFor = Array.isArray(input.scopeFor) && input.scopeFor.length > 0
+        ? validateRoleScopeForInput(input.scopeFor)
+        : currentScopeFor;
+      const nextScopeLevel = typeof input.scopeLevel === 'string' && input.scopeLevel.trim().length > 0
+        ? validateRoleScopeLevelInput(input.scopeLevel)
+        : currentScopeLevel;
       if (nextScope.length === 0) {
         throw new Error(roleScopeError());
       }
@@ -1137,19 +1451,25 @@ export async function updateAppRole(input: {
       }
 
       if (input.permissionIds.length > 0) {
-        const selectionError = await validateRolePermissionSelection(tx, input.appId, input.permissionIds);
+        const selectionError = await validateRolePermissionSelection(tx, input.appId, input.permissionIds, {
+          scopeFor: nextScopeFor,
+          scopeLevel: nextScopeLevel,
+        });
         if (selectionError) throw new Error(selectionError);
       }
+
+      const storedPolicy = getStoredPolicyForScopeLevel(nextScopeLevel);
 
       await tx.authzRole.update({
         where: { id: input.roleId },
         data: {
           description: input.description?.trim() || null,
           scope: parseRoleScopeInput(nextScope) as any,
+          ...(columnSupport.role ? { scopeFor: nextScopeFor, scopeLevel: nextScopeLevel } : {}),
           acquisitionType: storedPolicy.acquisitionType,
           approvalPolicy: storedPolicy.approvalPolicy,
           applicableFor,
-        },
+        } as any,
       });
 
       if (input.permissionIds.length > 0) {

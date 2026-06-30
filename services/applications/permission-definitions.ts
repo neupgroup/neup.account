@@ -1,3 +1,24 @@
+/*
+::neup.documentation::application-permission-definitions
+::title Application Permission Definitions
+
+Defines the built-in application-management permissions that are seeded into the authz catalog.
+
+::public
+
+Each permission definition includes its generated permission name, human description, app-defined scope tokens, and the `scope_for` / `scope_level` policy used by authz management.
+
+::public end
+
+::end
+*/
+
+import {
+  type AuthzScopeFor,
+  type AuthzScopeLevel,
+  getStoredPolicyForScopeLevel,
+} from '@/services/applications/authz-scope-policy';
+
 export type ApplicationPermissionBase =
   | 'basics.edit'
   | 'config.update'
@@ -23,13 +44,9 @@ type ApplicationPermissionDefinition = {
   suffix: string;
 };
 
-type ApplicationPermissionAccessDefinition = {
-  assignable: boolean;
-  publiclyEnrollable: boolean;
-  selfAssigned: boolean;
-  rootManaged: boolean;
-  publiclyRequestable: boolean;
-  requestableToOwner: boolean;
+type ApplicationPermissionPolicyDefinition = {
+  scopeFor: AuthzScopeFor[];
+  scopeLevel: AuthzScopeLevel[];
 };
 
 const APPLICATION_PERMISSION_DEFINITION_MAP: Record<ApplicationPermissionBase, ApplicationPermissionDefinition> = {
@@ -118,36 +135,24 @@ function permissionScope(audience: ApplicationPermissionAudience): string {
   return 'public.individual';
 }
 
-function permissionAccessDefinition(audience: ApplicationPermissionAudience): ApplicationPermissionAccessDefinition {
+function permissionPolicyDefinition(audience: ApplicationPermissionAudience): ApplicationPermissionPolicyDefinition {
   if (audience === 'root') {
     return {
-      assignable: false,
-      publiclyEnrollable: false,
-      selfAssigned: false,
-      rootManaged: true,
-      publiclyRequestable: false,
-      requestableToOwner: false,
+      scopeFor: ['for_individual'],
+      scopeLevel: ['rootManaged'],
     };
   }
 
   if (audience === 'managed') {
     return {
-      assignable: true,
-      publiclyEnrollable: false,
-      selfAssigned: false,
-      rootManaged: false,
-      publiclyRequestable: false,
-      requestableToOwner: false,
+      scopeFor: ['for_individual'],
+      scopeLevel: ['assignable'],
     };
   }
 
   return {
-    assignable: false,
-    publiclyEnrollable: true,
-    selfAssigned: false,
-    rootManaged: false,
-    publiclyRequestable: false,
-    requestableToOwner: false,
+    scopeFor: ['for_individual'],
+    scopeLevel: ['publiclyEnrollable'],
   };
 }
 
@@ -173,53 +178,42 @@ export function getApplicationPermissionDefinitions(
   name: string;
   description: string;
   scope: string[];
+  scopeFor: AuthzScopeFor[];
+  scopeLevel: AuthzScopeLevel[];
   acquisitionType: string;
   approvalPolicy: string;
-  assignable: boolean;
-  publiclyEnrollable: boolean;
-  selfAssigned: boolean;
-  rootManaged: boolean;
-  publiclyRequestable: boolean;
-  requestableToOwner: boolean;
 }> {
   const definitions = new Map<string, {
     name: string;
     description: string;
     scope: string[];
+    scopeFor: AuthzScopeFor[];
+    scopeLevel: AuthzScopeLevel[];
     acquisitionType: string;
     approvalPolicy: string;
-    assignable: boolean;
-    publiclyEnrollable: boolean;
-    selfAssigned: boolean;
-    rootManaged: boolean;
-    publiclyRequestable: boolean;
-    requestableToOwner: boolean;
   }>();
 
   for (const audience of audiences) {
     for (const base of Object.keys(APPLICATION_PERMISSION_DEFINITION_MAP) as ApplicationPermissionBase[]) {
       const name = permissionName(base, audience);
       const scope = permissionScope(audience);
-      const access = permissionAccessDefinition(audience);
+      const policy = permissionPolicyDefinition(audience);
       const existing = definitions.get(name);
 
       if (existing) {
         continue;
       }
 
+      const storedPolicy = getStoredPolicyForScopeLevel(policy.scopeLevel[0] ?? 'assignable');
+
       definitions.set(name, {
         name,
         description: permissionDescription(base, audience),
         scope: [scope],
-        acquisitionType: access.selfAssigned
-          ? 'system_generated'
-          : access.rootManaged || access.requestableToOwner
-            ? 'invitation'
-            : access.publiclyEnrollable || access.publiclyRequestable
-              ? 'public_request'
-              : 'assignment',
-        approvalPolicy: access.publiclyRequestable || access.requestableToOwner ? 'approval_required' : 'none',
-        ...access,
+        scopeFor: policy.scopeFor,
+        scopeLevel: policy.scopeLevel,
+        acquisitionType: storedPolicy.acquisitionType,
+        approvalPolicy: storedPolicy.approvalPolicy,
       });
     }
   }

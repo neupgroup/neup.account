@@ -438,6 +438,8 @@ exports.Prisma.AuthzPermissionScalarFieldEnum = {
   description: 'description',
   appId: 'appId',
   scope: 'scope',
+  scopeFor: 'scopeFor',
+  scopeLevel: 'scopeLevel',
   acquisitionType: 'acquisitionType',
   approvalPolicy: 'approvalPolicy',
   rules: 'rules',
@@ -451,6 +453,8 @@ exports.Prisma.AuthzRoleScalarFieldEnum = {
   description: 'description',
   appId: 'appId',
   scope: 'scope',
+  scopeFor: 'scopeFor',
+  scopeLevel: 'scopeLevel',
   acquisitionType: 'acquisitionType',
   approvalPolicy: 'approvalPolicy',
   pushed: 'pushed',
@@ -463,6 +467,8 @@ exports.Prisma.AuthzRolePermissionMapScalarFieldEnum = {
   roleId: 'roleId',
   permissionId: 'permissionId',
   scope: 'scope',
+  scopeFor: 'scopeFor',
+  scopeLevel: 'scopeLevel',
   createdAt: 'createdAt'
 };
 

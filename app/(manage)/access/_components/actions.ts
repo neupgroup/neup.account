@@ -9,6 +9,7 @@ import { assignAssetMemberRole, getRolesForAsset } from '@/services/manage/acces
 import { BRAND_OWNER_ROLE_ID } from '@/core/auth/brand-roles';
 import { resolveNeupAccountPermissionCandidates } from '@/services/neup-account/permission-catalog';
 import { canAssignRoleScopeToAccount } from '@/services/role-scopes';
+import { roleMatchesAccountTypeScopePolicy } from '@/services/applications/authz-scope-policy';
 import {
   ACCESS_TEAM_ADD_PERMISSIONS,
   ACCESS_TEAM_REMOVE_PERMISSIONS,
@@ -320,7 +321,7 @@ export async function getDirectAccessAssignmentOptions(): Promise<{
         name: { not: { startsWith: DIRECT_CUSTOM_ROLE_PREFIX } },
         ...(allowedRoleIds ? { id: { in: Array.from(allowedRoleIds) } } : {}),
       },
-      select: { id: true, name: true, description: true, scope: true, permissions: true },
+      select: { id: true, name: true, description: true, scope: true, scopeFor: true, scopeLevel: true, permissions: true },
       orderBy: [{ scope: 'asc' }, { name: 'asc' }],
     });
 
@@ -328,6 +329,14 @@ export async function getDirectAccessAssignmentOptions(): Promise<{
     const assignableRoles = [];
     for (const role of roles) {
       if (!canAssignRoleScopeToAccount(role.scope, account.accountType, ['manageable'])) {
+        continue;
+      }
+      if (!roleMatchesAccountTypeScopePolicy({
+        accountType: account.accountType,
+        scopeFor: role.scopeFor,
+        scopeLevel: role.scopeLevel,
+        requiredScopeLevel: 'managable',
+      })) {
         continue;
       }
 
@@ -409,6 +418,8 @@ export async function updateDirectMemberAccess(input: {
             select: {
               id: true,
               scope: true,
+              scopeFor: true,
+              scopeLevel: true,
               permissions: true,
             },
           })
@@ -431,6 +442,14 @@ export async function updateDirectMemberAccess(input: {
     if (selectedRoles.length !== roleIds.length) return { success: false, error: 'One or more roles are invalid.' };
     if (selectedRoles.some((role) => !canAssignRoleScopeToAccount(role.scope, parentAccount.accountType, ['manageable']))) {
       return { success: false, error: 'One or more roles cannot be assigned for this account type.' };
+    }
+    if (selectedRoles.some((role) => !roleMatchesAccountTypeScopePolicy({
+      accountType: parentAccount.accountType,
+      scopeFor: role.scopeFor,
+      scopeLevel: role.scopeLevel,
+      requiredScopeLevel: 'managable',
+    }))) {
+      return { success: false, error: 'One or more roles do not match the required scope_for and scope_level for this account type.' };
     }
 
     const currentPermissionSet = new Set(currentPermissionNames);

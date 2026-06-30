@@ -660,7 +660,13 @@ export async function createManagedApplication(input: { name: string; idPrefix: 
         where: { roleId: 'application.owner' },
       });
       await tx.authzRolePermissionMap.createMany({
-        data: permissions.map((cap) => ({ roleId: 'application.owner', permissionId: cap.id, scope: 'public.individual' })),
+        data: permissions.map((cap) => ({
+          roleId: 'application.owner',
+          permissionId: cap.id,
+          scope: 'public.individual',
+          scopeFor: 'for_individual',
+          scopeLevel: 'selfAssigned',
+        })),
         skipDuplicates: true,
       });
       await tx.authzRole.update({

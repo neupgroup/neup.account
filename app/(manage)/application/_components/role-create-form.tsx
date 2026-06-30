@@ -1,24 +1,33 @@
 'use client';
 
+/*
+::neup.documentation::application-role-create-form
+::title Application Role Create Form
+
+Creates a new application role with role scope, `scope_for`, `scope_level`, and applicable-for metadata.
+
+::public
+
+Use this form from the application role creation page to define a role before assigning permissions.
+
+::public end
+
+::end
+*/
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { createAppRole } from '@/services/applications/authz-manage';
 import { redirectInApp } from '@/core/helper/navigation';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { RoleScopeSelector } from './scope-selectors';
 import { AuthzDefinitionSelector } from './authz-definition-selector';
-import { ACCESS_FLAG_MODE_OPTIONS, getAccessFlagPayload, type AccessFlagMode } from './access-flag-mode';
 import type { ApplicationAuthzDefinitionOption } from '@/services/applications/authz-config';
+import { ScopeForSelector, ScopeLevelSelector } from './authz-scope-policy-selector';
+import type { AuthzScopeFor, AuthzScopeLevel } from '@/services/applications/authz-scope-policy';
 
 type Props = {
   appId: string;
@@ -31,7 +40,8 @@ export function RoleCreateForm({ appId, applicableForOptions }: Props) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [scope, setScope] = useState<string[]>([]);
-  const [accessMode, setAccessMode] = useState<AccessFlagMode>('assignable');
+  const [scopeFor, setScopeFor] = useState<AuthzScopeFor[]>(['for_individual']);
+  const [scopeLevel, setScopeLevel] = useState<AuthzScopeLevel[]>(['assignable']);
   const [applicableFor, setApplicableFor] = useState<string[]>([]);
   const [pending, setPending] = useState(false);
 
@@ -45,7 +55,8 @@ export function RoleCreateForm({ appId, applicableForOptions }: Props) {
       name: roleTitle,
       description: description || undefined,
       scope,
-      ...getAccessFlagPayload(accessMode),
+      scopeFor: [...scopeFor],
+      scopeLevel: scopeLevel[0],
       applicableFor,
       permissionIds: [],
     });
@@ -66,21 +77,8 @@ export function RoleCreateForm({ appId, applicableForOptions }: Props) {
       <Input value={name} onChange={(event) => setName(event.target.value)} placeholder="Role title, e.g. Viewer" />
       <Input value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Description (optional)" />
       <RoleScopeSelector value={scope} onChange={setScope} />
-      <div className="grid gap-2">
-        <Select value={accessMode} onValueChange={(value) => setAccessMode(value as AccessFlagMode)}>
-          <SelectTrigger>
-            <SelectValue placeholder="Role access mode" />
-          </SelectTrigger>
-          <SelectContent>
-            {ACCESS_FLAG_MODE_OPTIONS.map((option) => (
-              <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <p className="text-xs text-muted-foreground">
-          {ACCESS_FLAG_MODE_OPTIONS.find((option) => option.value === accessMode)?.description}
-        </p>
-      </div>
+      <ScopeForSelector value={scopeFor} onChange={setScopeFor} />
+      <ScopeLevelSelector value={scopeLevel} onChange={(value) => setScopeLevel([value[0] ?? 'assignable'])} allowMultiple={false} />
       <AuthzDefinitionSelector
         label="Applicable for"
         description="Choose the configured applicable-for targets for this role."

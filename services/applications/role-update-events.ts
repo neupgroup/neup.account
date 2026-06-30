@@ -4,11 +4,16 @@ import { createCipheriv, createHash, createHmac, randomBytes, randomUUID } from 
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import {
-  getRoleAccessFlags,
-  normalizeRoleAcquisitionType,
-  normalizeRoleApprovalPolicy,
   normalizeRoleScopes,
 } from '@/services/role-scopes';
+import {
+  getScopeLevelsFromStoredPolicy,
+  normalizeAuthzScopeFor,
+  normalizeSingleAuthzScopeLevel,
+  type AuthzScopeFor,
+  type AuthzScopeLevel,
+} from '@/services/applications/authz-scope-policy';
+import { getAuthzScopePolicyColumnSupport } from '@/services/applications/authz-scope-policy-columns';
 
 const BRIDGE_TYPE = 'roleUpdateWebhook';
 const SOURCE_APP_ID = 'neup.account';
@@ -51,14 +56,10 @@ type RolePayload = {
   name: string;
   description: string | null;
   scope: string[];
+  scopeFor: AuthzScopeFor[];
+  scopeLevel: AuthzScopeLevel;
   acquisitionType: string;
   approvalPolicy: string;
-  assignable: boolean;
-  publiclyEnrollable: boolean;
-  selfAssigned: boolean;
-  rootManaged: boolean;
-  publiclyRequestable: boolean;
-  requestableToOwner: boolean;
   applicableFor: string[];
   permissions: string[];
 };
@@ -114,6 +115,31 @@ function extractApplicableFor(raw: unknown): string[] {
   );
 }
 
+function deriveScopeForFromLegacyScope(raw: unknown): AuthzScopeFor[] {
+  const tokens = normalizeRoleScopes(raw).map((token) => token.toLowerCase());
+  const scopeFor = new Set<AuthzScopeFor>();
+
+  for (const token of tokens) {
+    if (token.includes('subbrand') || token.includes('branch')) scopeFor.add('for_subBrand');
+    if (token.includes('brand')) scopeFor.add('for_brand');
+    if (token.includes('dependent')) scopeFor.add('for_dependent');
+    if (token.includes('individual') || token.includes('self') || token.includes('account') || token.includes('acmgmt')) {
+      scopeFor.add('for_individual');
+    }
+  }
+
+  return scopeFor.size > 0 ? Array.from(scopeFor) : ['for_individual'];
+}
+
+function deriveScopeLevelFromLegacyPolicy(scopeLevel: unknown, acquisitionType: string | null | undefined, approvalPolicy: string | null | undefined): AuthzScopeLevel {
+  const normalized = normalizeSingleAuthzScopeLevel(scopeLevel);
+  if (normalized !== 'assignable' || scopeLevel === 'assignable') {
+    return normalized;
+  }
+
+  return getScopeLevelsFromStoredPolicy(acquisitionType, approvalPolicy)[0] ?? 'assignable';
+}
+
 export async function dispatchRoleUpdateWebhook(input: {
   appId: string;
   eventType: RoleEventType;
@@ -152,14 +178,10 @@ export async function dispatchRoleUpdateWebhook(input: {
         name: input.role.name,
         description: input.role.description,
         scope: input.role.scope,
+        scopeFor: input.role.scopeFor,
+        scopeLevel: input.role.scopeLevel,
         acquisitionType: input.role.acquisitionType,
         approvalPolicy: input.role.approvalPolicy,
-        assignable: input.role.assignable,
-        publiclyEnrollable: input.role.publiclyEnrollable,
-        selfAssigned: input.role.selfAssigned,
-        rootManaged: input.role.rootManaged,
-        publiclyRequestable: input.role.publiclyRequestable,
-        requestableToOwner: input.role.requestableToOwner,
         applicableFor: input.role.applicableFor,
         permissions: input.role.permissions,
       };
@@ -230,9 +252,30 @@ export async function dispatchRoleUpdateWebhook(input: {
 
 export async function getRolePayload(appId: string, roleId: string): Promise<RolePayload | null> {
   try {
+    const columnSupport = await getAuthzScopePolicyColumnSupport();
     const role = await prisma.authzRole.findFirst({
       where: { id: roleId, appId },
-      select: {
+      select: columnSupport.role ? {
+        id: true,
+        name: true,
+        description: true,
+        scope: true,
+        scopeFor: true,
+        scopeLevel: true,
+        acquisitionType: true,
+        approvalPolicy: true,
+        applicableFor: true,
+        permissionMappings: {
+          orderBy: { createdAt: 'asc' },
+          select: {
+            permission: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      } as any : {
         id: true,
         name: true,
         description: true,
@@ -250,22 +293,25 @@ export async function getRolePayload(appId: string, roleId: string): Promise<Rol
             },
           },
         },
-      },
-    });
+      } as any,
+    }) as any;
     if (!role) return null;
     return {
-      ...getRoleAccessFlags(role.acquisitionType, role.approvalPolicy),
       id: role.id,
       name: role.name,
       description: role.description ?? null,
       scope: normalizeRoleScopes(role.scope),
-      acquisitionType: normalizeRoleAcquisitionType(role.acquisitionType),
-      approvalPolicy: normalizeRoleApprovalPolicy(role.approvalPolicy),
+      scopeFor: normalizeAuthzScopeFor(role.scopeFor).length > 0
+        ? normalizeAuthzScopeFor(role.scopeFor)
+        : deriveScopeForFromLegacyScope(role.scope),
+      scopeLevel: deriveScopeLevelFromLegacyPolicy(role.scopeLevel, role.acquisitionType, role.approvalPolicy),
+      acquisitionType: role.acquisitionType ?? 'assignment',
+      approvalPolicy: role.approvalPolicy ?? 'none',
       applicableFor: extractApplicableFor(role.applicableFor),
       permissions: Array.from(
         new Set(
           role.permissionMappings
-            .map((mapping) => mapping.permission?.name?.trim() ?? '')
+            .map((mapping: any) => mapping.permission?.name?.trim() ?? '')
             .filter(Boolean),
         ),
       ),

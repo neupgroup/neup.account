@@ -209,16 +209,20 @@ async function main() {
 
       await prisma.authzRolePermissionMap.upsert({
         where: {
-          roleId_permissionId: {
+          roleId_permissionId_scopeFor_scopeLevel: {
             roleId: ROLE_DEFAULT_ID,
             permissionId: permission.id,
+            scopeFor: 'for_individual',
+            scopeLevel: 'publiclyEnrollable',
           },
-        },
+        } as any,
         update: {},
         create: {
           roleId: ROLE_DEFAULT_ID,
           permissionId: permission.id,
           scope: 'public.individual',
+          scopeFor: 'for_individual',
+          scopeLevel: 'publiclyEnrollable',
         },
       });
     }
@@ -250,16 +254,20 @@ async function main() {
 
       await prisma.authzRolePermissionMap.upsert({
         where: {
-          roleId_permissionId: {
+          roleId_permissionId_scopeFor_scopeLevel: {
             roleId: ROLE_ROOT_ID,
             permissionId: permission.id,
+            scopeFor: 'for_individual',
+            scopeLevel: 'rootManaged',
           },
-        },
+        } as any,
         update: {},
         create: {
           roleId: ROLE_ROOT_ID,
           permissionId: permission.id,
           scope: 'root.individual',
+          scopeFor: 'for_individual',
+          scopeLevel: 'rootManaged',
         },
       });
     }

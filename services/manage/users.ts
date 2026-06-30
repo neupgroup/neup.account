@@ -433,6 +433,8 @@ export async function grantManagedAccountAccess(input: {
             roleId,
             permissionId: permission.id,
             scope: 'account',
+            scopeFor: 'for_individual',
+            scopeLevel: 'assignable',
           })),
         });
       }

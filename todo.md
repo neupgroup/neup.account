@@ -12,11 +12,16 @@
 
 ## Documentation Follow-Ups
 
-- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/role-create-form.tsx`.
-- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/role-detail-editor.tsx`.
-- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/permission-detail-editor.tsx`.
-- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/permission-panel.tsx`.
-- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/roles-panel.tsx`.
+- [x] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/role-create-form.tsx`.
+- [x] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/role-detail-editor.tsx`.
+- [x] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/permission-detail-editor.tsx`.
+- [x] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/permission-panel.tsx`.
+- [x] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/roles-panel.tsx`.
+- [ ] Add `::neup.documentation::...` blocks for `services/applications/authz-config.ts`.
+- [ ] Add `::neup.documentation::...` blocks for `services/applications/role-scope-compatibility.ts`.
+- [ ] Add `::neup.documentation::...` blocks for `services/applications/permission-scopes.ts`.
+- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/access/_components/direct-member-access-form.tsx`.
+- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/access/_components/actions.ts`.
 
 ## Migration Follow-Ups
 

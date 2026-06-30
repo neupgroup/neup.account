@@ -1,17 +1,25 @@
 'use client';
 
+/*
+::neup.documentation::application-permission-detail-editor
+::title Application Permission Detail Editor
+
+Edits one application permission, including scope tokens and the `scope_for` / `scope_level` policy.
+
+::public
+
+Use this component from the application permission detail page to update or remove an existing permission without leaving the management flow.
+
+::public end
+
+::end
+*/
+
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { TokenField } from '@/components/ui/token-field';
 import {
@@ -23,7 +31,7 @@ import type { ApplicationAuthzDefinitionOption } from '@/services/applications/a
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { redirectInApp } from '@/core/helper/navigation';
 import { toScopeTokens } from './permission-scope-badges';
-import { ACCESS_FLAG_MODE_OPTIONS, getAccessFlagMode, getAccessFlagPayload, type AccessFlagMode } from './access-flag-mode';
+import { ScopeForSelector, ScopeLevelSelector } from './authz-scope-policy-selector';
 
 const SCOPE_TOKEN_PATTERN = /^[A-Za-z0-9_.-]+$/;
 
@@ -53,7 +61,8 @@ export function PermissionDetailEditor({
   const [description, setDescription] = useState(permission.description ?? '');
   const [scopeTokens, setScopeTokens] = useState<string[]>(() => toScopeTokens(permission.scope));
   const [scopeInput, setScopeInput] = useState('');
-  const [accessMode, setAccessMode] = useState<AccessFlagMode>(getAccessFlagMode(permission));
+  const [scopeFor, setScopeFor] = useState(permission.scopeFor);
+  const [scopeLevel, setScopeLevel] = useState(permission.scopeLevel);
   const [rules, setRules] = useState(permission.rules ?? '');
   const [status, setStatus] = useState(permission.status ?? '');
   const [savePending, setSavePending] = useState(false);
@@ -132,7 +141,8 @@ export function PermissionDetailEditor({
       permissionId: permission.id,
       description: description || undefined,
       scope: finalScopeTokens.length > 0 ? JSON.stringify(finalScopeTokens) : undefined,
-      ...getAccessFlagPayload(accessMode),
+      scopeFor,
+      scopeLevel,
       rules: rules || undefined,
       status: status || undefined,
     });
@@ -197,21 +207,8 @@ export function PermissionDetailEditor({
             </div>
           ) : null}
         </div>
-        <div className="grid gap-2">
-          <Select value={accessMode} onValueChange={(value) => setAccessMode(value as AccessFlagMode)} disabled={!canManage}>
-            <SelectTrigger>
-              <SelectValue placeholder="Permission access mode" />
-            </SelectTrigger>
-            <SelectContent>
-              {ACCESS_FLAG_MODE_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground">
-            {ACCESS_FLAG_MODE_OPTIONS.find((option) => option.value === accessMode)?.description}
-          </p>
-        </div>
+        <ScopeForSelector value={scopeFor} onChange={setScopeFor} disabled={!canManage} />
+        <ScopeLevelSelector value={scopeLevel} onChange={setScopeLevel} disabled={!canManage} />
         <Input
           value={rules}
           disabled={!canManage}

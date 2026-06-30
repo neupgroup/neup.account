@@ -104,19 +104,21 @@ async function main() {
         select: { id: true },
       });
 
-      await tx.authzRolePermissionMap.upsert({
+      await tx.authzRolePermissionMap.deleteMany({
         where: {
-          roleId_permissionId: {
-            roleId: BRAND_OWNER_ROLE_ID,
-            permissionId: permission.id,
-          },
+          roleId: BRAND_OWNER_ROLE_ID,
+          permissionId: permission.id,
         },
-        update: {},
-        create: {
+      });
+
+      await tx.authzRolePermissionMap.create({
+        data: {
           roleId: BRAND_OWNER_ROLE_ID,
           permissionId: permission.id,
           scope: 'managed.brand',
-        },
+          scopeFor: 'for_brand',
+          scopeLevel: 'assignable',
+        } as any,
       });
     }
 

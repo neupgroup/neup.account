@@ -1,17 +1,25 @@
 'use client';
 
+/*
+::neup.documentation::application-role-detail-editor
+::title Application Role Detail Editor
+
+Edits a role's permissions and metadata, including `scope_for` and `scope_level`.
+
+::public
+
+This component powers the role detail page where managers adjust permission membership, default-role state, and the role's scope policy.
+
+::public end
+
+::end
+*/
+
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
@@ -26,9 +34,10 @@ import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { isBuiltInApplicationManagementPermissionName } from '@/services/applications/permission-definitions';
 import { AuthzDefinitionSelector } from './authz-definition-selector';
 import type { ApplicationAuthzDefinitionOption } from '@/services/applications/authz-config';
+import type { AuthzScopeLevel } from '@/services/applications/authz-scope-policy';
 import { PermissionScopeBadges } from './permission-scope-badges';
-import { ACCESS_FLAG_MODE_OPTIONS, getAccessFlagMode, getAccessFlagPayload, type AccessFlagMode } from './access-flag-mode';
 import { RoleScopeSelector } from './scope-selectors';
+import { ScopeForSelector, ScopeLevelSelector } from './authz-scope-policy-selector';
 
 type Props = {
   appId: string;
@@ -51,7 +60,8 @@ export function RoleDetailEditor({
   const { toast } = useToast();
   const [description, setDescription] = useState(role.description ?? '');
   const [scope, setScope] = useState<string[]>(role.scope);
-  const [accessMode, setAccessMode] = useState<AccessFlagMode>(getAccessFlagMode(role));
+  const [scopeFor, setScopeFor] = useState(role.scopeFor);
+  const [scopeLevel, setScopeLevel] = useState<AuthzScopeLevel[]>([role.scopeLevel]);
   const [applicableFor, setApplicableFor] = useState<string[]>(role.applicableFor);
   const [showDetailsEditor, setShowDetailsEditor] = useState(false);
   const [permissionIds, setPermissionIds] = useState<string[]>(() => {
@@ -100,7 +110,8 @@ export function RoleDetailEditor({
       roleId: role.id,
       description: description || undefined,
       scope,
-      ...getAccessFlagPayload(accessMode),
+      scopeFor,
+      scopeLevel: scopeLevel[0],
       applicableFor,
       permissionIds,
     });
@@ -254,25 +265,8 @@ export function RoleDetailEditor({
             onChange={(event) => setDescription(event.target.value)}
             placeholder="Description (optional)"
           />
-          <div className="grid gap-2">
-            <Select
-              value={accessMode}
-              onValueChange={(value) => setAccessMode(value as AccessFlagMode)}
-              disabled={!canManage || isSystemRole}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Role access mode" />
-              </SelectTrigger>
-              <SelectContent>
-                {ACCESS_FLAG_MODE_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground">
-              {ACCESS_FLAG_MODE_OPTIONS.find((option) => option.value === accessMode)?.description}
-            </p>
-          </div>
+          <ScopeForSelector value={scopeFor} onChange={setScopeFor} disabled={!canManage || isSystemRole} />
+          <ScopeLevelSelector value={scopeLevel} onChange={(value) => setScopeLevel([value[0] ?? role.scopeLevel])} allowMultiple={false} disabled={!canManage || isSystemRole} />
           <AuthzDefinitionSelector
             label="Applicable for"
             description="Choose the configured applicable-for targets for this role."

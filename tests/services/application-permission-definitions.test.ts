@@ -20,7 +20,7 @@ describe('application system owner permissions', () => {
     ).toBe(false);
   });
 
-  it('marks public, managed, and root permissions with the new access flags', () => {
+  it('marks public, managed, and root permissions with scope_for and scope_level', () => {
     const publicView = APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS.find(
       (permission) => permission.name === 'application.view.self',
     );
@@ -31,8 +31,8 @@ describe('application system owner permissions', () => {
       (permission) => permission.name === ROOT_APPLICATION_VIEW_PERMISSION,
     );
 
-    expect(publicView).toMatchObject({ publiclyEnrollable: true, assignable: false });
-    expect(managedView).toMatchObject({ assignable: true, publiclyEnrollable: false });
-    expect(rootView).toMatchObject({ rootManaged: true, assignable: false });
+    expect(publicView).toMatchObject({ scopeFor: ['for_individual'], scopeLevel: ['publiclyEnrollable'] });
+    expect(managedView).toMatchObject({ scopeFor: ['for_individual'], scopeLevel: ['assignable'] });
+    expect(rootView).toMatchObject({ scopeFor: ['for_individual'], scopeLevel: ['rootManaged'] });
   });
 });

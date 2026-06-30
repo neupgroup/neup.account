@@ -294,6 +294,74 @@ export type DirectAccessAssignableRole = {
   description?: string;
 };
 
+type RawDirectAssignableRoleRow = {
+  id: string;
+  name: string;
+  description: string | null;
+  scopeText: string | null;
+  scopeForText: string | null;
+  scopeLevelText: string | null;
+  permissionsText: string | null;
+};
+
+function parseStoredJsonText(value: string | null | undefined): Prisma.JsonValue | null {
+  const trimmed = value?.trim();
+  if (!trimmed) return null;
+
+  try {
+    return JSON.parse(trimmed) as Prisma.JsonValue;
+  } catch {
+    return trimmed;
+  }
+}
+
+function isInvalidStoredJsonReadError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+
+  return error.message.includes('is not valid JSON')
+    || error.message.includes('Unexpected token');
+}
+
+async function loadDirectAccessAssignableRolesWithMalformedJsonFallback(input: {
+  allowedRoleIds: Set<string> | null;
+}): Promise<Array<{
+  id: string;
+  name: string;
+  description: string | null;
+  scope: Prisma.JsonValue | null;
+  scopeFor: Prisma.JsonValue | null;
+  scopeLevel: Prisma.JsonValue | null;
+  permissions: Prisma.JsonValue | null;
+}>> {
+  const whereRoleIds = input.allowedRoleIds ? Array.from(input.allowedRoleIds) : [];
+
+  const rows = await prisma.$queryRaw<RawDirectAssignableRoleRow[]>(Prisma.sql`
+    SELECT
+      r."id",
+      r."name",
+      r."description",
+      r."scope"::text AS "scopeText",
+      r."scope_for"::text AS "scopeForText",
+      r."scope_level"::text AS "scopeLevelText",
+      r."permissions"::text AS "permissionsText"
+    FROM "authz_role" r
+    WHERE r."app_id" = 'neup.account'
+      AND r."name" NOT LIKE ${`${DIRECT_CUSTOM_ROLE_PREFIX}%`}
+      ${input.allowedRoleIds ? Prisma.sql`AND r."id" IN (${Prisma.join(whereRoleIds)})` : Prisma.empty}
+    ORDER BY r."name" ASC
+  `);
+
+  return rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    description: row.description,
+    scope: parseStoredJsonText(row.scopeText),
+    scopeFor: parseStoredJsonText(row.scopeForText),
+    scopeLevel: parseStoredJsonText(row.scopeLevelText),
+    permissions: parseStoredJsonText(row.permissionsText),
+  }));
+}
+
 export async function getDirectAccessAssignmentOptions(selectedAccountId?: string | null): Promise<{
   roles: DirectAccessAssignableRole[];
 }> {
@@ -315,15 +383,24 @@ export async function getDirectAccessAssignmentOptions(selectedAccountId?: strin
     });
     if (!account) return { roles: [] };
 
-    const roles = await prisma.authzRole.findMany({
-      where: {
-        appId: 'neup.account',
-        name: { not: { startsWith: DIRECT_CUSTOM_ROLE_PREFIX } },
-        ...(allowedRoleIds ? { id: { in: Array.from(allowedRoleIds) } } : {}),
-      },
-      select: { id: true, name: true, description: true, scope: true, scopeFor: true, scopeLevel: true, permissions: true },
-      orderBy: [{ scope: 'asc' }, { name: 'asc' }],
-    });
+    const roles = await (async () => {
+      try {
+        return await prisma.authzRole.findMany({
+          where: {
+            appId: 'neup.account',
+            name: { not: { startsWith: DIRECT_CUSTOM_ROLE_PREFIX } },
+            ...(allowedRoleIds ? { id: { in: Array.from(allowedRoleIds) } } : {}),
+          },
+          select: { id: true, name: true, description: true, scope: true, scopeFor: true, scopeLevel: true, permissions: true },
+          orderBy: [{ scope: 'asc' }, { name: 'asc' }],
+        });
+      } catch (error) {
+        if (!isInvalidStoredJsonReadError(error)) throw error;
+        return loadDirectAccessAssignableRolesWithMalformedJsonFallback({
+          allowedRoleIds,
+        });
+      }
+    })();
 
     const roleMapPermissions = await rolePermissionNames(roles.map((role) => role.id));
     const assignableRoles = [];

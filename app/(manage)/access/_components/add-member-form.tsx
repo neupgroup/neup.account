@@ -1,13 +1,27 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, UserPlus } from "@/components/icons";
 import { resolveNeupId } from "./actions";
 import { redirectInApp } from "@/core/helper/navigation";
 
+/**
+ * ::neup.documentation::add-member-form
+ * ::title Add Member Form
+ *
+ * Resolves a NeupID and redirects into the access-assignment flow for portfolio or asset membership changes.
+ *
+ * ::public
+ *
+ * The component preserves the current `workingProfile` query param when present so managed-profile access flows stay scoped to the selected profile.
+ *
+ * ::public end
+ *
+ * ::end
+ */
 export function AddMemberForm({
   parentPortfolioId,
   assetId,
@@ -27,6 +41,7 @@ export function AddMemberForm({
   const [isPending, startTransition] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleLookup = () => {
     if (!neupIdInput.trim()) return;
@@ -35,9 +50,11 @@ export function AddMemberForm({
       const result = await resolveNeupId(neupIdInput);
       if (result.success) {
         const params = new URLSearchParams({ account: result.account.accountId });
+        const workingProfile = searchParams.get("workingProfile");
         if (parentPortfolioId) params.set("portfolio", parentPortfolioId);
         if (assetId) params.set("asset", assetId);
         if (mode === "root") params.set("mode", "root");
+        if (workingProfile) params.set("workingProfile", workingProfile);
         redirectInApp(router, `/access/assign?${params.toString()}`);
       } else {
         setLookupError(result.error);

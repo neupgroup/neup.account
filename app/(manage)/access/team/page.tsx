@@ -18,7 +18,7 @@ import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
 
 type PageProps = {
-  searchParams: Promise<{ portfolio?: string; asset?: string; mode?: string }>;
+  searchParams: Promise<{ portfolio?: string; asset?: string; mode?: string; workingProfile?: string }>;
 };
 
 export const metadata: Metadata = createPageMetadata('Team Management');
@@ -33,6 +33,21 @@ type MemberCardRow = {
   isSelf?: boolean;
   actionHref: string;
 };
+
+function appendWorkingProfile(href: string, workingProfile?: string) {
+  if (!workingProfile) return href;
+
+  const params = new URLSearchParams();
+  const [pathname, query = ''] = href.split('?', 2);
+  const existingParams = new URLSearchParams(query);
+
+  existingParams.forEach((value, key) => {
+    params.append(key, value);
+  });
+  params.set('workingProfile', workingProfile);
+
+  return `${pathname}?${params.toString()}`;
+}
 
 function MembersCards({ rows }: { rows: MemberCardRow[] }) {
   const dotClassByStatus: Record<MemberStatus, string> = {
@@ -114,13 +129,33 @@ function EmptyMembers({ message }: { message: string }) {
   );
 }
 
-async function PortfolioAccountPage({ id }: { id: string }) {
+/**
+ * ::neup.documentation::access-team-page
+ * ::title Access Team Page
+ *
+ * Renders the team-management views for direct profile access, portfolio members, and asset-member lookups.
+ *
+ * ::public
+ *
+ * The page accepts `portfolio`, `asset`, `mode`, and `workingProfile` query parameters. When `workingProfile` is present, all local navigation keeps that profile-selection context intact.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * Each branch appends `workingProfile` to child routes because downstream access pages resolve the acting profile from that query param rather than from the default session context.
+ *
+ * ::private end
+ *
+ * ::end
+ */
+async function PortfolioAccountPage({ id, workingProfile }: { id: string; workingProfile?: string }) {
   const { portfolioName, members } = await getPortfolioMembers(id);
   if (!portfolioName) notFound();
 
   return (
     <MembersLayout
-      backHref={`/access?portfolio=${id}`}
+      backHref={appendWorkingProfile(`/access?portfolio=${id}`, workingProfile)}
       description={`Members with access to portfolio "${portfolioName}"`}
       addForm={<AddMemberForm parentPortfolioId={id} />}
       content={
@@ -134,7 +169,7 @@ async function PortfolioAccountPage({ id }: { id: string }) {
                   ? 'No roles assigned'
                   : `${member.roleCount} role${member.roleCount !== 1 ? 's' : ''}`,
               status: member.status,
-              actionHref: `/access/assign?portfolio=${id}&account=${member.accountId}`,
+              actionHref: appendWorkingProfile(`/access/assign?portfolio=${id}&account=${member.accountId}`, workingProfile),
             }))}
           />
         ) : (
@@ -146,15 +181,15 @@ async function PortfolioAccountPage({ id }: { id: string }) {
   );
 }
 
-async function DirectAccountPage() {
-  const accountId = await getActiveAccountId();
+async function DirectAccountPage({ workingProfile }: { workingProfile?: string }) {
+  const accountId = await getActiveAccountId(workingProfile);
   if (!accountId) notFound();
 
   const { accountName, members } = await getDirectMembers(accountId);
 
   return (
     <MembersLayout
-      backHref="/access"
+      backHref={appendWorkingProfile('/access', workingProfile)}
       description={`Members with access to profile "${accountName}"`}
       addForm={<AddUserForm />}
       content={
@@ -169,7 +204,7 @@ async function DirectAccountPage() {
                   : `${member.roleCount} role${member.roleCount !== 1 ? 's' : ''}, ${member.isPermanent ? 'permanent' : 'temporary'} account`,
               status: member.status,
               isSelf: member.accountId === accountId,
-              actionHref: `/access/assign?account=${member.accountId}`,
+              actionHref: appendWorkingProfile(`/access/assign?account=${member.accountId}`, workingProfile),
             }))}
           />
         ) : (
@@ -181,8 +216,16 @@ async function DirectAccountPage() {
   );
 }
 
-async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; rootMode: boolean }) {
-  const accountId = await getActiveAccountId();
+async function AssetMembersPage({
+  assetRef,
+  rootMode,
+  workingProfile,
+}: {
+  assetRef: string;
+  rootMode: boolean;
+  workingProfile?: string;
+}) {
+  const accountId = await getActiveAccountId(workingProfile);
   if (!accountId) notFound();
 
   const toLogicalAssetId = (row: {
@@ -250,7 +293,7 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
 
   return (
     <MembersLayout
-      backHref="/access"
+      backHref={appendWorkingProfile('/access', workingProfile)}
       description={`${rootAssetLabel} for ${assetName}`}
       addForm={<AssetMemberLookupForm assetId={resolvedAssetId} rootMode={rootMode} />}
       content={
@@ -261,7 +304,7 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
               name: assetName,
               description: row.parent_portfolio_id ?? 'Direct asset access',
               status: 'active',
-              actionHref: `/access/team?asset=${encodeURIComponent(row.id)}`,
+              actionHref: appendWorkingProfile(`/access/team?asset=${encodeURIComponent(row.id)}`, workingProfile),
             }))}
           />
         ) : (
@@ -275,15 +318,15 @@ async function AssetMembersPage({ assetRef, rootMode }: { assetRef: string; root
 
 export default async function TeamPage({ searchParams }: PageProps) {
   await requireAnyPermission404([...ACCESS_TEAM_VIEW_PERMISSIONS]);
-  const { portfolio, asset, mode } = await searchParams;
+  const { portfolio, asset, mode, workingProfile } = await searchParams;
 
   if (asset) {
-    return <AssetMembersPage assetRef={asset} rootMode={mode === 'root'} />;
+    return <AssetMembersPage assetRef={asset} rootMode={mode === 'root'} workingProfile={workingProfile} />;
   }
 
   if (portfolio) {
-    return <PortfolioAccountPage id={portfolio} />;
+    return <PortfolioAccountPage id={portfolio} workingProfile={workingProfile} />;
   }
 
-  return <DirectAccountPage />;
+  return <DirectAccountPage workingProfile={workingProfile} />;
 }

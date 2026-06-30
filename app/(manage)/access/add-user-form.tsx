@@ -1,19 +1,34 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, UserPlus } from "@/components/icons";
 import { resolveNeupId } from "./_components/actions";
 import { redirectInApp } from "@/core/helper/navigation";
 
+/**
+ * ::neup.documentation::add-user-form
+ * ::title Add User Form
+ *
+ * Resolves a NeupID and redirects into the direct-account access assignment flow.
+ *
+ * ::public
+ *
+ * The redirect keeps `workingProfile` when the current session is managing another profile, so the assign page resolves the correct active profile.
+ *
+ * ::public end
+ *
+ * ::end
+ */
 export function AddUserForm() {
   const [neupIdInput, setNeupIdInput] = useState("");
   const [lookupError, setLookupError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleLookup = () => {
     if (!neupIdInput.trim()) return;
@@ -21,7 +36,12 @@ export function AddUserForm() {
     startTransition(async () => {
       const result = await resolveNeupId(neupIdInput);
       if (result.success) {
-        redirectInApp(router, `/access/assign?account=${encodeURIComponent(result.account.accountId)}`);
+        const params = new URLSearchParams({
+          account: result.account.accountId,
+        });
+        const workingProfile = searchParams.get("workingProfile");
+        if (workingProfile) params.set("workingProfile", workingProfile);
+        redirectInApp(router, `/access/assign?${params.toString()}`);
       } else {
         setLookupError(result.error);
         inputRef.current?.focus();

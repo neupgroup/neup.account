@@ -1,6 +1,15 @@
 'use server';
 
-// Next.js form actions and page data loaders for the applications UI.
+/*
+::neup.documentation::services-applications-form-actions-manage-page-data
+
+Server actions and page-data loaders for the application management UI.
+
+This module loads the application-management sections used by the `/application`
+route while preserving root-mode access checks.
+
+::end
+*/
 
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';

@@ -1,3 +1,14 @@
+/*
+::neup.documentation::application-detail-page
+
+Server-rendered application detail page for the `/application` route.
+
+Back-navigation and management links preserve `mode=root` so direct root-mode
+entry stays in the same server-rendered context.
+
+::end
+*/
+
 import { FlowLink } from '@/components/ui/flow-link';
 import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -116,7 +127,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
     <div className="grid gap-6">
       <div>
         <Button variant="ghost" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
-          <FlowLink href="/application">
+          <FlowLink href={mode === 'root' ? '/application?mode=root' : '/application'}>
             <ArrowLeft className="h-4 w-4" />
             Back
           </FlowLink>

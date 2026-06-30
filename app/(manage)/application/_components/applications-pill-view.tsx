@@ -1,5 +1,16 @@
 'use client';
 
+/*
+::neup.documentation::applications-pill-view
+
+Segmented application list for the `/application` route.
+
+The component preserves the active application mode in generated links so
+root-mode navigation stays in the root management context.
+
+::end
+*/
+
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FlowLink } from '@/components/ui/flow-link';
 import { Badge } from '@/components/ui/badge';
@@ -37,11 +48,19 @@ const statusVariant: Record<string, 'default' | 'secondary' | 'destructive' | 'o
   blocked: 'destructive',
 };
 
-function AppRow({ app, showStatus }: { app: FlatAppItem; showStatus?: boolean }) {
+function AppRow({
+  app,
+  showStatus,
+  mode,
+}: {
+  app: FlatAppItem;
+  showStatus?: boolean;
+  mode?: string;
+}) {
   const Icon = iconFor(app.icon);
   return (
     <FlowLink
-      href={applicationHref('/application', app.id)}
+      href={applicationHref('/application', app.id, mode ? { mode } : undefined)}
       className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
     >
       <div className="flex min-w-0 items-center gap-3">
@@ -67,10 +86,10 @@ function AppRow({ app, showStatus }: { app: FlatAppItem; showStatus?: boolean })
   );
 }
 
-function CreateAppRow() {
+function CreateAppRow({ mode }: { mode?: string }) {
   return (
     <FlowLink
-      href="/application/add"
+      href={mode ? `/application/add?mode=${encodeURIComponent(mode)}` : '/application/add'}
       className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 last:border-b-0 sm:px-5"
     >
       <div className="flex min-w-0 items-center gap-3">
@@ -107,6 +126,7 @@ type Props = {
 export function ApplicationsPillView({ sections, canCreateApplication }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const mode = searchParams.get('mode') ?? undefined;
 
   const tabParam = searchParams.get('mode') ?? 'using';
   const activeLabel: ApplicationSection['label'] =
@@ -167,11 +187,12 @@ export function ApplicationsPillView({ sections, canCreateApplication }: Props) 
           </div>
         ) : (
           <div className="overflow-hidden rounded-2xl border bg-card">
-            {showCreate && <CreateAppRow />}
+            {showCreate && <CreateAppRow mode={mode} />}
             {currentSection.apps.map((app) => (
               <AppRow
                 key={app.id}
                 app={app}
+                mode={mode}
                 showStatus={currentSection.label === 'Root'}
               />
             ))}

@@ -6,18 +6,34 @@ import { AlertTriangle } from '@/components/icons';
 import { Suspense } from 'react';
 import { ApplicationsPillView } from '@/app/(manage)/application/_components/applications-pill-view';
 import { ApplicationDetailPage } from '@/app/(manage)/application/_components/application-detail-page';
-import { getQueryParam } from '@/app/(manage)/application/_lib/query-param';
+import {
+  getApplicationMode,
+  getApplicationOverviewTab,
+  getQueryParam,
+} from '@/app/(manage)/application/_lib/query-param';
 import { canCurrentAccountUseRootApplicationMode, getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
 import { createPageMetadata } from '@/core/metadata';
 
+/*
+::neup.documentation::application-manage-page
+
+Server entry for the `/application` route.
+
+The page treats `mode=root` as a server-side access mode only. Overview tab
+selection uses the separate `tab` query parameter so direct URL loads do not
+depend on client-only search-param state.
+
+::end
+*/
+
 type Props = {
-  searchParams: Promise<{ application?: string | string[]; mode?: string }>;
+  searchParams: Promise<{ application?: string | string[]; mode?: string; tab?: string }>;
 };
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const resolvedSearchParams = await searchParams;
   const applicationId = getQueryParam(resolvedSearchParams.application);
-  const rootMode = resolvedSearchParams.mode === 'root';
+  const rootMode = getApplicationMode(resolvedSearchParams.mode) === 'root';
 
   if (rootMode) {
     const canUseRootMode = await canCurrentAccountUseRootApplicationMode();
@@ -39,7 +55,9 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 export default async function ApplicationsManagePage({ searchParams }: Props) {
   const resolvedSearchParams = await searchParams;
   const applicationId = getQueryParam(resolvedSearchParams.application);
-  const rootMode = resolvedSearchParams.mode === 'root';
+  const mode = getApplicationMode(resolvedSearchParams.mode);
+  const rootMode = mode === 'root';
+  const initialTab = getApplicationOverviewTab(resolvedSearchParams.tab, resolvedSearchParams.mode);
 
   if (rootMode) {
     const canUseRootMode = await canCurrentAccountUseRootApplicationMode();
@@ -47,7 +65,7 @@ export default async function ApplicationsManagePage({ searchParams }: Props) {
   }
 
   if (applicationId) {
-    return <ApplicationDetailPage applicationId={applicationId} mode={resolvedSearchParams.mode} />;
+    return <ApplicationDetailPage applicationId={applicationId} mode={mode} />;
   }
 
   const pageData = await getApplicationsManagePageData({ rootMode });
@@ -82,7 +100,11 @@ export default async function ApplicationsManagePage({ searchParams }: Props) {
         </div>
       ) : (
         <Suspense fallback={null}>
-          <ApplicationsPillView sections={sections} canCreateApplication={canCreateApplication} />
+          <ApplicationsPillView
+            sections={sections}
+            canCreateApplication={canCreateApplication}
+            initialTab={initialTab}
+          />
         </Suspense>
       )}
     </div>

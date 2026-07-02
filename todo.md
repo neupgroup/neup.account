@@ -12,6 +12,11 @@
 
 ## Documentation Follow-Ups
 
+- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/application-management-panel.tsx`.
+- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/application/users/_components/users-list.tsx`.
+- [ ] Add `::neup.documentation::...` blocks for `components/ui/flow-link.tsx`.
+- [ ] Add `::neup.documentation::...` blocks for `proxy.ts`.
+- [ ] Add `::neup.documentation::...` blocks for `services/applications/manage.ts`.
 - [x] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/role-create-form.tsx`.
 - [x] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/role-detail-editor.tsx`.
 - [x] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/permission-detail-editor.tsx`.

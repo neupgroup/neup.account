@@ -1,4 +1,20 @@
+/*
+::neup.documentation::application-query-param-helpers
+
+Helpers for normalizing `/application` query parameters.
+
+The application area reserves `mode=root` for server-side root-management
+access and uses a dedicated `tab` query parameter for client-side overview
+section selection.
+
+::end
+*/
+
 export type QueryParamValue = string | string[] | undefined;
+
+export const applicationOverviewTabs = ['using', 'development', 'root'] as const;
+
+export type ApplicationOverviewTab = (typeof applicationOverviewTabs)[number];
 
 export function getQueryParam(value: QueryParamValue): string | undefined {
   if (Array.isArray(value)) {
@@ -8,6 +24,31 @@ export function getQueryParam(value: QueryParamValue): string | undefined {
 
   const trimmed = value?.trim();
   return trimmed ? trimmed : undefined;
+}
+
+export function getApplicationMode(value: string | undefined): 'root' | undefined {
+  return value?.trim() === 'root' ? 'root' : undefined;
+}
+
+export function getApplicationOverviewTab(
+  tabValue: string | undefined,
+  legacyModeValue?: string,
+): ApplicationOverviewTab | undefined {
+  const normalizedTab = tabValue?.trim();
+  if (normalizedTab && applicationOverviewTabs.includes(normalizedTab as ApplicationOverviewTab)) {
+    return normalizedTab as ApplicationOverviewTab;
+  }
+
+  const normalizedLegacyMode = legacyModeValue?.trim();
+  if (
+    normalizedLegacyMode
+    && normalizedLegacyMode !== 'root'
+    && applicationOverviewTabs.includes(normalizedLegacyMode as ApplicationOverviewTab)
+  ) {
+    return normalizedLegacyMode as ApplicationOverviewTab;
+  }
+
+  return normalizedLegacyMode === 'root' ? 'root' : undefined;
 }
 
 export function applicationHref(

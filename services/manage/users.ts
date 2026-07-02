@@ -13,7 +13,7 @@ import { z } from 'zod';
 import { createNotification } from '../notifications';
 import { warningReasons } from '@/app/(manage)/manage/[id]/forms';
 import type { UserProfile } from '@/services/user';
-import { extractRolePermissionNames, ensureAccessGrant } from '@/services/access-model';
+import { cleanupExpiredAccessModel, extractRolePermissionNames, ensureAccessGrant } from '@/services/access-model';
 import { ACCOUNT_ACCESS_PERMISSION_GROUPS } from '@/core/auth/account-access-permissions';
 
 

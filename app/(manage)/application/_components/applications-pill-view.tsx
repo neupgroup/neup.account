@@ -17,9 +17,13 @@ import { Badge } from '@/components/ui/badge';
 import { AppWindow, Building, BarChart, Share2, ChevronRight, Plus, type LucideIcon } from '@/components/icons';
 import type { FlatAppItem, ApplicationSection } from '@/services/applications/types';
 import { redirectInApp } from '@/core/helper/navigation';
-import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
+import {
+  applicationHref,
+  applicationOverviewTabs,
+  type ApplicationOverviewTab,
+} from '@/app/(manage)/application/_lib/query-param';
 
-const TAB_PARAM: Record<ApplicationSection['label'], string> = {
+const TAB_PARAM: Record<ApplicationSection['label'], ApplicationOverviewTab> = {
   Using: 'using',
   Development: 'development',
   Root: 'root',
@@ -121,16 +125,21 @@ const showCreateOn: ApplicationSection['label'][] = ['Development', 'Root'];
 type Props = {
   sections: ApplicationSection[];
   canCreateApplication: boolean;
+  initialTab?: ApplicationOverviewTab;
 };
 
-export function ApplicationsPillView({ sections, canCreateApplication }: Props) {
+export function ApplicationsPillView({ sections, canCreateApplication, initialTab }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const mode = searchParams.get('mode') ?? undefined;
+  const mode = searchParams.get('mode') === 'root' ? 'root' : undefined;
 
-  const tabParam = searchParams.get('mode') ?? 'using';
+  const tabParam = searchParams.get('tab');
+  const resolvedTab =
+    tabParam && applicationOverviewTabs.includes(tabParam as ApplicationOverviewTab)
+      ? (tabParam as ApplicationOverviewTab)
+      : initialTab ?? 'using';
   const activeLabel: ApplicationSection['label'] =
-    PARAM_TO_LABEL[tabParam] ?? 'Using';
+    PARAM_TO_LABEL[resolvedTab] ?? 'Using';
 
   // If the resolved label isn't in the available sections, fall back to the first one
   const active =
@@ -140,7 +149,7 @@ export function ApplicationsPillView({ sections, canCreateApplication }: Props) 
 
   const setActive = (label: ApplicationSection['label']) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set('mode', TAB_PARAM[label]);
+    params.set('tab', TAB_PARAM[label]);
     redirectInApp(router, `?${params.toString()}`, { replace: true, scroll: false });
   };
 

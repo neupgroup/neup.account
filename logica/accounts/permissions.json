@@ -1,0 +1,5953 @@
+[
+  {
+    "id": "cap-def-access-account-brand-create",
+    "title": "access.account.brand.create",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-account-brand-create-root",
+    "title": "access.account.brand.create.root",
+    "description": "Allows a root manager to create access account brand for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-account-brand-create-self",
+    "title": "access.account.brand.create.self",
+    "description": "Allows the account holder to create access account brand for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-account-dependent-create",
+    "title": "access.account.dependent.create",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-account-dependent-create-root",
+    "title": "access.account.dependent.create.root",
+    "description": "Allows a root manager to create access account dependent for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-account-dependent-create-self",
+    "title": "access.account.dependent.create.self",
+    "description": "Allows the account holder to create access account dependent for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-account-dependent-unlink",
+    "title": "access.account.dependent.unlink",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-account-dependent-unlink-root",
+    "title": "access.account.dependent.unlink.root",
+    "description": "Allows a root manager to use access account dependent unlink for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-account-dependent-unlink-self",
+    "title": "access.account.dependent.unlink.self",
+    "description": "Allows the account holder to use access account dependent unlink for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-accounts-switch",
+    "title": "access.accounts.switch",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-accounts-switch-root",
+    "title": "access.accounts.switch.root",
+    "description": "Allows a root manager to use access accounts switch for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-accounts-switch-self",
+    "title": "access.accounts.switch.self",
+    "description": "Allows the account holder to use access accounts switch for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-application-add",
+    "title": "access.application.add",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-application-add-root",
+    "title": "access.application.add.root",
+    "description": "Allows a root manager to add access application for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-application-add-self",
+    "title": "access.application.add.self",
+    "description": "Allows the account holder to add access application for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-application-remove",
+    "title": "access.application.remove",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-application-remove-root",
+    "title": "access.application.remove.root",
+    "description": "Allows a root manager to remove access application for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-application-remove-self",
+    "title": "access.application.remove.self",
+    "description": "Allows the account holder to remove access application for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-application-view",
+    "title": "access.application.view",
+    "description": null,
+    "scope": "public.brand,managed.brand,root.individual",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-brand-owner-access-application-view-managed",
+    "title": "access.application.view.managed",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-application-view-root",
+    "title": "access.application.view.root",
+    "description": "Allows a root manager to view access application for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-application-view-self",
+    "title": "access.application.view.self",
+    "description": "Allows the account holder to view access application for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-block-update",
+    "title": "access.block.update",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-block-update-root",
+    "title": "access.block.update.root",
+    "description": "Allows a root manager to update access block for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-block-update-self",
+    "title": "access.block.update.self",
+    "description": "Allows the account holder to update access block for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-block-view",
+    "title": "access.block.view",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-block-view-root",
+    "title": "access.block.view.root",
+    "description": "Allows a root manager to view access block for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-block-view-self",
+    "title": "access.block.view.self",
+    "description": "Allows the account holder to view access block for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-connection-add",
+    "title": "access.connection.add",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-connection-add-root",
+    "title": "access.connection.add.root",
+    "description": "Allows a root manager to add access connection for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-connection-add-self",
+    "title": "access.connection.add.self",
+    "description": "Allows the account holder to add access connection for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-connection-remove",
+    "title": "access.connection.remove",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-connection-remove-root",
+    "title": "access.connection.remove.root",
+    "description": "Allows a root manager to remove access connection for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-connection-remove-self",
+    "title": "access.connection.remove.self",
+    "description": "Allows the account holder to remove access connection for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-connection-view",
+    "title": "access.connection.view",
+    "description": null,
+    "scope": "public.brand,managed.brand,root.individual",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-brand-owner-access-connection-view-managed",
+    "title": "access.connection.view.managed",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-connection-view-root",
+    "title": "access.connection.view.root",
+    "description": "Allows a root manager to view access connection for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-connection-view-self",
+    "title": "access.connection.view.self",
+    "description": "Allows the account holder to view access connection for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-family-member-update",
+    "title": "access.family.member.update",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-family-member-update-root",
+    "title": "access.family.member.update.root",
+    "description": "Allows a root manager to update access family member for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-family-member-update-self",
+    "title": "access.family.member.update.self",
+    "description": "Allows the account holder to update access family member for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-family-partner-update",
+    "title": "access.family.partner.update",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-family-partner-update-root",
+    "title": "access.family.partner.update.root",
+    "description": "Allows a root manager to update access family partner for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-family-partner-update-self",
+    "title": "access.family.partner.update.self",
+    "description": "Allows the account holder to update access family partner for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-invitation-approve",
+    "title": "access.invitation.approve",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-invitation-approve-root",
+    "title": "access.invitation.approve.root",
+    "description": "Allows a root manager to approve access invitation for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-invitation-approve-self",
+    "title": "access.invitation.approve.self",
+    "description": "Allows the account holder to approve access invitation for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-invitations-view",
+    "title": "access.invitations.view",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-invitations-view-root",
+    "title": "access.invitations.view.root",
+    "description": "Allows a root manager to view access invitations for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-invitations-view-self",
+    "title": "access.invitations.view.self",
+    "description": "Allows the account holder to view access invitations for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-linked-account-add",
+    "title": "access.linked_account.add",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-linked-account-add-root",
+    "title": "access.linked_account.add.root",
+    "description": "Allows a root manager to add access linked account for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-linked-account-add-self",
+    "title": "access.linked_account.add.self",
+    "description": "Allows the account holder to add access linked account for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-linked-account-approve",
+    "title": "access.linked_account.approve",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-linked-account-approve-root",
+    "title": "access.linked_account.approve.root",
+    "description": "Allows a root manager to approve access linked account for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-linked-account-approve-self",
+    "title": "access.linked_account.approve.self",
+    "description": "Allows the account holder to approve access linked account for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-linked-account-remove",
+    "title": "access.linked_account.remove",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-linked-account-remove-root",
+    "title": "access.linked_account.remove.root",
+    "description": "Allows a root manager to remove access linked account for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-linked-account-remove-self",
+    "title": "access.linked_account.remove.self",
+    "description": "Allows the account holder to remove access linked account for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-linked-account-view",
+    "title": "access.linked_account.view",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-linked-account-view-root",
+    "title": "access.linked_account.view.root",
+    "description": "Allows a root manager to view access linked account for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-linked-account-view-self",
+    "title": "access.linked_account.view.self",
+    "description": "Allows the account holder to view access linked account for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-portfolio-create",
+    "title": "access.portfolio.create",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-portfolio-create-root",
+    "title": "access.portfolio.create.root",
+    "description": "Allows a root manager to create access portfolio for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-portfolio-create-self",
+    "title": "access.portfolio.create.self",
+    "description": "Allows the account holder to create access portfolio for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-portfolio-delete",
+    "title": "access.portfolio.delete",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-portfolio-delete-root",
+    "title": "access.portfolio.delete.root",
+    "description": "Allows a root manager to delete access portfolio for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-portfolio-delete-self",
+    "title": "access.portfolio.delete.self",
+    "description": "Allows the account holder to delete access portfolio for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-portfolio-update",
+    "title": "access.portfolio.update",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-portfolio-update-root",
+    "title": "access.portfolio.update.root",
+    "description": "Allows a root manager to update access portfolio for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-portfolio-update-self",
+    "title": "access.portfolio.update.self",
+    "description": "Allows the account holder to update access portfolio for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-team-add",
+    "title": "access.team.add",
+    "description": null,
+    "scope": [
+      "acMgmt.indiv_self",
+      "acMgmt.indiv_brand",
+      "acMgmt.indiv_dependent",
+      "acMgmt.indiv_indiv",
+      "acMgmt.indiv_branch",
+      "rootMgmt.indiv"
+    ],
+    "scopeFor": [
+      "for_subBrand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-brand-owner-access-team-add-managed",
+    "title": "access.team.add.managed",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-team-add-root",
+    "title": "access.team.add.root",
+    "description": "Allows a root manager to add access team for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-team-add-self",
+    "title": "access.team.add.self",
+    "description": "Allows the account holder to add access team for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-team-remove",
+    "title": "access.team.remove",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-brand-owner-access-team-remove-managed",
+    "title": "access.team.remove.managed",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-team-remove-root",
+    "title": "access.team.remove.root",
+    "description": "Allows a root manager to remove access team for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-team-remove-self",
+    "title": "access.team.remove.self",
+    "description": "Allows the account holder to remove access team for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-team-view",
+    "title": "access.team.view",
+    "description": null,
+    "scope": [
+      "public.individual",
+      "root.individual",
+      "managed.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-brand-owner-access-team-view-managed",
+    "title": "access.team.view.managed",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-team-view-root",
+    "title": "access.team.view.root",
+    "description": "Allows a root manager to view access team for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-team-view-self",
+    "title": "access.team.view.self",
+    "description": "Allows the account holder to view access team for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "c8d5c179-9c62-4745-ab10-d0f1cf2f627a",
+    "title": "access.view",
+    "description": null,
+    "scope": "public.brand,managed.brand,root.individual",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-brand-owner-access-view-managed",
+    "title": "access.view.managed",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-access-view-root",
+    "title": "access.view.root",
+    "description": "Allows a root manager to view access for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-access-view-self",
+    "title": "access.view.self",
+    "description": "Allows the account holder to view access for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-account-brand-delete",
+    "title": "account.brand.delete",
+    "description": null,
+    "scope": "root.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-brand-owner-account-brand-delete-managed",
+    "title": "account.brand.delete.managed",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-account-brand-delete-root",
+    "title": "account.brand.delete.root",
+    "description": "Allows a root manager to delete account brand for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-account-brand-delete-self",
+    "title": "account.brand.delete.self",
+    "description": "Allows the account holder to delete account brand for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-account-brand-kyc-submit",
+    "title": "account.brand.kyc.submit",
+    "description": null,
+    "scope": "root.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-brand-owner-account-brand-kyc-submit-managed",
+    "title": "account.brand.kyc.submit.managed",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-account-brand-kyc-submit-root",
+    "title": "account.brand.kyc.submit.root",
+    "description": "Allows a root manager to use account brand KYC submit for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-account-brand-kyc-submit-self",
+    "title": "account.brand.kyc.submit.self",
+    "description": "Allows the account holder to use account brand KYC submit for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-account-brand-kyc-view",
+    "title": "account.brand.kyc.view",
+    "description": null,
+    "scope": "root.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-brand-owner-account-brand-kyc-view-managed",
+    "title": "account.brand.kyc.view.managed",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-account-brand-kyc-view-root",
+    "title": "account.brand.kyc.view.root",
+    "description": "Allows a root manager to view account brand KYC for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-account-brand-kyc-view-self",
+    "title": "account.brand.kyc.view.self",
+    "description": "Allows the account holder to view account brand KYC for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-account-brand-members-manage",
+    "title": "account.brand.members.manage",
+    "description": null,
+    "scope": "root.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-brand-owner-account-brand-members-manage-managed",
+    "title": "account.brand.members.manage.managed",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-account-brand-members-manage-root",
+    "title": "account.brand.members.manage.root",
+    "description": "Allows a root manager to manage account brand members for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-account-brand-members-manage-self",
+    "title": "account.brand.members.manage.self",
+    "description": "Allows the account holder to manage account brand members for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-1-application-basics-edit",
+    "title": "application.basics.edit",
+    "description": "Edit application basics such as name, description, icon, website, and status requests.",
+    "scope": "public.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-17-application-basics-edit-managed",
+    "title": "application.basics.edit.managed",
+    "description": "Edit application basics such as name, description, icon, website, and status requests.",
+    "scope": [
+      "managed.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-33-application-basics-edit-root",
+    "title": "application.basics.edit.root",
+    "description": "Edit application basics such as name, description, icon, website, and status requests.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "rootManaged"
+    ],
+    "acquisitionType": "invitation",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-1-application-basics-edit-self",
+    "title": "application.basics.edit.self",
+    "description": "Edit application basics such as name, description, icon, website, and status requests.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "publiclyEnrollable"
+    ],
+    "acquisitionType": "public_request",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-2-application-config-update",
+    "title": "application.config.update",
+    "description": "Update application configuration, secrets, response fields, endpoints, and webhook settings.",
+    "scope": "public.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-18-application-config-update-managed",
+    "title": "application.config.update.managed",
+    "description": "Update application configuration, secrets, response fields, endpoints, and webhook settings.",
+    "scope": [
+      "managed.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-34-application-config-update-root",
+    "title": "application.config.update.root",
+    "description": "Update application configuration, secrets, response fields, endpoints, and webhook settings.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "rootManaged"
+    ],
+    "acquisitionType": "invitation",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-2-application-config-update-self",
+    "title": "application.config.update.self",
+    "description": "Update application configuration, secrets, response fields, endpoints, and webhook settings.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "publiclyEnrollable"
+    ],
+    "acquisitionType": "public_request",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-3-application-config-view",
+    "title": "application.config.view",
+    "description": "View application configuration details.",
+    "scope": "public.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-19-application-config-view-managed",
+    "title": "application.config.view.managed",
+    "description": "View application configuration details.",
+    "scope": [
+      "managed.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-35-application-config-view-root",
+    "title": "application.config.view.root",
+    "description": "View application configuration details.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "rootManaged"
+    ],
+    "acquisitionType": "invitation",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-3-application-config-view-self",
+    "title": "application.config.view.self",
+    "description": "View application configuration details.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "publiclyEnrollable"
+    ],
+    "acquisitionType": "public_request",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-4-application-create",
+    "title": "application.create",
+    "description": "Create a new application.",
+    "scope": "public.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-20-application-create-managed",
+    "title": "application.create.managed",
+    "description": "Create a new application.",
+    "scope": [
+      "managed.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-36-application-create-root",
+    "title": "application.create.root",
+    "description": "Create a new application.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "rootManaged"
+    ],
+    "acquisitionType": "invitation",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-4-application-create-self",
+    "title": "application.create.self",
+    "description": "Create a new application.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "publiclyEnrollable"
+    ],
+    "acquisitionType": "public_request",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-application-delete",
+    "title": "application.delete",
+    "description": "Delete or deactivate an application.",
+    "scope": "public.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "application"
+  },
+  {
+    "id": "cap-appmanage-21-application-delete-managed",
+    "title": "application.delete.managed",
+    "description": "Delete or deactivate an application.",
+    "scope": [
+      "managed.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-application-delete-root",
+    "title": "application.delete.root",
+    "description": "Delete or deactivate an application.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "rootManaged"
+    ],
+    "acquisitionType": "invitation",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-application-delete-self",
+    "title": "application.delete.self",
+    "description": "Delete or deactivate an application.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "publiclyEnrollable"
+    ],
+    "acquisitionType": "public_request",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-6-application-devlogs-clear",
+    "title": "application.devlogs.clear",
+    "description": "Clear captured development API logs for the application.",
+    "scope": "public.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-22-application-devlogs-clear-managed",
+    "title": "application.devlogs.clear.managed",
+    "description": "Clear captured development API logs for the application.",
+    "scope": [
+      "managed.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-38-application-devlogs-clear-root",
+    "title": "application.devlogs.clear.root",
+    "description": "Clear captured development API logs for the application.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "rootManaged"
+    ],
+    "acquisitionType": "invitation",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-6-application-devlogs-clear-self",
+    "title": "application.devlogs.clear.self",
+    "description": "Clear captured development API logs for the application.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "publiclyEnrollable"
+    ],
+    "acquisitionType": "public_request",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-application-devlogs-view",
+    "title": "application.devlogs.view",
+    "description": "View development API request/response logs for the application.",
+    "scope": "public.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "application"
+  },
+  {
+    "id": "cap-appmanage-23-application-devlogs-view-managed",
+    "title": "application.devlogs.view.managed",
+    "description": "View development API request/response logs for the application.",
+    "scope": [
+      "managed.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-application-devlogs-view-root",
+    "title": "application.devlogs.view.root",
+    "description": "View development API request/response logs for the application.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "rootManaged"
+    ],
+    "acquisitionType": "invitation",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-application-devlogs-view-self",
+    "title": "application.devlogs.view.self",
+    "description": "View development API request/response logs for the application.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "publiclyEnrollable"
+    ],
+    "acquisitionType": "public_request",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-application-edit-root",
+    "title": "application.edit.root",
+    "description": "Allows a root manager to edit application for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-application-edit-self",
+    "title": "application.edit.self",
+    "description": "Allows the account holder to edit application for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-application-logs-view",
+    "title": "application.logs.view",
+    "description": "View application activity logs.",
+    "scope": "public.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "application"
+  },
+  {
+    "id": "cap-appmanage-24-application-logs-view-managed",
+    "title": "application.logs.view.managed",
+    "description": "View application activity logs.",
+    "scope": [
+      "managed.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-application-logs-view-root",
+    "title": "application.logs.view.root",
+    "description": "View application activity logs.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "rootManaged"
+    ],
+    "acquisitionType": "invitation",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-application-logs-view-self",
+    "title": "application.logs.view.self",
+    "description": "View application activity logs.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "publiclyEnrollable"
+    ],
+    "acquisitionType": "public_request",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-application-roles-manage",
+    "title": "application.roles.manage",
+    "description": "Create, update, and delete application roles and permissions.",
+    "scope": "public.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "application"
+  },
+  {
+    "id": "cap-appmanage-25-application-roles-manage-managed",
+    "title": "application.roles.manage.managed",
+    "description": "Create, update, and delete application roles and permissions.",
+    "scope": [
+      "managed.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-application-roles-manage-root",
+    "title": "application.roles.manage.root",
+    "description": "Create, update, and delete application roles and permissions.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "rootManaged"
+    ],
+    "acquisitionType": "invitation",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-application-roles-manage-self",
+    "title": "application.roles.manage.self",
+    "description": "Create, update, and delete application roles and permissions.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "publiclyEnrollable"
+    ],
+    "acquisitionType": "public_request",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-10-application-roles-resetpush",
+    "title": "application.roles.resetPush",
+    "description": "Reset role/authz push status so the application can re-sync from scratch.",
+    "scope": "public.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-26-application-roles-resetpush-managed",
+    "title": "application.roles.resetPush.managed",
+    "description": "Reset role/authz push status so the application can re-sync from scratch.",
+    "scope": [
+      "managed.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-42-application-roles-resetpush-root",
+    "title": "application.roles.resetPush.root",
+    "description": "Reset role/authz push status so the application can re-sync from scratch.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "rootManaged"
+    ],
+    "acquisitionType": "invitation",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-10-application-roles-resetpush-self",
+    "title": "application.roles.resetPush.self",
+    "description": "Reset role/authz push status so the application can re-sync from scratch.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "publiclyEnrollable"
+    ],
+    "acquisitionType": "public_request",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-application-roles-view",
+    "title": "application.roles.view",
+    "description": "View application roles and permissions.",
+    "scope": "public.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "application"
+  },
+  {
+    "id": "cap-appmanage-27-application-roles-view-managed",
+    "title": "application.roles.view.managed",
+    "description": "View application roles and permissions.",
+    "scope": [
+      "managed.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-application-roles-view-root",
+    "title": "application.roles.view.root",
+    "description": "View application roles and permissions.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "rootManaged"
+    ],
+    "acquisitionType": "invitation",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-application-roles-view-self",
+    "title": "application.roles.view.self",
+    "description": "View application roles and permissions.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "publiclyEnrollable"
+    ],
+    "acquisitionType": "public_request",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-12-application-user-remove",
+    "title": "application.user.remove",
+    "description": "Remove a user connection from the application.",
+    "scope": "public.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-28-application-user-remove-managed",
+    "title": "application.user.remove.managed",
+    "description": "Remove a user connection from the application.",
+    "scope": [
+      "managed.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-44-application-user-remove-root",
+    "title": "application.user.remove.root",
+    "description": "Remove a user connection from the application.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "rootManaged"
+    ],
+    "acquisitionType": "invitation",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-12-application-user-remove-self",
+    "title": "application.user.remove.self",
+    "description": "Remove a user connection from the application.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "publiclyEnrollable"
+    ],
+    "acquisitionType": "public_request",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-13-application-user-updatebasics",
+    "title": "application.user.updateBasics",
+    "description": "Update basic application-user details.",
+    "scope": "public.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-29-application-user-updatebasics-managed",
+    "title": "application.user.updateBasics.managed",
+    "description": "Update basic application-user details.",
+    "scope": [
+      "managed.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-45-application-user-updatebasics-root",
+    "title": "application.user.updateBasics.root",
+    "description": "Update basic application-user details.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "rootManaged"
+    ],
+    "acquisitionType": "invitation",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-13-application-user-updatebasics-self",
+    "title": "application.user.updateBasics.self",
+    "description": "Update basic application-user details.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "publiclyEnrollable"
+    ],
+    "acquisitionType": "public_request",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-14-application-user-updaterole",
+    "title": "application.user.updateRole",
+    "description": "Assign or change application roles for connected users.",
+    "scope": "public.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-30-application-user-updaterole-managed",
+    "title": "application.user.updateRole.managed",
+    "description": "Assign or change application roles for connected users.",
+    "scope": [
+      "managed.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-46-application-user-updaterole-root",
+    "title": "application.user.updateRole.root",
+    "description": "Assign or change application roles for connected users.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "rootManaged"
+    ],
+    "acquisitionType": "invitation",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-14-application-user-updaterole-self",
+    "title": "application.user.updateRole.self",
+    "description": "Assign or change application roles for connected users.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "publiclyEnrollable"
+    ],
+    "acquisitionType": "public_request",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-15-application-user-view",
+    "title": "application.user.view",
+    "description": "View connected users for the application.",
+    "scope": "public.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-31-application-user-view-managed",
+    "title": "application.user.view.managed",
+    "description": "View connected users for the application.",
+    "scope": [
+      "managed.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-47-application-user-view-root",
+    "title": "application.user.view.root",
+    "description": "View connected users for the application.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "rootManaged"
+    ],
+    "acquisitionType": "invitation",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-15-application-user-view-self",
+    "title": "application.user.view.self",
+    "description": "View connected users for the application.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "publiclyEnrollable"
+    ],
+    "acquisitionType": "public_request",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-appmanage-application-view",
+    "title": "application.view",
+    "description": "View application details and settings.",
+    "scope": "public.brand,managed.brand,root.individual",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "application"
+  },
+  {
+    "id": "cap-appmanage-32-application-view-managed",
+    "title": "application.view.managed",
+    "description": "View application details and settings.",
+    "scope": [
+      "managed.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-application-view-root",
+    "title": "application.view.root",
+    "description": "View application details and settings.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "rootManaged"
+    ],
+    "acquisitionType": "invitation",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-application-view-self",
+    "title": "application.view.self",
+    "description": "View application details and settings.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "publiclyEnrollable"
+    ],
+    "acquisitionType": "public_request",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-brand-owner-brand-members-view",
+    "title": "brand.members.view",
+    "description": null,
+    "scope": "public.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-brand-owner-brand-platforms-manage",
+    "title": "brand.platforms.manage",
+    "description": null,
+    "scope": "public.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-brand-owner-brand-platforms-view",
+    "title": "brand.platforms.view",
+    "description": null,
+    "scope": "public.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-brand-owner-brand-profile-edit",
+    "title": "brand.profile.edit",
+    "description": null,
+    "scope": "public.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-brand-owner-brand-profile-view",
+    "title": "brand.profile.view",
+    "description": null,
+    "scope": "public.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-brand-owner-brand-settings-edit",
+    "title": "brand.settings.edit",
+    "description": null,
+    "scope": "public.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-brand-owner-brand-settings-view",
+    "title": "brand.settings.view",
+    "description": null,
+    "scope": "public.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-data-agreed-terms-view",
+    "title": "data.agreed_terms.view",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-def-data-agreed-terms-view-self",
+    "title": "data.agreed_terms.view.self",
+    "description": "Allows the account holder to view data agreed terms for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-data-deactivate-account-start",
+    "title": "data.deactivate_account.start",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-def-data-deactivate-account-start-self",
+    "title": "data.deactivate_account.start.self",
+    "description": "Allows the account holder to start data deactivate account for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-data-delete-account-start",
+    "title": "data.delete_account.start",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-def-data-delete-account-start-self",
+    "title": "data.delete_account.start.self",
+    "description": "Allows the account holder to delete data delete account for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-data-materialization-modify",
+    "title": "data.materialization.modify",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-def-data-materialization-modify-self",
+    "title": "data.materialization.modify.self",
+    "description": "Allows the account holder to modify data materialization for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-data-materialization-view",
+    "title": "data.materialization.view",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-def-data-materialization-view-self",
+    "title": "data.materialization.view.self",
+    "description": "Allows the account holder to view data materialization for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "a7940d87-1545-44fb-a721-8c77ee63f773",
+    "title": "linked_accounts.brand.manage",
+    "description": null,
+    "scope": "public.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "brand"
+  },
+  {
+    "id": "cap-def-linked-accounts-brand-manage-self",
+    "title": "linked_accounts.brand.manage.self",
+    "description": "Allows the account holder to manage linked accounts brand for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "797d4cb6-2cb8-42b8-8926-0749e77bfc5f",
+    "title": "linked_accounts.brand.manager",
+    "description": null,
+    "scope": "public.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "brand"
+  },
+  {
+    "id": "cap-def-linked-accounts-brand-manager-self",
+    "title": "linked_accounts.brand.manager.self",
+    "description": "Allows the account holder to manage linked accounts brand manager for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "772de47f-fece-4aa9-97cd-47b663f02c58",
+    "title": "linked_accounts.brand.view",
+    "description": null,
+    "scope": "public.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "brand"
+  },
+  {
+    "id": "cap-def-linked-accounts-brand-view-self",
+    "title": "linked_accounts.brand.view.self",
+    "description": "Allows the account holder to view linked accounts brand for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "c65dce41-6235-481c-95cc-065cce465e32",
+    "title": "notification.delete",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-brand-owner-notification-delete-managed",
+    "title": "notification.delete.managed",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-notification-delete-self",
+    "title": "notification.delete.self",
+    "description": "Allows the account holder to delete notification for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "ad84637a-17d4-4c2d-b34c-516785b2d32e",
+    "title": "notification.read",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-brand-owner-notification-read-managed",
+    "title": "notification.read.managed",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-notification-read-self",
+    "title": "notification.read.self",
+    "description": "Allows the account holder to read notification for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-payment-method-show",
+    "title": "payment.method.show",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-def-payment-method-show-self",
+    "title": "payment.method.show.self",
+    "description": "Allows the account holder to view payment method for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-payment-purchase-neup-pro-view",
+    "title": "payment.purchase_neup_pro.view",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-def-payment-purchase-neup-pro-view-self",
+    "title": "payment.purchase_neup_pro.view.self",
+    "description": "Allows the account holder to view payment purchase neup Pro for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-payment-subscriptions-show",
+    "title": "payment.subscriptions.show",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-def-payment-subscriptions-show-self",
+    "title": "payment.subscriptions.show.self",
+    "description": "Allows the account holder to view payment subscriptions for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-payment-transactions-show",
+    "title": "payment.transactions.show",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-def-payment-transactions-show-self",
+    "title": "payment.transactions.show.self",
+    "description": "Allows the account holder to view payment transactions for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "e8b81edb-fb4b-4a0c-8c26-86f37b084d98",
+    "title": "profile.contact.update",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-def-profile-contact-update-self",
+    "title": "profile.contact.update.self",
+    "description": "Allows the account holder to update profile contact for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "024fb0d5-fbda-491d-98bb-f49741b690c3",
+    "title": "profile.contact.view",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-def-profile-contact-view-self",
+    "title": "profile.contact.view.self",
+    "description": "Allows the account holder to view profile contact for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "4683f7aa-d95c-4476-b65f-1b008b29d93d",
+    "title": "profile.demographics.update",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-def-profile-demographics-update-self",
+    "title": "profile.demographics.update.self",
+    "description": "Allows the account holder to update profile demographics for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "de264881-7e1c-4079-8bca-6f67a431fba9",
+    "title": "profile.demographics.view",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-def-profile-demographics-view-self",
+    "title": "profile.demographics.view.self",
+    "description": "Allows the account holder to view profile demographics for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "b714e5bc-7338-4aca-93a2-328805f7293d",
+    "title": "profile.display.name",
+    "description": "For viewing the name information.",
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "brand"
+    ]
+  },
+  {
+    "id": "cap-root-profile-display-update-root",
+    "title": "profile.display.update.root",
+    "description": "Allows a root manager to update the display information of any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-profile-display-update-self",
+    "title": "profile.display.update.self",
+    "description": "Allows the account holder to update their own account display information.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-root-profile-display-view-root",
+    "title": "profile.display.view.root",
+    "description": "Allows a root manager to view the display information of any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-profile-display-view-self",
+    "title": "profile.display.view.self",
+    "description": "Allows the account holder to view their own account display information.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "42f19de3-8bfd-44e6-809e-5de80987b148",
+    "title": "profile.kyc.update",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-def-profile-kyc-update-self",
+    "title": "profile.kyc.update.self",
+    "description": "Allows the account holder to update profile KYC for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "1f570988-3556-4fdb-9513-b74450dc5ff3",
+    "title": "profile.kyc.view",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-def-profile-kyc-view-self",
+    "title": "profile.kyc.view.self",
+    "description": "Allows the account holder to view profile KYC for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "419894b6-d074-40c0-b688-a04871ef079a",
+    "title": "profile.legal.update",
+    "description": "Update owns accounts legal information.",
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-def-profile-legal-update-self",
+    "title": "profile.legal.update.self",
+    "description": "Allows the account holder to update profile legal for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "6284f508-2c15-4f2a-bcc7-03197abdce40",
+    "title": "profile.legal.view",
+    "description": "Update the legal information of owns own profile.",
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-def-profile-legal-view-self",
+    "title": "profile.legal.view.self",
+    "description": "Allows the account holder to view profile legal for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "a6073a8c-b1c2-4aef-a695-6e232118f986",
+    "title": "profile.neupid.remove",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-def-profile-neupid-remove-self",
+    "title": "profile.neupid.remove.self",
+    "description": "Allows the account holder to remove profile NeupID for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-self-profile-neupid-request",
+    "title": "profile.neupid.request",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-def-profile-neupid-request-self",
+    "title": "profile.neupid.request.self",
+    "description": "Allows the account holder to request profile NeupID for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-profile-neupid-update-self",
+    "title": "profile.neupid.update.self",
+    "description": "Allows the account holder to update profile NeupID for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "e4d54032-e31e-4a72-848b-e51c26f91ca2",
+    "title": "profile.neupid.view",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default"
+  },
+  {
+    "id": "cap-def-profile-neupid-view-self",
+    "title": "profile.neupid.view.self",
+    "description": "Allows the account holder to view profile NeupID for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "b13c1907-633d-4cc1-bbd3-0eeeee73e53c",
+    "title": "requests.root_approval.view",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-account-access-edit-root",
+    "title": "root.account.access.edit.root",
+    "description": "Allows a root manager to edit root account access for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-account-access-view-root",
+    "title": "root.account.access.view.root",
+    "description": "Allows a root manager to view root account access for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "01de90a3-b854-485e-a226-03027dbb93b4",
+    "title": "root.account.create_individual",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-account-create-individual-root",
+    "title": "root.account.create_individual.root",
+    "description": "Allows a root manager to create root account create individual for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "219e5bdc-557a-4334-b8e0-16cfb4dc6438",
+    "title": "root.account.delete",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-account-delete-root",
+    "title": "root.account.delete.root",
+    "description": "Allows a root manager to delete root account for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "d6a15ac5-57cc-4b5e-b7b8-1484753a909f",
+    "title": "root.account.edit_neupid",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-account-edit-neupid-root",
+    "title": "root.account.edit_neupid.root",
+    "description": "Allows a root manager to edit root account edit NeupID for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "71391920-3bfa-4f67-a8bd-30b0768a1f46",
+    "title": "root.account.edit_pro_status",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-account-edit-pro-status-root",
+    "title": "root.account.edit_pro_status.root",
+    "description": "Allows a root manager to edit root account edit Pro status for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "2db66656-8872-4105-a7bb-134d0457f62b",
+    "title": "root.account.give_block_account",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-account-give-block-account-root",
+    "title": "root.account.give_block_account.root",
+    "description": "Allows a root manager to use root account give block account for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "abf2e683-f902-46a5-8657-983494c8f92c",
+    "title": "root.account.impersonate",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-account-impersonate-root",
+    "title": "root.account.impersonate.root",
+    "description": "Allows a root manager to impersonate root account for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "16771d50-a42f-420b-86f2-21ed5eadb7d3",
+    "title": "root.account.modify",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-account-modify-root",
+    "title": "root.account.modify.root",
+    "description": "Allows a root manager to modify root account for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "18d6b552-04ef-418e-99a7-d9c8d523116e",
+    "title": "root.account.remove_block_account",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-account-remove-block-account-root",
+    "title": "root.account.remove_block_account.root",
+    "description": "Allows a root manager to remove root account remove block account for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "4ac022a7-ce11-4042-a865-3988e9d08796",
+    "title": "root.account.search",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-account-search-root",
+    "title": "root.account.search.root",
+    "description": "Allows a root manager to search root account for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "08d2784b-867f-424e-99cd-9c6ed96446ce",
+    "title": "root.account.send_warning",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-account-send-warning-root",
+    "title": "root.account.send_warning.root",
+    "description": "Allows a root manager to use root account send warning for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "ec92d6d9-4eeb-444a-9a80-e4f710e34f6e",
+    "title": "root.account.view",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-account-view-root",
+    "title": "root.account.view.root",
+    "description": "Allows a root manager to view root account for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-dashboard-view",
+    "title": "root.dashboard.view",
+    "description": "View the Root dashboard for internal team.",
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "root"
+    ]
+  },
+  {
+    "id": "cap-root-root-dashboard-view-root",
+    "title": "root.dashboard.view.root",
+    "description": "Allows a root manager to view root dashboard for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "6b129d35-e53d-4d67-918b-177ffa38b291",
+    "title": "root.display_images.add",
+    "description": "Add the public display images.",
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "root"
+    ]
+  },
+  {
+    "id": "cap-root-root-display-images-add-root",
+    "title": "root.display_images.add.root",
+    "description": "Allows a root manager to add root display images for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "1b6c8c9c-ffde-4748-85d8-ef9f6daa0f52",
+    "title": "root.display_images.delete",
+    "description": "Delete the public images.",
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "root"
+    ]
+  },
+  {
+    "id": "cap-root-root-display-images-delete-root",
+    "title": "root.display_images.delete.root",
+    "description": "Allows a root manager to delete root display images for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "99f4ed39-d884-4c15-af77-f6f89554d664",
+    "title": "root.display_images.update",
+    "description": "Update the name of the image.",
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "root"
+    ]
+  },
+  {
+    "id": "cap-root-root-display-images-update-root",
+    "title": "root.display_images.update.root",
+    "description": "Allows a root manager to update root display images for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "9e14a069-1803-4654-8c07-fbb7c7943807",
+    "title": "root.display_images.view",
+    "description": "View the root public image.s",
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "root"
+    ]
+  },
+  {
+    "id": "cap-root-root-display-images-view-root",
+    "title": "root.display_images.view.root",
+    "description": "Allows a root manager to view root display images for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-errors-view",
+    "title": "root.errors.view",
+    "description": "View all the system errors in the application.",
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "root"
+    ]
+  },
+  {
+    "id": "cap-root-root-errors-view-root",
+    "title": "root.errors.view.root",
+    "description": "Allows a root manager to view root errors for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-payment-config-view",
+    "title": "root.payment_config.view",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "root"
+    ]
+  },
+  {
+    "id": "cap-root-root-payment-config-view-root",
+    "title": "root.payment_config.view.root",
+    "description": "Allows a root manager to view root payment config for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-permission-edit",
+    "title": "root.permission.edit",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "root"
+    ]
+  },
+  {
+    "id": "cap-root-root-permission-edit-root",
+    "title": "root.permission.edit.root",
+    "description": "Allows a root manager to edit root permission for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-permission-view",
+    "title": "root.permission.view",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "root"
+    ]
+  },
+  {
+    "id": "cap-root-root-permission-view-root",
+    "title": "root.permission.view.root",
+    "description": "Allows a root manager to view root permission for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-requests-approve",
+    "title": "root.requests.approve",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "root"
+    ]
+  },
+  {
+    "id": "cap-root-root-requests-approve-root",
+    "title": "root.requests.approve.root",
+    "description": "Allows a root manager to approve root requests for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-requests-deny",
+    "title": "root.requests.deny",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "root"
+    ]
+  },
+  {
+    "id": "cap-root-root-requests-deny-root",
+    "title": "root.requests.deny.root",
+    "description": "Allows a root manager to deny root requests for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-requests-view",
+    "title": "root.requests.view",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "root"
+    ]
+  },
+  {
+    "id": "cap-root-root-requests-view-root",
+    "title": "root.requests.view.root",
+    "description": "Allows a root manager to view root requests for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-site-social-accounts-add-root",
+    "title": "root.site.social_accounts.add.root",
+    "description": "Allows a root manager to add root site social accounts for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-site-social-accounts-delete-root",
+    "title": "root.site.social_accounts.delete.root",
+    "description": "Allows a root manager to delete root site social accounts for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-site-social-accounts-edit-root",
+    "title": "root.site.social_accounts.edit.root",
+    "description": "Allows a root manager to edit root site social accounts for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-root-root-site-social-accounts-read-root",
+    "title": "root.site.social_accounts.read.root",
+    "description": "Allows a root manager to read root site social accounts for any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "59402154-8dc9-4cd3-a71d-52427f313935",
+    "title": "security.backup_codes.create",
+    "description": "Create more backup codes.",
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "default"
+    ]
+  },
+  {
+    "id": "cap-def-security-backup-codes-create-self",
+    "title": "security.backup_codes.create.self",
+    "description": "Allows the account holder to create security backup codes for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "05a5fb12-c0b6-4cfe-b443-a369a760d53e",
+    "title": "security.backup_codes.view",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-security-backup-codes-view-self",
+    "title": "security.backup_codes.view.self",
+    "description": "Allows the account holder to view security backup codes for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "bc2600a4-0de7-415f-9e1a-d81c4752cda5",
+    "title": "security.login_devices.view",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "default"
+    ]
+  },
+  {
+    "id": "cap-def-security-login-devices-view-self",
+    "title": "security.login_devices.view.self",
+    "description": "Allows the account holder to view security login devices for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "13b9c970-760e-45d1-9d7e-0144e07b8c06",
+    "title": "security.pass.modify",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "default"
+    ]
+  },
+  {
+    "id": "cap-def-security-pass-modify-self",
+    "title": "security.pass.modify.self",
+    "description": "Allows the account holder to modify security pass for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-brand-owner-security-recent-activities-view",
+    "title": "security.recent_activities.view",
+    "description": null,
+    "scope": "managed.brand",
+    "scopeFor": [
+      "for_brand"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-security-recent-activities-view-self",
+    "title": "security.recent_activities.view.self",
+    "description": "Allows the account holder to view security recent activities for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "default"
+    ]
+  },
+  {
+    "id": "0309676c-b934-4bd3-a0fe-c666928b2b0f",
+    "title": "security.recovery_accounts.add",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "default"
+    ]
+  },
+  {
+    "id": "cap-def-security-recovery-accounts-add-self",
+    "title": "security.recovery_accounts.add.self",
+    "description": "Allows the account holder to add security recovery accounts for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "352aaf77-280a-4171-9ffd-79ef2ac11d76",
+    "title": "security.recovery_accounts.remove",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "default"
+    ]
+  },
+  {
+    "id": "cap-def-security-recovery-accounts-remove-self",
+    "title": "security.recovery_accounts.remove.self",
+    "description": "Allows the account holder to remove security recovery accounts for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "ee648696-dd27-4d96-98c2-9cab0f55edbd",
+    "title": "security.recovery_accounts.view",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "default"
+    ]
+  },
+  {
+    "id": "cap-def-security-recovery-accounts-view-self",
+    "title": "security.recovery_accounts.view.self",
+    "description": "Allows the account holder to view security recovery accounts for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "184dffd7-0fa0-4c52-85f0-a688a8141d54",
+    "title": "security.recovery_email.add",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "default"
+    ]
+  },
+  {
+    "id": "cap-def-security-recovery-email-add-self",
+    "title": "security.recovery_email.add.self",
+    "description": "Allows the account holder to add security recovery email for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "66d49eb8-483b-4a02-9da3-f9fb35cbac69",
+    "title": "security.recovery_email.remove",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "default"
+    ]
+  },
+  {
+    "id": "cap-def-security-recovery-email-remove-self",
+    "title": "security.recovery_email.remove.self",
+    "description": "Allows the account holder to remove security recovery email for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "c23feaa6-946f-4902-a051-70e7aaeb1d63",
+    "title": "security.recovery_email.view",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "default"
+    ]
+  },
+  {
+    "id": "cap-def-security-recovery-email-view-self",
+    "title": "security.recovery_email.view.self",
+    "description": "Allows the account holder to view security recovery email for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "ff91dd9a-4672-4a59-9c11-11bfd79fa1ae",
+    "title": "security.recovery_phone.add",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "default"
+    ]
+  },
+  {
+    "id": "cap-def-security-recovery-phone-add-self",
+    "title": "security.recovery_phone.add.self",
+    "description": "Allows the account holder to add security recovery phone for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "6fec3d86-b5c3-4929-8d0a-5a8f71f0fa4a",
+    "title": "security.recovery_phone.remove",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "default"
+    ]
+  },
+  {
+    "id": "cap-def-security-recovery-phone-remove-self",
+    "title": "security.recovery_phone.remove.self",
+    "description": "Allows the account holder to remove security recovery phone for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "6d0d3d64-098e-4f30-951e-857f4c54adf8",
+    "title": "security.recovery_phone.view",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "default"
+    ]
+  },
+  {
+    "id": "cap-def-security-recovery-phone-view-self",
+    "title": "security.recovery_phone.view.self",
+    "description": "Allows the account holder to view security recovery phone for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "cap-def-security-third-party-view-self",
+    "title": "security.third_party.view",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "default"
+    ]
+  },
+  {
+    "id": "261a27ad-7f4d-451c-8582-50530a8a798d",
+    "title": "security.totp.add",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "default"
+    ]
+  },
+  {
+    "id": "cap-def-security-totp-add-self",
+    "title": "security.totp.add.self",
+    "description": "Allows the account holder to add security TOTP for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "a47461f6-be96-4aa2-9dd2-daf4dbd4f781",
+    "title": "security.totp.remove",
+    "description": "Remove account's time based OTP.",
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": [
+      "default"
+    ]
+  },
+  {
+    "id": "cap-def-security-totp-remove-self",
+    "title": "security.totp.remove.self",
+    "description": "Allows the account holder to remove security TOTP for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "74bf3ed0-6343-48d1-9fcc-e99bb7078adf",
+    "title": "site.social_accounts.add",
+    "description": "Add the social medias to show in the site.",
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "6f644d24-f152-4dcf-81ba-5960f154e9e9",
+    "title": "site.social_accounts.delete",
+    "description": "Delete the social medias shown in the site.",
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "9c63c49a-b44f-4e9d-8341-cbcf584b3f66",
+    "title": "site.social_accounts.edit",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  },
+  {
+    "id": "75148e9a-1577-4a31-aa6f-55997d806c5d",
+    "title": "site.social_accounts.read",
+    "description": null,
+    "scope": null,
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null
+  }
+]

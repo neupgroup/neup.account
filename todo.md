@@ -12,6 +12,10 @@
 
 ## Documentation Follow-Ups
 
+- [ ] Add `::neup.documentation::...` blocks for `logica/core/approle.mjs`.
+- [ ] Add `::neup.documentation::...` blocks for `logica/basics/appinfo.json`.
+- [ ] Add `::neup.documentation::...` blocks for `logica/accounts/permissions.json`.
+- [ ] Add `::neup.documentation::...` blocks for `logica/accounts/roles.json`.
 - [ ] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/application-management-panel.tsx`.
 - [ ] Add `::neup.documentation::...` blocks for `app/(manage)/application/users/_components/users-list.tsx`.
 - [ ] Add `::neup.documentation::...` blocks for `components/ui/flow-link.tsx`.

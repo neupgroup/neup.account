@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import React from "react";
+import { permission } from "@/logica/permission";
 import { getConnectedApplications } from "@/services/applications/connected";
 import { ListItem } from "@/components/ui/list-item";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
@@ -7,6 +8,36 @@ import { History, Trash2, PowerOff, CalendarClock, AppWindow, Share2, type Lucid
 import { checkPermissions } from "@/services/user";
 import { DATA_PRIVACY_PERMISSION_GROUPS } from "@/core/auth/data-permissions";
 
+const pagePermissions = [
+    permission("data.delete_account.start", "for_individual", "page"),
+    permission("data.deactivate_account.start", "for_individual", "page"),
+    permission("data.materialization.view", "for_individual", "page"),
+    permission("data.materialization.modify", "for_individual", "page"),
+    permission("access.connection.view.self", "for_individual", "page"),
+    permission("access.application.view.self", "for_individual", "page"),
+    permission("security.recent_activities.view", "for_individual", "page"),
+];
+
+/**
+ * ::neup.documentation::manage-data-page-client
+ * ::title Data And Privacy Client Page
+ *
+ * Renders the account data-and-privacy dashboard with available privacy actions and connected apps.
+ *
+ * ::public
+ *
+ * The page shows only the privacy features the current account can access, plus first-party and third-party application connections when available.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * Visibility is determined by runtime permission checks against the shared data-permission groups and the connected-application service.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 export default async function DataAndPrivacyPage() {
     const [canViewDelete, canViewDeactivate, canViewMaterialization, canViewAppConnections, canViewActivity] = await Promise.all([
         checkPermissions(DATA_PRIVACY_PERMISSION_GROUPS.deleteAccount),

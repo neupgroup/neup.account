@@ -17,6 +17,26 @@ type AssetRole = {
   description?: string;
 };
 
+/**
+ * ::neup.documentation::asset-member-lookup-form-component
+ * ::title Asset Member Lookup Form
+ *
+ * Client-side lookup and assignment form for inviting or assigning a member to an asset.
+ *
+ * ::public
+ *
+ * The form resolves a NeupID to an account, optionally loads assignable roles in root mode, and then either assigns or invites the member to the target asset.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * Root mode requires a selected role before assignment, while non-root mode keeps the flow as an invitation-only action.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 export function AssetMemberLookupForm({
   assetId,
   rootMode,

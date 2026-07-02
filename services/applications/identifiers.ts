@@ -3,6 +3,26 @@ import crypto from 'node:crypto';
 const APPLICATION_ID_PREFIX_PATTERN = /^[0-9A-Za-z]+$/;
 const APPLICATION_ID_SEGMENT_PATTERN = /^[0-9A-Za-z]+$/;
 
+/**
+ * ::neup.documentation::application-identifiers-module
+ * ::title Application Identifier Helpers
+ *
+ * Normalizes, validates, and generates application-related identifiers.
+ *
+ * ::public
+ *
+ * Use this module to build app IDs, authz entity IDs, and human-readable labels from identifier fragments.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The helpers enforce a conservative ASCII alphanumeric identifier format for application prefixes and segments.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 export function normalizeApplicationIdPrefix(value: string): string {
   return value.replace(/[^0-9A-Za-z]/g, '');
 }
@@ -18,6 +38,26 @@ export function generateApplicationIdSuffix(): string {
 }
 
 export function buildApplicationId(prefix: string, suffix = generateApplicationIdSuffix()): string {
+  /**
+   * ::neup.documentation::application-identifiers-build-application-id
+   * ::function buildApplicationId(prefix, suffix)
+   *
+   * Builds a full application ID from a prefix and suffix.
+   *
+   * ::public
+   *
+   * The generated ID uses the format `<prefix>.<suffix>`.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * When no suffix is supplied, a random one is generated with `generateApplicationIdSuffix()`.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   return `${prefix}.${suffix}`;
 }
 
@@ -57,6 +97,26 @@ export function slugifyAuthzTitle(value: string): string {
 }
 
 export function buildAuthzEntityId(appId: string, title: string): string {
+  /**
+   * ::neup.documentation::application-identifiers-build-authz-entity-id
+   * ::function buildAuthzEntityId(appId, title)
+   *
+   * Builds a stable authz entity identifier for an application-scoped title.
+   *
+   * ::public
+   *
+   * The title is slugified and appended to the application ID.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Empty or fully invalid titles are rejected with an error instead of producing a blank identifier suffix.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const slug = slugifyAuthzTitle(title);
   if (!slug) {
     throw new Error('Identifier title is required.');

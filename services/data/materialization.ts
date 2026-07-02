@@ -1,5 +1,6 @@
 'use server';
 
+import { permission } from "@/logica/permission";
 import { z } from "zod";
 import { getActiveAccountId } from "@/core/auth/verify";
 import { logActivity } from "@/services/log-actions";
@@ -13,6 +14,11 @@ const formSchema = z.object({
     inactivityDays: z.string().min(1, "Please select a time period."),
     password: z.string().min(1, "Password is required to schedule deletion."),
 });
+
+const servicePermissions = [
+    permission("data.materialization.view", "for_individual", "service"),
+    permission("data.materialization.modify", "for_individual", "service"),
+];
 
 
 /**

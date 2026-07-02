@@ -14,6 +14,26 @@ import { Suspense } from 'react';
 
 type FlowLinkProps = ComponentProps<typeof Link>;
 
+/**
+ * ::neup.documentation::flow-link-component
+ * ::title Flow Link
+ *
+ * Link wrapper that preserves flow-related and sticky query parameters during in-app navigation.
+ *
+ * ::public
+ *
+ * Use this component anywhere a normal Next.js `Link` should keep flow params like callback state or root-mode query state intact.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The suspense fallback renders a plain `Link`, while the hydrated path appends flow params, sticky params, and application root mode from the current URL.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 function FlowLinkInner({ href, ...props }: FlowLinkProps) {
   const searchParams = useSearchParams();
   const flowParams = getFlowParams(searchParams);

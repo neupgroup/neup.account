@@ -14,6 +14,7 @@ route while preserving root-mode access checks.
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { permission } from '@/logica/permission';
 import {
   deleteManagedApplication,
   getManagedApplications,
@@ -31,6 +32,12 @@ import {
   ROOT_APPLICATION_CREATE_PERMISSION,
   ROOT_APPLICATION_VIEW_PERMISSION,
 } from '@/services/applications/permission-definitions';
+
+const servicePermissions = [
+  permission('application.create.root', 'for_individual', 'service'),
+  permission('application.view.root', 'for_individual', 'service'),
+  permission('application.basics.edit.root', 'for_individual', 'service'),
+];
 
 export type { FlatAppItem } from '@/services/applications/types';
 

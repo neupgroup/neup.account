@@ -7,6 +7,26 @@ import {
   stripPermissionAudience,
 } from '@/services/neup-account/permission-catalog';
 
+/**
+ * ::neup.documentation::profile-permissions-module
+ * ::title Profile Permission Helpers
+ *
+ * Centralizes profile-section permission groups and authorization helpers.
+ *
+ * ::public
+ *
+ * Use this module to check whether the current or selected account may access profile sections such as display, legal, contact, and KYC data.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * These helpers normalize canonical self, managed, and root permission variants and intentionally use `notFound()` for UI-gated authorization failures.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 export const PROFILE_DISPLAY_PERMISSION_GROUPS = {
   self: ['profile.display.view.self', 'profile.display.update.self'],
   managed: ['profile.display.view.managed', 'profile.display.update.managed'],
@@ -39,6 +59,26 @@ export function hasAnyPermission(
   grantedPermissions: string[] | null | undefined,
   requiredPermissions: readonly string[],
 ): boolean {
+  /**
+   * ::neup.documentation::profile-permissions-has-any-permission
+   * ::function hasAnyPermission(grantedPermissions, requiredPermissions)
+   *
+   * Checks whether any granted permission satisfies the required profile permission set.
+   *
+   * ::public
+   *
+   * This helper understands canonical self, managed, and root permission variants, so callers can pass normalized required permission names.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Self permissions are expanded through the Neup Account candidate resolver so legacy and canonical permission naming remain compatible.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   if (!requiredPermissions.length) return true;
   if (!grantedPermissions) return false;
 
@@ -61,6 +101,26 @@ export async function assertHasAnyPermission(
   requiredPermissions: readonly string[],
   accountId?: string,
 ): Promise<void> {
+  /**
+   * ::neup.documentation::profile-permissions-assert-has-any-permission
+   * ::function assertHasAnyPermission(requiredPermissions, accountId)
+   *
+   * Throws a `notFound()` navigation result when the account lacks the required profile permissions.
+   *
+   * ::public
+   *
+   * Use this in server-rendered profile screens that should disappear rather than show an explicit authorization error.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * The helper checks either a supplied account ID or the current selected-account context.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const grantedPermissions = accountId
     ? await getAccountPermission(accountId)
     : await getCurrentAccountPermission();
@@ -73,6 +133,26 @@ export async function hasSelectedAccountAnyPermission(
   targetAccountId: string,
   requiredPermissions: readonly string[],
 ): Promise<boolean> {
+  /**
+   * ::neup.documentation::profile-permissions-has-selected-account-any-permission
+   * ::function hasSelectedAccountAnyPermission(targetAccountId, requiredPermissions)
+   *
+   * Checks whether the current selector context may access the target account with any required permission.
+   *
+   * ::public
+   *
+   * This helper distinguishes self access from delegated managed-account access automatically.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Managed-account checks use grant-specific permission evaluation; self checks use direct permission checks.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   if (!requiredPermissions.length) return true;
 
   const { personalAccountId, isSelf } = await getAccountSelectorContext();
@@ -105,6 +185,26 @@ export async function hasProfileDisplayPermission(
   targetAccountId: string,
   action: 'view' | 'update',
 ): Promise<boolean> {
+  /**
+   * ::neup.documentation::profile-permissions-has-profile-display-permission
+   * ::function hasProfileDisplayPermission(targetAccountId, action)
+   *
+   * Checks whether the current selector context may view or update display-profile data for one account.
+   *
+   * ::public
+   *
+   * The helper resolves the correct self, managed, and root permission variant for the requested action.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Root access is evaluated separately from managed-profile access so a root user can pass without an explicit grant on the target account.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const { personalAccountId, isSelf } = await getAccountSelectorContext();
   if (!personalAccountId) return false;
 

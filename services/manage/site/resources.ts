@@ -1,5 +1,6 @@
 'use server';
 
+import { permission } from '@/logica/permission';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import prisma from '@/core/helpers/prisma';
@@ -7,6 +8,33 @@ import { checkPermissions } from '@/services/user';
 import { getPersonalAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
 
+const servicePermissions = [
+  permission('root.display_images.view', 'for_individual', 'service'),
+  permission('root.display_images.add', 'for_individual', 'service'),
+  permission('root.display_images.delete', 'for_individual', 'service'),
+  permission('root.display_images.update', 'for_individual', 'service'),
+];
+
+/**
+ * ::neup.documentation::manage-site-resources-module
+ * ::title Managed Resource Service
+ *
+ * Reads and manages uploaded resource records such as display images and KYC documents.
+ *
+ * ::public
+ *
+ * Use this service to list, create, delete, and retitle managed resources used by the account app.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * Resource writes are permission-gated and revalidate the display-image config routes after successful mutations.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 const RESOURCE_TYPES = [
   'display_image',
   'displayImage_publicMale',
@@ -62,6 +90,26 @@ function normalizeResourceRow(row: any): ManagedResource {
 }
 
 export async function getResources(options?: { requirePermission?: boolean }): Promise<ManagedResource[]> {
+  /**
+   * ::neup.documentation::manage-site-resources-get-resources
+   * ::function getResources(options)
+   *
+   * Returns the managed resource list.
+   *
+   * ::public
+   *
+   * Callers can optionally skip the permission gate by passing `requirePermission: false`.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Results are normalized from raw `resource` rows into a stable serializable shape.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const requirePermission = options?.requirePermission ?? true;
   if (requirePermission) {
     const canView = await checkPermissions(['root.display_images.view']);
@@ -82,6 +130,26 @@ export async function getResources(options?: { requirePermission?: boolean }): P
 }
 
 export async function createResource(formData: FormData): Promise<{ success: boolean; error?: string; resource?: ManagedResource }> {
+  /**
+   * ::neup.documentation::manage-site-resources-create-resource
+   * ::function createResource(formData)
+   *
+   * Creates a new managed resource record.
+   *
+   * ::public
+   *
+   * The form accepts a resource type, URL value, optional account ID, and optional title.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Public display-image resource types cannot be attached to a specific account.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const canAdd = await checkPermissions(['root.display_images.add']);
   if (!canAdd) {
     return { success: false, error: 'Permission denied.' };
@@ -133,6 +201,26 @@ export async function createResource(formData: FormData): Promise<{ success: boo
 }
 
 export async function deleteResource(formData: FormData): Promise<{ success: boolean; error?: string }> {
+  /**
+   * ::neup.documentation::manage-site-resources-delete-resource
+   * ::function deleteResource(formData)
+   *
+   * Deletes a managed resource by ID.
+   *
+   * ::public
+   *
+   * Use this helper when a resource should be removed entirely from the resource library.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Successful deletes revalidate the display-image config routes.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const canDelete = await checkPermissions(['root.display_images.delete']);
   if (!canDelete) {
     return { success: false, error: 'Permission denied.' };
@@ -156,6 +244,26 @@ export async function deleteResource(formData: FormData): Promise<{ success: boo
 }
 
 export async function updateResourceTitle(formData: FormData): Promise<{ success: boolean; error?: string; resource?: ManagedResource }> {
+  /**
+   * ::neup.documentation::manage-site-resources-update-resource-title
+   * ::function updateResourceTitle(formData)
+   *
+   * Updates the stored title metadata for a managed resource.
+   *
+   * ::public
+   *
+   * Use this when the resource library UI needs to label or relabel an uploaded item.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Title data is stored inside the resource `details` object rather than a top-level column.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const canUpdate = await checkPermissions(['root.display_images.update']);
   if (!canUpdate) {
     return { success: false, error: 'Permission denied.' };
@@ -207,6 +315,26 @@ export async function logDisplayImageResourceForAccount(input: {
   type?: string;
   title?: string;
 }): Promise<void> {
+  /**
+   * ::neup.documentation::manage-site-resources-log-display-image
+   * ::function logDisplayImageResourceForAccount(input)
+   *
+   * Logs a display-image resource record for an account without enforcing manage-surface permissions.
+   *
+   * ::public
+   *
+   * This helper is used by profile-update flows to preserve a resource history for uploaded display images.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Errors are logged and suppressed so profile updates do not fail solely because the resource history write failed.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   if (!input.accountId || !input.uploadedBy || !input.value) return;
 
   try {

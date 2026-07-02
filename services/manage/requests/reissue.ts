@@ -1,8 +1,34 @@
 'use server';
 
+import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
+
+const servicePermissions = [
+  permission('requests.root_approval.approve', 'for_individual', 'service'),
+];
+
+/**
+ * ::neup.documentation::manage-requests-reissue-module
+ * ::title Request Reissue Service
+ *
+ * Reissues previously processed requests with reviewer remarks.
+ *
+ * ::public
+ *
+ * Use this service when a reviewer needs to send a request back into the pending queue with explanatory remarks.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The service also cancels overlapping pending `applicationChange` requests that target the same fields.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 
 function hasOverlap(fieldsA: string[], fieldsB: string[]) {
   const setA = new Set(fieldsA);
@@ -10,6 +36,26 @@ function hasOverlap(fieldsA: string[], fieldsB: string[]) {
 }
 
 export async function reissueRequestWithRemarks(input: { requestId: string; remarks: string }) {
+  /**
+   * ::neup.documentation::manage-requests-reissue-with-remarks
+   * ::function reissueRequestWithRemarks(input)
+   *
+   * Creates a new pending request from an existing non-pending request and attaches reviewer remarks.
+   *
+   * ::public
+   *
+   * The caller must provide the original request ID and at least five characters of remarks.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Reissued requests record the source request ID, remarks, and reissue timestamp inside the new request payload.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const canApprove = await checkPermissions(['requests.root_approval.approve']);
   if (!canApprove) return { success: false, error: 'Permission denied.' };
 

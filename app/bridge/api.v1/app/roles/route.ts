@@ -1,5 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { permission } from '@/logica/permission';
 import { getSyncedAppRoles, postSyncedAppRoles } from '@/services/bridge/app-authz-sync';
+
+const routePermissions = [
+  permission('application.roles.view', 'for_individual', 'application'),
+  permission('application.roles.manage', 'for_individual', 'application'),
+];
 
 export const dynamic = 'force-dynamic';
 

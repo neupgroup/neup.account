@@ -1,6 +1,7 @@
 // @ts-nocheck
 'use server';
 
+import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { Prisma } from '../../prisma/generated/client/client';
 import { getUserNeupIds, getUserProfile as fetchUserProfile, checkPermissions } from '@/services/user';
@@ -15,6 +16,17 @@ import { warningReasons } from '@/app/(manage)/manage/[id]/forms';
 import type { UserProfile } from '@/services/user';
 import { cleanupExpiredAccessModel, extractRolePermissionNames, ensureAccessGrant } from '@/services/access-model';
 import { ACCOUNT_ACCESS_PERMISSION_GROUPS } from '@/core/auth/account-access-permissions';
+
+const servicePermissions = [
+  permission('root.account.access.edit', 'for_individual', 'service'),
+  permission('root.permission.edit', 'for_individual', 'service'),
+  permission('root.account.send_warning', 'for_individual', 'service'),
+  permission('root.account.give_block_account', 'for_individual', 'service'),
+  permission('root.account.remove_block_account', 'for_individual', 'service'),
+  permission('root.account.impersonate', 'for_individual', 'service'),
+  permission('root.account.delete', 'for_individual', 'service'),
+  permission('root.account.edit_pro_status', 'for_individual', 'service'),
+];
 
 
 // --- Types ---

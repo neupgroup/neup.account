@@ -2,20 +2,24 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 /**
- * proxy.ts — Next.js Edge Middleware
+ * ::neup.documentation::proxy-module
+ * ::title Edge Proxy Middleware
  *
- * Verifies auth_account JWT using AUTH_PUBLIC_KEY env var (Web Crypto API, Edge-compatible).
+ * Edge middleware that enforces HTTPS, device blocks, and account-session gating for protected routes.
  *
- * Rules:
- *   1. /auth/*    → always pass through
- *   2. /bridge/*  → always pass through
- *   3. Static     → always pass through
- *   4. Everything else:
- *      a. No auth_account cookie       → /auth/start
- *      b. JWT invalid / tampered       → /auth/start
- *      c. guest: 1 in JWT              → /auth/start
- *      d. nid missing in JWT           → /auth/start
- *      e. Valid JWT with nid, no guest → permit
+ * ::public
+ *
+ * Auth routes, bridge routes, and static assets pass through; protected app routes require a valid `auth_account` JWT with a non-guest NeupID-bearing payload.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The middleware also propagates pathname and selected-account headers into the request and can fall back to unsigned token decoding when no public key is configured.
+ *
+ * ::private end
+ *
+ * ::end
  */
 
 // ---------------------------------------------------------------------------
@@ -140,6 +144,26 @@ function redirectToStart(request: NextRequest, pathname: string) {
 // ---------------------------------------------------------------------------
 
 export default async function proxy(request: NextRequest) {
+  /**
+   * ::neup.documentation::proxy-main-function
+   * ::function proxy(request)
+   *
+   * Applies the account-app route protection and request-header enrichment rules.
+   *
+   * ::public
+   *
+   * Requests that fail HTTPS, device-block, or session checks are redirected to the appropriate auth route.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Successful requests forward `x-next-pathname` and, when present, `x-selected-account` to downstream route handlers.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const { pathname } = request.nextUrl;
   const selectedAccountId = request.nextUrl.searchParams.get('workingProfile')?.trim();
 

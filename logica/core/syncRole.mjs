@@ -37,12 +37,13 @@ const DIRECT_PERMISSION_PATTERNS = [
   /requirePermission\s*\(([\s\S]*?)\)/g,
   /authorize\s*\(([\s\S]*?)\)/g,
   /can\s*\(([\s\S]*?)\)/g,
+  /\b[A-Za-z0-9_]*(?:Permissions|PERMISSIONS)\s*=\s*\[([\s\S]*?)\]/g,
   /permissions?\s*:\s*\[([\s\S]*?)\]/g,
   /requiredPermissions?\s*:\s*\[([\s\S]*?)\]/g,
 ];
 
-const EXPORTED_ARRAY_PATTERN =
-  /export\s+const\s+([A-Za-z0-9_]+)\s*=\s*\[([\s\S]*?)\]\s*(?:as\s+const)?/g;
+const DECLARED_ARRAY_PATTERN =
+  /(?:export\s+)?const\s+([A-Za-z0-9_]+)\s*=\s*\[([\s\S]*?)\]\s*(?:as\s+const)?/g;
 
 const STRING_LITERAL_PATTERN = /["'`]([^"'`]+)["'`]/g;
 const PERMISSION_OBJECT_ID_PATTERN = /(?:^|[{,\s])["']?id["']?\s*:\s*["'`]([^"'`]+)["'`]/g;
@@ -134,8 +135,8 @@ function buildExportedPermissionMap(files) {
     const content = fs.readFileSync(file, "utf8");
     let match;
 
-    EXPORTED_ARRAY_PATTERN.lastIndex = 0;
-    while ((match = EXPORTED_ARRAY_PATTERN.exec(content))) {
+    DECLARED_ARRAY_PATTERN.lastIndex = 0;
+    while ((match = DECLARED_ARRAY_PATTERN.exec(content))) {
       definitions.set(match[1], parseArrayDefinition(match[2]));
     }
   }

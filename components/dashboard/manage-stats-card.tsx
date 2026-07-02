@@ -1,3 +1,4 @@
+import { permission } from '@/logica/permission';
 import { checkPermissions } from '@/services/user';
 import { getUserStats } from '@/services/manage/accounts';
 import { Card, CardContent } from '@/components/ui/card';
@@ -5,6 +6,30 @@ import { Users, UserCheck, UserPlus, ShieldCheck } from '@/components/icons';
 import { SecondaryHeader } from '@/components/ui/secondary-header';
 import Link from 'next/link';
 
+const componentPermissions = [
+    permission('root.dashboard.view', 'for_individual', 'component'),
+];
+
+/**
+ * ::neup.documentation::manage-stats-card-component
+ * ::title Manage Stats Card
+ *
+ * Dashboard card that summarizes account and permission metrics for root managers.
+ *
+ * ::public
+ *
+ * The component renders system-wide counts such as total accounts, active accounts, recent signups, and defined permission bundles.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The card is hidden entirely when the viewer lacks `root.dashboard.view`.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 export async function ManageStatsCard() {
     const canView = await checkPermissions(['root.dashboard.view']);
     if (!canView) return null;

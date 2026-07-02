@@ -4,6 +4,7 @@ import { isIP } from 'node:net';
 import { revalidatePath } from 'next/cache';
 import { notFound } from 'next/navigation';
 import { z } from 'zod';
+import { permission } from '@/logica/permission';
 import { Prisma } from '@/prisma/generated/client/client';
 import prisma from '@/core/helpers/prisma';
 import { getAccountSelectorContext } from '@/core/auth/accountSelector';
@@ -82,6 +83,25 @@ import {
   normalizeApplicationAuthzDefinitions,
   type ApplicationAuthzConfig,
 } from '@/services/applications/authz-config';
+
+const servicePermissions = [
+  permission('application.view.root', 'for_individual', 'service'),
+  permission('application.create.root', 'for_individual', 'service'),
+  permission('application.basics.edit.root', 'for_individual', 'service'),
+  permission('application.config.view.root', 'for_individual', 'service'),
+  permission('application.config.update.root', 'for_individual', 'service'),
+  permission('application.delete.root', 'for_individual', 'service'),
+  permission('application.logs.view.root', 'for_individual', 'service'),
+  permission('application.devlogs.view.root', 'for_individual', 'service'),
+  permission('application.devlogs.clear.root', 'for_individual', 'service'),
+  permission('application.roles.view.root', 'for_individual', 'service'),
+  permission('application.roles.manage.root', 'for_individual', 'service'),
+  permission('application.roles.resetPush.root', 'for_individual', 'service'),
+  permission('application.user.view.root', 'for_individual', 'service'),
+  permission('application.user.remove.root', 'for_individual', 'service'),
+  permission('application.user.updateBasics.root', 'for_individual', 'service'),
+  permission('application.user.updateRole.root', 'for_individual', 'service'),
+];
 
 const responseAccessSet = new Set<ApplicationAccessField>(applicationResponseFields);
 const tokenFieldSet = new Set<ApplicationAccessField>(applicationTokenFields);

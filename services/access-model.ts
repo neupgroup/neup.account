@@ -3,6 +3,26 @@ import { Prisma } from '@/prisma/generated/client/client';
 import type { AccessType, AssetType } from '@/prisma/generated/client';
 import { normalizeSingleAuthzScopeLevel } from '@/services/applications/authz-scope-policy';
 
+/**
+ * ::neup.documentation::access-model-module
+ * ::title Access Model Helpers
+ *
+ * Core helpers for creating and maintaining the denormalized access, asset, and member records.
+ *
+ * ::public
+ *
+ * Use this module to ensure member rows, asset rows, and access grants exist consistently for the new access model.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * These helpers are the low-level write layer behind the migration from legacy member/asset-shaped grants to the consolidated `access` table model.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 type Tx = Prisma.TransactionClient;
 
 type ParentRef =
@@ -73,6 +93,26 @@ export function getLogicalAssetId(asset: {
 }
 
 export async function cleanupExpiredAccessModel(tx: Tx = prisma) {
+  /**
+   * ::neup.documentation::access-model-cleanup-expired
+   * ::function cleanupExpiredAccessModel(tx)
+   *
+   * Deletes expired temporary rows from the access-model tables.
+   *
+   * ::public
+   *
+   * Expired rows are removed from `access`, `asset`, and `member`.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Callers may pass an existing transaction client so cleanup participates in a larger transaction.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const now = new Date();
 
   await tx.access.deleteMany({
@@ -198,6 +238,26 @@ export async function ensureAccessAsset(tx: Tx, input: ParentRef & AssetChildRef
 }
 
 export async function ensureAccessGrant(tx: Tx, input: AccessGrantInput) {
+  /**
+   * ::neup.documentation::access-model-ensure-access-grant
+   * ::function ensureAccessGrant(tx, input)
+   *
+   * Ensures the member, asset, and access-grant records exist for one assignment.
+   *
+   * ::public
+   *
+   * This helper is the main creation path for denormalized access grants in the new access model.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * The role's scope level is consulted to decide whether a self grant should be stored as `acc_self` or `acc_self_root`.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const roleRows = await tx.$queryRaw<Array<{ scopeLevel: string | null }>>(Prisma.sql`
     SELECT r."scope_level" AS "scopeLevel"
     FROM "authz_role" r
@@ -255,6 +315,26 @@ export async function ensureAccessGrant(tx: Tx, input: AccessGrantInput) {
 }
 
 export function extractRolePermissionNames(value: Prisma.JsonValue | null | undefined): string[] {
+  /**
+   * ::neup.documentation::access-model-extract-role-permission-names
+   * ::function extractRolePermissionNames(value)
+   *
+   * Extracts permission names from a stored authz-role permission payload.
+   *
+   * ::public
+   *
+   * The payload may contain raw strings or objects with `id` or `name` fields.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * The result is deduplicated and trimmed so callers can rely on a clean permission name list.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   if (!Array.isArray(value)) return [];
 
   return Array.from(new Set(value.flatMap((item) => {

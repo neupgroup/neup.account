@@ -1,5 +1,6 @@
 'use server';
 
+import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { getUserProfile, checkPermissions } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
@@ -8,6 +9,32 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { getPersonalAccountId } from '@/core/auth/verify';
 import { activityAction } from '@/services/activity-action';
+
+const servicePermissions = [
+    permission('requests.root_approval.view', 'for_individual', 'service'),
+    permission('requests.root_approval.approve', 'for_individual', 'service'),
+];
+
+/**
+ * ::neup.documentation::manage-verifications-module
+ * ::title Verification Management Service
+ *
+ * Loads and mutates account verification state for root reviewers.
+ *
+ * ::public
+ *
+ * Use this service to list pending verification requests, grant or revoke verification, and read the current verification state for an account.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The service coordinates `account.isVerified`, verification records, activity logs, and route revalidation for the manage UI.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 
 export type VerificationRequest = {
     id: string;
@@ -27,6 +54,26 @@ const verificationActionSchema = z.object({
  * Function getPendingVerificationRequests.
  */
 export async function getPendingVerificationRequests(): Promise<VerificationRequest[]> {
+    /**
+     * ::neup.documentation::manage-verifications-get-pending
+     * ::function getPendingVerificationRequests()
+     *
+     * Returns the pending verification requests awaiting review.
+     *
+     * ::public
+     *
+     * Each result includes the target account, display name, requested time, and current status.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * The current implementation reads pending rows from the `verification` table and maps account display names onto them.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     const canView = await checkPermissions(['requests.root_approval.view']);
     if (!canView) return [];
 
@@ -69,6 +116,26 @@ export async function getPendingVerificationRequests(): Promise<VerificationRequ
  * Function grantVerification.
  */
 export async function grantVerification(accountId: string, data: z.infer<typeof verificationActionSchema>): Promise<{ success: boolean; error?: string }> {
+    /**
+     * ::neup.documentation::manage-verifications-grant
+     * ::function grantVerification(accountId, data)
+     *
+     * Grants account verification with a reviewer reason and category.
+     *
+     * ::public
+     *
+     * Reviewers can use this to verify an account and record the category and justification for the approval.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * Self-verification is blocked and the mutation updates both the account flag and the verification record in one transaction.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     const canApprove = await checkPermissions(['requests.root_approval.approve']);
     if (!canApprove) return { success: false, error: 'Permission denied.' };
     
@@ -129,6 +196,26 @@ export async function grantVerification(accountId: string, data: z.infer<typeof 
  * Function revokeVerification.
  */
 export async function revokeVerification(accountId: string, reason: string): Promise<{ success: boolean; error?: string }> {
+    /**
+     * ::neup.documentation::manage-verifications-revoke
+     * ::function revokeVerification(accountId, reason)
+     *
+     * Revokes verification for an account.
+     *
+     * ::public
+     *
+     * Callers must provide a sufficiently detailed reason when removing verification.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * Revocation clears the account verification flag and updates the matching verification record with reviewer metadata.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     const canDeny = await checkPermissions(['requests.root_approval.approve']);
     if (!canDeny) return { success: false, error: 'Permission denied.' };
     
@@ -170,6 +257,26 @@ export async function revokeVerification(accountId: string, reason: string): Pro
  * Function getAccountVerification.
  */
 export async function getAccountVerification(accountId: string): Promise<{ verified: boolean; category?: string; verifiedAt?: string } | null> {
+    /**
+     * ::neup.documentation::manage-verifications-get-account-verification
+     * ::function getAccountVerification(accountId)
+     *
+     * Returns the current verification status for one account.
+     *
+     * ::public
+     *
+     * Verified accounts include category and verification date when available.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * The helper first checks `account.isVerified` and only then looks up the backing verification record.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     try {
         const account = await prisma.account.findUnique({
             where: { id: accountId },

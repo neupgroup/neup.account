@@ -142,6 +142,26 @@ function UserListSkeleton() {
   );
 }
 
+/**
+ * ::neup.documentation::application-users-list-component
+ * ::title Application Users List
+ *
+ * Client-side paginated user list for one application's connected accounts.
+ *
+ * ::public
+ *
+ * The list supports search, status filtering, recent-activity filtering, sorting, and pagination for application users.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * Filter state is mirrored into the URL query string so the view stays shareable and survives navigation.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 function UsersListInner({ appId }: { appId: string }) {
   const searchParams = useSearchParams();
   const router = useRouter();

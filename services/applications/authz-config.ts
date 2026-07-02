@@ -12,11 +12,51 @@ export type ApplicationAuthzConfig = {
   applicableForDefinitions: ApplicationAuthzDefinitionTuple[];
 };
 
+/**
+ * ::neup.documentation::application-authz-config-module
+ * ::title Application Authz Config Helpers
+ *
+ * Normalizes and formats authz configuration stored inside application details.
+ *
+ * ::public
+ *
+ * Use this module to read configured application scopes, convert them to UI options, and sanitize persisted authz definition tuples.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * Duplicate or malformed definition tuples are filtered out during normalization so config consumers work with a stable shape.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 function toTrimmedString(value: unknown): string {
   return typeof value === 'string' ? value.trim() : '';
 }
 
 export function normalizeApplicationAuthzDefinitions(value: unknown): ApplicationAuthzDefinitionTuple[] {
+  /**
+   * ::neup.documentation::application-authz-config-normalize-definitions
+   * ::function normalizeApplicationAuthzDefinitions(value)
+   *
+   * Normalizes stored authz definition tuples into a validated list.
+   *
+   * ::public
+   *
+   * Each valid row contributes a `[name, key, description]` tuple with a unique key.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Rows with missing names, missing keys, or duplicate keys are discarded.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   if (!Array.isArray(value)) return [];
 
   const rows: ApplicationAuthzDefinitionTuple[] = [];
@@ -60,6 +100,26 @@ export function formatApplicationAuthzScopeHint(
 }
 
 export function extractApplicationAuthzConfig(details: unknown): ApplicationAuthzConfig {
+  /**
+   * ::neup.documentation::application-authz-config-extract-config
+   * ::function extractApplicationAuthzConfig(details)
+   *
+   * Extracts the authz configuration subset from an application details payload.
+   *
+   * ::public
+   *
+   * The result includes defined scopes, whether multiple configured scopes are allowed, and the applicable-for definitions.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Missing or malformed details fall back to empty normalized configuration arrays.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const record = details && typeof details === 'object' ? (details as Record<string, unknown>) : {};
 
   return {

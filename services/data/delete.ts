@@ -1,6 +1,7 @@
 
 'use server';
 
+import { permission } from "@/logica/permission";
 import { z } from "zod";
 import { getActiveAccountId } from "@/core/auth/verify";
 import { logActivity } from "@/services/log-actions";
@@ -14,6 +15,10 @@ import { DATA_PRIVACY_PERMISSION_GROUPS } from "@/core/auth/data-permissions";
 const formSchema = z.object({
     password: z.string().min(1, "Password is required to request deletion."),
 });
+
+const servicePermissions = [
+  permission("data.delete_account.start", "for_individual", "service"),
+];
 
 /**
  * Function requestAccountDeletion.

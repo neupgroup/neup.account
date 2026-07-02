@@ -1,5 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { permission } from '@/logica/permission';
 import { getApplicationRoles } from '@/services/bridge/application-roles';
+
+const routePermissions = [
+  permission('application.roles.view', 'for_individual', 'application'),
+];
 
 export const dynamic = 'force-dynamic';
 

@@ -1,3 +1,4 @@
+import { permission } from "@/logica/permission";
 import { PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
 import { SECURITY_HUB_PERMISSIONS } from "@/core/auth/security-permissions";
 import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/core/auth/data-permissions";
@@ -5,6 +6,30 @@ import {
     ACCESS_BLOCK_VIEW_PERMISSIONS,
     ACCESS_VIEW_PERMISSIONS,
 } from "@/core/auth/access-view-permissions";
+
+const navPermissions = [
+    permission("notification.read", "for_individual", "component"),
+    permission("notification.delete", "for_individual", "component"),
+    permission("payment.method.show", "for_individual", "component"),
+    permission("payment.transactions.show", "for_individual", "component"),
+    permission("payment.subscriptions.show", "for_individual", "component"),
+    permission("payment.purchase_neup_pro.view", "for_individual", "component"),
+    permission("root.account.view", "for_individual", "component"),
+    permission("root.account.search", "for_individual", "component"),
+    permission("root.account.create_individual", "for_individual", "component"),
+    permission("requests.root_approval.view", "for_individual", "component"),
+    permission("root.payment_config.view", "for_individual", "component"),
+    permission("root.display_images.view", "for_individual", "component"),
+    permission("root.display_images.add", "for_individual", "component"),
+    permission("root.display_images.update", "for_individual", "component"),
+    permission("root.display_images.delete", "for_individual", "component"),
+    permission("root.permission.view", "for_individual", "component"),
+    permission("root.permission.edit", "for_individual", "component"),
+    permission("application.view", "for_individual", "component"),
+    permission("linked_accounts.brand.manage", "for_brand", "component"),
+    permission("root.dashboard.view", "for_individual", "component"),
+    permission("root.account.delete", "for_individual", "component"),
+];
 
 export type NavItem = {
     href: string;

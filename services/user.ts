@@ -22,6 +22,26 @@ import {
   stripPermissionAudience,
 } from '@/services/neup-account/permission-catalog';
 
+/**
+ * ::neup.documentation::user-service-module
+ * ::title User Data And Permission Service
+ *
+ * Central user-data layer for profile fields, contact data, NeupIDs, and permission resolution.
+ *
+ * ::public
+ *
+ * This module powers profile reads, selected-account permission checks, root-role lookups, and app-specific access resolution across the account app.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * Permission reads are based on the `access` model plus authz role records, with compatibility helpers to preserve legacy permission expectations.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 // --- Types ---
 
 export type UserProfile = {
@@ -269,6 +289,26 @@ function toRolePermissionEntries(
 export async function getUserProfile(
   accountId?: string,
 ): Promise<UserProfile | null> {
+  /**
+   * ::neup.documentation::user-service-get-user-profile
+   * ::function getUserProfile(accountId)
+   *
+   * Returns the normalized profile payload for one account.
+   *
+   * ::public
+   *
+   * The payload merges account, individual-profile, brand-profile, contact, and primary-NeupID fields into one server-friendly structure.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * When no account ID is supplied, the helper falls back to the active selected account.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const idToFetch = accountId || (await getActiveAccountId());
   if (!idToFetch) return null;
   try {
@@ -426,6 +466,26 @@ export async function getUserNeupIdDetails(
 export async function getAccountPermission(
   accountId?: string,
 ): Promise<string[]> {
+  /**
+   * ::neup.documentation::user-service-get-account-permission
+   * ::function getAccountPermission(accountId)
+   *
+   * Returns the effective Neup Account permission IDs for one account.
+   *
+   * ::public
+   *
+   * The permission set is assembled from active, non-expired access rows whose roles belong to the `neup.account` app.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * When no account ID is supplied, the helper falls back to the active selected account.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const activeId = accountId || (await getActiveAccountId());
   if (!activeId) return [];
 
@@ -495,6 +555,26 @@ export async function getGrantedAccountPermission(
   memberAccountId: string,
   parentAccountId: string,
 ): Promise<string[]> {
+  /**
+   * ::neup.documentation::user-service-get-granted-account-permission
+   * ::function getGrantedAccountPermission(memberAccountId, parentAccountId)
+   *
+   * Returns the permissions a member account holds on a managed parent account.
+   *
+   * ::public
+   *
+   * Use this helper for delegated-account contexts where the requester is acting on another account they manage.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Root-scoped managed grants are filtered out here so the result reflects delegated managed permissions only.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   if (!memberAccountId || !parentAccountId) return [];
 
   try {
@@ -638,6 +718,26 @@ async function getGrantedAccountPermissionEntries(
 }
 
 export async function getCurrentAccountPermission(selectedAccountId?: string | null): Promise<string[]> {
+  /**
+   * ::neup.documentation::user-service-get-current-account-permission
+   * ::function getCurrentAccountPermission(selectedAccountId)
+   *
+   * Returns the effective permission set for the current account-selector context.
+   *
+   * ::public
+   *
+   * The helper automatically switches between direct self permissions and delegated managed-account permissions.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * This is the preferred entry point for UI code that should honor the selected-account state.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const {
     activeAccountId,
     personalAccountId,
@@ -675,6 +775,26 @@ export async function checkGrantedPermissions(
   memberAccountId: string,
   parentAccountId: string,
 ): Promise<boolean> {
+  /**
+   * ::neup.documentation::user-service-check-granted-permissions
+   * ::function checkGrantedPermissions(requiredPermissions, memberAccountId, parentAccountId)
+   *
+   * Checks whether a member account holds all required permissions on a managed target account.
+   *
+   * ::public
+   *
+   * This helper is used for delegated-account authorization checks where grants are scoped to a parent account.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Matching uses the managed-permission resolution context, not direct self permission matching.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   if (!requiredPermissions || requiredPermissions.length === 0) return true;
 
   const entries = await getGrantedAccountPermissionEntries(memberAccountId, parentAccountId);
@@ -692,6 +812,26 @@ export async function checkPermissions(
     roleScope?: readonly string[] | string;
   },
 ): Promise<boolean> {
+  /**
+   * ::neup.documentation::user-service-check-permissions
+   * ::function checkPermissions(requiredPermissions, accountId, options)
+   *
+   * Checks whether an account or current selector context satisfies all required permissions.
+   *
+   * ::public
+   *
+   * Callers may optionally require a specific role scope in addition to the permission IDs.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Without an explicit account ID, permission matching automatically respects whether the current selector context is self or managed.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   if (!requiredPermissions || requiredPermissions.length === 0) return true;
 
   if (options?.roleScope) {

@@ -16,6 +16,27 @@ import {
   ACCESS_VIEW_PERMISSIONS,
 } from '@/core/auth/access-view-permissions';
 
+/**
+ * ::neup.documentation::manage-access-module
+ * ::title Manage Access Service
+ *
+ * Provides the manage-surface helpers for viewing and mutating direct account access.
+ *
+ * ::public
+ *
+ * This module powers access lists, member detail views, invitation flows, grant removal, and permission delegation for account access management.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The file still contains a mix of legacy `member`-table logic and newer `access`-model reads, so callers should treat it as the compatibility layer for manage-access behavior.
+ *
+ * ::private end
+ *
+ * ::end
+ */
+
 function isMissingAssetsGrantTableError(error: unknown): boolean {
   const candidate = error as { code?: string };
   return candidate?.code === 'P2021' || candidate?.code === 'P2022';
@@ -80,6 +101,26 @@ export type AccessDetails = {
  * Function getMasterPermissions.
  */
 export async function getMasterPermissions(): Promise<Permission[]> {
+    /**
+     * ::neup.documentation::manage-access-get-master-permissions
+     * ::function getMasterPermissions()
+     *
+     * Returns the master permission catalog for the `neup.account` application.
+     *
+     * ::public
+     *
+     * Use this when an access-management UI needs the full permission list for selection or display.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * The current implementation reads directly from `authzPermission` and normalizes the result into `{ id, name }` pairs.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     const permissions = await prisma.authzPermission.findMany({
         where: { appId: 'neup.account' },
         select: { name: true },
@@ -326,6 +367,26 @@ export type DirectMember = {
  * pending access_invitation request (shown with status 'invited').
  */
 export async function getDirectMembers(accountId: string): Promise<{ accountName: string; members: DirectMember[] }> {
+  /**
+   * ::neup.documentation::manage-access-get-direct-members
+   * ::function getDirectMembers(accountId)
+   *
+   * Returns the direct members attached to an account plus pending invitations.
+   *
+   * ::public
+   *
+   * The result includes one entry per unique member account with role counts, profile fields, permanence, and invitation/active status.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Confirmed direct grants are read from active access rows, while pending invitations come from `access_invitation` request rows.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const canView = await checkPermissions([...ACCESS_TEAM_VIEW_PERMISSIONS]);
   if (!canView) return { accountName: accountId, members: [] };
 
@@ -624,6 +685,26 @@ export async function updatePermissions(permitId: string, newPermissionIds: stri
  * Function grantAccessByNeupId.
  */
 export async function grantAccessByNeupId(formData: FormData, geolocation?: string): Promise<{ success: boolean; error?: string; }> {
+    /**
+     * ::neup.documentation::manage-access-grant-access-by-neup-id
+     * ::function grantAccessByNeupId(formData, geolocation)
+     *
+     * Sends a direct-access invitation to a target account identified by NeupID.
+     *
+     * ::public
+     *
+     * The target must be an individual or dependent account and must not already have access or a pending invitation.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * Successful requests create both an `access_invitation` request row and a notification for the invited account.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     const accessTo = await getActiveAccountId();
     if (!accessTo) {
         return { success: false, error: "Not authenticated." };

@@ -1,5 +1,6 @@
 'use client';
 
+import { permission } from '@/logica/permission';
 import { FlowLink } from '@/components/ui/flow-link'
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useTransition } from "react";
@@ -12,6 +13,16 @@ import { switchToPersonal } from "@/services/auth/switch";
 import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
 import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/core/auth/data-permissions";
 import { ACCESS_VIEW_PERMISSIONS } from "@/core/auth/access-view-permissions";
+
+const componentPermissions = [
+    permission('notification.read', 'for_individual', 'component'),
+    permission('notification.delete', 'for_individual', 'component'),
+    permission('application.view', 'for_individual', 'component'),
+    permission('payment.method.show', 'for_individual', 'component'),
+    permission('payment.transactions.show', 'for_individual', 'component'),
+    permission('payment.subscriptions.show', 'for_individual', 'component'),
+    permission('payment.purchase_neup_pro.view', 'for_individual', 'component'),
+];
 
 export function DashboardNav() {
     const pathname = usePathname();

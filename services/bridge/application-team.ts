@@ -1,5 +1,6 @@
 'use server';
 
+import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { verifyAccountToken } from '@/core/auth/accountToken';
 import { logError } from '@/core/helpers/logger';
@@ -8,6 +9,31 @@ import { validateAuthSession } from '@/services/auth/session';
 import { deriveLegacyRoleScopesFromPolicy, normalizeAuthzScopeFor, normalizeSingleAuthzScopeLevel } from '@/services/applications/authz-scope-policy';
 import { checkGrantedPermissions, getUserNeupIds, getUserProfile } from '@/services/user';
 
+const servicePermissions = [
+  permission('access.view', 'for_individual', 'service'),
+  permission('access.team.view', 'for_individual', 'service'),
+];
+
+/**
+ * ::neup.documentation::application-team-service-module
+ * ::title Application Team Bridge Service
+ *
+ * Provides the bridge-facing team roster for one application's access grants.
+ *
+ * ::public
+ *
+ * This service returns the effective team members, granted roles, and deduplicated permission list for an application's active access rows.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The implementation validates account-session state, applies managed-profile access checks, cleans expired access grants, and folds multiple access rows into per-member role summaries.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 type ApplicationTeamMemberRole = {
   roleId: string;
   roleName: string | null;
@@ -54,6 +80,26 @@ function resolveDisplayName(
   accountId: string,
   profile: Awaited<ReturnType<typeof getUserProfile>>,
 ): string {
+  /**
+   * ::neup.documentation::application-team-service-resolve-display-name
+   * ::function resolveDisplayName(accountId, profile)
+   *
+   * Chooses the best available display label for one member account.
+   *
+   * ::public
+   *
+   * Prefers the stored display name, then a first/last-name combination, and finally falls back to the raw account ID.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * This keeps bridge responses stable even when profile data is partially missing.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   return (
     profile?.nameDisplay ||
     `${profile?.nameFirst ?? ''} ${profile?.nameLast ?? ''}`.trim() ||
@@ -65,6 +111,26 @@ async function canAccessManagedProfile(
   requesterAccountId: string,
   profileAccountId: string,
 ): Promise<boolean> {
+  /**
+   * ::neup.documentation::application-team-service-can-access-managed-profile
+   * ::function canAccessManagedProfile(requesterAccountId, profileAccountId)
+   *
+   * Checks whether the requester may inspect access data for another managed profile.
+   *
+   * ::public
+   *
+   * Access is granted when the requester holds either `access.view` or `access.team.view` on the target profile.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * The helper evaluates both permissions in parallel and treats either result as sufficient for this read-only bridge operation.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const [canViewAccess, canViewTeam] = await Promise.all([
     checkGrantedPermissions(['access.view'], requesterAccountId, profileAccountId),
     checkGrantedPermissions(['access.team.view'], requesterAccountId, profileAccountId),
@@ -78,6 +144,36 @@ export async function getApplicationTeamMembers(input: {
   authToken: string | null;
   profileAccountId?: string | null;
 }): Promise<ApplicationTeamResult> {
+  /**
+   * ::neup.documentation::application-team-service-get-application-team-members
+   * ::function getApplicationTeamMembers(input)
+   *
+   * Returns the active application-team membership for one profile/application pair.
+   *
+   * ::public
+   *
+   * The service validates the caller, confirms the application exists, resolves the target profile, and returns the active members with their effective roles and permission set.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Only active `access` rows with a non-expired temporary window and a role tied to the requested application are included in the result.
+   *
+   * ::private end
+   *
+   * ::param external input
+   * ::datatype object
+   * ::required true
+   *
+   * Bridge request parameters including `appId`, `authToken`, and optional `profileAccountId`.
+   *
+   * ::returns ApplicationTeamResult
+   *
+   * Structured success or failure payload with the correct HTTP status already attached.
+   *
+   * ::end
+   */
   const appId = input.appId?.trim() || '';
   const authToken = input.authToken?.trim() || '';
   const requestedProfileAccountId = input.profileAccountId?.trim() || null;

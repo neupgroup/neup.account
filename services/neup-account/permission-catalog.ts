@@ -1,5 +1,25 @@
 export const NEUP_ACCOUNT_APP_ID = 'neup.account';
 
+/**
+ * ::neup.documentation::neup-account-permission-catalog-module
+ * ::title Neup Account Permission Catalog
+ *
+ * Defines and normalizes the canonical permission catalog for the Neup Account application.
+ *
+ * ::public
+ *
+ * This module is the source for canonical self, managed, and root permission definitions and for permission-name compatibility helpers.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The catalog is generated from legacy permission names plus audience rules so older permission references can still resolve to the new canonical naming model.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 export const PERMISSION_ACQUISITION_TYPES = [
   'assignment',
   'public_request',
@@ -410,10 +430,50 @@ function permissionAccessForAudience(audience: PermissionAudience) {
 }
 
 export function stripPermissionAudience(name: string): string {
+  /**
+   * ::neup.documentation::neup-account-permission-catalog-strip-audience
+   * ::function stripPermissionAudience(name)
+   *
+   * Removes the canonical permission audience suffix from a permission name.
+   *
+   * ::public
+   *
+   * Recognized suffixes are `.self`, `.managed`, and `.root`.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Names without one of those suffixes are returned unchanged.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   return name.replace(/\.(self|managed|root)$/u, '');
 }
 
 export function getCanonicalPermissionAudience(name: string): PermissionAudience | null {
+  /**
+   * ::neup.documentation::neup-account-permission-catalog-get-audience
+   * ::function getCanonicalPermissionAudience(name)
+   *
+   * Returns the canonical audience encoded in a permission name.
+   *
+   * ::public
+   *
+   * The audience is one of `self`, `managed`, or `root`, or `null` when the permission is not canonicalized.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * This helper is used by permission checkers to decide when a name already carries audience context.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   if (name.endsWith('.self')) return 'self';
   if (name.endsWith('.managed')) return 'managed';
   if (name.endsWith('.root')) return 'root';
@@ -481,6 +541,26 @@ export function resolveNeupAccountPermissionCandidates(
   permissionName: string,
   context: PermissionResolutionContext,
 ): string[] {
+  /**
+   * ::neup.documentation::neup-account-permission-catalog-resolve-candidates
+   * ::function resolveNeupAccountPermissionCandidates(permissionName, context)
+   *
+   * Expands a permission name into the canonical candidates that should satisfy it in a given context.
+   *
+   * ::public
+   *
+   * Callers can pass either a legacy base permission or a canonical permission; canonical names are returned unchanged.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * The expansion prefers audience variants appropriate to the requested resolution context such as `managed` or `selfOrRoot`.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const trimmed = permissionName.trim();
   if (!trimmed) return [];
 

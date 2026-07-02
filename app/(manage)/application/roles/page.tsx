@@ -20,6 +20,26 @@ type Props = {
   searchParams: Promise<{ application?: string | string[]; mode?: string }>;
 };
 
+/**
+ * ::neup.documentation::manage-application-roles-page
+ * ::title Application Roles Page
+ *
+ * Server page for viewing and managing one application's roles and permissions.
+ *
+ * ::public
+ *
+ * This page resolves the target application, checks role-view access, and renders the roles panel with current role data.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * Role-management, push-reset permissions, and default-role data are all loaded server-side so the panel can render in one pass.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const { application, mode } = await searchParams;
   const applicationId = getQueryParam(application);

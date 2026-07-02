@@ -1,5 +1,6 @@
 'use server';
 
+import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { getUserProfile, checkPermissions, getUserNeupIds } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
@@ -7,6 +8,31 @@ import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { activityAction } from '@/services/activity-action';
 
+const servicePermissions = [
+    permission('requests.root_approval.view', 'for_individual', 'service'),
+    permission('requests.root_approval.approve', 'for_individual', 'service'),
+];
+
+/**
+ * ::neup.documentation::manage-kyc-requests-module
+ * ::title KYC Request Service
+ *
+ * Loads and processes pending KYC approval requests.
+ *
+ * ::public
+ *
+ * Use this service from root request-review surfaces to inspect submitted KYC evidence and approve or reject the request.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * Approval updates both the request row and the target account verification flag, while rejection only updates the request state and logs activity.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 export type KycRequest = {
     id: string;
     accountId: string;
@@ -24,6 +50,26 @@ export type KycRequest = {
  * Function getPendingKycRequests.
  */
 export async function getPendingKycRequests(): Promise<KycRequest[]> {
+    /**
+     * ::neup.documentation::manage-kyc-requests-get-pending
+     * ::function getPendingKycRequests()
+     *
+     * Returns the pending KYC requests awaiting review.
+     *
+     * ::public
+     *
+     * Each result includes the requester account, their NeupID, document type, submitted time, and evidence URLs.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * Request data is assembled from pending `request` rows plus profile and NeupID lookups for the sender account.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     const canView = await checkPermissions(['requests.root_approval.view']);
     if (!canView) return [];
 
@@ -74,6 +120,26 @@ export async function getPendingKycRequests(): Promise<KycRequest[]> {
  * Function approveKycRequest.
  */
 export async function approveKycRequest(kycId: string, accountId: string): Promise<{ success: boolean; error?: string }> {
+    /**
+     * ::neup.documentation::manage-kyc-requests-approve
+     * ::function approveKycRequest(kycId, accountId)
+     *
+     * Approves a pending KYC request and marks the account as verified.
+     *
+     * ::public
+     *
+     * Use this when a reviewer accepts the submitted KYC evidence for an account.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * The request status and account verification flag are updated in one transaction, followed by activity logging and route revalidation.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     const canApprove = await checkPermissions(['requests.root_approval.approve']);
     if (!canApprove) return { success: false, error: 'Permission denied.' };
 
@@ -103,6 +169,26 @@ export async function approveKycRequest(kycId: string, accountId: string): Promi
  * Function rejectKycRequest.
  */
 export async function rejectKycRequest(kycId: string, accountId: string, reason: string): Promise<{ success: boolean; error?: string }> {
+    /**
+     * ::neup.documentation::manage-kyc-requests-reject
+     * ::function rejectKycRequest(kycId, accountId, reason)
+     *
+     * Rejects a pending KYC request.
+     *
+     * ::public
+     *
+     * Use this when the submitted KYC evidence is insufficient or invalid.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * Rejection records the new request status and logs the reviewer-supplied reason in the activity stream.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     const canDeny = await checkPermissions(['requests.root_approval.approve']);
     if (!canDeny) return { success: false, error: 'Permission denied.' };
 

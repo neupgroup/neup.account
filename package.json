@@ -11,6 +11,7 @@
     "normalize:authz-role-permissions": "tsx prisma/scripts/normalize-authz-role-permissions.ts",
     "rename:neup-account-self-permissions": "tsx prisma/scripts/rename-neup-account-self-permissions.ts",
     "backfill:individual-default-role": "tsx prisma/scripts/backfill-individual-default-role.ts",
+    "neup": "tsx logica/core/neup.ts",
     "getRoles": "node logica/core/getRoles.mjs",
     "postRoles": "node logica/core/postRoles.mjs",
     "grant-root": "tsx prisma/grant-root.ts",

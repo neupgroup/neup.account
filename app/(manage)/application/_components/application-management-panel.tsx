@@ -55,6 +55,26 @@ function toTextareaValue(value?: string) {
   return value ?? '';
 }
 
+/**
+ * ::neup.documentation::application-management-panel-component
+ * ::title Application Management Panel
+ *
+ * Client-side management panel for application secrets, access subscriptions, policies, endpoints, and authz webhook settings.
+ *
+ * ::public
+ *
+ * The panel lets managers generate a secret key, choose subscribed account fields, edit policy text, configure public/API endpoints, and maintain the authz webhook URL.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * Each section persists independently through dedicated server actions and uses local pending state to avoid cross-section save collisions.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 export function ApplicationManagementPanel({ application }: { application: ManagedApplication }) {
   const { toast } = useToast();
   const [pendingSection, setPendingSection] = useState<string | null>(null);

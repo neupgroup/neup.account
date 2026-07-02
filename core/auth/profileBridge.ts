@@ -5,6 +5,26 @@ import { hasAnyPermission, PROFILE_SECTION_PERMISSIONS } from '@/core/auth/profi
 import { validateAuthSession } from '@/services/auth/session';
 import { getAccountPermission, getGrantedAccountPermission, getUserProfile } from '@/services/user';
 
+/**
+ * ::neup.documentation::profile-bridge-module
+ * ::title Profile Bridge Service
+ *
+ * Resolves bridge-safe display profile payloads from either auth-session headers or temporary grant tokens.
+ *
+ * ::public
+ *
+ * This service supports both standard signed requests and temporary bridge grant flows when resolving a target profile.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The service enforces display-profile authorization only and intentionally returns structured HTTP status/body tuples for route handlers to forward unchanged.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 type BridgeGetProfileInput = {
   tempToken?: string | null;
   appId?: string | null;
@@ -21,6 +41,26 @@ type BridgeGetProfileResult = {
 };
 
 async function resolveAuthenticatedAccountId(input: BridgeGetProfileInput): Promise<string | null> {
+  /**
+   * ::neup.documentation::profile-bridge-resolve-authenticated-account-id
+   * ::function resolveAuthenticatedAccountId(input)
+   *
+   * Resolves the authenticated bridge account from either a temp token flow or auth-session headers.
+   *
+   * ::public
+   *
+   * Temporary grant tokens are accepted only when paired with the expected `appId`.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Header-based auth requires a valid `aid`/`sid`/`skey` session triplet validated through the auth-session service.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const tempToken = input.tempToken?.trim();
   const appId = input.appId?.trim();
 
@@ -59,6 +99,26 @@ async function resolveAuthenticatedAccountId(input: BridgeGetProfileInput): Prom
 }
 
 async function resolveTargetAccountId(input: BridgeGetProfileInput, authenticatedAccountId: string) {
+  /**
+   * ::neup.documentation::profile-bridge-resolve-target-account-id
+   * ::function resolveTargetAccountId(input, authenticatedAccountId)
+   *
+   * Resolves which profile account should be returned for the bridge request.
+   *
+   * ::public
+   *
+   * The request may target an explicit account ID, a NeupID, or default to the authenticated account.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * NeupID lookups are normalized to lowercase before hitting storage.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const requestedAid = input.requestedAid?.trim();
   if (requestedAid) return requestedAid;
 
@@ -74,6 +134,36 @@ async function resolveTargetAccountId(input: BridgeGetProfileInput, authenticate
 }
 
 export async function bridgeGetProfile(input: BridgeGetProfileInput): Promise<BridgeGetProfileResult> {
+  /**
+   * ::neup.documentation::profile-bridge-get-profile
+   * ::function bridgeGetProfile(input)
+   *
+   * Returns a bridge-safe display profile payload for the authenticated or requested account.
+   *
+   * ::public
+   *
+   * The success payload includes account ID, display name, display photo, primary NeupID, verification flag, and account type.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Authorization merges direct and granted permissions, then requires display-profile access before reading the target profile.
+   *
+   * ::private end
+   *
+   * ::param external input
+   * ::datatype object
+   * ::required true
+   *
+   * Bridge request inputs including temp-token fields, optional requested account fields, and session headers.
+   *
+   * ::returns BridgeGetProfileResult
+   *
+   * Structured HTTP status/body tuple for the route layer.
+   *
+   * ::end
+   */
   const authenticatedAccountId = await resolveAuthenticatedAccountId(input);
   if (!authenticatedAccountId) {
     return { status: 401, body: { success: false, error: 'invalid_session' } };

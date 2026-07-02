@@ -1,5 +1,6 @@
 'use server';
 
+import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { getPersonalAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
@@ -17,11 +18,68 @@ import { extractGenderFromDetails, resolveDisplayImage } from '@/core/helpers/di
 import { assertHasAnyPermission, assertHasProfileDisplayPermission } from '@/core/auth/profile-permissions';
 import { createNotification } from '@/services/notifications';
 
+const servicePermissions = [
+    permission('profile.display.view.self', 'for_individual', 'service'),
+    permission('profile.display.update.self', 'for_individual', 'service'),
+    permission('profile.display.view.managed', 'for_individual', 'service'),
+    permission('profile.display.update.managed', 'for_individual', 'service'),
+    permission('profile.display.view.root', 'for_individual', 'service'),
+    permission('profile.display.update.root', 'for_individual', 'service'),
+    permission('profile.contact.view', 'for_individual', 'service'),
+    permission('profile.contact.update', 'for_individual', 'service'),
+    permission('profile.neupid.view', 'for_individual', 'service'),
+    permission('profile.neupid.update', 'for_individual', 'service'),
+    permission('profile.neupid.request', 'for_individual', 'service'),
+    permission('profile.neupid.remove', 'for_individual', 'service'),
+    permission('profile.legal.update', 'for_individual', 'service'),
+    permission('profile.demographics.update', 'for_individual', 'service'),
+];
+
+/**
+ * ::neup.documentation::profile-service-module
+ * ::title Profile Service
+ *
+ * Provides profile-facing read and write helpers for display data, contacts, NeupIDs, and brand profile updates.
+ *
+ * ::public
+ *
+ * This module powers profile-edit screens, public/profile bridge payload composition, display-image history, and brand-profile update flows.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The service mixes direct account writes, request creation, activity logging, notifications, and downstream account-update dispatching.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 
 /**
  * Function getDisplayNameSuggestions.
  */
 export async function getDisplayNameSuggestions(accountId: string): Promise<string[]> {
+    /**
+     * ::neup.documentation::profile-service-get-display-name-suggestions
+     * ::function getDisplayNameSuggestions(accountId)
+     *
+     * Returns suggested display names for one account based on its current profile data.
+     *
+     * ::public
+     *
+     * Individual accounts get suggestions derived from first, middle, and last name combinations, while brand accounts use brand and legal names.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * Access is gated through the display-profile view permission for the target account.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     await assertHasProfileDisplayPermission(accountId, 'view');
     const profile = await getUserProfile(accountId);
     if (!profile) return [];
@@ -139,6 +197,26 @@ export async function getPublicDisplayImages(accountId: string): Promise<PublicD
 }
 
 export async function getProfileContacts(accountId: string) {
+    /**
+     * ::neup.documentation::profile-service-get-profile-contacts
+     * ::function getProfileContacts(accountId)
+     *
+     * Returns the contact fields stored for one account.
+     *
+     * ::public
+     *
+     * The result is a key-value object indexed by contact type, such as phone and location entries.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * Callers must satisfy either contact-view or contact-update permission before the lookup is allowed.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     await assertHasAnyPermission(['profile.contact.view', 'profile.contact.update']);
     const rows = await prisma.contact.findMany({
         where: { accountId },
@@ -153,6 +231,26 @@ export async function getProfileContacts(accountId: string) {
 }
 
 export async function getProfileNeupIds(accountId: string) {
+    /**
+     * ::neup.documentation::profile-service-get-profile-neup-ids
+     * ::function getProfileNeupIds(accountId)
+     *
+     * Returns the NeupID records attached to one account.
+     *
+     * ::public
+     *
+     * Use this helper when profile screens need more than the primary NeupID string.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * Access is allowed only when one of the NeupID view/update/request/remove permissions is available.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     await assertHasAnyPermission(['profile.neupid.view', 'profile.neupid.update', 'profile.neupid.request', 'profile.neupid.remove']);
     return prisma.neupId.findMany({
         where: { accountId },
@@ -195,6 +293,26 @@ async function updateOrCreateContact(tx: any, accountId: string, type: string, v
  * Function updateUserProfile.
  */
 export async function updateUserProfile(accountId: string, data: Record<string, any>, geolocation?: string) {
+    /**
+     * ::neup.documentation::profile-service-update-user-profile
+     * ::function updateUserProfile(accountId, data, geolocation)
+     *
+     * Updates an individual account profile, contacts, display image, and optional NeupID request state.
+     *
+     * ::public
+     *
+     * This is the main profile-update entry point for display, legal, demographic, contact, and new-NeupID-request flows.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * The implementation evaluates section-specific permissions, performs transactional writes, logs activity and notifications, and dispatches downstream account update events.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     const actorAccountId = await getPersonalAccountId();
     const wantsDisplayUpdate = data.accountPhoto !== undefined || data.nameDisplay !== undefined || data.customDisplayNameRequest !== undefined;
     const wantsLegalUpdate = data.nameFirst !== undefined || data.nameMiddle !== undefined || data.nameLast !== undefined;
@@ -585,6 +703,26 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
  * Function updateBrandProfile.
  */
 export async function updateBrandProfile(accountId: string, data: z.infer<typeof brandProfileFormSchema>, locationString?: string) {
+    /**
+     * ::neup.documentation::profile-service-update-brand-profile
+     * ::function updateBrandProfile(accountId, data, locationString)
+     *
+     * Updates the editable brand-profile fields for one account.
+     *
+     * ::public
+     *
+     * The update can change display name, display image, legal-entity state, legal name, registration ID, origin country, and establishment date.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * Legal-name changes can also update the display name when the previous display name matched the prior legal name.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     const personalAccountId = await getPersonalAccountId();
     if (!personalAccountId) {
         return { success: false, error: "User not authenticated." };
@@ -697,6 +835,26 @@ export async function updateBrandLegalProfile(
     data: z.infer<typeof brandLegalFormSchema>,
     locationString?: string,
 ) {
+    /**
+     * ::neup.documentation::profile-service-update-brand-legal-profile
+     * ::function updateBrandLegalProfile(accountId, data, locationString)
+     *
+     * Updates the legal-profile fields for a brand account.
+     *
+     * ::public
+     *
+     * This helper is used when the legal-entity-specific brand information must be changed with delegated-account support.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * Permission checks distinguish self updates from managed-account updates before validating and persisting the new legal data.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     const personalAccountId = await getPersonalAccountId();
     if (!personalAccountId) {
         return { success: false, error: "User not authenticated." };

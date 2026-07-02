@@ -1,8 +1,13 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { permission } from '@/logica/permission';
 import { getApplicationUsers } from '@/services/bridge/application-users';
 import { validateSilentSsoOrigin } from '@/services/auth/silent-sso';
 import prisma from '@/core/helpers/prisma';
 import { writeApplicationDevLog } from '@/services/bridge/dev-logs';
+
+const routePermissions = [
+  permission('application.user.view', 'for_individual'),
+];
 
 export const dynamic = 'force-dynamic';
 

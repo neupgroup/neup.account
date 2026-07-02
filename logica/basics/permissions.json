@@ -1,9 +1,413 @@
 [
   {
-    "id": "ad84637a-17d4-4c2d-b34c-516785b2d32e",
-    "title": "notification.read",
+    "id": "cap-def-access-application-add-managed",
+    "title": "access.application.add.managed",
     "description": null,
     "scope": null,
+    "scopeFor": [],
+    "scopeLevel": [],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "access.application.add.managed",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 17,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "access.application.add.managed",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 28,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "access.application.add.managed",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 39,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "access.application.add.managed",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 50,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "access.application.add.managed",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 58,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-access-application-add-root",
+    "title": "access.application.add.root",
+    "description": null,
+    "scope": null,
+    "scopeFor": [],
+    "scopeLevel": [],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "access.application.add.root",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 18,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "access.application.add.root",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 29,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "access.application.add.root",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 40,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "access.application.add.root",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 51,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "access.application.add.root",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 59,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-access-application-add-self",
+    "title": "access.application.add.self",
+    "description": null,
+    "scope": null,
+    "scopeFor": [],
+    "scopeLevel": [],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "access.application.add.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 16,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "access.application.add.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 27,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "access.application.add.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 38,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "access.application.add.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 49,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "access.application.add.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 57,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-access-connection-create-brand-managed",
+    "title": "access.connection.create.brand.managed",
+    "description": null,
+    "scope": null,
+    "scopeFor": [],
+    "scopeLevel": [],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "access.connection.create.brand.managed",
+        "scope": "for_brand",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 22,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "access.connection.create.brand.managed",
+        "scope": "for_brand",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 33,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "access.connection.create.brand.managed",
+        "scope": "for_brand",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 44,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-access-connection-create-brand-root",
+    "title": "access.connection.create.brand.root",
+    "description": null,
+    "scope": null,
+    "scopeFor": [],
+    "scopeLevel": [],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "access.connection.create.brand.root",
+        "scope": "for_brand",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 23,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "access.connection.create.brand.root",
+        "scope": "for_brand",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 34,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "access.connection.create.brand.root",
+        "scope": "for_brand",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 45,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-access-connection-create-brand-self",
+    "title": "access.connection.create.brand.self",
+    "description": null,
+    "scope": null,
+    "scopeFor": [],
+    "scopeLevel": [],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "access.connection.create.brand.self",
+        "scope": "for_brand",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 21,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "access.connection.create.brand.self",
+        "scope": "for_brand",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 32,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "access.connection.create.brand.self",
+        "scope": "for_brand",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 43,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-access-connection-create-dependent-managed",
+    "title": "access.connection.create.dependent.managed",
+    "description": "Allows a manager to create an application connection for a managed dependent account.",
+    "scope": [
+      "managed.individual"
+    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -14,13 +418,270 @@
     "approvalPolicy": "none",
     "rules": null,
     "status": null,
-    "tag": "default"
+    "tag": null,
+    "usages": [
+      {
+        "permission": "access.connection.create.dependent.managed",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 55,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
   },
   {
-    "id": "cap-def-payment-method-show",
-    "title": "payment.method.show",
+    "id": "cap-def-access-connection-create-dependent-root",
+    "title": "access.connection.create.dependent.root",
     "description": null,
-    "scope": "managed.brand",
+    "scope": null,
+    "scopeFor": [],
+    "scopeLevel": [],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "access.connection.create.dependent.root",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 56,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-access-connection-create-dependent-self",
+    "title": "access.connection.create.dependent.self",
+    "description": "Allows the account holder to create an application connection for their dependent account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "access.connection.create.dependent.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 54,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-access-connection-create-individual-managed",
+    "title": "access.connection.create.individual.managed",
+    "description": null,
+    "scope": null,
+    "scopeFor": [],
+    "scopeLevel": [],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "access.connection.create.individual.managed",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 14,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-access-connection-create-individual-root",
+    "title": "access.connection.create.individual.root",
+    "description": null,
+    "scope": null,
+    "scopeFor": [],
+    "scopeLevel": [],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "access.connection.create.individual.root",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 15,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-access-connection-create-individual-self",
+    "title": "access.connection.create.individual.self",
+    "description": null,
+    "scope": null,
+    "scopeFor": [],
+    "scopeLevel": [],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "access.connection.create.individual.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 13,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-access-connection-view-self",
+    "title": "access.connection.view.self",
+    "description": "Allows the account holder to view access connection for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "access.connection.view.self",
+        "scope": "for_individual",
+        "file": "services/bridge/connection-members.ts",
+        "line": 13,
+        "column": 3,
+        "route": null,
+        "type": "unknown",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "access.connection.view.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/access/connection/route.ts",
+        "line": 6,
+        "column": 3,
+        "route": "/bridge/api.v1/access/connection",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-access-team-view",
+    "title": "access.team.view",
+    "description": null,
+    "scope": [
+      "public.individual",
+      "root.individual",
+      "managed.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "access.team.view",
+        "scope": "for_individual",
+        "file": "services/bridge/application-team.ts",
+        "line": 14,
+        "column": 3,
+        "route": null,
+        "type": "unknown",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "access.team.view",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/access/team/route.ts",
+        "line": 7,
+        "column": 3,
+        "route": "/bridge/api.v1/access/team",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "c8d5c179-9c62-4745-ab10-d0f1cf2f627a",
+    "title": "access.view",
+    "description": null,
+    "scope": "public.brand,managed.brand,root.individual",
     "scopeFor": [
       "for_brand"
     ],
@@ -31,13 +692,243 @@
     "approvalPolicy": "none",
     "rules": null,
     "status": null,
-    "tag": "default"
+    "tag": null,
+    "usages": [
+      {
+        "permission": "access.view",
+        "scope": "for_individual",
+        "file": "services/bridge/application-team.ts",
+        "line": 13,
+        "column": 3,
+        "route": null,
+        "type": "unknown",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "access.view",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/access/team/route.ts",
+        "line": 6,
+        "column": 3,
+        "route": "/bridge/api.v1/access/team",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
   },
   {
-    "id": "cap-def-payment-purchase-neup-pro-view",
-    "title": "payment.purchase_neup_pro.view",
+    "id": "cap-appmanage-application-roles-manage",
+    "title": "application.roles.manage",
+    "description": "Create, update, and delete application roles and permissions.",
+    "scope": "public.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "application",
+    "usages": [
+      {
+        "permission": "application.roles.manage",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/app/permissions/route.ts",
+        "line": 7,
+        "column": 3,
+        "route": "/bridge/api.v1/app/permissions",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "application.roles.manage",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/app/roles/route.ts",
+        "line": 7,
+        "column": 3,
+        "route": "/bridge/api.v1/app/roles",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-appmanage-application-roles-view",
+    "title": "application.roles.view",
+    "description": "View application roles and permissions.",
+    "scope": "public.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "application",
+    "usages": [
+      {
+        "permission": "application.roles.view",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/app/permissions/route.ts",
+        "line": 6,
+        "column": 3,
+        "route": "/bridge/api.v1/app/permissions",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "application.roles.view",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/app/roles/route.ts",
+        "line": 6,
+        "column": 3,
+        "route": "/bridge/api.v1/app/roles",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "application.roles.view",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/application/roles/route.ts",
+        "line": 6,
+        "column": 3,
+        "route": "/bridge/api.v1/application/roles",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-appmanage-15-application-user-view",
+    "title": "application.user.view",
+    "description": "View connected users for the application.",
+    "scope": "public.individual",
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "application.user.view",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/application/access/route.ts",
+        "line": 6,
+        "column": 3,
+        "route": "/bridge/api.v1/application/access",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "application.user.view",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/application/users/route.ts",
+        "line": 9,
+        "column": 3,
+        "route": "/bridge/api.v1/application/users",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-brand-platforms-manage",
+    "title": "brand.platforms.manage",
     "description": null,
-    "scope": "managed.brand",
+    "scope": null,
+    "scopeFor": [],
+    "scopeLevel": [],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "brand.platforms.manage",
+        "scope": "for_brand",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 24,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "brand.platforms.manage",
+        "scope": "for_brand",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 35,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "brand.platforms.manage",
+        "scope": "for_brand",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 46,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "a7940d87-1545-44fb-a721-8c77ee63f773",
+    "title": "linked_accounts.brand.manage",
+    "description": null,
+    "scope": "public.brand",
     "scopeFor": [
       "for_brand"
     ],
@@ -48,13 +939,54 @@
     "approvalPolicy": "none",
     "rules": null,
     "status": null,
-    "tag": "default"
+    "tag": "brand",
+    "usages": [
+      {
+        "permission": "linked_accounts.brand.manage",
+        "scope": "for_brand",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 25,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "linked_accounts.brand.manage",
+        "scope": "for_brand",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 36,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "linked_accounts.brand.manage",
+        "scope": "for_brand",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 47,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
   },
   {
-    "id": "cap-def-payment-subscriptions-show",
-    "title": "payment.subscriptions.show",
+    "id": "797d4cb6-2cb8-42b8-8926-0749e77bfc5f",
+    "title": "linked_accounts.brand.manager",
     "description": null,
-    "scope": "managed.brand",
+    "scope": "public.brand",
     "scopeFor": [
       "for_brand"
     ],
@@ -65,83 +997,56 @@
     "approvalPolicy": "none",
     "rules": null,
     "status": null,
-    "tag": "default"
-  },
-  {
-    "id": "cap-def-payment-transactions-show",
-    "title": "payment.transactions.show",
-    "description": null,
-    "scope": "managed.brand",
-    "scopeFor": [
-      "for_brand"
-    ],
-    "scopeLevel": [
-      "assignable"
-    ],
-    "acquisitionType": "assignment",
-    "approvalPolicy": "none",
-    "rules": null,
-    "status": null,
-    "tag": "default"
-  },
-  {
-    "id": "b13c1907-633d-4cc1-bbd3-0eeeee73e53c",
-    "title": "requests.root_approval.view",
-    "description": null,
-    "scope": null,
-    "scopeFor": [
-      "for_individual"
-    ],
-    "scopeLevel": [
-      "assignable"
-    ],
-    "acquisitionType": "assignment",
-    "approvalPolicy": "none",
-    "rules": null,
-    "status": null,
-    "tag": null
-  },
-  {
-    "id": "ec92d6d9-4eeb-444a-9a80-e4f710e34f6e",
-    "title": "root.account.view",
-    "description": null,
-    "scope": null,
-    "scopeFor": [
-      "for_individual"
-    ],
-    "scopeLevel": [
-      "assignable"
-    ],
-    "acquisitionType": "assignment",
-    "approvalPolicy": "none",
-    "rules": null,
-    "status": null,
-    "tag": null
-  },
-  {
-    "id": "6b129d35-e53d-4d67-918b-177ffa38b291",
-    "title": "root.display_images.add",
-    "description": "Add the public display images.",
-    "scope": null,
-    "scopeFor": [
-      "for_individual"
-    ],
-    "scopeLevel": [
-      "assignable"
-    ],
-    "acquisitionType": "assignment",
-    "approvalPolicy": "none",
-    "rules": null,
-    "status": null,
-    "tag": [
-      "root"
+    "tag": "brand",
+    "usages": [
+      {
+        "permission": "linked_accounts.brand.manager",
+        "scope": "for_brand",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 26,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "linked_accounts.brand.manager",
+        "scope": "for_brand",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 37,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "linked_accounts.brand.manager",
+        "scope": "for_brand",
+        "file": "app/bridge/api.v1/accounts/route.ts",
+        "line": 48,
+        "column": 9,
+        "route": "/bridge/api.v1/accounts",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
     ]
   },
   {
-    "id": "1b6c8c9c-ffde-4748-85d8-ef9f6daa0f52",
-    "title": "root.display_images.delete",
-    "description": "Delete the public images.",
-    "scope": null,
+    "id": "cap-def-profile-contact-update-self",
+    "title": "profile.contact.update.self",
+    "description": "Allows the account holder to update profile contact for their own account.",
+    "scope": [
+      "public.individual"
+    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -152,15 +1057,30 @@
     "approvalPolicy": "none",
     "rules": null,
     "status": null,
-    "tag": [
-      "root"
+    "tag": null,
+    "usages": [
+      {
+        "permission": "profile.contact.update.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/signed/route.ts",
+        "line": 27,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/signed",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
     ]
   },
   {
-    "id": "99f4ed39-d884-4c15-af77-f6f89554d664",
-    "title": "root.display_images.update",
-    "description": "Update the name of the image.",
-    "scope": null,
+    "id": "cap-def-profile-contact-view-self",
+    "title": "profile.contact.view.self",
+    "description": "Allows the account holder to view profile contact for their own account.",
+    "scope": [
+      "public.individual"
+    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -171,15 +1091,30 @@
     "approvalPolicy": "none",
     "rules": null,
     "status": null,
-    "tag": [
-      "root"
+    "tag": null,
+    "usages": [
+      {
+        "permission": "profile.contact.view.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/signed/route.ts",
+        "line": 26,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/signed",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
     ]
   },
   {
-    "id": "9e14a069-1803-4654-8c07-fbb7c7943807",
-    "title": "root.display_images.view",
-    "description": "View the root public image.s",
-    "scope": null,
+    "id": "cap-def-profile-demographics-update-self",
+    "title": "profile.demographics.update.self",
+    "description": "Allows the account holder to update profile demographics for their own account.",
+    "scope": [
+      "public.individual"
+    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -190,15 +1125,30 @@
     "approvalPolicy": "none",
     "rules": null,
     "status": null,
-    "tag": [
-      "root"
+    "tag": null,
+    "usages": [
+      {
+        "permission": "profile.demographics.update.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/signed/route.ts",
+        "line": 21,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/signed",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
     ]
   },
   {
-    "id": "cap-root-root-payment-config-view",
-    "title": "root.payment_config.view",
-    "description": null,
-    "scope": null,
+    "id": "cap-def-profile-demographics-view-self",
+    "title": "profile.demographics.view.self",
+    "description": "Allows the account holder to view profile demographics for their own account.",
+    "scope": [
+      "public.individual"
+    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -209,8 +1159,575 @@
     "approvalPolicy": "none",
     "rules": null,
     "status": null,
-    "tag": [
-      "root"
+    "tag": null,
+    "usages": [
+      {
+        "permission": "profile.demographics.view.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/signed/route.ts",
+        "line": 20,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/signed",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-profile-display-update-managed",
+    "title": "profile.display.update.managed",
+    "description": "Allows a manager to update the display information of a managed account.",
+    "scope": [
+      "managed.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default",
+    "usages": [
+      {
+        "permission": "profile.display.update.managed",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/public/route.ts",
+        "line": 12,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/public",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "profile.display.update.managed",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/signed/route.ts",
+        "line": 15,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/signed",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-root-profile-display-update-root",
+    "title": "profile.display.update.root",
+    "description": "Allows a root manager to update the display information of any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "profile.display.update.root",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/public/route.ts",
+        "line": 14,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/public",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "profile.display.update.root",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/signed/route.ts",
+        "line": 17,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/signed",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-profile-display-update-self",
+    "title": "profile.display.update.self",
+    "description": "Allows the account holder to update their own account display information.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default",
+    "usages": [
+      {
+        "permission": "profile.display.update.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/public/route.ts",
+        "line": 10,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/public",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "profile.display.update.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/signed/route.ts",
+        "line": 13,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/signed",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-profile-display-view-managed",
+    "title": "profile.display.view.managed",
+    "description": "Allows a manager to view the display information of a managed account.",
+    "scope": [
+      "managed.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default",
+    "usages": [
+      {
+        "permission": "profile.display.view.managed",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/public/route.ts",
+        "line": 11,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/public",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "profile.display.view.managed",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/signed/route.ts",
+        "line": 14,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/signed",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-root-profile-display-view-root",
+    "title": "profile.display.view.root",
+    "description": "Allows a root manager to view the display information of any account in the system.",
+    "scope": [
+      "root.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "profile.display.view.root",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/public/route.ts",
+        "line": 13,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/public",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "profile.display.view.root",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/signed/route.ts",
+        "line": 16,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/signed",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-profile-display-view-self",
+    "title": "profile.display.view.self",
+    "description": "Allows the account holder to view their own account display information.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": "default",
+    "usages": [
+      {
+        "permission": "profile.display.view.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/public/route.ts",
+        "line": 9,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/public",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      },
+      {
+        "permission": "profile.display.view.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/signed/route.ts",
+        "line": 12,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/signed",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-profile-kyc-update-self",
+    "title": "profile.kyc.update.self",
+    "description": "Allows the account holder to update profile KYC for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "profile.kyc.update.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/signed/route.ts",
+        "line": 29,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/signed",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-profile-kyc-view-self",
+    "title": "profile.kyc.view.self",
+    "description": "Allows the account holder to view profile KYC for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "profile.kyc.view.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/signed/route.ts",
+        "line": 28,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/signed",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-profile-legal-update-self",
+    "title": "profile.legal.update.self",
+    "description": "Allows the account holder to update profile legal for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "profile.legal.update.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/signed/route.ts",
+        "line": 19,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/signed",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-profile-legal-view-self",
+    "title": "profile.legal.view.self",
+    "description": "Allows the account holder to view profile legal for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "profile.legal.view.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/signed/route.ts",
+        "line": 18,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/signed",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-profile-neupid-remove-self",
+    "title": "profile.neupid.remove.self",
+    "description": "Allows the account holder to remove profile NeupID for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "profile.neupid.remove.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/signed/route.ts",
+        "line": 25,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/signed",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-profile-neupid-request-self",
+    "title": "profile.neupid.request.self",
+    "description": "Allows the account holder to request profile NeupID for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "profile.neupid.request.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/signed/route.ts",
+        "line": 24,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/signed",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-profile-neupid-update-self",
+    "title": "profile.neupid.update.self",
+    "description": "Allows the account holder to update profile NeupID for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "profile.neupid.update.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/signed/route.ts",
+        "line": 23,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/signed",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
+    ]
+  },
+  {
+    "id": "cap-def-profile-neupid-view-self",
+    "title": "profile.neupid.view.self",
+    "description": "Allows the account holder to view profile NeupID for their own account.",
+    "scope": [
+      "public.individual"
+    ],
+    "scopeFor": [
+      "for_individual"
+    ],
+    "scopeLevel": [
+      "assignable"
+    ],
+    "acquisitionType": "assignment",
+    "approvalPolicy": "none",
+    "rules": null,
+    "status": null,
+    "tag": null,
+    "usages": [
+      {
+        "permission": "profile.neupid.view.self",
+        "scope": "for_individual",
+        "file": "app/bridge/api.v1/profile/signed/route.ts",
+        "line": 22,
+        "column": 5,
+        "route": "/bridge/api.v1/profile/signed",
+        "type": "route",
+        "function": null,
+        "class": null,
+        "component": null,
+        "method": null
+      }
     ]
   }
 ]

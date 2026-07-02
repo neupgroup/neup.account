@@ -1,5 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { permission } from '@/logica/permission';
 import { getConnectionMembers } from '@/services/bridge/connection-members';
+
+const routePermissions = [
+  permission('access.connection.view.self', 'for_individual', 'api'),
+];
 
 export const dynamic = 'force-dynamic';
 

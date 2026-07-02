@@ -1,10 +1,36 @@
 
 'use server';
 
+import { permission } from '@/logica/permission';
 import { logError } from '@/core/helpers/logger';
 import { checkPermissions } from '@/services/user';
 import prisma from '@/core/helpers/prisma';
 
+const servicePermissions = [
+    permission('root.account.search', 'for_individual', 'service'),
+    permission('root.permission.view', 'for_individual', 'service'),
+];
+
+/**
+ * ::neup.documentation::search-service-module
+ * ::title Global Search Service
+ *
+ * Provides the lightweight cross-entity search used by manage surfaces.
+ *
+ * ::public
+ *
+ * This service currently searches user accounts and account-app permission records and returns a normalized result list.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The implementation is intentionally simple and database-backed; it does not use a dedicated search index.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 export type SearchResult = {
     id: string;
     type: 'user' | 'permission';
@@ -17,6 +43,26 @@ export type SearchResult = {
 // A very basic search function. In a real-world scenario,
 // you would use a dedicated search service like Algolia, Typesense, or Elasticsearch.
 export async function searchAll(query: string): Promise<SearchResult[]> {
+    /**
+     * ::neup.documentation::search-service-search-all
+     * ::function searchAll(query)
+     *
+     * Searches supported manage entities for the supplied query string.
+     *
+     * ::public
+     *
+     * Results can include users and permissions, depending on the caller's permissions.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * User search combines display-name matches and NeupID matches; permission search scans `authzPermission` rows for the `neup.account` app.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     const lowercasedQuery = query.toLowerCase();
     const results: SearchResult[] = [];
 

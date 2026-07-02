@@ -1,5 +1,6 @@
 "use client";
 
+import { permission } from '@/logica/permission';
 import { useMemo, type ElementType } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ShieldCheck, Laptop, Link, AppWindow } from '@/components/icons';
@@ -11,6 +12,22 @@ import {
     SECURITY_PERMISSION_GROUPS,
 } from '@/core/auth/security-permissions';
 import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/core/auth/linked-account-permissions';
+
+const componentPermissions = [
+    permission('security.pass.modify.self', 'for_individual', 'component'),
+    permission('security.login_devices.view.self', 'for_individual', 'component'),
+    permission('access.linked_account.view.self', 'for_individual', 'component'),
+    permission('access.account.brand.create.self', 'for_individual', 'component'),
+    permission('access.accounts.switch.self', 'for_individual', 'component'),
+    permission('linked_accounts.brand.manage', 'for_brand', 'component'),
+    permission('linked_accounts.brand.manager', 'for_brand', 'component'),
+    permission('access.connection.view.self', 'for_individual', 'component'),
+    permission('access.connection.add.self', 'for_individual', 'component'),
+    permission('access.connection.remove.self', 'for_individual', 'component'),
+    permission('access.application.view.self', 'for_individual', 'component'),
+    permission('access.application.add.self', 'for_individual', 'component'),
+    permission('access.application.remove.self', 'for_individual', 'component'),
+];
 
 type SettingsItem = {
     id: string;

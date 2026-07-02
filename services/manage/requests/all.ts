@@ -6,12 +6,38 @@
 // accountDeletion (uses account.status = 'deletion_requested').
 
 import prisma from '@/core/helpers/prisma';
+import { permission } from '@/logica/permission';
 import { checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import { getUserProfile, getUserNeupIds } from '@/services/user';
 import { getActiveAccountId } from '@/core/auth/verify';
 import { canCurrentAccountViewApplicationRoles } from '@/services/applications/manage';
 import { REQUEST_TYPE_LABELS, UnifiedRequest, GetRequestsOptions } from './types';
+
+const servicePermissions = [
+  permission('requests.root_approval.view', 'for_individual', 'service'),
+];
+
+/**
+ * ::neup.documentation::manage-all-requests-module
+ * ::title Unified Request Service
+ *
+ * Aggregates request-like records from multiple stores into one normalized manage-facing feed.
+ *
+ * ::public
+ *
+ * Use this service when a manage UI needs to list or inspect requests across NeupID, display-name, KYC, application, verification, and deletion workflows.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The service combines data from `request`, `verification`, `account`, and related application/profile tables and applies root or application-scoped access checks before returning data.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 
 // ---------------------------------------------------------------------------
 // Helper — resolve display name from accountId
@@ -66,6 +92,26 @@ function getApplicationChangeScope(
 
 
 export async function getAllRequests(options: GetRequestsOptions = {}): Promise<UnifiedRequest[]> {
+  /**
+   * ::neup.documentation::manage-all-requests-get-all
+   * ::function getAllRequests(options)
+   *
+   * Returns the normalized request feed for the requested scope.
+   *
+   * ::public
+   *
+   * Callers can filter by request type and, for application-related requests, by application ID.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * The feed merges ordinary `request` rows with special-case verification rows and deletion-requested accounts, then sorts them by submitted time.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const { type, application } = options;
   const [activeAccountId, canViewRoot] = await Promise.all([
     getActiveAccountId(),
@@ -308,6 +354,26 @@ export async function getAllRequests(options: GetRequestsOptions = {}): Promise<
 // ---------------------------------------------------------------------------
 
 export async function getRequestDetail(id: string): Promise<UnifiedRequest | null> {
+  /**
+   * ::neup.documentation::manage-all-requests-get-detail
+   * ::function getRequestDetail(id)
+   *
+   * Returns one normalized request detail record by ID.
+   *
+   * ::public
+   *
+   * This helper understands synthetic deletion IDs, verification IDs, and ordinary request-table IDs.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Certain request types are enriched with extra payload data such as current NeupIDs, pending request metadata, or application names before being returned.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const [activeAccountId, canViewRoot] = await Promise.all([
     getActiveAccountId(),
     checkPermissions(['requests.root_approval.view']),

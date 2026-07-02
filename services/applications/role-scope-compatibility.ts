@@ -3,6 +3,26 @@ import { decodeRoleScope, normalizeRoleScopes, scopeCoversRoleScope } from '@/se
 
 export type ProgressiveScopeLevel = 'acMgmt' | 'rootMgmt' | 'unknown';
 
+/**
+ * ::neup.documentation::role-scope-compatibility-module
+ * ::title Role Scope Compatibility Helpers
+ *
+ * Validates whether permission scopes are compatible with a role's configured scope.
+ *
+ * ::public
+ *
+ * Use this module when role-editing surfaces need to prevent attaching permissions whose scopes exceed the role's scope policy.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * Compatibility is evaluated by normalizing both the role scope and permission scopes into the shared role-scope model.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 function normalizeScope(scope: unknown): string {
   const normalized = normalizeRoleScopes(scope);
   if (normalized.length > 0) return normalized.join(', ');
@@ -49,6 +69,26 @@ export function getRoleScopeCompatibilityError(
   roleScope: unknown,
   permissionScopes: readonly unknown[],
 ): string | null {
+  /**
+   * ::neup.documentation::role-scope-compatibility-get-error
+   * ::function getRoleScopeCompatibilityError(roleScope, permissionScopes)
+   *
+   * Returns a human-readable compatibility error for invalid permission scopes on a role.
+   *
+   * ::public
+   *
+   * The function returns `null` when every permission scope is allowed for the role scope.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Invalid scope entries are deduplicated before being formatted into the final error string.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const invalidScopes = getInvalidPermissionScopesForRoleScope(permissionScopes, roleScope);
   if (invalidScopes.length === 0) return null;
 

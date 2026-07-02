@@ -14,6 +14,26 @@ import {
   ACCESS_TEAM_REMOVE_PERMISSIONS,
 } from '@/core/auth/access-view-permissions';
 
+/**
+ * ::neup.documentation::manage-access-actions-module
+ * ::title Asset Access Actions
+ *
+ * Server actions for resolving members, listing assets, and assigning or inviting asset members from the access UI.
+ *
+ * ::public
+ *
+ * This module powers asset-member lookup, selectable-asset discovery, and the direct assign/invite actions used by manage access components.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The implementation enforces account-type restrictions, assignment-mode compatibility, and role/permission rules before mutating asset access.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 export type ResolvedAccount = {
   accountId: string;
   displayName: string;
@@ -22,6 +42,26 @@ export type ResolvedAccount = {
 export async function resolveNeupId(
   neupId: string,
 ): Promise<{ success: true; account: ResolvedAccount } | { success: false; error: string }> {
+  /**
+   * ::neup.documentation::manage-access-actions-resolve-neup-id
+   * ::function resolveNeupId(neupId)
+   *
+   * Resolves a NeupID to an inviteable individual account.
+   *
+   * ::public
+   *
+   * Only individual accounts are considered valid targets for the asset invitation flow.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * The helper lowercases the NeupID before lookup and returns a fallback display label when profile data is incomplete.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   const normalized = neupId.trim().toLowerCase();
   if (!normalized || normalized.length < 3) {
     return { success: false, error: 'NeupID must be at least 3 characters.' };
@@ -195,6 +235,26 @@ export async function getSelectableAssets(
   type: AssetType,
   excludeAssetIds?: string[],
 ): Promise<SelectableAsset[]> {
+  /**
+   * ::neup.documentation::manage-access-actions-get-selectable-assets
+   * ::function getSelectableAssets(type, excludeAssetIds)
+   *
+   * Returns the assets the current account may select for assignment flows.
+   *
+   * ::public
+   *
+   * Supported asset types currently include brand accounts, subbrand accounts, and owned applications.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Excluded asset IDs are filtered after the asset-type-specific source query is resolved.
+   *
+   * ::private end
+   *
+   * ::end
+   */
   let assets: SelectableAsset[];
   switch (type) {
     case 'brand_account':

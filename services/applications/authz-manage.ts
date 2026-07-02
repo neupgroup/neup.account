@@ -22,6 +22,7 @@ The service stores the new `scope_for` / `scope_level` fields directly while sti
 */
 
 import { revalidatePath } from 'next/cache';
+import { permission } from '@/logica/permission';
 import { Prisma } from '@/prisma/generated/client/client';
 import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
@@ -71,6 +72,12 @@ import {
   getAuthzScopePolicyColumnSupport,
   isMissingAuthzScopePolicyColumnError,
 } from '@/services/applications/authz-scope-policy-columns';
+
+const servicePermissions = [
+  permission('application.roles.view.root', 'for_individual', 'service'),
+  permission('application.roles.manage.root', 'for_individual', 'service'),
+  permission('application.roles.resetPush.root', 'for_individual', 'service'),
+];
 
 // ---------------------------------------------------------------------------
 // Types

@@ -1,6 +1,7 @@
 // @ts-nocheck
 'use server';
 
+import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { checkPermissions } from '@/services/user';
@@ -10,6 +11,30 @@ import { resolveDisplayImage } from '@/core/helpers/display-image';
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from '@/services/access-model';
 import type { Prisma } from '@/prisma/generated/client/client';
 
+const servicePermissions = [
+    permission('root.dashboard.view', 'for_individual', 'service'),
+];
+
+/**
+ * ::neup.documentation::manage-accounts-module
+ * ::title Manage Accounts Service
+ *
+ * Provides admin and delegated account listing helpers for the manage surface and bridge consumers.
+ *
+ * ::public
+ *
+ * This module exposes account roster queries, delegated-account lookups, and account-permission summaries used by manage pages and bridge routes.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * Most queries depend on the `access` model and intentionally clean expired grants before reading permission-aware account lists.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 export type UserStats = {
     totalUsers: number;
     activeUsers: number;
@@ -79,6 +104,26 @@ export type AccessibleAccount = StoredAccount & {
  * Deduplicates by accessTo to prevent duplicate entries.
  */
 export async function getAccessibleAccounts(): Promise<AccessibleAccount[]> {
+    /**
+     * ::neup.documentation::manage-accounts-get-accessible-accounts
+     * ::function getAccessibleAccounts()
+     *
+     * Returns the delegated accounts reachable from the current personal account.
+     *
+     * ::public
+     *
+     * Results include selector-ready display fields such as display name, photo, NeupID, and account-type flags.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * Duplicate access grants for the same parent account are collapsed to one result row.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     const personalAccountId = await getPersonalAccountId();
     if (!personalAccountId) return [];
 
@@ -149,6 +194,26 @@ export async function getAccessibleAccounts(): Promise<AccessibleAccount[]> {
  * Function getUserStats.
  */
 export async function getUserStats(): Promise<UserStats> {
+    /**
+     * ::neup.documentation::manage-accounts-get-user-stats
+     * ::function getUserStats()
+     *
+     * Returns root-dashboard summary metrics about accounts and bundled permissions.
+     *
+     * ::public
+     *
+     * The payload includes total users, an approximate active-user count, signups in the last 24 hours, and the count of bundled role definitions.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * The current `activeUsers` value is a simple derived estimate rather than a tracked activity metric.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     const canView = await checkPermissions(['root.dashboard.view']);
     if (!canView) return { totalUsers: 0, activeUsers: 0, signedUpToday: 0, permissionsDefined: 0 };
 
@@ -182,6 +247,26 @@ export async function getUserStats(): Promise<UserStats> {
  * has access to — i.e. all unique parent account IDs for active account grants.
  */
 export async function getAccessableAccountIds(accountId: string): Promise<string[]> {
+    /**
+     * ::neup.documentation::manage-accounts-get-accessible-account-ids
+     * ::function getAccessableAccountIds(accountId)
+     *
+     * Returns the deduplicated parent-account IDs the given member account may access.
+     *
+     * ::public
+     *
+     * Use this helper when a caller only needs account IDs before fetching richer account details elsewhere.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * Only active, non-expired Neup Account grants are considered.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     try {
         await cleanupExpiredAccessModel();
 
@@ -240,6 +325,26 @@ type ParsedAccountSearch = {
 };
 
 function parseAccountSearch(search: string): ParsedAccountSearch {
+    /**
+     * ::neup.documentation::manage-accounts-parse-account-search
+     * ::function parseAccountSearch(search)
+     *
+     * Parses the manage-account search string into structured filters.
+     *
+     * ::public
+     *
+     * Supported filter fragments include account type, NeupID, role, and `activeIn` windows.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * Unrecognized fragments are preserved as free-text search terms joined back into the final text query.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     const parsed: ParsedAccountSearch = { text: '' };
     const textParts: string[] = [];
 
@@ -304,6 +409,26 @@ export async function getAllAccountsPaginated(params: {
     filter?: AccountFilterTab;
     sort?: AccountSortKey;
 }): Promise<AccountsPage> {
+    /**
+     * ::neup.documentation::manage-accounts-get-all-paginated
+     * ::function getAllAccountsPaginated(params)
+     *
+     * Returns a filtered, sorted, paginated slice of all accounts for the manage UI.
+     *
+     * ::public
+     *
+     * This helper supports text search, account-type filters, role-name filters, NeupID filters, recent-activity filters, and multiple sort modes.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * `last_active` sorting is handled in memory after a grouped activity lookup because it cannot be expressed cleanly in the base account query.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     const canView = await checkPermissions(['root.account.view']);
     if (!canView) return { accounts: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
 
@@ -622,6 +747,26 @@ export async function getAccessableBrandAccounts(accountId: string): Promise<Acc
  * Returns basic account information for a given accountId.
  */
 export async function getAccountBasics(accountId: string): Promise<AccountBasics | null> {
+    /**
+     * ::neup.documentation::manage-accounts-get-account-basics
+     * ::function getAccountBasics(accountId)
+     *
+     * Returns the normalized display basics for one account ID.
+     *
+     * ::public
+     *
+     * The result includes the primary NeupID, resolved display image, verification flag, status, and account type.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * This helper is the common building block for richer accessible-account queries.
+     *
+     * ::private end
+     *
+     * ::end
+     */
     try {
         const account = await prisma.account.findUnique({
             where: { id: accountId },
@@ -708,9 +853,29 @@ async function getPermissionsForAccountPair(
  * the caller holds on that specific account.
  */
 export async function getAccessableAccountsWithPermissions(
-    accountId: string,
+  accountId: string,
 ): Promise<AccountBasicsWithPermissions[]> {
-    try {
+    /**
+     * ::neup.documentation::manage-accounts-get-accessible-accounts-with-permissions
+     * ::function getAccessableAccountsWithPermissions(accountId)
+     *
+     * Returns accessible accounts plus the effective permission IDs held on each one.
+     *
+     * ::public
+     *
+     * Use this helper when a consumer needs both the delegated account list and the exact permission set available on each target account.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * The permission list is derived from active Neup Account access rows grouped by target parent account.
+     *
+     * ::private end
+     *
+     * ::end
+     */
+  try {
         const ids = await getAccessableAccountIds(accountId);
         if (ids.length === 0) return [];
 

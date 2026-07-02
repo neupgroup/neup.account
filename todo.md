@@ -10,35 +10,6 @@
 - [x] Update bridge/API service responses so apps receive consistent access, asset, and permission data from the new model.
 - [x] Run Prisma generation and a type-oriented check if available, without running a build.
 
-## Documentation Follow-Ups
-
-- [ ] Add `::neup.documentation::...` blocks for `logica/core/approle.mjs`.
-- [ ] Add `::neup.documentation::...` blocks for `logica/basics/appinfo.json`.
-- [ ] Add `::neup.documentation::...` blocks for `logica/accounts/permissions.json`.
-- [ ] Add `::neup.documentation::...` blocks for `logica/accounts/roles.json`.
-- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/application-management-panel.tsx`.
-- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/application/users/_components/users-list.tsx`.
-- [ ] Add `::neup.documentation::...` blocks for `components/ui/flow-link.tsx`.
-- [ ] Add `::neup.documentation::...` blocks for `proxy.ts`.
-- [ ] Add `::neup.documentation::...` blocks for `services/applications/manage.ts`.
-- [x] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/role-create-form.tsx`.
-- [x] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/role-detail-editor.tsx`.
-- [x] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/permission-detail-editor.tsx`.
-- [x] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/permission-panel.tsx`.
-- [x] Add `::neup.documentation::...` blocks for `app/(manage)/application/_components/roles-panel.tsx`.
-- [ ] Add `::neup.documentation::...` blocks for `services/applications/authz-config.ts`.
-- [ ] Add `::neup.documentation::...` blocks for `services/applications/role-scope-compatibility.ts`.
-- [ ] Add `::neup.documentation::...` blocks for `services/applications/permission-scopes.ts`.
-- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/access/_components/actions.ts`.
-- [ ] Add `::neup.documentation::...` blocks for `services/access-model.ts`.
-- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/application/roles/page.tsx`.
-- [ ] Add `::neup.documentation::...` blocks for `app/(manage)/access/_components/asset-member-lookup-form.tsx`.
-- [ ] Add `::neup.documentation::...` blocks for `services/manage/access/index.ts`.
-- [ ] Add `::neup.documentation::...` blocks for `package.json`.
-- [ ] Add `::neup.documentation::...` blocks for `tsconfig.json`.
-- [ ] Add `::neup.documentation::...` blocks for `app/bridge/api.v1/permissions/route.ts`.
-- [ ] Add `::neup.documentation::...` blocks for `services/applications/identifiers.ts`.
-- [ ] Add `::neup.documentation::...` blocks for `prisma/schema.prisma`.
 
 ## Migration Follow-Ups
 

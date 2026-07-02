@@ -1,5 +1,6 @@
 'use client';
 
+import { permission } from "@/logica/permission";
 import React, { useMemo, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -35,6 +36,16 @@ import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-p
 import { redirectInApp } from "@/core/helper/navigation";
 import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/core/auth/data-permissions";
 import { ACCESS_VIEW_PERMISSIONS } from "@/core/auth/access-view-permissions";
+
+const componentPermissions = [
+    permission("notification.read", "for_individual", "component"),
+    permission("notification.delete", "for_individual", "component"),
+    permission("application.view", "for_individual", "component"),
+    permission("payment.method.show", "for_individual", "component"),
+    permission("payment.transactions.show", "for_individual", "component"),
+    permission("payment.subscriptions.show", "for_individual", "component"),
+    permission("payment.purchase_neup_pro.view", "for_individual", "component"),
+];
 
 const iconMap: { [key: string]: LucideIcon | React.ElementType } = {
     Home: Home,

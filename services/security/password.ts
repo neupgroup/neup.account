@@ -1,5 +1,6 @@
 'use server';
 
+import { permission } from '@/logica/permission';
 import { z } from 'zod';
 import { getActiveAccountId } from '@/core/auth/verify';
 import { checkPermissions } from '@/services/user';
@@ -10,6 +11,10 @@ import { changePasswordSchema } from '@/services/security/schema';
 import { createNotification } from '../notifications';
 import { changePassword as changePasswordForAccount } from '@/services/auth/password';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+
+const servicePermissions = [
+    permission('security.pass.modify', 'for_individual', 'service'),
+];
 
 /**
  * Function changePassword.

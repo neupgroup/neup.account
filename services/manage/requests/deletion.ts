@@ -8,6 +8,7 @@ import { deleteUserAccount } from '@/services/manage/users';
 import { getPersonalAccountId } from '@/core/auth/verify';
 import { logActivity } from '@/services/log-actions';
 import { z } from 'zod';
+import { permission } from '@/logica/permission';
 
 /**
  * Type DeletionRequest.
@@ -22,6 +23,12 @@ export type DeletionRequest = {
 const requestByAdminSchema = z.object({
     reason: z.string().min(10, "A reason of at least 10 characters is required."),
 });
+
+const servicePermissions = [
+  permission('requests.root_approval.view', 'for_individual', 'service'),
+  permission('root.account.delete', 'for_individual', 'service'),
+  permission('requests.root_approval.approve', 'for_individual', 'service'),
+];
 
 
 /**

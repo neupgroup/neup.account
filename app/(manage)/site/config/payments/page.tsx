@@ -3,6 +3,11 @@ import { BackButton } from '@/components/ui/back-button';
 import { checkPermissions } from '@/services/user';
 import { getPaymentSettings } from '@/services/manage/site/payments';
 import { PaymentSettingsForm } from '../../../config/payments/payment-settings-form.client';
+import { permission } from '@/logica/permission';
+
+const pagePermissions = [
+  permission('root.payment_config.view', 'for_individual', 'page'),
+];
 
 export default async function SiteConfigPaymentsPage() {
   const canView = await checkPermissions(['root.payment_config.view']);

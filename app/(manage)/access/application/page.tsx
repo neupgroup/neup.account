@@ -23,6 +23,7 @@ import { RevokeAppAccessButton } from '../connection/revoke-app-access-form';
 import { createPageMetadata } from '@/core/metadata';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { ACCESS_APPLICATION_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
+import { permission } from '@/logica/permission';
 import {
   addAssetToGroupWithMode,
   removeAssetFromGroupWithMode,
@@ -31,6 +32,10 @@ import { getActiveAccountId } from '@/core/auth/verify';
 import { isRootUser } from '@/services/user';
 
 export const metadata: Metadata = createPageMetadata('Application Management');
+
+const pagePermissions = [
+  permission('access.application.view.self', 'for_individual', 'page'),
+];
 
 type PageProps = {
   searchParams: Promise<{ application?: string; mode?: string }>;

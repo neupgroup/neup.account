@@ -1,5 +1,6 @@
 'use server';
 
+import { permission } from '@/logica/permission';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import prisma from '@/core/helpers/prisma';
@@ -14,6 +15,13 @@ import {
   ACCESS_APPLICATION_VIEW_PERMISSIONS,
   ACCESS_CONNECTION_VIEW_PERMISSIONS,
 } from '@/core/auth/access-view-permissions';
+
+const servicePermissions = [
+  permission('access.application.view.self', 'for_individual', 'service'),
+  permission('access.connection.view.self', 'for_individual', 'service'),
+  permission('access.application.add.self', 'for_individual', 'service'),
+  permission('access.application.remove.self', 'for_individual', 'service'),
+];
 
 /*
 ::neup.documentation::access-connection-actions

@@ -1,5 +1,6 @@
  'use server';
  
+ import { permission } from '@/logica/permission';
  import prisma from '@/core/helpers/prisma';
 import { getPersonalAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
@@ -25,6 +26,12 @@ import { requireAnyPermission404 } from '@/core/auth/permission-guards';
  });
  
 const RECOVERY_CONTACT_TYPE = 'recoveryAccount';
+
+const servicePermissions = [
+  permission('security.recovery_accounts.view', 'for_individual', 'service'),
+  permission('security.recovery_accounts.add', 'for_individual', 'service'),
+  permission('security.recovery_accounts.remove', 'for_individual', 'service'),
+];
 
 const statusOrder: Record<RecoveryAccount['status'], number> = {
    approved: 1,

@@ -1,4 +1,5 @@
 "use server";
+import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId } from '@/core/auth/verify';
 import { checkPermissions } from '@/services/user';
@@ -65,6 +66,11 @@ const verifyTotpRequestSchema = z.object({
 });
 
 const AUTH_METHOD_TOTP_TYPE = 'totpToken';
+
+const servicePermissions = [
+    permission('security.totp.add', 'for_individual', 'service'),
+    permission('security.totp.remove', 'for_individual', 'service'),
+];
 
 
 /**

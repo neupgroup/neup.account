@@ -7,8 +7,14 @@ import { BackButton } from '@/components/ui/back-button';
 import { checkPermissions } from '@/services/user';
 import { PrimaryHeader } from '@/components/ui/primary-header';
 import { createPageMetadata } from '@/core/metadata';
+import { permission } from '@/logica/permission';
 
 export const metadata: Metadata = createPageMetadata('Site Configuration');
+
+const pagePermissions = [
+  permission('root.payment_config.view', 'for_individual', 'page'),
+  permission('root.display_images.view', 'for_individual', 'page'),
+];
 
 const configItems = [
   {

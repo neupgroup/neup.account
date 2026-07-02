@@ -20,6 +20,12 @@ import { useSession } from '@/core/providers/session'
 import { BackButton } from '@/components/ui/back-button'
 import { Separator } from '@/components/ui/separator'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/auth/profile-permissions'
+import { permission } from '@/logica/permission';
+
+const pagePermissions = [
+  permission('profile.contact.view.self', 'for_individual', 'page'),
+  permission('profile.contact.update.self', 'for_individual', 'page'),
+];
 
 const contactFormSchema = z.object({
   primaryPhone: z.string().optional(),

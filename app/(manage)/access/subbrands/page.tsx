@@ -21,6 +21,15 @@ import { Building, Plus } from "lucide-react";
 import { notFound } from "next/navigation";
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { LINKED_ACCOUNT_PERMISSION_GROUPS } from '@/core/auth/linked-account-permissions';
+import { permission } from '@/logica/permission';
+
+const pagePermissions = [
+    permission('access.linked_account.view.self', 'for_individual', 'page'),
+    permission('access.account.brand.create.self', 'for_individual', 'page'),
+    permission('access.accounts.switch.self', 'for_individual', 'page'),
+    permission('linked_accounts.brand.manage', 'for_brand', 'page'),
+    permission('linked_accounts.brand.manager', 'for_brand', 'page'),
+];
 
 export default async function BrandSubbrandPage() {
     await requireAnyPermission404(LINKED_ACCOUNT_PERMISSION_GROUPS.brand);

@@ -7,6 +7,14 @@ import { ListItem } from "@/components/ui/list-item";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
 import { PrimaryHeader } from "@/components/ui/primary-header";
 import { CreditCard, History, Wallet, Gem, Ban } from "@/components/icons";
+import { permission } from '@/logica/permission';
+
+const pagePermissions = [
+    permission('payment.method.show', 'for_individual', 'page'),
+    permission('payment.transactions.show', 'for_individual', 'page'),
+    permission('payment.subscriptions.show', 'for_individual', 'page'),
+    permission('payment.purchase_neup_pro.view', 'for_individual', 'page'),
+];
 
 export default async function PaymentSubscriptionPage() {
     const [canViewMethods, canViewHistory, canViewSubscriptions, canViewNeupPro] = await Promise.all([

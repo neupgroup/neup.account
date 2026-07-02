@@ -22,6 +22,7 @@ import { BackButton } from '@/components/ui/back-button';
 import { Loader2, Camera, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { useSession } from '@/core/providers/session';
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/auth/profile-permissions';
+import { permission } from '@/logica/permission';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -34,6 +35,11 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { redirectInApp } from '@/core/helper/navigation';
+
+const pagePermissions = [
+    permission('profile.kyc.view.self', 'for_individual', 'page'),
+    permission('profile.kyc.update.self', 'for_individual', 'page'),
+];
 
 // Helper function to convert dataURL to File object
 function dataURLtoFile(dataurl: string, filename: string): File {

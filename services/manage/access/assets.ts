@@ -10,6 +10,7 @@ import { logError } from '@/core/helpers/logger';
 import { checkPermissions, getAccountType, isRootUser } from '@/services/user';
 import { resolveAssetName } from '@/services/manage/access/asset-resolvers';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { permission } from '@/logica/permission';
 import {
   ACCESS_APPLICATION_ADD_PERMISSIONS,
   ACCESS_APPLICATION_REMOVE_PERMISSIONS,
@@ -24,6 +25,19 @@ import {
 } from '@/core/auth/access-view-permissions';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
 import { roleMatchesAccountTypeScopePolicy, scopeForForAccountType } from '@/services/applications/authz-scope-policy';
+
+const servicePermissions = [
+  permission('access.view.self', 'for_individual', 'service'),
+  permission('access.portfolio.create.self', 'for_individual', 'service'),
+  permission('access.team.add.self', 'for_individual', 'service'),
+  permission('access.team.remove.self', 'for_individual', 'service'),
+  permission('access.application.add.self', 'for_individual', 'service'),
+  permission('access.application.remove.self', 'for_individual', 'service'),
+  permission('access.connection.add.self', 'for_individual', 'service'),
+  permission('access.connection.remove.self', 'for_individual', 'service'),
+  permission('access.linked_account.add.self', 'for_individual', 'service'),
+  permission('access.linked_account.remove.self', 'for_individual', 'service'),
+];
 
 const memberPattern = /^(account:)?[^\s:]+$/;
 

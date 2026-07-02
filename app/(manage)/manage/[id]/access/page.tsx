@@ -14,6 +14,12 @@ import { ManagedAccountAccessForm } from './form';
 import { RemoveMemberButton } from '@/app/(manage)/access/_components/remove-member-button';
 import { revokeManagedAccountAccess } from '@/services/manage/users';
 import { ACCOUNT_ACCESS_PERMISSION_GROUPS } from '@/core/auth/account-access-permissions';
+import { permission } from '@/logica/permission';
+
+const pagePermissions = [
+  permission('root.account.access.view', 'for_individual', 'page'),
+  permission('root.account.access.edit', 'for_individual', 'page'),
+];
 
 type Props = {
   params: Promise<{ id: string }>;

@@ -3,6 +3,14 @@ import { BackButton } from '@/components/ui/back-button';
 import { checkPermissions } from '@/services/user';
 import { getResources } from '@/services/manage/site/resources';
 import { DisplayImagesManager } from '../../../config/displayImages/display-images-manager.client';
+import { permission } from '@/logica/permission';
+
+const pagePermissions = [
+  permission('root.display_images.view', 'for_individual', 'page'),
+  permission('root.display_images.add', 'for_individual', 'page'),
+  permission('root.display_images.delete', 'for_individual', 'page'),
+  permission('root.display_images.update', 'for_individual', 'page'),
+];
 
 export default async function SiteConfigDisplayImagesPage() {
   const canView = await checkPermissions(['root.display_images.view']);

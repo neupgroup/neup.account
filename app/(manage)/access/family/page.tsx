@@ -9,12 +9,18 @@ import { getUserProfile, checkPermissions } from '@/services/user';
 import { notFound } from "next/navigation";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
 import { createPageMetadata } from '@/core/metadata';
+import { permission } from '@/logica/permission';
 import {
     ACCESS_FAMILY_MEMBER_UPDATE_PERMISSIONS,
     ACCESS_FAMILY_PARTNER_UPDATE_PERMISSIONS,
 } from '@/core/auth/access-view-permissions';
 
 export const metadata: Metadata = createPageMetadata('Family Management');
+
+const pagePermissions = [
+    permission('access.family.member.update.self', 'for_individual', 'page'),
+    permission('access.family.partner.update.self', 'for_individual', 'page'),
+];
 
 export default async function FamilySharingPage() {
     const activeAccountId = await getActiveAccountId();

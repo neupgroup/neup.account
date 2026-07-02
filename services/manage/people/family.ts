@@ -1,5 +1,6 @@
 'use server';
 
+import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
@@ -33,6 +34,11 @@ const addAccountSchema = z.object({
     .min(3, 'NeupID must be at least 3 characters.')
     .max(30, 'NeupID cannot be more than 30 characters.'),
 });
+
+const servicePermissions = [
+  permission('access.family.member.update.self', 'for_individual', 'service'),
+  permission('access.family.partner.update.self', 'for_individual', 'service'),
+];
 
 // --- NEW INVITATION-BASED LOGIC ---
 async function createInvite(

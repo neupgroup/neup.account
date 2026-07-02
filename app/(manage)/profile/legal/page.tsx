@@ -19,6 +19,12 @@ import { BackButton } from '@/components/ui/back-button'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/auth/profile-permissions'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Geolocation } from '@/core/providers/geolocation'
+import { permission } from '@/logica/permission';
+
+const pagePermissions = [
+    permission('profile.legal.view.self', 'for_individual', 'page'),
+    permission('profile.legal.update.self', 'for_individual', 'page'),
+];
 
 const individualLegalFormSchema = z.object({
   nameFirst: z.string().min(1, "First name is required"),

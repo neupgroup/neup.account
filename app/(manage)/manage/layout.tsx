@@ -1,5 +1,10 @@
 import type { ReactNode } from 'react';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { permission } from '@/logica/permission';
+
+const layoutPermissions = [
+  permission('root.account.view', 'for_individual', 'layout'),
+];
 
 export default async function ManageLayout({
   children,

@@ -7,6 +7,11 @@ import { checkPermissions } from '@/services/user';
 import { BackButton } from '@/components/ui/back-button';
 import { PrimaryHeader } from '@/components/ui/primary-header';
 import { UserCircle, FileText, HeartHandshake, AtSign, Contact, ShieldCheck } from '@/components/icons';
+import { permission } from '@/logica/permission';
+
+const pagePermissions = [
+  permission('root.account.view', 'for_individual', 'page'),
+];
 
 export default async function UserProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

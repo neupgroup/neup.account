@@ -11,6 +11,7 @@ import { SecondaryHeader } from '@/components/ui/secondary-header';
 import { AccessGroupView } from './_components/access-group-view';
 import { ListItem } from '@/components/ui/list-item';
 import { AccountListItem } from '@/components/elements/account-item';
+import { permission } from '@/logica/permission';
 import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/core/auth/linked-account-permissions';
 import { getCurrentAccountPermission, getUserProfile } from '@/services/user';
 import { getAccessibleAccounts } from '@/services/manage/accounts';
@@ -32,6 +33,24 @@ import {
   ACCESS_VIEW_PERMISSIONS,
 } from '@/core/auth/access-view-permissions';
 import { createPageMetadata } from '@/core/metadata';
+
+const pagePermissions = [
+  permission('access.view.self', 'for_individual', 'page'),
+  permission('access.team.view.self', 'for_individual', 'page'),
+  permission('access.connection.view.self', 'for_individual', 'page'),
+  permission('access.application.view.self', 'for_individual', 'page'),
+  permission('access.linked_account.view.self', 'for_individual', 'page'),
+  permission('access.account.brand.create.self', 'for_individual', 'page'),
+  permission('access.account.dependent.create.self', 'for_individual', 'page'),
+  permission('access.family.member.update.self', 'for_individual', 'page'),
+  permission('access.family.partner.update.self', 'for_individual', 'page'),
+  permission('access.invitations.view.self', 'for_individual', 'page'),
+  permission('access.block.view.self', 'for_individual', 'page'),
+  permission('access.accounts.switch.self', 'for_individual', 'page'),
+  permission('access.portfolio.create.self', 'for_individual', 'page'),
+  permission('linked_accounts.brand.manage', 'for_brand', 'page'),
+  permission('linked_accounts.brand.manager', 'for_brand', 'page'),
+];
 
 type PageProps = {
   searchParams: Promise<{ portfolio?: string; account?: string }>;

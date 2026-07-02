@@ -1,6 +1,7 @@
 // @ts-nocheck
 'use server';
  
+ import { permission } from '@/logica/permission';
  import { z } from 'zod';
  import prisma from '@/core/helpers/prisma';
 import { logActivity } from '@/services/log-actions';
@@ -16,6 +17,10 @@ import {
     BRAND_OWNER_ROLE_ID,
     BRAND_OWNER_ROLE_NAME,
 } from '@/core/auth/brand-roles';
+
+const servicePermissions = [
+    permission('linked_accounts.brand.manage', 'for_brand', 'service'),
+];
 
 /**
  * Type SubbrandAccount.

@@ -14,6 +14,12 @@ import { logActivity } from '@/services/log-actions';
 import { logError } from '@/core/helpers/logger';
 import { canCurrentAccountEditApplicationBasics } from '@/services/applications/manage';
 import { revalidateApplicationDetailRoutes, revalidateApplicationEditRoutes } from '@/services/applications/revalidate-routes';
+import { permission } from '@/logica/permission';
+
+const servicePermissions = [
+  permission('requests.root_approval.view', 'for_individual', 'service'),
+  permission('requests.root_approval.approve', 'for_individual', 'service'),
+];
 
 // ---------------------------------------------------------------------------
 // Types

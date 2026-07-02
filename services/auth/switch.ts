@@ -1,5 +1,6 @@
 'use server';
 
+import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { checkPermissions } from '@/services/user';
@@ -9,6 +10,10 @@ import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { cleanupExpiredAccessModel } from '@/services/access-model';
 import { BRAND_OWNER_ROLE_ID } from '@/core/auth/brand-roles';
 import { ACCESS_ACCOUNTS_SWITCH_PERMISSIONS } from '@/core/auth/access-view-permissions';
+
+const servicePermissions = [
+  permission('access.accounts.switch.self', 'for_individual', 'service'),
+];
 
 /**
  * Validates access to any account the current user has been granted access to.

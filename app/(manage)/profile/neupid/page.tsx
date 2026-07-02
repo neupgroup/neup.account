@@ -20,6 +20,14 @@ import { Badge } from '@/components/ui/badge'
 import { useSession } from '@/core/providers/session'
 import { BackButton } from '@/components/ui/back-button'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/auth/profile-permissions'
+import { permission } from '@/logica/permission';
+
+const pagePermissions = [
+  permission('profile.neupid.view.self', 'for_individual', 'page'),
+  permission('profile.neupid.update.self', 'for_individual', 'page'),
+  permission('profile.neupid.request.self', 'for_individual', 'page'),
+  permission('profile.neupid.remove.self', 'for_individual', 'page'),
+];
 
 
 const neupidFormSchema = z.object({

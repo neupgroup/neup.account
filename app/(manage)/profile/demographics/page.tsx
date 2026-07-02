@@ -24,6 +24,12 @@ import { Loader2 } from "@/components/icons"
 import { useSession } from '@/core/providers/session'
 import { BackButton } from '@/components/ui/back-button'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/auth/profile-permissions'
+import { permission } from '@/logica/permission';
+
+const pagePermissions = [
+    permission('profile.demographics.view.self', 'for_individual', 'page'),
+    permission('profile.demographics.update.self', 'for_individual', 'page'),
+];
 
 
 const demographicsFormSchema = z.object({

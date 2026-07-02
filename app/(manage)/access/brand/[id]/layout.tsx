@@ -4,6 +4,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { BrandNav } from './brand-nav';
 import { BackButton } from '@/components/ui/back-button';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { permission } from '@/logica/permission';
+
+const layoutPermissions = [
+  permission('linked_accounts.brand.manage', 'for_brand', 'layout'),
+];
 
 export default async function BrandManagementLayout({
   children,

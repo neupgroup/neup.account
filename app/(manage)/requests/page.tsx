@@ -9,10 +9,15 @@ import { Ban, ChevronRight } from '@/components/icons';
 import { FlowLink } from '@/components/ui/flow-link';
 import Link from 'next/link';
 import { cn } from '@/core/helpers/utils';
+import { permission } from '@/logica/permission';
 
 type Props = {
   searchParams: Promise<{ type?: string; application?: string }>;
 };
+
+const pagePermissions = [
+  permission('requests.root_approval.view', 'for_individual', 'page'),
+];
 
 const statusVariant: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
   pending:  'secondary',

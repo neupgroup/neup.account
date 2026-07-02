@@ -7,6 +7,7 @@ import { getPersonalAccountId } from '@/core/auth/verify';
 import { logError } from '@/core/helpers/logger';
 import { logActivity } from '@/services/log-actions';
 import { revalidatePath } from 'next/cache';
+import { permission } from '@/logica/permission';
 
 export type ExpiredGuestAccount = {
     id: string;
@@ -16,6 +17,11 @@ export type ExpiredGuestAccount = {
 };
 
 type Tx = Prisma.TransactionClient;
+
+const servicePermissions = [
+    permission('root.account.view', 'for_individual', 'service'),
+    permission('root.account.delete', 'for_individual', 'service'),
+];
 
 async function tableExists(tx: Tx, qualifiedTableName: string): Promise<boolean> {
     const rows = await tx.$queryRaw<Array<{ exists: string | null }>>`

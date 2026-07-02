@@ -43,8 +43,13 @@ import { checkPermissions } from '@/services/user'
 import { Loader2 } from "@/components/icons"
 import { redirectInApp } from "@/core/helper/navigation";
 import { ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS } from '@/core/auth/access-view-permissions';
+import { permission } from '@/logica/permission';
 
 type FormData = z.infer<typeof dependentFormSchema>;
+
+const pagePermissions = [
+    permission('access.account.dependent.create.self', 'for_individual', 'page'),
+];
 
 export default function CreateDependentPageClient() {
     const router = useRouter()

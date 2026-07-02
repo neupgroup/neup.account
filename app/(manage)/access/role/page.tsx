@@ -29,6 +29,11 @@ import { FlowLink } from '@/components/ui/flow-link';
 import { DirectMemberAccessForm } from '../_components/direct-member-access-form';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
+import { permission } from '@/logica/permission';
+
+const pagePermissions = [
+  permission('access.team.view.self', 'for_individual', 'page'),
+];
 
 type PageProps = {
   searchParams: Promise<{ member_id?: string; portfolio?: string; workingProfile?: string }>;

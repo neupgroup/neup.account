@@ -1,6 +1,7 @@
 // @ts-nocheck
 'use server';
 
+import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { getUserProfile, checkPermissions, getUserNeupIds } from '@/services/user';
 import { getActiveAccountId } from '@/core/auth/verify';
@@ -11,6 +12,11 @@ import {
   ACCESS_INVITATION_APPROVE_PERMISSIONS,
   ACCESS_INVITATIONS_VIEW_PERMISSIONS,
 } from '@/core/auth/access-view-permissions';
+
+const servicePermissions = [
+    permission('access.invitations.view.self', 'for_individual', 'service'),
+    permission('access.invitation.approve.self', 'for_individual', 'service'),
+];
 
 export type Invitation = {
     notificationId: string;

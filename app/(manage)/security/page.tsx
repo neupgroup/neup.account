@@ -3,12 +3,38 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ListItem } from '@/components/ui/list-item';
 import { PrimaryHeader } from '@/components/ui/primary-header';
 import { SecondaryHeader } from '@/components/ui/secondary-header';
+import { permission } from '@/logica/permission';
 import { notFound } from 'next/navigation';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { hasAnyPermission } from '@/core/auth/profile-permissions';
 import { SECURITY_HUB_ITEMS, SECURITY_HUB_PERMISSIONS } from '@/core/auth/security-permissions';
 import { getCurrentAccountPermission } from '@/services/user';
 import { getActiveAccountId } from '@/core/auth/verify';
+
+const pagePermissions = [
+    permission('security.pass.modify.self', 'for_individual', 'page'),
+    permission('security.totp.add.self', 'for_individual', 'page'),
+    permission('security.totp.remove.self', 'for_individual', 'page'),
+    permission('security.backup_codes.view.self', 'for_individual', 'page'),
+    permission('security.backup_codes.create.self', 'for_individual', 'page'),
+    permission('security.recovery_accounts.view.self', 'for_individual', 'page'),
+    permission('security.recovery_accounts.add.self', 'for_individual', 'page'),
+    permission('security.recovery_accounts.remove.self', 'for_individual', 'page'),
+    permission('security.recovery_phone.view.self', 'for_individual', 'page'),
+    permission('security.recovery_phone.add.self', 'for_individual', 'page'),
+    permission('security.recovery_phone.remove.self', 'for_individual', 'page'),
+    permission('security.recovery_email.view.self', 'for_individual', 'page'),
+    permission('security.recovery_email.add.self', 'for_individual', 'page'),
+    permission('security.recovery_email.remove.self', 'for_individual', 'page'),
+    permission('security.login_devices.view.self', 'for_individual', 'page'),
+    permission('security.recent_activities.view.self', 'for_individual', 'page'),
+    permission('access.connection.view.self', 'for_individual', 'page'),
+    permission('access.connection.add.self', 'for_individual', 'page'),
+    permission('access.connection.remove.self', 'for_individual', 'page'),
+    permission('access.application.view.self', 'for_individual', 'page'),
+    permission('access.application.add.self', 'for_individual', 'page'),
+    permission('access.application.remove.self', 'for_individual', 'page'),
+];
 
 const SECTION_META = {
   signIn: {

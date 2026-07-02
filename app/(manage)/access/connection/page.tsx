@@ -7,8 +7,13 @@ import { getConnectionPageData } from './actions';
 import { createPageMetadata } from '@/core/metadata';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { ACCESS_CONNECTION_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
+import { permission } from '@/logica/permission';
 
 export const metadata: Metadata = createPageMetadata('Connection Management');
+
+const pagePermissions = [
+  permission('access.connection.view.self', 'for_individual', 'page'),
+];
 
 function StatusDot({ status }: { status: string }) {
   const color =

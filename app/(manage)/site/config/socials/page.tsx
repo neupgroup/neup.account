@@ -3,6 +3,11 @@ import { BackButton } from '@/components/ui/back-button';
 import { checkPermissions } from '@/services/user';
 import { getSocialLinks } from '@/services/manage/site/socials';
 import { SocialLinksManager } from '../../../config/socials/social-links-manager';
+import { permission } from '@/logica/permission';
+
+const pagePermissions = [
+  permission('root.payment_config.view', 'for_individual', 'page'),
+];
 
 export default async function SiteConfigSocialsPage() {
   const canView = await checkPermissions(['root.payment_config.view']);

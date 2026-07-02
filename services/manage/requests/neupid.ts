@@ -1,10 +1,16 @@
 'use server';
 
+import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { Prisma } from '@/prisma/generated/client';
 import { getUserProfile, getUserNeupIds, checkPermissions } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
 import { logError } from '@/core/helpers/logger';
+
+const servicePermissions = [
+    permission('requests.root_approval.view', 'for_individual', 'service'),
+    permission('requests.root_approval.approve', 'for_individual', 'service'),
+];
 
 export type PendingNeupIdRequest = {
     id: string;

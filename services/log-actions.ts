@@ -8,9 +8,14 @@ import { logError } from '@/core/helpers/logger';
 import { getActiveAccountId } from '@/core/auth/verify';
 import { checkPermissions } from '@/services/user';
 import { compileActivityAction } from '@/services/activity-action';
+import { permission } from '@/logica/permission';
 
 // Number of activity logs returned per page
 const PAGE_SIZE = 10;
+
+const servicePermissions = [
+    permission('requests.root_approval.view', 'for_individual', 'service'),
+];
 
 export type ActivityLog = {
     id: string;

@@ -1,5 +1,6 @@
 'use server';
 
+import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { logActivity } from '@/services/log-actions';
 import { logError } from '@/core/helpers/logger';
@@ -12,6 +13,12 @@ import { createNotification } from '../notifications';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 
 const CONTACT_TYPE = 'recoveryPhone';
+
+const servicePermissions = [
+    permission('security.recovery_phone.view', 'for_individual', 'service'),
+    permission('security.recovery_phone.add', 'for_individual', 'service'),
+    permission('security.recovery_phone.remove', 'for_individual', 'service'),
+];
 
 /**
  * Function getRecoveryPhone.

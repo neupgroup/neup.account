@@ -1,5 +1,6 @@
 'use server';
 
+import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { getPersonalAccountId } from '@/core/auth/verify';
 import { logActivity } from '@/services/log-actions';
@@ -28,6 +29,11 @@ function generateSingleCode(): string {
 }
 
 const AUTH_METHOD_BACKUP_TYPE = 'backupCodes';
+
+const servicePermissions = [
+    permission('security.backup_codes.view', 'for_individual', 'service'),
+    permission('security.backup_codes.create', 'for_individual', 'service'),
+];
 
 function readBackupCodes(detail: unknown): BackupCode[] {
     if (!detail || typeof detail !== 'object') return [];

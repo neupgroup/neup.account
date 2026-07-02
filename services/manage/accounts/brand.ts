@@ -1,6 +1,7 @@
 // @ts-nocheck
 'use server';
 
+import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { checkPermissions, getUserProfile } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
@@ -19,6 +20,11 @@ import {
   ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS,
   ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS,
 } from '@/core/auth/access-view-permissions';
+
+const servicePermissions = [
+    permission('access.linked_account.view.self', 'for_individual', 'service'),
+    permission('access.account.brand.create.self', 'for_individual', 'service'),
+];
 
 export type BrandAccount = {
     id: string;

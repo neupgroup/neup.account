@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { permission } from '@/logica/permission';
 import CreateBrandPageClient from './brand-page-client';
 import CreateDependentPageClient from './dependent-page-client';
 import CreateSubbrandPageClient from './subbrand-page-client';
@@ -9,6 +10,12 @@ import {
     ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS,
     ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS,
 } from '@/core/auth/access-view-permissions';
+
+const pagePermissions = [
+    permission('access.account.brand.create.self', 'for_individual', 'page'),
+    permission('access.account.dependent.create.self', 'for_individual', 'page'),
+    permission('linked_accounts.brand.manage', 'for_brand', 'page'),
+];
 
 type PageProps = {
     searchParams: Promise<{ type?: string }>;

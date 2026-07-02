@@ -1,5 +1,6 @@
 'use server';
 
+import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId } from '@/core/auth/verify';
 import { getUserProfile, getUserNeupIds, checkPermissions } from '@/services/user';
@@ -14,6 +15,11 @@ import {
 const neupIdSchema = z.object({
   neupId: z.string().min(3, 'NeupID must be at least 3 characters.'),
 });
+
+const servicePermissions = [
+  permission('access.block.view.self', 'for_individual', 'service'),
+  permission('access.block.update.self', 'for_individual', 'service'),
+];
 
 /**
  * Type BlockedUser.

@@ -26,6 +26,16 @@ import { Check, Loader2, UploadCloud } from '@/components/icons'
 import { SecondaryHeader } from '@/components/ui/secondary-header'
 import { Separator } from '@/components/ui/separator'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/auth/profile-permissions'
+import { permission } from '@/logica/permission';
+
+const pagePermissions = [
+  permission('profile.display.view.self', 'for_individual', 'page'),
+  permission('profile.display.update.self', 'for_individual', 'page'),
+  permission('profile.display.view.managed', 'for_individual', 'page'),
+  permission('profile.display.update.managed', 'for_individual', 'page'),
+  permission('profile.display.view.root', 'for_individual', 'page'),
+  permission('profile.display.update.root', 'for_individual', 'page'),
+];
 
 const photoFormSchema = z.object({
   accountPhoto: z.string().url("Please enter a valid URL.").optional().or(z.literal('')),

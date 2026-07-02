@@ -1,5 +1,6 @@
 'use server';
 
+import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { Prisma } from '@/prisma/generated/client';
 import { checkPermissions, getCurrentAccountPermission, getUserProfile, isRootUser } from '@/services/user';
@@ -13,6 +14,11 @@ import {
   ACCESS_TEAM_ADD_PERMISSIONS,
   ACCESS_TEAM_REMOVE_PERMISSIONS,
 } from '@/core/auth/access-view-permissions';
+
+const servicePermissions = [
+  permission('access.team.add.self', 'for_individual', 'service'),
+  permission('access.team.remove.self', 'for_individual', 'service'),
+];
 
 /**
  * ::neup.documentation::manage-access-actions-module

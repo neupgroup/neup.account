@@ -1,5 +1,6 @@
 'use server';
 
+import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { getPersonalAccountId } from '@/core/auth/verify';
 import { logActivity } from '@/services/log-actions';
@@ -11,6 +12,12 @@ import { checkPermissions } from '@/services/user';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 
 const CONTACT_TYPE = 'recoveryEmail';
+
+const servicePermissions = [
+    permission('security.recovery_email.view', 'for_individual', 'service'),
+    permission('security.recovery_email.add', 'for_individual', 'service'),
+    permission('security.recovery_email.remove', 'for_individual', 'service'),
+];
 
 /**
  * Function getRecoveryEmail.

@@ -10,6 +10,7 @@ import { getActiveAccountId, getPersonalAccountId } from "@/core/auth/verify";
 import { extractGenderFromDetails, resolveDisplayImage } from "@/core/helpers/display-image";
 import { getAccountSelectorContext } from "@/core/auth/accountSelector";
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from "@/services/access-model";
+import { permission } from '@/logica/permission';
 import { isRootRoleScope, normalizeRoleScope, normalizeRoleScopes } from '@/services/role-scopes';
 import {
   deriveLegacyRoleScopesFromPolicy,
@@ -21,6 +22,13 @@ import {
   resolveNeupAccountPermissionCandidates,
   stripPermissionAudience,
 } from '@/services/neup-account/permission-catalog';
+
+const servicePermissions = [
+  permission('root.account.view', 'for_individual', 'service'),
+  permission('profile.display.view.self', 'for_individual', 'service'),
+  permission('profile.display.view.managed', 'for_individual', 'service'),
+  permission('profile.display.view.root', 'for_individual', 'service'),
+];
 
 /**
  * ::neup.documentation::user-service-module

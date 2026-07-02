@@ -1,5 +1,6 @@
 'use server';
 
+import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId } from '@/core/auth/verify';
 import { getUserNeupIds, checkPermissions } from '@/services/user';
@@ -24,6 +25,11 @@ if (!ENCRYPTION_KEY || ENCRYPTION_KEY.length < 64) {
 }
 
 const AUTH_METHOD_TOTP_TYPE = 'totpToken';
+
+const servicePermissions = [
+    permission('security.totp.add', 'for_individual', 'service'),
+    permission('security.totp.remove', 'for_individual', 'service'),
+];
 
 // Basic encryption/decryption functions using Node.js crypto
 // In a production app, use a dedicated KMS for this.

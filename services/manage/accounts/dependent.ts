@@ -1,6 +1,7 @@
 // @ts-nocheck
 'use server';
 
+import { permission } from '@/logica/permission';
 import { z } from 'zod';
 import prisma from '@/core/helpers/prisma';
 import { getPersonalAccountId } from '@/core/auth/verify';
@@ -17,6 +18,11 @@ import {
   ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS,
   ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS,
 } from '@/core/auth/access-view-permissions';
+
+const servicePermissions = [
+  permission('access.linked_account.view.self', 'for_individual', 'service'),
+  permission('access.account.dependent.create.self', 'for_individual', 'service'),
+];
 
 
 /**

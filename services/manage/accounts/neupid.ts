@@ -1,5 +1,6 @@
  'use server';
  
+ import { permission } from '@/logica/permission';
  import prisma from '@/core/helpers/prisma';
  import { getPersonalAccountId } from '@/core/auth/verify';
  import { logActivity } from '@/services/log-actions';
@@ -7,6 +8,10 @@ import { logError } from '@/core/helpers/logger';
 import { checkPermissions, getUserNeupIds } from '@/services/user';
 import { revalidatePath } from 'next/cache';
 import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';
+
+const servicePermissions = [
+  permission('root.account.edit_neupid', 'for_individual', 'service'),
+];
  
  /**
   * Function addNeupId.

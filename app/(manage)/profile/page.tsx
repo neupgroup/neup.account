@@ -8,6 +8,28 @@ import { checkGrantedPermissions, checkPermissions, getUserProfile } from "@/ser
 import { logSystemError } from "@/core/helpers/logger";
 import { PROFILE_NAV_PERMISSIONS, PROFILE_SECTION_PERMISSIONS } from "@/core/auth/profile-permissions";
 import { getAccountSelectorContext } from "@/core/auth/accountSelector";
+import { permission } from '@/logica/permission';
+
+const pagePermissions = [
+    permission('profile.display.view.self', 'for_individual', 'page'),
+    permission('profile.display.update.self', 'for_individual', 'page'),
+    permission('profile.display.view.managed', 'for_individual', 'page'),
+    permission('profile.display.update.managed', 'for_individual', 'page'),
+    permission('profile.display.view.root', 'for_individual', 'page'),
+    permission('profile.display.update.root', 'for_individual', 'page'),
+    permission('profile.legal.view.self', 'for_individual', 'page'),
+    permission('profile.legal.update.self', 'for_individual', 'page'),
+    permission('profile.demographics.view.self', 'for_individual', 'page'),
+    permission('profile.demographics.update.self', 'for_individual', 'page'),
+    permission('profile.neupid.view.self', 'for_individual', 'page'),
+    permission('profile.neupid.update.self', 'for_individual', 'page'),
+    permission('profile.neupid.request.self', 'for_individual', 'page'),
+    permission('profile.neupid.remove.self', 'for_individual', 'page'),
+    permission('profile.contact.view.self', 'for_individual', 'page'),
+    permission('profile.contact.update.self', 'for_individual', 'page'),
+    permission('profile.kyc.view.self', 'for_individual', 'page'),
+    permission('profile.kyc.update.self', 'for_individual', 'page'),
+];
 
 function isDebuggingEnabled() {
     return (

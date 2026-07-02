@@ -11,9 +11,16 @@ import { ManageStatsCard } from '@/components/dashboard/manage-stats-card';
 import { FindUserCard } from '@/components/dashboard/find-user-card';
 import { SystemToolsCard } from '@/components/dashboard/system-tools-card';
 import { createPageMetadata } from '@/core/metadata';
+import { permission } from '@/logica/permission';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = createPageMetadata('Homepage');
+
+const pagePermissions = [
+  permission('notification.read', 'for_individual', 'page'),
+  permission('payment.subscriptions.show', 'for_individual', 'page'),
+  permission('root.account.view', 'for_individual', 'page'),
+];
 
 export default async function HomePage() {
     const accountId = await getActiveAccountId();

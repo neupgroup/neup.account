@@ -1,4 +1,5 @@
 
+import { permission } from '@/logica/permission';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getRecoveryAccounts } from "@/services/security/account";
 import { RecoveryAccountManager } from "./recovery-account-manager";
@@ -6,6 +7,12 @@ import { BackButton } from "@/components/ui/back-button";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { SECURITY_PERMISSION_GROUPS } from '@/core/auth/security-permissions';
+
+const pagePermissions = [
+    permission('security.recovery_accounts.view.self', 'for_individual', 'page'),
+    permission('security.recovery_accounts.add.self', 'for_individual', 'page'),
+    permission('security.recovery_accounts.remove.self', 'for_individual', 'page'),
+];
 
 export default async function RecoveryAccountPage() {
     await requireAnyPermission404(SECURITY_PERMISSION_GROUPS.recoveryAccounts);

@@ -10,11 +10,18 @@ import { z } from 'zod';
 import { logActivity } from '@/services/log-actions';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { activeAccessWhere, getLogicalAssetId } from '@/services/access-model';
+import { permission } from '@/logica/permission';
 import {
   ACCESS_TEAM_ADD_PERMISSIONS,
   ACCESS_TEAM_VIEW_PERMISSIONS,
   ACCESS_VIEW_PERMISSIONS,
 } from '@/core/auth/access-view-permissions';
+
+const servicePermissions = [
+  permission('access.view.self', 'for_individual', 'service'),
+  permission('access.team.view.self', 'for_individual', 'service'),
+  permission('access.team.add.self', 'for_individual', 'service'),
+];
 
 /**
  * ::neup.documentation::manage-access-module

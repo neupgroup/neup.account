@@ -1,11 +1,35 @@
 import { checkGrantedPermissions, checkPermissions, getAccountPermission, getCurrentAccountPermission } from '@/services/user';
 import { notFound } from 'next/navigation';
 import { getAccountSelectorContext } from '@/core/auth/accountSelector';
+import { permission } from '@/logica/permission';
 import {
   getCanonicalPermissionAudience,
   resolveNeupAccountPermissionCandidates,
   stripPermissionAudience,
 } from '@/services/neup-account/permission-catalog';
+
+const helperPermissions = [
+  permission('profile.display.view.self', 'for_individual', 'helper'),
+  permission('profile.display.update.self', 'for_individual', 'helper'),
+  permission('profile.display.view.managed', 'for_individual', 'helper'),
+  permission('profile.display.update.managed', 'for_individual', 'helper'),
+  permission('profile.display.view.root', 'for_individual', 'helper'),
+  permission('profile.display.update.root', 'for_individual', 'helper'),
+  permission('profile.legal.view.self', 'for_individual', 'helper'),
+  permission('profile.legal.update.self', 'for_individual', 'helper'),
+  permission('profile.demographics.view.self', 'for_individual', 'helper'),
+  permission('profile.demographics.update.self', 'for_individual', 'helper'),
+  permission('profile.neupid.view.self', 'for_individual', 'helper'),
+  permission('profile.neupid.update.self', 'for_individual', 'helper'),
+  permission('profile.neupid.request.self', 'for_individual', 'helper'),
+  permission('profile.neupid.remove.self', 'for_individual', 'helper'),
+  permission('profile.contact.view.self', 'for_individual', 'helper'),
+  permission('profile.contact.update.self', 'for_individual', 'helper'),
+  permission('profile.kyc.view.self', 'for_individual', 'helper'),
+  permission('profile.kyc.update.self', 'for_individual', 'helper'),
+  permission('notification.read.self', 'for_individual', 'helper'),
+  permission('notification.delete.self', 'for_individual', 'helper'),
+];
 
 /**
  * ::neup.documentation::profile-permissions-module

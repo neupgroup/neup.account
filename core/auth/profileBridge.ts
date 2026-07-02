@@ -4,6 +4,16 @@ import prisma from '@/core/helpers/prisma';
 import { hasAnyPermission, PROFILE_SECTION_PERMISSIONS } from '@/core/auth/profile-permissions';
 import { validateAuthSession } from '@/services/auth/session';
 import { getAccountPermission, getGrantedAccountPermission, getUserProfile } from '@/services/user';
+import { permission } from '@/logica/permission';
+
+const servicePermissions = [
+  permission('profile.display.view.self', 'for_individual', 'service'),
+  permission('profile.display.update.self', 'for_individual', 'service'),
+  permission('profile.display.view.managed', 'for_individual', 'service'),
+  permission('profile.display.update.managed', 'for_individual', 'service'),
+  permission('profile.display.view.root', 'for_individual', 'service'),
+  permission('profile.display.update.root', 'for_individual', 'service'),
+];
 
 /**
  * ::neup.documentation::profile-bridge-module

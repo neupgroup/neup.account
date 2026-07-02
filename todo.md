@@ -34,6 +34,11 @@
 - [ ] Add `::neup.documentation::...` blocks for `app/(manage)/application/roles/page.tsx`.
 - [ ] Add `::neup.documentation::...` blocks for `app/(manage)/access/_components/asset-member-lookup-form.tsx`.
 - [ ] Add `::neup.documentation::...` blocks for `services/manage/access/index.ts`.
+- [ ] Add `::neup.documentation::...` blocks for `package.json`.
+- [ ] Add `::neup.documentation::...` blocks for `tsconfig.json`.
+- [ ] Add `::neup.documentation::...` blocks for `app/bridge/api.v1/permissions/route.ts`.
+- [ ] Add `::neup.documentation::...` blocks for `services/applications/identifiers.ts`.
+- [ ] Add `::neup.documentation::...` blocks for `prisma/schema.prisma`.
 
 ## Migration Follow-Ups
 

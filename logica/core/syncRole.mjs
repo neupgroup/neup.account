@@ -1,11 +1,12 @@
 /*
 ::neup.documentation::logica-core-apppermit
 
-Scans application page files for permission usage and writes the matching
+Scans application page, route, and service files for permission usage and writes the matching
 permission definitions into `logica/basics/permissions.json`.
 
 The script treats `logica/accounts/permissions.json` as the full app-level
-permission catalog and derives the page-used subset from that snapshot.
+permission catalog and derives the used subset from permission declaration
+objects shaped as `{ id, scopeFor, tag }`.
 
 ::end
 */
@@ -14,7 +15,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const ROOT = process.cwd();
-const PAGE_DIRS = ["app", "pages"];
+const SCAN_DIRS = ["app", "pages", "services"];
 const EXTENSIONS = [".js", ".jsx", ".ts", ".tsx"];
 
 const CATALOG_PATH = path.join(ROOT, "logica", "accounts", "permissions.json");
@@ -44,6 +45,7 @@ const EXPORTED_ARRAY_PATTERN =
   /export\s+const\s+([A-Za-z0-9_]+)\s*=\s*\[([\s\S]*?)\]\s*(?:as\s+const)?/g;
 
 const STRING_LITERAL_PATTERN = /["'`]([^"'`]+)["'`]/g;
+const PERMISSION_OBJECT_ID_PATTERN = /(?:^|[{,\s])["']?id["']?\s*:\s*["'`]([^"'`]+)["'`]/g;
 const SPREAD_IDENTIFIER_PATTERN = /\.\.\.\s*([A-Za-z0-9_]+)/g;
 const IDENTIFIER_ARG_PATTERN = /^[A-Za-z0-9_]+$/;
 
@@ -69,13 +71,14 @@ function walk(dir, files = []) {
   return files;
 }
 
-function isPageFile(filePath) {
+function isScannedFile(filePath) {
   const normalized = filePath.replaceAll("\\", "/");
 
   return (
     /\/page\.(js|jsx|ts|tsx)$/.test(normalized) ||
     /\/route\.(js|jsx|ts|tsx)$/.test(normalized) ||
-    /\/pages\/.*\.(js|jsx|ts|tsx)$/.test(normalized)
+    /\/pages\/.*\.(js|jsx|ts|tsx)$/.test(normalized) ||
+    /\/services\/.*\.(js|jsx|ts|tsx)$/.test(normalized)
   );
 }
 
@@ -85,6 +88,18 @@ function collectStringLiterals(value) {
 
   STRING_LITERAL_PATTERN.lastIndex = 0;
   while ((match = STRING_LITERAL_PATTERN.exec(value))) {
+    matches.push(match[1].trim());
+  }
+
+  return matches.filter(Boolean);
+}
+
+function collectPermissionObjectIds(value) {
+  const matches = [];
+  let match;
+
+  PERMISSION_OBJECT_ID_PATTERN.lastIndex = 0;
+  while ((match = PERMISSION_OBJECT_ID_PATTERN.exec(value))) {
     matches.push(match[1].trim());
   }
 
@@ -104,8 +119,10 @@ function collectSpreadIdentifiers(value) {
 }
 
 function parseArrayDefinition(arraySource) {
+  const objectIds = collectPermissionObjectIds(arraySource);
+
   return {
-    permissions: collectStringLiterals(arraySource),
+    permissions: objectIds.length > 0 ? objectIds : collectStringLiterals(arraySource),
     dependencies: collectSpreadIdentifiers(arraySource),
   };
 }
@@ -155,7 +172,8 @@ function buildExportedPermissionMap(files) {
 }
 
 function extractPermissionsFromSnippet(snippet, exportedArrays) {
-  const permissions = new Set(collectStringLiterals(snippet));
+  const objectIds = collectPermissionObjectIds(snippet);
+  const permissions = new Set(objectIds.length > 0 ? objectIds : collectStringLiterals(snippet));
 
   for (const identifier of collectSpreadIdentifiers(snippet)) {
     for (const permission of exportedArrays.get(identifier) ?? []) {
@@ -199,12 +217,12 @@ function loadPermissionCatalog() {
 }
 
 function main() {
-  const allFiles = PAGE_DIRS.flatMap((dir) => walk(path.join(ROOT, dir)));
-  const pageFiles = allFiles.filter(isPageFile);
+  const allFiles = SCAN_DIRS.flatMap((dir) => walk(path.join(ROOT, dir)));
+  const scannedFiles = allFiles.filter(isScannedFile);
   const exportedArrays = buildExportedPermissionMap(allFiles);
   const usedPermissions = new Set();
 
-  for (const file of pageFiles) {
+  for (const file of scannedFiles) {
     const content = fs.readFileSync(file, "utf8");
     for (const permission of extractPermissionsFromContent(content, exportedArrays)) {
       usedPermissions.add(permission);
@@ -217,7 +235,7 @@ function main() {
   fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
   fs.writeFileSync(OUTPUT_PATH, `${JSON.stringify(filteredPermissions, null, 2)}\n`, "utf8");
 
-  console.log(`Scanned ${pageFiles.length} page files.`);
+  console.log(`Scanned ${scannedFiles.length} page, route, and service files.`);
   console.log(`Resolved ${usedPermissions.size} distinct permission references.`);
   console.log(`Wrote ${filteredPermissions.length} permission entries to: ${OUTPUT_PATH}`);
 }

@@ -2415,3 +2415,43 @@ Not:
 The filename identifies where the documentation is stored.
 
 The title tells the reader what the documentation is about.
+
+---
+
+# 43. Permission Declaration Format
+
+Pages, services, and API route files must declare permission usage with the
+minimal permission object shape only:
+
+```ts
+{
+  id: "permission.view",
+  scopeFor: "for_individual",
+  tag: ""
+}
+```
+
+The object keys are:
+
+* `id`: permission name used by the app permission catalog.
+* `scopeFor`: target scope such as `for_individual`, `for_brand`, or `for_subBrand`.
+* `tag`: optional grouping label. Use an empty string when no tag is needed.
+
+Do not place full permission catalog records in pages, services, or API route
+files. Full records belong in `logica/accounts/permissions.json` and generated
+snapshots such as `logica/basics/permissions.json`.
+
+Example:
+
+```ts
+const pagePermissions = [
+  {
+    id: "permission.view",
+    scopeFor: "for_individual",
+    tag: ""
+  }
+];
+```
+
+Permission scanners must read the permission object `id` field only. They must
+not treat `scopeFor` or `tag` string values as permission IDs.

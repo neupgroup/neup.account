@@ -5,7 +5,8 @@ Statically maps permission helper usage across the project.
 
 The command scans TypeScript and TSX files with the TypeScript Compiler API,
 recognizes imports from the local permission helper, records usage context,
-and writes an enriched permission catalog to `logica/basics/permissions.json`.
+and writes a permission catalog with policy and usage metadata to
+`logica/basics/permissions.json`.
 
 ::end
 */
@@ -44,8 +45,6 @@ type PermissionUsage = {
 type PermissionCatalogEntry = {
   id: string;
   title: string;
-  description: unknown;
-  scope?: unknown;
   scopeFor?: unknown;
   scopeLevel?: unknown;
   acquisitionType?: unknown;
@@ -490,8 +489,6 @@ function mergeCatalog(
     return {
       id: existing?.id ?? slugifyPermissionId(name),
       title: existing?.title ?? name,
-      description: existing?.description ?? null,
-      scope: existing?.scope ?? null,
       scopeFor: existing?.scopeFor ?? [],
       scopeLevel: existing?.scopeLevel ?? [],
       acquisitionType: existing?.acquisitionType ?? 'assignment',

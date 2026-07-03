@@ -2,8 +2,6 @@
   {
     "id": "cap-def-access-account-brand-create-self",
     "title": "access.account.brand.create.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -82,8 +80,6 @@
   {
     "id": "cap-def-access-account-dependent-create-self",
     "title": "access.account.dependent.create.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -149,8 +145,6 @@
   {
     "id": "cap-def-access-accounts-switch-self",
     "title": "access.accounts.switch.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -216,8 +210,6 @@
   {
     "id": "cap-def-access-application-add-managed",
     "title": "access.application.add.managed",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -296,8 +288,6 @@
   {
     "id": "cap-def-access-application-add-root",
     "title": "access.application.add.root",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -376,8 +366,6 @@
   {
     "id": "cap-def-access-application-add-self",
     "title": "access.application.add.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -508,8 +496,6 @@
   {
     "id": "cap-def-access-application-remove-self",
     "title": "access.application.remove.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -575,8 +561,6 @@
   {
     "id": "cap-def-access-application-view-self",
     "title": "access.application.view.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -707,8 +691,6 @@
   {
     "id": "cap-def-access-block-update-self",
     "title": "access.block.update.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -735,8 +717,6 @@
   {
     "id": "cap-def-access-block-view-self",
     "title": "access.block.view.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -776,8 +756,6 @@
   {
     "id": "cap-def-access-connection-add-self",
     "title": "access.connection.add.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -830,8 +808,6 @@
   {
     "id": "cap-def-access-connection-create-brand-managed",
     "title": "access.connection.create.brand.managed",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -884,8 +860,6 @@
   {
     "id": "cap-def-access-connection-create-brand-root",
     "title": "access.connection.create.brand.root",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -938,8 +912,6 @@
   {
     "id": "cap-def-access-connection-create-brand-self",
     "title": "access.connection.create.brand.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -992,10 +964,6 @@
   {
     "id": "cap-def-access-connection-create-dependent-managed",
     "title": "access.connection.create.dependent.managed",
-    "description": "Allows a manager to create an application connection for a managed dependent account.",
-    "scope": [
-      "managed.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -1026,8 +994,6 @@
   {
     "id": "cap-def-access-connection-create-dependent-root",
     "title": "access.connection.create.dependent.root",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -1054,10 +1020,6 @@
   {
     "id": "cap-def-access-connection-create-dependent-self",
     "title": "access.connection.create.dependent.self",
-    "description": "Allows the account holder to create an application connection for their dependent account.",
-    "scope": [
-      "public.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -1088,8 +1050,6 @@
   {
     "id": "cap-def-access-connection-create-individual-managed",
     "title": "access.connection.create.individual.managed",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -1116,8 +1076,6 @@
   {
     "id": "cap-def-access-connection-create-individual-root",
     "title": "access.connection.create.individual.root",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -1144,8 +1102,6 @@
   {
     "id": "cap-def-access-connection-create-individual-self",
     "title": "access.connection.create.individual.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -1172,8 +1128,6 @@
   {
     "id": "cap-def-access-connection-remove-self",
     "title": "access.connection.remove.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -1226,10 +1180,6 @@
   {
     "id": "cap-def-access-connection-view-self",
     "title": "access.connection.view.self",
-    "description": "Allows the account holder to view access connection for their own account.",
-    "scope": [
-      "public.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -1390,8 +1340,6 @@
   {
     "id": "cap-def-access-family-member-update-self",
     "title": "access.family.member.update.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -1444,8 +1392,6 @@
   {
     "id": "cap-def-access-family-partner-update-self",
     "title": "access.family.partner.update.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -1498,8 +1444,6 @@
   {
     "id": "cap-def-access-invitation-approve-self",
     "title": "access.invitation.approve.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -1539,8 +1483,6 @@
   {
     "id": "cap-def-access-invitations-view-self",
     "title": "access.invitations.view.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -1593,8 +1535,6 @@
   {
     "id": "cap-def-access-linked-account-add-self",
     "title": "access.linked_account.add.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -1621,8 +1561,6 @@
   {
     "id": "cap-def-access-linked-account-remove-self",
     "title": "access.linked_account.remove.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -1649,8 +1587,6 @@
   {
     "id": "cap-def-access-linked-account-view-self",
     "title": "access.linked_account.view.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -1742,8 +1678,6 @@
   {
     "id": "cap-def-access-portfolio-create-self",
     "title": "access.portfolio.create.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -1783,8 +1717,6 @@
   {
     "id": "cap-def-access-team-add-self",
     "title": "access.team.add.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -1837,8 +1769,6 @@
   {
     "id": "cap-def-access-team-remove-self",
     "title": "access.team.remove.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -1878,12 +1808,6 @@
   {
     "id": "cap-def-access-team-view",
     "title": "access.team.view",
-    "description": null,
-    "scope": [
-      "public.individual",
-      "root.individual",
-      "managed.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -1927,8 +1851,6 @@
   {
     "id": "cap-def-access-team-view-self",
     "title": "access.team.view.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -1994,8 +1916,6 @@
   {
     "id": "c8d5c179-9c62-4745-ab10-d0f1cf2f627a",
     "title": "access.view",
-    "description": null,
-    "scope": "public.brand,managed.brand,root.individual",
     "scopeFor": [
       "for_brand"
     ],
@@ -2039,8 +1959,6 @@
   {
     "id": "cap-def-access-view-self",
     "title": "access.view.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -2093,8 +2011,6 @@
   {
     "id": "cap-def-application-basics-edit-root",
     "title": "application.basics.edit.root",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -2134,8 +2050,6 @@
   {
     "id": "cap-def-application-config-update-root",
     "title": "application.config.update.root",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -2162,8 +2076,6 @@
   {
     "id": "cap-def-application-config-view-root",
     "title": "application.config.view.root",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -2190,8 +2102,6 @@
   {
     "id": "cap-def-application-create-root",
     "title": "application.create.root",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -2231,8 +2141,6 @@
   {
     "id": "cap-def-application-delete-root",
     "title": "application.delete.root",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -2259,8 +2167,6 @@
   {
     "id": "cap-def-application-devlogs-clear-root",
     "title": "application.devlogs.clear.root",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -2287,8 +2193,6 @@
   {
     "id": "cap-def-application-devlogs-view-root",
     "title": "application.devlogs.view.root",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -2315,8 +2219,6 @@
   {
     "id": "cap-def-application-logs-view-root",
     "title": "application.logs.view.root",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -2343,8 +2245,6 @@
   {
     "id": "cap-appmanage-application-roles-manage",
     "title": "application.roles.manage",
-    "description": "Create, update, and delete application roles and permissions.",
-    "scope": "public.individual",
     "scopeFor": [
       "for_individual"
     ],
@@ -2388,8 +2288,6 @@
   {
     "id": "cap-def-application-roles-manage-root",
     "title": "application.roles.manage.root",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -2429,8 +2327,6 @@
   {
     "id": "cap-def-application-roles-resetpush-root",
     "title": "application.roles.resetPush.root",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -2470,8 +2366,6 @@
   {
     "id": "cap-appmanage-application-roles-view",
     "title": "application.roles.view",
-    "description": "View application roles and permissions.",
-    "scope": "public.individual",
     "scopeFor": [
       "for_individual"
     ],
@@ -2528,8 +2422,6 @@
   {
     "id": "cap-def-application-roles-view-root",
     "title": "application.roles.view.root",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -2569,8 +2461,6 @@
   {
     "id": "cap-def-application-user-remove-root",
     "title": "application.user.remove.root",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -2597,8 +2487,6 @@
   {
     "id": "cap-def-application-user-updatebasics-root",
     "title": "application.user.updateBasics.root",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -2625,8 +2513,6 @@
   {
     "id": "cap-def-application-user-updaterole-root",
     "title": "application.user.updateRole.root",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -2653,8 +2539,6 @@
   {
     "id": "cap-appmanage-15-application-user-view",
     "title": "application.user.view",
-    "description": "View connected users for the application.",
-    "scope": "public.individual",
     "scopeFor": [
       "for_individual"
     ],
@@ -2698,8 +2582,6 @@
   {
     "id": "cap-def-application-user-view-root",
     "title": "application.user.view.root",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -2726,8 +2608,6 @@
   {
     "id": "cap-def-application-view",
     "title": "application.view",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -2780,8 +2660,6 @@
   {
     "id": "cap-def-application-view-root",
     "title": "application.view.root",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -2821,8 +2699,6 @@
   {
     "id": "cap-def-brand-platforms-manage",
     "title": "brand.platforms.manage",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -2875,8 +2751,6 @@
   {
     "id": "cap-def-data-agreed-terms-view",
     "title": "data.agreed_terms.view",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -2903,8 +2777,6 @@
   {
     "id": "cap-def-data-deactivate-account-start",
     "title": "data.deactivate_account.start",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -2970,8 +2842,6 @@
   {
     "id": "cap-def-data-delete-account-start",
     "title": "data.delete_account.start",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -3037,8 +2907,6 @@
   {
     "id": "cap-def-data-materialization-modify",
     "title": "data.materialization.modify",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -3104,8 +2972,6 @@
   {
     "id": "cap-def-data-materialization-view",
     "title": "data.materialization.view",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -3171,8 +3037,6 @@
   {
     "id": "a7940d87-1545-44fb-a721-8c77ee63f773",
     "title": "linked_accounts.brand.manage",
-    "description": null,
-    "scope": "public.brand",
     "scopeFor": [
       "for_brand"
     ],
@@ -3320,8 +3184,6 @@
   {
     "id": "797d4cb6-2cb8-42b8-8926-0749e77bfc5f",
     "title": "linked_accounts.brand.manager",
-    "description": null,
-    "scope": "public.brand",
     "scopeFor": [
       "for_brand"
     ],
@@ -3417,8 +3279,6 @@
   {
     "id": "cap-def-notification-delete",
     "title": "notification.delete",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -3471,8 +3331,6 @@
   {
     "id": "cap-def-notification-delete-self",
     "title": "notification.delete.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -3512,8 +3370,6 @@
   {
     "id": "cap-def-notification-read",
     "title": "notification.read",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -3579,8 +3435,6 @@
   {
     "id": "cap-def-notification-read-self",
     "title": "notification.read.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -3620,8 +3474,6 @@
   {
     "id": "cap-def-payment-method-show",
     "title": "payment.method.show",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -3687,8 +3539,6 @@
   {
     "id": "cap-def-payment-purchase-neup-pro-view",
     "title": "payment.purchase_neup_pro.view",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -3767,8 +3617,6 @@
   {
     "id": "cap-def-payment-subscriptions-show",
     "title": "payment.subscriptions.show",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -3847,8 +3695,6 @@
   {
     "id": "cap-def-payment-transactions-show",
     "title": "payment.transactions.show",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -3914,8 +3760,6 @@
   {
     "id": "cap-def-profile-contact-update",
     "title": "profile.contact.update",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -3942,10 +3786,6 @@
   {
     "id": "cap-def-profile-contact-update-self",
     "title": "profile.contact.update.self",
-    "description": "Allows the account holder to update profile contact for their own account.",
-    "scope": [
-      "public.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -4015,8 +3855,6 @@
   {
     "id": "cap-def-profile-contact-view",
     "title": "profile.contact.view",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -4043,10 +3881,6 @@
   {
     "id": "cap-def-profile-contact-view-self",
     "title": "profile.contact.view.self",
-    "description": "Allows the account holder to view profile contact for their own account.",
-    "scope": [
-      "public.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -4116,8 +3950,6 @@
   {
     "id": "cap-def-profile-demographics-update",
     "title": "profile.demographics.update",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -4144,10 +3976,6 @@
   {
     "id": "cap-def-profile-demographics-update-self",
     "title": "profile.demographics.update.self",
-    "description": "Allows the account holder to update profile demographics for their own account.",
-    "scope": [
-      "public.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -4217,10 +4045,6 @@
   {
     "id": "cap-def-profile-demographics-view-self",
     "title": "profile.demographics.view.self",
-    "description": "Allows the account holder to view profile demographics for their own account.",
-    "scope": [
-      "public.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -4290,10 +4114,6 @@
   {
     "id": "cap-def-profile-display-update-managed",
     "title": "profile.display.update.managed",
-    "description": "Allows a manager to update the display information of a managed account.",
-    "scope": [
-      "managed.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -4402,10 +4222,6 @@
   {
     "id": "cap-root-profile-display-update-root",
     "title": "profile.display.update.root",
-    "description": "Allows a root manager to update the display information of any account in the system.",
-    "scope": [
-      "root.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -4514,10 +4330,6 @@
   {
     "id": "cap-def-profile-display-update-self",
     "title": "profile.display.update.self",
-    "description": "Allows the account holder to update their own account display information.",
-    "scope": [
-      "public.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -4626,10 +4438,6 @@
   {
     "id": "cap-def-profile-display-view-managed",
     "title": "profile.display.view.managed",
-    "description": "Allows a manager to view the display information of a managed account.",
-    "scope": [
-      "managed.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -4777,10 +4585,6 @@
   {
     "id": "cap-root-profile-display-view-root",
     "title": "profile.display.view.root",
-    "description": "Allows a root manager to view the display information of any account in the system.",
-    "scope": [
-      "root.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -4928,10 +4732,6 @@
   {
     "id": "cap-def-profile-display-view-self",
     "title": "profile.display.view.self",
-    "description": "Allows the account holder to view their own account display information.",
-    "scope": [
-      "public.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -5079,8 +4879,6 @@
   {
     "id": "cap-def-profile-kyc-update",
     "title": "profile.kyc.update",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -5107,10 +4905,6 @@
   {
     "id": "cap-def-profile-kyc-update-self",
     "title": "profile.kyc.update.self",
-    "description": "Allows the account holder to update profile KYC for their own account.",
-    "scope": [
-      "public.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -5180,10 +4974,6 @@
   {
     "id": "cap-def-profile-kyc-view-self",
     "title": "profile.kyc.view.self",
-    "description": "Allows the account holder to view profile KYC for their own account.",
-    "scope": [
-      "public.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -5253,8 +5043,6 @@
   {
     "id": "cap-def-profile-legal-update",
     "title": "profile.legal.update",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -5281,10 +5069,6 @@
   {
     "id": "cap-def-profile-legal-update-self",
     "title": "profile.legal.update.self",
-    "description": "Allows the account holder to update profile legal for their own account.",
-    "scope": [
-      "public.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -5354,10 +5138,6 @@
   {
     "id": "cap-def-profile-legal-view-self",
     "title": "profile.legal.view.self",
-    "description": "Allows the account holder to view profile legal for their own account.",
-    "scope": [
-      "public.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -5427,8 +5207,6 @@
   {
     "id": "cap-def-profile-neupid-remove",
     "title": "profile.neupid.remove",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -5455,10 +5233,6 @@
   {
     "id": "cap-def-profile-neupid-remove-self",
     "title": "profile.neupid.remove.self",
-    "description": "Allows the account holder to remove profile NeupID for their own account.",
-    "scope": [
-      "public.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -5528,8 +5302,6 @@
   {
     "id": "cap-def-profile-neupid-request",
     "title": "profile.neupid.request",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -5556,10 +5328,6 @@
   {
     "id": "cap-def-profile-neupid-request-self",
     "title": "profile.neupid.request.self",
-    "description": "Allows the account holder to request profile NeupID for their own account.",
-    "scope": [
-      "public.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -5629,8 +5397,6 @@
   {
     "id": "cap-def-profile-neupid-update",
     "title": "profile.neupid.update",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -5657,10 +5423,6 @@
   {
     "id": "cap-def-profile-neupid-update-self",
     "title": "profile.neupid.update.self",
-    "description": "Allows the account holder to update profile NeupID for their own account.",
-    "scope": [
-      "public.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -5730,8 +5492,6 @@
   {
     "id": "cap-def-profile-neupid-view",
     "title": "profile.neupid.view",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -5758,10 +5518,6 @@
   {
     "id": "cap-def-profile-neupid-view-self",
     "title": "profile.neupid.view.self",
-    "description": "Allows the account holder to view profile NeupID for their own account.",
-    "scope": [
-      "public.individual"
-    ],
     "scopeFor": [
       "for_individual"
     ],
@@ -5831,8 +5587,6 @@
   {
     "id": "cap-def-requests-root-approval-approve",
     "title": "requests.root_approval.approve",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -5937,8 +5691,6 @@
   {
     "id": "cap-def-requests-root-approval-view",
     "title": "requests.root_approval.view",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -6095,8 +5847,6 @@
   {
     "id": "cap-def-root-account-access-edit",
     "title": "root.account.access.edit",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -6136,8 +5886,6 @@
   {
     "id": "cap-def-root-account-access-view",
     "title": "root.account.access.view",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -6177,8 +5925,6 @@
   {
     "id": "cap-def-root-account-create-individual",
     "title": "root.account.create_individual",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -6205,8 +5951,6 @@
   {
     "id": "cap-def-root-account-delete",
     "title": "root.account.delete",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -6272,8 +6016,6 @@
   {
     "id": "cap-def-root-account-edit-neupid",
     "title": "root.account.edit_neupid",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -6300,8 +6042,6 @@
   {
     "id": "cap-def-root-account-edit-pro-status",
     "title": "root.account.edit_pro_status",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -6328,8 +6068,6 @@
   {
     "id": "cap-def-root-account-give-block-account",
     "title": "root.account.give_block_account",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -6356,8 +6094,6 @@
   {
     "id": "cap-def-root-account-impersonate",
     "title": "root.account.impersonate",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -6384,8 +6120,6 @@
   {
     "id": "cap-def-root-account-remove-block-account",
     "title": "root.account.remove_block_account",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -6412,8 +6146,6 @@
   {
     "id": "cap-def-root-account-search",
     "title": "root.account.search",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -6453,8 +6185,6 @@
   {
     "id": "cap-def-root-account-send-warning",
     "title": "root.account.send_warning",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -6481,8 +6211,6 @@
   {
     "id": "cap-def-root-account-view",
     "title": "root.account.view",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -6613,8 +6341,6 @@
   {
     "id": "cap-def-root-dashboard-view",
     "title": "root.dashboard.view",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -6667,8 +6393,6 @@
   {
     "id": "cap-def-root-display-images-add",
     "title": "root.display_images.add",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -6721,8 +6445,6 @@
   {
     "id": "cap-def-root-display-images-delete",
     "title": "root.display_images.delete",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -6775,8 +6497,6 @@
   {
     "id": "cap-def-root-display-images-update",
     "title": "root.display_images.update",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -6829,8 +6549,6 @@
   {
     "id": "cap-def-root-display-images-view",
     "title": "root.display_images.view",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -6909,8 +6627,6 @@
   {
     "id": "cap-def-root-payment-config-view",
     "title": "root.payment_config.view",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7041,8 +6757,6 @@
   {
     "id": "cap-def-root-permission-edit",
     "title": "root.permission.edit",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7082,8 +6796,6 @@
   {
     "id": "cap-def-root-permission-view",
     "title": "root.permission.view",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7123,8 +6835,6 @@
   {
     "id": "cap-def-root-requests-manage",
     "title": "root.requests.manage",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7151,8 +6861,6 @@
   {
     "id": "cap-def-security-backup-codes-create",
     "title": "security.backup_codes.create",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7192,8 +6900,6 @@
   {
     "id": "cap-def-security-backup-codes-create-self",
     "title": "security.backup_codes.create.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7233,8 +6939,6 @@
   {
     "id": "cap-def-security-backup-codes-view",
     "title": "security.backup_codes.view",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7274,8 +6978,6 @@
   {
     "id": "cap-def-security-backup-codes-view-self",
     "title": "security.backup_codes.view.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7315,8 +7017,6 @@
   {
     "id": "cap-def-security-login-devices-view",
     "title": "security.login_devices.view",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7343,8 +7043,6 @@
   {
     "id": "cap-def-security-login-devices-view-self",
     "title": "security.login_devices.view.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7397,8 +7095,6 @@
   {
     "id": "cap-def-security-pass-modify",
     "title": "security.pass.modify",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7425,8 +7121,6 @@
   {
     "id": "cap-def-security-pass-modify-self",
     "title": "security.pass.modify.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7479,8 +7173,6 @@
   {
     "id": "cap-def-security-recent-activities-view",
     "title": "security.recent_activities.view",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7520,8 +7212,6 @@
   {
     "id": "cap-def-security-recent-activities-view-self",
     "title": "security.recent_activities.view.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7574,8 +7264,6 @@
   {
     "id": "cap-def-security-recovery-accounts-add",
     "title": "security.recovery_accounts.add",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7602,8 +7290,6 @@
   {
     "id": "cap-def-security-recovery-accounts-add-self",
     "title": "security.recovery_accounts.add.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7643,8 +7329,6 @@
   {
     "id": "cap-def-security-recovery-accounts-remove",
     "title": "security.recovery_accounts.remove",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7671,8 +7355,6 @@
   {
     "id": "cap-def-security-recovery-accounts-remove-self",
     "title": "security.recovery_accounts.remove.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7712,8 +7394,6 @@
   {
     "id": "cap-def-security-recovery-accounts-view",
     "title": "security.recovery_accounts.view",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7740,8 +7420,6 @@
   {
     "id": "cap-def-security-recovery-accounts-view-self",
     "title": "security.recovery_accounts.view.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7781,8 +7459,6 @@
   {
     "id": "cap-def-security-recovery-email-add",
     "title": "security.recovery_email.add",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7822,8 +7498,6 @@
   {
     "id": "cap-def-security-recovery-email-add-self",
     "title": "security.recovery_email.add.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7863,8 +7537,6 @@
   {
     "id": "cap-def-security-recovery-email-remove",
     "title": "security.recovery_email.remove",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7904,8 +7576,6 @@
   {
     "id": "cap-def-security-recovery-email-remove-self",
     "title": "security.recovery_email.remove.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7945,8 +7615,6 @@
   {
     "id": "cap-def-security-recovery-email-view",
     "title": "security.recovery_email.view",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -7986,8 +7654,6 @@
   {
     "id": "cap-def-security-recovery-email-view-self",
     "title": "security.recovery_email.view.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -8027,8 +7693,6 @@
   {
     "id": "cap-def-security-recovery-phone-add",
     "title": "security.recovery_phone.add",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -8055,8 +7719,6 @@
   {
     "id": "cap-def-security-recovery-phone-add-self",
     "title": "security.recovery_phone.add.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -8096,8 +7758,6 @@
   {
     "id": "cap-def-security-recovery-phone-remove",
     "title": "security.recovery_phone.remove",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -8124,8 +7784,6 @@
   {
     "id": "cap-def-security-recovery-phone-remove-self",
     "title": "security.recovery_phone.remove.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -8165,8 +7823,6 @@
   {
     "id": "cap-def-security-recovery-phone-view",
     "title": "security.recovery_phone.view",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -8193,8 +7849,6 @@
   {
     "id": "cap-def-security-recovery-phone-view-self",
     "title": "security.recovery_phone.view.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -8234,8 +7888,6 @@
   {
     "id": "cap-def-security-totp-add",
     "title": "security.totp.add",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -8275,8 +7927,6 @@
   {
     "id": "cap-def-security-totp-add-self",
     "title": "security.totp.add.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -8316,8 +7966,6 @@
   {
     "id": "cap-def-security-totp-remove",
     "title": "security.totp.remove",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -8357,8 +8005,6 @@
   {
     "id": "cap-def-security-totp-remove-self",
     "title": "security.totp.remove.self",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -8398,8 +8044,6 @@
   {
     "id": "cap-def-site-social-accounts-add",
     "title": "site.social_accounts.add",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -8426,8 +8070,6 @@
   {
     "id": "cap-def-site-social-accounts-delete",
     "title": "site.social_accounts.delete",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -8454,8 +8096,6 @@
   {
     "id": "cap-def-site-social-accounts-edit",
     "title": "site.social_accounts.edit",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",
@@ -8482,8 +8122,6 @@
   {
     "id": "cap-def-site-social-accounts-read",
     "title": "site.social_accounts.read",
-    "description": null,
-    "scope": null,
     "scopeFor": [],
     "scopeLevel": [],
     "acquisitionType": "assignment",

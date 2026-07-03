@@ -8,7 +8,7 @@ Lists application permissions and provides the inline creation dialog for new pe
 
 ::public
 
-This panel powers the top-level permissions page, including search, scope badges, and creation of permissions with `scope_for` and `scope_level`.
+This panel powers the top-level permissions page, including search and creation of permissions with `scope_for` and `scope_level`.
 
 ::public end
 
@@ -39,7 +39,6 @@ import {
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { redirectInApp } from '@/core/helper/navigation';
 import { FlowLink } from '@/components/ui/flow-link';
-import { PermissionScopeBadges } from './permission-scope-badges';
 import { ScopeForSelector, ScopeLevelSelector } from './authz-scope-policy-selector';
 
 type Props = {
@@ -47,13 +46,11 @@ type Props = {
   initialPermissions: AppPermission[];
   canManage: boolean;
   mode?: string;
-  scopeHint?: string;
 };
 
 type PermissionSearchFilters = {
   nameTerms: string[];
   plainTerms: string[];
-  scopes: string[];
   sort: 'asc' | 'desc';
 };
 
@@ -61,7 +58,6 @@ function parsePermissionSearch(input: string): PermissionSearchFilters {
   const filters: PermissionSearchFilters = {
     nameTerms: [],
     plainTerms: [],
-    scopes: [],
     sort: 'asc',
   };
 
@@ -94,16 +90,6 @@ function parsePermissionSearch(input: string): PermissionSearchFilters {
       continue;
     }
 
-    if (key === 'scope') {
-      for (const part of rawValue.split('||')) {
-        const normalizedScope = part.trim().toLowerCase();
-        if (normalizedScope && !filters.scopes.includes(normalizedScope)) {
-          filters.scopes.push(normalizedScope);
-        }
-      }
-      continue;
-    }
-
     if (key === 'name') {
       filters.nameTerms.push(rawValue.toLowerCase());
       continue;
@@ -120,7 +106,6 @@ export function PermissionPanel({
   initialPermissions,
   canManage,
   mode,
-  scopeHint,
 }: Props) {
   const router = useRouter();
   const { toast } = useToast();
@@ -130,7 +115,6 @@ export function PermissionPanel({
   const [addOpen, setAddOpen] = useState(false);
   const [addName, setAddName] = useState('');
   const [addDesc, setAddDesc] = useState('');
-  const [addScope, setAddScope] = useState('');
   const [addScopeFor, setAddScopeFor] = useState<AppPermission['scopeFor']>(['for_individual']);
   const [addScopeLevel, setAddScopeLevel] = useState<AppPermission['scopeLevel']>(['assignable']);
   const [addRules, setAddRules] = useState('');
@@ -146,11 +130,8 @@ export function PermissionPanel({
         const plainHaystack = `${permission.name} ${permission.description ?? ''}`.toLowerCase();
         const matchesName = filters.nameTerms.every((term) => nameHaystack.includes(term));
         const matchesPlain = filters.plainTerms.every((term) => plainHaystack.includes(term));
-        const matchesScope =
-          filters.scopes.length === 0 ||
-          filters.scopes.includes((permission.scope ?? '').trim().toLowerCase());
 
-        return matchesName && matchesPlain && matchesScope;
+        return matchesName && matchesPlain;
       })
       .sort((a, b) => {
         const result = a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
@@ -177,7 +158,6 @@ export function PermissionPanel({
       appId,
       name: trimmed,
       description: addDesc || undefined,
-      scope: addScope || undefined,
       scopeFor: addScopeFor,
       scopeLevel: addScopeLevel,
       rules: addRules || undefined,
@@ -194,7 +174,6 @@ export function PermissionPanel({
     setPermissions((prev) => [...prev, createdPermission]);
     setAddName('');
     setAddDesc('');
-    setAddScope('');
     setAddScopeFor(['for_individual']);
     setAddScopeLevel(['assignable']);
     setAddRules('');
@@ -209,7 +188,7 @@ export function PermissionPanel({
       <Input
         value={search}
         onChange={(event) => setSearch(event.target.value)}
-        placeholder="Search permissions... e.g. sort:asc&scope:public&name:access"
+        placeholder="Search permissions... e.g. sort:asc&name:access"
       />
 
       <div className="overflow-hidden rounded-2xl border bg-card">
@@ -245,7 +224,6 @@ export function PermissionPanel({
                     <p className="truncate text-sm text-muted-foreground">{permission.description}</p>
                   ) : null}
                   <div className="mt-1 flex flex-wrap gap-1">
-                    <PermissionScopeBadges scope={permission.scope} />
                     {permission.scopeFor.map((label) => (
                       <Badge key={label} variant="outline" className="text-xs">
                         {label}
@@ -281,7 +259,6 @@ export function PermissionPanel({
           if (!open) {
             setAddName('');
             setAddDesc('');
-            setAddScope('');
             setAddScopeFor(['for_individual']);
             setAddScopeLevel(['assignable']);
             setAddRules('');
@@ -299,10 +276,6 @@ export function PermissionPanel({
           <div className="space-y-3">
             <Input value={addName} onChange={(event) => setAddName(event.target.value)} placeholder="Title, e.g. Orders Read" autoFocus />
             <Textarea value={addDesc} onChange={(event) => setAddDesc(event.target.value)} placeholder="Description (optional)" />
-            <Input value={addScope} onChange={(event) => setAddScope(event.target.value)} placeholder="Scope (optional)" />
-            {scopeHint ? (
-              <p className="text-xs text-muted-foreground">{scopeHint}</p>
-            ) : null}
             <ScopeForSelector value={addScopeFor} onChange={setAddScopeFor} />
             <ScopeLevelSelector value={addScopeLevel} onChange={setAddScopeLevel} />
             <Input value={addRules} onChange={(event) => setAddRules(event.target.value)} placeholder="Rules (optional)" />

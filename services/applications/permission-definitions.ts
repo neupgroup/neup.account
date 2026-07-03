@@ -6,7 +6,7 @@ Defines the built-in application-management permissions that are seeded into the
 
 ::public
 
-Each permission definition includes its generated permission name, human description, app-defined scope tokens, and the `scope_for` / `scope_level` policy used by authz management.
+Each permission definition includes its generated permission name, human description, and the `scope_for` / `scope_level` policy used by authz management.
 
 ::public end
 
@@ -129,12 +129,6 @@ function permissionDescription(base: ApplicationPermissionBase, audience: Applic
   return baseDescription;
 }
 
-function permissionScope(audience: ApplicationPermissionAudience): string {
-  if (audience === 'root') return 'root.individual';
-  if (audience === 'managed') return 'managed.individual';
-  return 'public.individual';
-}
-
 function permissionPolicyDefinition(audience: ApplicationPermissionAudience): ApplicationPermissionPolicyDefinition {
   if (audience === 'root') {
     return {
@@ -177,7 +171,6 @@ export function getApplicationPermissionDefinitions(
 ): Array<{
   name: string;
   description: string;
-  scope: string[];
   scopeFor: AuthzScopeFor[];
   scopeLevel: AuthzScopeLevel[];
   acquisitionType: string;
@@ -186,7 +179,6 @@ export function getApplicationPermissionDefinitions(
   const definitions = new Map<string, {
     name: string;
     description: string;
-    scope: string[];
     scopeFor: AuthzScopeFor[];
     scopeLevel: AuthzScopeLevel[];
     acquisitionType: string;
@@ -196,7 +188,6 @@ export function getApplicationPermissionDefinitions(
   for (const audience of audiences) {
     for (const base of Object.keys(APPLICATION_PERMISSION_DEFINITION_MAP) as ApplicationPermissionBase[]) {
       const name = permissionName(base, audience);
-      const scope = permissionScope(audience);
       const policy = permissionPolicyDefinition(audience);
       const existing = definitions.get(name);
 
@@ -209,7 +200,6 @@ export function getApplicationPermissionDefinitions(
       definitions.set(name, {
         name,
         description: permissionDescription(base, audience),
-        scope: [scope],
         scopeFor: policy.scopeFor,
         scopeLevel: policy.scopeLevel,
         acquisitionType: storedPolicy.acquisitionType,

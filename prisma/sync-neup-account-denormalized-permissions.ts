@@ -1,3 +1,23 @@
+/*
+::neup.documentation::sync-denormalized-neup-account-permissions
+
+Rebuilds denormalized role permission arrays for the Neup Account app.
+
+::public
+
+Run this script when canonical authz permission rows change and existing role `permissions` arrays need to be resynced.
+
+::public end
+
+::private
+
+The script uses canonical permission names instead of the removed legacy `authz_permission.scope` column.
+
+::private end
+
+::end
+*/
+
 import 'dotenv/config';
 import { Pool } from 'pg';
 
@@ -85,11 +105,11 @@ async function main() {
         merged AS (
           SELECT permission_name FROM current_permissions
           UNION
-          SELECT DISTINCT c.name AS permission_name
+            SELECT DISTINCT c.name AS permission_name
           FROM authz_permission c
           WHERE c.app_id = $1
             AND (
-              (c.scope = 'individual.root' AND c.name LIKE 'application.%')
+              c.name LIKE 'application.%.root'
               OR c.name LIKE 'config.%'
               OR c.name LIKE 'root.display_images.%'
             )

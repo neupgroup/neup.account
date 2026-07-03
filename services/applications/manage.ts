@@ -665,13 +665,13 @@ export async function createManagedApplication(input: { name: string; idPrefix: 
         id: `cap-appowner-${index + 1}-${permission.name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}`,
         ...permission,
       }));
-      const permissions: Array<{ id: string; name: string; description: string | null; scope: Prisma.JsonValue }> = [];
+      const permissions: Array<{ id: string; name: string; description: string | null }> = [];
       for (const cap of permissionDefinitions) {
         const permission = await tx.authzPermission.upsert({
           where: { name_appId: { name: cap.name, appId: 'neup.account' } },
-          update: { name: cap.name, description: cap.description, appId: 'neup.account', scope: cap.scope },
-          create: { id: cap.id, name: cap.name, description: cap.description, appId: 'neup.account', scope: cap.scope },
-          select: { id: true, name: true, description: true, scope: true },
+          update: { name: cap.name, description: cap.description, appId: 'neup.account' },
+          create: { id: cap.id, name: cap.name, description: cap.description, appId: 'neup.account' },
+          select: { id: true, name: true, description: true },
         });
         permissions.push(permission);
       }
@@ -737,7 +737,6 @@ export async function createManagedApplication(input: { name: string; idPrefix: 
             id: permission.id,
             name: permission.name,
             description: permission.description ?? null,
-            scope: permission.scope,
           })),
         },
       });

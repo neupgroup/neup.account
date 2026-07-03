@@ -1,18 +1,22 @@
-/**
- * 02_neupaccount_applicationRole.ts
- *
- * Seeds the application.owner role for the neupaccount application.
- *
- * Order of operations (must be followed to satisfy FK constraints):
- *   1. Upsert permissions  (application.* unified permission names)
- *   2. Upsert role          (application.owner)
- *   3. Upsert permission-to-role maps (AuthzRolePermissionMap)
- *
- * Safe to re-run — all operations are idempotent upserts.
- *
- * Usage:
- *   tsx prisma/02_neupaccount_applicationRole.ts
- */
+/*
+::neup.documentation::seed-application-owner-role-script
+
+Seeds the `application.owner` authz role for the Neup Account app.
+
+::public
+
+Run this script to ensure the owner role and its canonical application-management permissions exist.
+
+::public end
+
+::private
+
+The script is idempotent and rebuilds the role-permission mappings after upserting the source permission rows.
+
+::private end
+
+::end
+*/
 
 import 'dotenv/config';
 import prisma from '../core/helpers/prisma';
@@ -31,7 +35,6 @@ const CAPABILITIES = APPLICATION_SYSTEM_OWNER_PERMISSION_DEFINITIONS.map((permis
   id: `cap-appowner-${index + 1}-${permission.name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}`,
   name: permission.name,
   description: permission.description,
-  scope: permission.scope,
 }));
 
 // ---------------------------------------------------------------------------
@@ -59,14 +62,12 @@ async function main() {
         name: cap.name,
         description: cap.description,
         appId: APP_ID,
-        scope: cap.scope,
       },
       create: {
         id: cap.id,
         name: cap.name,
         description: cap.description,
         appId: APP_ID,
-        scope: cap.scope,
       },
       select: {
         id: true,
@@ -110,7 +111,6 @@ async function main() {
       data: {
         roleId: ROLE.id,
         permissionId: cap.id,
-        scope: 'application',
         scopeFor: 'for_individual',
         scopeLevel: 'assignable',
       },

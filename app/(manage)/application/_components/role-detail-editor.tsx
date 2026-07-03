@@ -34,7 +34,6 @@ import { isBuiltInApplicationManagementPermissionName } from '@/services/applica
 import { AuthzDefinitionSelector } from './authz-definition-selector';
 import type { ApplicationAuthzDefinitionOption } from '@/services/applications/authz-config';
 import type { AuthzScopeLevel } from '@/services/applications/authz-scope-policy';
-import { PermissionScopeBadges } from './permission-scope-badges';
 import { ScopeForSelector, ScopeLevelSelector } from './authz-scope-policy-selector';
 
 type Props = {
@@ -254,7 +253,6 @@ export function RoleDetailEditor({
                         {permission.description}
                       </p>
                     ) : null}
-                    <PermissionScopeBadges scope={permission.scope} className="mt-1 flex flex-wrap gap-1" />
                   </div>
                 </label>
               );

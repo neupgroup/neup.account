@@ -1,5 +1,25 @@
 import 'dotenv/config';
 import prisma from '../../core/helpers/prisma';
+/*
+::neup.documentation::seed-brand-owner-role-script
+
+Ensures the canonical brand-owner authz role and related permission rows exist.
+
+::public
+
+Run this script after authz catalog changes that affect the brand-owner role.
+
+::public end
+
+::private
+
+The script keeps the role-permission map aligned with the current canonical brand-owner permission name sets.
+
+::private end
+
+::end
+*/
+
 import {
   BRAND_OWNER_PERMISSION_NAMES,
   BRAND_ROOT_PERMISSION_NAMES,
@@ -12,26 +32,6 @@ const LEGACY_ROLE_ID = 'brand-owner-neup-account';
 
 function slugifyPermission(permission: string): string {
   return permission.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-}
-
-function permissionScopesForBrandOwnerPermission(permissionName: string): string {
-  if (
-    permissionName.endsWith('.managed') ||
-    permissionName === 'data.agreed_terms.view' ||
-    permissionName === 'data.delete_account.start' ||
-    permissionName === 'data.deactivate_account.start' ||
-    permissionName === 'data.materialization.view' ||
-    permissionName === 'data.materialization.modify' ||
-    permissionName === 'security.recent_activities.view' ||
-    permissionName === 'payment.method.show' ||
-    permissionName === 'payment.transactions.show' ||
-    permissionName === 'payment.subscriptions.show' ||
-    permissionName === 'payment.purchase_neup_pro.view'
-  ) {
-    return 'managed.brand';
-  }
-
-  return 'public.brand';
 }
 
 async function main() {
@@ -89,20 +89,17 @@ async function main() {
 
     for (const permissionName of BRAND_OWNER_PERMISSION_NAMES) {
       const permissionId = `cap-brand-owner-${slugifyPermission(permissionName)}`;
-      const permissionScope = permissionScopesForBrandOwnerPermission(permissionName);
 
       const permission = await tx.authzPermission.upsert({
         where: { name_appId: { name: permissionName, appId: APP_ID } },
         update: {
           name: permissionName,
           appId: APP_ID,
-          scope: permissionScope,
         },
         create: {
           id: permissionId,
           name: permissionName,
           appId: APP_ID,
-          scope: permissionScope,
         },
         select: { id: true },
       });
@@ -148,13 +145,11 @@ async function main() {
         update: {
           name: permissionName,
           appId: APP_ID,
-          scope: 'root.individual',
         },
         create: {
           id: permissionId,
           name: permissionName,
           appId: APP_ID,
-          scope: 'root.individual',
         },
       });
     }

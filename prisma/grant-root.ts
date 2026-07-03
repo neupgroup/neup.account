@@ -1,3 +1,23 @@
+/*
+::neup.documentation::grant-root-script
+
+Grants the canonical root access role to one Neup Account account.
+
+::public
+
+Use this script to give a specific account the root role by account id or NeupID.
+
+::public end
+
+::private
+
+The script ensures the root authz role exists before creating the access grant.
+
+::private end
+
+::end
+*/
+
 import 'dotenv/config';
 import prisma from '../core/helpers/prisma';
 import { ensureAccessGrant } from '../services/access-model';

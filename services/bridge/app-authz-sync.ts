@@ -46,7 +46,6 @@ type PermissionInput = {
   title?: string;
   name?: string;
   description?: string | null;
-  scope?: unknown;
   scopeFor?: unknown;
   scopeLevel?: unknown;
   acquisitionType?: string | null;
@@ -192,7 +191,6 @@ function serializePermission(permission: {
   id: string;
   name: string;
   description: string | null;
-  scope: unknown;
   scopeFor: unknown;
   scopeLevel: unknown;
   acquisitionType: string | null;
@@ -205,7 +203,6 @@ function serializePermission(permission: {
     id: permission.id,
     title: permission.name,
     description: permission.description,
-    scope: normalizeJsonValue(permission.scope),
     scopeFor: normalizeJsonValue(permission.scopeFor),
     scopeLevel: normalizeJsonValue(permission.scopeLevel),
     acquisitionType: permission.acquisitionType,
@@ -362,7 +359,6 @@ export async function postSyncedAppPermissions(credentials: AppCredentials, inpu
           update: {
             name,
             description: permission.description?.trim() || null,
-            scope: toNullableJsonInput(permission.scope),
             scopeFor: toJsonInput(permission.scopeFor, []),
             scopeLevel: toJsonInput(permission.scopeLevel, []),
             acquisitionType: permission.acquisitionType?.trim() || 'assignment',
@@ -376,7 +372,6 @@ export async function postSyncedAppPermissions(credentials: AppCredentials, inpu
             id,
             name,
             description: permission.description?.trim() || null,
-            scope: toNullableJsonInput(permission.scope),
             scopeFor: toJsonInput(permission.scopeFor, []),
             scopeLevel: toJsonInput(permission.scopeLevel, []),
             acquisitionType: permission.acquisitionType?.trim() || 'assignment',

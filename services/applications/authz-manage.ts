@@ -14,7 +14,7 @@ This service validates authz editor input, persists role and permission metadata
 
 ::private
 
-The service stores the new `scope_for` / `scope_level` fields directly while still deriving legacy acquisition and approval columns for compatibility with older consumers.
+The service stores `scope_for` / `scope_level` directly while still deriving legacy acquisition and approval columns for compatibility with older consumers.
 
 ::private end
 
@@ -87,7 +87,6 @@ export type AppPermission = {
   id: string;
   name: string;
   description: string | null;
-  scope: string | null;
   scopeFor: AuthzScopeFor[];
   scopeLevel: AuthzScopeLevel[];
   acquisitionType: string | null;
@@ -133,7 +132,6 @@ type RawAppPermissionRow = {
   id: string;
   name: string;
   description: string | null;
-  scopeText: string | null;
   scopeForText: string | null;
   scopeLevelText: string | null;
   acquisitionType: string | null;
@@ -164,17 +162,6 @@ function normalizeApplicableFor(value: Prisma.JsonValue | null | undefined): str
         .filter(Boolean),
     ),
   );
-}
-
-function formatPermissionScope(value: Prisma.JsonValue | null | undefined): string | null {
-  if (value === null || value === undefined) return null;
-  if (typeof value === 'string') return value;
-
-  try {
-    return JSON.stringify(value);
-  } catch {
-    return String(value);
-  }
 }
 
 function formatScopeFor(value: Prisma.JsonValue | null | undefined, allowMultiple = true): AuthzScopeFor[] {
@@ -258,7 +245,6 @@ function formatRoleScopeLevel(
 }
 
 function getPermissionScopeFor(record: {
-  scope?: Prisma.JsonValue | null;
   scopeFor?: Prisma.JsonValue | null;
 }): AuthzScopeFor[] {
   return formatScopeFor(record.scopeFor);
@@ -284,7 +270,6 @@ function mapPermissionRecord(record: any): AppPermission {
     id: record.id,
     name: record.name,
     description: record.description ?? null,
-    scope: formatPermissionScope(record.scope),
     scopeFor: getPermissionScopeFor(record),
     scopeLevel: getPermissionScopeLevel(record),
     acquisitionType: record.acquisitionType ?? 'assignment',
@@ -345,7 +330,6 @@ async function loadAppRolesWithMalformedJsonFallback(
           p."id",
           p."name",
           p."description",
-          p."scope"::text AS "scopeText",
           ${permissionScopePolicySelect}
           p."acquisition_type" AS "acquisitionType",
           p."approval_policy" AS "approvalPolicy",
@@ -364,7 +348,6 @@ async function loadAppRolesWithMalformedJsonFallback(
       id: row.id,
       name: row.name,
       description: row.description,
-      scope: parseStoredJsonText(row.scopeText),
       scopeFor: parseStoredJsonText(row.scopeForText),
       scopeLevel: parseStoredJsonText(row.scopeLevelText),
       acquisitionType: row.acquisitionType,
@@ -393,17 +376,6 @@ async function loadAppRolesWithMalformedJsonFallback(
     applicableFor: normalizeApplicableFor(parseStoredJsonText(row.applicableForText)),
     permissions: permissionsByRoleId.get(row.id) ?? [],
   }));
-}
-
-function parsePermissionScopeInput(value: string | undefined): Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput | undefined {
-  const trimmed = value?.trim();
-  if (!trimmed) return undefined;
-
-  try {
-    return JSON.parse(trimmed) as Prisma.InputJsonValue;
-  } catch {
-    return trimmed;
-  }
 }
 
 function parseScopeForInput(value: string[] | undefined, allowMultiple = true): AuthzScopeFor[] {
@@ -462,73 +434,6 @@ function normalizePermissionApprovalPolicy(value: string | null | undefined): st
   return PERMISSION_APPROVAL_POLICIES.includes(normalized as (typeof PERMISSION_APPROVAL_POLICIES)[number])
     ? normalized
     : 'none';
-}
-
-function parsePermissionScopeTokens(value: string | undefined): string[] {
-  const trimmed = value?.trim();
-  if (!trimmed) return [];
-
-  try {
-    const parsed = JSON.parse(trimmed) as unknown;
-
-    if (typeof parsed === 'string') {
-      return parsed.trim() ? [parsed.trim()] : [];
-    }
-
-    if (!Array.isArray(parsed)) {
-      throw new Error('Permission scope must be a string or string array.');
-    }
-
-    const tokens = parsed.map((item) => {
-      if (typeof item !== 'string') {
-        throw new Error('Permission scope entries must be strings.');
-      }
-
-      const token = item.trim();
-      if (!token) {
-        throw new Error('Permission scope entries cannot be empty.');
-      }
-
-      return token;
-    });
-
-    return Array.from(new Set(tokens));
-  } catch (error) {
-    if (error instanceof Error && error.message.startsWith('Permission scope')) {
-      throw error;
-    }
-
-    return Array.from(
-      new Set(
-        trimmed
-          .split(',')
-          .map((token) => token.trim())
-          .filter(Boolean),
-      ),
-    );
-  }
-}
-
-async function validatePermissionScopeInput(appId: string, value: string | undefined): Promise<void> {
-  const tokens = parsePermissionScopeTokens(value);
-  if (tokens.length === 0) return;
-
-  const authzConfig = await getApplicationAuthzConfigForValidation(appId);
-  const allowedKeys = authzConfig.definedScopes.map(([, key]) => key);
-  const allowedSet = new Set(allowedKeys);
-
-  if (allowedSet.size === 0) {
-    throw new Error('No scopes are configured for this application.');
-  }
-
-  if (!authzConfig.allowMultipleDefinedScopes && tokens.length > 1) {
-    throw new Error('Only one configured scope is allowed for this permission.');
-  }
-
-  const invalidTokens = tokens.filter((token) => !allowedSet.has(token));
-  if (invalidTokens.length > 0) {
-    throw new Error('Scope must use only configured application scopes.');
-  }
 }
 
 async function getApplicationAuthzConfigForValidation(appId: string): Promise<ApplicationAuthzConfig> {
@@ -596,7 +501,6 @@ async function upsertPermissionsForApp(
     id: string;
     name: string;
     description: string;
-    scope: string[];
     scopeFor: AuthzScopeFor[];
     scopeLevel: AuthzScopeLevel[];
   }>,
@@ -610,7 +514,6 @@ async function upsertPermissionsForApp(
       name: definition.name,
       description: definition.description,
       appId,
-      scope: definition.scope,
       ...(includeScopePolicyColumns ? {
         scopeFor: definition.scopeFor,
         scopeLevel: definition.scopeLevel,
@@ -671,8 +574,8 @@ async function syncRolePermissionMappings(tx: any, roleId: string, permissionIds
   const permissions = await tx.authzPermission.findMany({
     where: { id: { in: permissionIds } },
     select: columnSupport.permission
-      ? { id: true, scope: true, scopeFor: true, scopeLevel: true, acquisitionType: true, approvalPolicy: true }
-      : { id: true, scope: true, acquisitionType: true, approvalPolicy: true },
+      ? { id: true, scopeFor: true, scopeLevel: true, acquisitionType: true, approvalPolicy: true }
+      : { id: true, acquisitionType: true, approvalPolicy: true },
   });
 
   const rows = permissions.flatMap((permission: any) =>
@@ -774,8 +677,8 @@ async function validateRolePermissionSelection(
   const permissions = await tx.authzPermission.findMany({
     where: { id: { in: permissionIds }, appId },
     select: columnSupport.permission
-      ? { id: true, name: true, scope: true, scopeFor: true, scopeLevel: true, acquisitionType: true, approvalPolicy: true }
-      : { id: true, name: true, scope: true, acquisitionType: true, approvalPolicy: true },
+      ? { id: true, name: true, scopeFor: true, scopeLevel: true, acquisitionType: true, approvalPolicy: true }
+      : { id: true, name: true, acquisitionType: true, approvalPolicy: true },
   });
 
   if (permissions.length !== permissionIds.length) {
@@ -1004,7 +907,6 @@ export async function getAppPermissions(appId: string): Promise<AppPermission[]>
         id: true,
         name: true,
         description: true,
-        scope: true,
         scopeFor: true,
         scopeLevel: true,
         acquisitionType: true,
@@ -1015,7 +917,6 @@ export async function getAppPermissions(appId: string): Promise<AppPermission[]>
         id: true,
         name: true,
         description: true,
-        scope: true,
         acquisitionType: true,
         approvalPolicy: true,
         rules: true,
@@ -1033,7 +934,6 @@ export async function createAppPermission(input: {
   appId: string;
   name: string;
   description?: string;
-  scope?: string;
   scopeFor?: string[];
   scopeLevel?: string[];
   rules?: string;
@@ -1060,7 +960,6 @@ export async function createAppPermission(input: {
   }
 
   try {
-    await validatePermissionScopeInput(input.appId, input.scope);
     const scopeFor = validatePermissionScopeForInput(input.scopeFor);
     const scopeLevel = validatePermissionScopeLevelInput(input.scopeLevel);
     const storedPolicy = getStoredPolicyForScopeLevel(scopeLevel[0] ?? 'assignable');
@@ -1071,7 +970,6 @@ export async function createAppPermission(input: {
         id: permissionId,
         name,
         description: input.description?.trim() || null,
-        scope: parsePermissionScopeInput(input.scope),
         ...(columnSupport.permission ? { scopeFor, scopeLevel } : {}),
         acquisitionType: storedPolicy.acquisitionType,
         approvalPolicy: storedPolicy.approvalPolicy,
@@ -1083,7 +981,6 @@ export async function createAppPermission(input: {
         id: true,
         name: true,
         description: true,
-        scope: true,
         scopeFor: true,
         scopeLevel: true,
         acquisitionType: true,
@@ -1094,7 +991,6 @@ export async function createAppPermission(input: {
         id: true,
         name: true,
         description: true,
-        scope: true,
         acquisitionType: true,
         approvalPolicy: true,
         rules: true,
@@ -1117,7 +1013,6 @@ export async function updateAppPermission(input: {
   appId: string;
   permissionId: string;
   description?: string;
-  scope?: string;
   scopeFor?: string[];
   scopeLevel?: string[];
   rules?: string;
@@ -1138,7 +1033,6 @@ export async function updateAppPermission(input: {
       };
     }
 
-    await validatePermissionScopeInput(input.appId, input.scope);
     const scopeFor = validatePermissionScopeForInput(input.scopeFor);
     const scopeLevel = validatePermissionScopeLevelInput(input.scopeLevel);
     const storedPolicy = getStoredPolicyForScopeLevel(scopeLevel[0] ?? 'assignable');
@@ -1155,7 +1049,6 @@ export async function updateAppPermission(input: {
         where: { id: input.permissionId },
         data: {
           description: input.description?.trim() || null,
-          scope: parsePermissionScopeInput(input.scope),
           ...(columnSupport.permission ? { scopeFor, scopeLevel } : {}),
           acquisitionType: storedPolicy.acquisitionType,
           approvalPolicy: storedPolicy.approvalPolicy,
@@ -1166,7 +1059,6 @@ export async function updateAppPermission(input: {
           id: true,
           name: true,
           description: true,
-          scope: true,
           scopeFor: true,
           scopeLevel: true,
           acquisitionType: true,
@@ -1177,7 +1069,6 @@ export async function updateAppPermission(input: {
           id: true,
           name: true,
           description: true,
-          scope: true,
           acquisitionType: true,
           approvalPolicy: true,
           rules: true,
@@ -1261,7 +1152,6 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
                 id: true,
                 name: true,
                 description: true,
-                scope: true,
                 scopeFor: true,
                 scopeLevel: true,
                 acquisitionType: true,
@@ -1287,7 +1177,6 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
                 id: true,
                 name: true,
                 description: true,
-                scope: true,
                 acquisitionType: true,
                 approvalPolicy: true,
                 rules: true,
@@ -1374,7 +1263,6 @@ export async function createAppRole(input: {
           id: true,
           name: true,
           description: true,
-          scope: true,
           acquisitionType: true,
           approvalPolicy: true,
           applicableFor: true,

@@ -160,7 +160,24 @@ export type ApplicationPolicy = $Result.DefaultSelection<Prisma.$ApplicationPoli
 export type Role = $Result.DefaultSelection<Prisma.$RolePayload>
 /**
  * Model AuthzPermission
+ * ::neup.documentation::authz-permission-model
+ * ::title Authz Permission Model
  * 
+ * Stores application permission metadata and scope-policy fields.
+ * 
+ * ::public
+ * 
+ * Permissions belong to one application and persist their `scope_for` / `scope_level` policy together with optional descriptive metadata.
+ * 
+ * ::public end
+ * 
+ * ::private
+ * 
+ * The legacy permission `scope` column has been removed. Runtime compatibility now derives any needed legacy semantics from `scope_for`, `scope_level`, `acquisition_type`, and `approval_policy`.
+ * 
+ * ::private end
+ * 
+ * ::end
  */
 export type AuthzPermission = $Result.DefaultSelection<Prisma.$AuthzPermissionPayload>
 /**
@@ -38611,7 +38628,6 @@ export namespace Prisma {
     name: number
     description: number
     appId: number
-    scope: number
     scopeFor: number
     scopeLevel: number
     acquisitionType: number
@@ -38650,7 +38666,6 @@ export namespace Prisma {
     name?: true
     description?: true
     appId?: true
-    scope?: true
     scopeFor?: true
     scopeLevel?: true
     acquisitionType?: true
@@ -38738,7 +38753,6 @@ export namespace Prisma {
     name: string
     description: string | null
     appId: string | null
-    scope: JsonValue | null
     scopeFor: JsonValue | null
     scopeLevel: JsonValue | null
     acquisitionType: string | null
@@ -38770,7 +38784,6 @@ export namespace Prisma {
     name?: boolean
     description?: boolean
     appId?: boolean
-    scope?: boolean
     scopeFor?: boolean
     scopeLevel?: boolean
     acquisitionType?: boolean
@@ -38788,7 +38801,6 @@ export namespace Prisma {
     name?: boolean
     description?: boolean
     appId?: boolean
-    scope?: boolean
     scopeFor?: boolean
     scopeLevel?: boolean
     acquisitionType?: boolean
@@ -38804,7 +38816,6 @@ export namespace Prisma {
     name?: boolean
     description?: boolean
     appId?: boolean
-    scope?: boolean
     scopeFor?: boolean
     scopeLevel?: boolean
     acquisitionType?: boolean
@@ -38820,7 +38831,6 @@ export namespace Prisma {
     name?: boolean
     description?: boolean
     appId?: boolean
-    scope?: boolean
     scopeFor?: boolean
     scopeLevel?: boolean
     acquisitionType?: boolean
@@ -38830,7 +38840,7 @@ export namespace Prisma {
     tag?: boolean
   }
 
-  export type AuthzPermissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "appId" | "scope" | "scopeFor" | "scopeLevel" | "acquisitionType" | "approvalPolicy" | "rules" | "status" | "tag", ExtArgs["result"]["authzPermission"]>
+  export type AuthzPermissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "appId" | "scopeFor" | "scopeLevel" | "acquisitionType" | "approvalPolicy" | "rules" | "status" | "tag", ExtArgs["result"]["authzPermission"]>
   export type AuthzPermissionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     application?: boolean | AuthzPermission$applicationArgs<ExtArgs>
     roleMappings?: boolean | AuthzPermission$roleMappingsArgs<ExtArgs>
@@ -38854,7 +38864,6 @@ export namespace Prisma {
       name: string
       description: string | null
       appId: string | null
-      scope: Prisma.JsonValue | null
       scopeFor: Prisma.JsonValue | null
       scopeLevel: Prisma.JsonValue | null
       acquisitionType: string | null
@@ -39291,7 +39300,6 @@ export namespace Prisma {
     readonly name: FieldRef<"AuthzPermission", 'String'>
     readonly description: FieldRef<"AuthzPermission", 'String'>
     readonly appId: FieldRef<"AuthzPermission", 'String'>
-    readonly scope: FieldRef<"AuthzPermission", 'Json'>
     readonly scopeFor: FieldRef<"AuthzPermission", 'Json'>
     readonly scopeLevel: FieldRef<"AuthzPermission", 'Json'>
     readonly acquisitionType: FieldRef<"AuthzPermission", 'String'>
@@ -45883,7 +45891,6 @@ export namespace Prisma {
     name: 'name',
     description: 'description',
     appId: 'appId',
-    scope: 'scope',
     scopeFor: 'scopeFor',
     scopeLevel: 'scopeLevel',
     acquisitionType: 'acquisitionType',
@@ -48374,7 +48381,6 @@ export namespace Prisma {
     name?: StringFilter<"AuthzPermission"> | string
     description?: StringNullableFilter<"AuthzPermission"> | string | null
     appId?: StringNullableFilter<"AuthzPermission"> | string | null
-    scope?: JsonNullableFilter<"AuthzPermission">
     scopeFor?: JsonNullableFilter<"AuthzPermission">
     scopeLevel?: JsonNullableFilter<"AuthzPermission">
     acquisitionType?: StringNullableFilter<"AuthzPermission"> | string | null
@@ -48391,7 +48397,6 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     appId?: SortOrderInput | SortOrder
-    scope?: SortOrderInput | SortOrder
     scopeFor?: SortOrderInput | SortOrder
     scopeLevel?: SortOrderInput | SortOrder
     acquisitionType?: SortOrderInput | SortOrder
@@ -48412,7 +48417,6 @@ export namespace Prisma {
     name?: StringFilter<"AuthzPermission"> | string
     description?: StringNullableFilter<"AuthzPermission"> | string | null
     appId?: StringNullableFilter<"AuthzPermission"> | string | null
-    scope?: JsonNullableFilter<"AuthzPermission">
     scopeFor?: JsonNullableFilter<"AuthzPermission">
     scopeLevel?: JsonNullableFilter<"AuthzPermission">
     acquisitionType?: StringNullableFilter<"AuthzPermission"> | string | null
@@ -48429,7 +48433,6 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrderInput | SortOrder
     appId?: SortOrderInput | SortOrder
-    scope?: SortOrderInput | SortOrder
     scopeFor?: SortOrderInput | SortOrder
     scopeLevel?: SortOrderInput | SortOrder
     acquisitionType?: SortOrderInput | SortOrder
@@ -48450,7 +48453,6 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"AuthzPermission"> | string
     description?: StringNullableWithAggregatesFilter<"AuthzPermission"> | string | null
     appId?: StringNullableWithAggregatesFilter<"AuthzPermission"> | string | null
-    scope?: JsonNullableWithAggregatesFilter<"AuthzPermission">
     scopeFor?: JsonNullableWithAggregatesFilter<"AuthzPermission">
     scopeLevel?: JsonNullableWithAggregatesFilter<"AuthzPermission">
     acquisitionType?: StringNullableWithAggregatesFilter<"AuthzPermission"> | string | null
@@ -51206,7 +51208,6 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
-    scope?: NullableJsonNullValueInput | InputJsonValue
     scopeFor?: NullableJsonNullValueInput | InputJsonValue
     scopeLevel?: NullableJsonNullValueInput | InputJsonValue
     acquisitionType?: string | null
@@ -51223,7 +51224,6 @@ export namespace Prisma {
     name: string
     description?: string | null
     appId?: string | null
-    scope?: NullableJsonNullValueInput | InputJsonValue
     scopeFor?: NullableJsonNullValueInput | InputJsonValue
     scopeLevel?: NullableJsonNullValueInput | InputJsonValue
     acquisitionType?: string | null
@@ -51238,7 +51238,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableJsonNullValueInput | InputJsonValue
     scopeFor?: NullableJsonNullValueInput | InputJsonValue
     scopeLevel?: NullableJsonNullValueInput | InputJsonValue
     acquisitionType?: NullableStringFieldUpdateOperationsInput | string | null
@@ -51255,7 +51254,6 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     appId?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableJsonNullValueInput | InputJsonValue
     scopeFor?: NullableJsonNullValueInput | InputJsonValue
     scopeLevel?: NullableJsonNullValueInput | InputJsonValue
     acquisitionType?: NullableStringFieldUpdateOperationsInput | string | null
@@ -51271,7 +51269,6 @@ export namespace Prisma {
     name: string
     description?: string | null
     appId?: string | null
-    scope?: NullableJsonNullValueInput | InputJsonValue
     scopeFor?: NullableJsonNullValueInput | InputJsonValue
     scopeLevel?: NullableJsonNullValueInput | InputJsonValue
     acquisitionType?: string | null
@@ -51285,7 +51282,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableJsonNullValueInput | InputJsonValue
     scopeFor?: NullableJsonNullValueInput | InputJsonValue
     scopeLevel?: NullableJsonNullValueInput | InputJsonValue
     acquisitionType?: NullableStringFieldUpdateOperationsInput | string | null
@@ -51300,7 +51296,6 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     appId?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableJsonNullValueInput | InputJsonValue
     scopeFor?: NullableJsonNullValueInput | InputJsonValue
     scopeLevel?: NullableJsonNullValueInput | InputJsonValue
     acquisitionType?: NullableStringFieldUpdateOperationsInput | string | null
@@ -53283,7 +53278,6 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrder
     appId?: SortOrder
-    scope?: SortOrder
     scopeFor?: SortOrder
     scopeLevel?: SortOrder
     acquisitionType?: SortOrder
@@ -62387,7 +62381,6 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
-    scope?: NullableJsonNullValueInput | InputJsonValue
     scopeFor?: NullableJsonNullValueInput | InputJsonValue
     scopeLevel?: NullableJsonNullValueInput | InputJsonValue
     acquisitionType?: string | null
@@ -62402,7 +62395,6 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
-    scope?: NullableJsonNullValueInput | InputJsonValue
     scopeFor?: NullableJsonNullValueInput | InputJsonValue
     scopeLevel?: NullableJsonNullValueInput | InputJsonValue
     acquisitionType?: string | null
@@ -62846,7 +62838,6 @@ export namespace Prisma {
     name?: StringFilter<"AuthzPermission"> | string
     description?: StringNullableFilter<"AuthzPermission"> | string | null
     appId?: StringNullableFilter<"AuthzPermission"> | string | null
-    scope?: JsonNullableFilter<"AuthzPermission">
     scopeFor?: JsonNullableFilter<"AuthzPermission">
     scopeLevel?: JsonNullableFilter<"AuthzPermission">
     acquisitionType?: StringNullableFilter<"AuthzPermission"> | string | null
@@ -68430,7 +68421,6 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
-    scope?: NullableJsonNullValueInput | InputJsonValue
     scopeFor?: NullableJsonNullValueInput | InputJsonValue
     scopeLevel?: NullableJsonNullValueInput | InputJsonValue
     acquisitionType?: string | null
@@ -68446,7 +68436,6 @@ export namespace Prisma {
     name: string
     description?: string | null
     appId?: string | null
-    scope?: NullableJsonNullValueInput | InputJsonValue
     scopeFor?: NullableJsonNullValueInput | InputJsonValue
     scopeLevel?: NullableJsonNullValueInput | InputJsonValue
     acquisitionType?: string | null
@@ -68525,7 +68514,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableJsonNullValueInput | InputJsonValue
     scopeFor?: NullableJsonNullValueInput | InputJsonValue
     scopeLevel?: NullableJsonNullValueInput | InputJsonValue
     acquisitionType?: NullableStringFieldUpdateOperationsInput | string | null
@@ -68541,7 +68529,6 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     appId?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableJsonNullValueInput | InputJsonValue
     scopeFor?: NullableJsonNullValueInput | InputJsonValue
     scopeLevel?: NullableJsonNullValueInput | InputJsonValue
     acquisitionType?: NullableStringFieldUpdateOperationsInput | string | null
@@ -70897,7 +70884,6 @@ export namespace Prisma {
     id?: string
     name: string
     description?: string | null
-    scope?: NullableJsonNullValueInput | InputJsonValue
     scopeFor?: NullableJsonNullValueInput | InputJsonValue
     scopeLevel?: NullableJsonNullValueInput | InputJsonValue
     acquisitionType?: string | null
@@ -71077,7 +71063,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableJsonNullValueInput | InputJsonValue
     scopeFor?: NullableJsonNullValueInput | InputJsonValue
     scopeLevel?: NullableJsonNullValueInput | InputJsonValue
     acquisitionType?: NullableStringFieldUpdateOperationsInput | string | null
@@ -71092,7 +71077,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableJsonNullValueInput | InputJsonValue
     scopeFor?: NullableJsonNullValueInput | InputJsonValue
     scopeLevel?: NullableJsonNullValueInput | InputJsonValue
     acquisitionType?: NullableStringFieldUpdateOperationsInput | string | null
@@ -71107,7 +71091,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    scope?: NullableJsonNullValueInput | InputJsonValue
     scopeFor?: NullableJsonNullValueInput | InputJsonValue
     scopeLevel?: NullableJsonNullValueInput | InputJsonValue
     acquisitionType?: NullableStringFieldUpdateOperationsInput | string | null

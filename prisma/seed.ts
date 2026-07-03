@@ -1,3 +1,23 @@
+/*
+::neup.documentation::prisma-seed-script
+
+Seeds the base Neup Account app, default roles, and canonical permission rows.
+
+::public
+
+Use this script to initialize a development database with the core Neup Account authz records.
+
+::public end
+
+::private
+
+The seed keeps legacy root/default role names alive while populating the canonical authz permission catalog and connection grants.
+
+::private end
+
+::end
+*/
+
 import 'dotenv/config';
 import bcrypt from 'bcryptjs';
 import prisma from '../core/helpers/prisma';
@@ -191,7 +211,6 @@ async function main() {
           name: permissionName,
           description: permissionDefinition.description,
           appId: APP_ID,
-          scope: permissionDefinition.scope,
           acquisitionType: permissionDefinition.acquisitionType,
           approvalPolicy: permissionDefinition.approvalPolicy,
         },
@@ -200,7 +219,6 @@ async function main() {
           name: permissionName,
           description: permissionDefinition.description,
           appId: APP_ID,
-          scope: permissionDefinition.scope,
           acquisitionType: permissionDefinition.acquisitionType,
           approvalPolicy: permissionDefinition.approvalPolicy,
         },
@@ -236,7 +254,6 @@ async function main() {
           name: permissionName,
           description: permissionDefinition.description,
           appId: APP_ID,
-          scope: permissionDefinition.scope,
           acquisitionType: permissionDefinition.acquisitionType,
           approvalPolicy: permissionDefinition.approvalPolicy,
         },
@@ -245,7 +262,6 @@ async function main() {
           name: permissionName,
           description: permissionDefinition.description,
           appId: APP_ID,
-          scope: permissionDefinition.scope,
           acquisitionType: permissionDefinition.acquisitionType,
           approvalPolicy: permissionDefinition.approvalPolicy,
         },

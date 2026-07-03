@@ -7,6 +7,9 @@ The generated JSON keeps the user-facing `title` alias for `name` while also
 persisting the rest of each table row so downstream consumers can read the
 full authz snapshot without querying the database directly.
 
+Permission exports include policy fields such as `scopeFor` and `scopeLevel`
+but no longer persist the removed legacy permission `scope` column.
+
 ::end
 */
 
@@ -45,7 +48,6 @@ async function exportPermissions() {
     id: permission.id,
     title: permission.name,
     description: permission.description,
-    scope: normalizeJsonValue(permission.scope),
     scopeFor: normalizeJsonValue(permission.scopeFor),
     scopeLevel: normalizeJsonValue(permission.scopeLevel),
     acquisitionType: permission.acquisitionType,

@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import {
   canCurrentAccountManageApplicationRoles,
   canCurrentAccountViewApplicationRoles,
-  getApplicationAuthzConfig,
   getApplicationDetailsForViewerV2,
 } from '@/services/applications/manage';
 import { getAppPermissions } from '@/services/applications/authz-manage';
@@ -16,10 +15,27 @@ import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/
 import { createPageMetadata } from '@/core/metadata';
 import { PermissionDetailEditor } from '@/app/(manage)/application/_components/permission-detail-editor';
 import { isBuiltInApplicationManagementPermissionName } from '@/services/applications/permission-definitions';
-import {
-  formatApplicationAuthzScopeHint,
-  toApplicationAuthzDefinitionOptions,
-} from '@/services/applications/authz-config';
+
+/*
+::neup.documentation::manage-application-permissions-page
+::title Application Permissions Page
+
+Renders the application permission list and detail editor.
+
+::public
+
+This page loads the target application, checks permission-management access, and renders either the permission list or a selected permission detail editor.
+
+::public end
+
+::private
+
+Built-in Neup Account management permissions are filtered out from the generic editor flow.
+
+::private end
+
+::end
+*/
 
 type Props = {
   searchParams: Promise<{ application?: string | string[]; permission?: string | string[]; mode?: string }>;
@@ -84,19 +100,10 @@ export default async function ApplicationPermissionsQueryPage({ searchParams }: 
     );
   }
 
-  const [rawPermissions, authzConfig] = await Promise.all([
-    getAppPermissions(applicationId),
-    getApplicationAuthzConfig(applicationId),
-  ]);
+  const rawPermissions = await getAppPermissions(applicationId);
   const permissions = rawPermissions.filter(
     (permission) => !(applicationId === 'neup.account' && isBuiltInApplicationManagementPermissionName(permission.name)),
   );
-  const scopeHint = formatApplicationAuthzScopeHint(
-    toApplicationAuthzDefinitionOptions(authzConfig?.definedScopes ?? []),
-    authzConfig?.allowMultipleDefinedScopes ?? false,
-  );
-  const definedScopeOptions = toApplicationAuthzDefinitionOptions(authzConfig?.definedScopes ?? []);
-  const allowMultipleDefinedScopes = authzConfig?.allowMultipleDefinedScopes ?? false;
 
   if (permissionId) {
     const permission = permissions.find((item) => item.id === permissionId);
@@ -117,8 +124,6 @@ export default async function ApplicationPermissionsQueryPage({ searchParams }: 
           permission={permission}
           canManage={canManagePermissions}
           mode={mode}
-          definedScopeOptions={definedScopeOptions}
-          allowMultipleDefinedScopes={allowMultipleDefinedScopes}
         />
       </div>
     );
@@ -139,7 +144,6 @@ export default async function ApplicationPermissionsQueryPage({ searchParams }: 
         initialPermissions={permissions}
         canManage={canManagePermissions}
         mode={mode}
-        scopeHint={scopeHint}
       />
     </div>
   );

@@ -45,7 +45,6 @@ export type NeupAccountPermissionDefinition = {
   name: string;
   audience: PermissionAudience;
   description: string;
-  scope: string[];
   acquisitionType: PermissionAcquisitionType;
   approvalPolicy: PermissionApprovalPolicy;
   assignable: boolean;
@@ -384,12 +383,6 @@ function audiencesForLegacyPermission(legacyName: string): PermissionAudience[] 
   return ['self'];
 }
 
-function scopeForAudience(audience: PermissionAudience): string[] {
-  if (audience === 'managed') return ['managed.individual'];
-  if (audience === 'root') return ['root.individual'];
-  return ['public.individual'];
-}
-
 function permissionAccessForAudience(audience: PermissionAudience) {
   if (audience === 'root') {
     return {
@@ -492,7 +485,6 @@ export const NEUP_ACCOUNT_PERMISSION_DEFINITIONS: NeupAccountPermissionDefinitio
             name,
             audience,
             description: permissionDescription(name, audience),
-            scope: scopeForAudience(audience),
             acquisitionType: access.acquisitionType,
             approvalPolicy: access.approvalPolicy,
             assignable: access.assignable,

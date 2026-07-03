@@ -596,7 +596,6 @@ export async function updateDirectMemberAccess(input: {
           memberType: 'acc_in_acc',
           memberAccountId: input.memberAccountId,
           parentAccountId: accountId,
-          parentPortfolioId: null,
           status: 'active',
         },
         select: { id: true },
@@ -667,7 +666,6 @@ export async function updateDirectMemberAccess(input: {
         where: {
           parentAccountId: accountId,
           memberAccountId: input.memberAccountId,
-          parentPortfolioId: null,
           role: {
             name: { startsWith: DIRECT_CUSTOM_ROLE_PREFIX },
           },
@@ -680,7 +678,6 @@ export async function updateDirectMemberAccess(input: {
         where: {
           parentAccountId: accountId,
           memberAccountId: input.memberAccountId,
-          parentPortfolioId: null,
         },
       });
 
@@ -774,17 +771,15 @@ export async function removeDirectMember(
   try {
     await prisma.member.deleteMany({
       where: {
-        memberType: 'account',
+        memberType: 'acc_in_acc',
         memberAccountId,
         parentAccountId: accessTo,
-        parentPortfolioId: null,
       },
     });
     await prisma.access.deleteMany({
       where: {
         memberAccountId,
         parentAccountId: accessTo,
-        parentPortfolioId: null,
       },
     });
 
@@ -851,22 +846,10 @@ export async function cancelDirectInvitation(
  * and delegating to removeAssetGroupMember.
  */
 export async function removePortfolioMember(
-  parentPortfolioId: string,
-  memberAccountId: string,
+  _parentPortfolioId: string,
+  _memberAccountId: string,
 ): Promise<{ success: boolean; error?: string }> {
-  try {
-    const member = await prisma.member.findFirst({
-      where: { parentPortfolioId, memberAccountId: memberAccountId, memberType: 'account' },
-      select: { id: true },
-    });
-
-    if (!member) return { success: false, error: 'Member not found in this portfolio.' };
-
-    return await removeAssetGroupMember({ groupId: parentPortfolioId, memberId: member.id });
-  } catch (error) {
-    await logError('database', error, `removePortfolioMember:${parentPortfolioId}:${memberAccountId}`);
-    return { success: false, error: 'Failed to remove member.' };
-  }
+  return { success: false, error: 'Portfolio access has been removed.' };
 }
 
 /**
@@ -874,61 +857,10 @@ export async function removePortfolioMember(
  * PortfolioMember row with status 'invited' or 'expired'.
  */
 export async function cancelPortfolioInvitation(
-  parentPortfolioId: string,
-  recipientAccountId: string,
+  _parentPortfolioId: string,
+  _recipientAccountId: string,
 ): Promise<{ success: boolean; error?: string }> {
-  const senderAccountId = await getActiveAccountId();
-  if (!senderAccountId) return { success: false, error: 'Not authenticated.' };
-
-  const canRemove = await checkPermissions([...ACCESS_TEAM_REMOVE_PERMISSIONS]);
-  if (!canRemove) return { success: false, error: 'Permission denied.' };
-
-  try {
-    const pendingRequests = await prisma.request.findMany({
-      where: {
-        action: 'access_invitation',
-        senderId: senderAccountId,
-        recipientId: recipientAccountId,
-        status: 'pending',
-      },
-      select: { id: true, data: true },
-    });
-    const requestIds = pendingRequests
-      .filter(
-        (request) =>
-          (request.data as Record<string, unknown> | null)?.parentPortfolioId === parentPortfolioId,
-      )
-      .map((request) => request.id);
-
-    await prisma.$transaction(async (tx) => {
-      await tx.member.deleteMany({
-        where: {
-          parentPortfolioId,
-          memberAccountId: recipientAccountId,
-          memberType: 'acc_in_port',
-          status: 'invited',
-        },
-      });
-      if (requestIds.length > 0) {
-        await tx.request.deleteMany({ where: { id: { in: requestIds } } });
-        await tx.notification.deleteMany({
-          where: {
-            OR: requestIds.map((requestId) => ({
-              detail: { path: ['requestId'], equals: requestId },
-            })),
-          },
-        });
-      }
-    });
-
-    revalidatePath('/access');
-    revalidatePath(`/access/team?portfolio=${parentPortfolioId}`);
-    revalidatePath(`/access/assign?portfolio=${parentPortfolioId}&account=${recipientAccountId}`);
-    return { success: true };
-  } catch (error) {
-    await logError('database', error, `cancelPortfolioInvitation:${parentPortfolioId}:${recipientAccountId}`);
-    return { success: false, error: 'Failed to cancel invitation.' };
-  }
+  return { success: false, error: 'Portfolio access has been removed.' };
 }
 
 /**
@@ -936,11 +868,10 @@ export async function cancelPortfolioInvitation(
  * Role is null at invite time — flags default to isPermanent: false, hasFullAccess: false.
  */
 export async function inviteToPortfolio(
-  parentPortfolioId: string,
-  recipientAccountId: string,
+  _parentPortfolioId: string,
+  _recipientAccountId: string,
 ): Promise<{ success: boolean; error?: string }> {
-  const { addAssetGroupMember } = await import('@/services/manage/access/assets');
-  return addAssetGroupMember({ groupId: parentPortfolioId, member: recipientAccountId });
+  return { success: false, error: 'Portfolio access has been removed.' };
 }
 
 /**
@@ -975,10 +906,9 @@ export async function inviteDirectMember(
     // Check for existing grants
     const existingGrant = await prisma.member.findFirst({
       where: {
-        memberType: 'account',
+        memberType: 'acc_in_acc',
         memberAccountId: recipientAccountId,
         parentAccountId: senderAccountId,
-        parentPortfolioId: null,
       },
       select: { id: true },
     });
@@ -1060,9 +990,6 @@ export async function inviteDirectMember(
   }
 }
 
-/**
- * Finds a portfolio-asset row from either row ID or logical assetId.
- */
 async function resolvePortfolioAssetRow(assetRef: string): Promise<{
   rowId: string;
   assetId: string;
@@ -1073,8 +1000,7 @@ async function resolvePortfolioAssetRow(assetRef: string): Promise<{
     member_account_id: string | null;
     access_application_id: string | null;
     member_connection_id: string | null;
-    member_portfolio_id: string | null;
-  }): string => row.member_account_id ?? row.access_application_id ?? row.member_connection_id ?? row.member_portfolio_id ?? row.id;
+  }): string => row.member_account_id ?? row.access_application_id ?? row.member_connection_id ?? row.id;
 
   const byRow = await prisma.asset.findUnique({
     where: { id: assetRef },
@@ -1084,7 +1010,6 @@ async function resolvePortfolioAssetRow(assetRef: string): Promise<{
       member_account_id: true,
       access_application_id: true,
       member_connection_id: true,
-      member_portfolio_id: true,
     },
   });
   if (byRow) {
@@ -1101,7 +1026,6 @@ async function resolvePortfolioAssetRow(assetRef: string): Promise<{
         { member_account_id: assetRef },
         { access_application_id: assetRef },
         { member_connection_id: assetRef },
-        { member_portfolio_id: assetRef },
       ],
     },
     select: {
@@ -1110,7 +1034,6 @@ async function resolvePortfolioAssetRow(assetRef: string): Promise<{
       member_account_id: true,
       access_application_id: true,
       member_connection_id: true,
-      member_portfolio_id: true,
     },
     orderBy: { id: 'asc' },
   });

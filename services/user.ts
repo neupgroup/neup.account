@@ -182,6 +182,7 @@ async function queryAccessRoleRows(input: {
   accessType?: 'acc_self' | 'acc_self_root';
   parentAccountId?: string;
 }): Promise<RawAccessRoleRow[]> {
+  const dbAccessType = input.accessType === 'acc_self_root' ? 'acc_self.root' : input.accessType;
   const rows = await prisma.$queryRaw<RawAccessRoleRow[]>(Prisma.sql`
     SELECT
       a."id" AS "accessId",
@@ -200,7 +201,7 @@ async function queryAccessRoleRows(input: {
       AND a."status" = 'active'
       AND (a."is_temporary" IS NULL OR a."is_temporary" > NOW())
       AND r."app_id" = ${input.appId}
-      ${input.accessType ? Prisma.sql`AND a."access_type" = ${input.accessType}` : Prisma.empty}
+      ${dbAccessType ? Prisma.sql`AND a."access_type" = ${dbAccessType}` : Prisma.empty}
       ${input.parentAccountId ? Prisma.sql`AND a."parent_account_id" = ${input.parentAccountId}` : Prisma.empty}
     ORDER BY a."role_id" ASC, a."id" ASC
   `);
@@ -209,8 +210,17 @@ async function queryAccessRoleRows(input: {
 }
 
 function getRoleScopeFromAccessRow(row: RawAccessRoleRow): string[] {
+  const scopeFor = (() => {
+    if (!row.roleScopeForText) return [];
+    try {
+      return JSON.parse(row.roleScopeForText) as unknown;
+    } catch {
+      return row.roleScopeForText;
+    }
+  })();
+
   return deriveLegacyRoleScopesFromPolicy(
-    normalizeAuthzScopeFor(row.roleScopeForText),
+    normalizeAuthzScopeFor(scopeFor),
     normalizeSingleAuthzScopeLevel(row.roleScopeLevel),
   );
 }

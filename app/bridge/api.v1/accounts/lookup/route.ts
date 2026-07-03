@@ -246,7 +246,6 @@ export async function POST(request: NextRequest) {
       },
       select: {
         parentAccountId: true,
-        parentPortfolioId: true,
         role: {
           select: {
             permissions: true,
@@ -261,7 +260,6 @@ export async function POST(request: NextRequest) {
       accessOf: grant.parentAccountId ?? account.id,
       role: grant.role.name ?? grant.role.id,
       permissions: extractRolePermissionNames(grant.role.permissions),
-      ...(grant.parentPortfolioId ? { portfolio: grant.parentPortfolioId } : {}),
     }));
 
     const selfAccess = access.filter((entry) => entry.accessOf === account.id);

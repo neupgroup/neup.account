@@ -154,7 +154,6 @@ export async function getAccountRoles(accountId: string): Promise<{ id: string; 
                 memberId: accountId,
                 memberAccountId: accountId,
                 parentAccountId: accountId,
-                parentPortfolioId: null,
                 accessApplicationId: 'neup.account',
                 status: 'active',
                 role: { appId: 'neup.account' },
@@ -552,7 +551,6 @@ export async function updateAccountRoles(accountId: string, roleIds: string[]): 
                 where: {
                     memberAccountId: accountId,
                     parentAccountId: accountId,
-                    parentPortfolioId: null,
                     accessApplicationId: 'neup.account',
                 },
             });
@@ -611,7 +609,6 @@ export async function updateUserPermissions(accountId: string, newPermissionIds:
             where: {
                 memberAccountId: accountId,
                 parentAccountId: accountId,
-                parentPortfolioId: null,
                 roleId,
                 accessApplicationId: 'neup.account',
             },

@@ -163,32 +163,7 @@ export async function acceptRequest(requestId: string, notificationId: string): 
                     typeof data?.parentPortfolioId === 'string' ? data.parentPortfolioId : null;
 
                 if (parentPortfolioId) {
-                    const invitedMember = await tx.member.findFirst({
-                        where: {
-                            parentPortfolioId,
-                            memberAccountId: inviteeId,
-                            status: 'invited',
-                        },
-                        select: { id: true, details: true },
-                    });
-                    if (!invitedMember) {
-                        throw new Error('Portfolio invitation membership was not found.');
-                    }
-                    const details = invitedMember.details as Record<string, unknown> | null;
-                    await tx.member.update({
-                        where: { id: invitedMember.id },
-                        data: {
-                            status: 'active',
-                            isTemporary: null,
-                            details: {
-                                ...(details ?? {}),
-                                isPermanent: false,
-                                hasFullAccess: false,
-                                acceptedAt: new Date().toISOString(),
-                                expiresOn: null,
-                            },
-                        },
-                    });
+                    throw new Error('Portfolio invitations are no longer supported.');
                 } else {
                     await ensureAccessMember(tx, {
                         childAccountId: inviteeId,
@@ -256,13 +231,7 @@ export async function rejectRequest(requestId: string, notificationId: string): 
                 typeof data?.parentPortfolioId === 'string' ? data.parentPortfolioId : null;
 
             if (request.action === 'access_invitation' && parentPortfolioId) {
-                await tx.member.deleteMany({
-                    where: {
-                        parentPortfolioId,
-                        memberAccountId: inviteeId,
-                        status: 'invited',
-                    },
-                });
+                throw new Error('Portfolio invitations are no longer supported.');
             }
 
             await tx.request.update({

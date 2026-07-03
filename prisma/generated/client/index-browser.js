@@ -331,22 +331,13 @@ exports.Prisma.ApplicationDevLogScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
-exports.Prisma.PortfolioScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  description: 'description',
-  dateCreated: 'dateCreated'
-};
-
 exports.Prisma.AssetScalarFieldEnum = {
   id: 'id',
   access_type: 'access_type',
   member_account_id: 'member_account_id',
-  member_portfolio_id: 'member_portfolio_id',
   member_connection_id: 'member_connection_id',
   access_application_id: 'access_application_id',
   parent_account_id: 'parent_account_id',
-  parent_portfolio_id: 'parent_portfolio_id',
   isTemporary: 'isTemporary',
   status: 'status',
   details: 'details'
@@ -357,7 +348,6 @@ exports.Prisma.MemberScalarFieldEnum = {
   memberType: 'memberType',
   memberAccountId: 'memberAccountId',
   parentAccountId: 'parentAccountId',
-  parentPortfolioId: 'parentPortfolioId',
   status: 'status',
   isTemporary: 'isTemporary',
   details: 'details'
@@ -369,11 +359,9 @@ exports.Prisma.AccessScalarFieldEnum = {
   memberId: 'memberId',
   memberAccountId: 'memberAccountId',
   parentAccountId: 'parentAccountId',
-  parentPortfolioId: 'parentPortfolioId',
   assetId: 'assetId',
   assetAccountId: 'assetAccountId',
   assetConnectionId: 'assetConnectionId',
-  assetPortfolioId: 'assetPortfolioId',
   assetApplicationId: 'assetApplicationId',
   accessApplicationId: 'accessApplicationId',
   isTemporary: 'isTemporary',
@@ -474,7 +462,6 @@ exports.Prisma.AuthzAssetsAccessGrantScalarFieldEnum = {
   asset_id: 'asset_id',
   account_id: 'account_id',
   role_id: 'role_id',
-  portfolio_id: 'portfolio_id',
   app_id: 'app_id',
   asset_type: 'asset_type'
 };
@@ -531,25 +518,17 @@ exports.Prisma.NullsOrder = {
   last: 'last'
 };
 exports.AssetType = exports.$Enums.AssetType = {
-  acc_in_port: 'acc_in_port',
   acc_in_acc: 'acc_in_acc',
-  app_in_port: 'app_in_port',
   app_in_acc: 'app_in_acc',
-  port_in_acc: 'port_in_acc',
-  conn_in_acc: 'conn_in_acc',
-  conn_in_port: 'conn_in_port'
+  conn_in_acc: 'conn_in_acc'
 };
 
 exports.AccessType = exports.$Enums.AccessType = {
   acc_self: 'acc_self',
   acc_self_root: 'acc_self_root',
-  acc_in_port: 'acc_in_port',
   acc_in_acc: 'acc_in_acc',
-  app_in_port: 'app_in_port',
   app_in_acc: 'app_in_acc',
-  port_in_acc: 'port_in_acc',
-  conn_in_acc: 'conn_in_acc',
-  conn_in_port: 'conn_in_port'
+  conn_in_acc: 'conn_in_acc'
 };
 
 exports.Prisma.ModelName = {
@@ -573,7 +552,6 @@ exports.Prisma.ModelName = {
   ApplicationProvider: 'ApplicationProvider',
   Application: 'Application',
   ApplicationDevLog: 'ApplicationDevLog',
-  Portfolio: 'Portfolio',
   Asset: 'Asset',
   Member: 'Member',
   Access: 'Access',

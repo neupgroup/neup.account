@@ -67,11 +67,8 @@ async function hasPendingDirectInvitation(
 }
 
 async function getPortfolioName(parentPortfolioId: string): Promise<string | null> {
-  const portfolio = await prisma.portfolio.findUnique({
-    where: { id: parentPortfolioId },
-    select: { name: true },
-  });
-  return portfolio?.name ?? null;
+  void parentPortfolioId;
+  return null;
 }
 
 type PortfolioMemberFlags = {
@@ -83,45 +80,18 @@ async function getPortfolioMemberFlags(
   parentPortfolioId: string,
   memberAccountId: string,
 ): Promise<PortfolioMemberFlags | null> {
-  const member = await prisma.member.findFirst({
-    where: {
-      parentPortfolioId,
-      memberType: 'account',
-      memberAccountId,
-      status: 'active',
-    },
-    select: { details: true, isTemporary: true },
-  });
-  if (!member) return null;
-  const details = member.details && typeof member.details === 'object' && !Array.isArray(member.details)
-    ? member.details as Record<string, unknown>
-    : {};
-  return {
-    hasFullAccess: details.hasFullAccess === true || details.accessLevel === 'full',
-    isPermanent: member.isTemporary == null || details.isPermanent === true,
-  };
+  void parentPortfolioId;
+  void memberAccountId;
+  return null;
 }
 
 async function hasOtherPermanentOwner(
   parentPortfolioId: string,
   excludeAccountId: string,
 ): Promise<boolean> {
-  const members = await prisma.member.findMany({
-    where: {
-      parentPortfolioId,
-      status: 'active',
-      memberType: 'account',
-      memberAccountId: { not: excludeAccountId },
-    },
-    select: { details: true, isTemporary: true },
-  });
-  return members.some((member) => {
-    const details = member.details && typeof member.details === 'object' && !Array.isArray(member.details)
-      ? member.details as Record<string, unknown>
-      : {};
-    return (member.isTemporary == null || details.isPermanent === true)
-      && (details.hasFullAccess === true || details.accessLevel === 'full');
-  });
+  void parentPortfolioId;
+  void excludeAccountId;
+  return false;
 }
 
 function PlatformAvatar({
@@ -601,69 +571,6 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
     );
   }
 
-  if (!portfolio) notFound();
-
-  const group = await getAccessAssetGroup(portfolio);
-  if (!group) notFound();
-  const myPortfolioRoles = await getMyPortfolioRoles(portfolio);
-  if (!myPortfolioRoles) notFound();
-
-  const activeMembers = group.members.filter((m) => m.status === 'active');
-  const members = await Promise.all(
-    activeMembers.map(async (m) => {
-      const accountId = m.memberAccountId ?? '';
-      const profile = accountId ? await getUserProfile(accountId) : null;
-      const displayName =
-        profile?.nameDisplay ||
-        (profile?.nameFirst || profile?.nameLast
-          ? `${profile.nameFirst ?? ''} ${profile.nameLast ?? ''}`.trim()
-          : null) ||
-        accountId ||
-        m.id;
-      return { id: m.id, accountId, displayName };
-    })
-  );
-
-  const action = bulkAssignPermissionsFromForm.bind(null, portfolio);
-  const existingAssetIds = Array.from(
-    new Set(
-      group.assets.map((a) => a.member_account_id ?? a.access_application_id ?? a.member_connection_id ?? a.member_portfolio_id ?? a.id),
-    ),
-  );
-
-  return (
-    <div className="grid gap-8">
-      <BackButton href={`/access?portfolio=${portfolio}`} />
-      <PrimaryHeader
-        title="Assign Asset Roles"
-        description={`Assign one or more roles on portfolio assets in "${group.name}".`}
-      />
-      {mode !== 'root' && myPortfolioRoles.roles.length > 0 ? (
-        <Card>
-          <CardContent className="divide-y p-0">
-            {myPortfolioRoles.roles.map((role, i) => (
-              <RoleCard
-                key={`${role.roleId}-${i}`}
-                platformLabel={role.assetType.replace(/_/g, ' ')}
-                contextName={role.assetName}
-                roleName={role.roleName}
-                roleDescription={role.roleDescription}
-              />
-            ))}
-          </CardContent>
-        </Card>
-      ) : null}
-      <Card>
-        <CardContent className="p-0">
-          <AssignPermissionsWizard
-            action={action}
-            members={members}
-            existingAssetIds={existingAssetIds}
-            groupId={portfolio}
-            initialMemberAccountId={member}
-          />
-        </CardContent>
-      </Card>
-    </div>
-  );
+  if (portfolio) notFound();
+  notFound();
 }

@@ -144,9 +144,6 @@ INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-def-access-invitation-approve',       'access.invitation.approve',           '${APP_ID}', 'default'),
   ('cap-def-access-block-view',               'access.block.view',                   '${APP_ID}', 'default'),
   ('cap-def-access-block-update',             'access.block.update',                 '${APP_ID}', 'default'),
-  ('cap-def-access-portfolio-create',         'access.portfolio.create',             '${APP_ID}', 'default'),
-  ('cap-def-access-portfolio-update',         'access.portfolio.update',             '${APP_ID}', 'default'),
-  ('cap-def-access-portfolio-delete',         'access.portfolio.delete',             '${APP_ID}', 'default'),
   ('cap-def-security-recent-activities',      'security.recent_activities.view',         '${APP_ID}', 'default'),
   ('cap-def-payment-method-show',             'payment.method.show',                '${APP_ID}', 'default'),
   ('cap-def-payment-transactions-show',       'payment.transactions.show',          '${APP_ID}', 'default'),
@@ -165,7 +162,7 @@ SELECT
   'default',
   '${APP_ID}',
   'individual.default',
-  '["profile.display.name","profile.display.update","profile.display.view","profile.display.view.root","profile.display.update.root","profile.legal.view","profile.legal.update","profile.demographics.view","profile.demographics.update","profile.neupid.view","profile.neupid.update","profile.neupid.request","profile.neupid.remove","profile.contact.view","profile.contact.update","profile.kyc.view","profile.kyc.update","notification.read","notification.delete","security.pass.modify","security.totp.add","security.totp.remove","security.backup_codes.view","security.backup_codes.create","security.recovery_accounts.view","security.recovery_accounts.add","security.recovery_accounts.remove","security.recovery_phone.view","security.recovery_phone.add","security.recovery_phone.remove","security.recovery_email.view","security.recovery_email.add","security.recovery_email.remove","security.login_devices.view","linked_accounts.brand.view","data.agreed_terms.view","data.delete_account.start","data.deactivate_account.start","data.materialization.view","data.materialization.modify","access.view","access.team.view","access.team.add","access.team.remove","access.connection.view","access.connection.add","access.connection.remove","access.application.view","access.application.add","access.application.remove","access.linked_account.view","access.linked_account.add","access.linked_account.remove","access.linked_account.approve","access.account.brand.create","access.account.dependent.create","access.account.dependent.unlink","access.accounts.switch","access.family.member.update","access.family.partner.update","access.invitations.view","access.invitation.approve","access.block.view","access.block.update","access.portfolio.create","access.portfolio.update","access.portfolio.delete","security.recent_activities.view","payment.method.show","payment.transactions.show","payment.subscriptions.show","payment.purchase_neup_pro.view","linked_accounts.brand.manage","linked_accounts.brand.manager"]'::jsonb
+  '["profile.display.name","profile.display.update","profile.display.view","profile.display.view.root","profile.display.update.root","profile.legal.view","profile.legal.update","profile.demographics.view","profile.demographics.update","profile.neupid.view","profile.neupid.update","profile.neupid.request","profile.neupid.remove","profile.contact.view","profile.contact.update","profile.kyc.view","profile.kyc.update","notification.read","notification.delete","security.pass.modify","security.totp.add","security.totp.remove","security.backup_codes.view","security.backup_codes.create","security.recovery_accounts.view","security.recovery_accounts.add","security.recovery_accounts.remove","security.recovery_phone.view","security.recovery_phone.add","security.recovery_phone.remove","security.recovery_email.view","security.recovery_email.add","security.recovery_email.remove","security.login_devices.view","linked_accounts.brand.view","data.agreed_terms.view","data.delete_account.start","data.deactivate_account.start","data.materialization.view","data.materialization.modify","access.view","access.team.view","access.team.add","access.team.remove","access.connection.view","access.connection.add","access.connection.remove","access.application.view","access.application.add","access.application.remove","access.linked_account.view","access.linked_account.add","access.linked_account.remove","access.linked_account.approve","access.account.brand.create","access.account.dependent.create","access.account.dependent.unlink","access.accounts.switch","access.family.member.update","access.family.partner.update","access.invitations.view","access.invitation.approve","access.block.view","access.block.update","security.recent_activities.view","payment.method.show","payment.transactions.show","payment.subscriptions.show","payment.purchase_neup_pro.view","linked_accounts.brand.manage","linked_accounts.brand.manager"]'::jsonb
 FROM "authz_capability" c
 WHERE c."app_id" = '${APP_ID}'
   AND c."scope"  = 'default'
@@ -202,9 +199,6 @@ INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-root-admin-access-invitation-approve','access.invitation.approve', '${APP_ID}', 'individual.root'),
   ('cap-root-admin-access-block-view',     'access.block.view',            '${APP_ID}', 'individual.root'),
   ('cap-root-admin-access-block-update',   'access.block.update',          '${APP_ID}', 'individual.root'),
-  ('cap-root-admin-access-portfolio-create','access.portfolio.create',     '${APP_ID}', 'individual.root'),
-  ('cap-root-admin-access-portfolio-update','access.portfolio.update',     '${APP_ID}', 'individual.root'),
-  ('cap-root-admin-access-portfolio-delete','access.portfolio.delete',     '${APP_ID}', 'individual.root'),
   ('cap-root-admin-application-view',               'application.view',               '${APP_ID}', 'individual.root'),
   ('cap-root-admin-application-create',             'application.create',             '${APP_ID}', 'individual.root'),
   ('cap-root-admin-application-basics-edit',        'application.basics.edit',        '${APP_ID}', 'individual.root'),
@@ -277,9 +271,6 @@ SELECT
     'access.invitation.approve',
     'access.block.view',
     'access.block.update',
-    'access.portfolio.create',
-    'access.portfolio.update',
-    'access.portfolio.delete',
     'application.view',
     'application.create',
     'application.basics.edit',

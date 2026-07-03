@@ -8,6 +8,7 @@
     "start": "next start --port 2226",
     "seed": "tsx prisma/seed.ts",
     "sync:permissions:neup-account": "tsx prisma/sync-neup-account-denormalized-permissions.ts",
+    "rebuild:authz:neup-account": "tsx prisma/sync-neup-account-denormalized-permissions.ts",
     "normalize:authz-role-permissions": "tsx prisma/scripts/normalize-authz-role-permissions.ts",
     "rename:neup-account-self-permissions": "tsx prisma/scripts/rename-neup-account-self-permissions.ts",
     "backfill:individual-default-role": "tsx prisma/scripts/backfill-individual-default-role.ts",

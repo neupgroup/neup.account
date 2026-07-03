@@ -45,12 +45,10 @@ function assetChildRef(asset: {
   member_account_id?: string | null;
   access_application_id?: string | null;
   member_connection_id?: string | null;
-  member_portfolio_id?: string | null;
 }) {
   if (asset.member_account_id) return { childAccountId: asset.member_account_id };
   if (asset.access_application_id) return { childApplicationId: asset.access_application_id };
   if (asset.member_connection_id) return { childConnectionId: asset.member_connection_id };
-  if (asset.member_portfolio_id) return { childPortfolioId: asset.member_portfolio_id };
   return null;
 }
 
@@ -370,9 +368,7 @@ async function handleAccountAccessGrant(operation: Operation, body: WebhookBody)
       const record = await prisma.$transaction(async (tx) => {
         const grant = await ensureAccessGrant(tx, {
           memberAccountId: d.memberId as string,
-          ...(d.parentPortfolioId
-            ? { parentPortfolioId: d.parentPortfolioId as string }
-            : { parentAccountId: d.accessTo as string }),
+          parentAccountId: d.accessTo as string,
           childApplicationId: d.appId as string,
           accessApplicationId: d.appId as string,
           roleId: role.id,
@@ -390,7 +386,6 @@ async function handleAccountAccessGrant(operation: Operation, body: WebhookBody)
       await prisma.access.update({
         where: { id: body.id },
         data: {
-          ...(d.parentPortfolioId !== undefined && { parentPortfolioId: d.parentPortfolioId as string | null }),
           ...(d.roleId !== undefined && { roleId: d.roleId as string }),
         },
       });
@@ -400,13 +395,13 @@ async function handleAccountAccessGrant(operation: Operation, body: WebhookBody)
     case 'update': {
       if (!Array.isArray(body.data)) return err('Missing required field: `data` (array).', 400);
       await Promise.all(body.data.map(async (item) => {
-        const { id, roleId, parentPortfolioId } = item as Record<string, unknown>;
+        const { id, roleId } = item as Record<string, unknown>;
         if (!id || typeof id !== 'string') return;
         await handleAccountAccessGrant('updateOne', {
           table: body.table,
           operation: 'updateOne',
           id,
-          data: { roleId, parentPortfolioId },
+          data: { roleId },
         });
       }));
       return ok({ ok: true, count: body.data.length });
@@ -445,7 +440,6 @@ async function handleAssetsAccessGrant(operation: Operation, body: WebhookBody):
           member_account_id: true,
           access_application_id: true,
           member_connection_id: true,
-          member_portfolio_id: true,
         },
       });
       if (!asset) return err('Asset not found.', 404);
@@ -454,9 +448,7 @@ async function handleAssetsAccessGrant(operation: Operation, body: WebhookBody):
 
       const record = await ensureAccessGrant(prisma, {
         memberAccountId: d.accountId as string,
-        ...(d.parentPortfolioId
-          ? { parentPortfolioId: d.parentPortfolioId as string }
-          : { parentAccountId: (d.accessTo as string) || (d.accountId as string) }),
+        parentAccountId: (d.accessTo as string) || (d.accountId as string),
         ...childRef,
         accessApplicationId: d.appId as string,
         roleId: d.roleId as string,
@@ -472,7 +464,6 @@ async function handleAssetsAccessGrant(operation: Operation, body: WebhookBody):
         where: { id: body.id },
         data: {
           ...(d.roleId !== undefined && { roleId: d.roleId as string }),
-          ...(d.parentPortfolioId !== undefined && { parentPortfolioId: d.parentPortfolioId as string | null }),
         },
       });
       return ok({ ok: true });
@@ -482,13 +473,12 @@ async function handleAssetsAccessGrant(operation: Operation, body: WebhookBody):
       if (!Array.isArray(body.data)) return err('Missing required field: `data` (array).', 400);
       await Promise.all(
         body.data.map((item) => {
-          const { id, roleId, parentPortfolioId } = item;
+          const { id, roleId } = item;
           if (!id) return Promise.resolve();
           return prisma.access.update({
             where: { id: id as string },
             data: {
               ...(roleId !== undefined && { roleId: roleId as string }),
-              ...(parentPortfolioId !== undefined && { parentPortfolioId: parentPortfolioId as string | null }),
             },
           });
         })

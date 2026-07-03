@@ -1,20 +1,14 @@
 import type { Metadata } from 'next';
-import { notFound, redirect } from 'next/navigation';
-import { revalidatePath } from 'next/cache';
-import prisma from '@/core/helpers/prisma';
+import { notFound } from 'next/navigation';
 import { BackButton } from '@/components/ui/back-button';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   AppWindow,
   ExternalLink,
-  FolderGit2,
-  Plus,
   UserCircle,
   UserPlus,
   Users,
-  X,
 } from '@/components/icons';
 import { FlowLink } from '@/components/ui/flow-link';
 import { getApplicationAccessPageData } from '../connection/actions';
@@ -24,12 +18,6 @@ import { createPageMetadata } from '@/core/metadata';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { ACCESS_APPLICATION_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
 import { permission } from '@/logica/permission';
-import {
-  addAssetToGroupWithMode,
-  removeAssetFromGroupWithMode,
-} from '@/services/manage/access/assets';
-import { getActiveAccountId } from '@/core/auth/verify';
-import { isRootUser } from '@/services/user';
 
 export const metadata: Metadata = createPageMetadata('Application Management');
 
@@ -39,16 +27,6 @@ const pagePermissions = [
 
 type PageProps = {
   searchParams: Promise<{ application?: string; mode?: string }>;
-};
-
-type AccessibleTeam = {
-  id: string;
-  name: string;
-  description: string | null;
-  _count: {
-    members: number;
-    assets: number;
-  };
 };
 
 function StatusBadge({ status }: { status: string | null }) {
@@ -62,92 +40,6 @@ function StatusBadge({ status }: { status: string | null }) {
   );
 }
 
-async function assignApplicationToTeam(formData: FormData) {
-  'use server';
-
-  const applicationId = String(formData.get('applicationId') || '');
-  const groupId = String(formData.get('groupId') || '');
-  const mode = String(formData.get('mode') || '');
-
-  if (!applicationId || !groupId) return;
-
-  await addAssetToGroupWithMode(
-    {
-      groupId,
-      asset: applicationId,
-      type: 'application',
-    },
-    { rootMode: mode === 'root' },
-  );
-
-  const suffix = mode === 'root' ? '&mode=root' : '';
-  revalidatePath('/access/application');
-  revalidatePath(`/access/application?application=${applicationId}${suffix}`);
-  redirect(`/access/application?application=${applicationId}${suffix}`);
-}
-
-async function removeApplicationFromTeam(formData: FormData) {
-  'use server';
-
-  const applicationId = String(formData.get('applicationId') || '');
-  const portfolioAssetId = String(formData.get('portfolioAssetId') || '');
-  const mode = String(formData.get('mode') || '');
-
-  if (!applicationId || !portfolioAssetId) return;
-
-  const assetRow = await prisma.asset.findUnique({
-    where: { id: portfolioAssetId },
-    select: { parent_portfolio_id: true },
-  });
-
-  if (!assetRow?.parent_portfolio_id) return;
-
-  await removeAssetFromGroupWithMode(
-    {
-      groupId: assetRow.parent_portfolio_id,
-      portfolioAssetId,
-    },
-    { rootMode: mode === 'root' },
-  );
-
-  const suffix = mode === 'root' ? '&mode=root' : '';
-  revalidatePath('/access/application');
-  revalidatePath(`/access/application?application=${applicationId}${suffix}`);
-  redirect(`/access/application?application=${applicationId}${suffix}`);
-}
-
-async function getAccessibleTeams(mode?: string): Promise<AccessibleTeam[]> {
-  const accountId = await getActiveAccountId();
-  if (!accountId) return [];
-
-  const rootMode = mode === 'root' && (await isRootUser(accountId));
-
-  return prisma.portfolio.findMany({
-    where: rootMode
-      ? undefined
-      : {
-          members: {
-            some: {
-              memberAccountId: accountId,
-              status: 'active',
-              OR: [{ isTemporary: null }, { isTemporary: { gt: new Date() } }],
-            },
-          },
-        },
-    include: {
-      _count: {
-        select: {
-          members: true,
-          assets: true,
-        },
-      },
-    },
-    orderBy: {
-      name: 'asc',
-    },
-  });
-}
-
 async function SelectedApplicationPage({
   applicationId,
   mode,
@@ -155,46 +47,12 @@ async function SelectedApplicationPage({
   applicationId: string;
   mode?: string;
 }) {
-  const [apps, portfolios] = await Promise.all([
-    getApplicationAccessPageData(),
-    getAccessibleTeams(mode),
-  ]);
+  const apps = await getApplicationAccessPageData();
 
   const app = apps.find((item) => item.id === applicationId);
   if (!app) notFound();
 
-  const portfolioIds = portfolios.map((portfolio) => portfolio.id);
-  const linkedTeams = portfolioIds.length
-    ? await prisma.asset.findMany({
-        where: {
-          access_application_id: applicationId,
-          parent_portfolio_id: { in: portfolioIds },
-        },
-        select: {
-          id: true,
-          parent_portfolio_id: true,
-          parentPortfolio: {
-            select: {
-              id: true,
-              name: true,
-              description: true,
-            },
-          },
-        },
-      })
-    : [];
-
-  const linkedPortfolioIds = new Set(
-    linkedTeams
-      .map((item) => item.parent_portfolio_id)
-      .filter((id): id is string => Boolean(id)),
-  );
-
-  const availableTeams = portfolios.filter((portfolio) => !linkedPortfolioIds.has(portfolio.id));
   const modeSuffix = mode === 'root' ? '&mode=root' : '';
-  const sortedLinkedTeams = [...linkedTeams].sort((a, b) =>
-    (a.parentPortfolio?.name ?? '').localeCompare(b.parentPortfolio?.name ?? ''),
-  );
 
   return (
     <div className="grid gap-8">
@@ -251,112 +109,6 @@ async function SelectedApplicationPage({
         </CardHeader>
 
         <CardContent className="p-0">
-          <div className="border-t">
-            <div className="flex items-center justify-between gap-2 px-4 py-2.5">
-              <div className="flex items-center gap-1.5">
-                <FolderGit2 className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  Teams with access
-                </span>
-              </div>
-              <Badge variant="secondary" className="text-xs font-normal">
-                {linkedTeams.length}
-              </Badge>
-            </div>
-
-            <div className="divide-y border-t">
-              {sortedLinkedTeams.length > 0 ? (
-                sortedLinkedTeams.map((team) => (
-                  <div key={team.id} className="flex items-center gap-3 px-4 py-3">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted">
-                      <FolderGit2 className="h-4 w-4 text-muted-foreground" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">
-                        {team.parentPortfolio?.name ?? 'Unnamed team'}
-                      </p>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {team.parentPortfolio?.description || team.parent_portfolio_id}
-                      </p>
-                    </div>
-                    <FlowLink
-                      href={`/access?portfolio=${team.parent_portfolio_id}${modeSuffix}`}
-                      className="text-xs text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      Open
-                    </FlowLink>
-                    <form action={removeApplicationFromTeam}>
-                      <input type="hidden" name="applicationId" value={app.id} />
-                      <input type="hidden" name="portfolioAssetId" value={team.id} />
-                      {mode === 'root' ? <input type="hidden" name="mode" value="root" /> : null}
-                      <Button
-                        type="submit"
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
-                        aria-label={`Remove ${team.parentPortfolio?.name ?? 'team'} from ${app.name}`}
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </Button>
-                    </form>
-                  </div>
-                ))
-              ) : (
-                <div className="flex items-center gap-3 px-4 py-4">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted">
-                    <FolderGit2 className="h-4 w-4 text-muted-foreground" />
-                  </span>
-                  <p className="text-sm text-muted-foreground">
-                    No team has been assigned to this application yet.
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="border-t">
-            <div className="px-4 py-2.5">
-              <div className="flex items-center gap-1.5">
-                <Plus className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  Assign team to asset
-                </span>
-              </div>
-            </div>
-
-            <div className="divide-y border-t">
-              {availableTeams.length > 0 ? (
-                availableTeams.map((team) => (
-                  <form
-                    key={team.id}
-                    action={assignApplicationToTeam}
-                    className="flex items-center gap-3 px-4 py-3"
-                  >
-                    <input type="hidden" name="applicationId" value={app.id} />
-                    <input type="hidden" name="groupId" value={team.id} />
-                    {mode === 'root' ? <input type="hidden" name="mode" value="root" /> : null}
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted">
-                      <FolderGit2 className="h-4 w-4 text-muted-foreground" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{team.name}</p>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {team.description || `${team._count.members} members · ${team._count.assets} assets`}
-                      </p>
-                    </div>
-                    <Button type="submit" size="sm" variant="outline">
-                      Assign
-                    </Button>
-                  </form>
-                ))
-              ) : (
-                <div className="px-4 py-4 text-sm text-muted-foreground">
-                  All available teams already have this application assigned.
-                </div>
-              )}
-            </div>
-          </div>
-
           <div className="border-t">
             <div className="flex items-center justify-between gap-2 px-4 py-2.5">
               <div className="flex items-center gap-1.5">

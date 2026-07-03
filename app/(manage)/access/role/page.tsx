@@ -66,11 +66,8 @@ async function hasPendingDirectInvitation(
 
 /** Returns the portfolio name, or null if not found. */
 async function getPortfolioName(parentPortfolioId: string): Promise<string | null> {
-  const portfolio = await prisma.portfolio.findUnique({
-    where: { id: parentPortfolioId },
-    select: { name: true },
-  });
-  return portfolio?.name ?? null;
+  void parentPortfolioId;
+  return null;
 }
 
 type PortfolioMemberFlags = {
@@ -83,23 +80,9 @@ async function getPortfolioMemberFlags(
   parentPortfolioId: string,
   memberAccountId: string,
 ): Promise<PortfolioMemberFlags | null> {
-  const member = await prisma.member.findFirst({
-    where: {
-      parentPortfolioId,
-      memberType: 'account',
-      memberAccountId,
-      status: 'active',
-    },
-    select: { details: true, isTemporary: true },
-  });
-  if (!member) return null;
-  const details = member.details && typeof member.details === 'object' && !Array.isArray(member.details)
-    ? member.details as Record<string, unknown>
-    : {};
-  return {
-    hasFullAccess: details.hasFullAccess === true || details.accessLevel === 'full',
-    isPermanent: member.isTemporary == null || details.isPermanent === true,
-  };
+  void parentPortfolioId;
+  void memberAccountId;
+  return null;
 }
 
 /**
@@ -110,22 +93,9 @@ async function hasOtherPermanentOwner(
   parentPortfolioId: string,
   excludeAccountId: string,
 ): Promise<boolean> {
-  const members = await prisma.member.findMany({
-    where: {
-      parentPortfolioId,
-      status: 'active',
-      memberType: 'account',
-      memberAccountId: { not: excludeAccountId },
-    },
-    select: { details: true, isTemporary: true },
-  });
-  return members.some((member) => {
-    const details = member.details && typeof member.details === 'object' && !Array.isArray(member.details)
-      ? member.details as Record<string, unknown>
-      : {};
-    return (member.isTemporary == null || details.isPermanent === true)
-      && (details.hasFullAccess === true || details.accessLevel === 'full');
-  });
+  void parentPortfolioId;
+  void excludeAccountId;
+  return false;
 }
 
 // ── Platform avatar ───────────────────────────────────────────────────────────

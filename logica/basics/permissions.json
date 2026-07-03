@@ -1676,45 +1676,6 @@
     ]
   },
   {
-    "id": "cap-def-access-portfolio-create-self",
-    "title": "access.portfolio.create.self",
-    "scopeFor": [],
-    "scopeLevel": [],
-    "acquisitionType": "assignment",
-    "approvalPolicy": "none",
-    "rules": null,
-    "status": null,
-    "tag": null,
-    "usages": [
-      {
-        "permission": "access.portfolio.create.self",
-        "scope": "for_individual",
-        "file": "services/manage/access/assets.ts",
-        "line": 31,
-        "column": 3,
-        "route": null,
-        "type": "unknown",
-        "function": null,
-        "class": null,
-        "component": null,
-        "method": null
-      },
-      {
-        "permission": "access.portfolio.create.self",
-        "scope": "for_individual",
-        "file": "app/(manage)/access/page.tsx",
-        "line": 50,
-        "column": 3,
-        "route": "/access",
-        "type": "page",
-        "function": null,
-        "class": null,
-        "component": null,
-        "method": null
-      }
-    ]
-  },
-  {
     "id": "cap-def-access-team-add-self",
     "title": "access.team.add.self",
     "scopeFor": [],

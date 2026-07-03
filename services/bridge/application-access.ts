@@ -191,7 +191,6 @@ export async function getApplicationAccess(params: {
           id: true,
           roleId: true,
           status: true,
-          parentPortfolioId: true,
           parentAccount: {
             select: {
               id: true,
@@ -238,7 +237,6 @@ export async function getApplicationAccess(params: {
       'roleDescription',
       'roleScope',
       'permissions',
-      'parentPortfolioId',
     ];
 
     const data = grants.map((g) => ({
@@ -266,7 +264,6 @@ export async function getApplicationAccess(params: {
         permissionTag: null,
         denormalized: [name],
       })),
-      parentPortfolioId: g.parentPortfolioId,
     }));
 
     const startedAt = grants.length > 0 ? grants[0].id : null;

@@ -144,7 +144,6 @@ async function getDirectTeamMembershipStatus(
         memberType: 'acc_in_acc',
         memberAccountId,
         parentAccountId: ownerAccountId,
-        parentPortfolioId: null,
         status: 'active',
       },
       select: { id: true },

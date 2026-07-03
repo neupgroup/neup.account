@@ -123,9 +123,6 @@ const DEFAULT_LEGACY_PERMISSIONS = [
   'access.invitation.approve',
   'access.block.view',
   'access.block.update',
-  'access.portfolio.create',
-  'access.portfolio.update',
-  'access.portfolio.delete',
   'security.recent_activities.view',
   'payment.method.show',
   'payment.transactions.show',
@@ -170,9 +167,6 @@ const ROOT_LEGACY_PERMISSIONS = [
   'access.invitation.approve',
   'access.block.view',
   'access.block.update',
-  'access.portfolio.create',
-  'access.portfolio.update',
-  'access.portfolio.delete',
   'root.account.send_warning',
   'root.account.give_block_account',
   'root.account.remove_block_account',
@@ -252,9 +246,6 @@ const SELF_MANAGED_ROOT_LEGACY_PERMISSION_SET = new Set<string>([
 const SELF_ROOT_LEGACY_PERMISSION_SET = new Set<string>([
   'access.family.member.update',
   'access.family.partner.update',
-  'access.portfolio.create',
-  'access.portfolio.update',
-  'access.portfolio.delete',
 ]);
 
 const LEGACY_PERMISSION_AUDIENCE_OVERRIDES: Record<string, LegacyPermissionAudienceConfig> = {

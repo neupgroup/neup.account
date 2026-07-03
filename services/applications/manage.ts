@@ -1830,26 +1830,19 @@ export type AppAccessEntry = {
   neupId?: string;
   isVerified: boolean;
   roles: string[];
-  /** null = direct grant; string = portfolio name the grant came through */
+  /** null for direct grant compatibility. */
   via: null | string;
-};
-
-export type AppPortfolioEntry = {
-  parentPortfolioId: string;
-  portfolioName: string;
 };
 
 export type AppOwnershipData = {
   owners: AppOwnerEntry[];
   accessGrants: AppAccessEntry[];
-  portfolios: AppPortfolioEntry[];
 };
 
 /**
  * Function getAppOwnershipData.
  *
- * Returns the owner(s), all accounts with access grants, and any portfolios
- * this application belongs to. Accessible to the app owner and root viewers.
+ * Returns the owner(s) and all accounts with access grants.
  */
 export async function getAppOwnershipData(appId: string): Promise<AppOwnershipData | null> {
   const accountId = await getActiveAccountId();
@@ -1867,8 +1860,6 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
       },
       select: {
         roleId: true,
-        parentPortfolioId: true,
-        parentPortfolio: { select: { id: true, name: true } },
         parentAccount: {
           select: {
             id: true,
@@ -1882,41 +1873,6 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
         },
       },
     });
-
-    const appPortfolioGrants = await prisma.access.findMany({
-      where: {
-        parentPortfolioId: { not: null },
-        accessApplicationId: appId,
-        ...activeAccessWhere(),
-      },
-      select: {
-        parentPortfolioId: true,
-        parentPortfolio: { select: { id: true, name: true } },
-      },
-      distinct: ['parentPortfolioId'],
-    });
-
-    // Also check AuthzAccountAccessGrant portfolios
-    const portfolioIds = new Set<string>();
-    const portfolioMap = new Map<string, string>();
-
-    for (const g of grants) {
-      if (g.parentPortfolioId && g.parentPortfolio) {
-        portfolioIds.add(g.parentPortfolioId);
-        portfolioMap.set(g.parentPortfolioId, g.parentPortfolio.name);
-      }
-    }
-    for (const g of appPortfolioGrants) {
-      if (g.parentPortfolioId && g.parentPortfolio) {
-        portfolioIds.add(g.parentPortfolioId);
-        portfolioMap.set(g.parentPortfolioId, g.parentPortfolio.name);
-      }
-    }
-
-    const portfolios: AppPortfolioEntry[] = Array.from(portfolioIds).map((id) => ({
-      parentPortfolioId: id,
-      portfolioName: portfolioMap.get(id) ?? id,
-    }));
 
     // Helper to resolve a display name from the included account data
     function resolveDisplayName(target: {
@@ -1962,16 +1918,12 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
             neupId,
             isVerified: t.isVerified,
             roles: [],
-            via: g.parentPortfolioId && g.parentPortfolio ? g.parentPortfolio.name : null,
+            via: null,
           });
         }
         const entry = accessMap.get(t.id)!;
         if (!entry.roles.includes(g.roleId)) {
           entry.roles.push(g.roleId);
-        }
-        // If any grant for this account came via a portfolio, mark it
-        if (g.parentPortfolioId && g.parentPortfolio && entry.via === null) {
-          entry.via = g.parentPortfolio.name;
         }
       }
     }
@@ -1979,7 +1931,6 @@ export async function getAppOwnershipData(appId: string): Promise<AppOwnershipDa
     return {
       owners: Array.from(ownerMap.values()),
       accessGrants: Array.from(accessMap.values()),
-      portfolios,
     };
   } catch (error) {
     await logError('database', error, `getAppOwnershipData:${appId}`);

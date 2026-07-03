@@ -114,11 +114,6 @@ export type Application = $Result.DefaultSelection<Prisma.$ApplicationPayload>
  */
 export type ApplicationDevLog = $Result.DefaultSelection<Prisma.$ApplicationDevLogPayload>
 /**
- * Model Portfolio
- * 
- */
-export type Portfolio = $Result.DefaultSelection<Prisma.$PortfolioPayload>
-/**
  * Model Asset
  * 
  */
@@ -223,13 +218,9 @@ export type AuthzGrantStatus = (typeof AuthzGrantStatus)[keyof typeof AuthzGrant
 
 
 export const AssetType: {
-  acc_in_port: 'acc_in_port',
   acc_in_acc: 'acc_in_acc',
-  app_in_port: 'app_in_port',
   app_in_acc: 'app_in_acc',
-  port_in_acc: 'port_in_acc',
-  conn_in_acc: 'conn_in_acc',
-  conn_in_port: 'conn_in_port'
+  conn_in_acc: 'conn_in_acc'
 };
 
 export type AssetType = (typeof AssetType)[keyof typeof AssetType]
@@ -238,13 +229,9 @@ export type AssetType = (typeof AssetType)[keyof typeof AssetType]
 export const AccessType: {
   acc_self: 'acc_self',
   acc_self_root: 'acc_self_root',
-  acc_in_port: 'acc_in_port',
   acc_in_acc: 'acc_in_acc',
-  app_in_port: 'app_in_port',
   app_in_acc: 'app_in_acc',
-  port_in_acc: 'port_in_acc',
-  conn_in_acc: 'conn_in_acc',
-  conn_in_port: 'conn_in_port'
+  conn_in_acc: 'conn_in_acc'
 };
 
 export type AccessType = (typeof AccessType)[keyof typeof AccessType]
@@ -253,8 +240,7 @@ export type AccessType = (typeof AccessType)[keyof typeof AccessType]
 export const MemberAccessFor: {
   account: 'account',
   application: 'application',
-  connection: 'connection',
-  portfolio: 'portfolio'
+  connection: 'connection'
 };
 
 export type MemberAccessFor = (typeof MemberAccessFor)[keyof typeof MemberAccessFor]
@@ -606,16 +592,6 @@ export class PrismaClient<
     * ```
     */
   get applicationDevLog(): Prisma.ApplicationDevLogDelegate<ExtArgs, ClientOptions>;
-
-  /**
-   * `prisma.portfolio`: Exposes CRUD operations for the **Portfolio** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Portfolios
-    * const portfolios = await prisma.portfolio.findMany()
-    * ```
-    */
-  get portfolio(): Prisma.PortfolioDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.asset`: Exposes CRUD operations for the **Asset** model.
@@ -1210,7 +1186,6 @@ export namespace Prisma {
     ApplicationProvider: 'ApplicationProvider',
     Application: 'Application',
     ApplicationDevLog: 'ApplicationDevLog',
-    Portfolio: 'Portfolio',
     Asset: 'Asset',
     Member: 'Member',
     Access: 'Access',
@@ -1240,7 +1215,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "resource" | "accountTypeIndividual" | "accountTypeBrand" | "systemConfig" | "authnRequest" | "activity" | "notification" | "request" | "family" | "familyMember" | "verification" | "contact" | "neupId" | "authnMethod" | "authnSession" | "systemError" | "applicationProvider" | "application" | "applicationDevLog" | "portfolio" | "asset" | "member" | "access" | "accountOwnership" | "connection" | "applicationBridge" | "applicationPolicy" | "role" | "authzPermission" | "authzRole" | "authzRolePermissionMap" | "authzAssetsAccessGrant" | "permit" | "identity"
+      modelProps: "account" | "resource" | "accountTypeIndividual" | "accountTypeBrand" | "systemConfig" | "authnRequest" | "activity" | "notification" | "request" | "family" | "familyMember" | "verification" | "contact" | "neupId" | "authnMethod" | "authnSession" | "systemError" | "applicationProvider" | "application" | "applicationDevLog" | "asset" | "member" | "access" | "accountOwnership" | "connection" | "applicationBridge" | "applicationPolicy" | "role" | "authzPermission" | "authzRole" | "authzRolePermissionMap" | "authzAssetsAccessGrant" | "permit" | "identity"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2724,80 +2699,6 @@ export namespace Prisma {
           }
         }
       }
-      Portfolio: {
-        payload: Prisma.$PortfolioPayload<ExtArgs>
-        fields: Prisma.PortfolioFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.PortfolioFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PortfolioPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.PortfolioFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PortfolioPayload>
-          }
-          findFirst: {
-            args: Prisma.PortfolioFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PortfolioPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.PortfolioFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PortfolioPayload>
-          }
-          findMany: {
-            args: Prisma.PortfolioFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PortfolioPayload>[]
-          }
-          create: {
-            args: Prisma.PortfolioCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PortfolioPayload>
-          }
-          createMany: {
-            args: Prisma.PortfolioCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.PortfolioCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PortfolioPayload>[]
-          }
-          delete: {
-            args: Prisma.PortfolioDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PortfolioPayload>
-          }
-          update: {
-            args: Prisma.PortfolioUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PortfolioPayload>
-          }
-          deleteMany: {
-            args: Prisma.PortfolioDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.PortfolioUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.PortfolioUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PortfolioPayload>[]
-          }
-          upsert: {
-            args: Prisma.PortfolioUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PortfolioPayload>
-          }
-          aggregate: {
-            args: Prisma.PortfolioAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregatePortfolio>
-          }
-          groupBy: {
-            args: Prisma.PortfolioGroupByArgs<ExtArgs>
-            result: $Utils.Optional<PortfolioGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.PortfolioCountArgs<ExtArgs>
-            result: $Utils.Optional<PortfolioCountAggregateOutputType> | number
-          }
-        }
-      }
       Asset: {
         payload: Prisma.$AssetPayload<ExtArgs>
         fields: Prisma.AssetFieldRefs
@@ -3962,7 +3863,6 @@ export namespace Prisma {
     applicationProvider?: ApplicationProviderOmit
     application?: ApplicationOmit
     applicationDevLog?: ApplicationDevLogOmit
-    portfolio?: PortfolioOmit
     asset?: AssetOmit
     member?: MemberOmit
     access?: AccessOmit
@@ -4497,82 +4397,6 @@ export namespace Prisma {
    */
   export type ApplicationCountOutputTypeCountDevLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ApplicationDevLogWhereInput
-  }
-
-
-  /**
-   * Count Type PortfolioCountOutputType
-   */
-
-  export type PortfolioCountOutputType = {
-    assets: number
-    childAssets: number
-    members: number
-    accessParentRows: number
-    accessAssetRows: number
-    authzAssetsAccessGrants: number
-  }
-
-  export type PortfolioCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    assets?: boolean | PortfolioCountOutputTypeCountAssetsArgs
-    childAssets?: boolean | PortfolioCountOutputTypeCountChildAssetsArgs
-    members?: boolean | PortfolioCountOutputTypeCountMembersArgs
-    accessParentRows?: boolean | PortfolioCountOutputTypeCountAccessParentRowsArgs
-    accessAssetRows?: boolean | PortfolioCountOutputTypeCountAccessAssetRowsArgs
-    authzAssetsAccessGrants?: boolean | PortfolioCountOutputTypeCountAuthzAssetsAccessGrantsArgs
-  }
-
-  // Custom InputTypes
-  /**
-   * PortfolioCountOutputType without action
-   */
-  export type PortfolioCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PortfolioCountOutputType
-     */
-    select?: PortfolioCountOutputTypeSelect<ExtArgs> | null
-  }
-
-  /**
-   * PortfolioCountOutputType without action
-   */
-  export type PortfolioCountOutputTypeCountAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: AssetWhereInput
-  }
-
-  /**
-   * PortfolioCountOutputType without action
-   */
-  export type PortfolioCountOutputTypeCountChildAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: AssetWhereInput
-  }
-
-  /**
-   * PortfolioCountOutputType without action
-   */
-  export type PortfolioCountOutputTypeCountMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: MemberWhereInput
-  }
-
-  /**
-   * PortfolioCountOutputType without action
-   */
-  export type PortfolioCountOutputTypeCountAccessParentRowsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: AccessWhereInput
-  }
-
-  /**
-   * PortfolioCountOutputType without action
-   */
-  export type PortfolioCountOutputTypeCountAccessAssetRowsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: AccessWhereInput
-  }
-
-  /**
-   * PortfolioCountOutputType without action
-   */
-  export type PortfolioCountOutputTypeCountAuthzAssetsAccessGrantsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: AuthzAssetsAccessGrantWhereInput
   }
 
 
@@ -27752,1203 +27576,6 @@ export namespace Prisma {
 
 
   /**
-   * Model Portfolio
-   */
-
-  export type AggregatePortfolio = {
-    _count: PortfolioCountAggregateOutputType | null
-    _min: PortfolioMinAggregateOutputType | null
-    _max: PortfolioMaxAggregateOutputType | null
-  }
-
-  export type PortfolioMinAggregateOutputType = {
-    id: string | null
-    name: string | null
-    description: string | null
-    dateCreated: Date | null
-  }
-
-  export type PortfolioMaxAggregateOutputType = {
-    id: string | null
-    name: string | null
-    description: string | null
-    dateCreated: Date | null
-  }
-
-  export type PortfolioCountAggregateOutputType = {
-    id: number
-    name: number
-    description: number
-    dateCreated: number
-    _all: number
-  }
-
-
-  export type PortfolioMinAggregateInputType = {
-    id?: true
-    name?: true
-    description?: true
-    dateCreated?: true
-  }
-
-  export type PortfolioMaxAggregateInputType = {
-    id?: true
-    name?: true
-    description?: true
-    dateCreated?: true
-  }
-
-  export type PortfolioCountAggregateInputType = {
-    id?: true
-    name?: true
-    description?: true
-    dateCreated?: true
-    _all?: true
-  }
-
-  export type PortfolioAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Portfolio to aggregate.
-     */
-    where?: PortfolioWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Portfolios to fetch.
-     */
-    orderBy?: PortfolioOrderByWithRelationInput | PortfolioOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: PortfolioWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Portfolios from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Portfolios.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned Portfolios
-    **/
-    _count?: true | PortfolioCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: PortfolioMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: PortfolioMaxAggregateInputType
-  }
-
-  export type GetPortfolioAggregateType<T extends PortfolioAggregateArgs> = {
-        [P in keyof T & keyof AggregatePortfolio]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregatePortfolio[P]>
-      : GetScalarType<T[P], AggregatePortfolio[P]>
-  }
-
-
-
-
-  export type PortfolioGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: PortfolioWhereInput
-    orderBy?: PortfolioOrderByWithAggregationInput | PortfolioOrderByWithAggregationInput[]
-    by: PortfolioScalarFieldEnum[] | PortfolioScalarFieldEnum
-    having?: PortfolioScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: PortfolioCountAggregateInputType | true
-    _min?: PortfolioMinAggregateInputType
-    _max?: PortfolioMaxAggregateInputType
-  }
-
-  export type PortfolioGroupByOutputType = {
-    id: string
-    name: string
-    description: string | null
-    dateCreated: Date
-    _count: PortfolioCountAggregateOutputType | null
-    _min: PortfolioMinAggregateOutputType | null
-    _max: PortfolioMaxAggregateOutputType | null
-  }
-
-  type GetPortfolioGroupByPayload<T extends PortfolioGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<PortfolioGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof PortfolioGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], PortfolioGroupByOutputType[P]>
-            : GetScalarType<T[P], PortfolioGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type PortfolioSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    description?: boolean
-    dateCreated?: boolean
-    assets?: boolean | Portfolio$assetsArgs<ExtArgs>
-    childAssets?: boolean | Portfolio$childAssetsArgs<ExtArgs>
-    members?: boolean | Portfolio$membersArgs<ExtArgs>
-    accessParentRows?: boolean | Portfolio$accessParentRowsArgs<ExtArgs>
-    accessAssetRows?: boolean | Portfolio$accessAssetRowsArgs<ExtArgs>
-    authzAssetsAccessGrants?: boolean | Portfolio$authzAssetsAccessGrantsArgs<ExtArgs>
-    _count?: boolean | PortfolioCountOutputTypeDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["portfolio"]>
-
-  export type PortfolioSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    description?: boolean
-    dateCreated?: boolean
-  }, ExtArgs["result"]["portfolio"]>
-
-  export type PortfolioSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    description?: boolean
-    dateCreated?: boolean
-  }, ExtArgs["result"]["portfolio"]>
-
-  export type PortfolioSelectScalar = {
-    id?: boolean
-    name?: boolean
-    description?: boolean
-    dateCreated?: boolean
-  }
-
-  export type PortfolioOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "dateCreated", ExtArgs["result"]["portfolio"]>
-  export type PortfolioInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    assets?: boolean | Portfolio$assetsArgs<ExtArgs>
-    childAssets?: boolean | Portfolio$childAssetsArgs<ExtArgs>
-    members?: boolean | Portfolio$membersArgs<ExtArgs>
-    accessParentRows?: boolean | Portfolio$accessParentRowsArgs<ExtArgs>
-    accessAssetRows?: boolean | Portfolio$accessAssetRowsArgs<ExtArgs>
-    authzAssetsAccessGrants?: boolean | Portfolio$authzAssetsAccessGrantsArgs<ExtArgs>
-    _count?: boolean | PortfolioCountOutputTypeDefaultArgs<ExtArgs>
-  }
-  export type PortfolioIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type PortfolioIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-
-  export type $PortfolioPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "Portfolio"
-    objects: {
-      assets: Prisma.$AssetPayload<ExtArgs>[]
-      childAssets: Prisma.$AssetPayload<ExtArgs>[]
-      members: Prisma.$MemberPayload<ExtArgs>[]
-      accessParentRows: Prisma.$AccessPayload<ExtArgs>[]
-      accessAssetRows: Prisma.$AccessPayload<ExtArgs>[]
-      authzAssetsAccessGrants: Prisma.$AuthzAssetsAccessGrantPayload<ExtArgs>[]
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      name: string
-      description: string | null
-      dateCreated: Date
-    }, ExtArgs["result"]["portfolio"]>
-    composites: {}
-  }
-
-  type PortfolioGetPayload<S extends boolean | null | undefined | PortfolioDefaultArgs> = $Result.GetResult<Prisma.$PortfolioPayload, S>
-
-  type PortfolioCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<PortfolioFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: PortfolioCountAggregateInputType | true
-    }
-
-  export interface PortfolioDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Portfolio'], meta: { name: 'Portfolio' } }
-    /**
-     * Find zero or one Portfolio that matches the filter.
-     * @param {PortfolioFindUniqueArgs} args - Arguments to find a Portfolio
-     * @example
-     * // Get one Portfolio
-     * const portfolio = await prisma.portfolio.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends PortfolioFindUniqueArgs>(args: SelectSubset<T, PortfolioFindUniqueArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one Portfolio that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {PortfolioFindUniqueOrThrowArgs} args - Arguments to find a Portfolio
-     * @example
-     * // Get one Portfolio
-     * const portfolio = await prisma.portfolio.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends PortfolioFindUniqueOrThrowArgs>(args: SelectSubset<T, PortfolioFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Portfolio that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PortfolioFindFirstArgs} args - Arguments to find a Portfolio
-     * @example
-     * // Get one Portfolio
-     * const portfolio = await prisma.portfolio.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends PortfolioFindFirstArgs>(args?: SelectSubset<T, PortfolioFindFirstArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Portfolio that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PortfolioFindFirstOrThrowArgs} args - Arguments to find a Portfolio
-     * @example
-     * // Get one Portfolio
-     * const portfolio = await prisma.portfolio.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends PortfolioFindFirstOrThrowArgs>(args?: SelectSubset<T, PortfolioFindFirstOrThrowArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more Portfolios that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PortfolioFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all Portfolios
-     * const portfolios = await prisma.portfolio.findMany()
-     * 
-     * // Get first 10 Portfolios
-     * const portfolios = await prisma.portfolio.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const portfolioWithIdOnly = await prisma.portfolio.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends PortfolioFindManyArgs>(args?: SelectSubset<T, PortfolioFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a Portfolio.
-     * @param {PortfolioCreateArgs} args - Arguments to create a Portfolio.
-     * @example
-     * // Create one Portfolio
-     * const Portfolio = await prisma.portfolio.create({
-     *   data: {
-     *     // ... data to create a Portfolio
-     *   }
-     * })
-     * 
-     */
-    create<T extends PortfolioCreateArgs>(args: SelectSubset<T, PortfolioCreateArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many Portfolios.
-     * @param {PortfolioCreateManyArgs} args - Arguments to create many Portfolios.
-     * @example
-     * // Create many Portfolios
-     * const portfolio = await prisma.portfolio.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends PortfolioCreateManyArgs>(args?: SelectSubset<T, PortfolioCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many Portfolios and returns the data saved in the database.
-     * @param {PortfolioCreateManyAndReturnArgs} args - Arguments to create many Portfolios.
-     * @example
-     * // Create many Portfolios
-     * const portfolio = await prisma.portfolio.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many Portfolios and only return the `id`
-     * const portfolioWithIdOnly = await prisma.portfolio.createManyAndReturn({
-     *   select: { id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends PortfolioCreateManyAndReturnArgs>(args?: SelectSubset<T, PortfolioCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Delete a Portfolio.
-     * @param {PortfolioDeleteArgs} args - Arguments to delete one Portfolio.
-     * @example
-     * // Delete one Portfolio
-     * const Portfolio = await prisma.portfolio.delete({
-     *   where: {
-     *     // ... filter to delete one Portfolio
-     *   }
-     * })
-     * 
-     */
-    delete<T extends PortfolioDeleteArgs>(args: SelectSubset<T, PortfolioDeleteArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one Portfolio.
-     * @param {PortfolioUpdateArgs} args - Arguments to update one Portfolio.
-     * @example
-     * // Update one Portfolio
-     * const portfolio = await prisma.portfolio.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends PortfolioUpdateArgs>(args: SelectSubset<T, PortfolioUpdateArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more Portfolios.
-     * @param {PortfolioDeleteManyArgs} args - Arguments to filter Portfolios to delete.
-     * @example
-     * // Delete a few Portfolios
-     * const { count } = await prisma.portfolio.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends PortfolioDeleteManyArgs>(args?: SelectSubset<T, PortfolioDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Portfolios.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PortfolioUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many Portfolios
-     * const portfolio = await prisma.portfolio.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends PortfolioUpdateManyArgs>(args: SelectSubset<T, PortfolioUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Portfolios and returns the data updated in the database.
-     * @param {PortfolioUpdateManyAndReturnArgs} args - Arguments to update many Portfolios.
-     * @example
-     * // Update many Portfolios
-     * const portfolio = await prisma.portfolio.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more Portfolios and only return the `id`
-     * const portfolioWithIdOnly = await prisma.portfolio.updateManyAndReturn({
-     *   select: { id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends PortfolioUpdateManyAndReturnArgs>(args: SelectSubset<T, PortfolioUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Create or update one Portfolio.
-     * @param {PortfolioUpsertArgs} args - Arguments to update or create a Portfolio.
-     * @example
-     * // Update or create a Portfolio
-     * const portfolio = await prisma.portfolio.upsert({
-     *   create: {
-     *     // ... data to create a Portfolio
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the Portfolio we want to update
-     *   }
-     * })
-     */
-    upsert<T extends PortfolioUpsertArgs>(args: SelectSubset<T, PortfolioUpsertArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of Portfolios.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PortfolioCountArgs} args - Arguments to filter Portfolios to count.
-     * @example
-     * // Count the number of Portfolios
-     * const count = await prisma.portfolio.count({
-     *   where: {
-     *     // ... the filter for the Portfolios we want to count
-     *   }
-     * })
-    **/
-    count<T extends PortfolioCountArgs>(
-      args?: Subset<T, PortfolioCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], PortfolioCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a Portfolio.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PortfolioAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends PortfolioAggregateArgs>(args: Subset<T, PortfolioAggregateArgs>): Prisma.PrismaPromise<GetPortfolioAggregateType<T>>
-
-    /**
-     * Group by Portfolio.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PortfolioGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends PortfolioGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: PortfolioGroupByArgs['orderBy'] }
-        : { orderBy?: PortfolioGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, PortfolioGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPortfolioGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the Portfolio model
-   */
-  readonly fields: PortfolioFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for Portfolio.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__PortfolioClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    assets<T extends Portfolio$assetsArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$assetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    childAssets<T extends Portfolio$childAssetsArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$childAssetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    members<T extends Portfolio$membersArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    accessParentRows<T extends Portfolio$accessParentRowsArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$accessParentRowsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    accessAssetRows<T extends Portfolio$accessAssetRowsArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$accessAssetRowsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    authzAssetsAccessGrants<T extends Portfolio$authzAssetsAccessGrantsArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$authzAssetsAccessGrantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzAssetsAccessGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the Portfolio model
-   */
-  interface PortfolioFieldRefs {
-    readonly id: FieldRef<"Portfolio", 'String'>
-    readonly name: FieldRef<"Portfolio", 'String'>
-    readonly description: FieldRef<"Portfolio", 'String'>
-    readonly dateCreated: FieldRef<"Portfolio", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * Portfolio findUnique
-   */
-  export type PortfolioFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Portfolio
-     */
-    select?: PortfolioSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Portfolio
-     */
-    omit?: PortfolioOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PortfolioInclude<ExtArgs> | null
-    /**
-     * Filter, which Portfolio to fetch.
-     */
-    where: PortfolioWhereUniqueInput
-  }
-
-  /**
-   * Portfolio findUniqueOrThrow
-   */
-  export type PortfolioFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Portfolio
-     */
-    select?: PortfolioSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Portfolio
-     */
-    omit?: PortfolioOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PortfolioInclude<ExtArgs> | null
-    /**
-     * Filter, which Portfolio to fetch.
-     */
-    where: PortfolioWhereUniqueInput
-  }
-
-  /**
-   * Portfolio findFirst
-   */
-  export type PortfolioFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Portfolio
-     */
-    select?: PortfolioSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Portfolio
-     */
-    omit?: PortfolioOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PortfolioInclude<ExtArgs> | null
-    /**
-     * Filter, which Portfolio to fetch.
-     */
-    where?: PortfolioWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Portfolios to fetch.
-     */
-    orderBy?: PortfolioOrderByWithRelationInput | PortfolioOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Portfolios.
-     */
-    cursor?: PortfolioWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Portfolios from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Portfolios.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Portfolios.
-     */
-    distinct?: PortfolioScalarFieldEnum | PortfolioScalarFieldEnum[]
-  }
-
-  /**
-   * Portfolio findFirstOrThrow
-   */
-  export type PortfolioFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Portfolio
-     */
-    select?: PortfolioSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Portfolio
-     */
-    omit?: PortfolioOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PortfolioInclude<ExtArgs> | null
-    /**
-     * Filter, which Portfolio to fetch.
-     */
-    where?: PortfolioWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Portfolios to fetch.
-     */
-    orderBy?: PortfolioOrderByWithRelationInput | PortfolioOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Portfolios.
-     */
-    cursor?: PortfolioWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Portfolios from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Portfolios.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Portfolios.
-     */
-    distinct?: PortfolioScalarFieldEnum | PortfolioScalarFieldEnum[]
-  }
-
-  /**
-   * Portfolio findMany
-   */
-  export type PortfolioFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Portfolio
-     */
-    select?: PortfolioSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Portfolio
-     */
-    omit?: PortfolioOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PortfolioInclude<ExtArgs> | null
-    /**
-     * Filter, which Portfolios to fetch.
-     */
-    where?: PortfolioWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Portfolios to fetch.
-     */
-    orderBy?: PortfolioOrderByWithRelationInput | PortfolioOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing Portfolios.
-     */
-    cursor?: PortfolioWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Portfolios from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Portfolios.
-     */
-    skip?: number
-    distinct?: PortfolioScalarFieldEnum | PortfolioScalarFieldEnum[]
-  }
-
-  /**
-   * Portfolio create
-   */
-  export type PortfolioCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Portfolio
-     */
-    select?: PortfolioSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Portfolio
-     */
-    omit?: PortfolioOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PortfolioInclude<ExtArgs> | null
-    /**
-     * The data needed to create a Portfolio.
-     */
-    data: XOR<PortfolioCreateInput, PortfolioUncheckedCreateInput>
-  }
-
-  /**
-   * Portfolio createMany
-   */
-  export type PortfolioCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many Portfolios.
-     */
-    data: PortfolioCreateManyInput | PortfolioCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * Portfolio createManyAndReturn
-   */
-  export type PortfolioCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Portfolio
-     */
-    select?: PortfolioSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the Portfolio
-     */
-    omit?: PortfolioOmit<ExtArgs> | null
-    /**
-     * The data used to create many Portfolios.
-     */
-    data: PortfolioCreateManyInput | PortfolioCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * Portfolio update
-   */
-  export type PortfolioUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Portfolio
-     */
-    select?: PortfolioSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Portfolio
-     */
-    omit?: PortfolioOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PortfolioInclude<ExtArgs> | null
-    /**
-     * The data needed to update a Portfolio.
-     */
-    data: XOR<PortfolioUpdateInput, PortfolioUncheckedUpdateInput>
-    /**
-     * Choose, which Portfolio to update.
-     */
-    where: PortfolioWhereUniqueInput
-  }
-
-  /**
-   * Portfolio updateMany
-   */
-  export type PortfolioUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update Portfolios.
-     */
-    data: XOR<PortfolioUpdateManyMutationInput, PortfolioUncheckedUpdateManyInput>
-    /**
-     * Filter which Portfolios to update
-     */
-    where?: PortfolioWhereInput
-    /**
-     * Limit how many Portfolios to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * Portfolio updateManyAndReturn
-   */
-  export type PortfolioUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Portfolio
-     */
-    select?: PortfolioSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the Portfolio
-     */
-    omit?: PortfolioOmit<ExtArgs> | null
-    /**
-     * The data used to update Portfolios.
-     */
-    data: XOR<PortfolioUpdateManyMutationInput, PortfolioUncheckedUpdateManyInput>
-    /**
-     * Filter which Portfolios to update
-     */
-    where?: PortfolioWhereInput
-    /**
-     * Limit how many Portfolios to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * Portfolio upsert
-   */
-  export type PortfolioUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Portfolio
-     */
-    select?: PortfolioSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Portfolio
-     */
-    omit?: PortfolioOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PortfolioInclude<ExtArgs> | null
-    /**
-     * The filter to search for the Portfolio to update in case it exists.
-     */
-    where: PortfolioWhereUniqueInput
-    /**
-     * In case the Portfolio found by the `where` argument doesn't exist, create a new Portfolio with this data.
-     */
-    create: XOR<PortfolioCreateInput, PortfolioUncheckedCreateInput>
-    /**
-     * In case the Portfolio was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<PortfolioUpdateInput, PortfolioUncheckedUpdateInput>
-  }
-
-  /**
-   * Portfolio delete
-   */
-  export type PortfolioDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Portfolio
-     */
-    select?: PortfolioSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Portfolio
-     */
-    omit?: PortfolioOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PortfolioInclude<ExtArgs> | null
-    /**
-     * Filter which Portfolio to delete.
-     */
-    where: PortfolioWhereUniqueInput
-  }
-
-  /**
-   * Portfolio deleteMany
-   */
-  export type PortfolioDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Portfolios to delete
-     */
-    where?: PortfolioWhereInput
-    /**
-     * Limit how many Portfolios to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * Portfolio.assets
-   */
-  export type Portfolio$assetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Asset
-     */
-    select?: AssetSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Asset
-     */
-    omit?: AssetOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AssetInclude<ExtArgs> | null
-    where?: AssetWhereInput
-    orderBy?: AssetOrderByWithRelationInput | AssetOrderByWithRelationInput[]
-    cursor?: AssetWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: AssetScalarFieldEnum | AssetScalarFieldEnum[]
-  }
-
-  /**
-   * Portfolio.childAssets
-   */
-  export type Portfolio$childAssetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Asset
-     */
-    select?: AssetSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Asset
-     */
-    omit?: AssetOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AssetInclude<ExtArgs> | null
-    where?: AssetWhereInput
-    orderBy?: AssetOrderByWithRelationInput | AssetOrderByWithRelationInput[]
-    cursor?: AssetWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: AssetScalarFieldEnum | AssetScalarFieldEnum[]
-  }
-
-  /**
-   * Portfolio.members
-   */
-  export type Portfolio$membersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Member
-     */
-    select?: MemberSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Member
-     */
-    omit?: MemberOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: MemberInclude<ExtArgs> | null
-    where?: MemberWhereInput
-    orderBy?: MemberOrderByWithRelationInput | MemberOrderByWithRelationInput[]
-    cursor?: MemberWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: MemberScalarFieldEnum | MemberScalarFieldEnum[]
-  }
-
-  /**
-   * Portfolio.accessParentRows
-   */
-  export type Portfolio$accessParentRowsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Access
-     */
-    select?: AccessSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Access
-     */
-    omit?: AccessOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AccessInclude<ExtArgs> | null
-    where?: AccessWhereInput
-    orderBy?: AccessOrderByWithRelationInput | AccessOrderByWithRelationInput[]
-    cursor?: AccessWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: AccessScalarFieldEnum | AccessScalarFieldEnum[]
-  }
-
-  /**
-   * Portfolio.accessAssetRows
-   */
-  export type Portfolio$accessAssetRowsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Access
-     */
-    select?: AccessSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Access
-     */
-    omit?: AccessOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AccessInclude<ExtArgs> | null
-    where?: AccessWhereInput
-    orderBy?: AccessOrderByWithRelationInput | AccessOrderByWithRelationInput[]
-    cursor?: AccessWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: AccessScalarFieldEnum | AccessScalarFieldEnum[]
-  }
-
-  /**
-   * Portfolio.authzAssetsAccessGrants
-   */
-  export type Portfolio$authzAssetsAccessGrantsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the AuthzAssetsAccessGrant
-     */
-    select?: AuthzAssetsAccessGrantSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the AuthzAssetsAccessGrant
-     */
-    omit?: AuthzAssetsAccessGrantOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: AuthzAssetsAccessGrantInclude<ExtArgs> | null
-    where?: AuthzAssetsAccessGrantWhereInput
-    orderBy?: AuthzAssetsAccessGrantOrderByWithRelationInput | AuthzAssetsAccessGrantOrderByWithRelationInput[]
-    cursor?: AuthzAssetsAccessGrantWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: AuthzAssetsAccessGrantScalarFieldEnum | AuthzAssetsAccessGrantScalarFieldEnum[]
-  }
-
-  /**
-   * Portfolio without action
-   */
-  export type PortfolioDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Portfolio
-     */
-    select?: PortfolioSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Portfolio
-     */
-    omit?: PortfolioOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PortfolioInclude<ExtArgs> | null
-  }
-
-
-  /**
    * Model Asset
    */
 
@@ -28962,11 +27589,9 @@ export namespace Prisma {
     id: string | null
     access_type: $Enums.AssetType | null
     member_account_id: string | null
-    member_portfolio_id: string | null
     member_connection_id: string | null
     access_application_id: string | null
     parent_account_id: string | null
-    parent_portfolio_id: string | null
     isTemporary: Date | null
     status: string | null
   }
@@ -28975,11 +27600,9 @@ export namespace Prisma {
     id: string | null
     access_type: $Enums.AssetType | null
     member_account_id: string | null
-    member_portfolio_id: string | null
     member_connection_id: string | null
     access_application_id: string | null
     parent_account_id: string | null
-    parent_portfolio_id: string | null
     isTemporary: Date | null
     status: string | null
   }
@@ -28988,11 +27611,9 @@ export namespace Prisma {
     id: number
     access_type: number
     member_account_id: number
-    member_portfolio_id: number
     member_connection_id: number
     access_application_id: number
     parent_account_id: number
-    parent_portfolio_id: number
     isTemporary: number
     status: number
     details: number
@@ -29004,11 +27625,9 @@ export namespace Prisma {
     id?: true
     access_type?: true
     member_account_id?: true
-    member_portfolio_id?: true
     member_connection_id?: true
     access_application_id?: true
     parent_account_id?: true
-    parent_portfolio_id?: true
     isTemporary?: true
     status?: true
   }
@@ -29017,11 +27636,9 @@ export namespace Prisma {
     id?: true
     access_type?: true
     member_account_id?: true
-    member_portfolio_id?: true
     member_connection_id?: true
     access_application_id?: true
     parent_account_id?: true
-    parent_portfolio_id?: true
     isTemporary?: true
     status?: true
   }
@@ -29030,11 +27647,9 @@ export namespace Prisma {
     id?: true
     access_type?: true
     member_account_id?: true
-    member_portfolio_id?: true
     member_connection_id?: true
     access_application_id?: true
     parent_account_id?: true
-    parent_portfolio_id?: true
     isTemporary?: true
     status?: true
     details?: true
@@ -29117,11 +27732,9 @@ export namespace Prisma {
     id: string
     access_type: $Enums.AssetType
     member_account_id: string | null
-    member_portfolio_id: string | null
     member_connection_id: string | null
     access_application_id: string | null
     parent_account_id: string | null
-    parent_portfolio_id: string | null
     isTemporary: Date | null
     status: string
     details: JsonValue | null
@@ -29148,19 +27761,15 @@ export namespace Prisma {
     id?: boolean
     access_type?: boolean
     member_account_id?: boolean
-    member_portfolio_id?: boolean
     member_connection_id?: boolean
     access_application_id?: boolean
     parent_account_id?: boolean
-    parent_portfolio_id?: boolean
     isTemporary?: boolean
     status?: boolean
     details?: boolean
-    parentPortfolio?: boolean | Asset$parentPortfolioArgs<ExtArgs>
     parentAccount?: boolean | Asset$parentAccountArgs<ExtArgs>
     childAccount?: boolean | Asset$childAccountArgs<ExtArgs>
     childConnection?: boolean | Asset$childConnectionArgs<ExtArgs>
-    childPortfolio?: boolean | Asset$childPortfolioArgs<ExtArgs>
     childApplication?: boolean | Asset$childApplicationArgs<ExtArgs>
     accessRows?: boolean | Asset$accessRowsArgs<ExtArgs>
     roles?: boolean | Asset$rolesArgs<ExtArgs>
@@ -29172,19 +27781,15 @@ export namespace Prisma {
     id?: boolean
     access_type?: boolean
     member_account_id?: boolean
-    member_portfolio_id?: boolean
     member_connection_id?: boolean
     access_application_id?: boolean
     parent_account_id?: boolean
-    parent_portfolio_id?: boolean
     isTemporary?: boolean
     status?: boolean
     details?: boolean
-    parentPortfolio?: boolean | Asset$parentPortfolioArgs<ExtArgs>
     parentAccount?: boolean | Asset$parentAccountArgs<ExtArgs>
     childAccount?: boolean | Asset$childAccountArgs<ExtArgs>
     childConnection?: boolean | Asset$childConnectionArgs<ExtArgs>
-    childPortfolio?: boolean | Asset$childPortfolioArgs<ExtArgs>
     childApplication?: boolean | Asset$childApplicationArgs<ExtArgs>
   }, ExtArgs["result"]["asset"]>
 
@@ -29192,19 +27797,15 @@ export namespace Prisma {
     id?: boolean
     access_type?: boolean
     member_account_id?: boolean
-    member_portfolio_id?: boolean
     member_connection_id?: boolean
     access_application_id?: boolean
     parent_account_id?: boolean
-    parent_portfolio_id?: boolean
     isTemporary?: boolean
     status?: boolean
     details?: boolean
-    parentPortfolio?: boolean | Asset$parentPortfolioArgs<ExtArgs>
     parentAccount?: boolean | Asset$parentAccountArgs<ExtArgs>
     childAccount?: boolean | Asset$childAccountArgs<ExtArgs>
     childConnection?: boolean | Asset$childConnectionArgs<ExtArgs>
-    childPortfolio?: boolean | Asset$childPortfolioArgs<ExtArgs>
     childApplication?: boolean | Asset$childApplicationArgs<ExtArgs>
   }, ExtArgs["result"]["asset"]>
 
@@ -29212,23 +27813,19 @@ export namespace Prisma {
     id?: boolean
     access_type?: boolean
     member_account_id?: boolean
-    member_portfolio_id?: boolean
     member_connection_id?: boolean
     access_application_id?: boolean
     parent_account_id?: boolean
-    parent_portfolio_id?: boolean
     isTemporary?: boolean
     status?: boolean
     details?: boolean
   }
 
-  export type AssetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "access_type" | "member_account_id" | "member_portfolio_id" | "member_connection_id" | "access_application_id" | "parent_account_id" | "parent_portfolio_id" | "isTemporary" | "status" | "details", ExtArgs["result"]["asset"]>
+  export type AssetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "access_type" | "member_account_id" | "member_connection_id" | "access_application_id" | "parent_account_id" | "isTemporary" | "status" | "details", ExtArgs["result"]["asset"]>
   export type AssetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    parentPortfolio?: boolean | Asset$parentPortfolioArgs<ExtArgs>
     parentAccount?: boolean | Asset$parentAccountArgs<ExtArgs>
     childAccount?: boolean | Asset$childAccountArgs<ExtArgs>
     childConnection?: boolean | Asset$childConnectionArgs<ExtArgs>
-    childPortfolio?: boolean | Asset$childPortfolioArgs<ExtArgs>
     childApplication?: boolean | Asset$childApplicationArgs<ExtArgs>
     accessRows?: boolean | Asset$accessRowsArgs<ExtArgs>
     roles?: boolean | Asset$rolesArgs<ExtArgs>
@@ -29236,30 +27833,24 @@ export namespace Prisma {
     _count?: boolean | AssetCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AssetIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    parentPortfolio?: boolean | Asset$parentPortfolioArgs<ExtArgs>
     parentAccount?: boolean | Asset$parentAccountArgs<ExtArgs>
     childAccount?: boolean | Asset$childAccountArgs<ExtArgs>
     childConnection?: boolean | Asset$childConnectionArgs<ExtArgs>
-    childPortfolio?: boolean | Asset$childPortfolioArgs<ExtArgs>
     childApplication?: boolean | Asset$childApplicationArgs<ExtArgs>
   }
   export type AssetIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    parentPortfolio?: boolean | Asset$parentPortfolioArgs<ExtArgs>
     parentAccount?: boolean | Asset$parentAccountArgs<ExtArgs>
     childAccount?: boolean | Asset$childAccountArgs<ExtArgs>
     childConnection?: boolean | Asset$childConnectionArgs<ExtArgs>
-    childPortfolio?: boolean | Asset$childPortfolioArgs<ExtArgs>
     childApplication?: boolean | Asset$childApplicationArgs<ExtArgs>
   }
 
   export type $AssetPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Asset"
     objects: {
-      parentPortfolio: Prisma.$PortfolioPayload<ExtArgs> | null
       parentAccount: Prisma.$AccountPayload<ExtArgs> | null
       childAccount: Prisma.$AccountPayload<ExtArgs> | null
       childConnection: Prisma.$ConnectionPayload<ExtArgs> | null
-      childPortfolio: Prisma.$PortfolioPayload<ExtArgs> | null
       childApplication: Prisma.$ApplicationPayload<ExtArgs> | null
       accessRows: Prisma.$AccessPayload<ExtArgs>[]
       roles: Prisma.$RolePayload<ExtArgs>[]
@@ -29269,11 +27860,9 @@ export namespace Prisma {
       id: string
       access_type: $Enums.AssetType
       member_account_id: string | null
-      member_portfolio_id: string | null
       member_connection_id: string | null
       access_application_id: string | null
       parent_account_id: string | null
-      parent_portfolio_id: string | null
       isTemporary: Date | null
       status: string
       details: Prisma.JsonValue | null
@@ -29671,11 +28260,9 @@ export namespace Prisma {
    */
   export interface Prisma__AssetClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    parentPortfolio<T extends Asset$parentPortfolioArgs<ExtArgs> = {}>(args?: Subset<T, Asset$parentPortfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     parentAccount<T extends Asset$parentAccountArgs<ExtArgs> = {}>(args?: Subset<T, Asset$parentAccountArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     childAccount<T extends Asset$childAccountArgs<ExtArgs> = {}>(args?: Subset<T, Asset$childAccountArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     childConnection<T extends Asset$childConnectionArgs<ExtArgs> = {}>(args?: Subset<T, Asset$childConnectionArgs<ExtArgs>>): Prisma__ConnectionClient<$Result.GetResult<Prisma.$ConnectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    childPortfolio<T extends Asset$childPortfolioArgs<ExtArgs> = {}>(args?: Subset<T, Asset$childPortfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     childApplication<T extends Asset$childApplicationArgs<ExtArgs> = {}>(args?: Subset<T, Asset$childApplicationArgs<ExtArgs>>): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     accessRows<T extends Asset$accessRowsArgs<ExtArgs> = {}>(args?: Subset<T, Asset$accessRowsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     roles<T extends Asset$rolesArgs<ExtArgs> = {}>(args?: Subset<T, Asset$rolesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -29712,11 +28299,9 @@ export namespace Prisma {
     readonly id: FieldRef<"Asset", 'String'>
     readonly access_type: FieldRef<"Asset", 'AssetType'>
     readonly member_account_id: FieldRef<"Asset", 'String'>
-    readonly member_portfolio_id: FieldRef<"Asset", 'String'>
     readonly member_connection_id: FieldRef<"Asset", 'String'>
     readonly access_application_id: FieldRef<"Asset", 'String'>
     readonly parent_account_id: FieldRef<"Asset", 'String'>
-    readonly parent_portfolio_id: FieldRef<"Asset", 'String'>
     readonly isTemporary: FieldRef<"Asset", 'DateTime'>
     readonly status: FieldRef<"Asset", 'String'>
     readonly details: FieldRef<"Asset", 'Json'>
@@ -30116,25 +28701,6 @@ export namespace Prisma {
   }
 
   /**
-   * Asset.parentPortfolio
-   */
-  export type Asset$parentPortfolioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Portfolio
-     */
-    select?: PortfolioSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Portfolio
-     */
-    omit?: PortfolioOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PortfolioInclude<ExtArgs> | null
-    where?: PortfolioWhereInput
-  }
-
-  /**
    * Asset.parentAccount
    */
   export type Asset$parentAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -30189,25 +28755,6 @@ export namespace Prisma {
      */
     include?: ConnectionInclude<ExtArgs> | null
     where?: ConnectionWhereInput
-  }
-
-  /**
-   * Asset.childPortfolio
-   */
-  export type Asset$childPortfolioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Portfolio
-     */
-    select?: PortfolioSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Portfolio
-     */
-    omit?: PortfolioOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PortfolioInclude<ExtArgs> | null
-    where?: PortfolioWhereInput
   }
 
   /**
@@ -30335,7 +28882,6 @@ export namespace Prisma {
     memberType: string | null
     memberAccountId: string | null
     parentAccountId: string | null
-    parentPortfolioId: string | null
     status: string | null
     isTemporary: Date | null
   }
@@ -30345,7 +28891,6 @@ export namespace Prisma {
     memberType: string | null
     memberAccountId: string | null
     parentAccountId: string | null
-    parentPortfolioId: string | null
     status: string | null
     isTemporary: Date | null
   }
@@ -30355,7 +28900,6 @@ export namespace Prisma {
     memberType: number
     memberAccountId: number
     parentAccountId: number
-    parentPortfolioId: number
     status: number
     isTemporary: number
     details: number
@@ -30368,7 +28912,6 @@ export namespace Prisma {
     memberType?: true
     memberAccountId?: true
     parentAccountId?: true
-    parentPortfolioId?: true
     status?: true
     isTemporary?: true
   }
@@ -30378,7 +28921,6 @@ export namespace Prisma {
     memberType?: true
     memberAccountId?: true
     parentAccountId?: true
-    parentPortfolioId?: true
     status?: true
     isTemporary?: true
   }
@@ -30388,7 +28930,6 @@ export namespace Prisma {
     memberType?: true
     memberAccountId?: true
     parentAccountId?: true
-    parentPortfolioId?: true
     status?: true
     isTemporary?: true
     details?: true
@@ -30472,7 +29013,6 @@ export namespace Prisma {
     memberType: string
     memberAccountId: string | null
     parentAccountId: string | null
-    parentPortfolioId: string | null
     status: string
     isTemporary: Date | null
     details: JsonValue | null
@@ -30500,13 +29040,11 @@ export namespace Prisma {
     memberType?: boolean
     memberAccountId?: boolean
     parentAccountId?: boolean
-    parentPortfolioId?: boolean
     status?: boolean
     isTemporary?: boolean
     details?: boolean
     memberAccount?: boolean | Member$memberAccountArgs<ExtArgs>
     parentAccount?: boolean | Member$parentAccountArgs<ExtArgs>
-    parentPortfolio?: boolean | Member$parentPortfolioArgs<ExtArgs>
     accessRows?: boolean | Member$accessRowsArgs<ExtArgs>
     roles?: boolean | Member$rolesArgs<ExtArgs>
     _count?: boolean | MemberCountOutputTypeDefaultArgs<ExtArgs>
@@ -30517,13 +29055,11 @@ export namespace Prisma {
     memberType?: boolean
     memberAccountId?: boolean
     parentAccountId?: boolean
-    parentPortfolioId?: boolean
     status?: boolean
     isTemporary?: boolean
     details?: boolean
     memberAccount?: boolean | Member$memberAccountArgs<ExtArgs>
     parentAccount?: boolean | Member$parentAccountArgs<ExtArgs>
-    parentPortfolio?: boolean | Member$parentPortfolioArgs<ExtArgs>
   }, ExtArgs["result"]["member"]>
 
   export type MemberSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -30531,13 +29067,11 @@ export namespace Prisma {
     memberType?: boolean
     memberAccountId?: boolean
     parentAccountId?: boolean
-    parentPortfolioId?: boolean
     status?: boolean
     isTemporary?: boolean
     details?: boolean
     memberAccount?: boolean | Member$memberAccountArgs<ExtArgs>
     parentAccount?: boolean | Member$parentAccountArgs<ExtArgs>
-    parentPortfolio?: boolean | Member$parentPortfolioArgs<ExtArgs>
   }, ExtArgs["result"]["member"]>
 
   export type MemberSelectScalar = {
@@ -30545,17 +29079,15 @@ export namespace Prisma {
     memberType?: boolean
     memberAccountId?: boolean
     parentAccountId?: boolean
-    parentPortfolioId?: boolean
     status?: boolean
     isTemporary?: boolean
     details?: boolean
   }
 
-  export type MemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "memberType" | "memberAccountId" | "parentAccountId" | "parentPortfolioId" | "status" | "isTemporary" | "details", ExtArgs["result"]["member"]>
+  export type MemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "memberType" | "memberAccountId" | "parentAccountId" | "status" | "isTemporary" | "details", ExtArgs["result"]["member"]>
   export type MemberInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     memberAccount?: boolean | Member$memberAccountArgs<ExtArgs>
     parentAccount?: boolean | Member$parentAccountArgs<ExtArgs>
-    parentPortfolio?: boolean | Member$parentPortfolioArgs<ExtArgs>
     accessRows?: boolean | Member$accessRowsArgs<ExtArgs>
     roles?: boolean | Member$rolesArgs<ExtArgs>
     _count?: boolean | MemberCountOutputTypeDefaultArgs<ExtArgs>
@@ -30563,12 +29095,10 @@ export namespace Prisma {
   export type MemberIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     memberAccount?: boolean | Member$memberAccountArgs<ExtArgs>
     parentAccount?: boolean | Member$parentAccountArgs<ExtArgs>
-    parentPortfolio?: boolean | Member$parentPortfolioArgs<ExtArgs>
   }
   export type MemberIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     memberAccount?: boolean | Member$memberAccountArgs<ExtArgs>
     parentAccount?: boolean | Member$parentAccountArgs<ExtArgs>
-    parentPortfolio?: boolean | Member$parentPortfolioArgs<ExtArgs>
   }
 
   export type $MemberPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -30576,7 +29106,6 @@ export namespace Prisma {
     objects: {
       memberAccount: Prisma.$AccountPayload<ExtArgs> | null
       parentAccount: Prisma.$AccountPayload<ExtArgs> | null
-      parentPortfolio: Prisma.$PortfolioPayload<ExtArgs> | null
       accessRows: Prisma.$AccessPayload<ExtArgs>[]
       roles: Prisma.$RolePayload<ExtArgs>[]
     }
@@ -30585,7 +29114,6 @@ export namespace Prisma {
       memberType: string
       memberAccountId: string | null
       parentAccountId: string | null
-      parentPortfolioId: string | null
       status: string
       isTemporary: Date | null
       details: Prisma.JsonValue | null
@@ -30985,7 +29513,6 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     memberAccount<T extends Member$memberAccountArgs<ExtArgs> = {}>(args?: Subset<T, Member$memberAccountArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     parentAccount<T extends Member$parentAccountArgs<ExtArgs> = {}>(args?: Subset<T, Member$parentAccountArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    parentPortfolio<T extends Member$parentPortfolioArgs<ExtArgs> = {}>(args?: Subset<T, Member$parentPortfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     accessRows<T extends Member$accessRowsArgs<ExtArgs> = {}>(args?: Subset<T, Member$accessRowsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     roles<T extends Member$rolesArgs<ExtArgs> = {}>(args?: Subset<T, Member$rolesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -31021,7 +29548,6 @@ export namespace Prisma {
     readonly memberType: FieldRef<"Member", 'String'>
     readonly memberAccountId: FieldRef<"Member", 'String'>
     readonly parentAccountId: FieldRef<"Member", 'String'>
-    readonly parentPortfolioId: FieldRef<"Member", 'String'>
     readonly status: FieldRef<"Member", 'String'>
     readonly isTemporary: FieldRef<"Member", 'DateTime'>
     readonly details: FieldRef<"Member", 'Json'>
@@ -31459,25 +29985,6 @@ export namespace Prisma {
   }
 
   /**
-   * Member.parentPortfolio
-   */
-  export type Member$parentPortfolioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Portfolio
-     */
-    select?: PortfolioSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Portfolio
-     */
-    omit?: PortfolioOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PortfolioInclude<ExtArgs> | null
-    where?: PortfolioWhereInput
-  }
-
-  /**
    * Member.accessRows
    */
   export type Member$accessRowsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -31560,11 +30067,9 @@ export namespace Prisma {
     memberId: string | null
     memberAccountId: string | null
     parentAccountId: string | null
-    parentPortfolioId: string | null
     assetId: string | null
     assetAccountId: string | null
     assetConnectionId: string | null
-    assetPortfolioId: string | null
     assetApplicationId: string | null
     accessApplicationId: string | null
     isTemporary: Date | null
@@ -31578,11 +30083,9 @@ export namespace Prisma {
     memberId: string | null
     memberAccountId: string | null
     parentAccountId: string | null
-    parentPortfolioId: string | null
     assetId: string | null
     assetAccountId: string | null
     assetConnectionId: string | null
-    assetPortfolioId: string | null
     assetApplicationId: string | null
     accessApplicationId: string | null
     isTemporary: Date | null
@@ -31596,11 +30099,9 @@ export namespace Prisma {
     memberId: number
     memberAccountId: number
     parentAccountId: number
-    parentPortfolioId: number
     assetId: number
     assetAccountId: number
     assetConnectionId: number
-    assetPortfolioId: number
     assetApplicationId: number
     accessApplicationId: number
     isTemporary: number
@@ -31617,11 +30118,9 @@ export namespace Prisma {
     memberId?: true
     memberAccountId?: true
     parentAccountId?: true
-    parentPortfolioId?: true
     assetId?: true
     assetAccountId?: true
     assetConnectionId?: true
-    assetPortfolioId?: true
     assetApplicationId?: true
     accessApplicationId?: true
     isTemporary?: true
@@ -31635,11 +30134,9 @@ export namespace Prisma {
     memberId?: true
     memberAccountId?: true
     parentAccountId?: true
-    parentPortfolioId?: true
     assetId?: true
     assetAccountId?: true
     assetConnectionId?: true
-    assetPortfolioId?: true
     assetApplicationId?: true
     accessApplicationId?: true
     isTemporary?: true
@@ -31653,11 +30150,9 @@ export namespace Prisma {
     memberId?: true
     memberAccountId?: true
     parentAccountId?: true
-    parentPortfolioId?: true
     assetId?: true
     assetAccountId?: true
     assetConnectionId?: true
-    assetPortfolioId?: true
     assetApplicationId?: true
     accessApplicationId?: true
     isTemporary?: true
@@ -31745,11 +30240,9 @@ export namespace Prisma {
     memberId: string
     memberAccountId: string | null
     parentAccountId: string | null
-    parentPortfolioId: string | null
     assetId: string
     assetAccountId: string | null
     assetConnectionId: string | null
-    assetPortfolioId: string | null
     assetApplicationId: string | null
     accessApplicationId: string | null
     isTemporary: Date | null
@@ -31781,11 +30274,9 @@ export namespace Prisma {
     memberId?: boolean
     memberAccountId?: boolean
     parentAccountId?: boolean
-    parentPortfolioId?: boolean
     assetId?: boolean
     assetAccountId?: boolean
     assetConnectionId?: boolean
-    assetPortfolioId?: boolean
     assetApplicationId?: boolean
     accessApplicationId?: boolean
     isTemporary?: boolean
@@ -31795,11 +30286,9 @@ export namespace Prisma {
     member?: boolean | MemberDefaultArgs<ExtArgs>
     memberAccount?: boolean | Access$memberAccountArgs<ExtArgs>
     parentAccount?: boolean | Access$parentAccountArgs<ExtArgs>
-    parentPortfolio?: boolean | Access$parentPortfolioArgs<ExtArgs>
     asset?: boolean | AssetDefaultArgs<ExtArgs>
     assetAccount?: boolean | Access$assetAccountArgs<ExtArgs>
     assetConnection?: boolean | Access$assetConnectionArgs<ExtArgs>
-    assetPortfolio?: boolean | Access$assetPortfolioArgs<ExtArgs>
     assetApplication?: boolean | Access$assetApplicationArgs<ExtArgs>
     accessApplication?: boolean | Access$accessApplicationArgs<ExtArgs>
     role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
@@ -31811,11 +30300,9 @@ export namespace Prisma {
     memberId?: boolean
     memberAccountId?: boolean
     parentAccountId?: boolean
-    parentPortfolioId?: boolean
     assetId?: boolean
     assetAccountId?: boolean
     assetConnectionId?: boolean
-    assetPortfolioId?: boolean
     assetApplicationId?: boolean
     accessApplicationId?: boolean
     isTemporary?: boolean
@@ -31825,11 +30312,9 @@ export namespace Prisma {
     member?: boolean | MemberDefaultArgs<ExtArgs>
     memberAccount?: boolean | Access$memberAccountArgs<ExtArgs>
     parentAccount?: boolean | Access$parentAccountArgs<ExtArgs>
-    parentPortfolio?: boolean | Access$parentPortfolioArgs<ExtArgs>
     asset?: boolean | AssetDefaultArgs<ExtArgs>
     assetAccount?: boolean | Access$assetAccountArgs<ExtArgs>
     assetConnection?: boolean | Access$assetConnectionArgs<ExtArgs>
-    assetPortfolio?: boolean | Access$assetPortfolioArgs<ExtArgs>
     assetApplication?: boolean | Access$assetApplicationArgs<ExtArgs>
     accessApplication?: boolean | Access$accessApplicationArgs<ExtArgs>
     role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
@@ -31841,11 +30326,9 @@ export namespace Prisma {
     memberId?: boolean
     memberAccountId?: boolean
     parentAccountId?: boolean
-    parentPortfolioId?: boolean
     assetId?: boolean
     assetAccountId?: boolean
     assetConnectionId?: boolean
-    assetPortfolioId?: boolean
     assetApplicationId?: boolean
     accessApplicationId?: boolean
     isTemporary?: boolean
@@ -31855,11 +30338,9 @@ export namespace Prisma {
     member?: boolean | MemberDefaultArgs<ExtArgs>
     memberAccount?: boolean | Access$memberAccountArgs<ExtArgs>
     parentAccount?: boolean | Access$parentAccountArgs<ExtArgs>
-    parentPortfolio?: boolean | Access$parentPortfolioArgs<ExtArgs>
     asset?: boolean | AssetDefaultArgs<ExtArgs>
     assetAccount?: boolean | Access$assetAccountArgs<ExtArgs>
     assetConnection?: boolean | Access$assetConnectionArgs<ExtArgs>
-    assetPortfolio?: boolean | Access$assetPortfolioArgs<ExtArgs>
     assetApplication?: boolean | Access$assetApplicationArgs<ExtArgs>
     accessApplication?: boolean | Access$accessApplicationArgs<ExtArgs>
     role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
@@ -31871,11 +30352,9 @@ export namespace Prisma {
     memberId?: boolean
     memberAccountId?: boolean
     parentAccountId?: boolean
-    parentPortfolioId?: boolean
     assetId?: boolean
     assetAccountId?: boolean
     assetConnectionId?: boolean
-    assetPortfolioId?: boolean
     assetApplicationId?: boolean
     accessApplicationId?: boolean
     isTemporary?: boolean
@@ -31884,16 +30363,14 @@ export namespace Prisma {
     details?: boolean
   }
 
-  export type AccessOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "accessType" | "memberId" | "memberAccountId" | "parentAccountId" | "parentPortfolioId" | "assetId" | "assetAccountId" | "assetConnectionId" | "assetPortfolioId" | "assetApplicationId" | "accessApplicationId" | "isTemporary" | "roleId" | "status" | "details", ExtArgs["result"]["access"]>
+  export type AccessOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "accessType" | "memberId" | "memberAccountId" | "parentAccountId" | "assetId" | "assetAccountId" | "assetConnectionId" | "assetApplicationId" | "accessApplicationId" | "isTemporary" | "roleId" | "status" | "details", ExtArgs["result"]["access"]>
   export type AccessInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     member?: boolean | MemberDefaultArgs<ExtArgs>
     memberAccount?: boolean | Access$memberAccountArgs<ExtArgs>
     parentAccount?: boolean | Access$parentAccountArgs<ExtArgs>
-    parentPortfolio?: boolean | Access$parentPortfolioArgs<ExtArgs>
     asset?: boolean | AssetDefaultArgs<ExtArgs>
     assetAccount?: boolean | Access$assetAccountArgs<ExtArgs>
     assetConnection?: boolean | Access$assetConnectionArgs<ExtArgs>
-    assetPortfolio?: boolean | Access$assetPortfolioArgs<ExtArgs>
     assetApplication?: boolean | Access$assetApplicationArgs<ExtArgs>
     accessApplication?: boolean | Access$accessApplicationArgs<ExtArgs>
     role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
@@ -31902,11 +30379,9 @@ export namespace Prisma {
     member?: boolean | MemberDefaultArgs<ExtArgs>
     memberAccount?: boolean | Access$memberAccountArgs<ExtArgs>
     parentAccount?: boolean | Access$parentAccountArgs<ExtArgs>
-    parentPortfolio?: boolean | Access$parentPortfolioArgs<ExtArgs>
     asset?: boolean | AssetDefaultArgs<ExtArgs>
     assetAccount?: boolean | Access$assetAccountArgs<ExtArgs>
     assetConnection?: boolean | Access$assetConnectionArgs<ExtArgs>
-    assetPortfolio?: boolean | Access$assetPortfolioArgs<ExtArgs>
     assetApplication?: boolean | Access$assetApplicationArgs<ExtArgs>
     accessApplication?: boolean | Access$accessApplicationArgs<ExtArgs>
     role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
@@ -31915,11 +30390,9 @@ export namespace Prisma {
     member?: boolean | MemberDefaultArgs<ExtArgs>
     memberAccount?: boolean | Access$memberAccountArgs<ExtArgs>
     parentAccount?: boolean | Access$parentAccountArgs<ExtArgs>
-    parentPortfolio?: boolean | Access$parentPortfolioArgs<ExtArgs>
     asset?: boolean | AssetDefaultArgs<ExtArgs>
     assetAccount?: boolean | Access$assetAccountArgs<ExtArgs>
     assetConnection?: boolean | Access$assetConnectionArgs<ExtArgs>
-    assetPortfolio?: boolean | Access$assetPortfolioArgs<ExtArgs>
     assetApplication?: boolean | Access$assetApplicationArgs<ExtArgs>
     accessApplication?: boolean | Access$accessApplicationArgs<ExtArgs>
     role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
@@ -31931,11 +30404,9 @@ export namespace Prisma {
       member: Prisma.$MemberPayload<ExtArgs>
       memberAccount: Prisma.$AccountPayload<ExtArgs> | null
       parentAccount: Prisma.$AccountPayload<ExtArgs> | null
-      parentPortfolio: Prisma.$PortfolioPayload<ExtArgs> | null
       asset: Prisma.$AssetPayload<ExtArgs>
       assetAccount: Prisma.$AccountPayload<ExtArgs> | null
       assetConnection: Prisma.$ConnectionPayload<ExtArgs> | null
-      assetPortfolio: Prisma.$PortfolioPayload<ExtArgs> | null
       assetApplication: Prisma.$ApplicationPayload<ExtArgs> | null
       accessApplication: Prisma.$ApplicationPayload<ExtArgs> | null
       role: Prisma.$AuthzRolePayload<ExtArgs>
@@ -31946,11 +30417,9 @@ export namespace Prisma {
       memberId: string
       memberAccountId: string | null
       parentAccountId: string | null
-      parentPortfolioId: string | null
       assetId: string
       assetAccountId: string | null
       assetConnectionId: string | null
-      assetPortfolioId: string | null
       assetApplicationId: string | null
       accessApplicationId: string | null
       isTemporary: Date | null
@@ -32354,11 +30823,9 @@ export namespace Prisma {
     member<T extends MemberDefaultArgs<ExtArgs> = {}>(args?: Subset<T, MemberDefaultArgs<ExtArgs>>): Prisma__MemberClient<$Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     memberAccount<T extends Access$memberAccountArgs<ExtArgs> = {}>(args?: Subset<T, Access$memberAccountArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     parentAccount<T extends Access$parentAccountArgs<ExtArgs> = {}>(args?: Subset<T, Access$parentAccountArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    parentPortfolio<T extends Access$parentPortfolioArgs<ExtArgs> = {}>(args?: Subset<T, Access$parentPortfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     assetAccount<T extends Access$assetAccountArgs<ExtArgs> = {}>(args?: Subset<T, Access$assetAccountArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     assetConnection<T extends Access$assetConnectionArgs<ExtArgs> = {}>(args?: Subset<T, Access$assetConnectionArgs<ExtArgs>>): Prisma__ConnectionClient<$Result.GetResult<Prisma.$ConnectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    assetPortfolio<T extends Access$assetPortfolioArgs<ExtArgs> = {}>(args?: Subset<T, Access$assetPortfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     assetApplication<T extends Access$assetApplicationArgs<ExtArgs> = {}>(args?: Subset<T, Access$assetApplicationArgs<ExtArgs>>): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     accessApplication<T extends Access$accessApplicationArgs<ExtArgs> = {}>(args?: Subset<T, Access$accessApplicationArgs<ExtArgs>>): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     role<T extends AuthzRoleDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRoleDefaultArgs<ExtArgs>>): Prisma__AuthzRoleClient<$Result.GetResult<Prisma.$AuthzRolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
@@ -32396,11 +30863,9 @@ export namespace Prisma {
     readonly memberId: FieldRef<"Access", 'String'>
     readonly memberAccountId: FieldRef<"Access", 'String'>
     readonly parentAccountId: FieldRef<"Access", 'String'>
-    readonly parentPortfolioId: FieldRef<"Access", 'String'>
     readonly assetId: FieldRef<"Access", 'String'>
     readonly assetAccountId: FieldRef<"Access", 'String'>
     readonly assetConnectionId: FieldRef<"Access", 'String'>
-    readonly assetPortfolioId: FieldRef<"Access", 'String'>
     readonly assetApplicationId: FieldRef<"Access", 'String'>
     readonly accessApplicationId: FieldRef<"Access", 'String'>
     readonly isTemporary: FieldRef<"Access", 'DateTime'>
@@ -32841,25 +31306,6 @@ export namespace Prisma {
   }
 
   /**
-   * Access.parentPortfolio
-   */
-  export type Access$parentPortfolioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Portfolio
-     */
-    select?: PortfolioSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Portfolio
-     */
-    omit?: PortfolioOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PortfolioInclude<ExtArgs> | null
-    where?: PortfolioWhereInput
-  }
-
-  /**
    * Access.assetAccount
    */
   export type Access$assetAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -32895,25 +31341,6 @@ export namespace Prisma {
      */
     include?: ConnectionInclude<ExtArgs> | null
     where?: ConnectionWhereInput
-  }
-
-  /**
-   * Access.assetPortfolio
-   */
-  export type Access$assetPortfolioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Portfolio
-     */
-    select?: PortfolioSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Portfolio
-     */
-    omit?: PortfolioOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PortfolioInclude<ExtArgs> | null
-    where?: PortfolioWhereInput
   }
 
   /**
@@ -42171,7 +40598,6 @@ export namespace Prisma {
     asset_id: string | null
     account_id: string | null
     role_id: string | null
-    portfolio_id: string | null
     app_id: string | null
     asset_type: string | null
   }
@@ -42181,7 +40607,6 @@ export namespace Prisma {
     asset_id: string | null
     account_id: string | null
     role_id: string | null
-    portfolio_id: string | null
     app_id: string | null
     asset_type: string | null
   }
@@ -42191,7 +40616,6 @@ export namespace Prisma {
     asset_id: number
     account_id: number
     role_id: number
-    portfolio_id: number
     app_id: number
     asset_type: number
     _all: number
@@ -42203,7 +40627,6 @@ export namespace Prisma {
     asset_id?: true
     account_id?: true
     role_id?: true
-    portfolio_id?: true
     app_id?: true
     asset_type?: true
   }
@@ -42213,7 +40636,6 @@ export namespace Prisma {
     asset_id?: true
     account_id?: true
     role_id?: true
-    portfolio_id?: true
     app_id?: true
     asset_type?: true
   }
@@ -42223,7 +40645,6 @@ export namespace Prisma {
     asset_id?: true
     account_id?: true
     role_id?: true
-    portfolio_id?: true
     app_id?: true
     asset_type?: true
     _all?: true
@@ -42306,7 +40727,6 @@ export namespace Prisma {
     asset_id: string
     account_id: string
     role_id: string
-    portfolio_id: string | null
     app_id: string
     asset_type: string | null
     _count: AuthzAssetsAccessGrantCountAggregateOutputType | null
@@ -42333,13 +40753,11 @@ export namespace Prisma {
     asset_id?: boolean
     account_id?: boolean
     role_id?: boolean
-    portfolio_id?: boolean
     app_id?: boolean
     asset_type?: boolean
     asset?: boolean | AssetDefaultArgs<ExtArgs>
     account?: boolean | AccountDefaultArgs<ExtArgs>
     role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
-    portfolio?: boolean | AuthzAssetsAccessGrant$portfolioArgs<ExtArgs>
   }, ExtArgs["result"]["authzAssetsAccessGrant"]>
 
   export type AuthzAssetsAccessGrantSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -42347,13 +40765,11 @@ export namespace Prisma {
     asset_id?: boolean
     account_id?: boolean
     role_id?: boolean
-    portfolio_id?: boolean
     app_id?: boolean
     asset_type?: boolean
     asset?: boolean | AssetDefaultArgs<ExtArgs>
     account?: boolean | AccountDefaultArgs<ExtArgs>
     role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
-    portfolio?: boolean | AuthzAssetsAccessGrant$portfolioArgs<ExtArgs>
   }, ExtArgs["result"]["authzAssetsAccessGrant"]>
 
   export type AuthzAssetsAccessGrantSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -42361,13 +40777,11 @@ export namespace Prisma {
     asset_id?: boolean
     account_id?: boolean
     role_id?: boolean
-    portfolio_id?: boolean
     app_id?: boolean
     asset_type?: boolean
     asset?: boolean | AssetDefaultArgs<ExtArgs>
     account?: boolean | AccountDefaultArgs<ExtArgs>
     role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
-    portfolio?: boolean | AuthzAssetsAccessGrant$portfolioArgs<ExtArgs>
   }, ExtArgs["result"]["authzAssetsAccessGrant"]>
 
   export type AuthzAssetsAccessGrantSelectScalar = {
@@ -42375,29 +40789,25 @@ export namespace Prisma {
     asset_id?: boolean
     account_id?: boolean
     role_id?: boolean
-    portfolio_id?: boolean
     app_id?: boolean
     asset_type?: boolean
   }
 
-  export type AuthzAssetsAccessGrantOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "asset_id" | "account_id" | "role_id" | "portfolio_id" | "app_id" | "asset_type", ExtArgs["result"]["authzAssetsAccessGrant"]>
+  export type AuthzAssetsAccessGrantOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "asset_id" | "account_id" | "role_id" | "app_id" | "asset_type", ExtArgs["result"]["authzAssetsAccessGrant"]>
   export type AuthzAssetsAccessGrantInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     asset?: boolean | AssetDefaultArgs<ExtArgs>
     account?: boolean | AccountDefaultArgs<ExtArgs>
     role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
-    portfolio?: boolean | AuthzAssetsAccessGrant$portfolioArgs<ExtArgs>
   }
   export type AuthzAssetsAccessGrantIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     asset?: boolean | AssetDefaultArgs<ExtArgs>
     account?: boolean | AccountDefaultArgs<ExtArgs>
     role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
-    portfolio?: boolean | AuthzAssetsAccessGrant$portfolioArgs<ExtArgs>
   }
   export type AuthzAssetsAccessGrantIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     asset?: boolean | AssetDefaultArgs<ExtArgs>
     account?: boolean | AccountDefaultArgs<ExtArgs>
     role?: boolean | AuthzRoleDefaultArgs<ExtArgs>
-    portfolio?: boolean | AuthzAssetsAccessGrant$portfolioArgs<ExtArgs>
   }
 
   export type $AuthzAssetsAccessGrantPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -42406,14 +40816,12 @@ export namespace Prisma {
       asset: Prisma.$AssetPayload<ExtArgs>
       account: Prisma.$AccountPayload<ExtArgs>
       role: Prisma.$AuthzRolePayload<ExtArgs>
-      portfolio: Prisma.$PortfolioPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       asset_id: string
       account_id: string
       role_id: string
-      portfolio_id: string | null
       app_id: string
       asset_type: string | null
     }, ExtArgs["result"]["authzAssetsAccessGrant"]>
@@ -42813,7 +41221,6 @@ export namespace Prisma {
     asset<T extends AssetDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssetDefaultArgs<ExtArgs>>): Prisma__AssetClient<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     account<T extends AccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AccountDefaultArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     role<T extends AuthzRoleDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AuthzRoleDefaultArgs<ExtArgs>>): Prisma__AuthzRoleClient<$Result.GetResult<Prisma.$AuthzRolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    portfolio<T extends AuthzAssetsAccessGrant$portfolioArgs<ExtArgs> = {}>(args?: Subset<T, AuthzAssetsAccessGrant$portfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -42847,7 +41254,6 @@ export namespace Prisma {
     readonly asset_id: FieldRef<"AuthzAssetsAccessGrant", 'String'>
     readonly account_id: FieldRef<"AuthzAssetsAccessGrant", 'String'>
     readonly role_id: FieldRef<"AuthzAssetsAccessGrant", 'String'>
-    readonly portfolio_id: FieldRef<"AuthzAssetsAccessGrant", 'String'>
     readonly app_id: FieldRef<"AuthzAssetsAccessGrant", 'String'>
     readonly asset_type: FieldRef<"AuthzAssetsAccessGrant", 'String'>
   }
@@ -43243,25 +41649,6 @@ export namespace Prisma {
      * Limit how many AuthzAssetsAccessGrants to delete.
      */
     limit?: number
-  }
-
-  /**
-   * AuthzAssetsAccessGrant.portfolio
-   */
-  export type AuthzAssetsAccessGrant$portfolioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Portfolio
-     */
-    select?: PortfolioSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Portfolio
-     */
-    omit?: PortfolioOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PortfolioInclude<ExtArgs> | null
-    where?: PortfolioWhereInput
   }
 
   /**
@@ -45758,25 +44145,13 @@ export namespace Prisma {
   export type ApplicationDevLogScalarFieldEnum = (typeof ApplicationDevLogScalarFieldEnum)[keyof typeof ApplicationDevLogScalarFieldEnum]
 
 
-  export const PortfolioScalarFieldEnum: {
-    id: 'id',
-    name: 'name',
-    description: 'description',
-    dateCreated: 'dateCreated'
-  };
-
-  export type PortfolioScalarFieldEnum = (typeof PortfolioScalarFieldEnum)[keyof typeof PortfolioScalarFieldEnum]
-
-
   export const AssetScalarFieldEnum: {
     id: 'id',
     access_type: 'access_type',
     member_account_id: 'member_account_id',
-    member_portfolio_id: 'member_portfolio_id',
     member_connection_id: 'member_connection_id',
     access_application_id: 'access_application_id',
     parent_account_id: 'parent_account_id',
-    parent_portfolio_id: 'parent_portfolio_id',
     isTemporary: 'isTemporary',
     status: 'status',
     details: 'details'
@@ -45790,7 +44165,6 @@ export namespace Prisma {
     memberType: 'memberType',
     memberAccountId: 'memberAccountId',
     parentAccountId: 'parentAccountId',
-    parentPortfolioId: 'parentPortfolioId',
     status: 'status',
     isTemporary: 'isTemporary',
     details: 'details'
@@ -45805,11 +44179,9 @@ export namespace Prisma {
     memberId: 'memberId',
     memberAccountId: 'memberAccountId',
     parentAccountId: 'parentAccountId',
-    parentPortfolioId: 'parentPortfolioId',
     assetId: 'assetId',
     assetAccountId: 'assetAccountId',
     assetConnectionId: 'assetConnectionId',
-    assetPortfolioId: 'assetPortfolioId',
     assetApplicationId: 'assetApplicationId',
     accessApplicationId: 'accessApplicationId',
     isTemporary: 'isTemporary',
@@ -45937,7 +44309,6 @@ export namespace Prisma {
     asset_id: 'asset_id',
     account_id: 'account_id',
     role_id: 'role_id',
-    portfolio_id: 'portfolio_id',
     app_id: 'app_id',
     asset_type: 'asset_type'
   };
@@ -47621,71 +45992,6 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"ApplicationDevLog"> | Date | string
   }
 
-  export type PortfolioWhereInput = {
-    AND?: PortfolioWhereInput | PortfolioWhereInput[]
-    OR?: PortfolioWhereInput[]
-    NOT?: PortfolioWhereInput | PortfolioWhereInput[]
-    id?: StringFilter<"Portfolio"> | string
-    name?: StringFilter<"Portfolio"> | string
-    description?: StringNullableFilter<"Portfolio"> | string | null
-    dateCreated?: DateTimeFilter<"Portfolio"> | Date | string
-    assets?: AssetListRelationFilter
-    childAssets?: AssetListRelationFilter
-    members?: MemberListRelationFilter
-    accessParentRows?: AccessListRelationFilter
-    accessAssetRows?: AccessListRelationFilter
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantListRelationFilter
-  }
-
-  export type PortfolioOrderByWithRelationInput = {
-    id?: SortOrder
-    name?: SortOrder
-    description?: SortOrderInput | SortOrder
-    dateCreated?: SortOrder
-    assets?: AssetOrderByRelationAggregateInput
-    childAssets?: AssetOrderByRelationAggregateInput
-    members?: MemberOrderByRelationAggregateInput
-    accessParentRows?: AccessOrderByRelationAggregateInput
-    accessAssetRows?: AccessOrderByRelationAggregateInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantOrderByRelationAggregateInput
-  }
-
-  export type PortfolioWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    AND?: PortfolioWhereInput | PortfolioWhereInput[]
-    OR?: PortfolioWhereInput[]
-    NOT?: PortfolioWhereInput | PortfolioWhereInput[]
-    name?: StringFilter<"Portfolio"> | string
-    description?: StringNullableFilter<"Portfolio"> | string | null
-    dateCreated?: DateTimeFilter<"Portfolio"> | Date | string
-    assets?: AssetListRelationFilter
-    childAssets?: AssetListRelationFilter
-    members?: MemberListRelationFilter
-    accessParentRows?: AccessListRelationFilter
-    accessAssetRows?: AccessListRelationFilter
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantListRelationFilter
-  }, "id">
-
-  export type PortfolioOrderByWithAggregationInput = {
-    id?: SortOrder
-    name?: SortOrder
-    description?: SortOrderInput | SortOrder
-    dateCreated?: SortOrder
-    _count?: PortfolioCountOrderByAggregateInput
-    _max?: PortfolioMaxOrderByAggregateInput
-    _min?: PortfolioMinOrderByAggregateInput
-  }
-
-  export type PortfolioScalarWhereWithAggregatesInput = {
-    AND?: PortfolioScalarWhereWithAggregatesInput | PortfolioScalarWhereWithAggregatesInput[]
-    OR?: PortfolioScalarWhereWithAggregatesInput[]
-    NOT?: PortfolioScalarWhereWithAggregatesInput | PortfolioScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"Portfolio"> | string
-    name?: StringWithAggregatesFilter<"Portfolio"> | string
-    description?: StringNullableWithAggregatesFilter<"Portfolio"> | string | null
-    dateCreated?: DateTimeWithAggregatesFilter<"Portfolio"> | Date | string
-  }
-
   export type AssetWhereInput = {
     AND?: AssetWhereInput | AssetWhereInput[]
     OR?: AssetWhereInput[]
@@ -47693,19 +45999,15 @@ export namespace Prisma {
     id?: StringFilter<"Asset"> | string
     access_type?: EnumAssetTypeFilter<"Asset"> | $Enums.AssetType
     member_account_id?: StringNullableFilter<"Asset"> | string | null
-    member_portfolio_id?: StringNullableFilter<"Asset"> | string | null
     member_connection_id?: StringNullableFilter<"Asset"> | string | null
     access_application_id?: StringNullableFilter<"Asset"> | string | null
     parent_account_id?: StringNullableFilter<"Asset"> | string | null
-    parent_portfolio_id?: StringNullableFilter<"Asset"> | string | null
     isTemporary?: DateTimeNullableFilter<"Asset"> | Date | string | null
     status?: StringFilter<"Asset"> | string
     details?: JsonNullableFilter<"Asset">
-    parentPortfolio?: XOR<PortfolioNullableScalarRelationFilter, PortfolioWhereInput> | null
     parentAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
     childAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
     childConnection?: XOR<ConnectionNullableScalarRelationFilter, ConnectionWhereInput> | null
-    childPortfolio?: XOR<PortfolioNullableScalarRelationFilter, PortfolioWhereInput> | null
     childApplication?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
     accessRows?: AccessListRelationFilter
     roles?: RoleListRelationFilter
@@ -47716,19 +46018,15 @@ export namespace Prisma {
     id?: SortOrder
     access_type?: SortOrder
     member_account_id?: SortOrderInput | SortOrder
-    member_portfolio_id?: SortOrderInput | SortOrder
     member_connection_id?: SortOrderInput | SortOrder
     access_application_id?: SortOrderInput | SortOrder
     parent_account_id?: SortOrderInput | SortOrder
-    parent_portfolio_id?: SortOrderInput | SortOrder
     isTemporary?: SortOrderInput | SortOrder
     status?: SortOrder
     details?: SortOrderInput | SortOrder
-    parentPortfolio?: PortfolioOrderByWithRelationInput
     parentAccount?: AccountOrderByWithRelationInput
     childAccount?: AccountOrderByWithRelationInput
     childConnection?: ConnectionOrderByWithRelationInput
-    childPortfolio?: PortfolioOrderByWithRelationInput
     childApplication?: ApplicationOrderByWithRelationInput
     accessRows?: AccessOrderByRelationAggregateInput
     roles?: RoleOrderByRelationAggregateInput
@@ -47742,19 +46040,15 @@ export namespace Prisma {
     NOT?: AssetWhereInput | AssetWhereInput[]
     access_type?: EnumAssetTypeFilter<"Asset"> | $Enums.AssetType
     member_account_id?: StringNullableFilter<"Asset"> | string | null
-    member_portfolio_id?: StringNullableFilter<"Asset"> | string | null
     member_connection_id?: StringNullableFilter<"Asset"> | string | null
     access_application_id?: StringNullableFilter<"Asset"> | string | null
     parent_account_id?: StringNullableFilter<"Asset"> | string | null
-    parent_portfolio_id?: StringNullableFilter<"Asset"> | string | null
     isTemporary?: DateTimeNullableFilter<"Asset"> | Date | string | null
     status?: StringFilter<"Asset"> | string
     details?: JsonNullableFilter<"Asset">
-    parentPortfolio?: XOR<PortfolioNullableScalarRelationFilter, PortfolioWhereInput> | null
     parentAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
     childAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
     childConnection?: XOR<ConnectionNullableScalarRelationFilter, ConnectionWhereInput> | null
-    childPortfolio?: XOR<PortfolioNullableScalarRelationFilter, PortfolioWhereInput> | null
     childApplication?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
     accessRows?: AccessListRelationFilter
     roles?: RoleListRelationFilter
@@ -47765,11 +46059,9 @@ export namespace Prisma {
     id?: SortOrder
     access_type?: SortOrder
     member_account_id?: SortOrderInput | SortOrder
-    member_portfolio_id?: SortOrderInput | SortOrder
     member_connection_id?: SortOrderInput | SortOrder
     access_application_id?: SortOrderInput | SortOrder
     parent_account_id?: SortOrderInput | SortOrder
-    parent_portfolio_id?: SortOrderInput | SortOrder
     isTemporary?: SortOrderInput | SortOrder
     status?: SortOrder
     details?: SortOrderInput | SortOrder
@@ -47785,11 +46077,9 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Asset"> | string
     access_type?: EnumAssetTypeWithAggregatesFilter<"Asset"> | $Enums.AssetType
     member_account_id?: StringNullableWithAggregatesFilter<"Asset"> | string | null
-    member_portfolio_id?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     member_connection_id?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     access_application_id?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     parent_account_id?: StringNullableWithAggregatesFilter<"Asset"> | string | null
-    parent_portfolio_id?: StringNullableWithAggregatesFilter<"Asset"> | string | null
     isTemporary?: DateTimeNullableWithAggregatesFilter<"Asset"> | Date | string | null
     status?: StringWithAggregatesFilter<"Asset"> | string
     details?: JsonNullableWithAggregatesFilter<"Asset">
@@ -47803,13 +46093,11 @@ export namespace Prisma {
     memberType?: StringFilter<"Member"> | string
     memberAccountId?: StringNullableFilter<"Member"> | string | null
     parentAccountId?: StringNullableFilter<"Member"> | string | null
-    parentPortfolioId?: StringNullableFilter<"Member"> | string | null
     status?: StringFilter<"Member"> | string
     isTemporary?: DateTimeNullableFilter<"Member"> | Date | string | null
     details?: JsonNullableFilter<"Member">
     memberAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
     parentAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
-    parentPortfolio?: XOR<PortfolioNullableScalarRelationFilter, PortfolioWhereInput> | null
     accessRows?: AccessListRelationFilter
     roles?: RoleListRelationFilter
   }
@@ -47819,13 +46107,11 @@ export namespace Prisma {
     memberType?: SortOrder
     memberAccountId?: SortOrderInput | SortOrder
     parentAccountId?: SortOrderInput | SortOrder
-    parentPortfolioId?: SortOrderInput | SortOrder
     status?: SortOrder
     isTemporary?: SortOrderInput | SortOrder
     details?: SortOrderInput | SortOrder
     memberAccount?: AccountOrderByWithRelationInput
     parentAccount?: AccountOrderByWithRelationInput
-    parentPortfolio?: PortfolioOrderByWithRelationInput
     accessRows?: AccessOrderByRelationAggregateInput
     roles?: RoleOrderByRelationAggregateInput
   }
@@ -47838,13 +46124,11 @@ export namespace Prisma {
     memberType?: StringFilter<"Member"> | string
     memberAccountId?: StringNullableFilter<"Member"> | string | null
     parentAccountId?: StringNullableFilter<"Member"> | string | null
-    parentPortfolioId?: StringNullableFilter<"Member"> | string | null
     status?: StringFilter<"Member"> | string
     isTemporary?: DateTimeNullableFilter<"Member"> | Date | string | null
     details?: JsonNullableFilter<"Member">
     memberAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
     parentAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
-    parentPortfolio?: XOR<PortfolioNullableScalarRelationFilter, PortfolioWhereInput> | null
     accessRows?: AccessListRelationFilter
     roles?: RoleListRelationFilter
   }, "id">
@@ -47854,7 +46138,6 @@ export namespace Prisma {
     memberType?: SortOrder
     memberAccountId?: SortOrderInput | SortOrder
     parentAccountId?: SortOrderInput | SortOrder
-    parentPortfolioId?: SortOrderInput | SortOrder
     status?: SortOrder
     isTemporary?: SortOrderInput | SortOrder
     details?: SortOrderInput | SortOrder
@@ -47871,7 +46154,6 @@ export namespace Prisma {
     memberType?: StringWithAggregatesFilter<"Member"> | string
     memberAccountId?: StringNullableWithAggregatesFilter<"Member"> | string | null
     parentAccountId?: StringNullableWithAggregatesFilter<"Member"> | string | null
-    parentPortfolioId?: StringNullableWithAggregatesFilter<"Member"> | string | null
     status?: StringWithAggregatesFilter<"Member"> | string
     isTemporary?: DateTimeNullableWithAggregatesFilter<"Member"> | Date | string | null
     details?: JsonNullableWithAggregatesFilter<"Member">
@@ -47886,11 +46168,9 @@ export namespace Prisma {
     memberId?: StringFilter<"Access"> | string
     memberAccountId?: StringNullableFilter<"Access"> | string | null
     parentAccountId?: StringNullableFilter<"Access"> | string | null
-    parentPortfolioId?: StringNullableFilter<"Access"> | string | null
     assetId?: StringFilter<"Access"> | string
     assetAccountId?: StringNullableFilter<"Access"> | string | null
     assetConnectionId?: StringNullableFilter<"Access"> | string | null
-    assetPortfolioId?: StringNullableFilter<"Access"> | string | null
     assetApplicationId?: StringNullableFilter<"Access"> | string | null
     accessApplicationId?: StringNullableFilter<"Access"> | string | null
     isTemporary?: DateTimeNullableFilter<"Access"> | Date | string | null
@@ -47900,11 +46180,9 @@ export namespace Prisma {
     member?: XOR<MemberScalarRelationFilter, MemberWhereInput>
     memberAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
     parentAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
-    parentPortfolio?: XOR<PortfolioNullableScalarRelationFilter, PortfolioWhereInput> | null
     asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
     assetAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
     assetConnection?: XOR<ConnectionNullableScalarRelationFilter, ConnectionWhereInput> | null
-    assetPortfolio?: XOR<PortfolioNullableScalarRelationFilter, PortfolioWhereInput> | null
     assetApplication?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
     accessApplication?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
     role?: XOR<AuthzRoleScalarRelationFilter, AuthzRoleWhereInput>
@@ -47916,11 +46194,9 @@ export namespace Prisma {
     memberId?: SortOrder
     memberAccountId?: SortOrderInput | SortOrder
     parentAccountId?: SortOrderInput | SortOrder
-    parentPortfolioId?: SortOrderInput | SortOrder
     assetId?: SortOrder
     assetAccountId?: SortOrderInput | SortOrder
     assetConnectionId?: SortOrderInput | SortOrder
-    assetPortfolioId?: SortOrderInput | SortOrder
     assetApplicationId?: SortOrderInput | SortOrder
     accessApplicationId?: SortOrderInput | SortOrder
     isTemporary?: SortOrderInput | SortOrder
@@ -47930,11 +46206,9 @@ export namespace Prisma {
     member?: MemberOrderByWithRelationInput
     memberAccount?: AccountOrderByWithRelationInput
     parentAccount?: AccountOrderByWithRelationInput
-    parentPortfolio?: PortfolioOrderByWithRelationInput
     asset?: AssetOrderByWithRelationInput
     assetAccount?: AccountOrderByWithRelationInput
     assetConnection?: ConnectionOrderByWithRelationInput
-    assetPortfolio?: PortfolioOrderByWithRelationInput
     assetApplication?: ApplicationOrderByWithRelationInput
     accessApplication?: ApplicationOrderByWithRelationInput
     role?: AuthzRoleOrderByWithRelationInput
@@ -47949,11 +46223,9 @@ export namespace Prisma {
     memberId?: StringFilter<"Access"> | string
     memberAccountId?: StringNullableFilter<"Access"> | string | null
     parentAccountId?: StringNullableFilter<"Access"> | string | null
-    parentPortfolioId?: StringNullableFilter<"Access"> | string | null
     assetId?: StringFilter<"Access"> | string
     assetAccountId?: StringNullableFilter<"Access"> | string | null
     assetConnectionId?: StringNullableFilter<"Access"> | string | null
-    assetPortfolioId?: StringNullableFilter<"Access"> | string | null
     assetApplicationId?: StringNullableFilter<"Access"> | string | null
     accessApplicationId?: StringNullableFilter<"Access"> | string | null
     isTemporary?: DateTimeNullableFilter<"Access"> | Date | string | null
@@ -47963,11 +46235,9 @@ export namespace Prisma {
     member?: XOR<MemberScalarRelationFilter, MemberWhereInput>
     memberAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
     parentAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
-    parentPortfolio?: XOR<PortfolioNullableScalarRelationFilter, PortfolioWhereInput> | null
     asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
     assetAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
     assetConnection?: XOR<ConnectionNullableScalarRelationFilter, ConnectionWhereInput> | null
-    assetPortfolio?: XOR<PortfolioNullableScalarRelationFilter, PortfolioWhereInput> | null
     assetApplication?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
     accessApplication?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
     role?: XOR<AuthzRoleScalarRelationFilter, AuthzRoleWhereInput>
@@ -47979,11 +46249,9 @@ export namespace Prisma {
     memberId?: SortOrder
     memberAccountId?: SortOrderInput | SortOrder
     parentAccountId?: SortOrderInput | SortOrder
-    parentPortfolioId?: SortOrderInput | SortOrder
     assetId?: SortOrder
     assetAccountId?: SortOrderInput | SortOrder
     assetConnectionId?: SortOrderInput | SortOrder
-    assetPortfolioId?: SortOrderInput | SortOrder
     assetApplicationId?: SortOrderInput | SortOrder
     accessApplicationId?: SortOrderInput | SortOrder
     isTemporary?: SortOrderInput | SortOrder
@@ -48004,11 +46272,9 @@ export namespace Prisma {
     memberId?: StringWithAggregatesFilter<"Access"> | string
     memberAccountId?: StringNullableWithAggregatesFilter<"Access"> | string | null
     parentAccountId?: StringNullableWithAggregatesFilter<"Access"> | string | null
-    parentPortfolioId?: StringNullableWithAggregatesFilter<"Access"> | string | null
     assetId?: StringWithAggregatesFilter<"Access"> | string
     assetAccountId?: StringNullableWithAggregatesFilter<"Access"> | string | null
     assetConnectionId?: StringNullableWithAggregatesFilter<"Access"> | string | null
-    assetPortfolioId?: StringNullableWithAggregatesFilter<"Access"> | string | null
     assetApplicationId?: StringNullableWithAggregatesFilter<"Access"> | string | null
     accessApplicationId?: StringNullableWithAggregatesFilter<"Access"> | string | null
     isTemporary?: DateTimeNullableWithAggregatesFilter<"Access"> | Date | string | null
@@ -48638,13 +46904,11 @@ export namespace Prisma {
     asset_id?: StringFilter<"AuthzAssetsAccessGrant"> | string
     account_id?: StringFilter<"AuthzAssetsAccessGrant"> | string
     role_id?: StringFilter<"AuthzAssetsAccessGrant"> | string
-    portfolio_id?: StringNullableFilter<"AuthzAssetsAccessGrant"> | string | null
     app_id?: StringFilter<"AuthzAssetsAccessGrant"> | string
     asset_type?: StringNullableFilter<"AuthzAssetsAccessGrant"> | string | null
     asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
     account?: XOR<AccountScalarRelationFilter, AccountWhereInput>
     role?: XOR<AuthzRoleScalarRelationFilter, AuthzRoleWhereInput>
-    portfolio?: XOR<PortfolioNullableScalarRelationFilter, PortfolioWhereInput> | null
   }
 
   export type AuthzAssetsAccessGrantOrderByWithRelationInput = {
@@ -48652,13 +46916,11 @@ export namespace Prisma {
     asset_id?: SortOrder
     account_id?: SortOrder
     role_id?: SortOrder
-    portfolio_id?: SortOrderInput | SortOrder
     app_id?: SortOrder
     asset_type?: SortOrderInput | SortOrder
     asset?: AssetOrderByWithRelationInput
     account?: AccountOrderByWithRelationInput
     role?: AuthzRoleOrderByWithRelationInput
-    portfolio?: PortfolioOrderByWithRelationInput
   }
 
   export type AuthzAssetsAccessGrantWhereUniqueInput = Prisma.AtLeast<{
@@ -48669,13 +46931,11 @@ export namespace Prisma {
     asset_id?: StringFilter<"AuthzAssetsAccessGrant"> | string
     account_id?: StringFilter<"AuthzAssetsAccessGrant"> | string
     role_id?: StringFilter<"AuthzAssetsAccessGrant"> | string
-    portfolio_id?: StringNullableFilter<"AuthzAssetsAccessGrant"> | string | null
     app_id?: StringFilter<"AuthzAssetsAccessGrant"> | string
     asset_type?: StringNullableFilter<"AuthzAssetsAccessGrant"> | string | null
     asset?: XOR<AssetScalarRelationFilter, AssetWhereInput>
     account?: XOR<AccountScalarRelationFilter, AccountWhereInput>
     role?: XOR<AuthzRoleScalarRelationFilter, AuthzRoleWhereInput>
-    portfolio?: XOR<PortfolioNullableScalarRelationFilter, PortfolioWhereInput> | null
   }, "id">
 
   export type AuthzAssetsAccessGrantOrderByWithAggregationInput = {
@@ -48683,7 +46943,6 @@ export namespace Prisma {
     asset_id?: SortOrder
     account_id?: SortOrder
     role_id?: SortOrder
-    portfolio_id?: SortOrderInput | SortOrder
     app_id?: SortOrder
     asset_type?: SortOrderInput | SortOrder
     _count?: AuthzAssetsAccessGrantCountOrderByAggregateInput
@@ -48699,7 +46958,6 @@ export namespace Prisma {
     asset_id?: StringWithAggregatesFilter<"AuthzAssetsAccessGrant"> | string
     account_id?: StringWithAggregatesFilter<"AuthzAssetsAccessGrant"> | string
     role_id?: StringWithAggregatesFilter<"AuthzAssetsAccessGrant"> | string
-    portfolio_id?: StringNullableWithAggregatesFilter<"AuthzAssetsAccessGrant"> | string | null
     app_id?: StringWithAggregatesFilter<"AuthzAssetsAccessGrant"> | string
     asset_type?: StringNullableWithAggregatesFilter<"AuthzAssetsAccessGrant"> | string | null
   }
@@ -50473,90 +48731,15 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type PortfolioCreateInput = {
-    id?: string
-    name: string
-    description?: string | null
-    dateCreated?: Date | string
-    assets?: AssetCreateNestedManyWithoutParentPortfolioInput
-    childAssets?: AssetCreateNestedManyWithoutChildPortfolioInput
-    members?: MemberCreateNestedManyWithoutParentPortfolioInput
-    accessParentRows?: AccessCreateNestedManyWithoutParentPortfolioInput
-    accessAssetRows?: AccessCreateNestedManyWithoutAssetPortfolioInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutPortfolioInput
-  }
-
-  export type PortfolioUncheckedCreateInput = {
-    id?: string
-    name: string
-    description?: string | null
-    dateCreated?: Date | string
-    assets?: AssetUncheckedCreateNestedManyWithoutParentPortfolioInput
-    childAssets?: AssetUncheckedCreateNestedManyWithoutChildPortfolioInput
-    members?: MemberUncheckedCreateNestedManyWithoutParentPortfolioInput
-    accessParentRows?: AccessUncheckedCreateNestedManyWithoutParentPortfolioInput
-    accessAssetRows?: AccessUncheckedCreateNestedManyWithoutAssetPortfolioInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
-  }
-
-  export type PortfolioUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
-    assets?: AssetUpdateManyWithoutParentPortfolioNestedInput
-    childAssets?: AssetUpdateManyWithoutChildPortfolioNestedInput
-    members?: MemberUpdateManyWithoutParentPortfolioNestedInput
-    accessParentRows?: AccessUpdateManyWithoutParentPortfolioNestedInput
-    accessAssetRows?: AccessUpdateManyWithoutAssetPortfolioNestedInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutPortfolioNestedInput
-  }
-
-  export type PortfolioUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
-    assets?: AssetUncheckedUpdateManyWithoutParentPortfolioNestedInput
-    childAssets?: AssetUncheckedUpdateManyWithoutChildPortfolioNestedInput
-    members?: MemberUncheckedUpdateManyWithoutParentPortfolioNestedInput
-    accessParentRows?: AccessUncheckedUpdateManyWithoutParentPortfolioNestedInput
-    accessAssetRows?: AccessUncheckedUpdateManyWithoutAssetPortfolioNestedInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
-  }
-
-  export type PortfolioCreateManyInput = {
-    id?: string
-    name: string
-    description?: string | null
-    dateCreated?: Date | string
-  }
-
-  export type PortfolioUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type PortfolioUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
   export type AssetCreateInput = {
     id?: string
     access_type: $Enums.AssetType
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
-    parentPortfolio?: PortfolioCreateNestedOneWithoutAssetsInput
     parentAccount?: AccountCreateNestedOneWithoutParentAssetsInput
     childAccount?: AccountCreateNestedOneWithoutChildAssetsInput
     childConnection?: ConnectionCreateNestedOneWithoutChildAssetsInput
-    childPortfolio?: PortfolioCreateNestedOneWithoutChildAssetsInput
     childApplication?: ApplicationCreateNestedOneWithoutChildAssetsInput
     accessRows?: AccessCreateNestedManyWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
@@ -50567,11 +48750,9 @@ export namespace Prisma {
     id?: string
     access_type: $Enums.AssetType
     member_account_id?: string | null
-    member_portfolio_id?: string | null
     member_connection_id?: string | null
     access_application_id?: string | null
     parent_account_id?: string | null
-    parent_portfolio_id?: string | null
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -50586,11 +48767,9 @@ export namespace Prisma {
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
-    parentPortfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
     parentAccount?: AccountUpdateOneWithoutParentAssetsNestedInput
     childAccount?: AccountUpdateOneWithoutChildAssetsNestedInput
     childConnection?: ConnectionUpdateOneWithoutChildAssetsNestedInput
-    childPortfolio?: PortfolioUpdateOneWithoutChildAssetsNestedInput
     childApplication?: ApplicationUpdateOneWithoutChildAssetsNestedInput
     accessRows?: AccessUpdateManyWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
@@ -50601,11 +48780,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     access_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
     member_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    member_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     member_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
     access_application_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -50618,11 +48795,9 @@ export namespace Prisma {
     id?: string
     access_type: $Enums.AssetType
     member_account_id?: string | null
-    member_portfolio_id?: string | null
     member_connection_id?: string | null
     access_application_id?: string | null
     parent_account_id?: string | null
-    parent_portfolio_id?: string | null
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -50640,11 +48815,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     access_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
     member_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    member_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     member_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
     access_application_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -50658,7 +48831,6 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     memberAccount?: AccountCreateNestedOneWithoutAccessMembersInput
     parentAccount?: AccountCreateNestedOneWithoutParentAccountMembersInput
-    parentPortfolio?: PortfolioCreateNestedOneWithoutMembersInput
     accessRows?: AccessCreateNestedManyWithoutMemberInput
     roles?: RoleCreateNestedManyWithoutMemberInput
   }
@@ -50668,7 +48840,6 @@ export namespace Prisma {
     memberType: string
     memberAccountId?: string | null
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     status?: string
     isTemporary?: Date | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -50684,7 +48855,6 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     memberAccount?: AccountUpdateOneWithoutAccessMembersNestedInput
     parentAccount?: AccountUpdateOneWithoutParentAccountMembersNestedInput
-    parentPortfolio?: PortfolioUpdateOneWithoutMembersNestedInput
     accessRows?: AccessUpdateManyWithoutMemberNestedInput
     roles?: RoleUpdateManyWithoutMemberNestedInput
   }
@@ -50694,7 +48864,6 @@ export namespace Prisma {
     memberType?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -50707,7 +48876,6 @@ export namespace Prisma {
     memberType: string
     memberAccountId?: string | null
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     status?: string
     isTemporary?: Date | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -50726,7 +48894,6 @@ export namespace Prisma {
     memberType?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -50741,11 +48908,9 @@ export namespace Prisma {
     member: MemberCreateNestedOneWithoutAccessRowsInput
     memberAccount?: AccountCreateNestedOneWithoutAccessMemberRowsInput
     parentAccount?: AccountCreateNestedOneWithoutAccessParentRowsInput
-    parentPortfolio?: PortfolioCreateNestedOneWithoutAccessParentRowsInput
     asset: AssetCreateNestedOneWithoutAccessRowsInput
     assetAccount?: AccountCreateNestedOneWithoutAccessAssetAccountRowsInput
     assetConnection?: ConnectionCreateNestedOneWithoutAssetAccessRowsInput
-    assetPortfolio?: PortfolioCreateNestedOneWithoutAccessAssetRowsInput
     assetApplication?: ApplicationCreateNestedOneWithoutAssetAccessRowsInput
     accessApplication?: ApplicationCreateNestedOneWithoutAccessRowsInput
     role: AuthzRoleCreateNestedOneWithoutAccessRowsInput
@@ -50757,11 +48922,9 @@ export namespace Prisma {
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     assetId: string
     assetAccountId?: string | null
     assetConnectionId?: string | null
-    assetPortfolioId?: string | null
     assetApplicationId?: string | null
     accessApplicationId?: string | null
     isTemporary?: Date | string | null
@@ -50779,11 +48942,9 @@ export namespace Prisma {
     member?: MemberUpdateOneRequiredWithoutAccessRowsNestedInput
     memberAccount?: AccountUpdateOneWithoutAccessMemberRowsNestedInput
     parentAccount?: AccountUpdateOneWithoutAccessParentRowsNestedInput
-    parentPortfolio?: PortfolioUpdateOneWithoutAccessParentRowsNestedInput
     asset?: AssetUpdateOneRequiredWithoutAccessRowsNestedInput
     assetAccount?: AccountUpdateOneWithoutAccessAssetAccountRowsNestedInput
     assetConnection?: ConnectionUpdateOneWithoutAssetAccessRowsNestedInput
-    assetPortfolio?: PortfolioUpdateOneWithoutAccessAssetRowsNestedInput
     assetApplication?: ApplicationUpdateOneWithoutAssetAccessRowsNestedInput
     accessApplication?: ApplicationUpdateOneWithoutAccessRowsNestedInput
     role?: AuthzRoleUpdateOneRequiredWithoutAccessRowsNestedInput
@@ -50795,11 +48956,9 @@ export namespace Prisma {
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetId?: StringFieldUpdateOperationsInput | string
     assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -50814,11 +48973,9 @@ export namespace Prisma {
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     assetId: string
     assetAccountId?: string | null
     assetConnectionId?: string | null
-    assetPortfolioId?: string | null
     assetApplicationId?: string | null
     accessApplicationId?: string | null
     isTemporary?: Date | string | null
@@ -50841,11 +48998,9 @@ export namespace Prisma {
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetId?: StringFieldUpdateOperationsInput | string
     assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -51494,7 +49649,6 @@ export namespace Prisma {
     asset: AssetCreateNestedOneWithoutAuthzAssetsAccessGrantsInput
     account: AccountCreateNestedOneWithoutAuthzAssetsAccessGrantsInput
     role: AuthzRoleCreateNestedOneWithoutAssetsGrantsInput
-    portfolio?: PortfolioCreateNestedOneWithoutAuthzAssetsAccessGrantsInput
   }
 
   export type AuthzAssetsAccessGrantUncheckedCreateInput = {
@@ -51502,7 +49656,6 @@ export namespace Prisma {
     asset_id: string
     account_id: string
     role_id: string
-    portfolio_id?: string | null
     app_id: string
     asset_type?: string | null
   }
@@ -51514,7 +49667,6 @@ export namespace Prisma {
     asset?: AssetUpdateOneRequiredWithoutAuthzAssetsAccessGrantsNestedInput
     account?: AccountUpdateOneRequiredWithoutAuthzAssetsAccessGrantsNestedInput
     role?: AuthzRoleUpdateOneRequiredWithoutAssetsGrantsNestedInput
-    portfolio?: PortfolioUpdateOneWithoutAuthzAssetsAccessGrantsNestedInput
   }
 
   export type AuthzAssetsAccessGrantUncheckedUpdateInput = {
@@ -51522,7 +49674,6 @@ export namespace Prisma {
     asset_id?: StringFieldUpdateOperationsInput | string
     account_id?: StringFieldUpdateOperationsInput | string
     role_id?: StringFieldUpdateOperationsInput | string
-    portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     app_id?: StringFieldUpdateOperationsInput | string
     asset_type?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -51532,7 +49683,6 @@ export namespace Prisma {
     asset_id: string
     account_id: string
     role_id: string
-    portfolio_id?: string | null
     app_id: string
     asset_type?: string | null
   }
@@ -51548,7 +49698,6 @@ export namespace Prisma {
     asset_id?: StringFieldUpdateOperationsInput | string
     account_id?: StringFieldUpdateOperationsInput | string
     role_id?: StringFieldUpdateOperationsInput | string
-    portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     app_id?: StringFieldUpdateOperationsInput | string
     asset_type?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -52897,37 +51046,11 @@ export namespace Prisma {
     statusCode?: SortOrder
   }
 
-  export type PortfolioCountOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    description?: SortOrder
-    dateCreated?: SortOrder
-  }
-
-  export type PortfolioMaxOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    description?: SortOrder
-    dateCreated?: SortOrder
-  }
-
-  export type PortfolioMinOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    description?: SortOrder
-    dateCreated?: SortOrder
-  }
-
   export type EnumAssetTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.AssetType | EnumAssetTypeFieldRefInput<$PrismaModel>
     in?: $Enums.AssetType[] | ListEnumAssetTypeFieldRefInput<$PrismaModel>
     notIn?: $Enums.AssetType[] | ListEnumAssetTypeFieldRefInput<$PrismaModel>
     not?: NestedEnumAssetTypeFilter<$PrismaModel> | $Enums.AssetType
-  }
-
-  export type PortfolioNullableScalarRelationFilter = {
-    is?: PortfolioWhereInput | null
-    isNot?: PortfolioWhereInput | null
   }
 
   export type ConnectionNullableScalarRelationFilter = {
@@ -52944,11 +51067,9 @@ export namespace Prisma {
     id?: SortOrder
     access_type?: SortOrder
     member_account_id?: SortOrder
-    member_portfolio_id?: SortOrder
     member_connection_id?: SortOrder
     access_application_id?: SortOrder
     parent_account_id?: SortOrder
-    parent_portfolio_id?: SortOrder
     isTemporary?: SortOrder
     status?: SortOrder
     details?: SortOrder
@@ -52958,11 +51079,9 @@ export namespace Prisma {
     id?: SortOrder
     access_type?: SortOrder
     member_account_id?: SortOrder
-    member_portfolio_id?: SortOrder
     member_connection_id?: SortOrder
     access_application_id?: SortOrder
     parent_account_id?: SortOrder
-    parent_portfolio_id?: SortOrder
     isTemporary?: SortOrder
     status?: SortOrder
   }
@@ -52971,11 +51090,9 @@ export namespace Prisma {
     id?: SortOrder
     access_type?: SortOrder
     member_account_id?: SortOrder
-    member_portfolio_id?: SortOrder
     member_connection_id?: SortOrder
     access_application_id?: SortOrder
     parent_account_id?: SortOrder
-    parent_portfolio_id?: SortOrder
     isTemporary?: SortOrder
     status?: SortOrder
   }
@@ -52995,7 +51112,6 @@ export namespace Prisma {
     memberType?: SortOrder
     memberAccountId?: SortOrder
     parentAccountId?: SortOrder
-    parentPortfolioId?: SortOrder
     status?: SortOrder
     isTemporary?: SortOrder
     details?: SortOrder
@@ -53006,7 +51122,6 @@ export namespace Prisma {
     memberType?: SortOrder
     memberAccountId?: SortOrder
     parentAccountId?: SortOrder
-    parentPortfolioId?: SortOrder
     status?: SortOrder
     isTemporary?: SortOrder
   }
@@ -53016,7 +51131,6 @@ export namespace Prisma {
     memberType?: SortOrder
     memberAccountId?: SortOrder
     parentAccountId?: SortOrder
-    parentPortfolioId?: SortOrder
     status?: SortOrder
     isTemporary?: SortOrder
   }
@@ -53049,11 +51163,9 @@ export namespace Prisma {
     memberId?: SortOrder
     memberAccountId?: SortOrder
     parentAccountId?: SortOrder
-    parentPortfolioId?: SortOrder
     assetId?: SortOrder
     assetAccountId?: SortOrder
     assetConnectionId?: SortOrder
-    assetPortfolioId?: SortOrder
     assetApplicationId?: SortOrder
     accessApplicationId?: SortOrder
     isTemporary?: SortOrder
@@ -53068,11 +51180,9 @@ export namespace Prisma {
     memberId?: SortOrder
     memberAccountId?: SortOrder
     parentAccountId?: SortOrder
-    parentPortfolioId?: SortOrder
     assetId?: SortOrder
     assetAccountId?: SortOrder
     assetConnectionId?: SortOrder
-    assetPortfolioId?: SortOrder
     assetApplicationId?: SortOrder
     accessApplicationId?: SortOrder
     isTemporary?: SortOrder
@@ -53086,11 +51196,9 @@ export namespace Prisma {
     memberId?: SortOrder
     memberAccountId?: SortOrder
     parentAccountId?: SortOrder
-    parentPortfolioId?: SortOrder
     assetId?: SortOrder
     assetAccountId?: SortOrder
     assetConnectionId?: SortOrder
-    assetPortfolioId?: SortOrder
     assetApplicationId?: SortOrder
     accessApplicationId?: SortOrder
     isTemporary?: SortOrder
@@ -53394,7 +51502,6 @@ export namespace Prisma {
     asset_id?: SortOrder
     account_id?: SortOrder
     role_id?: SortOrder
-    portfolio_id?: SortOrder
     app_id?: SortOrder
     asset_type?: SortOrder
   }
@@ -53404,7 +51511,6 @@ export namespace Prisma {
     asset_id?: SortOrder
     account_id?: SortOrder
     role_id?: SortOrder
-    portfolio_id?: SortOrder
     app_id?: SortOrder
     asset_type?: SortOrder
   }
@@ -53414,7 +51520,6 @@ export namespace Prisma {
     asset_id?: SortOrder
     account_id?: SortOrder
     role_id?: SortOrder
-    portfolio_id?: SortOrder
     app_id?: SortOrder
     asset_type?: SortOrder
   }
@@ -55566,264 +53671,6 @@ export namespace Prisma {
     update?: XOR<XOR<ApplicationUpdateToOneWithWhereWithoutDevLogsInput, ApplicationUpdateWithoutDevLogsInput>, ApplicationUncheckedUpdateWithoutDevLogsInput>
   }
 
-  export type AssetCreateNestedManyWithoutParentPortfolioInput = {
-    create?: XOR<AssetCreateWithoutParentPortfolioInput, AssetUncheckedCreateWithoutParentPortfolioInput> | AssetCreateWithoutParentPortfolioInput[] | AssetUncheckedCreateWithoutParentPortfolioInput[]
-    connectOrCreate?: AssetCreateOrConnectWithoutParentPortfolioInput | AssetCreateOrConnectWithoutParentPortfolioInput[]
-    createMany?: AssetCreateManyParentPortfolioInputEnvelope
-    connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-  }
-
-  export type AssetCreateNestedManyWithoutChildPortfolioInput = {
-    create?: XOR<AssetCreateWithoutChildPortfolioInput, AssetUncheckedCreateWithoutChildPortfolioInput> | AssetCreateWithoutChildPortfolioInput[] | AssetUncheckedCreateWithoutChildPortfolioInput[]
-    connectOrCreate?: AssetCreateOrConnectWithoutChildPortfolioInput | AssetCreateOrConnectWithoutChildPortfolioInput[]
-    createMany?: AssetCreateManyChildPortfolioInputEnvelope
-    connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-  }
-
-  export type MemberCreateNestedManyWithoutParentPortfolioInput = {
-    create?: XOR<MemberCreateWithoutParentPortfolioInput, MemberUncheckedCreateWithoutParentPortfolioInput> | MemberCreateWithoutParentPortfolioInput[] | MemberUncheckedCreateWithoutParentPortfolioInput[]
-    connectOrCreate?: MemberCreateOrConnectWithoutParentPortfolioInput | MemberCreateOrConnectWithoutParentPortfolioInput[]
-    createMany?: MemberCreateManyParentPortfolioInputEnvelope
-    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-  }
-
-  export type AccessCreateNestedManyWithoutParentPortfolioInput = {
-    create?: XOR<AccessCreateWithoutParentPortfolioInput, AccessUncheckedCreateWithoutParentPortfolioInput> | AccessCreateWithoutParentPortfolioInput[] | AccessUncheckedCreateWithoutParentPortfolioInput[]
-    connectOrCreate?: AccessCreateOrConnectWithoutParentPortfolioInput | AccessCreateOrConnectWithoutParentPortfolioInput[]
-    createMany?: AccessCreateManyParentPortfolioInputEnvelope
-    connect?: AccessWhereUniqueInput | AccessWhereUniqueInput[]
-  }
-
-  export type AccessCreateNestedManyWithoutAssetPortfolioInput = {
-    create?: XOR<AccessCreateWithoutAssetPortfolioInput, AccessUncheckedCreateWithoutAssetPortfolioInput> | AccessCreateWithoutAssetPortfolioInput[] | AccessUncheckedCreateWithoutAssetPortfolioInput[]
-    connectOrCreate?: AccessCreateOrConnectWithoutAssetPortfolioInput | AccessCreateOrConnectWithoutAssetPortfolioInput[]
-    createMany?: AccessCreateManyAssetPortfolioInputEnvelope
-    connect?: AccessWhereUniqueInput | AccessWhereUniqueInput[]
-  }
-
-  export type AuthzAssetsAccessGrantCreateNestedManyWithoutPortfolioInput = {
-    create?: XOR<AuthzAssetsAccessGrantCreateWithoutPortfolioInput, AuthzAssetsAccessGrantUncheckedCreateWithoutPortfolioInput> | AuthzAssetsAccessGrantCreateWithoutPortfolioInput[] | AuthzAssetsAccessGrantUncheckedCreateWithoutPortfolioInput[]
-    connectOrCreate?: AuthzAssetsAccessGrantCreateOrConnectWithoutPortfolioInput | AuthzAssetsAccessGrantCreateOrConnectWithoutPortfolioInput[]
-    createMany?: AuthzAssetsAccessGrantCreateManyPortfolioInputEnvelope
-    connect?: AuthzAssetsAccessGrantWhereUniqueInput | AuthzAssetsAccessGrantWhereUniqueInput[]
-  }
-
-  export type AssetUncheckedCreateNestedManyWithoutParentPortfolioInput = {
-    create?: XOR<AssetCreateWithoutParentPortfolioInput, AssetUncheckedCreateWithoutParentPortfolioInput> | AssetCreateWithoutParentPortfolioInput[] | AssetUncheckedCreateWithoutParentPortfolioInput[]
-    connectOrCreate?: AssetCreateOrConnectWithoutParentPortfolioInput | AssetCreateOrConnectWithoutParentPortfolioInput[]
-    createMany?: AssetCreateManyParentPortfolioInputEnvelope
-    connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-  }
-
-  export type AssetUncheckedCreateNestedManyWithoutChildPortfolioInput = {
-    create?: XOR<AssetCreateWithoutChildPortfolioInput, AssetUncheckedCreateWithoutChildPortfolioInput> | AssetCreateWithoutChildPortfolioInput[] | AssetUncheckedCreateWithoutChildPortfolioInput[]
-    connectOrCreate?: AssetCreateOrConnectWithoutChildPortfolioInput | AssetCreateOrConnectWithoutChildPortfolioInput[]
-    createMany?: AssetCreateManyChildPortfolioInputEnvelope
-    connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-  }
-
-  export type MemberUncheckedCreateNestedManyWithoutParentPortfolioInput = {
-    create?: XOR<MemberCreateWithoutParentPortfolioInput, MemberUncheckedCreateWithoutParentPortfolioInput> | MemberCreateWithoutParentPortfolioInput[] | MemberUncheckedCreateWithoutParentPortfolioInput[]
-    connectOrCreate?: MemberCreateOrConnectWithoutParentPortfolioInput | MemberCreateOrConnectWithoutParentPortfolioInput[]
-    createMany?: MemberCreateManyParentPortfolioInputEnvelope
-    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-  }
-
-  export type AccessUncheckedCreateNestedManyWithoutParentPortfolioInput = {
-    create?: XOR<AccessCreateWithoutParentPortfolioInput, AccessUncheckedCreateWithoutParentPortfolioInput> | AccessCreateWithoutParentPortfolioInput[] | AccessUncheckedCreateWithoutParentPortfolioInput[]
-    connectOrCreate?: AccessCreateOrConnectWithoutParentPortfolioInput | AccessCreateOrConnectWithoutParentPortfolioInput[]
-    createMany?: AccessCreateManyParentPortfolioInputEnvelope
-    connect?: AccessWhereUniqueInput | AccessWhereUniqueInput[]
-  }
-
-  export type AccessUncheckedCreateNestedManyWithoutAssetPortfolioInput = {
-    create?: XOR<AccessCreateWithoutAssetPortfolioInput, AccessUncheckedCreateWithoutAssetPortfolioInput> | AccessCreateWithoutAssetPortfolioInput[] | AccessUncheckedCreateWithoutAssetPortfolioInput[]
-    connectOrCreate?: AccessCreateOrConnectWithoutAssetPortfolioInput | AccessCreateOrConnectWithoutAssetPortfolioInput[]
-    createMany?: AccessCreateManyAssetPortfolioInputEnvelope
-    connect?: AccessWhereUniqueInput | AccessWhereUniqueInput[]
-  }
-
-  export type AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput = {
-    create?: XOR<AuthzAssetsAccessGrantCreateWithoutPortfolioInput, AuthzAssetsAccessGrantUncheckedCreateWithoutPortfolioInput> | AuthzAssetsAccessGrantCreateWithoutPortfolioInput[] | AuthzAssetsAccessGrantUncheckedCreateWithoutPortfolioInput[]
-    connectOrCreate?: AuthzAssetsAccessGrantCreateOrConnectWithoutPortfolioInput | AuthzAssetsAccessGrantCreateOrConnectWithoutPortfolioInput[]
-    createMany?: AuthzAssetsAccessGrantCreateManyPortfolioInputEnvelope
-    connect?: AuthzAssetsAccessGrantWhereUniqueInput | AuthzAssetsAccessGrantWhereUniqueInput[]
-  }
-
-  export type AssetUpdateManyWithoutParentPortfolioNestedInput = {
-    create?: XOR<AssetCreateWithoutParentPortfolioInput, AssetUncheckedCreateWithoutParentPortfolioInput> | AssetCreateWithoutParentPortfolioInput[] | AssetUncheckedCreateWithoutParentPortfolioInput[]
-    connectOrCreate?: AssetCreateOrConnectWithoutParentPortfolioInput | AssetCreateOrConnectWithoutParentPortfolioInput[]
-    upsert?: AssetUpsertWithWhereUniqueWithoutParentPortfolioInput | AssetUpsertWithWhereUniqueWithoutParentPortfolioInput[]
-    createMany?: AssetCreateManyParentPortfolioInputEnvelope
-    set?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    disconnect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    delete?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    update?: AssetUpdateWithWhereUniqueWithoutParentPortfolioInput | AssetUpdateWithWhereUniqueWithoutParentPortfolioInput[]
-    updateMany?: AssetUpdateManyWithWhereWithoutParentPortfolioInput | AssetUpdateManyWithWhereWithoutParentPortfolioInput[]
-    deleteMany?: AssetScalarWhereInput | AssetScalarWhereInput[]
-  }
-
-  export type AssetUpdateManyWithoutChildPortfolioNestedInput = {
-    create?: XOR<AssetCreateWithoutChildPortfolioInput, AssetUncheckedCreateWithoutChildPortfolioInput> | AssetCreateWithoutChildPortfolioInput[] | AssetUncheckedCreateWithoutChildPortfolioInput[]
-    connectOrCreate?: AssetCreateOrConnectWithoutChildPortfolioInput | AssetCreateOrConnectWithoutChildPortfolioInput[]
-    upsert?: AssetUpsertWithWhereUniqueWithoutChildPortfolioInput | AssetUpsertWithWhereUniqueWithoutChildPortfolioInput[]
-    createMany?: AssetCreateManyChildPortfolioInputEnvelope
-    set?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    disconnect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    delete?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    update?: AssetUpdateWithWhereUniqueWithoutChildPortfolioInput | AssetUpdateWithWhereUniqueWithoutChildPortfolioInput[]
-    updateMany?: AssetUpdateManyWithWhereWithoutChildPortfolioInput | AssetUpdateManyWithWhereWithoutChildPortfolioInput[]
-    deleteMany?: AssetScalarWhereInput | AssetScalarWhereInput[]
-  }
-
-  export type MemberUpdateManyWithoutParentPortfolioNestedInput = {
-    create?: XOR<MemberCreateWithoutParentPortfolioInput, MemberUncheckedCreateWithoutParentPortfolioInput> | MemberCreateWithoutParentPortfolioInput[] | MemberUncheckedCreateWithoutParentPortfolioInput[]
-    connectOrCreate?: MemberCreateOrConnectWithoutParentPortfolioInput | MemberCreateOrConnectWithoutParentPortfolioInput[]
-    upsert?: MemberUpsertWithWhereUniqueWithoutParentPortfolioInput | MemberUpsertWithWhereUniqueWithoutParentPortfolioInput[]
-    createMany?: MemberCreateManyParentPortfolioInputEnvelope
-    set?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-    disconnect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-    delete?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-    update?: MemberUpdateWithWhereUniqueWithoutParentPortfolioInput | MemberUpdateWithWhereUniqueWithoutParentPortfolioInput[]
-    updateMany?: MemberUpdateManyWithWhereWithoutParentPortfolioInput | MemberUpdateManyWithWhereWithoutParentPortfolioInput[]
-    deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
-  }
-
-  export type AccessUpdateManyWithoutParentPortfolioNestedInput = {
-    create?: XOR<AccessCreateWithoutParentPortfolioInput, AccessUncheckedCreateWithoutParentPortfolioInput> | AccessCreateWithoutParentPortfolioInput[] | AccessUncheckedCreateWithoutParentPortfolioInput[]
-    connectOrCreate?: AccessCreateOrConnectWithoutParentPortfolioInput | AccessCreateOrConnectWithoutParentPortfolioInput[]
-    upsert?: AccessUpsertWithWhereUniqueWithoutParentPortfolioInput | AccessUpsertWithWhereUniqueWithoutParentPortfolioInput[]
-    createMany?: AccessCreateManyParentPortfolioInputEnvelope
-    set?: AccessWhereUniqueInput | AccessWhereUniqueInput[]
-    disconnect?: AccessWhereUniqueInput | AccessWhereUniqueInput[]
-    delete?: AccessWhereUniqueInput | AccessWhereUniqueInput[]
-    connect?: AccessWhereUniqueInput | AccessWhereUniqueInput[]
-    update?: AccessUpdateWithWhereUniqueWithoutParentPortfolioInput | AccessUpdateWithWhereUniqueWithoutParentPortfolioInput[]
-    updateMany?: AccessUpdateManyWithWhereWithoutParentPortfolioInput | AccessUpdateManyWithWhereWithoutParentPortfolioInput[]
-    deleteMany?: AccessScalarWhereInput | AccessScalarWhereInput[]
-  }
-
-  export type AccessUpdateManyWithoutAssetPortfolioNestedInput = {
-    create?: XOR<AccessCreateWithoutAssetPortfolioInput, AccessUncheckedCreateWithoutAssetPortfolioInput> | AccessCreateWithoutAssetPortfolioInput[] | AccessUncheckedCreateWithoutAssetPortfolioInput[]
-    connectOrCreate?: AccessCreateOrConnectWithoutAssetPortfolioInput | AccessCreateOrConnectWithoutAssetPortfolioInput[]
-    upsert?: AccessUpsertWithWhereUniqueWithoutAssetPortfolioInput | AccessUpsertWithWhereUniqueWithoutAssetPortfolioInput[]
-    createMany?: AccessCreateManyAssetPortfolioInputEnvelope
-    set?: AccessWhereUniqueInput | AccessWhereUniqueInput[]
-    disconnect?: AccessWhereUniqueInput | AccessWhereUniqueInput[]
-    delete?: AccessWhereUniqueInput | AccessWhereUniqueInput[]
-    connect?: AccessWhereUniqueInput | AccessWhereUniqueInput[]
-    update?: AccessUpdateWithWhereUniqueWithoutAssetPortfolioInput | AccessUpdateWithWhereUniqueWithoutAssetPortfolioInput[]
-    updateMany?: AccessUpdateManyWithWhereWithoutAssetPortfolioInput | AccessUpdateManyWithWhereWithoutAssetPortfolioInput[]
-    deleteMany?: AccessScalarWhereInput | AccessScalarWhereInput[]
-  }
-
-  export type AuthzAssetsAccessGrantUpdateManyWithoutPortfolioNestedInput = {
-    create?: XOR<AuthzAssetsAccessGrantCreateWithoutPortfolioInput, AuthzAssetsAccessGrantUncheckedCreateWithoutPortfolioInput> | AuthzAssetsAccessGrantCreateWithoutPortfolioInput[] | AuthzAssetsAccessGrantUncheckedCreateWithoutPortfolioInput[]
-    connectOrCreate?: AuthzAssetsAccessGrantCreateOrConnectWithoutPortfolioInput | AuthzAssetsAccessGrantCreateOrConnectWithoutPortfolioInput[]
-    upsert?: AuthzAssetsAccessGrantUpsertWithWhereUniqueWithoutPortfolioInput | AuthzAssetsAccessGrantUpsertWithWhereUniqueWithoutPortfolioInput[]
-    createMany?: AuthzAssetsAccessGrantCreateManyPortfolioInputEnvelope
-    set?: AuthzAssetsAccessGrantWhereUniqueInput | AuthzAssetsAccessGrantWhereUniqueInput[]
-    disconnect?: AuthzAssetsAccessGrantWhereUniqueInput | AuthzAssetsAccessGrantWhereUniqueInput[]
-    delete?: AuthzAssetsAccessGrantWhereUniqueInput | AuthzAssetsAccessGrantWhereUniqueInput[]
-    connect?: AuthzAssetsAccessGrantWhereUniqueInput | AuthzAssetsAccessGrantWhereUniqueInput[]
-    update?: AuthzAssetsAccessGrantUpdateWithWhereUniqueWithoutPortfolioInput | AuthzAssetsAccessGrantUpdateWithWhereUniqueWithoutPortfolioInput[]
-    updateMany?: AuthzAssetsAccessGrantUpdateManyWithWhereWithoutPortfolioInput | AuthzAssetsAccessGrantUpdateManyWithWhereWithoutPortfolioInput[]
-    deleteMany?: AuthzAssetsAccessGrantScalarWhereInput | AuthzAssetsAccessGrantScalarWhereInput[]
-  }
-
-  export type AssetUncheckedUpdateManyWithoutParentPortfolioNestedInput = {
-    create?: XOR<AssetCreateWithoutParentPortfolioInput, AssetUncheckedCreateWithoutParentPortfolioInput> | AssetCreateWithoutParentPortfolioInput[] | AssetUncheckedCreateWithoutParentPortfolioInput[]
-    connectOrCreate?: AssetCreateOrConnectWithoutParentPortfolioInput | AssetCreateOrConnectWithoutParentPortfolioInput[]
-    upsert?: AssetUpsertWithWhereUniqueWithoutParentPortfolioInput | AssetUpsertWithWhereUniqueWithoutParentPortfolioInput[]
-    createMany?: AssetCreateManyParentPortfolioInputEnvelope
-    set?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    disconnect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    delete?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    update?: AssetUpdateWithWhereUniqueWithoutParentPortfolioInput | AssetUpdateWithWhereUniqueWithoutParentPortfolioInput[]
-    updateMany?: AssetUpdateManyWithWhereWithoutParentPortfolioInput | AssetUpdateManyWithWhereWithoutParentPortfolioInput[]
-    deleteMany?: AssetScalarWhereInput | AssetScalarWhereInput[]
-  }
-
-  export type AssetUncheckedUpdateManyWithoutChildPortfolioNestedInput = {
-    create?: XOR<AssetCreateWithoutChildPortfolioInput, AssetUncheckedCreateWithoutChildPortfolioInput> | AssetCreateWithoutChildPortfolioInput[] | AssetUncheckedCreateWithoutChildPortfolioInput[]
-    connectOrCreate?: AssetCreateOrConnectWithoutChildPortfolioInput | AssetCreateOrConnectWithoutChildPortfolioInput[]
-    upsert?: AssetUpsertWithWhereUniqueWithoutChildPortfolioInput | AssetUpsertWithWhereUniqueWithoutChildPortfolioInput[]
-    createMany?: AssetCreateManyChildPortfolioInputEnvelope
-    set?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    disconnect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    delete?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    connect?: AssetWhereUniqueInput | AssetWhereUniqueInput[]
-    update?: AssetUpdateWithWhereUniqueWithoutChildPortfolioInput | AssetUpdateWithWhereUniqueWithoutChildPortfolioInput[]
-    updateMany?: AssetUpdateManyWithWhereWithoutChildPortfolioInput | AssetUpdateManyWithWhereWithoutChildPortfolioInput[]
-    deleteMany?: AssetScalarWhereInput | AssetScalarWhereInput[]
-  }
-
-  export type MemberUncheckedUpdateManyWithoutParentPortfolioNestedInput = {
-    create?: XOR<MemberCreateWithoutParentPortfolioInput, MemberUncheckedCreateWithoutParentPortfolioInput> | MemberCreateWithoutParentPortfolioInput[] | MemberUncheckedCreateWithoutParentPortfolioInput[]
-    connectOrCreate?: MemberCreateOrConnectWithoutParentPortfolioInput | MemberCreateOrConnectWithoutParentPortfolioInput[]
-    upsert?: MemberUpsertWithWhereUniqueWithoutParentPortfolioInput | MemberUpsertWithWhereUniqueWithoutParentPortfolioInput[]
-    createMany?: MemberCreateManyParentPortfolioInputEnvelope
-    set?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-    disconnect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-    delete?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-    connect?: MemberWhereUniqueInput | MemberWhereUniqueInput[]
-    update?: MemberUpdateWithWhereUniqueWithoutParentPortfolioInput | MemberUpdateWithWhereUniqueWithoutParentPortfolioInput[]
-    updateMany?: MemberUpdateManyWithWhereWithoutParentPortfolioInput | MemberUpdateManyWithWhereWithoutParentPortfolioInput[]
-    deleteMany?: MemberScalarWhereInput | MemberScalarWhereInput[]
-  }
-
-  export type AccessUncheckedUpdateManyWithoutParentPortfolioNestedInput = {
-    create?: XOR<AccessCreateWithoutParentPortfolioInput, AccessUncheckedCreateWithoutParentPortfolioInput> | AccessCreateWithoutParentPortfolioInput[] | AccessUncheckedCreateWithoutParentPortfolioInput[]
-    connectOrCreate?: AccessCreateOrConnectWithoutParentPortfolioInput | AccessCreateOrConnectWithoutParentPortfolioInput[]
-    upsert?: AccessUpsertWithWhereUniqueWithoutParentPortfolioInput | AccessUpsertWithWhereUniqueWithoutParentPortfolioInput[]
-    createMany?: AccessCreateManyParentPortfolioInputEnvelope
-    set?: AccessWhereUniqueInput | AccessWhereUniqueInput[]
-    disconnect?: AccessWhereUniqueInput | AccessWhereUniqueInput[]
-    delete?: AccessWhereUniqueInput | AccessWhereUniqueInput[]
-    connect?: AccessWhereUniqueInput | AccessWhereUniqueInput[]
-    update?: AccessUpdateWithWhereUniqueWithoutParentPortfolioInput | AccessUpdateWithWhereUniqueWithoutParentPortfolioInput[]
-    updateMany?: AccessUpdateManyWithWhereWithoutParentPortfolioInput | AccessUpdateManyWithWhereWithoutParentPortfolioInput[]
-    deleteMany?: AccessScalarWhereInput | AccessScalarWhereInput[]
-  }
-
-  export type AccessUncheckedUpdateManyWithoutAssetPortfolioNestedInput = {
-    create?: XOR<AccessCreateWithoutAssetPortfolioInput, AccessUncheckedCreateWithoutAssetPortfolioInput> | AccessCreateWithoutAssetPortfolioInput[] | AccessUncheckedCreateWithoutAssetPortfolioInput[]
-    connectOrCreate?: AccessCreateOrConnectWithoutAssetPortfolioInput | AccessCreateOrConnectWithoutAssetPortfolioInput[]
-    upsert?: AccessUpsertWithWhereUniqueWithoutAssetPortfolioInput | AccessUpsertWithWhereUniqueWithoutAssetPortfolioInput[]
-    createMany?: AccessCreateManyAssetPortfolioInputEnvelope
-    set?: AccessWhereUniqueInput | AccessWhereUniqueInput[]
-    disconnect?: AccessWhereUniqueInput | AccessWhereUniqueInput[]
-    delete?: AccessWhereUniqueInput | AccessWhereUniqueInput[]
-    connect?: AccessWhereUniqueInput | AccessWhereUniqueInput[]
-    update?: AccessUpdateWithWhereUniqueWithoutAssetPortfolioInput | AccessUpdateWithWhereUniqueWithoutAssetPortfolioInput[]
-    updateMany?: AccessUpdateManyWithWhereWithoutAssetPortfolioInput | AccessUpdateManyWithWhereWithoutAssetPortfolioInput[]
-    deleteMany?: AccessScalarWhereInput | AccessScalarWhereInput[]
-  }
-
-  export type AuthzAssetsAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput = {
-    create?: XOR<AuthzAssetsAccessGrantCreateWithoutPortfolioInput, AuthzAssetsAccessGrantUncheckedCreateWithoutPortfolioInput> | AuthzAssetsAccessGrantCreateWithoutPortfolioInput[] | AuthzAssetsAccessGrantUncheckedCreateWithoutPortfolioInput[]
-    connectOrCreate?: AuthzAssetsAccessGrantCreateOrConnectWithoutPortfolioInput | AuthzAssetsAccessGrantCreateOrConnectWithoutPortfolioInput[]
-    upsert?: AuthzAssetsAccessGrantUpsertWithWhereUniqueWithoutPortfolioInput | AuthzAssetsAccessGrantUpsertWithWhereUniqueWithoutPortfolioInput[]
-    createMany?: AuthzAssetsAccessGrantCreateManyPortfolioInputEnvelope
-    set?: AuthzAssetsAccessGrantWhereUniqueInput | AuthzAssetsAccessGrantWhereUniqueInput[]
-    disconnect?: AuthzAssetsAccessGrantWhereUniqueInput | AuthzAssetsAccessGrantWhereUniqueInput[]
-    delete?: AuthzAssetsAccessGrantWhereUniqueInput | AuthzAssetsAccessGrantWhereUniqueInput[]
-    connect?: AuthzAssetsAccessGrantWhereUniqueInput | AuthzAssetsAccessGrantWhereUniqueInput[]
-    update?: AuthzAssetsAccessGrantUpdateWithWhereUniqueWithoutPortfolioInput | AuthzAssetsAccessGrantUpdateWithWhereUniqueWithoutPortfolioInput[]
-    updateMany?: AuthzAssetsAccessGrantUpdateManyWithWhereWithoutPortfolioInput | AuthzAssetsAccessGrantUpdateManyWithWhereWithoutPortfolioInput[]
-    deleteMany?: AuthzAssetsAccessGrantScalarWhereInput | AuthzAssetsAccessGrantScalarWhereInput[]
-  }
-
-  export type PortfolioCreateNestedOneWithoutAssetsInput = {
-    create?: XOR<PortfolioCreateWithoutAssetsInput, PortfolioUncheckedCreateWithoutAssetsInput>
-    connectOrCreate?: PortfolioCreateOrConnectWithoutAssetsInput
-    connect?: PortfolioWhereUniqueInput
-  }
-
   export type AccountCreateNestedOneWithoutParentAssetsInput = {
     create?: XOR<AccountCreateWithoutParentAssetsInput, AccountUncheckedCreateWithoutParentAssetsInput>
     connectOrCreate?: AccountCreateOrConnectWithoutParentAssetsInput
@@ -55840,12 +53687,6 @@ export namespace Prisma {
     create?: XOR<ConnectionCreateWithoutChildAssetsInput, ConnectionUncheckedCreateWithoutChildAssetsInput>
     connectOrCreate?: ConnectionCreateOrConnectWithoutChildAssetsInput
     connect?: ConnectionWhereUniqueInput
-  }
-
-  export type PortfolioCreateNestedOneWithoutChildAssetsInput = {
-    create?: XOR<PortfolioCreateWithoutChildAssetsInput, PortfolioUncheckedCreateWithoutChildAssetsInput>
-    connectOrCreate?: PortfolioCreateOrConnectWithoutChildAssetsInput
-    connect?: PortfolioWhereUniqueInput
   }
 
   export type ApplicationCreateNestedOneWithoutChildAssetsInput = {
@@ -55900,16 +53741,6 @@ export namespace Prisma {
     set?: $Enums.AssetType
   }
 
-  export type PortfolioUpdateOneWithoutAssetsNestedInput = {
-    create?: XOR<PortfolioCreateWithoutAssetsInput, PortfolioUncheckedCreateWithoutAssetsInput>
-    connectOrCreate?: PortfolioCreateOrConnectWithoutAssetsInput
-    upsert?: PortfolioUpsertWithoutAssetsInput
-    disconnect?: PortfolioWhereInput | boolean
-    delete?: PortfolioWhereInput | boolean
-    connect?: PortfolioWhereUniqueInput
-    update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutAssetsInput, PortfolioUpdateWithoutAssetsInput>, PortfolioUncheckedUpdateWithoutAssetsInput>
-  }
-
   export type AccountUpdateOneWithoutParentAssetsNestedInput = {
     create?: XOR<AccountCreateWithoutParentAssetsInput, AccountUncheckedCreateWithoutParentAssetsInput>
     connectOrCreate?: AccountCreateOrConnectWithoutParentAssetsInput
@@ -55938,16 +53769,6 @@ export namespace Prisma {
     delete?: ConnectionWhereInput | boolean
     connect?: ConnectionWhereUniqueInput
     update?: XOR<XOR<ConnectionUpdateToOneWithWhereWithoutChildAssetsInput, ConnectionUpdateWithoutChildAssetsInput>, ConnectionUncheckedUpdateWithoutChildAssetsInput>
-  }
-
-  export type PortfolioUpdateOneWithoutChildAssetsNestedInput = {
-    create?: XOR<PortfolioCreateWithoutChildAssetsInput, PortfolioUncheckedCreateWithoutChildAssetsInput>
-    connectOrCreate?: PortfolioCreateOrConnectWithoutChildAssetsInput
-    upsert?: PortfolioUpsertWithoutChildAssetsInput
-    disconnect?: PortfolioWhereInput | boolean
-    delete?: PortfolioWhereInput | boolean
-    connect?: PortfolioWhereUniqueInput
-    update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutChildAssetsInput, PortfolioUpdateWithoutChildAssetsInput>, PortfolioUncheckedUpdateWithoutChildAssetsInput>
   }
 
   export type ApplicationUpdateOneWithoutChildAssetsNestedInput = {
@@ -56056,12 +53877,6 @@ export namespace Prisma {
     connect?: AccountWhereUniqueInput
   }
 
-  export type PortfolioCreateNestedOneWithoutMembersInput = {
-    create?: XOR<PortfolioCreateWithoutMembersInput, PortfolioUncheckedCreateWithoutMembersInput>
-    connectOrCreate?: PortfolioCreateOrConnectWithoutMembersInput
-    connect?: PortfolioWhereUniqueInput
-  }
-
   export type AccessCreateNestedManyWithoutMemberInput = {
     create?: XOR<AccessCreateWithoutMemberInput, AccessUncheckedCreateWithoutMemberInput> | AccessCreateWithoutMemberInput[] | AccessUncheckedCreateWithoutMemberInput[]
     connectOrCreate?: AccessCreateOrConnectWithoutMemberInput | AccessCreateOrConnectWithoutMemberInput[]
@@ -56108,16 +53923,6 @@ export namespace Prisma {
     delete?: AccountWhereInput | boolean
     connect?: AccountWhereUniqueInput
     update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutParentAccountMembersInput, AccountUpdateWithoutParentAccountMembersInput>, AccountUncheckedUpdateWithoutParentAccountMembersInput>
-  }
-
-  export type PortfolioUpdateOneWithoutMembersNestedInput = {
-    create?: XOR<PortfolioCreateWithoutMembersInput, PortfolioUncheckedCreateWithoutMembersInput>
-    connectOrCreate?: PortfolioCreateOrConnectWithoutMembersInput
-    upsert?: PortfolioUpsertWithoutMembersInput
-    disconnect?: PortfolioWhereInput | boolean
-    delete?: PortfolioWhereInput | boolean
-    connect?: PortfolioWhereUniqueInput
-    update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutMembersInput, PortfolioUpdateWithoutMembersInput>, PortfolioUncheckedUpdateWithoutMembersInput>
   }
 
   export type AccessUpdateManyWithoutMemberNestedInput = {
@@ -56194,12 +53999,6 @@ export namespace Prisma {
     connect?: AccountWhereUniqueInput
   }
 
-  export type PortfolioCreateNestedOneWithoutAccessParentRowsInput = {
-    create?: XOR<PortfolioCreateWithoutAccessParentRowsInput, PortfolioUncheckedCreateWithoutAccessParentRowsInput>
-    connectOrCreate?: PortfolioCreateOrConnectWithoutAccessParentRowsInput
-    connect?: PortfolioWhereUniqueInput
-  }
-
   export type AssetCreateNestedOneWithoutAccessRowsInput = {
     create?: XOR<AssetCreateWithoutAccessRowsInput, AssetUncheckedCreateWithoutAccessRowsInput>
     connectOrCreate?: AssetCreateOrConnectWithoutAccessRowsInput
@@ -56216,12 +54015,6 @@ export namespace Prisma {
     create?: XOR<ConnectionCreateWithoutAssetAccessRowsInput, ConnectionUncheckedCreateWithoutAssetAccessRowsInput>
     connectOrCreate?: ConnectionCreateOrConnectWithoutAssetAccessRowsInput
     connect?: ConnectionWhereUniqueInput
-  }
-
-  export type PortfolioCreateNestedOneWithoutAccessAssetRowsInput = {
-    create?: XOR<PortfolioCreateWithoutAccessAssetRowsInput, PortfolioUncheckedCreateWithoutAccessAssetRowsInput>
-    connectOrCreate?: PortfolioCreateOrConnectWithoutAccessAssetRowsInput
-    connect?: PortfolioWhereUniqueInput
   }
 
   export type ApplicationCreateNestedOneWithoutAssetAccessRowsInput = {
@@ -56274,16 +54067,6 @@ export namespace Prisma {
     update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutAccessParentRowsInput, AccountUpdateWithoutAccessParentRowsInput>, AccountUncheckedUpdateWithoutAccessParentRowsInput>
   }
 
-  export type PortfolioUpdateOneWithoutAccessParentRowsNestedInput = {
-    create?: XOR<PortfolioCreateWithoutAccessParentRowsInput, PortfolioUncheckedCreateWithoutAccessParentRowsInput>
-    connectOrCreate?: PortfolioCreateOrConnectWithoutAccessParentRowsInput
-    upsert?: PortfolioUpsertWithoutAccessParentRowsInput
-    disconnect?: PortfolioWhereInput | boolean
-    delete?: PortfolioWhereInput | boolean
-    connect?: PortfolioWhereUniqueInput
-    update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutAccessParentRowsInput, PortfolioUpdateWithoutAccessParentRowsInput>, PortfolioUncheckedUpdateWithoutAccessParentRowsInput>
-  }
-
   export type AssetUpdateOneRequiredWithoutAccessRowsNestedInput = {
     create?: XOR<AssetCreateWithoutAccessRowsInput, AssetUncheckedCreateWithoutAccessRowsInput>
     connectOrCreate?: AssetCreateOrConnectWithoutAccessRowsInput
@@ -56310,16 +54093,6 @@ export namespace Prisma {
     delete?: ConnectionWhereInput | boolean
     connect?: ConnectionWhereUniqueInput
     update?: XOR<XOR<ConnectionUpdateToOneWithWhereWithoutAssetAccessRowsInput, ConnectionUpdateWithoutAssetAccessRowsInput>, ConnectionUncheckedUpdateWithoutAssetAccessRowsInput>
-  }
-
-  export type PortfolioUpdateOneWithoutAccessAssetRowsNestedInput = {
-    create?: XOR<PortfolioCreateWithoutAccessAssetRowsInput, PortfolioUncheckedCreateWithoutAccessAssetRowsInput>
-    connectOrCreate?: PortfolioCreateOrConnectWithoutAccessAssetRowsInput
-    upsert?: PortfolioUpsertWithoutAccessAssetRowsInput
-    disconnect?: PortfolioWhereInput | boolean
-    delete?: PortfolioWhereInput | boolean
-    connect?: PortfolioWhereUniqueInput
-    update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutAccessAssetRowsInput, PortfolioUpdateWithoutAccessAssetRowsInput>, PortfolioUncheckedUpdateWithoutAccessAssetRowsInput>
   }
 
   export type ApplicationUpdateOneWithoutAssetAccessRowsNestedInput = {
@@ -57024,12 +54797,6 @@ export namespace Prisma {
     connect?: AuthzRoleWhereUniqueInput
   }
 
-  export type PortfolioCreateNestedOneWithoutAuthzAssetsAccessGrantsInput = {
-    create?: XOR<PortfolioCreateWithoutAuthzAssetsAccessGrantsInput, PortfolioUncheckedCreateWithoutAuthzAssetsAccessGrantsInput>
-    connectOrCreate?: PortfolioCreateOrConnectWithoutAuthzAssetsAccessGrantsInput
-    connect?: PortfolioWhereUniqueInput
-  }
-
   export type AssetUpdateOneRequiredWithoutAuthzAssetsAccessGrantsNestedInput = {
     create?: XOR<AssetCreateWithoutAuthzAssetsAccessGrantsInput, AssetUncheckedCreateWithoutAuthzAssetsAccessGrantsInput>
     connectOrCreate?: AssetCreateOrConnectWithoutAuthzAssetsAccessGrantsInput
@@ -57052,16 +54819,6 @@ export namespace Prisma {
     upsert?: AuthzRoleUpsertWithoutAssetsGrantsInput
     connect?: AuthzRoleWhereUniqueInput
     update?: XOR<XOR<AuthzRoleUpdateToOneWithWhereWithoutAssetsGrantsInput, AuthzRoleUpdateWithoutAssetsGrantsInput>, AuthzRoleUncheckedUpdateWithoutAssetsGrantsInput>
-  }
-
-  export type PortfolioUpdateOneWithoutAuthzAssetsAccessGrantsNestedInput = {
-    create?: XOR<PortfolioCreateWithoutAuthzAssetsAccessGrantsInput, PortfolioUncheckedCreateWithoutAuthzAssetsAccessGrantsInput>
-    connectOrCreate?: PortfolioCreateOrConnectWithoutAuthzAssetsAccessGrantsInput
-    upsert?: PortfolioUpsertWithoutAuthzAssetsAccessGrantsInput
-    disconnect?: PortfolioWhereInput | boolean
-    delete?: PortfolioWhereInput | boolean
-    connect?: PortfolioWhereUniqueInput
-    update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutAuthzAssetsAccessGrantsInput, PortfolioUpdateWithoutAuthzAssetsAccessGrantsInput>, PortfolioUncheckedUpdateWithoutAuthzAssetsAccessGrantsInput>
   }
 
   export type PermitCreatepermissionsInput = {
@@ -57660,14 +55417,12 @@ export namespace Prisma {
     asset_type?: string | null
     asset: AssetCreateNestedOneWithoutAuthzAssetsAccessGrantsInput
     role: AuthzRoleCreateNestedOneWithoutAssetsGrantsInput
-    portfolio?: PortfolioCreateNestedOneWithoutAuthzAssetsAccessGrantsInput
   }
 
   export type AuthzAssetsAccessGrantUncheckedCreateWithoutAccountInput = {
     id?: string
     asset_id: string
     role_id: string
-    portfolio_id?: string | null
     app_id: string
     asset_type?: string | null
   }
@@ -57688,10 +55443,8 @@ export namespace Prisma {
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
-    parentPortfolio?: PortfolioCreateNestedOneWithoutAssetsInput
     childAccount?: AccountCreateNestedOneWithoutChildAssetsInput
     childConnection?: ConnectionCreateNestedOneWithoutChildAssetsInput
-    childPortfolio?: PortfolioCreateNestedOneWithoutChildAssetsInput
     childApplication?: ApplicationCreateNestedOneWithoutChildAssetsInput
     accessRows?: AccessCreateNestedManyWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
@@ -57702,10 +55455,8 @@ export namespace Prisma {
     id?: string
     access_type: $Enums.AssetType
     member_account_id?: string | null
-    member_portfolio_id?: string | null
     member_connection_id?: string | null
     access_application_id?: string | null
-    parent_portfolio_id?: string | null
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -57730,10 +55481,8 @@ export namespace Prisma {
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
-    parentPortfolio?: PortfolioCreateNestedOneWithoutAssetsInput
     parentAccount?: AccountCreateNestedOneWithoutParentAssetsInput
     childConnection?: ConnectionCreateNestedOneWithoutChildAssetsInput
-    childPortfolio?: PortfolioCreateNestedOneWithoutChildAssetsInput
     childApplication?: ApplicationCreateNestedOneWithoutChildAssetsInput
     accessRows?: AccessCreateNestedManyWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
@@ -57743,11 +55492,9 @@ export namespace Prisma {
   export type AssetUncheckedCreateWithoutChildAccountInput = {
     id?: string
     access_type: $Enums.AssetType
-    member_portfolio_id?: string | null
     member_connection_id?: string | null
     access_application_id?: string | null
     parent_account_id?: string | null
-    parent_portfolio_id?: string | null
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -57773,7 +55520,6 @@ export namespace Prisma {
     isTemporary?: Date | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
     parentAccount?: AccountCreateNestedOneWithoutParentAccountMembersInput
-    parentPortfolio?: PortfolioCreateNestedOneWithoutMembersInput
     accessRows?: AccessCreateNestedManyWithoutMemberInput
     roles?: RoleCreateNestedManyWithoutMemberInput
   }
@@ -57782,7 +55528,6 @@ export namespace Prisma {
     id?: string
     memberType: string
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     status?: string
     isTemporary?: Date | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -57807,7 +55552,6 @@ export namespace Prisma {
     isTemporary?: Date | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
     memberAccount?: AccountCreateNestedOneWithoutAccessMembersInput
-    parentPortfolio?: PortfolioCreateNestedOneWithoutMembersInput
     accessRows?: AccessCreateNestedManyWithoutMemberInput
     roles?: RoleCreateNestedManyWithoutMemberInput
   }
@@ -57816,7 +55560,6 @@ export namespace Prisma {
     id?: string
     memberType: string
     memberAccountId?: string | null
-    parentPortfolioId?: string | null
     status?: string
     isTemporary?: Date | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -57842,11 +55585,9 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     member: MemberCreateNestedOneWithoutAccessRowsInput
     parentAccount?: AccountCreateNestedOneWithoutAccessParentRowsInput
-    parentPortfolio?: PortfolioCreateNestedOneWithoutAccessParentRowsInput
     asset: AssetCreateNestedOneWithoutAccessRowsInput
     assetAccount?: AccountCreateNestedOneWithoutAccessAssetAccountRowsInput
     assetConnection?: ConnectionCreateNestedOneWithoutAssetAccessRowsInput
-    assetPortfolio?: PortfolioCreateNestedOneWithoutAccessAssetRowsInput
     assetApplication?: ApplicationCreateNestedOneWithoutAssetAccessRowsInput
     accessApplication?: ApplicationCreateNestedOneWithoutAccessRowsInput
     role: AuthzRoleCreateNestedOneWithoutAccessRowsInput
@@ -57857,11 +55598,9 @@ export namespace Prisma {
     accessType: $Enums.AccessType
     memberId: string
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     assetId: string
     assetAccountId?: string | null
     assetConnectionId?: string | null
-    assetPortfolioId?: string | null
     assetApplicationId?: string | null
     accessApplicationId?: string | null
     isTemporary?: Date | string | null
@@ -57888,11 +55627,9 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     member: MemberCreateNestedOneWithoutAccessRowsInput
     memberAccount?: AccountCreateNestedOneWithoutAccessMemberRowsInput
-    parentPortfolio?: PortfolioCreateNestedOneWithoutAccessParentRowsInput
     asset: AssetCreateNestedOneWithoutAccessRowsInput
     assetAccount?: AccountCreateNestedOneWithoutAccessAssetAccountRowsInput
     assetConnection?: ConnectionCreateNestedOneWithoutAssetAccessRowsInput
-    assetPortfolio?: PortfolioCreateNestedOneWithoutAccessAssetRowsInput
     assetApplication?: ApplicationCreateNestedOneWithoutAssetAccessRowsInput
     accessApplication?: ApplicationCreateNestedOneWithoutAccessRowsInput
     role: AuthzRoleCreateNestedOneWithoutAccessRowsInput
@@ -57903,11 +55640,9 @@ export namespace Prisma {
     accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
-    parentPortfolioId?: string | null
     assetId: string
     assetAccountId?: string | null
     assetConnectionId?: string | null
-    assetPortfolioId?: string | null
     assetApplicationId?: string | null
     accessApplicationId?: string | null
     isTemporary?: Date | string | null
@@ -57935,10 +55670,8 @@ export namespace Prisma {
     member: MemberCreateNestedOneWithoutAccessRowsInput
     memberAccount?: AccountCreateNestedOneWithoutAccessMemberRowsInput
     parentAccount?: AccountCreateNestedOneWithoutAccessParentRowsInput
-    parentPortfolio?: PortfolioCreateNestedOneWithoutAccessParentRowsInput
     asset: AssetCreateNestedOneWithoutAccessRowsInput
     assetConnection?: ConnectionCreateNestedOneWithoutAssetAccessRowsInput
-    assetPortfolio?: PortfolioCreateNestedOneWithoutAccessAssetRowsInput
     assetApplication?: ApplicationCreateNestedOneWithoutAssetAccessRowsInput
     accessApplication?: ApplicationCreateNestedOneWithoutAccessRowsInput
     role: AuthzRoleCreateNestedOneWithoutAccessRowsInput
@@ -57950,10 +55683,8 @@ export namespace Prisma {
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     assetId: string
     assetConnectionId?: string | null
-    assetPortfolioId?: string | null
     assetApplicationId?: string | null
     accessApplicationId?: string | null
     isTemporary?: Date | string | null
@@ -58794,7 +56525,6 @@ export namespace Prisma {
     asset_id?: StringFilter<"AuthzAssetsAccessGrant"> | string
     account_id?: StringFilter<"AuthzAssetsAccessGrant"> | string
     role_id?: StringFilter<"AuthzAssetsAccessGrant"> | string
-    portfolio_id?: StringNullableFilter<"AuthzAssetsAccessGrant"> | string | null
     app_id?: StringFilter<"AuthzAssetsAccessGrant"> | string
     asset_type?: StringNullableFilter<"AuthzAssetsAccessGrant"> | string | null
   }
@@ -58822,11 +56552,9 @@ export namespace Prisma {
     id?: StringFilter<"Asset"> | string
     access_type?: EnumAssetTypeFilter<"Asset"> | $Enums.AssetType
     member_account_id?: StringNullableFilter<"Asset"> | string | null
-    member_portfolio_id?: StringNullableFilter<"Asset"> | string | null
     member_connection_id?: StringNullableFilter<"Asset"> | string | null
     access_application_id?: StringNullableFilter<"Asset"> | string | null
     parent_account_id?: StringNullableFilter<"Asset"> | string | null
-    parent_portfolio_id?: StringNullableFilter<"Asset"> | string | null
     isTemporary?: DateTimeNullableFilter<"Asset"> | Date | string | null
     status?: StringFilter<"Asset"> | string
     details?: JsonNullableFilter<"Asset">
@@ -58872,7 +56600,6 @@ export namespace Prisma {
     memberType?: StringFilter<"Member"> | string
     memberAccountId?: StringNullableFilter<"Member"> | string | null
     parentAccountId?: StringNullableFilter<"Member"> | string | null
-    parentPortfolioId?: StringNullableFilter<"Member"> | string | null
     status?: StringFilter<"Member"> | string
     isTemporary?: DateTimeNullableFilter<"Member"> | Date | string | null
     details?: JsonNullableFilter<"Member">
@@ -58919,11 +56646,9 @@ export namespace Prisma {
     memberId?: StringFilter<"Access"> | string
     memberAccountId?: StringNullableFilter<"Access"> | string | null
     parentAccountId?: StringNullableFilter<"Access"> | string | null
-    parentPortfolioId?: StringNullableFilter<"Access"> | string | null
     assetId?: StringFilter<"Access"> | string
     assetAccountId?: StringNullableFilter<"Access"> | string | null
     assetConnectionId?: StringNullableFilter<"Access"> | string | null
-    assetPortfolioId?: StringNullableFilter<"Access"> | string | null
     assetApplicationId?: StringNullableFilter<"Access"> | string | null
     accessApplicationId?: StringNullableFilter<"Access"> | string | null
     isTemporary?: DateTimeNullableFilter<"Access"> | Date | string | null
@@ -62497,11 +60222,9 @@ export namespace Prisma {
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
-    parentPortfolio?: PortfolioCreateNestedOneWithoutAssetsInput
     parentAccount?: AccountCreateNestedOneWithoutParentAssetsInput
     childAccount?: AccountCreateNestedOneWithoutChildAssetsInput
     childConnection?: ConnectionCreateNestedOneWithoutChildAssetsInput
-    childPortfolio?: PortfolioCreateNestedOneWithoutChildAssetsInput
     accessRows?: AccessCreateNestedManyWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAssetInput
@@ -62511,10 +60234,8 @@ export namespace Prisma {
     id?: string
     access_type: $Enums.AssetType
     member_account_id?: string | null
-    member_portfolio_id?: string | null
     member_connection_id?: string | null
     parent_account_id?: string | null
-    parent_portfolio_id?: string | null
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -62542,11 +60263,9 @@ export namespace Prisma {
     member: MemberCreateNestedOneWithoutAccessRowsInput
     memberAccount?: AccountCreateNestedOneWithoutAccessMemberRowsInput
     parentAccount?: AccountCreateNestedOneWithoutAccessParentRowsInput
-    parentPortfolio?: PortfolioCreateNestedOneWithoutAccessParentRowsInput
     asset: AssetCreateNestedOneWithoutAccessRowsInput
     assetAccount?: AccountCreateNestedOneWithoutAccessAssetAccountRowsInput
     assetConnection?: ConnectionCreateNestedOneWithoutAssetAccessRowsInput
-    assetPortfolio?: PortfolioCreateNestedOneWithoutAccessAssetRowsInput
     accessApplication?: ApplicationCreateNestedOneWithoutAccessRowsInput
     role: AuthzRoleCreateNestedOneWithoutAccessRowsInput
   }
@@ -62557,11 +60276,9 @@ export namespace Prisma {
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     assetId: string
     assetAccountId?: string | null
     assetConnectionId?: string | null
-    assetPortfolioId?: string | null
     accessApplicationId?: string | null
     isTemporary?: Date | string | null
     roleId: string
@@ -62588,11 +60305,9 @@ export namespace Prisma {
     member: MemberCreateNestedOneWithoutAccessRowsInput
     memberAccount?: AccountCreateNestedOneWithoutAccessMemberRowsInput
     parentAccount?: AccountCreateNestedOneWithoutAccessParentRowsInput
-    parentPortfolio?: PortfolioCreateNestedOneWithoutAccessParentRowsInput
     asset: AssetCreateNestedOneWithoutAccessRowsInput
     assetAccount?: AccountCreateNestedOneWithoutAccessAssetAccountRowsInput
     assetConnection?: ConnectionCreateNestedOneWithoutAssetAccessRowsInput
-    assetPortfolio?: PortfolioCreateNestedOneWithoutAccessAssetRowsInput
     assetApplication?: ApplicationCreateNestedOneWithoutAssetAccessRowsInput
     role: AuthzRoleCreateNestedOneWithoutAccessRowsInput
   }
@@ -62603,11 +60318,9 @@ export namespace Prisma {
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     assetId: string
     assetAccountId?: string | null
     assetConnectionId?: string | null
-    assetPortfolioId?: string | null
     assetApplicationId?: string | null
     isTemporary?: Date | string | null
     roleId: string
@@ -63122,369 +60835,6 @@ export namespace Prisma {
     accessRows?: AccessUncheckedUpdateManyWithoutAccessApplicationNestedInput
   }
 
-  export type AssetCreateWithoutParentPortfolioInput = {
-    id?: string
-    access_type: $Enums.AssetType
-    isTemporary?: Date | string | null
-    status?: string
-    details?: NullableJsonNullValueInput | InputJsonValue
-    parentAccount?: AccountCreateNestedOneWithoutParentAssetsInput
-    childAccount?: AccountCreateNestedOneWithoutChildAssetsInput
-    childConnection?: ConnectionCreateNestedOneWithoutChildAssetsInput
-    childPortfolio?: PortfolioCreateNestedOneWithoutChildAssetsInput
-    childApplication?: ApplicationCreateNestedOneWithoutChildAssetsInput
-    accessRows?: AccessCreateNestedManyWithoutAssetInput
-    roles?: RoleCreateNestedManyWithoutAssetInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAssetInput
-  }
-
-  export type AssetUncheckedCreateWithoutParentPortfolioInput = {
-    id?: string
-    access_type: $Enums.AssetType
-    member_account_id?: string | null
-    member_portfolio_id?: string | null
-    member_connection_id?: string | null
-    access_application_id?: string | null
-    parent_account_id?: string | null
-    isTemporary?: Date | string | null
-    status?: string
-    details?: NullableJsonNullValueInput | InputJsonValue
-    accessRows?: AccessUncheckedCreateNestedManyWithoutAssetInput
-    roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAssetInput
-  }
-
-  export type AssetCreateOrConnectWithoutParentPortfolioInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutParentPortfolioInput, AssetUncheckedCreateWithoutParentPortfolioInput>
-  }
-
-  export type AssetCreateManyParentPortfolioInputEnvelope = {
-    data: AssetCreateManyParentPortfolioInput | AssetCreateManyParentPortfolioInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type AssetCreateWithoutChildPortfolioInput = {
-    id?: string
-    access_type: $Enums.AssetType
-    isTemporary?: Date | string | null
-    status?: string
-    details?: NullableJsonNullValueInput | InputJsonValue
-    parentPortfolio?: PortfolioCreateNestedOneWithoutAssetsInput
-    parentAccount?: AccountCreateNestedOneWithoutParentAssetsInput
-    childAccount?: AccountCreateNestedOneWithoutChildAssetsInput
-    childConnection?: ConnectionCreateNestedOneWithoutChildAssetsInput
-    childApplication?: ApplicationCreateNestedOneWithoutChildAssetsInput
-    accessRows?: AccessCreateNestedManyWithoutAssetInput
-    roles?: RoleCreateNestedManyWithoutAssetInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAssetInput
-  }
-
-  export type AssetUncheckedCreateWithoutChildPortfolioInput = {
-    id?: string
-    access_type: $Enums.AssetType
-    member_account_id?: string | null
-    member_connection_id?: string | null
-    access_application_id?: string | null
-    parent_account_id?: string | null
-    parent_portfolio_id?: string | null
-    isTemporary?: Date | string | null
-    status?: string
-    details?: NullableJsonNullValueInput | InputJsonValue
-    accessRows?: AccessUncheckedCreateNestedManyWithoutAssetInput
-    roles?: RoleUncheckedCreateNestedManyWithoutAssetInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAssetInput
-  }
-
-  export type AssetCreateOrConnectWithoutChildPortfolioInput = {
-    where: AssetWhereUniqueInput
-    create: XOR<AssetCreateWithoutChildPortfolioInput, AssetUncheckedCreateWithoutChildPortfolioInput>
-  }
-
-  export type AssetCreateManyChildPortfolioInputEnvelope = {
-    data: AssetCreateManyChildPortfolioInput | AssetCreateManyChildPortfolioInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type MemberCreateWithoutParentPortfolioInput = {
-    id?: string
-    memberType: string
-    status?: string
-    isTemporary?: Date | string | null
-    details?: NullableJsonNullValueInput | InputJsonValue
-    memberAccount?: AccountCreateNestedOneWithoutAccessMembersInput
-    parentAccount?: AccountCreateNestedOneWithoutParentAccountMembersInput
-    accessRows?: AccessCreateNestedManyWithoutMemberInput
-    roles?: RoleCreateNestedManyWithoutMemberInput
-  }
-
-  export type MemberUncheckedCreateWithoutParentPortfolioInput = {
-    id?: string
-    memberType: string
-    memberAccountId?: string | null
-    parentAccountId?: string | null
-    status?: string
-    isTemporary?: Date | string | null
-    details?: NullableJsonNullValueInput | InputJsonValue
-    accessRows?: AccessUncheckedCreateNestedManyWithoutMemberInput
-    roles?: RoleUncheckedCreateNestedManyWithoutMemberInput
-  }
-
-  export type MemberCreateOrConnectWithoutParentPortfolioInput = {
-    where: MemberWhereUniqueInput
-    create: XOR<MemberCreateWithoutParentPortfolioInput, MemberUncheckedCreateWithoutParentPortfolioInput>
-  }
-
-  export type MemberCreateManyParentPortfolioInputEnvelope = {
-    data: MemberCreateManyParentPortfolioInput | MemberCreateManyParentPortfolioInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type AccessCreateWithoutParentPortfolioInput = {
-    id?: string
-    accessType: $Enums.AccessType
-    isTemporary?: Date | string | null
-    status?: string
-    details?: NullableJsonNullValueInput | InputJsonValue
-    member: MemberCreateNestedOneWithoutAccessRowsInput
-    memberAccount?: AccountCreateNestedOneWithoutAccessMemberRowsInput
-    parentAccount?: AccountCreateNestedOneWithoutAccessParentRowsInput
-    asset: AssetCreateNestedOneWithoutAccessRowsInput
-    assetAccount?: AccountCreateNestedOneWithoutAccessAssetAccountRowsInput
-    assetConnection?: ConnectionCreateNestedOneWithoutAssetAccessRowsInput
-    assetPortfolio?: PortfolioCreateNestedOneWithoutAccessAssetRowsInput
-    assetApplication?: ApplicationCreateNestedOneWithoutAssetAccessRowsInput
-    accessApplication?: ApplicationCreateNestedOneWithoutAccessRowsInput
-    role: AuthzRoleCreateNestedOneWithoutAccessRowsInput
-  }
-
-  export type AccessUncheckedCreateWithoutParentPortfolioInput = {
-    id?: string
-    accessType: $Enums.AccessType
-    memberId: string
-    memberAccountId?: string | null
-    parentAccountId?: string | null
-    assetId: string
-    assetAccountId?: string | null
-    assetConnectionId?: string | null
-    assetPortfolioId?: string | null
-    assetApplicationId?: string | null
-    accessApplicationId?: string | null
-    isTemporary?: Date | string | null
-    roleId: string
-    status?: string
-    details?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type AccessCreateOrConnectWithoutParentPortfolioInput = {
-    where: AccessWhereUniqueInput
-    create: XOR<AccessCreateWithoutParentPortfolioInput, AccessUncheckedCreateWithoutParentPortfolioInput>
-  }
-
-  export type AccessCreateManyParentPortfolioInputEnvelope = {
-    data: AccessCreateManyParentPortfolioInput | AccessCreateManyParentPortfolioInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type AccessCreateWithoutAssetPortfolioInput = {
-    id?: string
-    accessType: $Enums.AccessType
-    isTemporary?: Date | string | null
-    status?: string
-    details?: NullableJsonNullValueInput | InputJsonValue
-    member: MemberCreateNestedOneWithoutAccessRowsInput
-    memberAccount?: AccountCreateNestedOneWithoutAccessMemberRowsInput
-    parentAccount?: AccountCreateNestedOneWithoutAccessParentRowsInput
-    parentPortfolio?: PortfolioCreateNestedOneWithoutAccessParentRowsInput
-    asset: AssetCreateNestedOneWithoutAccessRowsInput
-    assetAccount?: AccountCreateNestedOneWithoutAccessAssetAccountRowsInput
-    assetConnection?: ConnectionCreateNestedOneWithoutAssetAccessRowsInput
-    assetApplication?: ApplicationCreateNestedOneWithoutAssetAccessRowsInput
-    accessApplication?: ApplicationCreateNestedOneWithoutAccessRowsInput
-    role: AuthzRoleCreateNestedOneWithoutAccessRowsInput
-  }
-
-  export type AccessUncheckedCreateWithoutAssetPortfolioInput = {
-    id?: string
-    accessType: $Enums.AccessType
-    memberId: string
-    memberAccountId?: string | null
-    parentAccountId?: string | null
-    parentPortfolioId?: string | null
-    assetId: string
-    assetAccountId?: string | null
-    assetConnectionId?: string | null
-    assetApplicationId?: string | null
-    accessApplicationId?: string | null
-    isTemporary?: Date | string | null
-    roleId: string
-    status?: string
-    details?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type AccessCreateOrConnectWithoutAssetPortfolioInput = {
-    where: AccessWhereUniqueInput
-    create: XOR<AccessCreateWithoutAssetPortfolioInput, AccessUncheckedCreateWithoutAssetPortfolioInput>
-  }
-
-  export type AccessCreateManyAssetPortfolioInputEnvelope = {
-    data: AccessCreateManyAssetPortfolioInput | AccessCreateManyAssetPortfolioInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type AuthzAssetsAccessGrantCreateWithoutPortfolioInput = {
-    id?: string
-    app_id: string
-    asset_type?: string | null
-    asset: AssetCreateNestedOneWithoutAuthzAssetsAccessGrantsInput
-    account: AccountCreateNestedOneWithoutAuthzAssetsAccessGrantsInput
-    role: AuthzRoleCreateNestedOneWithoutAssetsGrantsInput
-  }
-
-  export type AuthzAssetsAccessGrantUncheckedCreateWithoutPortfolioInput = {
-    id?: string
-    asset_id: string
-    account_id: string
-    role_id: string
-    app_id: string
-    asset_type?: string | null
-  }
-
-  export type AuthzAssetsAccessGrantCreateOrConnectWithoutPortfolioInput = {
-    where: AuthzAssetsAccessGrantWhereUniqueInput
-    create: XOR<AuthzAssetsAccessGrantCreateWithoutPortfolioInput, AuthzAssetsAccessGrantUncheckedCreateWithoutPortfolioInput>
-  }
-
-  export type AuthzAssetsAccessGrantCreateManyPortfolioInputEnvelope = {
-    data: AuthzAssetsAccessGrantCreateManyPortfolioInput | AuthzAssetsAccessGrantCreateManyPortfolioInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type AssetUpsertWithWhereUniqueWithoutParentPortfolioInput = {
-    where: AssetWhereUniqueInput
-    update: XOR<AssetUpdateWithoutParentPortfolioInput, AssetUncheckedUpdateWithoutParentPortfolioInput>
-    create: XOR<AssetCreateWithoutParentPortfolioInput, AssetUncheckedCreateWithoutParentPortfolioInput>
-  }
-
-  export type AssetUpdateWithWhereUniqueWithoutParentPortfolioInput = {
-    where: AssetWhereUniqueInput
-    data: XOR<AssetUpdateWithoutParentPortfolioInput, AssetUncheckedUpdateWithoutParentPortfolioInput>
-  }
-
-  export type AssetUpdateManyWithWhereWithoutParentPortfolioInput = {
-    where: AssetScalarWhereInput
-    data: XOR<AssetUpdateManyMutationInput, AssetUncheckedUpdateManyWithoutParentPortfolioInput>
-  }
-
-  export type AssetUpsertWithWhereUniqueWithoutChildPortfolioInput = {
-    where: AssetWhereUniqueInput
-    update: XOR<AssetUpdateWithoutChildPortfolioInput, AssetUncheckedUpdateWithoutChildPortfolioInput>
-    create: XOR<AssetCreateWithoutChildPortfolioInput, AssetUncheckedCreateWithoutChildPortfolioInput>
-  }
-
-  export type AssetUpdateWithWhereUniqueWithoutChildPortfolioInput = {
-    where: AssetWhereUniqueInput
-    data: XOR<AssetUpdateWithoutChildPortfolioInput, AssetUncheckedUpdateWithoutChildPortfolioInput>
-  }
-
-  export type AssetUpdateManyWithWhereWithoutChildPortfolioInput = {
-    where: AssetScalarWhereInput
-    data: XOR<AssetUpdateManyMutationInput, AssetUncheckedUpdateManyWithoutChildPortfolioInput>
-  }
-
-  export type MemberUpsertWithWhereUniqueWithoutParentPortfolioInput = {
-    where: MemberWhereUniqueInput
-    update: XOR<MemberUpdateWithoutParentPortfolioInput, MemberUncheckedUpdateWithoutParentPortfolioInput>
-    create: XOR<MemberCreateWithoutParentPortfolioInput, MemberUncheckedCreateWithoutParentPortfolioInput>
-  }
-
-  export type MemberUpdateWithWhereUniqueWithoutParentPortfolioInput = {
-    where: MemberWhereUniqueInput
-    data: XOR<MemberUpdateWithoutParentPortfolioInput, MemberUncheckedUpdateWithoutParentPortfolioInput>
-  }
-
-  export type MemberUpdateManyWithWhereWithoutParentPortfolioInput = {
-    where: MemberScalarWhereInput
-    data: XOR<MemberUpdateManyMutationInput, MemberUncheckedUpdateManyWithoutParentPortfolioInput>
-  }
-
-  export type AccessUpsertWithWhereUniqueWithoutParentPortfolioInput = {
-    where: AccessWhereUniqueInput
-    update: XOR<AccessUpdateWithoutParentPortfolioInput, AccessUncheckedUpdateWithoutParentPortfolioInput>
-    create: XOR<AccessCreateWithoutParentPortfolioInput, AccessUncheckedCreateWithoutParentPortfolioInput>
-  }
-
-  export type AccessUpdateWithWhereUniqueWithoutParentPortfolioInput = {
-    where: AccessWhereUniqueInput
-    data: XOR<AccessUpdateWithoutParentPortfolioInput, AccessUncheckedUpdateWithoutParentPortfolioInput>
-  }
-
-  export type AccessUpdateManyWithWhereWithoutParentPortfolioInput = {
-    where: AccessScalarWhereInput
-    data: XOR<AccessUpdateManyMutationInput, AccessUncheckedUpdateManyWithoutParentPortfolioInput>
-  }
-
-  export type AccessUpsertWithWhereUniqueWithoutAssetPortfolioInput = {
-    where: AccessWhereUniqueInput
-    update: XOR<AccessUpdateWithoutAssetPortfolioInput, AccessUncheckedUpdateWithoutAssetPortfolioInput>
-    create: XOR<AccessCreateWithoutAssetPortfolioInput, AccessUncheckedCreateWithoutAssetPortfolioInput>
-  }
-
-  export type AccessUpdateWithWhereUniqueWithoutAssetPortfolioInput = {
-    where: AccessWhereUniqueInput
-    data: XOR<AccessUpdateWithoutAssetPortfolioInput, AccessUncheckedUpdateWithoutAssetPortfolioInput>
-  }
-
-  export type AccessUpdateManyWithWhereWithoutAssetPortfolioInput = {
-    where: AccessScalarWhereInput
-    data: XOR<AccessUpdateManyMutationInput, AccessUncheckedUpdateManyWithoutAssetPortfolioInput>
-  }
-
-  export type AuthzAssetsAccessGrantUpsertWithWhereUniqueWithoutPortfolioInput = {
-    where: AuthzAssetsAccessGrantWhereUniqueInput
-    update: XOR<AuthzAssetsAccessGrantUpdateWithoutPortfolioInput, AuthzAssetsAccessGrantUncheckedUpdateWithoutPortfolioInput>
-    create: XOR<AuthzAssetsAccessGrantCreateWithoutPortfolioInput, AuthzAssetsAccessGrantUncheckedCreateWithoutPortfolioInput>
-  }
-
-  export type AuthzAssetsAccessGrantUpdateWithWhereUniqueWithoutPortfolioInput = {
-    where: AuthzAssetsAccessGrantWhereUniqueInput
-    data: XOR<AuthzAssetsAccessGrantUpdateWithoutPortfolioInput, AuthzAssetsAccessGrantUncheckedUpdateWithoutPortfolioInput>
-  }
-
-  export type AuthzAssetsAccessGrantUpdateManyWithWhereWithoutPortfolioInput = {
-    where: AuthzAssetsAccessGrantScalarWhereInput
-    data: XOR<AuthzAssetsAccessGrantUpdateManyMutationInput, AuthzAssetsAccessGrantUncheckedUpdateManyWithoutPortfolioInput>
-  }
-
-  export type PortfolioCreateWithoutAssetsInput = {
-    id?: string
-    name: string
-    description?: string | null
-    dateCreated?: Date | string
-    childAssets?: AssetCreateNestedManyWithoutChildPortfolioInput
-    members?: MemberCreateNestedManyWithoutParentPortfolioInput
-    accessParentRows?: AccessCreateNestedManyWithoutParentPortfolioInput
-    accessAssetRows?: AccessCreateNestedManyWithoutAssetPortfolioInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutPortfolioInput
-  }
-
-  export type PortfolioUncheckedCreateWithoutAssetsInput = {
-    id?: string
-    name: string
-    description?: string | null
-    dateCreated?: Date | string
-    childAssets?: AssetUncheckedCreateNestedManyWithoutChildPortfolioInput
-    members?: MemberUncheckedCreateNestedManyWithoutParentPortfolioInput
-    accessParentRows?: AccessUncheckedCreateNestedManyWithoutParentPortfolioInput
-    accessAssetRows?: AccessUncheckedCreateNestedManyWithoutAssetPortfolioInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
-  }
-
-  export type PortfolioCreateOrConnectWithoutAssetsInput = {
-    where: PortfolioWhereUniqueInput
-    create: XOR<PortfolioCreateWithoutAssetsInput, PortfolioUncheckedCreateWithoutAssetsInput>
-  }
-
   export type AccountCreateWithoutParentAssetsInput = {
     id?: string
     displayName?: string | null
@@ -63688,35 +61038,6 @@ export namespace Prisma {
     create: XOR<ConnectionCreateWithoutChildAssetsInput, ConnectionUncheckedCreateWithoutChildAssetsInput>
   }
 
-  export type PortfolioCreateWithoutChildAssetsInput = {
-    id?: string
-    name: string
-    description?: string | null
-    dateCreated?: Date | string
-    assets?: AssetCreateNestedManyWithoutParentPortfolioInput
-    members?: MemberCreateNestedManyWithoutParentPortfolioInput
-    accessParentRows?: AccessCreateNestedManyWithoutParentPortfolioInput
-    accessAssetRows?: AccessCreateNestedManyWithoutAssetPortfolioInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutPortfolioInput
-  }
-
-  export type PortfolioUncheckedCreateWithoutChildAssetsInput = {
-    id?: string
-    name: string
-    description?: string | null
-    dateCreated?: Date | string
-    assets?: AssetUncheckedCreateNestedManyWithoutParentPortfolioInput
-    members?: MemberUncheckedCreateNestedManyWithoutParentPortfolioInput
-    accessParentRows?: AccessUncheckedCreateNestedManyWithoutParentPortfolioInput
-    accessAssetRows?: AccessUncheckedCreateNestedManyWithoutAssetPortfolioInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
-  }
-
-  export type PortfolioCreateOrConnectWithoutChildAssetsInput = {
-    where: PortfolioWhereUniqueInput
-    create: XOR<PortfolioCreateWithoutChildAssetsInput, PortfolioUncheckedCreateWithoutChildAssetsInput>
-  }
-
   export type ApplicationCreateWithoutChildAssetsInput = {
     id: string
     name: string
@@ -63787,10 +61108,8 @@ export namespace Prisma {
     member: MemberCreateNestedOneWithoutAccessRowsInput
     memberAccount?: AccountCreateNestedOneWithoutAccessMemberRowsInput
     parentAccount?: AccountCreateNestedOneWithoutAccessParentRowsInput
-    parentPortfolio?: PortfolioCreateNestedOneWithoutAccessParentRowsInput
     assetAccount?: AccountCreateNestedOneWithoutAccessAssetAccountRowsInput
     assetConnection?: ConnectionCreateNestedOneWithoutAssetAccessRowsInput
-    assetPortfolio?: PortfolioCreateNestedOneWithoutAccessAssetRowsInput
     assetApplication?: ApplicationCreateNestedOneWithoutAssetAccessRowsInput
     accessApplication?: ApplicationCreateNestedOneWithoutAccessRowsInput
     role: AuthzRoleCreateNestedOneWithoutAccessRowsInput
@@ -63802,10 +61121,8 @@ export namespace Prisma {
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     assetAccountId?: string | null
     assetConnectionId?: string | null
-    assetPortfolioId?: string | null
     assetApplicationId?: string | null
     accessApplicationId?: string | null
     isTemporary?: Date | string | null
@@ -63868,14 +61185,12 @@ export namespace Prisma {
     asset_type?: string | null
     account: AccountCreateNestedOneWithoutAuthzAssetsAccessGrantsInput
     role: AuthzRoleCreateNestedOneWithoutAssetsGrantsInput
-    portfolio?: PortfolioCreateNestedOneWithoutAuthzAssetsAccessGrantsInput
   }
 
   export type AuthzAssetsAccessGrantUncheckedCreateWithoutAssetInput = {
     id?: string
     account_id: string
     role_id: string
-    portfolio_id?: string | null
     app_id: string
     asset_type?: string | null
   }
@@ -63888,41 +61203,6 @@ export namespace Prisma {
   export type AuthzAssetsAccessGrantCreateManyAssetInputEnvelope = {
     data: AuthzAssetsAccessGrantCreateManyAssetInput | AuthzAssetsAccessGrantCreateManyAssetInput[]
     skipDuplicates?: boolean
-  }
-
-  export type PortfolioUpsertWithoutAssetsInput = {
-    update: XOR<PortfolioUpdateWithoutAssetsInput, PortfolioUncheckedUpdateWithoutAssetsInput>
-    create: XOR<PortfolioCreateWithoutAssetsInput, PortfolioUncheckedCreateWithoutAssetsInput>
-    where?: PortfolioWhereInput
-  }
-
-  export type PortfolioUpdateToOneWithWhereWithoutAssetsInput = {
-    where?: PortfolioWhereInput
-    data: XOR<PortfolioUpdateWithoutAssetsInput, PortfolioUncheckedUpdateWithoutAssetsInput>
-  }
-
-  export type PortfolioUpdateWithoutAssetsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
-    childAssets?: AssetUpdateManyWithoutChildPortfolioNestedInput
-    members?: MemberUpdateManyWithoutParentPortfolioNestedInput
-    accessParentRows?: AccessUpdateManyWithoutParentPortfolioNestedInput
-    accessAssetRows?: AccessUpdateManyWithoutAssetPortfolioNestedInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutPortfolioNestedInput
-  }
-
-  export type PortfolioUncheckedUpdateWithoutAssetsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
-    childAssets?: AssetUncheckedUpdateManyWithoutChildPortfolioNestedInput
-    members?: MemberUncheckedUpdateManyWithoutParentPortfolioNestedInput
-    accessParentRows?: AccessUncheckedUpdateManyWithoutParentPortfolioNestedInput
-    accessAssetRows?: AccessUncheckedUpdateManyWithoutAssetPortfolioNestedInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
   export type AccountUpsertWithoutParentAssetsInput = {
@@ -64144,41 +61424,6 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     assetAccessRows?: AccessUncheckedUpdateManyWithoutAssetConnectionNestedInput
     denormRoles?: RoleUncheckedUpdateManyWithoutConnectionNestedInput
-  }
-
-  export type PortfolioUpsertWithoutChildAssetsInput = {
-    update: XOR<PortfolioUpdateWithoutChildAssetsInput, PortfolioUncheckedUpdateWithoutChildAssetsInput>
-    create: XOR<PortfolioCreateWithoutChildAssetsInput, PortfolioUncheckedCreateWithoutChildAssetsInput>
-    where?: PortfolioWhereInput
-  }
-
-  export type PortfolioUpdateToOneWithWhereWithoutChildAssetsInput = {
-    where?: PortfolioWhereInput
-    data: XOR<PortfolioUpdateWithoutChildAssetsInput, PortfolioUncheckedUpdateWithoutChildAssetsInput>
-  }
-
-  export type PortfolioUpdateWithoutChildAssetsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
-    assets?: AssetUpdateManyWithoutParentPortfolioNestedInput
-    members?: MemberUpdateManyWithoutParentPortfolioNestedInput
-    accessParentRows?: AccessUpdateManyWithoutParentPortfolioNestedInput
-    accessAssetRows?: AccessUpdateManyWithoutAssetPortfolioNestedInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutPortfolioNestedInput
-  }
-
-  export type PortfolioUncheckedUpdateWithoutChildAssetsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
-    assets?: AssetUncheckedUpdateManyWithoutParentPortfolioNestedInput
-    members?: MemberUncheckedUpdateManyWithoutParentPortfolioNestedInput
-    accessParentRows?: AccessUncheckedUpdateManyWithoutParentPortfolioNestedInput
-    accessAssetRows?: AccessUncheckedUpdateManyWithoutAssetPortfolioNestedInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
   export type ApplicationUpsertWithoutChildAssetsInput = {
@@ -64470,35 +61715,6 @@ export namespace Prisma {
     create: XOR<AccountCreateWithoutParentAccountMembersInput, AccountUncheckedCreateWithoutParentAccountMembersInput>
   }
 
-  export type PortfolioCreateWithoutMembersInput = {
-    id?: string
-    name: string
-    description?: string | null
-    dateCreated?: Date | string
-    assets?: AssetCreateNestedManyWithoutParentPortfolioInput
-    childAssets?: AssetCreateNestedManyWithoutChildPortfolioInput
-    accessParentRows?: AccessCreateNestedManyWithoutParentPortfolioInput
-    accessAssetRows?: AccessCreateNestedManyWithoutAssetPortfolioInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutPortfolioInput
-  }
-
-  export type PortfolioUncheckedCreateWithoutMembersInput = {
-    id?: string
-    name: string
-    description?: string | null
-    dateCreated?: Date | string
-    assets?: AssetUncheckedCreateNestedManyWithoutParentPortfolioInput
-    childAssets?: AssetUncheckedCreateNestedManyWithoutChildPortfolioInput
-    accessParentRows?: AccessUncheckedCreateNestedManyWithoutParentPortfolioInput
-    accessAssetRows?: AccessUncheckedCreateNestedManyWithoutAssetPortfolioInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
-  }
-
-  export type PortfolioCreateOrConnectWithoutMembersInput = {
-    where: PortfolioWhereUniqueInput
-    create: XOR<PortfolioCreateWithoutMembersInput, PortfolioUncheckedCreateWithoutMembersInput>
-  }
-
   export type AccessCreateWithoutMemberInput = {
     id?: string
     accessType: $Enums.AccessType
@@ -64507,11 +61723,9 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     memberAccount?: AccountCreateNestedOneWithoutAccessMemberRowsInput
     parentAccount?: AccountCreateNestedOneWithoutAccessParentRowsInput
-    parentPortfolio?: PortfolioCreateNestedOneWithoutAccessParentRowsInput
     asset: AssetCreateNestedOneWithoutAccessRowsInput
     assetAccount?: AccountCreateNestedOneWithoutAccessAssetAccountRowsInput
     assetConnection?: ConnectionCreateNestedOneWithoutAssetAccessRowsInput
-    assetPortfolio?: PortfolioCreateNestedOneWithoutAccessAssetRowsInput
     assetApplication?: ApplicationCreateNestedOneWithoutAssetAccessRowsInput
     accessApplication?: ApplicationCreateNestedOneWithoutAccessRowsInput
     role: AuthzRoleCreateNestedOneWithoutAccessRowsInput
@@ -64522,11 +61736,9 @@ export namespace Prisma {
     accessType: $Enums.AccessType
     memberAccountId?: string | null
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     assetId: string
     assetAccountId?: string | null
     assetConnectionId?: string | null
-    assetPortfolioId?: string | null
     assetApplicationId?: string | null
     accessApplicationId?: string | null
     isTemporary?: Date | string | null
@@ -64769,41 +61981,6 @@ export namespace Prisma {
     verifications?: VerificationUncheckedUpdateManyWithoutAccountNestedInput
   }
 
-  export type PortfolioUpsertWithoutMembersInput = {
-    update: XOR<PortfolioUpdateWithoutMembersInput, PortfolioUncheckedUpdateWithoutMembersInput>
-    create: XOR<PortfolioCreateWithoutMembersInput, PortfolioUncheckedCreateWithoutMembersInput>
-    where?: PortfolioWhereInput
-  }
-
-  export type PortfolioUpdateToOneWithWhereWithoutMembersInput = {
-    where?: PortfolioWhereInput
-    data: XOR<PortfolioUpdateWithoutMembersInput, PortfolioUncheckedUpdateWithoutMembersInput>
-  }
-
-  export type PortfolioUpdateWithoutMembersInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
-    assets?: AssetUpdateManyWithoutParentPortfolioNestedInput
-    childAssets?: AssetUpdateManyWithoutChildPortfolioNestedInput
-    accessParentRows?: AccessUpdateManyWithoutParentPortfolioNestedInput
-    accessAssetRows?: AccessUpdateManyWithoutAssetPortfolioNestedInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutPortfolioNestedInput
-  }
-
-  export type PortfolioUncheckedUpdateWithoutMembersInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
-    assets?: AssetUncheckedUpdateManyWithoutParentPortfolioNestedInput
-    childAssets?: AssetUncheckedUpdateManyWithoutChildPortfolioNestedInput
-    accessParentRows?: AccessUncheckedUpdateManyWithoutParentPortfolioNestedInput
-    accessAssetRows?: AccessUncheckedUpdateManyWithoutAssetPortfolioNestedInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
-  }
-
   export type AccessUpsertWithWhereUniqueWithoutMemberInput = {
     where: AccessWhereUniqueInput
     update: XOR<AccessUpdateWithoutMemberInput, AccessUncheckedUpdateWithoutMemberInput>
@@ -64844,7 +62021,6 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     memberAccount?: AccountCreateNestedOneWithoutAccessMembersInput
     parentAccount?: AccountCreateNestedOneWithoutParentAccountMembersInput
-    parentPortfolio?: PortfolioCreateNestedOneWithoutMembersInput
     roles?: RoleCreateNestedManyWithoutMemberInput
   }
 
@@ -64853,7 +62029,6 @@ export namespace Prisma {
     memberType: string
     memberAccountId?: string | null
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     status?: string
     isTemporary?: Date | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -65039,46 +62214,15 @@ export namespace Prisma {
     create: XOR<AccountCreateWithoutAccessParentRowsInput, AccountUncheckedCreateWithoutAccessParentRowsInput>
   }
 
-  export type PortfolioCreateWithoutAccessParentRowsInput = {
-    id?: string
-    name: string
-    description?: string | null
-    dateCreated?: Date | string
-    assets?: AssetCreateNestedManyWithoutParentPortfolioInput
-    childAssets?: AssetCreateNestedManyWithoutChildPortfolioInput
-    members?: MemberCreateNestedManyWithoutParentPortfolioInput
-    accessAssetRows?: AccessCreateNestedManyWithoutAssetPortfolioInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutPortfolioInput
-  }
-
-  export type PortfolioUncheckedCreateWithoutAccessParentRowsInput = {
-    id?: string
-    name: string
-    description?: string | null
-    dateCreated?: Date | string
-    assets?: AssetUncheckedCreateNestedManyWithoutParentPortfolioInput
-    childAssets?: AssetUncheckedCreateNestedManyWithoutChildPortfolioInput
-    members?: MemberUncheckedCreateNestedManyWithoutParentPortfolioInput
-    accessAssetRows?: AccessUncheckedCreateNestedManyWithoutAssetPortfolioInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
-  }
-
-  export type PortfolioCreateOrConnectWithoutAccessParentRowsInput = {
-    where: PortfolioWhereUniqueInput
-    create: XOR<PortfolioCreateWithoutAccessParentRowsInput, PortfolioUncheckedCreateWithoutAccessParentRowsInput>
-  }
-
   export type AssetCreateWithoutAccessRowsInput = {
     id?: string
     access_type: $Enums.AssetType
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
-    parentPortfolio?: PortfolioCreateNestedOneWithoutAssetsInput
     parentAccount?: AccountCreateNestedOneWithoutParentAssetsInput
     childAccount?: AccountCreateNestedOneWithoutChildAssetsInput
     childConnection?: ConnectionCreateNestedOneWithoutChildAssetsInput
-    childPortfolio?: PortfolioCreateNestedOneWithoutChildAssetsInput
     childApplication?: ApplicationCreateNestedOneWithoutChildAssetsInput
     roles?: RoleCreateNestedManyWithoutAssetInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAssetInput
@@ -65088,11 +62232,9 @@ export namespace Prisma {
     id?: string
     access_type: $Enums.AssetType
     member_account_id?: string | null
-    member_portfolio_id?: string | null
     member_connection_id?: string | null
     access_application_id?: string | null
     parent_account_id?: string | null
-    parent_portfolio_id?: string | null
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -65219,35 +62361,6 @@ export namespace Prisma {
   export type ConnectionCreateOrConnectWithoutAssetAccessRowsInput = {
     where: ConnectionWhereUniqueInput
     create: XOR<ConnectionCreateWithoutAssetAccessRowsInput, ConnectionUncheckedCreateWithoutAssetAccessRowsInput>
-  }
-
-  export type PortfolioCreateWithoutAccessAssetRowsInput = {
-    id?: string
-    name: string
-    description?: string | null
-    dateCreated?: Date | string
-    assets?: AssetCreateNestedManyWithoutParentPortfolioInput
-    childAssets?: AssetCreateNestedManyWithoutChildPortfolioInput
-    members?: MemberCreateNestedManyWithoutParentPortfolioInput
-    accessParentRows?: AccessCreateNestedManyWithoutParentPortfolioInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutPortfolioInput
-  }
-
-  export type PortfolioUncheckedCreateWithoutAccessAssetRowsInput = {
-    id?: string
-    name: string
-    description?: string | null
-    dateCreated?: Date | string
-    assets?: AssetUncheckedCreateNestedManyWithoutParentPortfolioInput
-    childAssets?: AssetUncheckedCreateNestedManyWithoutChildPortfolioInput
-    members?: MemberUncheckedCreateNestedManyWithoutParentPortfolioInput
-    accessParentRows?: AccessUncheckedCreateNestedManyWithoutParentPortfolioInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutPortfolioInput
-  }
-
-  export type PortfolioCreateOrConnectWithoutAccessAssetRowsInput = {
-    where: PortfolioWhereUniqueInput
-    create: XOR<PortfolioCreateWithoutAccessAssetRowsInput, PortfolioUncheckedCreateWithoutAccessAssetRowsInput>
   }
 
   export type ApplicationCreateWithoutAssetAccessRowsInput = {
@@ -65434,7 +62547,6 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     memberAccount?: AccountUpdateOneWithoutAccessMembersNestedInput
     parentAccount?: AccountUpdateOneWithoutParentAccountMembersNestedInput
-    parentPortfolio?: PortfolioUpdateOneWithoutMembersNestedInput
     roles?: RoleUpdateManyWithoutMemberNestedInput
   }
 
@@ -65443,7 +62555,6 @@ export namespace Prisma {
     memberType?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -65636,41 +62747,6 @@ export namespace Prisma {
     verifications?: VerificationUncheckedUpdateManyWithoutAccountNestedInput
   }
 
-  export type PortfolioUpsertWithoutAccessParentRowsInput = {
-    update: XOR<PortfolioUpdateWithoutAccessParentRowsInput, PortfolioUncheckedUpdateWithoutAccessParentRowsInput>
-    create: XOR<PortfolioCreateWithoutAccessParentRowsInput, PortfolioUncheckedCreateWithoutAccessParentRowsInput>
-    where?: PortfolioWhereInput
-  }
-
-  export type PortfolioUpdateToOneWithWhereWithoutAccessParentRowsInput = {
-    where?: PortfolioWhereInput
-    data: XOR<PortfolioUpdateWithoutAccessParentRowsInput, PortfolioUncheckedUpdateWithoutAccessParentRowsInput>
-  }
-
-  export type PortfolioUpdateWithoutAccessParentRowsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
-    assets?: AssetUpdateManyWithoutParentPortfolioNestedInput
-    childAssets?: AssetUpdateManyWithoutChildPortfolioNestedInput
-    members?: MemberUpdateManyWithoutParentPortfolioNestedInput
-    accessAssetRows?: AccessUpdateManyWithoutAssetPortfolioNestedInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutPortfolioNestedInput
-  }
-
-  export type PortfolioUncheckedUpdateWithoutAccessParentRowsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
-    assets?: AssetUncheckedUpdateManyWithoutParentPortfolioNestedInput
-    childAssets?: AssetUncheckedUpdateManyWithoutChildPortfolioNestedInput
-    members?: MemberUncheckedUpdateManyWithoutParentPortfolioNestedInput
-    accessAssetRows?: AccessUncheckedUpdateManyWithoutAssetPortfolioNestedInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
-  }
-
   export type AssetUpsertWithoutAccessRowsInput = {
     update: XOR<AssetUpdateWithoutAccessRowsInput, AssetUncheckedUpdateWithoutAccessRowsInput>
     create: XOR<AssetCreateWithoutAccessRowsInput, AssetUncheckedCreateWithoutAccessRowsInput>
@@ -65688,11 +62764,9 @@ export namespace Prisma {
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
-    parentPortfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
     parentAccount?: AccountUpdateOneWithoutParentAssetsNestedInput
     childAccount?: AccountUpdateOneWithoutChildAssetsNestedInput
     childConnection?: ConnectionUpdateOneWithoutChildAssetsNestedInput
-    childPortfolio?: PortfolioUpdateOneWithoutChildAssetsNestedInput
     childApplication?: ApplicationUpdateOneWithoutChildAssetsNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAssetNestedInput
@@ -65702,11 +62776,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     access_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
     member_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    member_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     member_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
     access_application_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -65840,41 +62912,6 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     childAssets?: AssetUncheckedUpdateManyWithoutChildConnectionNestedInput
     denormRoles?: RoleUncheckedUpdateManyWithoutConnectionNestedInput
-  }
-
-  export type PortfolioUpsertWithoutAccessAssetRowsInput = {
-    update: XOR<PortfolioUpdateWithoutAccessAssetRowsInput, PortfolioUncheckedUpdateWithoutAccessAssetRowsInput>
-    create: XOR<PortfolioCreateWithoutAccessAssetRowsInput, PortfolioUncheckedCreateWithoutAccessAssetRowsInput>
-    where?: PortfolioWhereInput
-  }
-
-  export type PortfolioUpdateToOneWithWhereWithoutAccessAssetRowsInput = {
-    where?: PortfolioWhereInput
-    data: XOR<PortfolioUpdateWithoutAccessAssetRowsInput, PortfolioUncheckedUpdateWithoutAccessAssetRowsInput>
-  }
-
-  export type PortfolioUpdateWithoutAccessAssetRowsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
-    assets?: AssetUpdateManyWithoutParentPortfolioNestedInput
-    childAssets?: AssetUpdateManyWithoutChildPortfolioNestedInput
-    members?: MemberUpdateManyWithoutParentPortfolioNestedInput
-    accessParentRows?: AccessUpdateManyWithoutParentPortfolioNestedInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutPortfolioNestedInput
-  }
-
-  export type PortfolioUncheckedUpdateWithoutAccessAssetRowsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
-    assets?: AssetUncheckedUpdateManyWithoutParentPortfolioNestedInput
-    childAssets?: AssetUncheckedUpdateManyWithoutChildPortfolioNestedInput
-    members?: MemberUncheckedUpdateManyWithoutParentPortfolioNestedInput
-    accessParentRows?: AccessUncheckedUpdateManyWithoutParentPortfolioNestedInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
   export type ApplicationUpsertWithoutAssetAccessRowsInput = {
@@ -66617,10 +63654,8 @@ export namespace Prisma {
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
-    parentPortfolio?: PortfolioCreateNestedOneWithoutAssetsInput
     parentAccount?: AccountCreateNestedOneWithoutParentAssetsInput
     childAccount?: AccountCreateNestedOneWithoutChildAssetsInput
-    childPortfolio?: PortfolioCreateNestedOneWithoutChildAssetsInput
     childApplication?: ApplicationCreateNestedOneWithoutChildAssetsInput
     accessRows?: AccessCreateNestedManyWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
@@ -66631,10 +63666,8 @@ export namespace Prisma {
     id?: string
     access_type: $Enums.AssetType
     member_account_id?: string | null
-    member_portfolio_id?: string | null
     access_application_id?: string | null
     parent_account_id?: string | null
-    parent_portfolio_id?: string | null
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -66662,10 +63695,8 @@ export namespace Prisma {
     member: MemberCreateNestedOneWithoutAccessRowsInput
     memberAccount?: AccountCreateNestedOneWithoutAccessMemberRowsInput
     parentAccount?: AccountCreateNestedOneWithoutAccessParentRowsInput
-    parentPortfolio?: PortfolioCreateNestedOneWithoutAccessParentRowsInput
     asset: AssetCreateNestedOneWithoutAccessRowsInput
     assetAccount?: AccountCreateNestedOneWithoutAccessAssetAccountRowsInput
-    assetPortfolio?: PortfolioCreateNestedOneWithoutAccessAssetRowsInput
     assetApplication?: ApplicationCreateNestedOneWithoutAssetAccessRowsInput
     accessApplication?: ApplicationCreateNestedOneWithoutAccessRowsInput
     role: AuthzRoleCreateNestedOneWithoutAccessRowsInput
@@ -66677,10 +63708,8 @@ export namespace Prisma {
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     assetId: string
     assetAccountId?: string | null
-    assetPortfolioId?: string | null
     assetApplicationId?: string | null
     accessApplicationId?: string | null
     isTemporary?: Date | string | null
@@ -67258,7 +64287,6 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     memberAccount?: AccountCreateNestedOneWithoutAccessMembersInput
     parentAccount?: AccountCreateNestedOneWithoutParentAccountMembersInput
-    parentPortfolio?: PortfolioCreateNestedOneWithoutMembersInput
     accessRows?: AccessCreateNestedManyWithoutMemberInput
   }
 
@@ -67267,7 +64295,6 @@ export namespace Prisma {
     memberType: string
     memberAccountId?: string | null
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     status?: string
     isTemporary?: Date | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -67401,11 +64428,9 @@ export namespace Prisma {
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
-    parentPortfolio?: PortfolioCreateNestedOneWithoutAssetsInput
     parentAccount?: AccountCreateNestedOneWithoutParentAssetsInput
     childAccount?: AccountCreateNestedOneWithoutChildAssetsInput
     childConnection?: ConnectionCreateNestedOneWithoutChildAssetsInput
-    childPortfolio?: PortfolioCreateNestedOneWithoutChildAssetsInput
     childApplication?: ApplicationCreateNestedOneWithoutChildAssetsInput
     accessRows?: AccessCreateNestedManyWithoutAssetInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAssetInput
@@ -67415,11 +64440,9 @@ export namespace Prisma {
     id?: string
     access_type: $Enums.AssetType
     member_account_id?: string | null
-    member_portfolio_id?: string | null
     member_connection_id?: string | null
     access_application_id?: string | null
     parent_account_id?: string | null
-    parent_portfolio_id?: string | null
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -67494,7 +64517,6 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     memberAccount?: AccountUpdateOneWithoutAccessMembersNestedInput
     parentAccount?: AccountUpdateOneWithoutParentAccountMembersNestedInput
-    parentPortfolio?: PortfolioUpdateOneWithoutMembersNestedInput
     accessRows?: AccessUpdateManyWithoutMemberNestedInput
   }
 
@@ -67503,7 +64525,6 @@ export namespace Prisma {
     memberType?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -67655,11 +64676,9 @@ export namespace Prisma {
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
-    parentPortfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
     parentAccount?: AccountUpdateOneWithoutParentAssetsNestedInput
     childAccount?: AccountUpdateOneWithoutChildAssetsNestedInput
     childConnection?: ConnectionUpdateOneWithoutChildAssetsNestedInput
-    childPortfolio?: PortfolioUpdateOneWithoutChildAssetsNestedInput
     childApplication?: ApplicationUpdateOneWithoutChildAssetsNestedInput
     accessRows?: AccessUpdateManyWithoutAssetNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAssetNestedInput
@@ -67669,11 +64688,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     access_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
     member_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    member_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     member_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
     access_application_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -67979,14 +64996,12 @@ export namespace Prisma {
     asset_type?: string | null
     asset: AssetCreateNestedOneWithoutAuthzAssetsAccessGrantsInput
     account: AccountCreateNestedOneWithoutAuthzAssetsAccessGrantsInput
-    portfolio?: PortfolioCreateNestedOneWithoutAuthzAssetsAccessGrantsInput
   }
 
   export type AuthzAssetsAccessGrantUncheckedCreateWithoutRoleInput = {
     id?: string
     asset_id: string
     account_id: string
-    portfolio_id?: string | null
     app_id: string
     asset_type?: string | null
   }
@@ -68010,11 +65025,9 @@ export namespace Prisma {
     member: MemberCreateNestedOneWithoutAccessRowsInput
     memberAccount?: AccountCreateNestedOneWithoutAccessMemberRowsInput
     parentAccount?: AccountCreateNestedOneWithoutAccessParentRowsInput
-    parentPortfolio?: PortfolioCreateNestedOneWithoutAccessParentRowsInput
     asset: AssetCreateNestedOneWithoutAccessRowsInput
     assetAccount?: AccountCreateNestedOneWithoutAccessAssetAccountRowsInput
     assetConnection?: ConnectionCreateNestedOneWithoutAssetAccessRowsInput
-    assetPortfolio?: PortfolioCreateNestedOneWithoutAccessAssetRowsInput
     assetApplication?: ApplicationCreateNestedOneWithoutAssetAccessRowsInput
     accessApplication?: ApplicationCreateNestedOneWithoutAccessRowsInput
   }
@@ -68025,11 +65038,9 @@ export namespace Prisma {
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     assetId: string
     assetAccountId?: string | null
     assetConnectionId?: string | null
-    assetPortfolioId?: string | null
     assetApplicationId?: string | null
     accessApplicationId?: string | null
     isTemporary?: Date | string | null
@@ -68544,11 +65555,9 @@ export namespace Prisma {
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
-    parentPortfolio?: PortfolioCreateNestedOneWithoutAssetsInput
     parentAccount?: AccountCreateNestedOneWithoutParentAssetsInput
     childAccount?: AccountCreateNestedOneWithoutChildAssetsInput
     childConnection?: ConnectionCreateNestedOneWithoutChildAssetsInput
-    childPortfolio?: PortfolioCreateNestedOneWithoutChildAssetsInput
     childApplication?: ApplicationCreateNestedOneWithoutChildAssetsInput
     accessRows?: AccessCreateNestedManyWithoutAssetInput
     roles?: RoleCreateNestedManyWithoutAssetInput
@@ -68558,11 +65567,9 @@ export namespace Prisma {
     id?: string
     access_type: $Enums.AssetType
     member_account_id?: string | null
-    member_portfolio_id?: string | null
     member_connection_id?: string | null
     access_application_id?: string | null
     parent_account_id?: string | null
-    parent_portfolio_id?: string | null
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -68705,35 +65712,6 @@ export namespace Prisma {
     create: XOR<AuthzRoleCreateWithoutAssetsGrantsInput, AuthzRoleUncheckedCreateWithoutAssetsGrantsInput>
   }
 
-  export type PortfolioCreateWithoutAuthzAssetsAccessGrantsInput = {
-    id?: string
-    name: string
-    description?: string | null
-    dateCreated?: Date | string
-    assets?: AssetCreateNestedManyWithoutParentPortfolioInput
-    childAssets?: AssetCreateNestedManyWithoutChildPortfolioInput
-    members?: MemberCreateNestedManyWithoutParentPortfolioInput
-    accessParentRows?: AccessCreateNestedManyWithoutParentPortfolioInput
-    accessAssetRows?: AccessCreateNestedManyWithoutAssetPortfolioInput
-  }
-
-  export type PortfolioUncheckedCreateWithoutAuthzAssetsAccessGrantsInput = {
-    id?: string
-    name: string
-    description?: string | null
-    dateCreated?: Date | string
-    assets?: AssetUncheckedCreateNestedManyWithoutParentPortfolioInput
-    childAssets?: AssetUncheckedCreateNestedManyWithoutChildPortfolioInput
-    members?: MemberUncheckedCreateNestedManyWithoutParentPortfolioInput
-    accessParentRows?: AccessUncheckedCreateNestedManyWithoutParentPortfolioInput
-    accessAssetRows?: AccessUncheckedCreateNestedManyWithoutAssetPortfolioInput
-  }
-
-  export type PortfolioCreateOrConnectWithoutAuthzAssetsAccessGrantsInput = {
-    where: PortfolioWhereUniqueInput
-    create: XOR<PortfolioCreateWithoutAuthzAssetsAccessGrantsInput, PortfolioUncheckedCreateWithoutAuthzAssetsAccessGrantsInput>
-  }
-
   export type AssetUpsertWithoutAuthzAssetsAccessGrantsInput = {
     update: XOR<AssetUpdateWithoutAuthzAssetsAccessGrantsInput, AssetUncheckedUpdateWithoutAuthzAssetsAccessGrantsInput>
     create: XOR<AssetCreateWithoutAuthzAssetsAccessGrantsInput, AssetUncheckedCreateWithoutAuthzAssetsAccessGrantsInput>
@@ -68751,11 +65729,9 @@ export namespace Prisma {
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
-    parentPortfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
     parentAccount?: AccountUpdateOneWithoutParentAssetsNestedInput
     childAccount?: AccountUpdateOneWithoutChildAssetsNestedInput
     childConnection?: ConnectionUpdateOneWithoutChildAssetsNestedInput
-    childPortfolio?: PortfolioUpdateOneWithoutChildAssetsNestedInput
     childApplication?: ApplicationUpdateOneWithoutChildAssetsNestedInput
     accessRows?: AccessUpdateManyWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
@@ -68765,11 +65741,9 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     access_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
     member_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    member_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     member_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
     access_application_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -68917,41 +65891,6 @@ export namespace Prisma {
     memberRoles?: RoleUncheckedUpdateManyWithoutAuthzRoleNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutRoleNestedInput
     defaultForApplications?: ApplicationUncheckedUpdateManyWithoutDefaultRoleNestedInput
-  }
-
-  export type PortfolioUpsertWithoutAuthzAssetsAccessGrantsInput = {
-    update: XOR<PortfolioUpdateWithoutAuthzAssetsAccessGrantsInput, PortfolioUncheckedUpdateWithoutAuthzAssetsAccessGrantsInput>
-    create: XOR<PortfolioCreateWithoutAuthzAssetsAccessGrantsInput, PortfolioUncheckedCreateWithoutAuthzAssetsAccessGrantsInput>
-    where?: PortfolioWhereInput
-  }
-
-  export type PortfolioUpdateToOneWithWhereWithoutAuthzAssetsAccessGrantsInput = {
-    where?: PortfolioWhereInput
-    data: XOR<PortfolioUpdateWithoutAuthzAssetsAccessGrantsInput, PortfolioUncheckedUpdateWithoutAuthzAssetsAccessGrantsInput>
-  }
-
-  export type PortfolioUpdateWithoutAuthzAssetsAccessGrantsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
-    assets?: AssetUpdateManyWithoutParentPortfolioNestedInput
-    childAssets?: AssetUpdateManyWithoutChildPortfolioNestedInput
-    members?: MemberUpdateManyWithoutParentPortfolioNestedInput
-    accessParentRows?: AccessUpdateManyWithoutParentPortfolioNestedInput
-    accessAssetRows?: AccessUpdateManyWithoutAssetPortfolioNestedInput
-  }
-
-  export type PortfolioUncheckedUpdateWithoutAuthzAssetsAccessGrantsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    dateCreated?: DateTimeFieldUpdateOperationsInput | Date | string
-    assets?: AssetUncheckedUpdateManyWithoutParentPortfolioNestedInput
-    childAssets?: AssetUncheckedUpdateManyWithoutChildPortfolioNestedInput
-    members?: MemberUncheckedUpdateManyWithoutParentPortfolioNestedInput
-    accessParentRows?: AccessUncheckedUpdateManyWithoutParentPortfolioNestedInput
-    accessAssetRows?: AccessUncheckedUpdateManyWithoutAssetPortfolioNestedInput
   }
 
   export type AccountCreateWithoutPermitsInput = {
@@ -69519,7 +66458,6 @@ export namespace Prisma {
     id?: string
     asset_id: string
     role_id: string
-    portfolio_id?: string | null
     app_id: string
     asset_type?: string | null
   }
@@ -69528,10 +66466,8 @@ export namespace Prisma {
     id?: string
     access_type: $Enums.AssetType
     member_account_id?: string | null
-    member_portfolio_id?: string | null
     member_connection_id?: string | null
     access_application_id?: string | null
-    parent_portfolio_id?: string | null
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -69540,11 +66476,9 @@ export namespace Prisma {
   export type AssetCreateManyChildAccountInput = {
     id?: string
     access_type: $Enums.AssetType
-    member_portfolio_id?: string | null
     member_connection_id?: string | null
     access_application_id?: string | null
     parent_account_id?: string | null
-    parent_portfolio_id?: string | null
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -69554,7 +66488,6 @@ export namespace Prisma {
     id?: string
     memberType: string
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     status?: string
     isTemporary?: Date | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -69564,7 +66497,6 @@ export namespace Prisma {
     id?: string
     memberType: string
     memberAccountId?: string | null
-    parentPortfolioId?: string | null
     status?: string
     isTemporary?: Date | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -69575,11 +66507,9 @@ export namespace Prisma {
     accessType: $Enums.AccessType
     memberId: string
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     assetId: string
     assetAccountId?: string | null
     assetConnectionId?: string | null
-    assetPortfolioId?: string | null
     assetApplicationId?: string | null
     accessApplicationId?: string | null
     isTemporary?: Date | string | null
@@ -69593,11 +66523,9 @@ export namespace Prisma {
     accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
-    parentPortfolioId?: string | null
     assetId: string
     assetAccountId?: string | null
     assetConnectionId?: string | null
-    assetPortfolioId?: string | null
     assetApplicationId?: string | null
     accessApplicationId?: string | null
     isTemporary?: Date | string | null
@@ -69612,10 +66540,8 @@ export namespace Prisma {
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     assetId: string
     assetConnectionId?: string | null
-    assetPortfolioId?: string | null
     assetApplicationId?: string | null
     accessApplicationId?: string | null
     isTemporary?: Date | string | null
@@ -69976,14 +66902,12 @@ export namespace Prisma {
     asset_type?: NullableStringFieldUpdateOperationsInput | string | null
     asset?: AssetUpdateOneRequiredWithoutAuthzAssetsAccessGrantsNestedInput
     role?: AuthzRoleUpdateOneRequiredWithoutAssetsGrantsNestedInput
-    portfolio?: PortfolioUpdateOneWithoutAuthzAssetsAccessGrantsNestedInput
   }
 
   export type AuthzAssetsAccessGrantUncheckedUpdateWithoutAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
     asset_id?: StringFieldUpdateOperationsInput | string
     role_id?: StringFieldUpdateOperationsInput | string
-    portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     app_id?: StringFieldUpdateOperationsInput | string
     asset_type?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -69992,7 +66916,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     asset_id?: StringFieldUpdateOperationsInput | string
     role_id?: StringFieldUpdateOperationsInput | string
-    portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     app_id?: StringFieldUpdateOperationsInput | string
     asset_type?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -70003,10 +66926,8 @@ export namespace Prisma {
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
-    parentPortfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
     childAccount?: AccountUpdateOneWithoutChildAssetsNestedInput
     childConnection?: ConnectionUpdateOneWithoutChildAssetsNestedInput
-    childPortfolio?: PortfolioUpdateOneWithoutChildAssetsNestedInput
     childApplication?: ApplicationUpdateOneWithoutChildAssetsNestedInput
     accessRows?: AccessUpdateManyWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
@@ -70017,10 +66938,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     access_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
     member_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    member_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     member_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
     access_application_id?: NullableStringFieldUpdateOperationsInput | string | null
-    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -70033,10 +66952,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     access_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
     member_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    member_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     member_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
     access_application_id?: NullableStringFieldUpdateOperationsInput | string | null
-    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -70048,10 +66965,8 @@ export namespace Prisma {
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
-    parentPortfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
     parentAccount?: AccountUpdateOneWithoutParentAssetsNestedInput
     childConnection?: ConnectionUpdateOneWithoutChildAssetsNestedInput
-    childPortfolio?: PortfolioUpdateOneWithoutChildAssetsNestedInput
     childApplication?: ApplicationUpdateOneWithoutChildAssetsNestedInput
     accessRows?: AccessUpdateManyWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
@@ -70061,11 +66976,9 @@ export namespace Prisma {
   export type AssetUncheckedUpdateWithoutChildAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
     access_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    member_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     member_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
     access_application_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -70077,11 +66990,9 @@ export namespace Prisma {
   export type AssetUncheckedUpdateManyWithoutChildAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
     access_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    member_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     member_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
     access_application_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -70094,7 +67005,6 @@ export namespace Prisma {
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
     parentAccount?: AccountUpdateOneWithoutParentAccountMembersNestedInput
-    parentPortfolio?: PortfolioUpdateOneWithoutMembersNestedInput
     accessRows?: AccessUpdateManyWithoutMemberNestedInput
     roles?: RoleUpdateManyWithoutMemberNestedInput
   }
@@ -70103,7 +67013,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     memberType?: StringFieldUpdateOperationsInput | string
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -70115,7 +67024,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     memberType?: StringFieldUpdateOperationsInput | string
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -70128,7 +67036,6 @@ export namespace Prisma {
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
     memberAccount?: AccountUpdateOneWithoutAccessMembersNestedInput
-    parentPortfolio?: PortfolioUpdateOneWithoutMembersNestedInput
     accessRows?: AccessUpdateManyWithoutMemberNestedInput
     roles?: RoleUpdateManyWithoutMemberNestedInput
   }
@@ -70137,7 +67044,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     memberType?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -70149,7 +67055,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     memberType?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -70163,11 +67068,9 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     member?: MemberUpdateOneRequiredWithoutAccessRowsNestedInput
     parentAccount?: AccountUpdateOneWithoutAccessParentRowsNestedInput
-    parentPortfolio?: PortfolioUpdateOneWithoutAccessParentRowsNestedInput
     asset?: AssetUpdateOneRequiredWithoutAccessRowsNestedInput
     assetAccount?: AccountUpdateOneWithoutAccessAssetAccountRowsNestedInput
     assetConnection?: ConnectionUpdateOneWithoutAssetAccessRowsNestedInput
-    assetPortfolio?: PortfolioUpdateOneWithoutAccessAssetRowsNestedInput
     assetApplication?: ApplicationUpdateOneWithoutAssetAccessRowsNestedInput
     accessApplication?: ApplicationUpdateOneWithoutAccessRowsNestedInput
     role?: AuthzRoleUpdateOneRequiredWithoutAccessRowsNestedInput
@@ -70178,11 +67081,9 @@ export namespace Prisma {
     accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetId?: StringFieldUpdateOperationsInput | string
     assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -70196,11 +67097,9 @@ export namespace Prisma {
     accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetId?: StringFieldUpdateOperationsInput | string
     assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -70217,11 +67116,9 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     member?: MemberUpdateOneRequiredWithoutAccessRowsNestedInput
     memberAccount?: AccountUpdateOneWithoutAccessMemberRowsNestedInput
-    parentPortfolio?: PortfolioUpdateOneWithoutAccessParentRowsNestedInput
     asset?: AssetUpdateOneRequiredWithoutAccessRowsNestedInput
     assetAccount?: AccountUpdateOneWithoutAccessAssetAccountRowsNestedInput
     assetConnection?: ConnectionUpdateOneWithoutAssetAccessRowsNestedInput
-    assetPortfolio?: PortfolioUpdateOneWithoutAccessAssetRowsNestedInput
     assetApplication?: ApplicationUpdateOneWithoutAssetAccessRowsNestedInput
     accessApplication?: ApplicationUpdateOneWithoutAccessRowsNestedInput
     role?: AuthzRoleUpdateOneRequiredWithoutAccessRowsNestedInput
@@ -70232,11 +67129,9 @@ export namespace Prisma {
     accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetId?: StringFieldUpdateOperationsInput | string
     assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -70250,11 +67145,9 @@ export namespace Prisma {
     accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetId?: StringFieldUpdateOperationsInput | string
     assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -70272,10 +67165,8 @@ export namespace Prisma {
     member?: MemberUpdateOneRequiredWithoutAccessRowsNestedInput
     memberAccount?: AccountUpdateOneWithoutAccessMemberRowsNestedInput
     parentAccount?: AccountUpdateOneWithoutAccessParentRowsNestedInput
-    parentPortfolio?: PortfolioUpdateOneWithoutAccessParentRowsNestedInput
     asset?: AssetUpdateOneRequiredWithoutAccessRowsNestedInput
     assetConnection?: ConnectionUpdateOneWithoutAssetAccessRowsNestedInput
-    assetPortfolio?: PortfolioUpdateOneWithoutAccessAssetRowsNestedInput
     assetApplication?: ApplicationUpdateOneWithoutAssetAccessRowsNestedInput
     accessApplication?: ApplicationUpdateOneWithoutAccessRowsNestedInput
     role?: AuthzRoleUpdateOneRequiredWithoutAccessRowsNestedInput
@@ -70287,10 +67178,8 @@ export namespace Prisma {
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetId?: StringFieldUpdateOperationsInput | string
     assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -70305,10 +67194,8 @@ export namespace Prisma {
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetId?: StringFieldUpdateOperationsInput | string
     assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -70919,10 +67806,8 @@ export namespace Prisma {
     id?: string
     access_type: $Enums.AssetType
     member_account_id?: string | null
-    member_portfolio_id?: string | null
     member_connection_id?: string | null
     parent_account_id?: string | null
-    parent_portfolio_id?: string | null
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -70934,11 +67819,9 @@ export namespace Prisma {
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     assetId: string
     assetAccountId?: string | null
     assetConnectionId?: string | null
-    assetPortfolioId?: string | null
     accessApplicationId?: string | null
     isTemporary?: Date | string | null
     roleId: string
@@ -70952,11 +67835,9 @@ export namespace Prisma {
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     assetId: string
     assetAccountId?: string | null
     assetConnectionId?: string | null
-    assetPortfolioId?: string | null
     assetApplicationId?: string | null
     isTemporary?: Date | string | null
     roleId: string
@@ -71184,11 +68065,9 @@ export namespace Prisma {
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
-    parentPortfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
     parentAccount?: AccountUpdateOneWithoutParentAssetsNestedInput
     childAccount?: AccountUpdateOneWithoutChildAssetsNestedInput
     childConnection?: ConnectionUpdateOneWithoutChildAssetsNestedInput
-    childPortfolio?: PortfolioUpdateOneWithoutChildAssetsNestedInput
     accessRows?: AccessUpdateManyWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
     authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAssetNestedInput
@@ -71198,10 +68077,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     access_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
     member_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    member_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     member_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -71214,10 +68091,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     access_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
     member_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    member_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     member_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -71232,11 +68107,9 @@ export namespace Prisma {
     member?: MemberUpdateOneRequiredWithoutAccessRowsNestedInput
     memberAccount?: AccountUpdateOneWithoutAccessMemberRowsNestedInput
     parentAccount?: AccountUpdateOneWithoutAccessParentRowsNestedInput
-    parentPortfolio?: PortfolioUpdateOneWithoutAccessParentRowsNestedInput
     asset?: AssetUpdateOneRequiredWithoutAccessRowsNestedInput
     assetAccount?: AccountUpdateOneWithoutAccessAssetAccountRowsNestedInput
     assetConnection?: ConnectionUpdateOneWithoutAssetAccessRowsNestedInput
-    assetPortfolio?: PortfolioUpdateOneWithoutAccessAssetRowsNestedInput
     accessApplication?: ApplicationUpdateOneWithoutAccessRowsNestedInput
     role?: AuthzRoleUpdateOneRequiredWithoutAccessRowsNestedInput
   }
@@ -71247,11 +68120,9 @@ export namespace Prisma {
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetId?: StringFieldUpdateOperationsInput | string
     assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     roleId?: StringFieldUpdateOperationsInput | string
@@ -71265,11 +68136,9 @@ export namespace Prisma {
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetId?: StringFieldUpdateOperationsInput | string
     assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     roleId?: StringFieldUpdateOperationsInput | string
@@ -71286,11 +68155,9 @@ export namespace Prisma {
     member?: MemberUpdateOneRequiredWithoutAccessRowsNestedInput
     memberAccount?: AccountUpdateOneWithoutAccessMemberRowsNestedInput
     parentAccount?: AccountUpdateOneWithoutAccessParentRowsNestedInput
-    parentPortfolio?: PortfolioUpdateOneWithoutAccessParentRowsNestedInput
     asset?: AssetUpdateOneRequiredWithoutAccessRowsNestedInput
     assetAccount?: AccountUpdateOneWithoutAccessAssetAccountRowsNestedInput
     assetConnection?: ConnectionUpdateOneWithoutAssetAccessRowsNestedInput
-    assetPortfolio?: PortfolioUpdateOneWithoutAccessAssetRowsNestedInput
     assetApplication?: ApplicationUpdateOneWithoutAssetAccessRowsNestedInput
     role?: AuthzRoleUpdateOneRequiredWithoutAccessRowsNestedInput
   }
@@ -71301,11 +68168,9 @@ export namespace Prisma {
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetId?: StringFieldUpdateOperationsInput | string
     assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     roleId?: StringFieldUpdateOperationsInput | string
@@ -71319,11 +68184,9 @@ export namespace Prisma {
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetId?: StringFieldUpdateOperationsInput | string
     assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     roleId?: StringFieldUpdateOperationsInput | string
@@ -71382,356 +68245,14 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type AssetCreateManyParentPortfolioInput = {
-    id?: string
-    access_type: $Enums.AssetType
-    member_account_id?: string | null
-    member_portfolio_id?: string | null
-    member_connection_id?: string | null
-    access_application_id?: string | null
-    parent_account_id?: string | null
-    isTemporary?: Date | string | null
-    status?: string
-    details?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type AssetCreateManyChildPortfolioInput = {
-    id?: string
-    access_type: $Enums.AssetType
-    member_account_id?: string | null
-    member_connection_id?: string | null
-    access_application_id?: string | null
-    parent_account_id?: string | null
-    parent_portfolio_id?: string | null
-    isTemporary?: Date | string | null
-    status?: string
-    details?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type MemberCreateManyParentPortfolioInput = {
-    id?: string
-    memberType: string
-    memberAccountId?: string | null
-    parentAccountId?: string | null
-    status?: string
-    isTemporary?: Date | string | null
-    details?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type AccessCreateManyParentPortfolioInput = {
-    id?: string
-    accessType: $Enums.AccessType
-    memberId: string
-    memberAccountId?: string | null
-    parentAccountId?: string | null
-    assetId: string
-    assetAccountId?: string | null
-    assetConnectionId?: string | null
-    assetPortfolioId?: string | null
-    assetApplicationId?: string | null
-    accessApplicationId?: string | null
-    isTemporary?: Date | string | null
-    roleId: string
-    status?: string
-    details?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type AccessCreateManyAssetPortfolioInput = {
-    id?: string
-    accessType: $Enums.AccessType
-    memberId: string
-    memberAccountId?: string | null
-    parentAccountId?: string | null
-    parentPortfolioId?: string | null
-    assetId: string
-    assetAccountId?: string | null
-    assetConnectionId?: string | null
-    assetApplicationId?: string | null
-    accessApplicationId?: string | null
-    isTemporary?: Date | string | null
-    roleId: string
-    status?: string
-    details?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type AuthzAssetsAccessGrantCreateManyPortfolioInput = {
-    id?: string
-    asset_id: string
-    account_id: string
-    role_id: string
-    app_id: string
-    asset_type?: string | null
-  }
-
-  export type AssetUpdateWithoutParentPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    access_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    details?: NullableJsonNullValueInput | InputJsonValue
-    parentAccount?: AccountUpdateOneWithoutParentAssetsNestedInput
-    childAccount?: AccountUpdateOneWithoutChildAssetsNestedInput
-    childConnection?: ConnectionUpdateOneWithoutChildAssetsNestedInput
-    childPortfolio?: PortfolioUpdateOneWithoutChildAssetsNestedInput
-    childApplication?: ApplicationUpdateOneWithoutChildAssetsNestedInput
-    accessRows?: AccessUpdateManyWithoutAssetNestedInput
-    roles?: RoleUpdateManyWithoutAssetNestedInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAssetNestedInput
-  }
-
-  export type AssetUncheckedUpdateWithoutParentPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    access_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    member_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    member_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
-    member_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
-    access_application_id?: NullableStringFieldUpdateOperationsInput | string | null
-    parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    details?: NullableJsonNullValueInput | InputJsonValue
-    accessRows?: AccessUncheckedUpdateManyWithoutAssetNestedInput
-    roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAssetNestedInput
-  }
-
-  export type AssetUncheckedUpdateManyWithoutParentPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    access_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    member_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    member_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
-    member_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
-    access_application_id?: NullableStringFieldUpdateOperationsInput | string | null
-    parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    details?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type AssetUpdateWithoutChildPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    access_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    details?: NullableJsonNullValueInput | InputJsonValue
-    parentPortfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
-    parentAccount?: AccountUpdateOneWithoutParentAssetsNestedInput
-    childAccount?: AccountUpdateOneWithoutChildAssetsNestedInput
-    childConnection?: ConnectionUpdateOneWithoutChildAssetsNestedInput
-    childApplication?: ApplicationUpdateOneWithoutChildAssetsNestedInput
-    accessRows?: AccessUpdateManyWithoutAssetNestedInput
-    roles?: RoleUpdateManyWithoutAssetNestedInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAssetNestedInput
-  }
-
-  export type AssetUncheckedUpdateWithoutChildPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    access_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    member_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    member_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
-    access_application_id?: NullableStringFieldUpdateOperationsInput | string | null
-    parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
-    isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    details?: NullableJsonNullValueInput | InputJsonValue
-    accessRows?: AccessUncheckedUpdateManyWithoutAssetNestedInput
-    roles?: RoleUncheckedUpdateManyWithoutAssetNestedInput
-    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAssetNestedInput
-  }
-
-  export type AssetUncheckedUpdateManyWithoutChildPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    access_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
-    member_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    member_connection_id?: NullableStringFieldUpdateOperationsInput | string | null
-    access_application_id?: NullableStringFieldUpdateOperationsInput | string | null
-    parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
-    isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    details?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type MemberUpdateWithoutParentPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    memberType?: StringFieldUpdateOperationsInput | string
-    status?: StringFieldUpdateOperationsInput | string
-    isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    details?: NullableJsonNullValueInput | InputJsonValue
-    memberAccount?: AccountUpdateOneWithoutAccessMembersNestedInput
-    parentAccount?: AccountUpdateOneWithoutParentAccountMembersNestedInput
-    accessRows?: AccessUpdateManyWithoutMemberNestedInput
-    roles?: RoleUpdateManyWithoutMemberNestedInput
-  }
-
-  export type MemberUncheckedUpdateWithoutParentPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    memberType?: StringFieldUpdateOperationsInput | string
-    memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    details?: NullableJsonNullValueInput | InputJsonValue
-    accessRows?: AccessUncheckedUpdateManyWithoutMemberNestedInput
-    roles?: RoleUncheckedUpdateManyWithoutMemberNestedInput
-  }
-
-  export type MemberUncheckedUpdateManyWithoutParentPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    memberType?: StringFieldUpdateOperationsInput | string
-    memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    details?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type AccessUpdateWithoutParentPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
-    isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    details?: NullableJsonNullValueInput | InputJsonValue
-    member?: MemberUpdateOneRequiredWithoutAccessRowsNestedInput
-    memberAccount?: AccountUpdateOneWithoutAccessMemberRowsNestedInput
-    parentAccount?: AccountUpdateOneWithoutAccessParentRowsNestedInput
-    asset?: AssetUpdateOneRequiredWithoutAccessRowsNestedInput
-    assetAccount?: AccountUpdateOneWithoutAccessAssetAccountRowsNestedInput
-    assetConnection?: ConnectionUpdateOneWithoutAssetAccessRowsNestedInput
-    assetPortfolio?: PortfolioUpdateOneWithoutAccessAssetRowsNestedInput
-    assetApplication?: ApplicationUpdateOneWithoutAssetAccessRowsNestedInput
-    accessApplication?: ApplicationUpdateOneWithoutAccessRowsNestedInput
-    role?: AuthzRoleUpdateOneRequiredWithoutAccessRowsNestedInput
-  }
-
-  export type AccessUncheckedUpdateWithoutParentPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
-    memberId?: StringFieldUpdateOperationsInput | string
-    memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetId?: StringFieldUpdateOperationsInput | string
-    assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    roleId?: StringFieldUpdateOperationsInput | string
-    status?: StringFieldUpdateOperationsInput | string
-    details?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type AccessUncheckedUpdateManyWithoutParentPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
-    memberId?: StringFieldUpdateOperationsInput | string
-    memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetId?: StringFieldUpdateOperationsInput | string
-    assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    roleId?: StringFieldUpdateOperationsInput | string
-    status?: StringFieldUpdateOperationsInput | string
-    details?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type AccessUpdateWithoutAssetPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
-    isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    status?: StringFieldUpdateOperationsInput | string
-    details?: NullableJsonNullValueInput | InputJsonValue
-    member?: MemberUpdateOneRequiredWithoutAccessRowsNestedInput
-    memberAccount?: AccountUpdateOneWithoutAccessMemberRowsNestedInput
-    parentAccount?: AccountUpdateOneWithoutAccessParentRowsNestedInput
-    parentPortfolio?: PortfolioUpdateOneWithoutAccessParentRowsNestedInput
-    asset?: AssetUpdateOneRequiredWithoutAccessRowsNestedInput
-    assetAccount?: AccountUpdateOneWithoutAccessAssetAccountRowsNestedInput
-    assetConnection?: ConnectionUpdateOneWithoutAssetAccessRowsNestedInput
-    assetApplication?: ApplicationUpdateOneWithoutAssetAccessRowsNestedInput
-    accessApplication?: ApplicationUpdateOneWithoutAccessRowsNestedInput
-    role?: AuthzRoleUpdateOneRequiredWithoutAccessRowsNestedInput
-  }
-
-  export type AccessUncheckedUpdateWithoutAssetPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
-    memberId?: StringFieldUpdateOperationsInput | string
-    memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetId?: StringFieldUpdateOperationsInput | string
-    assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    roleId?: StringFieldUpdateOperationsInput | string
-    status?: StringFieldUpdateOperationsInput | string
-    details?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type AccessUncheckedUpdateManyWithoutAssetPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
-    memberId?: StringFieldUpdateOperationsInput | string
-    memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetId?: StringFieldUpdateOperationsInput | string
-    assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
-    isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    roleId?: StringFieldUpdateOperationsInput | string
-    status?: StringFieldUpdateOperationsInput | string
-    details?: NullableJsonNullValueInput | InputJsonValue
-  }
-
-  export type AuthzAssetsAccessGrantUpdateWithoutPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    app_id?: StringFieldUpdateOperationsInput | string
-    asset_type?: NullableStringFieldUpdateOperationsInput | string | null
-    asset?: AssetUpdateOneRequiredWithoutAuthzAssetsAccessGrantsNestedInput
-    account?: AccountUpdateOneRequiredWithoutAuthzAssetsAccessGrantsNestedInput
-    role?: AuthzRoleUpdateOneRequiredWithoutAssetsGrantsNestedInput
-  }
-
-  export type AuthzAssetsAccessGrantUncheckedUpdateWithoutPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    asset_id?: StringFieldUpdateOperationsInput | string
-    account_id?: StringFieldUpdateOperationsInput | string
-    role_id?: StringFieldUpdateOperationsInput | string
-    app_id?: StringFieldUpdateOperationsInput | string
-    asset_type?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type AuthzAssetsAccessGrantUncheckedUpdateManyWithoutPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    asset_id?: StringFieldUpdateOperationsInput | string
-    account_id?: StringFieldUpdateOperationsInput | string
-    role_id?: StringFieldUpdateOperationsInput | string
-    app_id?: StringFieldUpdateOperationsInput | string
-    asset_type?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
   export type AccessCreateManyAssetInput = {
     id?: string
     accessType: $Enums.AccessType
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     assetAccountId?: string | null
     assetConnectionId?: string | null
-    assetPortfolioId?: string | null
     assetApplicationId?: string | null
     accessApplicationId?: string | null
     isTemporary?: Date | string | null
@@ -71758,7 +68279,6 @@ export namespace Prisma {
     id?: string
     account_id: string
     role_id: string
-    portfolio_id?: string | null
     app_id: string
     asset_type?: string | null
   }
@@ -71772,10 +68292,8 @@ export namespace Prisma {
     member?: MemberUpdateOneRequiredWithoutAccessRowsNestedInput
     memberAccount?: AccountUpdateOneWithoutAccessMemberRowsNestedInput
     parentAccount?: AccountUpdateOneWithoutAccessParentRowsNestedInput
-    parentPortfolio?: PortfolioUpdateOneWithoutAccessParentRowsNestedInput
     assetAccount?: AccountUpdateOneWithoutAccessAssetAccountRowsNestedInput
     assetConnection?: ConnectionUpdateOneWithoutAssetAccessRowsNestedInput
-    assetPortfolio?: PortfolioUpdateOneWithoutAccessAssetRowsNestedInput
     assetApplication?: ApplicationUpdateOneWithoutAssetAccessRowsNestedInput
     accessApplication?: ApplicationUpdateOneWithoutAccessRowsNestedInput
     role?: AuthzRoleUpdateOneRequiredWithoutAccessRowsNestedInput
@@ -71787,10 +68305,8 @@ export namespace Prisma {
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -71805,10 +68321,8 @@ export namespace Prisma {
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -71865,14 +68379,12 @@ export namespace Prisma {
     asset_type?: NullableStringFieldUpdateOperationsInput | string | null
     account?: AccountUpdateOneRequiredWithoutAuthzAssetsAccessGrantsNestedInput
     role?: AuthzRoleUpdateOneRequiredWithoutAssetsGrantsNestedInput
-    portfolio?: PortfolioUpdateOneWithoutAuthzAssetsAccessGrantsNestedInput
   }
 
   export type AuthzAssetsAccessGrantUncheckedUpdateWithoutAssetInput = {
     id?: StringFieldUpdateOperationsInput | string
     account_id?: StringFieldUpdateOperationsInput | string
     role_id?: StringFieldUpdateOperationsInput | string
-    portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     app_id?: StringFieldUpdateOperationsInput | string
     asset_type?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -71881,7 +68393,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     account_id?: StringFieldUpdateOperationsInput | string
     role_id?: StringFieldUpdateOperationsInput | string
-    portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     app_id?: StringFieldUpdateOperationsInput | string
     asset_type?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -71891,11 +68402,9 @@ export namespace Prisma {
     accessType: $Enums.AccessType
     memberAccountId?: string | null
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     assetId: string
     assetAccountId?: string | null
     assetConnectionId?: string | null
-    assetPortfolioId?: string | null
     assetApplicationId?: string | null
     accessApplicationId?: string | null
     isTemporary?: Date | string | null
@@ -71926,11 +68435,9 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     memberAccount?: AccountUpdateOneWithoutAccessMemberRowsNestedInput
     parentAccount?: AccountUpdateOneWithoutAccessParentRowsNestedInput
-    parentPortfolio?: PortfolioUpdateOneWithoutAccessParentRowsNestedInput
     asset?: AssetUpdateOneRequiredWithoutAccessRowsNestedInput
     assetAccount?: AccountUpdateOneWithoutAccessAssetAccountRowsNestedInput
     assetConnection?: ConnectionUpdateOneWithoutAssetAccessRowsNestedInput
-    assetPortfolio?: PortfolioUpdateOneWithoutAccessAssetRowsNestedInput
     assetApplication?: ApplicationUpdateOneWithoutAssetAccessRowsNestedInput
     accessApplication?: ApplicationUpdateOneWithoutAccessRowsNestedInput
     role?: AuthzRoleUpdateOneRequiredWithoutAccessRowsNestedInput
@@ -71941,11 +68448,9 @@ export namespace Prisma {
     accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetId?: StringFieldUpdateOperationsInput | string
     assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -71959,11 +68464,9 @@ export namespace Prisma {
     accessType?: EnumAccessTypeFieldUpdateOperationsInput | $Enums.AccessType
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetId?: StringFieldUpdateOperationsInput | string
     assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -72018,10 +68521,8 @@ export namespace Prisma {
     id?: string
     access_type: $Enums.AssetType
     member_account_id?: string | null
-    member_portfolio_id?: string | null
     access_application_id?: string | null
     parent_account_id?: string | null
-    parent_portfolio_id?: string | null
     isTemporary?: Date | string | null
     status?: string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -72033,10 +68534,8 @@ export namespace Prisma {
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     assetId: string
     assetAccountId?: string | null
-    assetPortfolioId?: string | null
     assetApplicationId?: string | null
     accessApplicationId?: string | null
     isTemporary?: Date | string | null
@@ -72065,10 +68564,8 @@ export namespace Prisma {
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
-    parentPortfolio?: PortfolioUpdateOneWithoutAssetsNestedInput
     parentAccount?: AccountUpdateOneWithoutParentAssetsNestedInput
     childAccount?: AccountUpdateOneWithoutChildAssetsNestedInput
-    childPortfolio?: PortfolioUpdateOneWithoutChildAssetsNestedInput
     childApplication?: ApplicationUpdateOneWithoutChildAssetsNestedInput
     accessRows?: AccessUpdateManyWithoutAssetNestedInput
     roles?: RoleUpdateManyWithoutAssetNestedInput
@@ -72079,10 +68576,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     access_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
     member_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    member_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     access_application_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -72095,10 +68590,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     access_type?: EnumAssetTypeFieldUpdateOperationsInput | $Enums.AssetType
     member_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    member_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     access_application_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_account_id?: NullableStringFieldUpdateOperationsInput | string | null
-    parent_portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: StringFieldUpdateOperationsInput | string
     details?: NullableJsonNullValueInput | InputJsonValue
@@ -72113,10 +68606,8 @@ export namespace Prisma {
     member?: MemberUpdateOneRequiredWithoutAccessRowsNestedInput
     memberAccount?: AccountUpdateOneWithoutAccessMemberRowsNestedInput
     parentAccount?: AccountUpdateOneWithoutAccessParentRowsNestedInput
-    parentPortfolio?: PortfolioUpdateOneWithoutAccessParentRowsNestedInput
     asset?: AssetUpdateOneRequiredWithoutAccessRowsNestedInput
     assetAccount?: AccountUpdateOneWithoutAccessAssetAccountRowsNestedInput
-    assetPortfolio?: PortfolioUpdateOneWithoutAccessAssetRowsNestedInput
     assetApplication?: ApplicationUpdateOneWithoutAssetAccessRowsNestedInput
     accessApplication?: ApplicationUpdateOneWithoutAccessRowsNestedInput
     role?: AuthzRoleUpdateOneRequiredWithoutAccessRowsNestedInput
@@ -72128,10 +68619,8 @@ export namespace Prisma {
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetId?: StringFieldUpdateOperationsInput | string
     assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -72146,10 +68635,8 @@ export namespace Prisma {
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetId?: StringFieldUpdateOperationsInput | string
     assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -72236,7 +68723,6 @@ export namespace Prisma {
     id?: string
     asset_id: string
     account_id: string
-    portfolio_id?: string | null
     app_id: string
     asset_type?: string | null
   }
@@ -72247,11 +68733,9 @@ export namespace Prisma {
     memberId: string
     memberAccountId?: string | null
     parentAccountId?: string | null
-    parentPortfolioId?: string | null
     assetId: string
     assetAccountId?: string | null
     assetConnectionId?: string | null
-    assetPortfolioId?: string | null
     assetApplicationId?: string | null
     accessApplicationId?: string | null
     isTemporary?: Date | string | null
@@ -72314,14 +68798,12 @@ export namespace Prisma {
     asset_type?: NullableStringFieldUpdateOperationsInput | string | null
     asset?: AssetUpdateOneRequiredWithoutAuthzAssetsAccessGrantsNestedInput
     account?: AccountUpdateOneRequiredWithoutAuthzAssetsAccessGrantsNestedInput
-    portfolio?: PortfolioUpdateOneWithoutAuthzAssetsAccessGrantsNestedInput
   }
 
   export type AuthzAssetsAccessGrantUncheckedUpdateWithoutRoleInput = {
     id?: StringFieldUpdateOperationsInput | string
     asset_id?: StringFieldUpdateOperationsInput | string
     account_id?: StringFieldUpdateOperationsInput | string
-    portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     app_id?: StringFieldUpdateOperationsInput | string
     asset_type?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -72330,7 +68812,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     asset_id?: StringFieldUpdateOperationsInput | string
     account_id?: StringFieldUpdateOperationsInput | string
-    portfolio_id?: NullableStringFieldUpdateOperationsInput | string | null
     app_id?: StringFieldUpdateOperationsInput | string
     asset_type?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -72344,11 +68825,9 @@ export namespace Prisma {
     member?: MemberUpdateOneRequiredWithoutAccessRowsNestedInput
     memberAccount?: AccountUpdateOneWithoutAccessMemberRowsNestedInput
     parentAccount?: AccountUpdateOneWithoutAccessParentRowsNestedInput
-    parentPortfolio?: PortfolioUpdateOneWithoutAccessParentRowsNestedInput
     asset?: AssetUpdateOneRequiredWithoutAccessRowsNestedInput
     assetAccount?: AccountUpdateOneWithoutAccessAssetAccountRowsNestedInput
     assetConnection?: ConnectionUpdateOneWithoutAssetAccessRowsNestedInput
-    assetPortfolio?: PortfolioUpdateOneWithoutAccessAssetRowsNestedInput
     assetApplication?: ApplicationUpdateOneWithoutAssetAccessRowsNestedInput
     accessApplication?: ApplicationUpdateOneWithoutAccessRowsNestedInput
   }
@@ -72359,11 +68838,9 @@ export namespace Prisma {
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetId?: StringFieldUpdateOperationsInput | string
     assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -72377,11 +68854,9 @@ export namespace Prisma {
     memberId?: StringFieldUpdateOperationsInput | string
     memberAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     parentAccountId?: NullableStringFieldUpdateOperationsInput | string | null
-    parentPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetId?: StringFieldUpdateOperationsInput | string
     assetAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     assetConnectionId?: NullableStringFieldUpdateOperationsInput | string | null
-    assetPortfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assetApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     accessApplicationId?: NullableStringFieldUpdateOperationsInput | string | null
     isTemporary?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

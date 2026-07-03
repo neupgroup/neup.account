@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { BackButton } from '@/components/ui/back-button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Shield, ChevronRight } from '@/components/icons';
-import { getPortfolioMembers, getDirectMembers } from '@/services/manage/access';
+import { getDirectMembers } from '@/services/manage/access';
 import { getActiveAccountId } from '@/core/auth/verify';
 import prisma from '@/core/helpers/prisma';
 import { getUserProfile, isRootUser } from '@/services/user';
@@ -154,38 +154,6 @@ function EmptyMembers({ message }: { message: string }) {
  *
  * ::end
  */
-async function PortfolioAccountPage({ id, workingProfile }: { id: string; workingProfile?: string }) {
-  const { portfolioName, members } = await getPortfolioMembers(id);
-  if (!portfolioName) notFound();
-
-  return (
-    <MembersLayout
-      backHref={appendWorkingProfile(`/access?portfolio=${id}`, workingProfile)}
-      description={`Members with access to portfolio "${portfolioName}"`}
-      addForm={<AddMemberForm parentPortfolioId={id} />}
-      content={
-        members.length > 0 ? (
-          <MembersCards
-            rows={members.map((member) => ({
-              id: `portfolio:${id}:${member.accountId}`,
-              name: member.displayName,
-              description:
-                member.roleCount === 0
-                  ? 'No roles assigned'
-                  : `${member.roleCount} role${member.roleCount !== 1 ? 's' : ''}`,
-              status: member.status,
-              actionHref: appendWorkingProfile(`/access/assign?portfolio=${id}&account=${member.accountId}`, workingProfile),
-            }))}
-          />
-        ) : (
-          <EmptyMembers message="Add a member above using their NeupID." />
-        )
-      }
-    >
-    </MembersLayout>
-  );
-}
-
 async function DirectAccountPage({ workingProfile }: { workingProfile?: string }) {
   const accountId = await getActiveAccountId(workingProfile);
   if (!accountId) notFound();
@@ -240,8 +208,7 @@ async function AssetMembersPage({
     member_account_id: string | null;
     access_application_id: string | null;
     member_connection_id: string | null;
-    member_portfolio_id: string | null;
-  }) => row.member_account_id ?? row.access_application_id ?? row.member_connection_id ?? row.member_portfolio_id ?? row.id;
+  }) => row.member_account_id ?? row.access_application_id ?? row.member_connection_id ?? row.id;
 
   const resolved = await prisma.asset.findFirst({
     where: {
@@ -250,7 +217,6 @@ async function AssetMembersPage({
         { member_account_id: assetRef },
         { access_application_id: assetRef },
         { member_connection_id: assetRef },
-        { member_portfolio_id: assetRef },
       ],
     },
       select: {
@@ -258,7 +224,6 @@ async function AssetMembersPage({
         member_account_id: true,
         access_application_id: true,
         member_connection_id: true,
-      member_portfolio_id: true,
       access_type: true,
     },
   });
@@ -272,20 +237,15 @@ async function AssetMembersPage({
         { member_account_id: resolvedAssetId },
         { access_application_id: resolvedAssetId },
         { member_connection_id: resolvedAssetId },
-        { member_portfolio_id: resolvedAssetId },
       ],
       access_type: resolved.access_type,
     },
-    select: { id: true, parent_portfolio_id: true },
+    select: { id: true },
   });
 
   if (allRows.length === 0) notFound();
 
   const rowIds = allRows.map((r) => r.id);
-  const portfolioIds = Array.from(
-    new Set(allRows.map((r) => r.parent_portfolio_id).filter((id): id is string => Boolean(id))),
-  );
-
   if (!rootMode) {
     const canView = await prisma.member.findFirst({
       where: { memberAccountId: accountId },
@@ -309,7 +269,7 @@ async function AssetMembersPage({
             rows={allRows.map((row) => ({
               id: row.id,
               name: assetName,
-              description: row.parent_portfolio_id ?? 'Direct asset access',
+              description: 'Direct asset access',
               status: 'active',
               actionHref: appendWorkingProfile(`/access/team?asset=${encodeURIComponent(row.id)}`, workingProfile),
             }))}
@@ -332,7 +292,7 @@ export default async function TeamPage({ searchParams }: PageProps) {
   }
 
   if (portfolio) {
-    return <PortfolioAccountPage id={portfolio} workingProfile={workingProfile} />;
+    notFound();
   }
 
   return <DirectAccountPage workingProfile={workingProfile} />;

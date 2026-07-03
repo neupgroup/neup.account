@@ -35,7 +35,3 @@ export const ACCESS_INVITATION_APPROVE_PERMISSIONS = ['access.invitation.approve
 
 export const ACCESS_BLOCK_VIEW_PERMISSIONS = ['access.block.view.self'] as const;
 export const ACCESS_BLOCK_UPDATE_PERMISSIONS = ['access.block.update.self'] as const;
-
-export const ACCESS_PORTFOLIO_CREATE_PERMISSIONS = ['access.portfolio.create.self'] as const;
-export const ACCESS_PORTFOLIO_UPDATE_PERMISSIONS = ['access.portfolio.update.self'] as const;
-export const ACCESS_PORTFOLIO_DELETE_PERMISSIONS = ['access.portfolio.delete.self'] as const;

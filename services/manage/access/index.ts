@@ -175,7 +175,6 @@ export async function getAccessList(accountId: string): Promise<UserAccess[]> {
         accessTo: accountId,
         accessFor: 'account',
         parentApplicationId: 'neup.account',
-        parentPortfolioId: null,
       },
     });
 
@@ -238,7 +237,6 @@ export async function getAccessListByGrant(accountId: string): Promise<UserAcces
         accessTo: accountId,
         accessFor: 'account',
         parentApplicationId: 'neup.account',
-        parentPortfolioId: null,
       },
       include: {
         role: { select: { id: true, name: true, description: true } },
@@ -310,7 +308,6 @@ export async function getDirectAccessGroup(accountId: string): Promise<DirectAcc
       prisma.access.findMany({
         where: {
           parentAccountId: accountId,
-          parentPortfolioId: null,
           ...activeAccessWhere(),
         },
         select: {
@@ -403,7 +400,6 @@ export async function getDirectMembers(accountId: string): Promise<{ accountName
       prisma.access.findMany({
         where: {
           parentAccountId: accountId,
-          parentPortfolioId: null,
           ...activeAccessWhere(),
         },
         select: { memberAccountId: true, status: true, isTemporary: true },
@@ -412,7 +408,6 @@ export async function getDirectMembers(accountId: string): Promise<{ accountName
         where: {
           memberType: 'acc_in_acc',
           parentAccountId: accountId,
-          parentPortfolioId: null,
           memberAccountId: { not: null },
           status: 'active',
         },
@@ -844,7 +839,6 @@ export async function getDirectMemberDetail(
         where: {
           parentAccountId: accessTo,
           memberAccountId,
-          parentPortfolioId: null,
           ...activeAccessWhere(),
         },
         select: {
@@ -857,7 +851,6 @@ export async function getDirectMemberDetail(
           memberType: 'acc_in_acc',
           memberAccountId,
           parentAccountId: accessTo,
-          parentPortfolioId: null,
           status: 'active',
         },
         select: { id: true },
@@ -949,82 +942,9 @@ export type PortfolioMemberSummary = {
  * Includes active members and invited (pending) members from portfolio_member.status.
  */
 export async function getPortfolioMembers(
-  parentPortfolioId: string,
+  _parentPortfolioId: string,
 ): Promise<{ portfolioName: string; members: PortfolioMemberSummary[] }> {
-  const canView = await checkPermissions([...ACCESS_TEAM_VIEW_PERMISSIONS]);
-  if (!canView) return { portfolioName: '', members: [] };
-
-  try {
-    const portfolio = await prisma.portfolio.findUnique({
-      where: { id: parentPortfolioId },
-      select: {
-        name: true,
-        members: {
-          select: {
-            memberAccountId: true,
-            status: true,
-            details: true,
-          },
-        },
-      },
-    });
-
-    if (!portfolio) return { portfolioName: '', members: [] };
-
-    let supportsAssetsGrantTable = true;
-    const members = await Promise.all(
-      portfolio.members.map(async ({ memberAccountId, status, details }) => {
-        if (!memberAccountId) return null;
-        const profile = await getUserProfile(memberAccountId);
-        const displayName =
-          profile?.nameDisplay ||
-          `${profile?.nameFirst ?? ''} ${profile?.nameLast ?? ''}`.trim() ||
-          memberAccountId;
-
-        // For active members, count their asset grants
-        let roleCount = 0;
-        if (status === 'active') {
-          roleCount = await prisma.access.count({
-            where: {
-              memberAccountId,
-              parentPortfolioId,
-              ...activeAccessWhere(),
-            },
-          });
-        }
-
-        // Resolve invitation expiry for invited members
-        const detailsObj = details as Record<string, unknown> | null;
-        const invitationExpiresOn =
-          status === 'invited' && typeof detailsObj?.expiresOn === 'string'
-            ? detailsObj.expiresOn
-            : undefined;
-
-        // Determine effective status — mark as expired if past expiresOn
-        let effectiveStatus: 'active' | 'invited' | 'expired' = status as 'active' | 'invited' | 'expired';
-        if (status === 'invited' && invitationExpiresOn) {
-          const expiresOn = new Date(invitationExpiresOn);
-          if (!Number.isNaN(expiresOn.getTime()) && expiresOn < new Date()) {
-            effectiveStatus = 'expired';
-          }
-        }
-
-        return {
-          accountId: memberAccountId,
-          displayName,
-          accountPhoto: profile?.accountPhoto,
-          roleCount,
-          status: effectiveStatus,
-          invitationExpiresOn,
-        };
-      })
-    );
-
-    return { portfolioName: portfolio.name, members: members.filter((member): member is PortfolioMemberSummary => member !== null) };
-  } catch (error) {
-    await logError('database', error, `getPortfolioMembers:${parentPortfolioId}`);
-    return { portfolioName: '', members: [] };
-  }
+  return { portfolioName: '', members: [] };
 }
 
 /**
@@ -1037,128 +957,10 @@ export async function getPortfolioMembers(
  * the account has no PortfolioMember row at all.
  */
 export async function getPortfolioMemberDetail(
-  parentPortfolioId: string,
-  memberAccountId: string,
+  _parentPortfolioId: string,
+  _memberAccountId: string,
 ): Promise<PortfolioMemberDetail | null> {
-  const canView = await checkPermissions([...ACCESS_TEAM_VIEW_PERMISSIONS]);
-  if (!canView) return null;
-
-  try {
-    const [portfolio, memberProfile, memberRow] = await Promise.all([
-      prisma.portfolio.findUnique({
-        where: { id: parentPortfolioId },
-        select: { name: true },
-      }),
-      getUserProfile(memberAccountId),
-      prisma.member.findFirst({
-        where: { parentPortfolioId, memberAccountId },
-        select: { status: true, details: true },
-      }),
-    ]);
-
-    if (!portfolio || !memberProfile || !memberRow) return null;
-
-    const displayName =
-      memberProfile.nameDisplay ||
-      `${memberProfile.nameFirst ?? ''} ${memberProfile.nameLast ?? ''}`.trim() ||
-      memberAccountId;
-
-    // Resolve invitation expiry
-    const detailsObj = memberRow.details as Record<string, unknown> | null;
-    const invitationExpiresOn =
-      memberRow.status === 'invited' && typeof detailsObj?.expiresOn === 'string'
-        ? detailsObj.expiresOn
-        : undefined;
-
-    // Determine effective status
-    let effectiveStatus = memberRow.status;
-    if (memberRow.status === 'invited' && invitationExpiresOn) {
-      const expiresOn = new Date(invitationExpiresOn);
-      if (!Number.isNaN(expiresOn.getTime()) && expiresOn < new Date()) {
-        effectiveStatus = 'expired';
-      }
-    }
-
-    // Invited/expired members have no asset grants yet
-    if (effectiveStatus !== 'active') {
-      return {
-        accountId: memberAccountId,
-        displayName,
-        portfolioName: portfolio.name,
-        status: effectiveStatus,
-        invitationExpiresOn,
-        roles: [],
-      };
-    }
-
-    // Fetch all asset grants for active members
-    const grants: Array<{
-      roleId: string;
-      role: { id: string; name: string; description: string | null };
-      asset: {
-        id: string;
-        member_account_id: string | null;
-        access_application_id: string | null;
-        member_connection_id: string | null;
-        member_portfolio_id: string | null;
-        access_type: string;
-      };
-    }> = await prisma.access.findMany({
-      where: {
-        memberAccountId,
-        parentPortfolioId,
-        ...activeAccessWhere(),
-      },
-      select: {
-        roleId: true,
-        role: { select: { id: true, name: true, description: true } },
-        asset: {
-          select: {
-            id: true,
-            member_account_id: true,
-            access_application_id: true,
-            member_connection_id: true,
-            member_portfolio_id: true,
-            access_type: true,
-          },
-        },
-      },
-    });
-
-    // Resolve asset names
-    const { resolveAssetName } = await import('@/services/manage/access/asset-resolvers');
-
-    const roles = await Promise.all(
-      grants.map(async (grant) => {
-        const assetId =
-          grant.asset.member_account_id ??
-          grant.asset.access_application_id ??
-          grant.asset.member_connection_id ??
-          grant.asset.member_portfolio_id ??
-          grant.asset.id;
-        const resolved = await resolveAssetName(assetId, grant.asset.access_type);
-        return {
-          roleId: grant.roleId,
-          roleName: grant.role.name,
-          roleDescription: grant.role.description ?? undefined,
-          assetId,
-          assetName: resolved.name,
-          assetType: grant.asset.access_type,
-        };
-      })
-    );
-
-    return {
-      accountId: memberAccountId,
-      displayName,
-      portfolioName: portfolio.name,
-      status: 'active',
-      roles,
-    };
-  } catch (error) {
-    await logError('database', error, `getPortfolioMemberDetail:${parentPortfolioId}:${memberAccountId}`);
-    return null;
-  }
+  return null;
 }
 
 /**
@@ -1192,7 +994,6 @@ export async function getMyDirectRoles(
         where: {
           parentAccountId: accessTo,
           memberAccountId: myAccountId,
-          parentPortfolioId: null,
           ...activeAccessWhere(),
         },
         select: {
@@ -1249,73 +1050,7 @@ export type MyPortfolioRole = {
  * Returns all roles the current user holds on assets within the given portfolio.
  */
 export async function getMyPortfolioRoles(
-  parentPortfolioId: string,
+  _parentPortfolioId: string,
 ): Promise<{ portfolioName: string; myName: string; roles: MyPortfolioRole[] } | null> {
-  try {
-    const myAccountId = await getActiveAccountId();
-    if (!myAccountId) return null;
-
-    const [portfolio, myProfile, grants] = await Promise.all([
-      prisma.portfolio.findUnique({
-        where: { id: parentPortfolioId },
-        select: { name: true },
-      }),
-      getUserProfile(myAccountId),
-      prisma.access.findMany({
-        where: {
-          memberAccountId: myAccountId,
-          parentPortfolioId,
-          ...activeAccessWhere(),
-        },
-        select: {
-          roleId: true,
-          role: { select: { id: true, name: true, description: true } },
-          asset: {
-            select: {
-              id: true,
-              member_account_id: true,
-              access_application_id: true,
-              member_connection_id: true,
-              member_portfolio_id: true,
-              access_type: true,
-            },
-          },
-        },
-      }),
-    ]);
-
-    if (!portfolio) return null;
-
-    const myName =
-      myProfile?.nameDisplay ||
-      `${myProfile?.nameFirst ?? ''} ${myProfile?.nameLast ?? ''}`.trim() ||
-      myAccountId;
-
-    const { resolveAssetName } = await import('@/services/manage/access/asset-resolvers');
-
-    const roles = await Promise.all(
-      grants.map(async (grant) => {
-        const assetId =
-          grant.asset.member_account_id ??
-          grant.asset.access_application_id ??
-          grant.asset.member_connection_id ??
-          grant.asset.member_portfolio_id ??
-          grant.asset.id;
-        const resolved = await resolveAssetName(assetId, grant.asset.access_type);
-        return {
-          roleId: grant.roleId,
-          roleName: grant.role.name,
-          roleDescription: grant.role.description ?? undefined,
-          assetId,
-          assetName: resolved.name,
-          assetType: grant.asset.access_type,
-        };
-      })
-    );
-
-    return { portfolioName: portfolio.name, myName, roles };
-  } catch (error) {
-    await logError('database', error, `getMyPortfolioRoles:${parentPortfolioId}`);
-    return null;
-  }
+  return null;
 }

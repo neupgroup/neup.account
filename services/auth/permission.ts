@@ -243,89 +243,15 @@ async function resolvePermissionSet(input: {
 	accountId: string;
 	checkFor: string[];
 }): Promise<{ permissions: string[]; matched: string[] }> {
-	const now = new Date();
-
-	const [appRecord, portfolios] = await Promise.all([
-		prisma.application.findUnique({
-			where: { id: input.app },
-			select: { id: true },
-		}),
-		prisma.portfolio.findMany({
-			where: {
-				OR: [
-					{ id: input.app },
-					{
-						assets: {
-							some: {
-								access_application_id: input.app,
-								access_type: 'app_in_port',
-							},
-						},
-					},
-				],
-			},
-			select: {
-				id: true,
-				assets: {
-					select: {
-						id: true,
-						member_account_id: true,
-						access_application_id: true,
-						member_connection_id: true,
-						member_portfolio_id: true,
-						access_type: true,
-					},
-				},
-					members: {
-						where: { memberType: 'account', memberAccountId: input.accountId },
-						select: {
-							isTemporary: true,
-							details: true,
-						},
-					},
-				},
-			}),
-		]);
+	const appRecord = await prisma.application.findUnique({
+		where: { id: input.app },
+		select: { id: true },
+	});
 
 	if (!appRecord) {
 		return { permissions: [], matched: [] };
 	}
 	const resolvedPermissions = new Set<string>();
-
-	if (portfolios.some((portfolio) => portfolio.members.length > 0)) {
-		resolvedPermissions.add('application.owner');
-		resolvedPermissions.add('owner');
-	}
-
-	for (const portfolio of portfolios) {
-		if (portfolio.members.length === 0) {
-			continue;
-		}
-
-		const apiMatches = !input.api
-			? true
-			: portfolio.assets.some((asset) =>
-				(asset.member_account_id ?? asset.access_application_id ?? asset.member_connection_id ?? asset.member_portfolio_id ?? asset.id) === input.api ||
-				asset.access_type === input.api
-			);
-
-		if (!apiMatches) {
-			continue;
-		}
-
-		const hasFullAccess = portfolio.members.some((member) => {
-			const stillValid = !member.isTemporary || member.isTemporary > now;
-			const details = member.details && typeof member.details === 'object' && !Array.isArray(member.details)
-				? member.details as Record<string, unknown>
-				: {};
-			return stillValid && details.accessLevel === 'full';
-		});
-
-		if (hasFullAccess) {
-			resolvedPermissions.add('*');
-		}
-
-	}
 
 	for (const grant of await prisma.access.findMany({
 		where: {

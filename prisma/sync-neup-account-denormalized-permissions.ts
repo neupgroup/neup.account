@@ -1,17 +1,20 @@
 /*
 ::neup.documentation::sync-denormalized-neup-account-permissions
+::title Neup Account Authz Rebuild Script
 
-Rebuilds denormalized role permission arrays for the Neup Account app.
+Rebuilds the Neup Account role and permission catalog from the checked-in authz snapshots.
 
 ::public
 
-Run this script when canonical authz permission rows change and existing role `permissions` arrays need to be resynced.
+Run this script to rewrite the Neup Account authz catalog in the database so `authz_permission`,
+`authz_role`, `authz_role_permission_map`, and legacy role permission snapshots all agree.
 
 ::public end
 
 ::private
 
-The script uses canonical permission names instead of the removed legacy `authz_permission.scope` column.
+The script treats `logica/basics/permissions.json` and `logica/basics/roles.json` as the
+source of truth, updates only `app_id = neup.account`, and leaves unrelated apps untouched.
 
 ::private end
 
@@ -19,184 +22,588 @@ The script uses canonical permission names instead of the removed legacy `authz_
 */
 
 import 'dotenv/config';
-import { Pool } from 'pg';
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import prisma from '../core/helpers/prisma';
+import { Prisma } from '@/prisma/generated/client/client';
+import { NEUP_ACCOUNT_PERMISSION_DEFINITIONS } from '@/services/neup-account/permission-catalog';
 
 const APP_ID = 'neup.account';
+const PERMISSIONS_FILE = resolve(process.cwd(), 'logica/basics/permissions.json');
+const ROLES_FILE = resolve(process.cwd(), 'logica/basics/roles.json');
 
-if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL is not set.');
+type PermissionSnapshot = {
+  id: string;
+  title?: string;
+  name?: string;
+  description?: string | null;
+  scopeFor?: unknown;
+  scopeLevel?: unknown;
+  acquisitionType?: string | null;
+  approvalPolicy?: string | null;
+  rules?: string | null;
+  status?: string | null;
+  tag?: unknown;
+};
+
+type RoleSnapshot = {
+  id: string;
+  title?: string;
+  name?: string;
+  description?: string | null;
+  scopeFor?: unknown;
+  scopeLevel?: unknown;
+  acquisitionType?: string | null;
+  approvalPolicy?: string | null;
+  pushed?: boolean;
+  applicableFor?: unknown;
+  permissions?: unknown;
+};
+
+type DuplicateRoleNameResolution = {
+  originalName: string;
+  storedName: string;
+};
+
+type PermissionNameResolution = {
+  originalName: string;
+  storedName: string;
+};
+
+type SkippedRoleResolution = {
+  roleId: string;
+  roleName: string;
+  missingPermissions: string[];
+};
+
+type IdReuseResolution = {
+  snapshotId: string;
+  storedId: string;
+  name: string;
+};
+
+function normalizeString(value: unknown): string | null {
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
+}
+
+function normalizeStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+
+  return Array.from(
+    new Set(
+      value
+        .map((entry) => normalizeString(entry))
+        .filter((entry): entry is string => entry !== null),
+    ),
+  ).sort((left, right) => left.localeCompare(right));
+}
+
+function normalizeJsonArray(value: unknown, fallback: string[] = []): Prisma.InputJsonValue {
+  return normalizeStringArray(value ?? fallback);
+}
+
+function normalizeRoleScopeLevel(value: unknown): string {
+  const candidate = Array.isArray(value) ? value[0] : value;
+  return normalizeString(candidate) ?? 'assignable';
+}
+
+function slugifyPermission(name: string): string {
+  return name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase();
+}
+
+function audienceSuffixForRoleScopeLevel(scopeLevel: string): 'self' | 'managed' | 'root' {
+  if (scopeLevel === 'rootManaged') return 'root';
+  if (scopeLevel === 'assignable') return 'managed';
+  return 'self';
+}
+
+function scopeLevelForCanonicalDefinition(definition: (typeof NEUP_ACCOUNT_PERMISSION_DEFINITIONS)[number]): string[] {
+  if (definition.rootManaged) return ['rootManaged'];
+  if (definition.assignable) return ['assignable'];
+  if (definition.selfAssigned) return ['selfAssigned'];
+  if (definition.publiclyEnrollable) return ['publiclyEnrollable'];
+  return [];
+}
+
+function readPermissionName(permission: PermissionSnapshot): string {
+  const name = normalizeString(permission.title) ?? normalizeString(permission.name);
+  if (!name) {
+    throw new Error(`Permission ${permission.id} is missing a title/name.`);
+  }
+
+  return name;
+}
+
+function readRoleName(role: RoleSnapshot): string {
+  const name = normalizeString(role.title) ?? normalizeString(role.name);
+  if (!name) {
+    throw new Error(`Role ${role.id} is missing a title/name.`);
+  }
+
+  return name;
+}
+
+async function readSnapshotFile<T>(filePath: string, label: string): Promise<T[]> {
+  const raw = await readFile(filePath, 'utf8');
+  const parsed = JSON.parse(raw) as unknown;
+
+  if (!Array.isArray(parsed)) {
+    throw new Error(`${label} snapshot must be a JSON array.`);
+  }
+
+  return parsed as T[];
+}
+
+function normalizeRolePermissionNames(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+
+  const names = value.flatMap((entry) => {
+    if (typeof entry === 'string') {
+      const trimmed = entry.trim();
+      return trimmed ? [trimmed] : [];
+    }
+
+    if (entry && typeof entry === 'object' && !Array.isArray(entry)) {
+      const maybeName = normalizeString((entry as { name?: unknown; title?: unknown }).name)
+        ?? normalizeString((entry as { title?: unknown }).title);
+      return maybeName ? [maybeName] : [];
+    }
+
+    return [];
+  });
+
+  return Array.from(new Set(names)).sort((left, right) => left.localeCompare(right));
+}
+
+function resolvePermissionNameForRole(
+  permissionName: string,
+  roleScopeLevel: string,
+  knownPermissionNames: Set<string>,
+): string | null {
+  if (knownPermissionNames.has(permissionName)) {
+    return permissionName;
+  }
+
+  const candidates: string[] = [];
+  const suffix = audienceSuffixForRoleScopeLevel(roleScopeLevel);
+  const hasAudienceSuffix = /\.(self|managed|root)$/.test(permissionName);
+
+  if (!hasAudienceSuffix) {
+    candidates.push(`${permissionName}.${suffix}`);
+
+    if (suffix !== 'root') candidates.push(`${permissionName}.root`);
+    if (suffix !== 'managed') candidates.push(`${permissionName}.managed`);
+    if (suffix !== 'self') candidates.push(`${permissionName}.self`);
+  }
+
+  if (permissionName.startsWith('root.') && !permissionName.endsWith('.root')) {
+    candidates.push(`${permissionName}.root`);
+  }
+
+  for (const candidate of candidates) {
+    if (knownPermissionNames.has(candidate)) {
+      return candidate;
+    }
+  }
+
+  return null;
 }
 
 async function main() {
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL is not set.');
+  }
 
-  try {
-    await pool.query('BEGIN');
-    const roleId = 'individual-default-and-application-neup-account';
-    const roleName = 'individual.defaultAndApplication';
-    const roleDescription = 'Default individual permissions with application view/edit access.';
-    const applicationPermissions = [
-      'application.view',
-      'application.edit',
-      'application.logs.view',
-      'application.devlogs.view',
-    ];
+  const [rawPermissionSnapshots, roleSnapshots] = await Promise.all([
+    readSnapshotFile<PermissionSnapshot>(PERMISSIONS_FILE, 'Permission'),
+    readSnapshotFile<RoleSnapshot>(ROLES_FILE, 'Role'),
+  ]);
 
-    // 1) Rebuild authz_role.permissions from legacy role-capability mapping if it still exists.
-    await pool.query(
-      `
-      DO $$
-      BEGIN
-        IF to_regclass('public.authz_role_capability') IS NOT NULL THEN
-          WITH role_permissions AS (
-            SELECT
-              arc.role_id,
-              jsonb_agg(DISTINCT cap.name ORDER BY cap.name) AS permissions
-            FROM authz_role_capability arc
-            JOIN authz_permission cap ON cap.id = arc.capability_id
-            WHERE COALESCE(arc.app_id, cap.app_id) = 'neup.account'
-            GROUP BY arc.role_id
-          )
-          UPDATE authz_role r
-          SET permissions = rp.permissions
-          FROM role_permissions rp
-          WHERE r.id = rp.role_id
-            AND r.app_id = 'neup.account';
-        END IF;
-      END
-      $$;
-      `
+  const permissionSnapshots = [...rawPermissionSnapshots];
+  const permissionNamesFromSnapshot = new Set(
+    rawPermissionSnapshots.map((permission) => readPermissionName(permission)),
+  );
+
+  for (const definition of NEUP_ACCOUNT_PERMISSION_DEFINITIONS) {
+    if (permissionNamesFromSnapshot.has(definition.name)) {
+      continue;
+    }
+
+    permissionSnapshots.push({
+      id: `cap-auto-${slugifyPermission(definition.name)}`,
+      title: definition.name,
+      description: definition.description,
+      scopeFor: ['for_individual'],
+      scopeLevel: scopeLevelForCanonicalDefinition(definition),
+      acquisitionType: definition.acquisitionType,
+      approvalPolicy: definition.approvalPolicy,
+      rules: null,
+      status: null,
+      tag: null,
+    });
+  }
+
+  const duplicatePermissionIds = new Set<string>();
+  const duplicatePermissionNames = new Set<string>();
+  const permissionIdSet = new Set<string>();
+  const permissionNameSet = new Set<string>();
+
+  for (const permission of permissionSnapshots) {
+    if (!normalizeString(permission.id)) {
+      throw new Error('Permission snapshot contains an entry without an id.');
+    }
+
+    const permissionName = readPermissionName(permission);
+    if (permissionIdSet.has(permission.id)) duplicatePermissionIds.add(permission.id);
+    if (permissionNameSet.has(permissionName)) duplicatePermissionNames.add(permissionName);
+    permissionIdSet.add(permission.id);
+    permissionNameSet.add(permissionName);
+  }
+
+  if (duplicatePermissionIds.size > 0) {
+    throw new Error(`Duplicate permission ids: ${Array.from(duplicatePermissionIds).join(', ')}`);
+  }
+
+  if (duplicatePermissionNames.size > 0) {
+    throw new Error(`Duplicate permission titles: ${Array.from(duplicatePermissionNames).join(', ')}`);
+  }
+
+  const duplicateRoleIds = new Set<string>();
+  const roleIdSet = new Set<string>();
+  const sourceRoleNameById = new Map<string, string>();
+  const roleIdsBySourceName = new Map<string, string[]>();
+
+  for (const role of roleSnapshots) {
+    if (!normalizeString(role.id)) {
+      throw new Error('Role snapshot contains an entry without an id.');
+    }
+
+    const roleName = readRoleName(role);
+    if (roleIdSet.has(role.id)) duplicateRoleIds.add(role.id);
+    roleIdSet.add(role.id);
+    sourceRoleNameById.set(role.id, roleName);
+    roleIdsBySourceName.set(roleName, [...(roleIdsBySourceName.get(roleName) ?? []), role.id]);
+  }
+
+  if (duplicateRoleIds.size > 0) {
+    throw new Error(`Duplicate role ids: ${Array.from(duplicateRoleIds).join(', ')}`);
+  }
+
+  const permissionIdByName = new Map(permissionSnapshots.map((permission) => [readPermissionName(permission), permission.id]));
+  const knownPermissionNames = new Set(permissionIdByName.keys());
+  const storedRoleNameById = new Map<string, string>();
+  const duplicateRoleNameResolutions: Array<{ roleId: string } & DuplicateRoleNameResolution> = [];
+  const resolvedRolePermissionsById = new Map<string, string[]>();
+  const permissionNameResolutions: Array<{ roleId: string } & PermissionNameResolution> = [];
+  const skippedRoles: SkippedRoleResolution[] = [];
+
+  for (const role of roleSnapshots) {
+    const sourceRoleName = sourceRoleNameById.get(role.id)!;
+    const conflictingRoleIds = roleIdsBySourceName.get(sourceRoleName) ?? [];
+    const conflictIndex = conflictingRoleIds.indexOf(role.id);
+    const storedRoleName = conflictIndex <= 0 ? sourceRoleName : role.id;
+
+    storedRoleNameById.set(role.id, storedRoleName);
+
+    if (storedRoleName !== sourceRoleName) {
+      duplicateRoleNameResolutions.push({
+        roleId: role.id,
+        originalName: sourceRoleName,
+        storedName: storedRoleName,
+      });
+    }
+  }
+
+  for (const role of roleSnapshots) {
+    const roleScopeLevel = normalizeRoleScopeLevel(role.scopeLevel);
+    const missingPermissions: string[] = [];
+    const resolvedPermissions = normalizeRolePermissionNames(role.permissions).flatMap((permissionName) => {
+      const resolvedName = resolvePermissionNameForRole(permissionName, roleScopeLevel, knownPermissionNames);
+
+      if (!resolvedName) {
+        missingPermissions.push(permissionName);
+        return [];
+      }
+
+      if (resolvedName !== permissionName) {
+        permissionNameResolutions.push({
+          roleId: role.id,
+          originalName: permissionName,
+          storedName: resolvedName,
+        });
+      }
+
+      return resolvedName;
+    });
+
+    if (missingPermissions.length > 0) {
+      skippedRoles.push({
+        roleId: role.id,
+        roleName: sourceRoleNameById.get(role.id) ?? role.id,
+        missingPermissions,
+      });
+      continue;
+    }
+
+    resolvedRolePermissionsById.set(
+      role.id,
+      Array.from(new Set(resolvedPermissions)).sort((left, right) => left.localeCompare(right)),
     );
+  }
 
-    // 2) Ensure every role in neup.account has permissions set (at least empty array).
-    await pool.query(
-      `
-      UPDATE authz_role
-      SET permissions = '[]'::jsonb
-      WHERE app_id = $1
-        AND permissions IS NULL;
-      `,
-      [APP_ID],
-    );
+  const summary = await prisma.$transaction(async (tx) => {
+    const permissionDbIdByName = new Map<string, string>();
+    const reusedPermissionIds: IdReuseResolution[] = [];
+    const reusedRoleIds: IdReuseResolution[] = [];
 
-    // 2b) Ensure individual.defaultAndApplication role exists with application-only permissions.
-    await pool.query(
-      `
-      INSERT INTO authz_role (id, app_id, name, description, scope, permissions)
-      VALUES ($1, $2, $3, $4, $5, $6::jsonb)
-      ON CONFLICT (id) DO UPDATE
-      SET name = EXCLUDED.name,
-          description = EXCLUDED.description,
-          scope = EXCLUDED.scope,
-          permissions = EXCLUDED.permissions;
-      `,
-      [roleId, APP_ID, roleName, roleDescription, 'application', JSON.stringify(applicationPermissions)],
-    );
+    for (const permission of permissionSnapshots) {
+      const permissionName = readPermissionName(permission);
+      const existingById = await tx.authzPermission.findUnique({
+        where: { id: permission.id },
+        select: { id: true, appId: true },
+      });
+      const existingByName = await tx.authzPermission.findFirst({
+        where: { appId: APP_ID, name: permissionName },
+        select: { id: true },
+      });
+      const targetPermissionId = existingById?.id ?? existingByName?.id ?? permission.id;
 
-    // 2c) Ensure individual.root includes all application/config/display-image permissions.
-    await pool.query(
-      `
-      UPDATE authz_role r
-      SET permissions = (
-        WITH current_permissions AS (
-          SELECT DISTINCT elem AS permission_name
-          FROM jsonb_array_elements_text(COALESCE(r.permissions, '[]'::jsonb)) AS elem
-        ),
-        merged AS (
-          SELECT permission_name FROM current_permissions
-          UNION
-            SELECT DISTINCT c.name AS permission_name
-          FROM authz_permission c
-          WHERE c.app_id = $1
-            AND (
-              c.name LIKE 'application.%.root'
-              OR c.name LIKE 'config.%'
-              OR c.name LIKE 'root.display_images.%'
-            )
-        )
-        SELECT COALESCE(jsonb_agg(permission_name ORDER BY permission_name), '[]'::jsonb)
-        FROM merged
-      )
-      WHERE r.app_id = $1
-        AND r.name = 'individual.root';
-      `,
-      [APP_ID],
-    );
+      if (existingById && existingById.appId && existingById.appId !== APP_ID) {
+        throw new Error(
+          `Permission id ${permission.id} already belongs to another app and cannot be reused for ${permissionName}.`,
+        );
+      }
 
-    // 3) Normalize existing permissions arrays to permission-name strings only.
-    await pool.query(
-      `
-      UPDATE authz_role r
-      SET permissions = COALESCE(
-        (
-          SELECT jsonb_agg(value ORDER BY value)
-          FROM (
-            SELECT DISTINCT
-              CASE
-                WHEN jsonb_typeof(elem) = 'object' AND elem ? 'name' THEN elem->>'name'
-                WHEN jsonb_typeof(elem) = 'string' THEN elem #>> '{}'
-                ELSE NULL
-              END AS value
-            FROM jsonb_array_elements(COALESCE(r.permissions, '[]'::jsonb)) AS elem
-          ) dedup
-          WHERE value IS NOT NULL
-        ),
-        '[]'::jsonb
-      )
-      WHERE r.app_id = $1;
-      `,
-      [APP_ID],
-    );
+      if (targetPermissionId !== permission.id) {
+        reusedPermissionIds.push({
+          snapshotId: permission.id,
+          storedId: targetPermissionId,
+          name: permissionName,
+        });
+      }
 
-    // 4) If legacy denormalized column still exists, sync it from authz_role.permissions.
-    await pool.query(
-      `
-      DO $$
-      BEGIN
-        IF to_regclass('public.authz_role_capability') IS NOT NULL THEN
-          IF EXISTS (
-            SELECT 1
-            FROM information_schema.columns
-            WHERE table_schema = 'public'
-              AND table_name = 'authz_role_capability'
-              AND column_name = 'denormalized_capability'
-          ) THEN
-            UPDATE authz_role_capability arc
-            SET denormalized_capability = COALESCE(r.permissions, '[]'::jsonb)
-            FROM authz_role r
-            WHERE r.id = arc.role_id
-              AND r.app_id = 'neup.account'
-              AND arc.app_id = 'neup.account';
-          END IF;
-        END IF;
-      END
-      $$;
-      `
-    );
+      await tx.authzPermission.upsert({
+        where: { id: targetPermissionId },
+        update: {
+          name: permissionName,
+          description: normalizeString(permission.description) ?? null,
+          appId: APP_ID,
+          scopeFor: normalizeJsonArray(permission.scopeFor),
+          scopeLevel: normalizeJsonArray(permission.scopeLevel),
+          acquisitionType: normalizeString(permission.acquisitionType) ?? 'assignment',
+          approvalPolicy: normalizeString(permission.approvalPolicy) ?? 'none',
+          rules: normalizeString(permission.rules) ?? null,
+          status: normalizeString(permission.status) ?? null,
+          tag: permission.tag === undefined ? Prisma.JsonNull : (permission.tag as Prisma.InputJsonValue),
+        },
+        create: {
+          id: targetPermissionId,
+          name: permissionName,
+          description: normalizeString(permission.description) ?? null,
+          appId: APP_ID,
+          scopeFor: normalizeJsonArray(permission.scopeFor),
+          scopeLevel: normalizeJsonArray(permission.scopeLevel),
+          acquisitionType: normalizeString(permission.acquisitionType) ?? 'assignment',
+          approvalPolicy: normalizeString(permission.approvalPolicy) ?? 'none',
+          rules: normalizeString(permission.rules) ?? null,
+          status: normalizeString(permission.status) ?? null,
+          tag: permission.tag === undefined ? Prisma.JsonNull : (permission.tag as Prisma.InputJsonValue),
+        },
+      });
 
-    const roleStats = await pool.query(
-      `
-      SELECT id, name, jsonb_array_length(COALESCE(permissions, '[]'::jsonb)) AS permission_count
-      FROM authz_role
-      WHERE app_id = $1
-      ORDER BY name ASC;
-      `,
-      [APP_ID],
-    );
+      permissionDbIdByName.set(permissionName, targetPermissionId);
+    }
 
-    await pool.query('COMMIT');
+    for (const role of roleSnapshots) {
+      if (!resolvedRolePermissionsById.has(role.id)) {
+        continue;
+      }
 
-    console.log(`Synced denormalized permissions for app: ${APP_ID}`);
-    console.table(roleStats.rows);
-  } catch (error) {
-    await pool.query('ROLLBACK');
-    throw error;
-  } finally {
-    await pool.end();
+      const roleName = storedRoleNameById.get(role.id) ?? readRoleName(role);
+      const permissionNames = resolvedRolePermissionsById.get(role.id) ?? [];
+      const scopeFor = normalizeStringArray(role.scopeFor);
+      const scopeLevel = normalizeRoleScopeLevel(role.scopeLevel);
+      const existingById = await tx.authzRole.findUnique({
+        where: { id: role.id },
+        select: { id: true, appId: true },
+      });
+      const existingByName = await tx.authzRole.findFirst({
+        where: { appId: APP_ID, name: roleName },
+        select: { id: true },
+      });
+      const targetRoleId = existingById?.id ?? existingByName?.id ?? role.id;
+
+      if (existingById && existingById.appId && existingById.appId !== APP_ID) {
+        throw new Error(`Role id ${role.id} already belongs to another app and cannot be reused for ${roleName}.`);
+      }
+
+      if (targetRoleId !== role.id) {
+        reusedRoleIds.push({
+          snapshotId: role.id,
+          storedId: targetRoleId,
+          name: roleName,
+        });
+      }
+
+      await tx.authzRole.upsert({
+        where: { id: targetRoleId },
+        update: {
+          name: roleName,
+          description: normalizeString(role.description) ?? null,
+          appId: APP_ID,
+          scopeFor: normalizeJsonArray(scopeFor),
+          scopeLevel,
+          acquisitionType: normalizeString(role.acquisitionType) ?? 'assignment',
+          approvalPolicy: normalizeString(role.approvalPolicy) ?? 'none',
+          pushed: Boolean(role.pushed),
+          applicableFor: normalizeJsonArray(role.applicableFor),
+          permissions: permissionNames,
+        },
+        create: {
+          id: targetRoleId,
+          name: roleName,
+          description: normalizeString(role.description) ?? null,
+          appId: APP_ID,
+          scopeFor: normalizeJsonArray(scopeFor),
+          scopeLevel,
+          acquisitionType: normalizeString(role.acquisitionType) ?? 'assignment',
+          approvalPolicy: normalizeString(role.approvalPolicy) ?? 'none',
+          pushed: Boolean(role.pushed),
+          applicableFor: normalizeJsonArray(role.applicableFor),
+          permissions: permissionNames,
+        },
+      });
+
+      await tx.authzRolePermissionMap.deleteMany({ where: { roleId: targetRoleId } });
+
+      const mappingScopeFor = scopeFor.length > 0 ? scopeFor : ['for_individual'];
+      if (permissionNames.length > 0) {
+        await tx.authzRolePermissionMap.createMany({
+          data: permissionNames.flatMap((permissionName) =>
+            mappingScopeFor.map((scopeForValue) => ({
+              roleId: targetRoleId,
+              permissionId: permissionDbIdByName.get(permissionName) ?? permissionIdByName.get(permissionName)!,
+              scopeFor: scopeForValue,
+              scopeLevel,
+            })),
+          ),
+          skipDuplicates: true,
+        });
+      }
+
+      await tx.role.updateMany({
+        where: { roleId: targetRoleId },
+        data: {
+          roleName,
+          permissions: permissionNames,
+        },
+      });
+    }
+
+    const [dbRoles, dbPermissions] = await Promise.all([
+      tx.authzRole.findMany({
+        where: { appId: APP_ID },
+        select: { id: true, name: true, permissions: true },
+        orderBy: { name: 'asc' },
+      }),
+      tx.authzPermission.count({ where: { appId: APP_ID } }),
+    ]);
+
+    const rolesOutsideSnapshot = dbRoles
+      .filter((role) => !roleIdSet.has(role.id))
+      .map((role) => `${role.name} (${role.id})`);
+
+    return {
+      permissionCount: dbPermissions,
+      roleCount: dbRoles.length,
+      syncedRoleCount: resolvedRolePermissionsById.size,
+      rolesOutsideSnapshot,
+      reusedPermissionIds,
+      reusedRoleIds,
+      roleStats: dbRoles.map((role) => ({
+        id: role.id,
+        name: role.name,
+        permissionCount: Array.isArray(role.permissions) ? role.permissions.length : 0,
+        permissions: Array.isArray(role.permissions)
+          ? role.permissions.filter((permission): permission is string => typeof permission === 'string')
+          : [],
+      })),
+    };
+  }, { timeout: 120000 });
+
+  console.log(`Rebuilt authz catalog for app: ${APP_ID}`);
+  console.table(summary.roleStats.map((role) => ({
+    id: role.id,
+    name: role.name,
+    permissionCount: role.permissionCount,
+  })));
+
+  if (summary.rolesOutsideSnapshot.length > 0) {
+    console.warn('Roles present in the database but not in the checked-in snapshot were left untouched:');
+    for (const role of summary.rolesOutsideSnapshot) {
+      console.warn(`- ${role}`);
+    }
+  }
+
+  console.log(
+    `Permissions synced: ${permissionSnapshots.length}/${summary.permissionCount}. Roles synced: ${summary.syncedRoleCount}/${summary.roleCount}.`,
+  );
+
+  if (duplicateRoleNameResolutions.length > 0) {
+    console.warn('Duplicate role titles were normalized to unique stored names:');
+    for (const resolution of duplicateRoleNameResolutions) {
+      console.warn(
+        `- ${resolution.roleId}: "${resolution.originalName}" stored as "${resolution.storedName}"`,
+      );
+    }
+  }
+
+  if (permissionNameResolutions.length > 0) {
+    console.warn('Legacy role permission names were upgraded to canonical stored names:');
+    for (const resolution of permissionNameResolutions) {
+      console.warn(
+        `- ${resolution.roleId}: "${resolution.originalName}" -> "${resolution.storedName}"`,
+      );
+    }
+  }
+
+  if (summary.reusedPermissionIds.length > 0) {
+    console.warn('Permission rows reused existing database ids for matching names:');
+    for (const resolution of summary.reusedPermissionIds) {
+      console.warn(
+        `- ${resolution.name}: snapshot id "${resolution.snapshotId}" -> stored id "${resolution.storedId}"`,
+      );
+    }
+  }
+
+  if (summary.reusedRoleIds.length > 0) {
+    console.warn('Role rows reused existing database ids for matching names:');
+    for (const resolution of summary.reusedRoleIds) {
+      console.warn(
+        `- ${resolution.name}: snapshot id "${resolution.snapshotId}" -> stored id "${resolution.storedId}"`,
+      );
+    }
+  }
+
+  if (skippedRoles.length > 0) {
+    console.warn('Roles skipped because their snapshots still reference missing permissions:');
+    for (const skippedRole of skippedRoles) {
+      console.warn(
+        `- ${skippedRole.roleId} (${skippedRole.roleName}): ${skippedRole.missingPermissions.join(', ')}`,
+      );
+    }
   }
 }
 
-main().catch((error) => {
-  console.error('sync-neup-account-denormalized-permissions failed:', error instanceof Error ? error.message : error);
-  process.exit(1);
-});
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+  })
+  .catch(async (error) => {
+    console.error(
+      'sync-neup-account-denormalized-permissions failed:',
+      error instanceof Error ? error.message : error,
+    );
+    await prisma.$disconnect();
+    process.exit(1);
+  });

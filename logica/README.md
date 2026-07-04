@@ -11,5 +11,9 @@ application tables. Regenerate them with
 See `logica/basics/README.md` for the generated snapshot contracts in the
 `basics` folder.
 
+`logica/account/` contains portable fetch-based helpers for resolving
+bridge-backed account identity data from `NEUP_APP_ID`,
+`NEUP_APP_SECRET`, and `NEUP_AUTH_URL`.
+
 ::end
 */

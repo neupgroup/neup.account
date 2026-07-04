@@ -3,6 +3,7 @@
 import { cookies } from 'next/headers';
 import { getCookie, setCookies } from '@/core/helper/cookieHelper';
 import type { StoredAccount, Session } from '@/core/auth/session';
+import { readValidAuthAccountCookiePayload } from '@/logica/auth/validation';
 
 type SessionCookiePayload = {
   aid: string;
@@ -48,20 +49,23 @@ export async function getSessionCookies(): Promise<SessionCookiePayload> {
 
   try {
     const { verifyAccountToken } = await import('@/core/auth/accountToken');
-    const payload = await verifyAccountToken(raw.trim());
+    const normalized = await readValidAuthAccountCookiePayload({
+      token: raw,
+      verifyToken: verifyAccountToken,
+    });
 
-    if (!payload) {
+    if (!normalized) {
       return getEmptySessionCookiePayload();
     }
 
     const account = {
-      aid: payload.aid,
-      sid: payload.sid,
-      skey: payload.skey,
+      aid: normalized.accountId,
+      sid: normalized.sessionId,
+      skey: normalized.sessionKey,
       def: 1 as const,
-      nid: payload.nid ?? '',
-      neupId: payload.nid ?? '',
-      guest: payload.guest,
+      nid: normalized.payload.nid ?? normalized.payload.neupId ?? '',
+      neupId: normalized.payload.neupId ?? normalized.payload.nid ?? '',
+      guest: normalized.payload.guest,
     } satisfies StoredAccount;
 
     return {

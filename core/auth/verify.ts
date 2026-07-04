@@ -8,6 +8,8 @@ import { redirect } from 'next/navigation';
 import { verifyActiveSession } from '@/services/auth/verify';
 import { getSessionCookies } from '@/core/auth/cookies';
 import { getAccountSelectorContext } from '@/core/auth/accountSelector';
+import { getCookie } from '@/core/helper/cookieHelper';
+import { validateAuthAccountCookieSession } from '@/logica/auth/validation';
 
 // Represents an active session with both shorthand and legacy field names.
 export type Session = {
@@ -20,7 +22,9 @@ export type Session = {
   jwt?: string;
 };
 
-const SESSION_DURATION_DAYS = 30;
+type GetActiveSessionOptions = {
+  expectedGuest?: boolean;
+};
 
 // Returns true if the three required session cookie values exist on the device.
 // This is a cookie-only check — it does not validate against the database.
@@ -31,27 +35,24 @@ export async function hasActiveSessionCookies(): Promise<boolean> {
 
 // Reads the session from cookies and validates it against the database via services/auth/verify.
 // Returns null if the session is missing, expired, or tampered with.
-export async function getActiveSession(): Promise<Session | null> {
-  const { accountId, sessionId, sessionKey } = await getSessionCookies();
-
-  if (!accountId || !sessionId || !sessionKey) {
-    return null;
-  }
-
-  const result = await verifyActiveSession({
-    accountId,
-    sessionId,
-    sessionKey,
+export async function getActiveSession(options: GetActiveSessionOptions = {}): Promise<Session | null> {
+  const rawToken = await getCookie('auth_account');
+  const { verifyAccountToken } = await import('@/core/auth/accountToken');
+  const result = await validateAuthAccountCookieSession({
+    token: rawToken,
+    verifyToken: verifyAccountToken,
+    validateSession: verifyActiveSession,
+    expectedGuest: options.expectedGuest,
   });
   if (!result.valid) return null;
 
   return {
-    aid: accountId,
-    sid: sessionId,
-    skey: sessionKey,
-    accountId,
-    sessionId,
-    sessionKey,
+    aid: result.accountId,
+    sid: result.sessionId,
+    skey: result.sessionKey,
+    accountId: result.accountId,
+    sessionId: result.sessionId,
+    sessionKey: result.sessionKey,
   };
 }
 

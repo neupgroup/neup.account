@@ -4,12 +4,10 @@
 // profile and permissions, and returns everything the SessionProvider needs to hydrate.
 // This is called on every page load by the client-side SessionProvider.
 
-import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
 import { getUserProfile, getAccountPermission, getGrantedAccountPermission } from '@/services/user';
-import { verifyActiveSession } from '@/services/auth/verify';
 import type { StoredProfileInfo } from './storage';
 import { getAccountSelectorContext } from '@/core/auth/accountSelector';
-import { getSessionCookies } from '@/core/auth/cookies';
+import { getActiveSession } from '@/core/auth/verify';
 
 export type SessionCheckResult =
     | { valid: false }
@@ -24,14 +22,8 @@ export type SessionCheckResult =
 // Verifies the active session and returns the profile, permissions, and account IDs.
 // Returns { valid: false } if the session is invalid or the profile cannot be loaded.
 export async function checkSession(selectedAccountId?: string | null): Promise<SessionCheckResult> {
-    // First verify the raw session triplet (aid/sid/skey) is valid
-    const { accountId, sessionId, sessionKey } = await getSessionCookies();
-    const verification = await verifyActiveSession({
-        accountId,
-        sessionId,
-        sessionKey,
-    });
-    if (!verification.valid) {
+    const session = await getActiveSession();
+    if (!session) {
         return { valid: false };
     }
 

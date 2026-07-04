@@ -18,6 +18,7 @@ export type AccountTokenPayload = {
   sid: string;
   skey: string;
   nid?: string;   // omitted entirely for guest accounts
+  neupId?: string;
   guest?: 1;      // only present on guest accounts
 };
 

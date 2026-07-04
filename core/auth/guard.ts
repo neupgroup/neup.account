@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation';
 import { getSessionCookies } from '@/core/auth/cookies';
 import { getCookie } from '@/core/helper/cookieHelper';
-import { verifyActiveSession } from '@/services/auth/verify';
+import { getActiveSession } from '@/core/auth/verify';
 
 type RequireValidSessionOptions = {
   redirectTo?: string;
@@ -26,15 +26,11 @@ export async function requireValidSession(
   const isGuestUser = cookieFlagGuest || tokenFlagGuest;
 
   // Validate session against DB, including expected guest-vs-non-guest mode.
-  const { accountId, sessionId, sessionKey } = await getSessionCookies();
-  const session = await verifyActiveSession({
-    accountId,
-    sessionId,
-    sessionKey,
+  const session = await getActiveSession({
     expectedGuest: isGuestUser,
   });
 
-  if (!session.valid || (!allowGuest && isGuestUser)) {
+  if (!session || (!allowGuest && isGuestUser)) {
     redirect(redirectTo);
   }
 

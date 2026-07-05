@@ -15,10 +15,11 @@ This component powers the role detail page where managers adjust permission memb
 ::end
 */
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/neup.core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -33,7 +34,12 @@ import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { isBuiltInApplicationManagementPermissionName } from '@/services/applications/permission-definitions';
 import { AuthzDefinitionSelector } from './authz-definition-selector';
 import type { ApplicationAuthzDefinitionOption } from '@/services/applications/authz-config';
-import type { AuthzScopeLevel } from '@/services/applications/authz-scope-policy';
+import {
+  AUTHZ_SCOPE_FOR_META,
+  AUTHZ_SCOPE_LEVEL_META,
+  getCompatibleRolePermissionScopePairs,
+  type AuthzScopeLevel,
+} from '@/services/applications/authz-scope-policy';
 import { ScopeForSelector, ScopeLevelSelector } from './authz-scope-policy-selector';
 
 type Props = {
@@ -87,6 +93,26 @@ export function RoleDetailEditor({
   const [deletePending, setDeletePending] = useState(false);
 
   const selectedSet = useMemo(() => new Set(permissionIds), [permissionIds]);
+  const activeScopeLevel = scopeLevel[0] ?? role.scopeLevel;
+
+  const permissionCompatibility = useMemo(() => {
+    return new Map(
+      permissions.map((permission) => {
+        const matchingPairs = getCompatibleRolePermissionScopePairs({
+          roleScopeFor: scopeFor,
+          roleScopeLevel: activeScopeLevel,
+          permissionScopeFor: permission.scopeFor,
+          permissionScopeLevels: permission.scopeLevel,
+        });
+
+        return [permission.id, matchingPairs.length > 0] as const;
+      }),
+    );
+  }, [activeScopeLevel, permissions, scopeFor]);
+
+  useEffect(() => {
+    setPermissionIds((current) => current.filter((id) => permissionCompatibility.get(id) !== false));
+  }, [permissionCompatibility]);
 
   const visiblePermissions = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -225,15 +251,21 @@ export function RoleDetailEditor({
               const isChecked = selectedSet.has(permission.id);
               const isSystemPermission = appId === 'neup.account' && isBuiltInApplicationManagementPermissionName(permission.name);
               const isLockedSystemAssignment = isSystemRole && isSystemPermission;
+              const isCompatible = permissionCompatibility.get(permission.id) !== false;
+              const isDisabled = !canManage || isSystemRole || !isCompatible;
 
               return (
                 <label
                   key={permission.id}
-                  className="group flex items-start gap-3 border-b px-4 py-4 transition-colors last:border-b-0 hover:bg-muted/40 sm:px-5"
+                  className={`group flex items-start gap-3 border-b px-4 py-4 transition-colors last:border-b-0 sm:px-5 ${
+                    isDisabled
+                      ? 'cursor-not-allowed bg-muted/10 text-muted-foreground'
+                      : 'cursor-pointer hover:bg-muted/40'
+                  }`}
                 >
                   <Checkbox
                     checked={isChecked}
-                    disabled={!canManage || isSystemRole}
+                    disabled={isDisabled}
                     onCheckedChange={() =>
                       setPermissionIds((prev) =>
                         prev.includes(permission.id)
@@ -244,13 +276,32 @@ export function RoleDetailEditor({
                     className="mt-0.5"
                   />
                   <div className="min-w-0">
-                    <p className="truncate text-base font-medium leading-6">
-                      {permission.name}
-                      {isLockedSystemAssignment ? ' (Sys)' : ''}
-                    </p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className={`truncate text-base font-medium leading-6 ${isDisabled ? 'text-muted-foreground' : 'text-foreground'}`}>
+                        {permission.name}
+                        {isLockedSystemAssignment ? ' (Sys)' : ''}
+                      </p>
+                    </div>
                     {permission.description ? (
                       <p className="text-sm text-muted-foreground">
                         {permission.description}
+                      </p>
+                    ) : null}
+                    <div className="mt-1 flex flex-wrap gap-1">
+                      {permission.scopeFor.map((value) => (
+                        <Badge key={value} variant="outline" className={`text-xs ${isDisabled ? 'opacity-70' : ''}`}>
+                          {AUTHZ_SCOPE_FOR_META[value]?.label ?? value}
+                        </Badge>
+                      ))}
+                      {permission.scopeLevel.map((value) => (
+                        <Badge key={value} variant="outline" className={`text-xs ${isDisabled ? 'opacity-70' : ''}`}>
+                          {AUTHZ_SCOPE_LEVEL_META[value]?.label ?? value}
+                        </Badge>
+                      ))}
+                    </div>
+                    {!isCompatible ? (
+                      <p className="text-xs text-muted-foreground">
+                        This permission cannot be selected because its scope_for / scope_level does not match this role.
                       </p>
                     ) : null}
                   </div>

@@ -132,6 +132,8 @@ export type ResolvedAccount = {
 
 type ApplicationAccessPageOptions = {
   ownerOnly?: boolean;
+  accountId?: string | null;
+  skipPermissionCheck?: boolean;
 };
 
 async function getDirectTeamMembershipStatus(
@@ -172,10 +174,12 @@ async function getDirectTeamMembershipStatus(
 export async function getApplicationAccessPageData(
   options?: ApplicationAccessPageOptions,
 ): Promise<AppWithAccess[]> {
-  const canView = await checkPermissions([...ACCESS_APPLICATION_VIEW_PERMISSIONS]);
-  if (!canView) return [];
+  if (!options?.skipPermissionCheck) {
+    const canView = await checkPermissions([...ACCESS_APPLICATION_VIEW_PERMISSIONS]);
+    if (!canView) return [];
+  }
 
-  const personalAccountId = await getPersonalAccountId();
+  const personalAccountId = options?.accountId ?? await getPersonalAccountId();
   if (!personalAccountId) return [];
 
   try {
@@ -285,11 +289,16 @@ export async function getApplicationAccessPageData(
   }
 }
 
-export async function getConnectionPageData(selectedAccountId?: string | null): Promise<ConnectionPageItem[]> {
-  const canView = await checkPermissions([...ACCESS_CONNECTION_VIEW_PERMISSIONS]);
-  if (!canView) return [];
+export async function getConnectionPageData(
+  selectedAccountId?: string | null,
+  options: { skipPermissionCheck?: boolean } = {},
+): Promise<ConnectionPageItem[]> {
+  if (!options.skipPermissionCheck) {
+    const canView = await checkPermissions([...ACCESS_CONNECTION_VIEW_PERMISSIONS]);
+    if (!canView) return [];
+  }
 
-  const accountId = await getActiveAccountId(selectedAccountId);
+  const accountId = selectedAccountId ?? await getActiveAccountId();
   if (!accountId) return [];
 
   try {
@@ -366,11 +375,14 @@ export async function getConnectionPageData(selectedAccountId?: string | null): 
 export async function getConnectionDetail(
   connectionId: string,
   selectedAccountId?: string | null,
+  options: { skipPermissionCheck?: boolean } = {},
 ): Promise<ConnectionDetail | null> {
-  const canView = await checkPermissions([...ACCESS_CONNECTION_VIEW_PERMISSIONS]);
-  if (!canView) return null;
+  if (!options.skipPermissionCheck) {
+    const canView = await checkPermissions([...ACCESS_CONNECTION_VIEW_PERMISSIONS]);
+    if (!canView) return null;
+  }
 
-  const accountId = await getActiveAccountId(selectedAccountId);
+  const accountId = selectedAccountId ?? await getActiveAccountId();
   if (!accountId) return null;
 
   try {

@@ -298,9 +298,14 @@ export type DirectAccessGroup = {
  * Returns the active account's name and all accounts that have direct
  * (non-portfolio) grants on it, one entry per grant row.
  */
-export async function getDirectAccessGroup(accountId: string): Promise<DirectAccessGroup | null> {
-  const canView = await checkPermissions([...ACCESS_TEAM_VIEW_PERMISSIONS]);
-  if (!canView) return null;
+export async function getDirectAccessGroup(
+  accountId: string,
+  options: { skipPermissionCheck?: boolean } = {},
+): Promise<DirectAccessGroup | null> {
+  if (!options.skipPermissionCheck) {
+    const canView = await checkPermissions([...ACCESS_TEAM_VIEW_PERMISSIONS]);
+    if (!canView) return null;
+  }
 
   try {
     const [accountProfile, grants] = await Promise.all([
@@ -370,7 +375,10 @@ export type DirectMember = {
  * grouped by accountId with a total role count. Also includes accounts with a
  * pending access_invitation request (shown with status 'invited').
  */
-export async function getDirectMembers(accountId: string): Promise<{ accountName: string; members: DirectMember[] }> {
+export async function getDirectMembers(
+  accountId: string,
+  options: { skipPermissionCheck?: boolean } = {},
+): Promise<{ accountName: string; members: DirectMember[] }> {
   /**
    * ::neup.documentation::manage-access-get-direct-members
    * ::function getDirectMembers(accountId)
@@ -391,8 +399,10 @@ export async function getDirectMembers(accountId: string): Promise<{ accountName
    *
    * ::end
    */
-  const canView = await checkPermissions([...ACCESS_TEAM_VIEW_PERMISSIONS]);
-  if (!canView) return { accountName: accountId, members: [] };
+  if (!options.skipPermissionCheck) {
+    const canView = await checkPermissions([...ACCESS_TEAM_VIEW_PERMISSIONS]);
+    if (!canView) return { accountName: accountId, members: [] };
+  }
 
   try {
     const [accountProfile, grants, activeMemberships, pendingInvitations] = await Promise.all([

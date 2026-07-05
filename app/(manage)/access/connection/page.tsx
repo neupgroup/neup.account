@@ -1,19 +1,36 @@
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import { BackButton } from '@/components/ui/back-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AppWindow, ChevronRight, Users } from '@/components/icons';
 import { FlowLink } from '@/components/ui/flow-link';
 import { getConnectionPageData } from './actions';
 import { createPageMetadata } from '@/neup.core/metadata';
-import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
 import { ACCESS_CONNECTION_VIEW_PERMISSIONS } from '@/neup.core/auth/access-view-permissions';
 import { permission } from '@/neup.logica/permission';
+import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
 
 export const metadata: Metadata = createPageMetadata('Connection Management');
 
 const pagePermissions = [
   permission('access.connection.view.self', 'for_individual', 'page'),
 ];
+
+type PageProps = {
+  searchParams: Promise<{ account?: string; mode?: string; workingProfile?: string }>;
+};
+
+function buildAccessHref(
+  pathname: string,
+  context: { account?: string; mode?: string; workingProfile?: string },
+) {
+  const params = new URLSearchParams();
+  if (context.account) params.set('account', context.account);
+  if (context.mode) params.set('mode', context.mode);
+  if (context.workingProfile) params.set('workingProfile', context.workingProfile);
+  const query = params.toString();
+  return query ? `${pathname}?${query}` : pathname;
+}
 
 function StatusDot({ status }: { status: string }) {
   const color =
@@ -41,13 +58,24 @@ function AccessSummary({ accessCount }: { accessCount: number }) {
   );
 }
 
-export default async function ConnectionPage() {
-  await requireAnyPermission404([...ACCESS_CONNECTION_VIEW_PERMISSIONS]);
-  const connections = await getConnectionPageData();
+export default async function ConnectionPage({ searchParams }: PageProps) {
+  const { account, mode, workingProfile } = await searchParams;
+  const accessContext = await resolveAccessProfileContext({
+    account,
+    workingProfile,
+    requiredPermissions: ACCESS_CONNECTION_VIEW_PERMISSIONS,
+  });
+
+  if (!accessContext) {
+    notFound();
+  }
+
+  const hrefContext = { account: accessContext.selectedProfile, mode, workingProfile };
+  const connections = await getConnectionPageData(accessContext.selectedProfile, { skipPermissionCheck: true });
 
   return (
     <div className="grid gap-8">
-      <BackButton href="/access" />
+      <BackButton href={buildAccessHref('/access', hrefContext)} />
 
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
@@ -65,7 +93,11 @@ export default async function ConnectionPage() {
       {connections.length > 0 ? (
         <div className="grid gap-4">
           {connections.map((connection) => (
-            <FlowLink key={connection.id} href={`/access/connection/${connection.id}`} className="block">
+            <FlowLink
+              key={connection.id}
+              href={buildAccessHref(`/access/connection/${connection.id}`, hrefContext)}
+              className="block"
+            >
               <Card className="transition-colors hover:border-muted-foreground/40 hover:bg-muted/20">
                 <CardHeader className="p-4">
                   <div className="flex items-start justify-between gap-3">

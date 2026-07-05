@@ -4,18 +4,16 @@ import { FlowLink } from '@/components/ui/flow-link';
 import { Card, CardContent } from '@/components/ui/card';
 import { FolderGit2, ChevronRight, Building, UserPlus, Users, MailQuestion, UserX } from '@/components/icons';
 import { getDirectAccessGroup } from '@/services/manage/access';
-import { getActiveAccountId } from '@/neup.core/auth/verify';
 import { SecondaryHeader } from '@/components/ui/secondary-header';
 import { AccessGroupView } from './_components/access-group-view';
 import { ListItem } from '@/components/ui/list-item';
 import { AccountListItem } from '@/components/elements/account-item';
 import { permission } from '@/neup.logica/permission';
 import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/neup.core/auth/linked-account-permissions';
-import { getCurrentAccountPermission, getUserProfile } from '@/services/user';
+import { getUserProfile } from '@/services/user';
 import { getAccessibleAccounts } from '@/services/manage/accounts';
-import { getAccountSelectorContext } from '@/neup.core/auth/accountSelector';
-import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
 import { hasAnyPermission } from '@/neup.core/auth/profile-permissions';
+import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
 import {
   ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS,
   ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS,
@@ -49,7 +47,7 @@ const pagePermissions = [
 ];
 
 type PageProps = {
-  searchParams: Promise<{ portfolio?: string; account?: string }>;
+  searchParams: Promise<{ portfolio?: string; account?: string; mode?: string; workingProfile?: string }>;
 };
 
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
@@ -110,10 +108,16 @@ function PeopleAndSharingFeatures({
   canViewFamily,
   canViewInvitations,
   canBlockUsers,
+  familyHref,
+  invitationsHref,
+  blockedHref,
 }: {
   canViewFamily: boolean;
   canViewInvitations: boolean;
   canBlockUsers: boolean;
+  familyHref: string;
+  invitationsHref: string;
+  blockedHref: string;
 }) {
   return (
     <>
@@ -122,7 +126,7 @@ function PeopleAndSharingFeatures({
           icon={Users}
           title="Family Sharing"
           description="Manage your family group and shared subscriptions."
-          href="/access/family"
+          href={familyHref}
         />
       )}
       {canViewInvitations && (
@@ -130,7 +134,7 @@ function PeopleAndSharingFeatures({
           icon={MailQuestion}
           title="Invitations"
           description="Accept or reject requests from other users."
-          href="/access/invitations"
+          href={invitationsHref}
         />
       )}
       {canBlockUsers && (
@@ -138,32 +142,59 @@ function PeopleAndSharingFeatures({
           icon={UserX}
           title="Blocked Users"
           description="Manage users you have blocked or restricted."
-          href="/access/blocked"
+          href={blockedHref}
         />
       )}
     </>
   );
 }
 
+function buildAccessHref(
+  pathname: string,
+  context: {
+    account?: string;
+    mode?: string;
+    workingProfile?: string;
+  },
+) {
+  const params = new URLSearchParams();
+
+  if (context.account) params.set('account', context.account);
+  if (context.mode) params.set('mode', context.mode);
+  if (context.workingProfile) params.set('workingProfile', context.workingProfile);
+
+  const query = params.toString();
+  return query ? `${pathname}?${query}` : pathname;
+}
+
 export default async function AccessControlPage({ searchParams }: PageProps) {
-  await requireAnyPermission404(ACCESS_VIEW_PERMISSIONS);
-  const { portfolio: parentPortfolioId } = await searchParams;
+  const {
+    portfolio: parentPortfolioId,
+    account,
+    mode,
+    workingProfile,
+  } = await searchParams;
 
   if (parentPortfolioId) {
     notFound();
   }
 
-  const accountId = await getActiveAccountId();
-  const { isManagingOtherAccount } = await getAccountSelectorContext();
+  const accessContext = await resolveAccessProfileContext({
+    account,
+    workingProfile,
+    requiredPermissions: ACCESS_VIEW_PERMISSIONS,
+  });
 
-  const directGroup = accountId ? await getDirectAccessGroup(accountId) : null;
+  if (!accessContext) notFound();
 
+  const selectedAccountId = accessContext.selectedProfile;
+  const directGroup = await getDirectAccessGroup(selectedAccountId, { skipPermissionCheck: true });
   if (!directGroup) notFound();
 
-  const [permissions, activeProfile] = await Promise.all([
-    getCurrentAccountPermission(),
-    accountId ? getUserProfile(accountId) : Promise.resolve(null),
+  const [activeProfile] = await Promise.all([
+    getUserProfile(selectedAccountId),
   ]);
+  const permissions = accessContext.permissions;
   const allowsFamilySettings =
     activeProfile?.accountType === 'individual' || activeProfile?.accountType === 'dependent';
   const canViewTeam = hasAnyPermission(permissions, ACCESS_TEAM_VIEW_PERMISSIONS);
@@ -179,10 +210,15 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
   const canBlockUsers = hasAnyPermission(permissions, ACCESS_BLOCK_VIEW_PERMISSIONS);
   const canSwitchAccounts = hasAnyPermission(permissions, ACCESS_ACCOUNTS_SWITCH_PERMISSIONS);
   const accountsToShow =
-    showLinkedAccounts && canSwitchAccounts && !isManagingOtherAccount
+    showLinkedAccounts && canSwitchAccounts && accessContext.isSelf && accessContext.isWorkingAsSignedIn
       ? await getAccessibleAccounts()
       : [];
   const previewAccounts = accountsToShow.slice(0, 3);
+  const childHrefContext = {
+    account: selectedAccountId,
+    mode,
+    workingProfile,
+  };
 
   return (
     <AccessGroupView
@@ -190,9 +226,9 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
       pageDescription="Manage who can access this account and what they can do."
       name={directGroup.name}
       description="Direct access grants on this account."
-      membersHref="/access/team"
-      connectionsHref="/access/connection"
-      applicationsHref="/access/application"
+      membersHref={buildAccessHref('/access/team', childHrefContext)}
+      connectionsHref={buildAccessHref('/access/connection', childHrefContext)}
+      applicationsHref={buildAccessHref('/access/application', childHrefContext)}
       showMembers={canViewTeam}
       showConnections={canViewConnections}
       showApplications={canViewApplications}
@@ -214,7 +250,7 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
         </div>
       )}
 
-      {showLinkedAccounts && canSwitchAccounts && !isManagingOtherAccount && (
+      {showLinkedAccounts && canSwitchAccounts && accessContext.isSelf && accessContext.isWorkingAsSignedIn && (
         <div className="space-y-2">
           <SecondaryHeader
             title="Manage Accounts"
@@ -260,6 +296,9 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
                 canViewFamily={canViewFamily}
                 canViewInvitations={canViewInvitations}
                 canBlockUsers={canBlockUsers}
+                familyHref={buildAccessHref('/access/family', childHrefContext)}
+                invitationsHref={buildAccessHref('/access/invitations', childHrefContext)}
+                blockedHref={buildAccessHref('/access/blocked', childHrefContext)}
               />
             </CardContent>
           </Card>

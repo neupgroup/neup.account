@@ -15,9 +15,9 @@ import { getApplicationAccessPageData } from '../connection/actions';
 import { AssignAppAccessForm } from '../connection/assign-app-access-form';
 import { RevokeAppAccessButton } from '../connection/revoke-app-access-form';
 import { createPageMetadata } from '@/neup.core/metadata';
-import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
 import { ACCESS_APPLICATION_VIEW_PERMISSIONS } from '@/neup.core/auth/access-view-permissions';
 import { permission } from '@/neup.logica/permission';
+import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
 
 export const metadata: Metadata = createPageMetadata('Application Management');
 
@@ -26,8 +26,27 @@ const pagePermissions = [
 ];
 
 type PageProps = {
-  searchParams: Promise<{ application?: string; mode?: string }>;
+  searchParams: Promise<{ application?: string; mode?: string; account?: string; workingProfile?: string }>;
 };
+
+function buildAccessHref(
+  pathname: string,
+  context: { account?: string; mode?: string; workingProfile?: string; application?: string },
+) {
+  const [basePathname, query = ''] = pathname.split('?', 2);
+  const params = new URLSearchParams();
+  const existingParams = new URLSearchParams(query);
+
+  existingParams.forEach((value, key) => {
+    params.append(key, value);
+  });
+  if (context.account) params.set('account', context.account);
+  if (context.mode) params.set('mode', context.mode);
+  if (context.workingProfile) params.set('workingProfile', context.workingProfile);
+  if (context.application) params.set('application', context.application);
+  const nextQuery = params.toString();
+  return nextQuery ? `${basePathname}?${nextQuery}` : basePathname;
+}
 
 function StatusBadge({ status }: { status: string | null }) {
   if (!status) return null;
@@ -42,21 +61,24 @@ function StatusBadge({ status }: { status: string | null }) {
 
 async function SelectedApplicationPage({
   applicationId,
-  mode,
+  accountId,
+  hrefContext,
 }: {
   applicationId: string;
-  mode?: string;
+  accountId: string;
+  hrefContext: { account?: string; mode?: string; workingProfile?: string };
 }) {
-  const apps = await getApplicationAccessPageData();
+  const apps = await getApplicationAccessPageData({
+    accountId,
+    skipPermissionCheck: true,
+  });
 
   const app = apps.find((item) => item.id === applicationId);
   if (!app) notFound();
 
-  const modeSuffix = mode === 'root' ? '&mode=root' : '';
-
   return (
     <div className="grid gap-8">
-      <BackButton href={mode === 'root' ? '/application?mode=root' : '/application'} />
+      <BackButton href={buildAccessHref('/access/application', hrefContext)} />
 
       <Card>
         <CardHeader className="pb-3">
@@ -186,7 +208,7 @@ async function SelectedApplicationPage({
 
       <div className="flex justify-end">
         <FlowLink
-          href={`/access/team?asset=${encodeURIComponent(app.id)}${modeSuffix}`}
+          href={buildAccessHref(`/access/team?asset=${encodeURIComponent(app.id)}`, hrefContext)}
           className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           <Users className="h-4 w-4" />
@@ -197,13 +219,22 @@ async function SelectedApplicationPage({
   );
 }
 
-async function ApplicationsOverviewPage({ mode }: { mode?: string }) {
-  const apps = await getApplicationAccessPageData({ ownerOnly: true });
-  const modeSuffix = mode === 'root' ? '&mode=root' : '';
+async function ApplicationsOverviewPage({
+  accountId,
+  hrefContext,
+}: {
+  accountId: string;
+  hrefContext: { account?: string; mode?: string; workingProfile?: string };
+}) {
+  const apps = await getApplicationAccessPageData({
+    ownerOnly: true,
+    accountId,
+    skipPermissionCheck: true,
+  });
 
   return (
     <div className="grid gap-8">
-      <BackButton href="/access" />
+      <BackButton href={buildAccessHref('/access', hrefContext)} />
 
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
@@ -242,7 +273,10 @@ async function ApplicationsOverviewPage({ mode }: { mode?: string }) {
                   <div className="flex shrink-0 items-center gap-2 pt-0.5">
                     <StatusBadge status={app.status} />
                     <FlowLink
-                      href={`/access/application?application=${app.id}${modeSuffix}`}
+                      href={buildAccessHref('/access/application', {
+                        ...hrefContext,
+                        application: app.id,
+                      })}
                       className="text-xs text-muted-foreground transition-colors hover:text-foreground"
                     >
                       Open
@@ -302,12 +336,30 @@ async function ApplicationsOverviewPage({ mode }: { mode?: string }) {
 }
 
 export default async function ApplicationAccessPage({ searchParams }: PageProps) {
-  await requireAnyPermission404([...ACCESS_APPLICATION_VIEW_PERMISSIONS]);
-  const { application, mode } = await searchParams;
+  const { application, mode, account, workingProfile } = await searchParams;
+  const accessContext = await resolveAccessProfileContext({
+    account,
+    workingProfile,
+    requiredPermissions: ACCESS_APPLICATION_VIEW_PERMISSIONS,
+  });
+
+  if (!accessContext) notFound();
+
+  const hrefContext = {
+    account: accessContext.selectedProfile,
+    mode,
+    workingProfile,
+  };
 
   if (application) {
-    return <SelectedApplicationPage applicationId={application} mode={mode} />;
+    return (
+      <SelectedApplicationPage
+        applicationId={application}
+        accountId={accessContext.selectedProfile}
+        hrefContext={hrefContext}
+      />
+    );
   }
 
-  return <ApplicationsOverviewPage mode={mode} />;
+  return <ApplicationsOverviewPage accountId={accessContext.selectedProfile} hrefContext={hrefContext} />;
 }

@@ -4,7 +4,6 @@ import { BackButton } from '@/components/ui/back-button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Shield, ChevronRight } from '@/components/icons';
 import { getDirectMembers } from '@/services/manage/access';
-import { getActiveAccountId } from '@/neup.core/auth/verify';
 import prisma from '@/neup.core/helpers/prisma';
 import { getUserProfile, isRootUser } from '@/services/user';
 import { resolveAssetName } from '@/services/manage/access/asset-resolvers';
@@ -14,16 +13,16 @@ import { AddUserForm } from '../add-user-form';
 import { FlowLink } from '@/components/ui/flow-link';
 import { PrimaryHeader } from '@/components/ui/primary-header';
 import { createPageMetadata } from '@/neup.core/metadata';
-import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
 import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/neup.core/auth/access-view-permissions';
 import { permission } from '@/neup.logica/permission';
+import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
 
 const pagePermissions = [
   permission('access.team.view.self', 'for_individual', 'page'),
 ];
 
 type PageProps = {
-  searchParams: Promise<{ portfolio?: string; asset?: string; mode?: string; workingProfile?: string }>;
+  searchParams: Promise<{ portfolio?: string; asset?: string; mode?: string; workingProfile?: string; account?: string }>;
 };
 
 export const metadata: Metadata = createPageMetadata('Team Management');
@@ -50,6 +49,24 @@ function appendWorkingProfile(href: string, workingProfile?: string) {
     params.append(key, value);
   });
   params.set('workingProfile', workingProfile);
+
+  return `${pathname}?${params.toString()}`;
+}
+
+function appendAccessContext(
+  href: string,
+  context: { account?: string; mode?: string; workingProfile?: string },
+) {
+  const params = new URLSearchParams();
+  const [pathname, query = ''] = href.split('?', 2);
+  const existingParams = new URLSearchParams(query);
+
+  existingParams.forEach((value, key) => {
+    params.append(key, value);
+  });
+  if (context.account) params.set('account', context.account);
+  if (context.mode) params.set('mode', context.mode);
+  if (context.workingProfile) params.set('workingProfile', context.workingProfile);
 
   return `${pathname}?${params.toString()}`;
 }
@@ -154,15 +171,21 @@ function EmptyMembers({ message }: { message: string }) {
  *
  * ::end
  */
-async function DirectAccountPage({ workingProfile }: { workingProfile?: string }) {
-  const accountId = await getActiveAccountId(workingProfile);
-  if (!accountId) notFound();
-
-  const { accountName, members } = await getDirectMembers(accountId);
+async function DirectAccountPage({
+  accountId,
+  mode,
+  workingProfile,
+}: {
+  accountId: string;
+  mode?: string;
+  workingProfile?: string;
+}) {
+  const { accountName, members } = await getDirectMembers(accountId, { skipPermissionCheck: true });
+  const hrefContext = { account: accountId, mode, workingProfile };
 
   return (
     <MembersLayout
-      backHref={appendWorkingProfile('/access', workingProfile)}
+      backHref={appendAccessContext('/access', hrefContext)}
       description={`Members with access to profile "${accountName}"`}
       addForm={<AddUserForm />}
       content={
@@ -193,15 +216,18 @@ async function DirectAccountPage({ workingProfile }: { workingProfile?: string }
 
 async function AssetMembersPage({
   assetRef,
+  accountId,
   rootMode,
+  mode,
   workingProfile,
 }: {
   assetRef: string;
+  accountId: string;
   rootMode: boolean;
+  mode?: string;
   workingProfile?: string;
 }) {
-  const accountId = await getActiveAccountId(workingProfile);
-  if (!accountId) notFound();
+  const hrefContext = { account: accountId, mode, workingProfile };
 
   const toLogicalAssetId = (row: {
     id: string;
@@ -260,7 +286,7 @@ async function AssetMembersPage({
 
   return (
     <MembersLayout
-      backHref={appendWorkingProfile('/access', workingProfile)}
+      backHref={appendAccessContext('/access', hrefContext)}
       description={`${rootAssetLabel} for ${assetName}`}
       addForm={<AssetMemberLookupForm assetId={resolvedAssetId} rootMode={rootMode} />}
       content={
@@ -271,7 +297,7 @@ async function AssetMembersPage({
               name: assetName,
               description: 'Direct asset access',
               status: 'active',
-              actionHref: appendWorkingProfile(`/access/team?asset=${encodeURIComponent(row.id)}`, workingProfile),
+              actionHref: appendAccessContext(`/access/team?asset=${encodeURIComponent(row.id)}`, hrefContext),
             }))}
           />
         ) : (
@@ -284,16 +310,36 @@ async function AssetMembersPage({
 }
 
 export default async function TeamPage({ searchParams }: PageProps) {
-  await requireAnyPermission404([...ACCESS_TEAM_VIEW_PERMISSIONS]);
-  const { portfolio, asset, mode, workingProfile } = await searchParams;
+  const { portfolio, asset, mode, workingProfile, account } = await searchParams;
+  const accessContext = await resolveAccessProfileContext({
+    account,
+    workingProfile,
+    requiredPermissions: ACCESS_TEAM_VIEW_PERMISSIONS,
+  });
+
+  if (!accessContext) notFound();
 
   if (asset) {
-    return <AssetMembersPage assetRef={asset} rootMode={mode === 'root'} workingProfile={workingProfile} />;
+    return (
+      <AssetMembersPage
+        assetRef={asset}
+        accountId={accessContext.selectedProfile}
+        rootMode={mode === 'root'}
+        mode={mode}
+        workingProfile={workingProfile}
+      />
+    );
   }
 
   if (portfolio) {
     notFound();
   }
 
-  return <DirectAccountPage workingProfile={workingProfile} />;
+  return (
+    <DirectAccountPage
+      accountId={accessContext.selectedProfile}
+      mode={mode}
+      workingProfile={workingProfile}
+    />
+  );
 }

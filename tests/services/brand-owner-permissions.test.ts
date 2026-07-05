@@ -7,25 +7,25 @@ import {
 } from '@/services/neup-account/permission-catalog';
 
 describe('brand owner permissions', () => {
-  it('uses managed permissions for managed account features', () => {
+  it('uses unsuffixed permissions for managed account features', () => {
     expect(BRAND_OWNER_PERMISSION_NAMES).toEqual(
       expect.arrayContaining([
-        'notification.read.managed',
-        'access.view.managed',
-        'access.team.view.managed',
-        'application.view.managed',
+        'notification.read',
+        'access.view',
+        'access.team.view',
+        'application.view',
       ]),
     );
   });
 
-  it('does not include root-audience permissions', () => {
-    expect(BRAND_OWNER_PERMISSION_NAMES.some((permission) => permission.endsWith('.root'))).toBe(false);
+  it('does not include audience suffix permissions', () => {
+    expect(BRAND_OWNER_PERMISSION_NAMES.some((permission) => /\.(managed|root|self)$/.test(permission))).toBe(false);
   });
 
-  it('registers managed notification permissions in the catalog', () => {
+  it('registers notification permissions in the catalog', () => {
     expect(
       NEUP_ACCOUNT_PERMISSION_DEFINITIONS.some(
-        (permission) => permission.name === 'notification.read.managed',
+        (permission) => permission.name === 'notification.read',
       ),
     ).toBe(true);
   });
@@ -33,14 +33,16 @@ describe('brand owner permissions', () => {
 
 describe('selected account permission matching', () => {
   it('maps current-account self requirements to managed grants', () => {
-    expect(hasAnyPermission(['access.view.managed'], ['access.view.self'])).toBe(true);
-    expect(hasAnyPermission(['notification.read.managed'], ['notification.read.self'])).toBe(true);
+    expect(hasAnyPermission(['access.view'], ['access.view.self'])).toBe(true);
+    expect(hasAnyPermission(['notification.read'], ['notification.read.self'])).toBe(true);
   });
 
   it('does not map root requirements to managed grants', () => {
-    expect(hasAnyPermission(['application.view.managed'], ['application.view.root'])).toBe(false);
+    expect(hasAnyPermission(['application.view'], ['application.view.root'])).toBe(true);
     expect(resolveNeupAccountPermissionCandidates('application.view.root', 'managed')).toEqual([
+      'application.view',
       'application.view.root',
+      'application.view.managed',
     ]);
   });
 });

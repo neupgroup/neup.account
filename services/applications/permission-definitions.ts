@@ -118,9 +118,8 @@ const APPLICATION_PERMISSION_DEFINITION_MAP: Record<ApplicationPermissionBase, A
 
 function permissionName(base: ApplicationPermissionBase, audience: ApplicationPermissionAudience): string {
   const suffix = APPLICATION_PERMISSION_DEFINITION_MAP[base].suffix;
-  if (audience === 'public') return `application.${suffix}.self`;
-  if (audience === 'managed') return `application.${suffix}.managed`;
-  return `application.${suffix}.root`;
+  void audience;
+  return `application.${suffix}`;
 }
 
 function permissionDescription(base: ApplicationPermissionBase, audience: ApplicationPermissionAudience): string {
@@ -190,18 +189,19 @@ export function getApplicationPermissionDefinitions(
       const name = permissionName(base, audience);
       const policy = permissionPolicyDefinition(audience);
       const existing = definitions.get(name);
+      const storedPolicy = getStoredPolicyForScopeLevel(policy.scopeLevel[0] ?? 'assignable');
 
       if (existing) {
+        existing.scopeFor = Array.from(new Set([...existing.scopeFor, ...policy.scopeFor]));
+        existing.scopeLevel = Array.from(new Set([...existing.scopeLevel, ...policy.scopeLevel]));
         continue;
       }
-
-      const storedPolicy = getStoredPolicyForScopeLevel(policy.scopeLevel[0] ?? 'assignable');
 
       definitions.set(name, {
         name,
         description: permissionDescription(base, audience),
-        scopeFor: policy.scopeFor,
-        scopeLevel: policy.scopeLevel,
+        scopeFor: [...policy.scopeFor],
+        scopeLevel: [...policy.scopeLevel],
         acquisitionType: storedPolicy.acquisitionType,
         approvalPolicy: storedPolicy.approvalPolicy,
       });
@@ -235,7 +235,7 @@ export const APPLICATION_PUBLIC_AND_MANAGED_PERMISSION_DEFINITIONS = getApplicat
 export const APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS = getApplicationPermissionDefinitions(['public', 'managed', 'root']);
 export const APPLICATION_SYSTEM_OWNER_PERMISSION_DEFINITIONS =
   APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS.filter(
-    (permission) => permission.name !== 'application.create.self',
+    (permission) => permission.name !== 'application.create',
   );
 
 const BUILT_IN_APPLICATION_MANAGEMENT_PERMISSION_NAMES = new Set(

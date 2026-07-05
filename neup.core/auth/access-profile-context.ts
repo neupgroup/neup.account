@@ -63,10 +63,9 @@ function hasAnyRootPermission(
 
   const granted = new Set(grantedPermissions);
   return requiredPermissions.some((requiredPermission) => {
-    const permissionBase =
-      getCanonicalPermissionAudience(requiredPermission)
-        ? stripPermissionAudience(requiredPermission)
-        : requiredPermission;
+    const permissionBase = getCanonicalPermissionAudience(requiredPermission)
+      ? stripPermissionAudience(requiredPermission)
+      : requiredPermission;
 
     return resolveNeupAccountPermissionCandidates(permissionBase, 'root')
       .some((candidate) => granted.has(candidate));

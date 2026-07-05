@@ -26,7 +26,10 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import prisma from '../core/helpers/prisma';
 import { Prisma } from '@/prisma/generated/client/client';
-import { NEUP_ACCOUNT_PERMISSION_DEFINITIONS } from '@/services/neup-account/permission-catalog';
+import {
+  NEUP_ACCOUNT_PERMISSION_DEFINITIONS,
+  stripPermissionAudience,
+} from '@/services/neup-account/permission-catalog';
 
 const APP_ID = 'neup.account';
 const PERMISSIONS_FILE = resolve(process.cwd(), 'neup.logica/basics/permissions.json');
@@ -184,20 +187,25 @@ function resolvePermissionNameForRole(
     return permissionName;
   }
 
+  const basePermissionName = stripPermissionAudience(permissionName);
+  if (knownPermissionNames.has(basePermissionName)) {
+    return basePermissionName;
+  }
+
   const candidates: string[] = [];
   const suffix = audienceSuffixForRoleScopeLevel(roleScopeLevel);
   const hasAudienceSuffix = /\.(self|managed|root)$/.test(permissionName);
 
   if (!hasAudienceSuffix) {
-    candidates.push(`${permissionName}.${suffix}`);
+    candidates.push(`${basePermissionName}.${suffix}`);
 
-    if (suffix !== 'root') candidates.push(`${permissionName}.root`);
-    if (suffix !== 'managed') candidates.push(`${permissionName}.managed`);
-    if (suffix !== 'self') candidates.push(`${permissionName}.self`);
+    if (suffix !== 'root') candidates.push(`${basePermissionName}.root`);
+    if (suffix !== 'managed') candidates.push(`${basePermissionName}.managed`);
+    if (suffix !== 'self') candidates.push(`${basePermissionName}.self`);
   }
 
-  if (permissionName.startsWith('root.') && !permissionName.endsWith('.root')) {
-    candidates.push(`${permissionName}.root`);
+  if (basePermissionName.startsWith('root.') && !basePermissionName.endsWith('.root')) {
+    candidates.push(`${basePermissionName}.root`);
   }
 
   for (const candidate of candidates) {

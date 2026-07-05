@@ -25,6 +25,7 @@
 - [ ] Document `package.json` authz maintenance commands so `sync:permissions:neup-account` / `rebuild:authz:neup-account` clearly describe when they rebuild database catalog tables versus when they only export snapshots.
 - [ ] Document `logica/basics/roles.json` and `logica/basics/permissions.json` as generated authz snapshots, including which script owns them and how they are used as database rebuild inputs.
 - [ ] Fix the remaining authz tooling path drift from `logica/...` to `neup.logica/...`, especially `package.json` `getRoles` / `postRoles` and the export/post helper scripts that still target the old snapshot tree.
+- [ ] Finish the repo-wide permission literal migration from suffixed names like `.self` / `.managed` / `.root` to the new unsuffixed permission names in page/service declarations and old Prisma maintenance scripts such as `prisma/scripts/runner-neupaccount.ts`.
 - [ ] Add a Neup documentation block for `app/(manage)/config/socials/social-links-manager.tsx`, which currently exposes the socials editor UI without structured source-owned documentation.
 - [ ] Upgrade `neup.core/helpers/link.ts` to `documentation.guide.md` with Neup documentation blocks instead of plain comments.
 - [ ] Upgrade `neup.core/helper/navigation.ts` to `documentation.guide.md` with Neup documentation blocks instead of plain comments.

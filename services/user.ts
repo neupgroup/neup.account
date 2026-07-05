@@ -18,9 +18,7 @@ import {
   normalizeSingleAuthzScopeLevel,
 } from '@/services/applications/authz-scope-policy';
 import {
-  getCanonicalPermissionAudience,
   resolveNeupAccountPermissionCandidates,
-  stripPermissionAudience,
 } from '@/services/neup-account/permission-catalog';
 
 const servicePermissions = [
@@ -138,13 +136,7 @@ function permissionMatches(
   requiredPermission: string,
   context: PermissionMatchContext,
 ): boolean {
-  const requiredAudience = getCanonicalPermissionAudience(requiredPermission);
-  const contextualRequiredPermission =
-    context === 'managed' && requiredAudience === 'self'
-      ? stripPermissionAudience(requiredPermission)
-      : requiredPermission;
-
-  return resolveNeupAccountPermissionCandidates(contextualRequiredPermission, context).includes(grantedPermission);
+  return resolveNeupAccountPermissionCandidates(requiredPermission, context).includes(grantedPermission);
 }
 
 function roleScopeToPermissionContext(

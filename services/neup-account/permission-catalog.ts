@@ -41,9 +41,9 @@ type LegacyPermissionAudienceConfig = {
 };
 
 export type NeupAccountPermissionDefinition = {
-  legacyName: string;
+  legacyNames: string[];
   name: string;
-  audience: PermissionAudience;
+  supportedAudiences: PermissionAudience[];
   description: string;
   acquisitionType: PermissionAcquisitionType;
   approvalPolicy: PermissionApprovalPolicy;
@@ -333,34 +333,119 @@ function audienceTail(audience: PermissionAudience): string {
 }
 
 function permissionDescription(name: string, audience: PermissionAudience): string {
+  void audience;
   switch (name) {
-    case 'profile.display.view.self':
-      return 'Allows the account holder to view their own account display information.';
-    case 'profile.display.view.managed':
-      return 'Allows a managing account to view the display information of an account they manage.';
-    case 'profile.display.view.root':
-      return 'Allows a root manager to view the display information of any account in the system.';
-    case 'profile.display.update.self':
-      return 'Allows the account holder to update their own account display information.';
-    case 'profile.display.update.managed':
-      return 'Allows a managing account to update the display information of an account they manage.';
-    case 'profile.display.update.root':
-      return 'Allows a root manager to update the display information of any account in the system.';
-    default: {
-      const canonicalBase = stripPermissionAudience(name);
-      return `${audienceLead(audience)} ${formatActionFromBase(canonicalBase)} ${formatSubjectFromBase(canonicalBase)} ${audienceTail(audience)}`;
-    }
+    case 'profile.display.view':
+      return 'Allows authorized accounts to view account display information when their access scope permits it.';
+    case 'profile.display.update':
+      return 'Allows authorized accounts to update account display information when their access scope permits it.';
+    default:
+      return `Allows authorized accounts to ${formatActionFromBase(name)} ${formatSubjectFromBase(name)} when their access scope permits it.`;
   }
 }
 
-function canonicalNameFromLegacy(legacyName: string, audience: PermissionAudience): string {
-  if (legacyName === 'profile.display.name') return 'profile.display.view.self';
-  if (legacyName === 'profile.display.view') return 'profile.display.view.managed';
-  if (legacyName === 'profile.display.view.root') return 'profile.display.view.root';
-  if (legacyName === 'profile.display.update') return `profile.display.update.${audience}`;
-  if (legacyName === 'profile.display.update.root') return 'profile.display.update.root';
-  if (legacyName.endsWith('.root')) return legacyName;
-  return `${legacyName}.${audience}`;
+function canonicalNameFromLegacy(legacyName: string): string {
+  if (legacyName === 'profile.display.name') return 'profile.display.view';
+  return stripPermissionAudience(legacyName);
+}
+
+function determineAcquisitionType(input: Pick<
+  NeupAccountPermissionDefinition,
+  'assignable' | 'publiclyEnrollable' | 'selfAssigned' | 'rootManaged'
+>): PermissionAcquisitionType {
+  if (input.assignable) return 'assignment';
+  if (input.publiclyEnrollable) return 'public_request';
+  if (input.rootManaged) return 'invitation';
+  if (input.selfAssigned) return 'system_generated';
+  return 'assignment';
+}
+
+function determineApprovalPolicy(input: Pick<
+  NeupAccountPermissionDefinition,
+  'publiclyRequestable' | 'requestableToOwner'
+>): PermissionApprovalPolicy {
+  return input.publiclyRequestable || input.requestableToOwner ? 'approval_required' : 'none';
+}
+
+function mergeAudienceAccess(
+  definition: Omit<NeupAccountPermissionDefinition, 'acquisitionType' | 'approvalPolicy'>,
+  audience: PermissionAudience,
+): Omit<NeupAccountPermissionDefinition, 'acquisitionType' | 'approvalPolicy'> {
+  const access = permissionAccessForAudience(audience);
+
+  return {
+    ...definition,
+    supportedAudiences: definition.supportedAudiences.includes(audience)
+      ? definition.supportedAudiences
+      : [...definition.supportedAudiences, audience],
+    assignable: definition.assignable || access.assignable,
+    publiclyEnrollable: definition.publiclyEnrollable || access.publiclyEnrollable,
+    selfAssigned: definition.selfAssigned || access.selfAssigned,
+    rootManaged: definition.rootManaged || access.rootManaged,
+    publiclyRequestable: definition.publiclyRequestable || access.publiclyRequestable,
+    requestableToOwner: definition.requestableToOwner || access.requestableToOwner,
+  };
+}
+
+function finalizePermissionDefinition(
+  definition: Omit<NeupAccountPermissionDefinition, 'acquisitionType' | 'approvalPolicy'>,
+): NeupAccountPermissionDefinition {
+  return {
+    ...definition,
+    supportedAudiences: [...definition.supportedAudiences].sort(),
+    legacyNames: [...definition.legacyNames].sort(),
+    acquisitionType: determineAcquisitionType(definition),
+    approvalPolicy: determineApprovalPolicy(definition),
+  };
+}
+
+function permissionDescriptionForDefinition(name: string, audiences: PermissionAudience[]): string {
+  return permissionDescription(name, audiences[0] ?? 'self');
+}
+
+function createPermissionDefinition(
+  canonicalName: string,
+  legacyName: string,
+): Omit<NeupAccountPermissionDefinition, 'acquisitionType' | 'approvalPolicy'> {
+  return {
+    legacyNames: [legacyName],
+    name: canonicalName,
+    supportedAudiences: [],
+    description: permissionDescriptionForDefinition(canonicalName, []),
+    assignable: false,
+    publiclyEnrollable: false,
+    selfAssigned: false,
+    rootManaged: false,
+    publiclyRequestable: false,
+    requestableToOwner: false,
+  };
+}
+
+function finalizePermissionDescription(definition: NeupAccountPermissionDefinition): NeupAccountPermissionDefinition {
+  return {
+    ...definition,
+    description: permissionDescriptionForDefinition(definition.name, definition.supportedAudiences),
+  };
+}
+
+type PermissionResolutionContext = PermissionAudience | 'selfOrRoot';
+const permissionDefinitionMap = new Map<string, NeupAccountPermissionDefinition>();
+
+function permissionLegacyAliases(permissionName: string, context: PermissionResolutionContext): string[] {
+  const baseName = stripPermissionAudience(permissionName);
+
+  switch (context) {
+    case 'managed':
+      return [`${baseName}.managed`];
+    case 'root':
+      return [`${baseName}.root`];
+    case 'self':
+      return [`${baseName}.self`];
+    case 'selfOrRoot':
+      return [`${baseName}.self`, `${baseName}.root`];
+    default:
+      return [];
+  }
 }
 
 function audiencesForLegacyPermission(legacyName: string): PermissionAudience[] {
@@ -464,59 +549,38 @@ export function getCanonicalPermissionAudience(name: string): PermissionAudience
 
 export const NEUP_ACCOUNT_PERMISSION_DEFINITIONS: NeupAccountPermissionDefinition[] = Array.from(
   new Map(
-    Array.from(LEGACY_PERMISSION_SET)
-      .flatMap((legacyName) =>
-        audiencesForLegacyPermission(legacyName).map((audience) => {
-          const name = canonicalNameFromLegacy(legacyName, audience);
-          const access = permissionAccessForAudience(audience);
-          const definition: NeupAccountPermissionDefinition = {
-            legacyName,
-            name,
-            audience,
-            description: permissionDescription(name, audience),
-            acquisitionType: access.acquisitionType,
-            approvalPolicy: access.approvalPolicy,
-            assignable: access.assignable,
-            publiclyEnrollable: access.publiclyEnrollable,
-            selfAssigned: access.selfAssigned,
-            rootManaged: access.rootManaged,
-            publiclyRequestable: access.publiclyRequestable,
-            requestableToOwner: access.requestableToOwner,
-          };
-          return [name, definition] as const;
-        }),
-      ),
+    Array.from(LEGACY_PERMISSION_SET).map((legacyName) => {
+      const canonicalName = canonicalNameFromLegacy(legacyName);
+      const existing = permissionDefinitionMap.get(canonicalName)
+        ?? createPermissionDefinition(canonicalName, legacyName);
+
+      const mergedDefinition = audiencesForLegacyPermission(legacyName).reduce(
+        (definition, audience) => mergeAudienceAccess(definition, audience),
+        {
+          ...existing,
+          legacyNames: existing.legacyNames.includes(legacyName)
+            ? existing.legacyNames
+            : [...existing.legacyNames, legacyName],
+        },
+      );
+
+      const finalizedDefinition = finalizePermissionDescription(
+        finalizePermissionDefinition(mergedDefinition),
+      );
+
+      permissionDefinitionMap.set(canonicalName, finalizedDefinition);
+      return [canonicalName, finalizedDefinition] as const;
+    }),
   ).values(),
 );
 
 export const NEUP_ACCOUNT_DEFAULT_ROLE_PERMISSION_NAMES = NEUP_ACCOUNT_PERMISSION_DEFINITIONS
-  .filter((permission) => permission.audience === 'self')
+  .filter((permission) => permission.selfAssigned)
   .map((permission) => permission.name);
 
 export const NEUP_ACCOUNT_ROOT_ROLE_PERMISSION_NAMES = NEUP_ACCOUNT_PERMISSION_DEFINITIONS
-  .filter((permission) => permission.audience === 'root')
+  .filter((permission) => permission.rootManaged)
   .map((permission) => permission.name);
-
-type PermissionResolutionContext = PermissionAudience | 'selfOrRoot';
-
-function defaultAudienceCandidatesForLegacyPermission(
-  legacyName: string,
-  context: PermissionResolutionContext,
-): PermissionAudience[] {
-  if (context === 'selfOrRoot') {
-    return ['self', 'root'];
-  }
-
-  if (context === 'root') {
-    return ['root'];
-  }
-
-  if (context === 'managed') {
-    return ['managed'];
-  }
-
-  return ['self'];
-}
 
 export function resolveNeupAccountPermissionCandidates(
   permissionName: string,
@@ -541,27 +605,15 @@ export function resolveNeupAccountPermissionCandidates(
    * ::private end
    *
    * ::end
-   */
+  */
   const trimmed = permissionName.trim();
   if (!trimmed) return [];
 
-  const canonicalAudience = getCanonicalPermissionAudience(trimmed);
-  if (canonicalAudience) {
-    return [trimmed];
-  }
+  const baseName = canonicalNameFromLegacy(trimmed);
+  const candidates = new Set<string>([trimmed, baseName]);
 
-  const candidates = new Set<string>([trimmed]);
-  const preferredAudiences = defaultAudienceCandidatesForLegacyPermission(trimmed, context);
-
-  if (LEGACY_PERMISSION_SET.has(trimmed)) {
-    for (const audience of preferredAudiences) {
-      const canonicalName = canonicalNameFromLegacy(trimmed, audience);
-      candidates.add(canonicalName);
-    }
-  } else {
-    for (const audience of preferredAudiences) {
-      candidates.add(`${trimmed}.${audience}`);
-    }
+  for (const alias of permissionLegacyAliases(baseName, context)) {
+    candidates.add(alias);
   }
 
   return Array.from(candidates);

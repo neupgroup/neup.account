@@ -202,7 +202,7 @@ async function main() {
       },
     });
 
-    for (const permissionDefinition of NEUP_ACCOUNT_PERMISSION_DEFINITIONS.filter((permission) => permission.audience === 'self')) {
+    for (const permissionDefinition of NEUP_ACCOUNT_PERMISSION_DEFINITIONS.filter((permission) => permission.selfAssigned)) {
       const permissionName = permissionDefinition.name;
       const permissionId = `cap-def-${slugifyPermission(permissionName)}`;
       const permission = await prisma.authzPermission.upsert({
@@ -245,7 +245,7 @@ async function main() {
       });
     }
 
-    for (const permissionDefinition of NEUP_ACCOUNT_PERMISSION_DEFINITIONS.filter((permission) => permission.audience === 'root')) {
+    for (const permissionDefinition of NEUP_ACCOUNT_PERMISSION_DEFINITIONS.filter((permission) => permission.rootManaged)) {
       const permissionName = permissionDefinition.name;
       const permissionId = `cap-root-${slugifyPermission(permissionName)}`;
       const permission = await prisma.authzPermission.upsert({

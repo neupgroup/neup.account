@@ -37,6 +37,8 @@
 - [ ] Upgrade KYC profile document service documentation in `services/manage/profile/documents.ts` so it uses Neup documentation blocks instead of plain comments.
 - [ ] Upgrade managed-account NeupID service documentation in `services/manage/accounts/neupid.ts` so it uses Neup documentation blocks instead of plain comments.
 - [ ] Add Neup documentation blocks for shared UI/metadata helpers in `components/ui/list-item.tsx`, `components/ui/primary-header.tsx`, and `neup.core/metadata.ts`.
+- [ ] Add a Neup documentation block for `components/layout/header.v1.tsx`, which currently exposes the shared layout header without structured source-owned documentation.
+- [ ] Add a Neup documentation block for `components/ui/secondary-header.tsx`, which currently exposes the shared section header without structured source-owned documentation.
 - [ ] Add a Neup documentation block for `components/icons.tsx`, which currently exposes the shared icon barrel without structured source-owned documentation.
 - [ ] Add a Neup documentation block for `components/ui/input.tsx`, which currently exposes shared form input behavior without structured source-owned documentation.
 - [ ] Add Neup documentation blocks for selected-account create-account pages and services in `app/(manage)/access/createAccount/page.tsx`, `app/(manage)/access/createAccount/brand-page-client.tsx`, `app/(manage)/access/createAccount/dependent-page-client.tsx`, `app/(manage)/access/createAccount/subbrand-page-client.tsx`, `services/manage/accounts/brand.ts`, `services/manage/accounts/dependent.ts`, and `services/manage/accounts/subbrands.ts`.

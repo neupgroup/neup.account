@@ -92,7 +92,7 @@ export function HeaderV1({ showUserNavOnAuth = false, logoUrl }: HeaderV1Props) 
 
   return (
     <header
-      className="fixed inset-x-0 top-0 z-50 bg-background shadow-sm lg:h-16"
+      className="fixed inset-x-0 top-0 z-50 bg-background shadow-[0_6px_18px_rgba(15,23,42,0.12)] lg:h-16"
       style={{
         height: mobileMenuOpen && shouldShowUserNav ? '100dvh' : HEADER_HEIGHT,
         transition: `height ${MOBILE_EXPAND_DURATION}ms ${MOBILE_EXPAND_EASING}`,
@@ -102,7 +102,7 @@ export function HeaderV1({ showUserNavOnAuth = false, logoUrl }: HeaderV1Props) 
         <div
           className={cn(
             'flex h-full flex-col overflow-hidden bg-background',
-            mobileMenuOpen && 'shadow-sm'
+            mobileMenuOpen && 'shadow-[0_6px_18px_rgba(15,23,42,0.12)]'
           )}
           style={{
             transition: `box-shadow ${MOBILE_EXPAND_DURATION}ms ${MOBILE_EXPAND_EASING}, background-color ${MOBILE_EXPAND_DURATION}ms ${MOBILE_EXPAND_EASING}`,

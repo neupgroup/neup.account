@@ -86,6 +86,7 @@ import {
     AtSign,
     Camera,
     ExternalLink,
+    Pencil,
 } from "lucide-react";
 
 export {
@@ -175,4 +176,5 @@ export {
     AtSign,
     Camera,
     ExternalLink,
+    Pencil,
 };

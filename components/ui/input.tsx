@@ -14,6 +14,19 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
 
     React.useImperativeHandle(ref, () => localRef.current as HTMLInputElement)
 
+    const setInputRef = React.useCallback((node: HTMLInputElement | null) => {
+      localRef.current = node
+
+      if (typeof ref === "function") {
+        ref(node)
+        return
+      }
+
+      if (ref) {
+        ref.current = node
+      }
+    }, [ref])
+
     React.useEffect(() => {
       setHasValue(String(value ?? defaultValue ?? "").length > 0)
     }, [defaultValue, value])
@@ -22,12 +35,13 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
       return (
         <input
           type={type}
+          onChange={onChange}
           className={cn(
             "flex h-10 w-full px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 lg:text-sm",
             fieldOutlineClassName,
             className
           )}
-          ref={ref}
+          ref={setInputRef}
           placeholder={placeholder}
           value={value}
           defaultValue={defaultValue}
@@ -56,7 +70,7 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
             className
           )}
           placeholder={shouldFloatLabel ? " " : placeholder}
-          ref={localRef}
+          ref={setInputRef}
           value={value}
           defaultValue={defaultValue}
           {...props}

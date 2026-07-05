@@ -16,7 +16,7 @@ import { redirectInApp } from "@/neup.core/helper/navigation";
  *
  * ::public
  *
- * The component preserves the current `workingProfile` query param when present so managed-profile access flows stay scoped to the selected profile.
+ * The component preserves the current `selectedProfile` or legacy `selectedAccount` plus `workingProfile` query params when present so access flows stay scoped to the selected profile.
  *
  * ::public end
  *
@@ -50,10 +50,12 @@ export function AddMemberForm({
       const result = await resolveNeupId(neupIdInput);
       if (result.success) {
         const params = new URLSearchParams({ account: result.account.accountId });
+        const selectedProfile = searchParams.get("selectedProfile") ?? searchParams.get("selectedAccount");
         const workingProfile = searchParams.get("workingProfile");
         if (parentPortfolioId) params.set("portfolio", parentPortfolioId);
         if (assetId) params.set("asset", assetId);
         if (mode === "root") params.set("mode", "root");
+        if (selectedProfile) params.set("selectedProfile", selectedProfile);
         if (workingProfile) params.set("workingProfile", workingProfile);
         redirectInApp(router, `/access/assign?${params.toString()}`);
       } else {

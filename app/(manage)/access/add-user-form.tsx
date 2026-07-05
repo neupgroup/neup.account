@@ -16,7 +16,7 @@ import { redirectInApp } from "@/neup.core/helper/navigation";
  *
  * ::public
  *
- * The redirect keeps `workingProfile` when the current session is managing another profile, so the assign page resolves the correct active profile.
+ * The redirect keeps `selectedProfile` or legacy `selectedAccount` plus `workingProfile` when present, so the assign page resolves the same selected account context as the team page.
  *
  * ::public end
  *
@@ -39,7 +39,9 @@ export function AddUserForm() {
         const params = new URLSearchParams({
           account: result.account.accountId,
         });
+        const selectedProfile = searchParams.get("selectedProfile") ?? searchParams.get("selectedAccount");
         const workingProfile = searchParams.get("workingProfile");
+        if (selectedProfile) params.set("selectedProfile", selectedProfile);
         if (workingProfile) params.set("workingProfile", workingProfile);
         redirectInApp(router, `/access/assign?${params.toString()}`);
       } else {

@@ -3,7 +3,7 @@
 import { permission } from '@/neup.logica/permission';
 import prisma from '@/neup.core/helpers/prisma';
 import { Prisma } from '@/prisma/generated/client';
-import { checkPermissions, getCurrentAccountPermission, getUserProfile, isRootUser } from '@/services/user';
+import { checkPermissions, getUserProfile, isRootUser } from '@/services/user';
 import { getPersonalAccountId, getActiveAccountId } from '@/neup.core/auth/verify';
 import { logError } from '@/neup.core/helpers/logger';
 import { assignAssetMemberRole, getRolesForAsset } from '@/services/manage/access/assets';
@@ -14,11 +14,28 @@ import {
   ACCESS_TEAM_ADD_PERMISSIONS,
   ACCESS_TEAM_REMOVE_PERMISSIONS,
 } from '@/neup.core/auth/access-view-permissions';
+import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
 
 const servicePermissions = [
   permission('access.team.add.self', 'for_individual', 'service'),
   permission('access.team.remove.self', 'for_individual', 'service'),
 ];
+
+function hasAllContextPermissions(
+  grantedPermissions: readonly string[],
+  requiredPermissions: readonly string[],
+): boolean {
+  const granted = new Set(grantedPermissions);
+
+  return requiredPermissions.every((requiredPermission) => {
+    const candidates = new Set([
+      ...resolveNeupAccountPermissionCandidates(requiredPermission, 'managed'),
+      ...resolveNeupAccountPermissionCandidates(requiredPermission, 'selfOrRoot'),
+    ]);
+
+    return Array.from(candidates).some((candidate) => granted.has(candidate));
+  });
+}
 
 /**
  * ::neup.documentation::manage-access-actions-module
@@ -28,7 +45,7 @@ const servicePermissions = [
  *
  * ::public
  *
- * This module powers asset-member lookup, selectable-asset discovery, and the direct assign/invite actions used by manage access components.
+ * This module powers asset-member lookup, selectable-asset discovery, and the direct assign/invite actions used by manage access components. Direct account actions resolve `selectedProfile` before reading or mutating access.
  *
  * ::public end
  *
@@ -455,11 +472,13 @@ async function loadDirectAccessAssignableRolesWithMalformedJsonFallback(input: {
 export async function getDirectAccessAssignmentOptions(selectedAccountId?: string | null): Promise<{
   roles: DirectAccessAssignableRole[];
 }> {
-  const accountId = await getActiveAccountId(selectedAccountId);
-  if (!accountId) return { roles: [] };
+  const accessContext = await resolveAccessProfileContext({
+    selectedProfile: selectedAccountId,
+    requiredPermissions: ACCESS_TEAM_ADD_PERMISSIONS,
+  });
+  if (!accessContext) return { roles: [] };
 
-  const canAdd = await checkPermissions([...ACCESS_TEAM_ADD_PERMISSIONS]);
-  if (!canAdd) return { roles: [] };
+  const accountId = accessContext.selectedProfile;
 
   try {
     const allowedRoleIds = await getSelfManagedDirectRoleIds();
@@ -516,7 +535,7 @@ export async function getDirectAccessAssignmentOptions(selectedAccountId?: strin
         ...extractRolePermissionNames(role.permissions),
         ...(roleMapPermissions.get(role.id) ?? []),
       ]));
-      if (!(await checkPermissions(permissionNames))) {
+      if (!hasAllContextPermissions(accessContext.permissions, permissionNames)) {
         continue;
       }
 
@@ -561,11 +580,13 @@ export async function updateDirectMemberAccess(input: {
   roleIds: string[];
   selectedAccountId?: string | null;
 }): Promise<{ success: boolean; error?: string }> {
-  const accountId = await getActiveAccountId(input.selectedAccountId);
-  if (!accountId) return { success: false, error: 'Not authenticated.' };
+  const accessContext = await resolveAccessProfileContext({
+    selectedProfile: input.selectedAccountId,
+    requiredPermissions: ACCESS_TEAM_ADD_PERMISSIONS,
+  });
+  if (!accessContext) return { success: false, error: 'Permission denied.' };
 
-  const canAdd = await checkPermissions([...ACCESS_TEAM_ADD_PERMISSIONS]);
-  if (!canAdd) return { success: false, error: 'Permission denied.' };
+  const accountId = accessContext.selectedProfile;
 
   const roleIds = normalizeStringList(input.roleIds);
 
@@ -586,7 +607,7 @@ export async function updateDirectMemberAccess(input: {
       }
     }
 
-    const [targetMember, activeMembership, selectedRoles, currentPermissionNames, parentAccount] = await Promise.all([
+    const [targetMember, activeMembership, selectedRoles, parentAccount] = await Promise.all([
       prisma.account.findUnique({
         where: { id: input.memberAccountId },
         select: { id: true, accountType: true },
@@ -605,7 +626,6 @@ export async function updateDirectMemberAccess(input: {
             roleIds,
           })
         : Promise.resolve([]),
-      getCurrentAccountPermission(input.selectedAccountId),
       prisma.account.findUnique({
         where: { id: accountId },
         select: { accountType: true },
@@ -638,7 +658,7 @@ export async function updateDirectMemberAccess(input: {
       return { success: false, error: 'One or more roles do not match the required scope_for and scope_level for this account type.' };
     }
 
-    const currentPermissionSet = new Set(currentPermissionNames);
+    const currentPermissionSet = new Set(accessContext.permissions);
     const requestedPermissionNames = new Set<string>();
     const roleMapPermissions = await rolePermissionNames(roleIds);
     for (const role of selectedRoles) {
@@ -755,11 +775,13 @@ export async function removeDirectMember(
   memberAccountId: string,
   selectedAccountId?: string | null,
 ): Promise<{ success: boolean; error?: string }> {
-  const accessTo = await getActiveAccountId(selectedAccountId);
-  if (!accessTo) return { success: false, error: 'Not authenticated.' };
+  const accessContext = await resolveAccessProfileContext({
+    selectedProfile: selectedAccountId,
+    requiredPermissions: ACCESS_TEAM_REMOVE_PERMISSIONS,
+  });
+  if (!accessContext) return { success: false, error: 'Permission denied.' };
 
-  const canRemove = await checkPermissions([...ACCESS_TEAM_REMOVE_PERMISSIONS]);
-  if (!canRemove) return { success: false, error: 'Permission denied.' };
+  const accessTo = accessContext.selectedProfile;
 
   // Nobody can remove the account owner's own direct grants:
   // - not a delegated actor (personalAccountId !== accessTo)
@@ -800,11 +822,13 @@ export async function cancelDirectInvitation(
   recipientAccountId: string,
   selectedAccountId?: string | null,
 ): Promise<{ success: boolean; error?: string }> {
-  const senderAccountId = await getActiveAccountId(selectedAccountId);
-  if (!senderAccountId) return { success: false, error: 'Not authenticated.' };
+  const accessContext = await resolveAccessProfileContext({
+    selectedProfile: selectedAccountId,
+    requiredPermissions: ACCESS_TEAM_REMOVE_PERMISSIONS,
+  });
+  if (!accessContext) return { success: false, error: 'Permission denied.' };
 
-  const canRemove = await checkPermissions([...ACCESS_TEAM_REMOVE_PERMISSIONS]);
-  if (!canRemove) return { success: false, error: 'Permission denied.' };
+  const senderAccountId = accessContext.selectedProfile;
 
   try {
     const requests = await prisma.request.findMany({
@@ -882,11 +906,13 @@ export async function inviteDirectMember(
   recipientAccountId: string,
   selectedAccountId?: string | null,
 ): Promise<{ success: boolean; error?: string }> {
-  const senderAccountId = await getActiveAccountId(selectedAccountId);
-  if (!senderAccountId) return { success: false, error: 'Not authenticated.' };
+  const accessContext = await resolveAccessProfileContext({
+    selectedProfile: selectedAccountId,
+    requiredPermissions: ACCESS_TEAM_ADD_PERMISSIONS,
+  });
+  if (!accessContext) return { success: false, error: 'Permission denied.' };
 
-  const canAdd = await checkPermissions([...ACCESS_TEAM_ADD_PERMISSIONS]);
-  if (!canAdd) return { success: false, error: 'Permission denied.' };
+  const senderAccountId = accessContext.selectedProfile;
 
   try {
     // Prevent inviting self

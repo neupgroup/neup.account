@@ -23,7 +23,7 @@ const CUSTOM_ROLE_PREFIX = "account.access.";
  *
  * ::public
  *
- * The form preserves the current `workingProfile` query param so updates apply to the selected managed profile instead of always defaulting to the signed-in account.
+ * The form preserves the current `selectedProfile` or legacy `selectedAccount` query param so updates apply to the selected account instead of always defaulting to the signed-in account.
  *
  * ::public end
  *
@@ -62,7 +62,10 @@ export function DirectMemberAccessForm({
       const result = await updateDirectMemberAccess({
         memberAccountId,
         roleIds: Array.from(selectedRoleIds),
-        selectedAccountId: searchParams.get("workingProfile"),
+        selectedAccountId:
+          searchParams.get("selectedProfile") ??
+          searchParams.get("selectedAccount") ??
+          searchParams.get("workingProfile"),
       });
 
       if (result.success) {

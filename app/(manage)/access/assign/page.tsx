@@ -32,6 +32,9 @@ import {
   removePortfolioMember,
 } from '../_components/actions';
 import { DirectMemberAccessForm } from '../_components/direct-member-access-form';
+import { AddUserForm } from '../add-user-form';
+import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
+import { ACCESS_TEAM_ADD_PERMISSIONS } from '@/neup.core/auth/access-view-permissions';
 
 type PageProps = {
   searchParams: Promise<{
@@ -41,6 +44,8 @@ type PageProps = {
     member?: string;
     mode?: string;
     workingProfile?: string;
+    selectedProfile?: string;
+    selectedAccount?: string;
   }>;
 };
 
@@ -209,24 +214,46 @@ function EmptyRoles({ message }: { message: string }) {
  *
  * ::public
  *
- * The page supports `portfolio`, `connection`, and `account` query combinations for portfolio-member, connection-member, and direct-account assignment flows. Query parameter names are normalized to asset-style names such as `account`, not `member_id`.
+ * The page supports `portfolio`, `connection`, `account`, `selectedProfile`, `selectedAccount`, and `workingProfile` query combinations for portfolio-member, connection-member, and direct-account assignment flows. Query parameter names are normalized to asset-style names such as `account`, not `member_id`; `selectedProfile` identifies the account whose access is being edited, with `selectedAccount` accepted as a legacy alias.
  *
  * ::public end
  *
  * ::private
  *
- * Query-param branching keeps both assignment flows behind one stable route while each branch reuses its existing service and form layer.
+ * Query-param branching keeps assignment flows behind one stable route while each branch reuses its existing service and form layer. Direct-account assignment keeps `account` as the member target and `selectedProfile` as the owner profile context, and requires add permission before opening the assignment interface.
  *
  * ::private end
  *
  * ::end
  */
 export default async function AssignPermissionsPage({ searchParams }: PageProps) {
-  const { portfolio, connection: connectionId, account, member, mode, workingProfile } = await searchParams;
+  const {
+    portfolio,
+    connection: connectionId,
+    account,
+    member,
+    mode,
+    workingProfile,
+    selectedProfile,
+    selectedAccount,
+  } = await searchParams;
   const accountId = account || member;
+  const selectedProfileParam = selectedProfile ?? selectedAccount;
+  const accessContext = { selectedProfile: selectedProfileParam, mode, workingProfile };
+  const directOwnerContext = selectedProfileParam ?? workingProfile;
+
+  const appendAccessContext = (href: string) => {
+    const [pathname, query = ''] = href.split('?', 2);
+    const params = new URLSearchParams(query);
+    if (accessContext.selectedProfile) params.set('selectedProfile', accessContext.selectedProfile);
+    if (accessContext.mode) params.set('mode', accessContext.mode);
+    if (accessContext.workingProfile) params.set('workingProfile', accessContext.workingProfile);
+    const queryString = params.toString();
+    return queryString ? `${pathname}?${queryString}` : pathname;
+  };
 
   if (connectionId) {
-    const connection = await getConnectionDetail(connectionId, workingProfile);
+    const connection = await getConnectionDetail(connectionId, directOwnerContext);
     if (!connection || !connection.canGrantDirectAccess) notFound();
     const selectedMember = accountId
       ? connection.members.find((item) => item.accountId === accountId) ?? null
@@ -236,7 +263,7 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
 
     return (
       <div className="grid gap-8">
-        <BackButton href={workingProfile ? `/access/connection/${connection.id}?workingProfile=${encodeURIComponent(workingProfile)}` : `/access/connection/${connection.id}`} />
+        <BackButton href={appendAccessContext(`/access/connection/${connection.id}`)} />
         <PrimaryHeader
           title={selectedMember ? 'Edit Connection Access' : 'Add People to This Connection'}
           description={
@@ -466,15 +493,49 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
     );
   }
 
+  if (!accountId && selectedProfileParam && !portfolio && !connectionId) {
+    const directAccessContext = await resolveAccessProfileContext({
+      selectedProfile: selectedProfileParam,
+      workingProfile,
+      requiredPermissions: ACCESS_TEAM_ADD_PERMISSIONS,
+    });
+    if (!directAccessContext) notFound();
+
+    const ownerProfile = await getUserProfile(directAccessContext.selectedProfile);
+    const ownerName = ownerProfile?.nameDisplay ?? directAccessContext.selectedProfile;
+
+    return (
+      <div className="grid gap-6">
+        <BackButton href={appendAccessContext('/access/team')} />
+        <PrimaryHeader
+          title="Assign Account Access"
+          description={`Enter a NeupID to assign access for ${ownerName}.`}
+        />
+        <Card>
+          <CardContent className="p-4">
+            <AddUserForm />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (accountId) {
-    const activeAccountId = await getActiveAccountId(workingProfile);
-    if (!activeAccountId) notFound();
+    const directAccessContext = await resolveAccessProfileContext({
+      selectedProfile: selectedProfileParam,
+      workingProfile,
+      requiredPermissions: ACCESS_TEAM_ADD_PERMISSIONS,
+    });
+    if (!directAccessContext) notFound();
+
+    const activeAccountId = directAccessContext.selectedProfile;
+    const selectedOwnerContext = directAccessContext.selectedProfile;
 
     const [detail, ownerProfile, isPendingInvitation, assignmentOptions] = await Promise.all([
       getDirectMemberDetail(activeAccountId, accountId),
       getUserProfile(activeAccountId),
       hasPendingDirectInvitation(activeAccountId, accountId),
-      getDirectAccessAssignmentOptions(workingProfile),
+      getDirectAccessAssignmentOptions(selectedOwnerContext),
     ]);
 
     if (!detail) notFound();
@@ -492,7 +553,7 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
 
     return (
       <div className="grid gap-6">
-        <BackButton href="/access/team" />
+        <BackButton href={appendAccessContext('/access/team')} />
         <PageHeader
           photo={userPhoto}
           displayName={detail.displayName}
@@ -544,16 +605,16 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
               <InviteButton
                 displayName={detail.displayName}
                 confirmDescription={`This will send an access invitation to ${detail.displayName}. They will be able to accept or decline it.`}
-                action={inviteDirectMember.bind(null, accountId, workingProfile ?? null)}
-                redirectTo="/access/team"
+                action={inviteDirectMember.bind(null, accountId, selectedOwnerContext)}
+                redirectTo={appendAccessContext('/access/team')}
               />
             ) : isPendingInvitation || detail.membershipStatus === 'invited' ? (
               <RemoveMemberButton
                 label="Cancel Invitation"
                 confirmTitle="Cancel invitation?"
                 confirmDescription={`This will cancel the pending access invitation sent to ${detail.displayName}. They will no longer be able to accept it.`}
-                action={cancelDirectInvitation.bind(null, accountId, workingProfile ?? null)}
-                redirectTo="/access/team"
+                action={cancelDirectInvitation.bind(null, accountId, selectedOwnerContext)}
+                redirectTo={appendAccessContext('/access/team')}
                 variant="outline"
               />
             ) : (
@@ -561,8 +622,8 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
                 label="Remove All Access"
                 confirmTitle="Remove all access?"
                 confirmDescription={`This will remove all roles ${detail.displayName} holds on your account. This cannot be undone.`}
-                action={removeDirectMember.bind(null, accountId, workingProfile ?? null)}
-                redirectTo="/access/team"
+                action={removeDirectMember.bind(null, accountId, selectedOwnerContext)}
+                redirectTo={appendAccessContext('/access/team')}
               />
             )}
           </div>

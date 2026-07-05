@@ -7,7 +7,6 @@ import { getDirectMembers } from '@/services/manage/access';
 import prisma from '@/neup.core/helpers/prisma';
 import { getUserProfile, isRootUser } from '@/services/user';
 import { resolveAssetName } from '@/services/manage/access/asset-resolvers';
-import { AddMemberForm } from '../_components/add-member-form';
 import { AssetMemberLookupForm } from '../_components/asset-member-lookup-form';
 import { AddUserForm } from '../add-user-form';
 import { FlowLink } from '@/components/ui/flow-link';
@@ -37,21 +36,6 @@ type MemberCardRow = {
   isSelf?: boolean;
   actionHref: string;
 };
-
-function appendWorkingProfile(href: string, workingProfile?: string) {
-  if (!workingProfile) return href;
-
-  const params = new URLSearchParams();
-  const [pathname, query = ''] = href.split('?', 2);
-  const existingParams = new URLSearchParams(query);
-
-  existingParams.forEach((value, key) => {
-    params.append(key, value);
-  });
-  params.set('workingProfile', workingProfile);
-
-  return `${pathname}?${params.toString()}`;
-}
 
 function appendAccessContext(
   href: string,
@@ -159,13 +143,13 @@ function EmptyMembers({ message }: { message: string }) {
  *
  * ::public
  *
- * The page accepts `portfolio`, `asset`, `mode`, and `workingProfile` query parameters. When `workingProfile` is present, all local navigation keeps that profile-selection context intact.
+ * The page accepts `selectedProfile`, `portfolio`, `asset`, `mode`, and `workingProfile` query parameters. Local navigation keeps the selected-profile context intact.
  *
  * ::public end
  *
  * ::private
  *
- * Each branch appends `workingProfile` to child routes because downstream access pages resolve the acting profile from that query param rather than from the default session context.
+ * Each branch appends `selectedProfile` and `workingProfile` to child routes because downstream access pages resolve the selected and acting profile from those query params rather than from the default session context.
  *
  * ::private end
  *
@@ -202,7 +186,7 @@ async function DirectAccountPage({
                     : `${member.roleCount} role${member.roleCount !== 1 ? 's' : ''}, ${member.isPermanent ? 'permanent' : 'temporary'} account`,
               status: member.status,
               isSelf: member.accountId === accountId,
-              actionHref: appendWorkingProfile(`/access/assign?account=${member.accountId}`, workingProfile),
+              actionHref: appendAccessContext(`/access/assign?account=${member.accountId}`, hrefContext),
             }))}
           />
         ) : (

@@ -26,3 +26,5 @@
 - [ ] Document `logica/basics/roles.json` and `logica/basics/permissions.json` as generated authz snapshots, including which script owns them and how they are used as database rebuild inputs.
 - [ ] Upgrade `neup.core/helpers/link.ts` to `documentation.guide.md` with Neup documentation blocks instead of plain comments.
 - [ ] Upgrade `neup.core/helper/navigation.ts` to `documentation.guide.md` with Neup documentation blocks instead of plain comments.
+- [ ] Add Neup documentation blocks for the root account management pages in `app/(manage)/manage/[id]/page.tsx`, `app/(manage)/manage/[id]/permissions/page.tsx`, and `app/(manage)/manage/[id]/verification/page.tsx`, which currently expose management flows without structured page-level documentation.
+- [ ] Add Neup documentation blocks for the managed account access module in `app/(manage)/manage/[id]/access/page.tsx`, `app/(manage)/manage/[id]/access/form.tsx`, `services/manage/users.ts`, `app/(manage)/manage/layout.tsx`, and `neup.core/auth/account-access-permissions.ts`, which currently rely on plain comments or no structured documentation.

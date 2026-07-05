@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -13,8 +13,8 @@ import { Loader2, UserPlus } from '@/components/icons';
 import { useToast } from '@/neup.core/hooks/use-toast';
 import {
   getAccountByNeupId,
-  grantManagedAccountAccess,
-  type ManagedAccountAccessPermission,
+  updateManagedAccountAccess,
+  type ManagedAccountAccessAssignableRole,
 } from '@/services/manage/users';
 
 type ResolvedMember = {
@@ -23,63 +23,23 @@ type ResolvedMember = {
   accountPhoto?: string;
 };
 
-type PermissionGroup = {
-  title: string;
-  match: (name: string) => boolean;
-};
-
-const PERMISSION_GROUPS: PermissionGroup[] = [
-  { title: 'Account', match: (name) => name.startsWith('root.account.') },
-  { title: 'Permissions', match: (name) => name.startsWith('root.permission.') },
-  { title: 'Applications', match: (name) => name.startsWith('application.') },
-  { title: 'Profile', match: (name) => name.startsWith('profile.') },
-  { title: 'Security', match: (name) => name.startsWith('security.') },
-  { title: 'Notifications', match: (name) => name.startsWith('notification.') },
-  { title: 'Linked Accounts', match: (name) => name.startsWith('linked_accounts.') },
-  { title: 'Data & Privacy', match: (name) => name.startsWith('data.') },
-  { title: 'People', match: (name) => name.startsWith('people.') },
-  { title: 'Payment', match: (name) => name.startsWith('payment.') },
-];
-
-function groupPermissions(permissions: ManagedAccountAccessPermission[]) {
-  const grouped = new Map<string, ManagedAccountAccessPermission[]>();
-  const used = new Set<string>();
-
-  for (const group of PERMISSION_GROUPS) {
-    const items = permissions.filter((permission) => group.match(permission.name));
-    if (items.length > 0) {
-      grouped.set(group.title, items);
-      items.forEach((permission) => used.add(permission.id));
-    }
-  }
-
-  const remaining = permissions.filter((permission) => !used.has(permission.id));
-  if (remaining.length > 0) {
-    grouped.set('Other', remaining);
-  }
-
-  return Array.from(grouped.entries());
-}
-
 export function ManagedAccountAccessForm({
   accountId,
-  permissions,
+  roles,
   canEdit,
 }: {
   accountId: string;
-  permissions: ManagedAccountAccessPermission[];
+  roles: ManagedAccountAccessAssignableRole[];
   canEdit: boolean;
 }) {
   const router = useRouter();
   const { toast } = useToast();
   const [lookupValue, setLookupValue] = useState('');
   const [resolvedMember, setResolvedMember] = useState<ResolvedMember | null>(null);
-  const [selectedPermissionIds, setSelectedPermissionIds] = useState<Set<string>>(new Set());
+  const [selectedRoleIds, setSelectedRoleIds] = useState<Set<string>>(new Set());
   const [lookupError, setLookupError] = useState<string | null>(null);
   const [isLookingUp, startLookup] = useTransition();
   const [isSaving, startSave] = useTransition();
-
-  const groupedPermissions = useMemo(() => groupPermissions(permissions), [permissions]);
 
   const handleLookup = () => {
     const nextLookup = lookupValue.trim().toLowerCase();
@@ -101,16 +61,16 @@ export function ManagedAccountAccessForm({
       }
 
       setResolvedMember(result);
-      setSelectedPermissionIds(new Set());
+      setSelectedRoleIds(new Set());
       setLookupError(null);
     });
   };
 
-  const togglePermission = (permissionId: string) => {
-    setSelectedPermissionIds((current) => {
+  const toggleRole = (roleId: string) => {
+    setSelectedRoleIds((current) => {
       const next = new Set(current);
-      if (next.has(permissionId)) next.delete(permissionId);
-      else next.add(permissionId);
+      if (next.has(roleId)) next.delete(roleId);
+      else next.add(roleId);
       return next;
     });
   };
@@ -119,26 +79,26 @@ export function ManagedAccountAccessForm({
     if (!resolvedMember) return;
 
     startSave(async () => {
-      const result = await grantManagedAccountAccess({
+      const result = await updateManagedAccountAccess({
         accountId,
         memberId: resolvedMember.accountId,
-        permissions: Array.from(selectedPermissionIds),
+        roleIds: Array.from(selectedRoleIds),
       });
 
       if (result.success) {
         toast({
-          title: 'Access granted',
-          description: `Direct access was assigned to ${resolvedMember.displayName}.`,
+          title: 'Access updated',
+          description: `Direct access roles were updated for ${resolvedMember.displayName}.`,
           className: 'bg-accent text-accent-foreground',
         });
         setResolvedMember(null);
         setLookupValue('');
-        setSelectedPermissionIds(new Set());
+        setSelectedRoleIds(new Set());
         router.refresh();
       } else {
         toast({
           variant: 'destructive',
-          title: 'Could not grant access',
+          title: 'Could not update access',
           description: result.error ?? 'An unexpected error occurred.',
         });
       }
@@ -208,73 +168,59 @@ export function ManagedAccountAccessForm({
         <div className="grid gap-4">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h3 className="text-sm font-semibold">Permission set</h3>
+              <h3 className="text-sm font-semibold">Role assignment</h3>
               <p className="text-sm text-muted-foreground">
-                Choose the permissions this account should get immediately.
+                Choose the direct roles this account should get immediately.
               </p>
             </div>
-            <Badge variant="outline">{selectedPermissionIds.size} selected</Badge>
+            <Badge variant="outline">{selectedRoleIds.size} selected</Badge>
           </div>
 
-          <div className="grid gap-4">
-            {groupedPermissions.map(([groupTitle, items]) => (
-              <div key={groupTitle} className="grid gap-2">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  {groupTitle}
-                </p>
-                <div className="rounded-lg border">
-                  {items.map((permission, index) => {
-                    const checked = selectedPermissionIds.has(permission.id);
-                    const rounded =
-                      items.length === 1
-                        ? 'rounded-lg'
-                        : index === 0
-                          ? 'rounded-t-lg'
-                          : index === items.length - 1
-                            ? 'rounded-b-lg'
-                            : '';
+          <div className="rounded-lg border">
+            {roles.length > 0 ? (
+              roles.map((role) => {
+                const checked = selectedRoleIds.has(role.id);
 
-                    return (
-                      <label
-                        key={permission.id}
-                        className={[
-                          'flex cursor-pointer items-start gap-3 border-b px-4 py-3 transition-colors last:border-b-0 hover:bg-muted/40',
-                          rounded,
-                        ].join(' ')}
-                      >
-                        <Checkbox
-                          checked={checked}
-                          onCheckedChange={() => togglePermission(permission.id)}
-                          disabled={!canEdit || isSaving}
-                          className="mt-0.5"
-                        />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium">{permission.name}</p>
-                          {permission.description && (
-                            <p className="text-xs text-muted-foreground">{permission.description}</p>
-                          )}
-                        </div>
-                        {checked && <Badge variant="secondary">Selected</Badge>}
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
+                return (
+                  <label
+                    key={role.id}
+                    className="flex cursor-pointer items-start gap-3 border-b px-4 py-3 transition-colors last:border-b-0 hover:bg-muted/40"
+                  >
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={() => toggleRole(role.id)}
+                      disabled={!canEdit || isSaving}
+                      className="mt-0.5"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium">{role.name}</p>
+                      {role.description && (
+                        <p className="text-xs text-muted-foreground">{role.description}</p>
+                      )}
+                    </div>
+                    {checked && <Badge variant="secondary">Selected</Badge>}
+                  </label>
+                );
+              })
+            ) : (
+              <p className="px-4 py-8 text-center text-sm text-muted-foreground">
+                No assignable roles are available.
+              </p>
+            )}
           </div>
         </div>
 
         <div className="flex items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            Direct access is granted immediately without sending an invitation.
+            Saving replaces direct role assignments for this account immediately, without sending an invitation.
           </p>
           <Button
             type="button"
             onClick={handleGrant}
-            disabled={!canEdit || !resolvedMember || selectedPermissionIds.size === 0 || isSaving}
+            disabled={!canEdit || !resolvedMember || selectedRoleIds.size === 0 || isSaving}
           >
             {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Grant Access
+            Save Access
           </Button>
         </div>
       </CardContent>

@@ -6,10 +6,8 @@ import { SecondaryHeader } from '@/components/ui/secondary-header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { UserCircle } from '@/components/icons';
-import { getUserDetails, getManagedAccountAccessMembers, getManagedAccountAccessPermissions } from '@/services/manage/users';
-import { getGrantedAccountPermission } from '@/services/user';
-import { getPersonalAccountId } from '@/neup.core/auth/verify';
-import { hasAnyPermission } from '@/neup.core/auth/profile-permissions';
+import { getUserDetails, getManagedAccountAccessMembers, getManagedAccountAccessAssignableRoles } from '@/services/manage/users';
+import { checkPermissions } from '@/services/user';
 import { ManagedAccountAccessForm } from './form';
 import { RemoveMemberButton } from '@/app/(manage)/access/_components/remove-member-button';
 import { revokeManagedAccountAccess } from '@/services/manage/users';
@@ -26,15 +24,15 @@ type Props = {
   searchParams: Promise<{ selectedId?: string }>;
 };
 
-function PermissionBadges({ permissions }: { permissions: string[] }) {
-  const visible = permissions.slice(0, 3);
-  const hiddenCount = Math.max(permissions.length - visible.length, 0);
+function RoleBadges({ roles }: { roles: Array<{ id: string; name: string }> }) {
+  const visible = roles.slice(0, 3);
+  const hiddenCount = Math.max(roles.length - visible.length, 0);
 
   return (
     <div className="flex flex-wrap gap-2">
-      {visible.map((permission) => (
-        <Badge key={permission} variant="secondary" className="font-normal">
-          {permission}
+      {visible.map((role) => (
+        <Badge key={role.id} variant="secondary" className="font-normal">
+          {role.name}
         </Badge>
       ))}
       {hiddenCount > 0 && (
@@ -55,7 +53,7 @@ function EmptyState() {
         </span>
         <p className="font-medium">No direct access yet</p>
         <p className="max-w-sm text-sm text-muted-foreground">
-          Add an account above to grant permissions immediately without sending an invitation.
+          Add an account above to assign direct access roles immediately without sending an invitation.
         </p>
       </CardContent>
     </Card>
@@ -65,36 +63,22 @@ function EmptyState() {
 export default async function ManagedAccountAccessPage({ params, searchParams }: Props) {
   const { id } = await params;
   const { selectedId } = await searchParams;
-  const targetAccountId = selectedId?.trim() || id;
+  const targetAccountId = id;
 
-  const viewerAccountId = await getPersonalAccountId();
-  if (!viewerAccountId) {
-    notFound();
-  }
-
-  const [grantedPermissions, userDetails] = await Promise.all([
-    getGrantedAccountPermission(viewerAccountId, targetAccountId),
+  const [canViewAccess, canEditAccess, userDetails] = await Promise.all([
+    checkPermissions(ACCOUNT_ACCESS_PERMISSION_GROUPS.view),
+    checkPermissions(ACCOUNT_ACCESS_PERMISSION_GROUPS.edit),
     getUserDetails(targetAccountId),
   ]);
-
-  const canViewAccess = hasAnyPermission(grantedPermissions, ACCOUNT_ACCESS_PERMISSION_GROUPS.view)
-    || hasAnyPermission(grantedPermissions, ACCOUNT_ACCESS_PERMISSION_GROUPS.edit);
-  const canEditAccess = hasAnyPermission(grantedPermissions, ACCOUNT_ACCESS_PERMISSION_GROUPS.edit);
 
   if (!canViewAccess || !userDetails) {
     notFound();
   }
 
-  const [permissions, members] = await Promise.all([
-    getManagedAccountAccessPermissions(),
+  const [roles, members] = await Promise.all([
+    getManagedAccountAccessAssignableRoles(),
     getManagedAccountAccessMembers(targetAccountId),
   ]);
-
-  console.log('[manage/access] selected account permissions', {
-    viewerAccountId,
-    targetAccountId,
-    permissions: grantedPermissions,
-  });
 
   return (
     <div className="grid gap-8">
@@ -103,23 +87,23 @@ export default async function ManagedAccountAccessPage({ params, searchParams }:
       <div className="grid gap-2">
         <PrimaryHeader
           title="Account Access"
-          description={`Grant direct access to @${userDetails.neupId} without sending an invitation.`}
+          description={`Assign direct access roles to @${userDetails.neupId} without sending an invitation.`}
         />
         <p className="text-sm text-muted-foreground">
-          This page only exposes accounts with a direct access grant. Use it for immediate access assignment, not request-based invitations.
+          This page manages direct role assignments only. It does not support ad-hoc permission assignment or request-based invitations.
         </p>
       </div>
 
       <ManagedAccountAccessForm
         accountId={targetAccountId}
-        permissions={permissions}
+        roles={roles}
         canEdit={canEditAccess}
       />
 
       <div className="space-y-2">
         <SecondaryHeader
           title="Current Access"
-          description="Accounts that currently have direct access to this account."
+          description="Accounts that currently hold direct roles on this account."
         />
 
         {members.length > 0 ? (
@@ -145,13 +129,10 @@ export default async function ManagedAccountAccessPage({ params, searchParams }:
                         @{member.neupId}
                       </Badge>
                       <Badge variant="secondary" className="font-normal">
-                        {member.grantCount} grant{member.grantCount !== 1 ? 's' : ''}
+                        {member.roles.length} role{member.roles.length !== 1 ? 's' : ''}
                       </Badge>
                     </div>
-                    <PermissionBadges permissions={member.permissions} />
-                    <p className="text-xs text-muted-foreground">
-                      {member.roleDescription ?? 'Direct access role'}
-                    </p>
+                    <RoleBadges roles={member.roles} />
                   </div>
                   <div className="shrink-0">
                     <RemoveMemberButton

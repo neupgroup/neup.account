@@ -6,12 +6,29 @@ import { useRouter } from "next/navigation";
 import { redirectInApp } from "@/neup.core/helper/navigation";
 
 /**
- * AuthProxy handles the authentication check and redirection logic.
- * It ensures that children (and the layout wrapping them) are only
- * visible after the authentication check has been successfully completed.
- * 
- * This component acts as a "proxy" to guard protected routes without
- * relying on Next.js middleware, which the user prefers to avoid.
+ * ::neup.documentation::auth-proxy-component
+ * ::title Auth Proxy Component
+ *
+ * Client-side redirect helper for authenticated dashboard routes.
+ *
+ * ::public
+ *
+ * Use this component inside server-guarded authenticated layouts to redirect
+ * invalid client sessions without blocking server-rendered page content while
+ * the browser refreshes session state.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The enclosing dashboard layout calls `requireValidSession()` before this
+ * component renders, so this proxy must not hide children during the client
+ * session loading phase. Hiding children here makes direct query-parameter
+ * pages appear blank until a previous client page has hydrated session state.
+ *
+ * ::private end
+ *
+ * ::end
  */
 export function AuthProxy({ children }: { children: React.ReactNode }) {
     const { loading, profile } = useSession();
@@ -26,11 +43,5 @@ export function AuthProxy({ children }: { children: React.ReactNode }) {
         }
     }, [loading, profile, router]);
 
-    // If still loading or not authenticated, render nothing to hide the layout
-    if (loading || !profile) {
-        return null;
-    }
-
-    // Only render children if authenticated
     return <>{children}</>;
 }

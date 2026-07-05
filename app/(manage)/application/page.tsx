@@ -21,7 +21,9 @@ Server entry for the `/application` route.
 
 The page treats `mode=root` as a server-side access mode only. Overview tab
 selection uses the separate `tab` query parameter so direct URL loads do not
-depend on client-only search-param state.
+depend on client-only search-param state. The application list suspense
+fallback renders a stable skeleton instead of `null` so deep links never show
+a blank content area while client query-param helpers hydrate.
 
 ::end
 */
@@ -29,6 +31,38 @@ depend on client-only search-param state.
 type Props = {
   searchParams: Promise<{ application?: string | string[]; mode?: string; tab?: string }>;
 };
+
+function ApplicationsPillViewSkeleton() {
+  return (
+    <div className="grid gap-6" aria-busy="true" aria-label="Loading applications">
+      <div className="flex flex-wrap items-center gap-2">
+        {['Using', 'Development', 'Root'].map((label, index) => (
+          <div
+            key={label}
+            className={[
+              'h-8 rounded-full border px-4',
+              index === 0 ? 'w-20 bg-muted' : 'w-28 bg-muted/50',
+            ].join(' ')}
+          />
+        ))}
+      </div>
+      <div className="overflow-hidden rounded-2xl border bg-card">
+        {[0, 1, 2].map((item) => (
+          <div key={item} className="flex items-center justify-between gap-4 border-b px-4 py-4 last:border-b-0 sm:px-5">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="h-12 w-12 shrink-0 rounded-xl border bg-muted/60" />
+              <div className="min-w-0 space-y-2">
+                <div className="h-4 w-40 rounded bg-muted" />
+                <div className="h-3 w-28 rounded bg-muted/70" />
+              </div>
+            </div>
+            <div className="h-5 w-5 shrink-0 rounded bg-muted/70" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const resolvedSearchParams = await searchParams;
@@ -99,7 +133,7 @@ export default async function ApplicationsManagePage({ searchParams }: Props) {
           </div>
         </div>
       ) : (
-        <Suspense fallback={null}>
+        <Suspense fallback={<ApplicationsPillViewSkeleton />}>
           <ApplicationsPillView
             sections={sections}
             canCreateApplication={canCreateApplication}

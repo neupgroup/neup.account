@@ -1,15 +1,26 @@
-/**
- * _wholeRunner.ts
- *
- * Master seed runner — fully self-contained, no external files needed.
- *
- *   Step 1 — Insert application, roles, permissions, and role-permission maps
- *   Step 2 — Create the master account (interactive prompt) or use ACCOUNT_ID
- *   Step 3 — Assign neup.account roles to the master account
- *
- * Configuration — edit the constants below, then run:
- *   npx tsx --tsconfig tsconfig.json core/dbSeed/runner_neupaccount.ts
- */
+/*
+::neup.documentation::prisma-runner-neupaccount-script
+::title Neup Account Bootstrap Seed Runner
+
+Interactive bootstrap seed runner for the `neup.account` application.
+
+::public
+
+This script seeds the application catalog, root/default roles, capabilities, and the initial master-account grants needed to bootstrap a fresh environment.
+
+Run it with:
+`npx tsx --tsconfig tsconfig.json prisma/scripts/runner-neupaccount.ts`
+
+::public end
+
+::private
+
+The script is intentionally self-contained so bootstrap SQL, prompts, and follow-up access-grant creation stay in one place for first-environment setup.
+
+::private end
+
+::end
+*/
 
 import 'dotenv/config';
 import { createInterface } from 'node:readline/promises';

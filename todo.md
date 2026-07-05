@@ -24,3 +24,5 @@
 - [ ] Fix `prisma/grant-root.ts` so it uses the current `authz_role` schema and looks up NeupID records by `neupId`, not stale role fields.
 - [ ] Document `package.json` authz maintenance commands so `sync:permissions:neup-account` / `rebuild:authz:neup-account` clearly describe when they rebuild database catalog tables versus when they only export snapshots.
 - [ ] Document `logica/basics/roles.json` and `logica/basics/permissions.json` as generated authz snapshots, including which script owns them and how they are used as database rebuild inputs.
+- [ ] Upgrade `neup.core/helpers/link.ts` to `documentation.guide.md` with Neup documentation blocks instead of plain comments.
+- [ ] Upgrade `neup.core/helper/navigation.ts` to `documentation.guide.md` with Neup documentation blocks instead of plain comments.

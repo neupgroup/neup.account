@@ -4,7 +4,7 @@
 // Use redirectHttps / redirectHttp for external URLs.
 
 import { getFlowParams, appendFlowParamsObject } from '@/neup.core/auth/callback';
-import { appendApplicationRootMode } from '@/neup.core/helpers/application-mode';
+import { appendApplicationRootMode } from '@/app/(manage)/application/_lib/application-mode';
 
 type RouterNavigationOptions = {
   scroll?: boolean;

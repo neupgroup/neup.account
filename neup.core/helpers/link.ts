@@ -1,6 +1,6 @@
 import { APP_BASE_PATH } from '@/neup.core/appconfig';
 import { getFlowParams, appendFlowParamsObject } from '@/neup.core/auth/callback';
-import { appendApplicationRootMode } from '@/neup.core/helpers/application-mode';
+import { appendApplicationRootMode } from '@/app/(manage)/application/_lib/application-mode';
 
 type RouterLike = {
     push: (href: string, options?: { scroll?: boolean }) => void;

@@ -7,7 +7,7 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { appendFlowParamsObject, getFlowParams } from '@/neup.core/auth/callback';
-import { appendApplicationRootMode } from '@/neup.core/helpers/application-mode';
+import { appendApplicationRootMode } from '@/app/(manage)/application/_lib/application-mode';
 import { appendStickyQueryParams } from '@/neup.core/helper/navigation';
 import type { ComponentProps } from 'react';
 import { Suspense } from 'react';

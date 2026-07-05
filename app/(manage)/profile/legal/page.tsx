@@ -20,6 +20,7 @@ import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/neup.core/auth/
 import { Checkbox } from '@/components/ui/checkbox'
 import { Geolocation } from '@/neup.core/providers/geolocation'
 import { permission } from '@/neup.logica/permission';
+import { useSelectedProfilePage } from '../use-selected-profile-page';
 
 const pagePermissions = [
     permission('profile.legal.view.self', 'for_individual', 'page'),
@@ -46,9 +47,34 @@ export default function LegalPage() {
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
     const geo = useContext(Geolocation);
-    const { profile, accountId, permissions, loading: sessionLoading, refetch } = useSession();
+    const {
+        profile: sessionProfile,
+        accountId: sessionAccountId,
+        permissions: sessionPermissions,
+        loading: sessionLoading,
+        refetch,
+    } = useSession();
+    const {
+        selectedProfile,
+        selectedProfileDenied,
+        loadingSelectedProfile,
+        targetAccountId,
+        targetPermissions,
+        targetProfile,
+        profileBackHref,
+        refreshSelectedProfile,
+    } = useSelectedProfilePage({
+        requiredPermissions: PROFILE_SECTION_PERMISSIONS.legal,
+        sessionAccountId,
+        sessionPermissions,
+        sessionProfile,
+    });
 
-    if (!sessionLoading && !hasAnyPermission(permissions, PROFILE_SECTION_PERMISSIONS.legal)) {
+    if (selectedProfileDenied) {
+        notFound();
+    }
+
+    if (!sessionLoading && !loadingSelectedProfile && !hasAnyPermission(targetPermissions, PROFILE_SECTION_PERMISSIONS.legal)) {
         notFound();
     }
 
@@ -72,51 +98,51 @@ export default function LegalPage() {
     });
 
     useEffect(() => {
-        if (!profile) return;
+        if (!targetProfile) return;
 
-        if (profile.accountType === 'brand') {
+        if (targetProfile.accountType === 'brand') {
             brandForm.reset({
-                isLegalEntity: profile.isLegalEntity === true,
-                nameLegal: profile.nameLegal || "",
-                incorporationDate: profile.dateEstablished ? profile.dateEstablished.slice(0, 10) : "",
-                headOfficeLocation: profile.headOfficeLocation || "",
+                isLegalEntity: targetProfile.isLegalEntity === true,
+                nameLegal: targetProfile.nameLegal || "",
+                incorporationDate: targetProfile.dateEstablished ? targetProfile.dateEstablished.slice(0, 10) : "",
+                headOfficeLocation: targetProfile.headOfficeLocation || "",
             });
         } else {
             individualForm.reset({
-                nameFirst: profile.nameFirst || "",
-                nameMiddle: profile.nameMiddle || "",
-                nameLast: profile.nameLast || "",
+                nameFirst: targetProfile.nameFirst || "",
+                nameMiddle: targetProfile.nameMiddle || "",
+                nameLast: targetProfile.nameLast || "",
             });
         }
 
         setLoading(false);
-    }, [profile, individualForm, brandForm]);
+    }, [targetProfile, individualForm, brandForm]);
 
     async function onIndividualSubmit(data: IndividualLegalFormValues) {
-        if (!accountId) {
+        if (!targetAccountId) {
             toast({ variant: "destructive", title: "Error", description: "Not authenticated." });
             return;
         }
 
         const locationString = geo?.latitude && geo?.longitude ? `${geo.latitude},${geo.longitude}` : undefined;
-        const result = await updateUserProfile(accountId, data, locationString);
+        const result = await updateUserProfile(targetAccountId, data, locationString);
 
         if (result.success) {
             toast({ title: "Success", description: "Legal name updated successfully.", className: "bg-accent text-accent-foreground" });
-            refetch();
+            selectedProfile ? await refreshSelectedProfile() : refetch();
         } else {
             toast({ variant: "destructive", title: "Error", description: result.error });
         }
     }
 
     async function onBrandSubmit(data: BrandLegalFormValues) {
-        if (!accountId) {
+        if (!targetAccountId) {
             toast({ variant: "destructive", title: "Error", description: "Not authenticated." });
             return;
         }
 
         const locationString = geo?.latitude && geo?.longitude ? `${geo.latitude},${geo.longitude}` : undefined;
-        const result = await updateBrandLegalProfile(accountId, {
+        const result = await updateBrandLegalProfile(targetAccountId, {
             isLegalEntity: data.isLegalEntity,
             nameLegal: data.nameLegal,
             dateEstablished: data.incorporationDate ? new Date(`${data.incorporationDate}T00:00:00`) : undefined,
@@ -125,22 +151,22 @@ export default function LegalPage() {
 
         if (result.success) {
             toast({ title: "Success", description: result.message, className: "bg-accent text-accent-foreground" });
-            refetch();
+            selectedProfile ? await refreshSelectedProfile() : refetch();
         } else {
             toast({ variant: "destructive", title: "Error", description: result.error });
         }
     }
     
-    if (loading) {
+    if (loading || loadingSelectedProfile) {
         return <Skeleton className="h-64 w-full" />
     }
 
-    const isBrandAccount = profile?.accountType === 'brand';
+    const isBrandAccount = targetProfile?.accountType === 'brand';
     const isLegalEntity = brandForm.watch('isLegalEntity');
 
     return (
          <div className="space-y-8">
-            <BackButton href="/manage/profile" />
+            <BackButton href={profileBackHref} />
 
             {isBrandAccount ? (
                 <Form {...brandForm}>

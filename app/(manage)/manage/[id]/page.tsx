@@ -22,7 +22,7 @@ const accountManagementFeatures = (accountId: string) => [
     icon: UserCircle,
     title: 'Profile Information',
     description: 'View and manage user profile details.',
-    href: `/manage/${accountId}/profile`,
+    href: `/profile?selectedProfile=${encodeURIComponent(accountId)}`,
   },
   {
     icon: ShieldCheck,

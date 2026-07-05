@@ -21,6 +21,7 @@ import { BackButton } from '@/components/ui/back-button'
 import { Separator } from '@/components/ui/separator'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/neup.core/auth/profile-permissions'
 import { permission } from '@/neup.logica/permission';
+import { useSelectedProfilePage } from '../use-selected-profile-page';
 
 const pagePermissions = [
   permission('profile.contact.view.self', 'for_individual', 'page'),
@@ -41,9 +42,30 @@ type ContactFormValues = z.infer<typeof contactFormSchema>;
 export default function ContactPage() {
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
-    const { accountId, permissions, loading: sessionLoading } = useSession();
+    const {
+        profile: sessionProfile,
+        accountId: sessionAccountId,
+        permissions: sessionPermissions,
+        loading: sessionLoading,
+    } = useSession();
+    const {
+        selectedProfileDenied,
+        loadingSelectedProfile,
+        targetAccountId,
+        targetPermissions,
+        profileBackHref,
+    } = useSelectedProfilePage({
+        requiredPermissions: PROFILE_SECTION_PERMISSIONS.contact,
+        sessionAccountId,
+        sessionPermissions,
+        sessionProfile,
+    });
 
-    if (!sessionLoading && !hasAnyPermission(permissions, PROFILE_SECTION_PERMISSIONS.contact)) {
+    if (selectedProfileDenied) {
+        notFound();
+    }
+
+    if (!sessionLoading && !loadingSelectedProfile && !hasAnyPermission(targetPermissions, PROFILE_SECTION_PERMISSIONS.contact)) {
         notFound();
     }
 
@@ -65,9 +87,9 @@ export default function ContactPage() {
     const watchWorkLocation = useWatch({ control: form.control, name: "workLocation" });
 
     useEffect(() => {
-        if (accountId) {
+        if (targetAccountId) {
             const fetchData = async () => {
-                const contactsData = await getProfileContacts(accountId);
+                const contactsData = await getProfileContacts(targetAccountId);
                 form.reset({
                     primaryPhone: contactsData.primaryPhone || "",
                     secondaryPhone: contactsData.secondaryPhone || "",
@@ -80,15 +102,15 @@ export default function ContactPage() {
             }
             fetchData();
         }
-    }, [accountId, form]);
+    }, [targetAccountId, form]);
 
     async function onSubmit(data: ContactFormValues) {
-        if (!accountId) {
+        if (!targetAccountId) {
             toast({ variant: "destructive", title: "Error", description: "Not authenticated." });
             return;
         }
 
-        const result = await updateUserProfile(accountId, data);
+        const result = await updateUserProfile(targetAccountId, data);
 
         if (result.success) {
             toast({ title: "Success", description: "Contact information updated successfully.", className: "bg-accent text-accent-foreground" });
@@ -97,13 +119,13 @@ export default function ContactPage() {
         }
     }
     
-    if (loading) {
+    if (loading || loadingSelectedProfile) {
         return <Skeleton className="h-64 w-full" />
     }
 
     return (
         <div className="space-y-8">
-            <BackButton href="/manage/profile" />
+            <BackButton href={profileBackHref} />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <Card>

@@ -21,6 +21,7 @@ import { useSession } from '@/neup.core/providers/session'
 import { BackButton } from '@/components/ui/back-button'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/neup.core/auth/profile-permissions'
 import { permission } from '@/neup.logica/permission';
+import { useSelectedProfilePage } from '../use-selected-profile-page';
 
 const pagePermissions = [
   permission('profile.neupid.view.self', 'for_individual', 'page'),
@@ -40,10 +41,31 @@ export default function NeupidPage() {
     const [neupIds, setNeupIds] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
-    const { accountId, permissions, loading: sessionLoading } = useSession();
+    const {
+        profile: sessionProfile,
+        accountId: sessionAccountId,
+        permissions: sessionPermissions,
+        loading: sessionLoading,
+    } = useSession();
+    const {
+        selectedProfileDenied,
+        loadingSelectedProfile,
+        targetAccountId,
+        targetPermissions,
+        profileBackHref,
+    } = useSelectedProfilePage({
+        requiredPermissions: PROFILE_SECTION_PERMISSIONS.neupid,
+        sessionAccountId,
+        sessionPermissions,
+        sessionProfile,
+    });
     const [isPro, setIsPro] = useState(false);
 
-    if (!sessionLoading && !hasAnyPermission(permissions, PROFILE_SECTION_PERMISSIONS.neupid)) {
+    if (selectedProfileDenied) {
+        notFound();
+    }
+
+    if (!sessionLoading && !loadingSelectedProfile && !hasAnyPermission(targetPermissions, PROFILE_SECTION_PERMISSIONS.neupid)) {
         notFound();
     }
 
@@ -53,11 +75,11 @@ export default function NeupidPage() {
     });
 
     useEffect(() => {
-        if (!accountId) return;
+        if (!targetAccountId) return;
 
         const fetchData = async () => {
             const [neupIdsData] = await Promise.all([
-                getProfileNeupIds(accountId),
+                getProfileNeupIds(targetAccountId),
             ]);
 
             setNeupIds(neupIdsData.map((row) => row.id));
@@ -65,15 +87,15 @@ export default function NeupidPage() {
         }
 
         fetchData();
-    }, [accountId]);
+    }, [targetAccountId]);
 
     async function onSubmit(data: NeupidFormValues) {
-        if (!accountId) {
+        if (!targetAccountId) {
             toast({ variant: "destructive", title: "Error", description: "Not authenticated." });
             return;
         }
         
-        const result = await updateUserProfile(accountId, {}, data.newNeupIdRequest);
+        const result = await updateUserProfile(targetAccountId, {}, data.newNeupIdRequest);
 
         if (result.success) {
             toast({ title: "Success", description: "NeupID request sent successfully.", className: "bg-accent text-accent-foreground" });
@@ -89,13 +111,13 @@ export default function NeupidPage() {
     const neupIdLimit = isPro ? 2 : 1;
     const canRequestNeupId = neupIds.length < neupIdLimit;
 
-    if (loading) {
+    if (loading || loadingSelectedProfile) {
         return <Skeleton className="h-64 w-full" />
     }
 
     return (
         <div className="space-y-8">
-            <BackButton href="/manage/profile" />
+            <BackButton href={profileBackHref} />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <Card>

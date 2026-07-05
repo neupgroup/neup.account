@@ -25,6 +25,7 @@ import { useSession } from '@/neup.core/providers/session'
 import { BackButton } from '@/components/ui/back-button'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/neup.core/auth/profile-permissions'
 import { permission } from '@/neup.logica/permission';
+import { useSelectedProfilePage } from '../use-selected-profile-page';
 
 const pagePermissions = [
     permission('profile.demographics.view.self', 'for_individual', 'page'),
@@ -43,13 +44,35 @@ type DemographicsFormValues = z.infer<typeof demographicsFormSchema>;
 export default function DemographicsPage() {
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
-    const { profile, accountId, permissions, loading: sessionLoading } = useSession();
+    const {
+        profile: sessionProfile,
+        accountId: sessionAccountId,
+        permissions: sessionPermissions,
+        loading: sessionLoading,
+    } = useSession();
+    const {
+        selectedProfileDenied,
+        loadingSelectedProfile,
+        targetAccountId,
+        targetPermissions,
+        targetProfile,
+        profileBackHref,
+    } = useSelectedProfilePage({
+        requiredPermissions: PROFILE_SECTION_PERMISSIONS.demographics,
+        sessionAccountId,
+        sessionPermissions,
+        sessionProfile,
+    });
 
-    if (!sessionLoading && profile?.accountType === 'brand') {
+    if (selectedProfileDenied) {
         notFound();
     }
 
-    if (!sessionLoading && !hasAnyPermission(permissions, PROFILE_SECTION_PERMISSIONS.demographics)) {
+    if (!sessionLoading && !loadingSelectedProfile && targetProfile?.accountType === 'brand') {
+        notFound();
+    }
+
+    if (!sessionLoading && !loadingSelectedProfile && !hasAnyPermission(targetPermissions, PROFILE_SECTION_PERMISSIONS.demographics)) {
         notFound();
     }
 
@@ -65,8 +88,8 @@ export default function DemographicsPage() {
     });
 
     useEffect(() => {
-        if (profile) {
-            let formGender = profile.gender || 'prefer_not_to_say';
+        if (targetProfile) {
+            let formGender = targetProfile.gender || 'prefer_not_to_say';
             let formCustomGender = "";
 
             if (formGender.startsWith('c.')) {
@@ -74,7 +97,7 @@ export default function DemographicsPage() {
                 formGender = 'custom';
             }
             
-            const dobDate = profile.dateBirth ? new Date(profile.dateBirth) : undefined;
+            const dobDate = targetProfile.dateBirth ? new Date(targetProfile.dateBirth) : undefined;
             if (dobDate) {
                  setDateInput(format(dobDate, 'yyyy-MM-dd'));
             }
@@ -86,7 +109,7 @@ export default function DemographicsPage() {
             });
             setLoading(false);
         }
-    }, [profile, form]);
+    }, [targetProfile, form]);
 
     const handleDateInputBlur = async () => {
         if (!dateInput) return;
@@ -118,7 +141,7 @@ export default function DemographicsPage() {
 
 
     async function onSubmit(data: DemographicsFormValues) {
-        if (!accountId) {
+        if (!targetAccountId) {
             toast({ variant: "destructive", title: "Error", description: "Not authenticated." });
             return;
         }
@@ -128,7 +151,7 @@ export default function DemographicsPage() {
             finalGender = `c.${data.customGender?.trim() || 'custom'}` as any;
         }
 
-        const result = await updateUserProfile(accountId, { ...data, gender: finalGender });
+        const result = await updateUserProfile(targetAccountId, { ...data, gender: finalGender });
 
         if (result.success) {
             toast({ title: "Success", description: "Demographics updated successfully.", className: "bg-accent text-accent-foreground" });
@@ -137,13 +160,13 @@ export default function DemographicsPage() {
         }
     }
     
-    if (loading) {
+    if (loading || loadingSelectedProfile) {
         return <Skeleton className="h-64 w-full" />
     }
 
     return (
          <div className="space-y-8">
-            <BackButton href="/manage/profile" />
+            <BackButton href={profileBackHref} />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <Card>

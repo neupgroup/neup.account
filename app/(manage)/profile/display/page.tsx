@@ -27,6 +27,7 @@ import { SecondaryHeader } from '@/components/ui/secondary-header'
 import { Separator } from '@/components/ui/separator'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/neup.core/auth/profile-permissions'
 import { permission } from '@/neup.logica/permission';
+import { useSelectedProfilePage } from '../use-selected-profile-page';
 
 const pagePermissions = [
   permission('profile.display.view.self', 'for_individual', 'page'),
@@ -60,7 +61,28 @@ type NameFormValues = z.infer<typeof nameFormSchema>;
 export default function DisplayInfoPage() {
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
-    const { profile, accountId, permissions, loading: sessionLoading, refetch: refetchSession } = useSession();
+    const {
+        profile: sessionProfile,
+        accountId: sessionAccountId,
+        permissions: sessionPermissions,
+        loading: sessionLoading,
+        refetch: refetchSession,
+    } = useSession();
+    const {
+        selectedProfile,
+        selectedProfileDenied,
+        loadingSelectedProfile,
+        targetAccountId,
+        targetPermissions,
+        targetProfile,
+        profileBackHref,
+        refreshSelectedProfile,
+    } = useSelectedProfilePage({
+        requiredPermissions: PROFILE_SECTION_PERMISSIONS.display,
+        sessionAccountId,
+        sessionPermissions,
+        sessionProfile,
+    });
     const [nameSuggestions, setNameSuggestions] = useState<string[]>([]);
     const [pastPhotos, setPastPhotos] = useState<string[]>([]);
     const [isPhotoPending, startPhotoTransition] = useTransition();
@@ -68,12 +90,16 @@ export default function DisplayInfoPage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [photoView, setPhotoView] = useState<'uploader' | 'carousel' | 'public'>('uploader');
     const [publicPhotos, setPublicPhotos] = useState<PublicDisplayImage[]>([]);
-    const isBrandAccount = profile?.accountType === 'brand';
+    const isBrandAccount = targetProfile?.accountType === 'brand';
     const currentDisplayName = isBrandAccount
-        ? (profile?.displayName || profile?.nameDisplay || '')
-        : (profile?.nameDisplay || profile?.displayName || '');
+        ? (targetProfile?.displayName || targetProfile?.nameDisplay || '')
+        : (targetProfile?.nameDisplay || targetProfile?.displayName || '');
 
-    if (!sessionLoading && !hasAnyPermission(permissions, PROFILE_SECTION_PERMISSIONS.display)) {
+    if (selectedProfileDenied) {
+        notFound();
+    }
+
+    if (!sessionLoading && !loadingSelectedProfile && !hasAnyPermission(targetPermissions, PROFILE_SECTION_PERMISSIONS.display)) {
         notFound();
     }
 
@@ -90,16 +116,16 @@ export default function DisplayInfoPage() {
     const { formState: photoFormState } = photoForm;
 
     useEffect(() => {
-        if (profile && accountId) {
+        if (targetProfile && targetAccountId) {
             const fetchSuggestions = async () => {
-                if (accountId) {
+                if (targetAccountId) {
                     const [suggestions, photos] = await Promise.all([
-                        getDisplayNameSuggestions(accountId),
-                        getPastProfilePhotos(accountId),
+                        getDisplayNameSuggestions(targetAccountId),
+                        getPastProfilePhotos(targetAccountId),
                     ]);
                     setNameSuggestions(suggestions);
                     setPastPhotos(photos);
-                    const publicResources = await getPublicDisplayImages(accountId);
+                    const publicResources = await getPublicDisplayImages(targetAccountId);
                     setPublicPhotos(publicResources);
 
                     const currentName = currentDisplayName;
@@ -115,29 +141,29 @@ export default function DisplayInfoPage() {
                         });
                     }
                     photoForm.reset({
-                        accountPhoto: profile.accountPhoto || "",
+                        accountPhoto: targetProfile.accountPhoto || "",
                     });
                 }
                 setLoading(false);
             }
             fetchSuggestions();
         }
-    }, [profile, accountId, nameForm, photoForm]);
+    }, [targetProfile, targetAccountId, currentDisplayName, nameForm, photoForm]);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
-        if (!file || !accountId) return;
+        if (!file || !targetAccountId) return;
 
         startPhotoTransition(async () => {
-            const contentId = `profile-photo-${accountId}-${Date.now()}`;
-            const result = await uploadFile(file, "neup.account", contentId, file.name, accountId);
+            const contentId = `profile-photo-${targetAccountId}-${Date.now()}`;
+            const result = await uploadFile(file, "neup.account", contentId, file.name, targetAccountId);
             if(result.success && result.url) {
-                const updateResult = await updateUserProfile(accountId, { accountPhoto: result.url });
+                const updateResult = await updateUserProfile(targetAccountId, { accountPhoto: result.url });
                 if(updateResult.success) {
                     toast({ title: "Success", description: "Profile photo updated.", className: "bg-accent text-accent-foreground" });
                     photoForm.setValue('accountPhoto', result.url, { shouldDirty: true });
                     setPastPhotos(prev => [result.url as string, ...prev].slice(0, 4));
-                    refetchSession();
+                    selectedProfile ? await refreshSelectedProfile() : refetchSession();
                 } else {
                     toast({ variant: "destructive", title: "Error", description: updateResult.error });
                 }
@@ -148,13 +174,13 @@ export default function DisplayInfoPage() {
     };
     
     const onPhotoSubmit = (data: PhotoFormValues) => {
-        if (!accountId) return;
+        if (!targetAccountId) return;
         startPhotoTransition(async () => {
-            const result = await updateUserProfile(accountId, { accountPhoto: data.accountPhoto });
+            const result = await updateUserProfile(targetAccountId, { accountPhoto: data.accountPhoto });
             if (result.success) {
                 toast({ title: "Success", description: "Profile photo updated.", className: "bg-accent text-accent-foreground" });
                 photoForm.reset(data); // Resets the form's dirty state
-                refetchSession();
+                selectedProfile ? await refreshSelectedProfile() : refetchSession();
             } else {
                 toast({ variant: "destructive", title: "Error", description: result.error });
             }
@@ -162,7 +188,7 @@ export default function DisplayInfoPage() {
     };
 
     const onNameSubmit = (data: NameFormValues) => {
-        if (!accountId || !profile) {
+        if (!targetAccountId || !targetProfile) {
             toast({ variant: "destructive", title: "Error", description: "Not authenticated or profile missing." });
             return;
         }
@@ -186,10 +212,10 @@ export default function DisplayInfoPage() {
                     isApprovalNeeded = false;
                 } else {
                     // 2. Check if it's an extension of the current custom display name.
-                    const currentNameIsStandard = nameSuggestions.some(s => s.toLowerCase() === profile.nameDisplay?.toLowerCase());
-                    if (!currentNameIsStandard && profile.nameDisplay) {
-                        const nameParts = [profile.nameFirst, profile.nameMiddle, profile.nameLast].filter(Boolean).map(n => n!.toLowerCase());
-                        const currentCustomLower = profile.nameDisplay.toLowerCase();
+                    const currentNameIsStandard = nameSuggestions.some(s => s.toLowerCase() === targetProfile.nameDisplay?.toLowerCase());
+                    if (!currentNameIsStandard && targetProfile.nameDisplay) {
+                        const nameParts = [targetProfile.nameFirst, targetProfile.nameMiddle, targetProfile.nameLast].filter(Boolean).map(n => n!.toLowerCase());
+                        const currentCustomLower = targetProfile.nameDisplay.toLowerCase();
                         
                         const isExtension = nameParts.some(part => lowerCustomName === `${currentCustomLower} ${part}`);
                         if(isExtension) {
@@ -211,7 +237,7 @@ export default function DisplayInfoPage() {
                 isApprovalNeeded = false;
             }
 
-            const result = await updateUserProfile(accountId, payload);
+            const result = await updateUserProfile(targetAccountId, payload);
 
             if (result.success) {
                 toast({ title: "Success", description: result.message, className: "bg-accent text-accent-foreground" });
@@ -219,7 +245,7 @@ export default function DisplayInfoPage() {
                     nameForm.setValue('customDisplayName', '');
                 }
                 nameForm.reset(data); // Resets the form's dirty state
-                refetchSession();
+                selectedProfile ? await refreshSelectedProfile() : refetchSession();
             } else {
                 toast({ variant: "destructive", title: "Error", description: result.error });
             }
@@ -230,7 +256,7 @@ export default function DisplayInfoPage() {
         nameForm.setValue('selectedDisplayName', value, { shouldDirty: true });
         nameForm.setValue('customDisplayName', '', { shouldDirty: false });
 
-        if (!isBrandAccount || !accountId) {
+        if (!isBrandAccount || !targetAccountId) {
             return;
         }
 
@@ -239,12 +265,12 @@ export default function DisplayInfoPage() {
         }
 
         startNameTransition(async () => {
-            const result = await updateUserProfile(accountId, { nameDisplay: value });
+            const result = await updateUserProfile(targetAccountId, { nameDisplay: value });
 
             if (result.success) {
                 toast({ title: "Success", description: "Display name updated.", className: "bg-accent text-accent-foreground" });
                 nameForm.reset({ selectedDisplayName: value, customDisplayName: "" });
-                refetchSession();
+                selectedProfile ? await refreshSelectedProfile() : refetchSession();
             } else {
                 toast({ variant: "destructive", title: "Error", description: result.error });
             }
@@ -255,11 +281,11 @@ export default function DisplayInfoPage() {
     const currentDisplayPhoto = photoForm.watch('accountPhoto');
     const displayNameOptions = isBrandAccount
         ? [
-            { label: 'Brand Name', value: profile?.brandName || '' },
-            { label: 'Legal Name', value: profile?.nameLegal || '' },
+            { label: 'Brand Name', value: targetProfile?.brandName || '' },
+            { label: 'Legal Name', value: targetProfile?.nameLegal || '' },
         ].filter((option) => option.value.trim().length > 0)
         : nameSuggestions.map((name) => ({ label: name, value: name }));
-    const profileGender = (profile?.gender || '').toLowerCase();
+    const profileGender = (targetProfile?.gender || '').toLowerCase();
     const filteredPublicPhotos = publicPhotos.filter((photo) => {
         if (profileGender === 'male') return photo.type === 'displayImage_publicMale';
         if (profileGender === 'female') return photo.type === 'displayImage_publicFemale';
@@ -267,13 +293,13 @@ export default function DisplayInfoPage() {
         return true;
     });
 
-    if (loading) {
+    if (loading || loadingSelectedProfile) {
         return <Skeleton className="h-96 w-full" />
     }
 
     return (
         <div className="space-y-8">
-            <BackButton href="/manage/profile" />
+            <BackButton href={profileBackHref} />
 
             <div className="space-y-2">
                 <SecondaryHeader

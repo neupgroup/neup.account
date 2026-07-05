@@ -10,7 +10,6 @@ import { useToast } from '@/neup.core/hooks/use-toast';
 import { kycFormSchema, type KycFormValues } from '@/services/manage/profile/schema';
 import { submitKyc } from '@/services/manage/profile/documents';
 import { uploadFile } from '@/services/upload';
-import { getPersonalAccountId } from '@/neup.core/auth/verify';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { BackButton } from '@/components/ui/back-button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Loader2, Camera, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { useSession } from '@/neup.core/providers/session';
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/neup.core/auth/profile-permissions';
@@ -35,6 +35,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { redirectInApp } from '@/neup.core/helper/navigation';
+import { useSelectedProfilePage } from '../use-selected-profile-page';
 
 const pagePermissions = [
     permission('profile.kyc.view.self', 'for_individual', 'page'),
@@ -127,11 +128,31 @@ export default function KycPage() {
     const [isPending, startTransition] = useTransition();
     const router = useRouter();
     const { toast } = useToast();
-    const [accountId, setAccountId] = useState<string | null>(null);
     const [isSubmitted, setIsSubmitted] = useState(false);
-    const { permissions, loading: sessionLoading } = useSession();
+    const {
+        profile: sessionProfile,
+        accountId: sessionAccountId,
+        permissions: sessionPermissions,
+        loading: sessionLoading,
+    } = useSession();
+    const {
+        selectedProfileDenied,
+        loadingSelectedProfile,
+        targetAccountId,
+        targetPermissions,
+        profileBackHref,
+    } = useSelectedProfilePage({
+        requiredPermissions: PROFILE_SECTION_PERMISSIONS.kyc,
+        sessionAccountId,
+        sessionPermissions,
+        sessionProfile,
+    });
 
-    if (!sessionLoading && !hasAnyPermission(permissions, PROFILE_SECTION_PERMISSIONS.kyc)) {
+    if (selectedProfileDenied) {
+        notFound();
+    }
+
+    if (!sessionLoading && !loadingSelectedProfile && !hasAnyPermission(targetPermissions, PROFILE_SECTION_PERMISSIONS.kyc)) {
         notFound();
     }
 
@@ -142,16 +163,8 @@ export default function KycPage() {
         }
     });
 
-    useEffect(() => {
-        const fetchProfile = async () => {
-            const id = await getPersonalAccountId();
-            setAccountId(id);
-        };
-        fetchProfile();
-    }, []);
-    
     const onSubmit = (data: KycFormValues) => {
-        if (!accountId) {
+        if (!targetAccountId) {
             toast({ variant: 'destructive', title: 'Error', description: 'Could not identify user.' });
             return;
         }
@@ -161,8 +174,8 @@ export default function KycPage() {
                 toast({title: "Uploading files...", description: "Please wait while we upload your documents."});
 
                 const [docUploadResult, selfieUploadResult] = await Promise.all([
-                    uploadFile(data.documentPhoto, "neup.account", crypto.randomUUID(), data.documentPhoto.name, accountId),
-                    uploadFile(data.selfiePhoto, "neup.account", crypto.randomUUID(), data.selfiePhoto.name, accountId),
+                    uploadFile(data.documentPhoto, "neup.account", crypto.randomUUID(), data.documentPhoto.name, targetAccountId),
+                    uploadFile(data.selfiePhoto, "neup.account", crypto.randomUUID(), data.selfiePhoto.name, targetAccountId),
                 ]);
 
                 if (!docUploadResult.success || !selfieUploadResult.success || !docUploadResult.contentId || !selfieUploadResult.contentId) {
@@ -181,7 +194,7 @@ export default function KycPage() {
                     selfiePhotoContentId: selfieUploadResult.contentId,
                 };
 
-                const result = await submitKyc(accountId, submissionData);
+                const result = await submitKyc(targetAccountId, submissionData);
                 if (result.success) {
                     setIsSubmitted(true);
                 } else {
@@ -194,20 +207,24 @@ export default function KycPage() {
         });
     };
 
+    if (loadingSelectedProfile) {
+        return <Skeleton className="h-64 w-full" />;
+    }
+
     if (isSubmitted) { // Success screen
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
                 <CheckCircle2 className="h-16 w-16 text-green-500 mb-4" />
                 <h1 className="text-2xl font-bold">KYC Submitted Successfully!</h1>
                 <p className="text-muted-foreground mt-2">Your information is now under review. We will notify you once the process is complete.</p>
-                <Button onClick={() => redirectInApp(router, '/manage/profile')} className="mt-6">Back to Profile</Button>
+                <Button onClick={() => redirectInApp(router, profileBackHref)} className="mt-6">Back to Profile</Button>
             </div>
         )
     }
 
     return (
         <div className="grid gap-8">
-            <BackButton href="/manage/profile" />
+            <BackButton href={profileBackHref} />
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">KYC & Verification</h1>
                 <p className="text-muted-foreground">Verify your identity to unlock all features of your account.</p>

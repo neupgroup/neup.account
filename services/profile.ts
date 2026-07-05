@@ -8,14 +8,15 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { format, isValid, parse as parseWithFormat } from 'date-fns';
 import { brandLegalFormSchema, brandProfileFormSchema } from '@/services/profile/schema';
-import { getUserProfile, checkGrantedPermissions, checkPermissions, checkNeupIdAvailability, getUserNeupIds } from '@/services/user';
+import { getUserProfile, checkGrantedPermissions, checkPermissions, checkNeupIdAvailability, getUserNeupIds, type UserProfile } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
 import { getAITextResponse } from '@/services/shared/ai';
 import { logDisplayImageResourceForAccount } from '@/services/manage/site/resources';
 import { dispatchAccountUpdatedEvent, type AccountUpdateEventField } from '@/services/applications/account-update-events';
 import { extractGenderFromDetails, resolveDisplayImage } from '@/neup.core/helpers/display-image';
-import { assertHasAnyPermission, assertHasProfileDisplayPermission } from '@/neup.core/auth/profile-permissions';
+import { assertHasProfileDisplayPermission } from '@/neup.core/auth/profile-permissions';
+import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
 import { createNotification } from '@/services/notifications';
 
 const servicePermissions = [
@@ -155,6 +156,80 @@ export type PublicDisplayImage = {
     title: string | null;
 };
 
+export type SelectedProfilePageData = {
+    accountId: string;
+    profile: UserProfile;
+    permissions: string[];
+};
+
+export async function getSelectedProfilePageData(input: {
+    selectedProfile?: string | null;
+    workingProfile?: string | null;
+    requiredPermissions: readonly string[];
+}): Promise<SelectedProfilePageData | null> {
+    /**
+     * ::neup.documentation::profile-service-get-selected-profile-page-data
+     * ::function getSelectedProfilePageData(input)
+     *
+     * Resolves the profile data and permission snapshot for a URL-selected profile page.
+     *
+     * ::public
+     *
+     * Use this from `/profile/*?selectedProfile=[id]` screens so they render the selected account without switching the active account.
+     *
+     * ::public end
+     *
+     * ::private
+     *
+     * The resolver mirrors access pages by validating `selectedProfile` and `workingProfile` through the shared selected-profile context before returning profile data.
+     *
+     * ::private end
+     *
+     * ::end
+     */
+    if (!input.selectedProfile) return null;
+
+    const accessContext = await resolveAccessProfileContext({
+        selectedProfile: input.selectedProfile,
+        workingProfile: input.workingProfile,
+        requiredPermissions: input.requiredPermissions,
+    });
+    if (!accessContext) return null;
+
+    const profile = await getUserProfile(accessContext.selectedProfile);
+    if (!profile) return null;
+
+    return {
+        accountId: accessContext.selectedProfile,
+        profile,
+        permissions: accessContext.permissions,
+    };
+}
+
+async function hasTargetProfilePermission(
+    accountId: string,
+    requiredPermissions: readonly string[],
+): Promise<boolean> {
+    const personalAccountId = await getPersonalAccountId();
+    if (!personalAccountId) return false;
+
+    if (accountId === personalAccountId) {
+        return Promise.all(requiredPermissions.map((requiredPermission) => checkPermissions([requiredPermission])))
+            .then((results) => results.some(Boolean));
+    }
+
+    const [managedResults, rootResults] = await Promise.all([
+        Promise.all(
+            requiredPermissions.map((requiredPermission) =>
+                checkGrantedPermissions([requiredPermission], personalAccountId, accountId)
+            )
+        ),
+        Promise.all(requiredPermissions.map((requiredPermission) => checkPermissions([requiredPermission]))),
+    ]);
+
+    return managedResults.some(Boolean) || rootResults.some(Boolean);
+}
+
 export async function getPublicDisplayImages(accountId: string): Promise<PublicDisplayImage[]> {
     await assertHasProfileDisplayPermission(accountId, 'view');
     try {
@@ -217,7 +292,9 @@ export async function getProfileContacts(accountId: string) {
      *
      * ::end
      */
-    await assertHasAnyPermission(['profile.contact.view', 'profile.contact.update']);
+    if (!await hasTargetProfilePermission(accountId, ['profile.contact.view', 'profile.contact.update'])) {
+        throw new Error('You do not have permission to view this profile contact information.');
+    }
     const rows = await prisma.contact.findMany({
         where: { accountId },
     });
@@ -251,7 +328,9 @@ export async function getProfileNeupIds(accountId: string) {
      *
      * ::end
      */
-    await assertHasAnyPermission(['profile.neupid.view', 'profile.neupid.update', 'profile.neupid.request', 'profile.neupid.remove']);
+    if (!await hasTargetProfilePermission(accountId, ['profile.neupid.view', 'profile.neupid.update', 'profile.neupid.request', 'profile.neupid.remove'])) {
+        throw new Error('You do not have permission to view this profile NeupID information.');
+    }
     return prisma.neupId.findMany({
         where: { accountId },
     });
@@ -322,10 +401,10 @@ export async function updateUserProfile(accountId: string, data: Record<string, 
 
     const [canUpdateDisplay, canUpdateLegal, canUpdateDemographics, canUpdateContact, canRequestNeupId] = await Promise.all([
         assertHasProfileDisplayPermission(accountId, 'update').then(() => true).catch(() => false),
-        checkPermissions(['profile.legal.update']),
-        checkPermissions(['profile.demographics.update']),
-        checkPermissions(['profile.contact.update']),
-        checkPermissions(['profile.neupid.request']),
+        hasTargetProfilePermission(accountId, ['profile.legal.update']),
+        hasTargetProfilePermission(accountId, ['profile.demographics.update']),
+        hasTargetProfilePermission(accountId, ['profile.contact.update']),
+        hasTargetProfilePermission(accountId, ['profile.neupid.request']),
     ]);
 
     if (

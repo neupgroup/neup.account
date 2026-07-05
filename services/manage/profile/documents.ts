@@ -3,7 +3,8 @@
 
 import { permission } from '@/neup.logica/permission';
 import prisma from '@/neup.core/helpers/prisma';
-import { checkPermissions } from '@/services/user';
+import { checkGrantedPermissions, checkPermissions } from '@/services/user';
+import { getPersonalAccountId } from '@/neup.core/auth/verify';
 import { logActivity } from '@/services/log-actions';
 import { logError } from '@/neup.core/helpers/logger';
 import { revalidatePath } from 'next/cache';
@@ -30,7 +31,15 @@ export type KycSubmissionData = {
  * Function submitKyc.
  */
 export async function submitKyc(accountId: string, data: KycSubmissionData): Promise<{ success: boolean; error?: string }> {
-    const canSubmit = await checkPermissions(['profile.kyc.update']);
+    const personalAccountId = await getPersonalAccountId();
+    if (!personalAccountId) {
+        return { success: false, error: 'Permission denied.' };
+    }
+
+    const canSubmit = accountId === personalAccountId
+        ? await checkPermissions(['profile.kyc.update'])
+        : await checkGrantedPermissions(['profile.kyc.update'], personalAccountId, accountId) ||
+            await checkPermissions(['profile.kyc.update']);
     if (!canSubmit) {
         return { success: false, error: 'Permission denied.' };
     }

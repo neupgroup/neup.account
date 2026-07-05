@@ -89,6 +89,7 @@ export default function DisplayInfoPage() {
     const [isNamePending, startNameTransition] = useTransition();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [photoView, setPhotoView] = useState<'uploader' | 'carousel' | 'public'>('uploader');
+    const [showAllPublicPhotos, setShowAllPublicPhotos] = useState(false);
     const [publicPhotos, setPublicPhotos] = useState<PublicDisplayImage[]>([]);
     const isBrandAccount = targetProfile?.accountType === 'brand';
     const currentDisplayName = isBrandAccount
@@ -374,7 +375,10 @@ export default function DisplayInfoPage() {
                                             </div>
                                         ) : (
                                             <div className="relative min-h-48 h-full flex flex-col justify-between border-2 border-dashed rounded-lg p-4">
-                                                <div className="flex items-center gap-3 overflow-x-auto pb-4">
+                                                <div className={cn(
+                                                    "flex flex-wrap items-start gap-2 pb-4 overflow-hidden transition-[max-height]",
+                                                    showAllPublicPhotos ? "max-h-[999px]" : "max-h-16"
+                                                )}>
                                                     {filteredPublicPhotos.length === 0 ? (
                                                         <p className="text-sm text-muted-foreground">
                                                             No default public images available for your gender yet.
@@ -384,7 +388,7 @@ export default function DisplayInfoPage() {
                                                             <button
                                                                 type="button"
                                                                 key={photo.id}
-                                                                className="relative p-1 h-24 w-24 rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                                                                className="relative p-1 h-16 w-16 rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                                                                 onClick={() => photoForm.setValue('accountPhoto', photo.value, { shouldDirty: true })}
                                                                 title={photo.title || undefined}
                                                             >
@@ -398,19 +402,32 @@ export default function DisplayInfoPage() {
                                                         ))
                                                     )}
                                                 </div>
-                                                <button type="button" className="text-primary underline text-sm p-0 h-auto" onClick={() => setPhotoView('uploader')}>
-                                                    Upload new photo
-                                                </button>
+                                                <div className="flex items-center gap-4 text-sm">
+                                                    {filteredPublicPhotos.length > 0 && (
+                                                        <button
+                                                            type="button"
+                                                            className="text-primary underline p-0 h-auto"
+                                                            onClick={() => setShowAllPublicPhotos((current) => !current)}
+                                                        >
+                                                            {showAllPublicPhotos ? 'Show less' : 'Show more'}
+                                                        </button>
+                                                    )}
+                                                    <button type="button" className="text-primary underline p-0 h-auto" onClick={() => setPhotoView('uploader')}>
+                                                        Upload new photo
+                                                    </button>
+                                                </div>
                                             </div>
                                         )}
                                     </div>
                                 </div>
                             </CardContent>
-                             <CardFooter className="border-t pt-4 mt-4 flex justify-start">
-                                 <Button type="submit" disabled={isPhotoPending || !photoFormState.isDirty}>
-                                    {isPhotoPending ? <Loader2 className="animate-spin" /> : "Save"}
-                                </Button>
-                            </CardFooter>
+                            {photoFormState.isDirty ? (
+                                <CardFooter className="border-t pt-4 mt-4 flex justify-start">
+                                    <Button type="submit" disabled={isPhotoPending}>
+                                        {isPhotoPending ? <Loader2 className="animate-spin" /> : "Save"}
+                                    </Button>
+                                </CardFooter>
+                            ) : null}
                         </Card>
                     </form>
                 </Form>

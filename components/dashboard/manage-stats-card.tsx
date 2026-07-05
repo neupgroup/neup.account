@@ -1,4 +1,4 @@
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 import { checkPermissions } from '@/services/user';
 import { getUserStats } from '@/services/manage/accounts';
 import { Card, CardContent } from '@/components/ui/card';

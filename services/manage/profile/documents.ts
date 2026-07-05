@@ -1,7 +1,7 @@
 
 'use server';
 
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 import prisma from '@/neup.core/helpers/prisma';
 import { checkPermissions } from '@/services/user';
 import { logActivity } from '@/services/log-actions';

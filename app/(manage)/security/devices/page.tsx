@@ -1,4 +1,4 @@
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 import {
     Card,
 } from "@/components/ui/card";

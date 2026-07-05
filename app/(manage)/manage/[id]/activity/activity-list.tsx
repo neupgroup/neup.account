@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
 import type { UserActivityLog } from '@/services/manage/users';
 import type { AccountBasics } from '@/services/manage/accounts';
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 
 const componentPermissions = [
     permission('root.account.view', 'for_individual', 'component'),

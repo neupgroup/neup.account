@@ -9,7 +9,7 @@ import { verifyActiveSession } from '@/services/auth/verify';
 import { getSessionCookies } from '@/neup.core/auth/cookies';
 import { getAccountSelectorContext } from '@/neup.core/auth/accountSelector';
 import { getCookie } from '@/neup.core/helper/cookieHelper';
-import { validateAuthAccountCookieSession } from '@/logica/auth/validation';
+import { validateAuthAccountCookieSession } from '@/neup.logica/auth/validation';
 
 // Represents an active session with both shorthand and legacy field names.
 export type Session = {

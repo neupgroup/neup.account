@@ -19,7 +19,7 @@ import { BackButton } from '@/components/ui/back-button'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/neup.core/auth/profile-permissions'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Geolocation } from '@/neup.core/providers/geolocation'
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 
 const pagePermissions = [
     permission('profile.legal.view.self', 'for_individual', 'page'),

@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 import { getUserProfile } from '@/services/user';
 import { getActiveSession } from '@/neup.core/auth/verify';
 import { logError } from '@/neup.core/helpers/logger';

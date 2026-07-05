@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use server';
 
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 import prisma from '@/neup.core/helpers/prisma';
 import { getUserProfile, checkPermissions, getUserNeupIds } from '@/services/user';
 import { getActiveAccountId } from '@/neup.core/auth/verify';

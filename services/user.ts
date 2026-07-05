@@ -10,7 +10,7 @@ import { getActiveAccountId, getPersonalAccountId } from "@/neup.core/auth/verif
 import { extractGenderFromDetails, resolveDisplayImage } from "@/neup.core/helpers/display-image";
 import { getAccountSelectorContext } from "@/neup.core/auth/accountSelector";
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from "@/services/access-model";
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 import { isRootRoleScope, normalizeRoleScope, normalizeRoleScopes } from '@/services/role-scopes';
 import {
   deriveLegacyRoleScopesFromPolicy,

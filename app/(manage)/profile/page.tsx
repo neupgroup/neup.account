@@ -8,7 +8,7 @@ import { checkGrantedPermissions, checkPermissions, getUserProfile } from "@/ser
 import { logSystemError } from "@/neup.core/helpers/logger";
 import { PROFILE_NAV_PERMISSIONS, PROFILE_SECTION_PERMISSIONS } from "@/neup.core/auth/profile-permissions";
 import { getAccountSelectorContext } from "@/neup.core/auth/accountSelector";
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 
 const pagePermissions = [
     permission('profile.display.view.self', 'for_individual', 'page'),

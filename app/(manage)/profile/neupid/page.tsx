@@ -20,7 +20,7 @@ import { Badge } from '@/components/ui/badge'
 import { useSession } from '@/neup.core/providers/session'
 import { BackButton } from '@/components/ui/back-button'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/neup.core/auth/profile-permissions'
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 
 const pagePermissions = [
   permission('profile.neupid.view.self', 'for_individual', 'page'),

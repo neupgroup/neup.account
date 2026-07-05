@@ -1,4 +1,4 @@
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 import { getActiveAccountId } from '@/neup.core/auth/verify';
 import { assertHasSelectedAccountAnyPermission, NOTIFICATION_PERMISSIONS } from '@/neup.core/auth/profile-permissions';
 import { notFound } from 'next/navigation';

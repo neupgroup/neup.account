@@ -1,4 +1,4 @@
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
 import { DATA_PRIVACY_NAV_PERMISSIONS } from '@/neup.core/auth/data-permissions';
 import DataAndPrivacyPage from './page.client';

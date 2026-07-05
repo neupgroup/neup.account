@@ -12,7 +12,7 @@ import { canCurrentAccountManageApplicationRoles, hasRootApplicationPermission }
 import { revalidateApplicationRequestsRoutes, revalidateApplicationUsersRoutes } from '@/services/applications/revalidate-routes';
 import { ROOT_APPLICATION_ROLES_MANAGE_PERMISSION } from '@/services/applications/permission-definitions';
 import { roleMatchesAssignmentModesPolicy } from '@/services/applications/authz-scope-policy';
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 
 const servicePermissions = [
   permission('root.requests.manage', 'for_individual', 'service'),

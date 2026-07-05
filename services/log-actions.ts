@@ -8,7 +8,7 @@ import { logError } from '@/neup.core/helpers/logger';
 import { getActiveAccountId } from '@/neup.core/auth/verify';
 import { checkPermissions } from '@/services/user';
 import { compileActivityAction } from '@/services/activity-action';
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 
 // Number of activity logs returned per page
 const PAGE_SIZE = 10;

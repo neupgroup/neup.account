@@ -4,7 +4,7 @@ import prisma from '@/neup.core/helpers/prisma';
 import { hasAnyPermission, PROFILE_SECTION_PERMISSIONS } from '@/neup.core/auth/profile-permissions';
 import { validateAuthSession } from '@/services/auth/session';
 import { getAccountPermission, getGrantedAccountPermission, getUserProfile } from '@/services/user';
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 
 const servicePermissions = [
   permission('profile.display.view.self', 'for_individual', 'service'),

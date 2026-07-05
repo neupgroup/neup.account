@@ -14,7 +14,7 @@ import { ManagedAccountAccessForm } from './form';
 import { RemoveMemberButton } from '@/app/(manage)/access/_components/remove-member-button';
 import { revokeManagedAccountAccess } from '@/services/manage/users';
 import { ACCOUNT_ACCESS_PERMISSION_GROUPS } from '@/neup.core/auth/account-access-permissions';
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 
 const pagePermissions = [
   permission('root.account.access.view', 'for_individual', 'page'),

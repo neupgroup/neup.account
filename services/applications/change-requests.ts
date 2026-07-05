@@ -14,7 +14,7 @@ import { logActivity } from '@/services/log-actions';
 import { logError } from '@/neup.core/helpers/logger';
 import { canCurrentAccountEditApplicationBasics } from '@/services/applications/manage';
 import { revalidateApplicationDetailRoutes, revalidateApplicationEditRoutes } from '@/services/applications/revalidate-routes';
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 
 const servicePermissions = [
   permission('requests.root_approval.view', 'for_individual', 'service'),

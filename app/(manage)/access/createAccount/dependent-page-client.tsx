@@ -43,7 +43,7 @@ import { checkPermissions } from '@/services/user'
 import { Loader2 } from "@/components/icons"
 import { redirectInApp } from "@/neup.core/helper/navigation";
 import { ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS } from '@/neup.core/auth/access-view-permissions';
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 
 type FormData = z.infer<typeof dependentFormSchema>;
 

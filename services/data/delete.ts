@@ -1,7 +1,7 @@
 
 'use server';
 
-import { permission } from "@/logica/permission";
+import { permission } from "@/neup.logica/permission";
 import { z } from "zod";
 import { getActiveAccountId } from "@/neup.core/auth/verify";
 import { logActivity } from "@/services/log-actions";

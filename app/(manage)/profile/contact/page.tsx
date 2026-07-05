@@ -20,7 +20,7 @@ import { useSession } from '@/neup.core/providers/session'
 import { BackButton } from '@/components/ui/back-button'
 import { Separator } from '@/components/ui/separator'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/neup.core/auth/profile-permissions'
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 
 const pagePermissions = [
   permission('profile.contact.view.self', 'for_individual', 'page'),

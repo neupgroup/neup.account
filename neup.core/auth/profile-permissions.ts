@@ -1,7 +1,7 @@
 import { checkGrantedPermissions, checkPermissions, getAccountPermission, getCurrentAccountPermission } from '@/services/user';
 import { notFound } from 'next/navigation';
 import { getAccountSelectorContext } from '@/neup.core/auth/accountSelector';
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 import {
   getCanonicalPermissionAudience,
   resolveNeupAccountPermissionCandidates,

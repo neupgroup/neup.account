@@ -13,7 +13,7 @@ import { AccountListItem } from "@/components/elements/account-item";
 import { BackButton } from "@/components/ui/back-button";
 import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
 import { ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS } from '@/neup.core/auth/access-view-permissions';
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 
 const pagePermissions = [
     permission('access.linked_account.view.self', 'for_individual', 'page'),

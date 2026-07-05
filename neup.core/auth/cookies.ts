@@ -3,7 +3,7 @@
 import { cookies } from 'next/headers';
 import { getCookie, setCookies } from '@/neup.core/helper/cookieHelper';
 import type { StoredAccount, Session } from '@/neup.core/auth/session';
-import { readValidAuthAccountCookiePayload } from '@/logica/auth/validation';
+import { readValidAuthAccountCookiePayload } from '@/neup.logica/auth/validation';
 
 type SessionCookiePayload = {
   aid: string;

@@ -7,7 +7,7 @@ import { BackButton } from '@/components/ui/back-button';
 import { checkPermissions } from '@/services/user';
 import { PrimaryHeader } from '@/components/ui/primary-header';
 import { createPageMetadata } from '@/neup.core/metadata';
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 
 export const metadata: Metadata = createPageMetadata('Site Configuration');
 

@@ -3,7 +3,7 @@ import { BackButton } from '@/components/ui/back-button';
 import { checkPermissions } from '@/services/user';
 import { getSiteLogoUrl } from '@/services/manage/site/logo';
 import { AppLogoForm } from '../../../config/app/app-logo-form.client';
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 
 const pagePermissions = [
   permission('root.payment_config.view', 'for_individual', 'page'),

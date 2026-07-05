@@ -21,7 +21,7 @@ import { Building, Plus } from "lucide-react";
 import { notFound } from "next/navigation";
 import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
 import { LINKED_ACCOUNT_PERMISSION_GROUPS } from '@/neup.core/auth/linked-account-permissions';
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 
 const pagePermissions = [
     permission('access.linked_account.view.self', 'for_individual', 'page'),

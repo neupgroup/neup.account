@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 import CreateBrandPageClient from './brand-page-client';
 import CreateDependentPageClient from './dependent-page-client';
 import CreateSubbrandPageClient from './subbrand-page-client';

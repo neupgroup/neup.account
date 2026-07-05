@@ -16,7 +16,7 @@ import { PrimaryHeader } from '@/components/ui/primary-header';
 import { createPageMetadata } from '@/neup.core/metadata';
 import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
 import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/neup.core/auth/access-view-permissions';
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 
 const pagePermissions = [
   permission('access.team.view.self', 'for_individual', 'page'),

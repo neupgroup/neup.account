@@ -7,7 +7,7 @@ import { getPersonalAccountId } from '@/neup.core/auth/verify';
 import { logError } from '@/neup.core/helpers/logger';
 import { logActivity } from '@/services/log-actions';
 import { revalidatePath } from 'next/cache';
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 
 export type ExpiredGuestAccount = {
     id: string;

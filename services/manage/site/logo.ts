@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 import { checkPermissions } from '@/services/user';
 import { logError } from '@/neup.core/helpers/logger';
 import { SYSTEM_CONFIG_KEYS, readSystemConfigData, writeSystemConfigData } from '@/services/manage/site/system-config';

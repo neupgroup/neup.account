@@ -22,7 +22,7 @@ The service stores `scope_for` / `scope_level` directly while still deriving leg
 */
 
 import { revalidatePath } from 'next/cache';
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 import { Prisma } from '@/prisma/generated/client/client';
 import prisma from '@/neup.core/helpers/prisma';
 import { getActiveAccountId, getPersonalAccountId } from '@/neup.core/auth/verify';

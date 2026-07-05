@@ -1,6 +1,6 @@
 'use client';
 
-import { permission } from "@/logica/permission";
+import { permission } from "@/neup.logica/permission";
 import React, { useMemo, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {

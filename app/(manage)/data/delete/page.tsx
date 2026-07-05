@@ -1,7 +1,7 @@
 import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
 import { DATA_PRIVACY_PERMISSION_GROUPS } from '@/neup.core/auth/data-permissions';
 import DeleteAccountPage from './page.client';
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 
 const pagePermissions = [
   permission('data.delete_account.start', 'for_individual', 'page'),

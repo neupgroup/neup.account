@@ -17,7 +17,7 @@ import { RevokeAppAccessButton } from '../connection/revoke-app-access-form';
 import { createPageMetadata } from '@/neup.core/metadata';
 import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
 import { ACCESS_APPLICATION_VIEW_PERMISSIONS } from '@/neup.core/auth/access-view-permissions';
-import { permission } from '@/logica/permission';
+import { permission } from '@/neup.logica/permission';
 
 export const metadata: Metadata = createPageMetadata('Application Management');
 

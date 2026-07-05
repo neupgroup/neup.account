@@ -43,7 +43,7 @@ const servicePermissions = [
     });
  
      await logActivity(accountId, `NeupID added by admin: ${lowerCaseNeupId}`, 'Success', undefined, adminId);
-     revalidatePath(`/manage/${accountId}/profile/neupid`);
+     revalidatePath(`/profile/neupid?selectedProfile=${accountId}`);
      return { success: true };
    } catch (e) {
      await logError('database', e, `addNeupId for account ${accountId}`);
@@ -80,7 +80,7 @@ const servicePermissions = [
     });
  
      await logActivity(accountId, `NeupID removed by admin: ${neupId}`, 'Success', undefined, adminId);
-     revalidatePath(`/manage/${accountId}/profile/neupid`);
+     revalidatePath(`/profile/neupid?selectedProfile=${accountId}`);
      return { success: true };
    } catch (e) {
      await logError('database', e, `removeNeupId: ${neupId}`);
@@ -123,7 +123,7 @@ const servicePermissions = [
     }
  
      await logActivity(accountId, `Primary NeupID set to: ${newPrimaryNeupId}`, 'Success', undefined, adminId);
-     revalidatePath(`/manage/${accountId}/profile/neupid`);
+     revalidatePath(`/profile/neupid?selectedProfile=${accountId}`);
      return { success: true };
    } catch (e) {
      await logError('database', e, `setPrimaryNeupId for account ${accountId}`);

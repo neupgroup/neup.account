@@ -6,11 +6,34 @@ import { SocialLinksManager } from '../../../config/socials/social-links-manager
 import { permission } from '@/neup.logica/permission';
 
 const pagePermissions = [
-  permission('root.payment_config.view', 'for_individual', 'page'),
+  permission('site.socials.read', 'for_individual', 'page'),
+  permission('site.socials.update', 'for_individual', 'page'),
 ];
 
+/**
+ * ::neup.documentation::manage-site-config-socials-page
+ * ::title Site Social Links Manage Page
+ *
+ * Renders the root-managed interface for listing and updating footer social links.
+ *
+ * ::public
+ *
+ * Users need `site.socials.read` to view the page, while `site.socials.update` also unlocks the editing actions inside the manager.
+ *
+ * ::public end
+ *
+ * ::private
+ *
+ * The page accepts root-managed access because permission checks flow through the selected-account access model before loading the social-link service.
+ *
+ * ::private end
+ *
+ * ::end
+ */
 export default async function SiteConfigSocialsPage() {
-  const canView = await checkPermissions(['root.payment_config.view']);
+  const canView =
+    (await checkPermissions(['site.socials.read'])) ||
+    (await checkPermissions(['site.socials.update']));
   if (!canView) {
     notFound();
   }

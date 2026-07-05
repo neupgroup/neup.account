@@ -9,11 +9,8 @@ import crypto from 'crypto';
 import { SYSTEM_CONFIG_KEYS, readSystemConfigData, writeSystemConfigData } from '@/services/manage/site/system-config';
 
 const servicePermissions = [
-    permission('site.social_accounts.read', 'for_individual', 'service'),
-    permission('site.social_accounts.add', 'for_individual', 'service'),
-    permission('site.social_accounts.edit', 'for_individual', 'service'),
-    permission('site.social_accounts.delete', 'for_individual', 'service'),
-    permission('root.payment_config.view', 'for_individual', 'service'),
+    permission('site.socials.read', 'for_individual', 'service'),
+    permission('site.socials.update', 'for_individual', 'service'),
 ];
 
 /**
@@ -30,7 +27,7 @@ const servicePermissions = [
  *
  * ::private
  *
- * Root payment-config viewers are treated as privileged fallbacks for the standard social-link permissions.
+ * Root-managed access must carry `site.socials.read` or `site.socials.update`; update implies write access for add, toggle, and delete flows.
  *
  * ::private end
  *
@@ -44,15 +41,11 @@ export type SocialLink = {
     isVisible: boolean;
 };
 
-
-// Database schema for social links.
 const formSchema = z.object({
     type: z.enum(['instagram', 'linkedin', 'twitter', 'facebook', 'whatsapp', 'other']),
     url: z.string().url("Please enter a valid URL."),
 });
 
-
-// Fetch all social media links.
 export async function getSocialLinks(): Promise<SocialLink[]> {
     /**
      * ::neup.documentation::manage-site-socials-get-links
@@ -68,15 +61,15 @@ export async function getSocialLinks(): Promise<SocialLink[]> {
      *
      * ::private
      *
-     * Readers can qualify through either the dedicated social-link read permission or the root payment-config permission.
+     * Readers can qualify through the dedicated social-link read permission, and root-managed updaters can read so the same role can edit the list.
      *
      * ::private end
      *
      * ::end
      */
     const canView =
-        (await checkPermissions(['site.social_accounts.read'])) ||
-        (await checkPermissions(['root.payment_config.view']));
+        (await checkPermissions(['site.socials.read'])) ||
+        (await checkPermissions(['site.socials.update']));
     if (!canView) return [];
 
     try {
@@ -93,9 +86,6 @@ export async function getSocialLinks(): Promise<SocialLink[]> {
 }
 
 
-/**
- * Function addSocialLink.
- */
 export async function addSocialLink(formData: FormData): Promise<{
     success: boolean;
     error?: string;
@@ -121,9 +111,7 @@ export async function addSocialLink(formData: FormData): Promise<{
      *
      * ::end
      */
-    const canAdd =
-        (await checkPermissions(['site.social_accounts.add'])) ||
-        (await checkPermissions(['root.payment_config.view']));
+    const canAdd = await checkPermissions(['site.socials.update']);
     if (!canAdd) return {success: false, error: 'Permission denied.'};
     
     const rawData = Object.fromEntries(formData.entries());
@@ -170,9 +158,6 @@ export async function addSocialLink(formData: FormData): Promise<{
 }
 
 
-/**
- * Function toggleSocialLinkVisibility.
- */
 export async function toggleSocialLinkVisibility(id: string, isVisible: boolean): Promise<{
     success: boolean;
     error?: string
@@ -197,9 +182,7 @@ export async function toggleSocialLinkVisibility(id: string, isVisible: boolean)
      *
      * ::end
      */
-    const canEdit =
-        (await checkPermissions(['site.social_accounts.edit'])) ||
-        (await checkPermissions(['root.payment_config.view']));
+    const canEdit = await checkPermissions(['site.socials.update']);
     if (!canEdit) return {success: false, error: 'Permission denied.'};
 
     try {
@@ -230,9 +213,6 @@ export async function toggleSocialLinkVisibility(id: string, isVisible: boolean)
 }
 
 
-/**
- * Function deleteSocialLink.
- */
 export async function deleteSocialLink(id: string): Promise<{ success: boolean; error?: string }> {
     /**
      * ::neup.documentation::manage-site-socials-delete-link
@@ -254,9 +234,7 @@ export async function deleteSocialLink(id: string): Promise<{ success: boolean; 
      *
      * ::end
      */
-    const canDelete =
-        (await checkPermissions(['site.social_accounts.delete'])) ||
-        (await checkPermissions(['root.payment_config.view']));
+    const canDelete = await checkPermissions(['site.socials.update']);
     if (!canDelete) return {success: false, error: 'Permission denied.'};
 
     try {

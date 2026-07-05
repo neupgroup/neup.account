@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from 'react';
 import { Loader2, Plus, Save, Trash2 } from 'lucide-react';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '@/neup.core/hooks/use-toast';
 import { createResource, deleteResource, updateResourceTitle, type ManagedResource } from '@/services/manage/site/resources';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';

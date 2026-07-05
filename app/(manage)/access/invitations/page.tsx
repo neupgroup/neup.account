@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import { notFound } from 'next/navigation';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '@/neup.core/hooks/use-toast';
 import { getInvitations, acceptRequest, rejectRequest } from '@/services/manage/people/invitations';
 import type { Invitation } from '@/services/manage/people/invitations';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,13 +10,13 @@ import { Button } from '@/components/ui/button';
 import { Check, X, Loader2, Users, Handshake } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BackButton } from '@/components/ui/back-button';
-import { useSession } from '@/core/providers/session';
-import { hasAnyPermission } from '@/core/auth/profile-permissions';
+import { useSession } from '@/neup.core/providers/session';
+import { hasAnyPermission } from '@/neup.core/auth/profile-permissions';
 import { permission } from '@/logica/permission';
 import {
     ACCESS_INVITATION_APPROVE_PERMISSIONS,
     ACCESS_INVITATIONS_VIEW_PERMISSIONS,
-} from '@/core/auth/access-view-permissions';
+} from '@/neup.core/auth/access-view-permissions';
 
 const pagePermissions = [
     permission('access.invitations.view.self', 'for_individual', 'page'),

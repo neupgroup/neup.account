@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { getActiveSession } from '@/core/auth/verify';
+import { getActiveSession } from '@/neup.core/auth/verify';
 import { getAccessableAccountsWithPermissions } from '@/services/manage/accounts';
 import { resolveAppTokenAuth } from '@/services/auth/appTokenAuth';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/neup.core/helpers/prisma';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import { permission, type PermissionDeclaration } from '@/logica/permission';
 

@@ -6,11 +6,11 @@ import { usePathname } from 'next/navigation';
 import { DashboardNav } from '@/components/dashboard-nav';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from '@/components/icons';
-import { cn } from '@/core/helpers/utils';
+import { cn } from '@/neup.core/helpers/utils';
 import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useSession } from '@/core/providers/session';
+import { useSession } from '@/neup.core/providers/session';
 
 const STATIC_LOGO_URL = 'https://neupcdn.com/neupaccount/assets/logo.svg';
 const HEADER_HEIGHT = '4rem';

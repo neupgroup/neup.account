@@ -8,7 +8,7 @@ import { z } from "zod"
 
 import { getUserNeupIdDetails as fetchUserNeupIdDetails } from '@/services/user'
 import { addNeupId, removeNeupId, setPrimaryNeupId } from '@/services/manage/accounts/neupid';
-import { useToast } from "@/core/hooks/use-toast"
+import { useToast } from "@/neup.core/hooks/use-toast"
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from "@/components/ui/button"

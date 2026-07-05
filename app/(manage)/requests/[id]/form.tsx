@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '@/neup.core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -17,7 +17,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Loader2 } from 'lucide-react';
-import { redirectInApp } from '@/core/helper/navigation';
+import { redirectInApp } from '@/neup.core/helper/navigation';
 import type { UnifiedRequest } from '@/services/manage/requests/types';
 
 // Per-type server actions

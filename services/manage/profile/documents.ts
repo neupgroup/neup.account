@@ -2,10 +2,10 @@
 'use server';
 
 import { permission } from '@/logica/permission';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/neup.core/helpers/prisma';
 import { checkPermissions } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/neup.core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { activityAction } from '@/services/activity-action';
 

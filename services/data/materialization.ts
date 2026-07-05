@@ -2,13 +2,13 @@
 
 import { permission } from "@/logica/permission";
 import { z } from "zod";
-import { getActiveAccountId } from "@/core/auth/verify";
+import { getActiveAccountId } from "@/neup.core/auth/verify";
 import { logActivity } from "@/services/log-actions";
-import { logError } from "@/core/helpers/logger";
-import prisma from "@/core/helpers/prisma";
+import { logError } from "@/neup.core/helpers/logger";
+import prisma from "@/neup.core/helpers/prisma";
 import bcrypt from "bcryptjs";
-import { requireAnyPermission404 } from "@/core/auth/permission-guards";
-import { DATA_PRIVACY_PERMISSION_GROUPS } from "@/core/auth/data-permissions";
+import { requireAnyPermission404 } from "@/neup.core/auth/permission-guards";
+import { DATA_PRIVACY_PERMISSION_GROUPS } from "@/neup.core/auth/data-permissions";
 
 const formSchema = z.object({
     inactivityDays: z.string().min(1, "Please select a time period."),

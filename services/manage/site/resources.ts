@@ -3,10 +3,10 @@
 import { permission } from '@/logica/permission';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/neup.core/helpers/prisma';
 import { checkPermissions } from '@/services/user';
-import { getPersonalAccountId } from '@/core/auth/verify';
-import { logError } from '@/core/helpers/logger';
+import { getPersonalAccountId } from '@/neup.core/auth/verify';
+import { logError } from '@/neup.core/helpers/logger';
 
 const servicePermissions = [
   permission('root.display_images.view', 'for_individual', 'service'),

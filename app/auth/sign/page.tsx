@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AppWindow } from '@/components/icons';
-import { getAuthSignPageData } from '@/core/auth/signPage';
+import { getAuthSignPageData } from '@/neup.core/auth/signPage';
 import Image from 'next/image';
 
 type SignPageProps = {

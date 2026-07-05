@@ -5,7 +5,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Ban } from 'lucide-react';
 import { getExpiredGuestAccounts } from '@/services/manage/accounts/cleanup';
 import { CleanupClient } from './cleanup-client';
-import { createPageMetadata } from '@/core/metadata';
+import { createPageMetadata } from '@/neup.core/metadata';
 
 export const metadata: Metadata = createPageMetadata('Accounts Cleanup');
 

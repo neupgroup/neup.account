@@ -1,6 +1,6 @@
 'use server';
 
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/neup.core/helpers/prisma';
 import { randomUUID } from 'crypto';
 
 // Expiry thresholds in minutes

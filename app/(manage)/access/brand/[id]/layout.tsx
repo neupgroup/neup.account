@@ -3,7 +3,7 @@ import { getUserProfile, checkPermissions } from '@/services/user';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { BrandNav } from './brand-nav';
 import { BackButton } from '@/components/ui/back-button';
-import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
 import { permission } from '@/logica/permission';
 
 const layoutPermissions = [

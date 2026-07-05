@@ -17,7 +17,7 @@ This panel powers the top-level permissions page, including search and creation 
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '@/neup.core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -37,7 +37,7 @@ import {
   type AppPermission,
 } from '@/services/applications/authz-manage';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
-import { redirectInApp } from '@/core/helper/navigation';
+import { redirectInApp } from '@/neup.core/helper/navigation';
 import { FlowLink } from '@/components/ui/flow-link';
 import { ScopeForSelector, ScopeLevelSelector } from './authz-scope-policy-selector';
 

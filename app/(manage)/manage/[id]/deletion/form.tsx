@@ -5,7 +5,7 @@ import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '@/neup.core/hooks/use-toast';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -16,7 +16,7 @@ import { TertiaryHeader } from '@/components/ui/tertiary-header';
 import { approveAccountDeletion, cancelAccountDeletion, getDeletionStatus, requestAccountDeletionByAdmin } from '@/services/manage/requests/deletion';
 import { useRouter } from 'next/navigation';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { redirectInApp } from '@/core/helper/navigation';
+import { redirectInApp } from '@/neup.core/helper/navigation';
 
 type DeletionStatus = {
     status: 'none' | 'pending' | 'deleted' | 'is_root';

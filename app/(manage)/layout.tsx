@@ -1,4 +1,4 @@
-import { requireValidSession } from "@/core/auth/guard";
+import { requireValidSession } from "@/neup.core/auth/guard";
 import { DashboardLayoutShell } from "./layout-shell";
 
 export const dynamic = 'force-dynamic';

@@ -1,7 +1,7 @@
 'use server';
 
-import prisma from '@/core/helpers/prisma';
-import { logError } from '@/core/helpers/logger';
+import prisma from '@/neup.core/helpers/prisma';
+import { logError } from '@/neup.core/helpers/logger';
 
 export async function getApplicationDefaultRoleId(appId: string): Promise<string | null> {
   try {

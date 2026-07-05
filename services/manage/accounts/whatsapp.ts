@@ -1,7 +1,7 @@
  'use server';
  
- import { getActiveAccountId } from '@/core/auth/verify';
- import { logError } from '@/core/helpers/logger';
+ import { getActiveAccountId } from '@/neup.core/auth/verify';
+ import { logError } from '@/neup.core/helpers/logger';
  import { z } from 'zod';
  import { whatsAppFormSchema, verifyCodeSchema } from '@/app/(manage)/access/link/whatsapp/schema';
  import { revalidatePath } from 'next/cache';

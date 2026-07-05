@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import prisma from '../../core/helpers/prisma';
+import prisma from '../../neup.core/helpers/prisma';
 /*
 ::neup.documentation::seed-brand-owner-role-script
 
@@ -25,7 +25,7 @@ import {
   BRAND_ROOT_PERMISSION_NAMES,
   BRAND_OWNER_ROLE_ID,
   BRAND_OWNER_ROLE_NAME,
-} from '../../core/auth/brand-roles';
+} from '../../neup.core/auth/brand-roles';
 
 const APP_ID = 'neup.account';
 const LEGACY_ROLE_ID = 'brand-owner-neup-account';

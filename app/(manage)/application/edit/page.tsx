@@ -5,8 +5,8 @@ import { PrimaryHeader } from '@/components/ui/primary-header';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { AppEditForm } from '@/app/(manage)/application/_components/app-edit-form';
-import prisma from '@/core/helpers/prisma';
-import { getActiveAccountId } from '@/core/auth/verify';
+import prisma from '@/neup.core/helpers/prisma';
+import { getActiveAccountId } from '@/neup.core/auth/verify';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = {

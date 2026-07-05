@@ -5,12 +5,12 @@
 // except kycVerification (uses the `verification` table) and
 // accountDeletion (uses account.status = 'deletion_requested').
 
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/neup.core/helpers/prisma';
 import { permission } from '@/logica/permission';
 import { checkPermissions } from '@/services/user';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/neup.core/helpers/logger';
 import { getUserProfile, getUserNeupIds } from '@/services/user';
-import { getActiveAccountId } from '@/core/auth/verify';
+import { getActiveAccountId } from '@/neup.core/auth/verify';
 import { canCurrentAccountViewApplicationRoles } from '@/services/applications/manage';
 import { REQUEST_TYPE_LABELS, UnifiedRequest, GetRequestsOptions } from './types';
 

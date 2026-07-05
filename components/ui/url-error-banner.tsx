@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from './button';
 import { AlertTriangle, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { redirectInApp } from '@/core/helper/navigation';
+import { redirectInApp } from '@/neup.core/helper/navigation';
 
 const ERROR_MESSAGES: Record<string, string> = {
     session_expired: "Your session has expired. Please sign in again.",

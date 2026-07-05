@@ -17,7 +17,7 @@ Use this component from the application permission detail page to update or remo
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '@/neup.core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -27,7 +27,7 @@ import {
   type AppPermission,
 } from '@/services/applications/authz-manage';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
-import { redirectInApp } from '@/core/helper/navigation';
+import { redirectInApp } from '@/neup.core/helper/navigation';
 import { ScopeForSelector, ScopeLevelSelector } from './authz-scope-policy-selector';
 
 type Props = {

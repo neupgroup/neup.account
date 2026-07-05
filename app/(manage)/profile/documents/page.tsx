@@ -6,11 +6,11 @@ import { notFound } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '@/neup.core/hooks/use-toast';
 import { kycFormSchema, type KycFormValues } from '@/services/manage/profile/schema';
 import { submitKyc } from '@/services/manage/profile/documents';
 import { uploadFile } from '@/services/upload';
-import { getPersonalAccountId } from '@/core/auth/verify';
+import { getPersonalAccountId } from '@/neup.core/auth/verify';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,8 +20,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { BackButton } from '@/components/ui/back-button';
 import { Loader2, Camera, ShieldCheck, CheckCircle2 } from 'lucide-react';
-import { useSession } from '@/core/providers/session';
-import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/auth/profile-permissions';
+import { useSession } from '@/neup.core/providers/session';
+import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/neup.core/auth/profile-permissions';
 import { permission } from '@/logica/permission';
 import {
     AlertDialog,
@@ -34,7 +34,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { redirectInApp } from '@/core/helper/navigation';
+import { redirectInApp } from '@/neup.core/helper/navigation';
 
 const pagePermissions = [
     permission('profile.kyc.view.self', 'for_individual', 'page'),

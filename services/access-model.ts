@@ -1,4 +1,4 @@
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/neup.core/helpers/prisma';
 import { Prisma } from '@/prisma/generated/client/client';
 import type { AccessType, AssetType } from '@/prisma/generated/client';
 import { normalizeSingleAuthzScopeLevel } from '@/services/applications/authz-scope-policy';

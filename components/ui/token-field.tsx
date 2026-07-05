@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from 'react';
 import { X } from '@/components/icons';
-import { cn } from '@/core/helpers/utils';
+import { cn } from '@/neup.core/helpers/utils';
 
 const fieldOutlineClassName =
   'rounded-xl border border-input bg-background transition-colors hover:border-foreground/30';

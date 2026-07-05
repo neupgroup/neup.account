@@ -1,7 +1,7 @@
 "use server";
 
-import prisma from '@/core/helpers/prisma';
-import { logError } from '@/core/helpers/logger';
+import prisma from '@/neup.core/helpers/prisma';
+import { logError } from '@/neup.core/helpers/logger';
 import { activeAccessWhere, extractRolePermissionNames } from '@/services/access-model';
 import { resolveNeupAccountPermissionCandidates } from '@/services/neup-account/permission-catalog';
 

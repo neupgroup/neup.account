@@ -13,9 +13,9 @@
  * Auth: appId + appSecret as query params (same pattern as /accounts/lookup).
  */
 
-import prisma from '@/core/helpers/prisma';
-import { logError } from '@/core/helpers/logger';
-import { extractGenderFromDetails, resolveDisplayImage } from '@/core/helpers/display-image';
+import prisma from '@/neup.core/helpers/prisma';
+import { logError } from '@/neup.core/helpers/logger';
+import { extractGenderFromDetails, resolveDisplayImage } from '@/neup.core/helpers/display-image';
 
 /*
 ::neup.documentation::application-users-service

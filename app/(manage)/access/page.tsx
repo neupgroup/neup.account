@@ -4,18 +4,18 @@ import { FlowLink } from '@/components/ui/flow-link';
 import { Card, CardContent } from '@/components/ui/card';
 import { FolderGit2, ChevronRight, Building, UserPlus, Users, MailQuestion, UserX } from '@/components/icons';
 import { getDirectAccessGroup } from '@/services/manage/access';
-import { getActiveAccountId } from '@/core/auth/verify';
+import { getActiveAccountId } from '@/neup.core/auth/verify';
 import { SecondaryHeader } from '@/components/ui/secondary-header';
 import { AccessGroupView } from './_components/access-group-view';
 import { ListItem } from '@/components/ui/list-item';
 import { AccountListItem } from '@/components/elements/account-item';
 import { permission } from '@/logica/permission';
-import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/core/auth/linked-account-permissions';
+import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/neup.core/auth/linked-account-permissions';
 import { getCurrentAccountPermission, getUserProfile } from '@/services/user';
 import { getAccessibleAccounts } from '@/services/manage/accounts';
-import { getAccountSelectorContext } from '@/core/auth/accountSelector';
-import { requireAnyPermission404 } from '@/core/auth/permission-guards';
-import { hasAnyPermission } from '@/core/auth/profile-permissions';
+import { getAccountSelectorContext } from '@/neup.core/auth/accountSelector';
+import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
+import { hasAnyPermission } from '@/neup.core/auth/profile-permissions';
 import {
   ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS,
   ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS,
@@ -28,8 +28,8 @@ import {
   ACCESS_INVITATIONS_VIEW_PERMISSIONS,
   ACCESS_TEAM_VIEW_PERMISSIONS,
   ACCESS_VIEW_PERMISSIONS,
-} from '@/core/auth/access-view-permissions';
-import { createPageMetadata } from '@/core/metadata';
+} from '@/neup.core/auth/access-view-permissions';
+import { createPageMetadata } from '@/neup.core/metadata';
 
 const pagePermissions = [
   permission('access.view.self', 'for_individual', 'page'),

@@ -8,12 +8,12 @@ import { Badge } from '@/components/ui/badge';
 import { UserCircle } from '@/components/icons';
 import { getUserDetails, getManagedAccountAccessMembers, getManagedAccountAccessPermissions } from '@/services/manage/users';
 import { getGrantedAccountPermission } from '@/services/user';
-import { getPersonalAccountId } from '@/core/auth/verify';
-import { hasAnyPermission } from '@/core/auth/profile-permissions';
+import { getPersonalAccountId } from '@/neup.core/auth/verify';
+import { hasAnyPermission } from '@/neup.core/auth/profile-permissions';
 import { ManagedAccountAccessForm } from './form';
 import { RemoveMemberButton } from '@/app/(manage)/access/_components/remove-member-button';
 import { revokeManagedAccountAccess } from '@/services/manage/users';
-import { ACCOUNT_ACCESS_PERMISSION_GROUPS } from '@/core/auth/account-access-permissions';
+import { ACCOUNT_ACCESS_PERMISSION_GROUPS } from '@/neup.core/auth/account-access-permissions';
 import { permission } from '@/logica/permission';
 
 const pagePermissions = [

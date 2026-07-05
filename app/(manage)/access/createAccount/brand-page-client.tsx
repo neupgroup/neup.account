@@ -23,7 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Checkbox } from "@/components/ui/checkbox"
-import { useToast } from "@/core/hooks/use-toast"
+import { useToast } from "@/neup.core/hooks/use-toast"
 import { createBrandAccount } from "@/services/manage/accounts/brand"
 import { Textarea } from "@/components/ui/textarea"
 import { CheckCircle2, XCircle, Loader2 } from "@/components/icons"
@@ -31,7 +31,7 @@ import { BackButton } from "@/components/ui/back-button"
 import { brandCreationSchema } from "@/services/manage/accounts/schema"
 import { checkNeupIdAvailability } from '@/services/user'
 import { SecondaryHeader } from "@/components/ui/secondary-header"
-import { redirectInApp } from "@/core/helper/navigation";
+import { redirectInApp } from "@/neup.core/helper/navigation";
 
 type FormData = z.infer<typeof brandCreationSchema>;
 

@@ -3,7 +3,7 @@
 import { permission } from '@/logica/permission';
 import {z} from 'zod';
 import {revalidatePath} from 'next/cache';
-import {logError} from '@/core/helpers/logger';
+import {logError} from '@/neup.core/helpers/logger';
 import {checkPermissions} from '@/services/user';
 import crypto from 'crypto';
 import { SYSTEM_CONFIG_KEYS, readSystemConfigData, writeSystemConfigData } from '@/services/manage/site/system-config';

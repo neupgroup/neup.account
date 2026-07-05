@@ -3,9 +3,9 @@
 
 import { ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { cn } from '@/core/helpers/utils';
+import { cn } from '@/neup.core/helpers/utils';
 import { FlowLink } from '@/components/ui/flow-link';
-import { hasPreviousInAppPath } from '@/core/helpers/back-navigation';
+import { hasPreviousInAppPath } from '@/neup.core/helpers/back-navigation';
 
 export function BackButton({ href, className }: { href: string, className?: string }) {
   const router = useRouter();

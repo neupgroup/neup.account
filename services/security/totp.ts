@@ -1,21 +1,21 @@
 'use server';
 
 import { permission } from '@/logica/permission';
-import prisma from '@/core/helpers/prisma';
-import { getActiveAccountId } from '@/core/auth/verify';
+import prisma from '@/neup.core/helpers/prisma';
+import { getActiveAccountId } from '@/neup.core/auth/verify';
 import { getUserNeupIds, checkPermissions } from '@/services/user';
 import { authenticator } from 'otplib';
 import qrcode from 'qrcode';
 import bcrypt from 'bcryptjs';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/neup.core/helpers/logger';
 import { z } from 'zod';
 import crypto from 'crypto';
 import { totpEnableSchema, totpDisableSchema } from '@/services/security/schema';
 import { createNotification } from '../notifications';
 import { createHash, randomBytes } from 'crypto';
 import { activityAction } from '@/services/activity-action';
-import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
 
 // We need a consistent secret for encryption. STORE THIS IN A SECURE VAULT.
 // For this example, it's in an environment variable.

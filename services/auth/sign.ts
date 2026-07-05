@@ -1,11 +1,11 @@
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/neup.core/helpers/prisma';
 import { randomBytes } from 'crypto';
 import jwt from 'jsonwebtoken';
 import { getUserProfile } from '@/services/user';
 import { validateExternalRequest } from '@/services/auth/validate';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import { applicationPartyValues, type ApplicationParty } from '@/services/applications/types';
-import { verifyAccountToken } from '@/core/auth/accountToken';
+import { verifyAccountToken } from '@/neup.core/auth/accountToken';
 import { validateAuthSession } from '@/services/auth/session';
 
 /*

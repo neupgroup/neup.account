@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import prisma from '../../core/helpers/prisma';
+import prisma from '../../neup.core/helpers/prisma';
 import { ensureAccessGrant } from '../../services/access-model';
 
 const APP_ID = 'neup.account';

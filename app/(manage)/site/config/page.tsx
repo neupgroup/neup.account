@@ -6,7 +6,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/ca
 import { BackButton } from '@/components/ui/back-button';
 import { checkPermissions } from '@/services/user';
 import { PrimaryHeader } from '@/components/ui/primary-header';
-import { createPageMetadata } from '@/core/metadata';
+import { createPageMetadata } from '@/neup.core/metadata';
 import { permission } from '@/logica/permission';
 
 export const metadata: Metadata = createPageMetadata('Site Configuration');

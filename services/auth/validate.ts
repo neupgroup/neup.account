@@ -1,6 +1,6 @@
 'use server';
 
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/neup.core/helpers/prisma';
 import { z } from 'zod';
 import { getUserProfile, getUserNeupIds } from '@/services/user';
 

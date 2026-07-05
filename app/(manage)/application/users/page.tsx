@@ -6,7 +6,7 @@ import { ArrowLeft } from '@/components/icons';
 import { canCurrentAccountViewApplicationUsers, getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 import { UsersList } from './_components/users-list';
-import { createPageMetadata } from '@/core/metadata';
+import { createPageMetadata } from '@/neup.core/metadata';
 
 type Props = {
   searchParams: Promise<{ application?: string | string[]; mode?: string }>;

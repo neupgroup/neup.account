@@ -5,7 +5,7 @@ import * as React from "react"
 import * as SelectPrimitive from "@radix-ui/react-select"
 import { Check, ChevronDown, ChevronUp } from "@/components/icons"
 
-import { cn } from "@/core/helpers/utils"
+import { cn } from "@/neup.core/helpers/utils"
 
 const fieldOutlineClassName =
   "rounded-xl border border-input bg-background transition-colors hover:border-foreground/30 focus:border-ring focus:ring-1 focus:ring-ring/20 focus:ring-offset-0"

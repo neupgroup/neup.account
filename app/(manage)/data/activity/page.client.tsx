@@ -12,7 +12,7 @@ import { ChevronLeft, ChevronRight } from "@/components/icons";
 import { BackButton } from "@/components/ui/back-button";
 import { useEffect, useState, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { redirectInApp } from "@/core/helper/navigation";
+import { redirectInApp } from "@/neup.core/helper/navigation";
 import type { ActivityLog } from "@/services/log-actions";
 import { applicationHref } from "@/app/(manage)/application/_lib/query-param";
 

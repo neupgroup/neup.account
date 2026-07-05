@@ -32,8 +32,8 @@ import {
 } from "@/components/ui/select"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Checkbox } from "@/components/ui/checkbox"
-import { cn } from "@/core/helpers/utils"
-import { useToast } from "@/core/hooks/use-toast"
+import { cn } from "@/neup.core/helpers/utils"
+import { useToast } from "@/neup.core/hooks/use-toast"
 import { createDependentAccount } from "@/services/manage/accounts/dependent"
 import { dependentFormSchema } from "@/services/manage/accounts/schema"
 import { Label } from "@/components/ui/label"
@@ -41,8 +41,8 @@ import { parseDateString } from "@/services/profile"
 import { BackButton } from "@/components/ui/back-button"
 import { checkPermissions } from '@/services/user'
 import { Loader2 } from "@/components/icons"
-import { redirectInApp } from "@/core/helper/navigation";
-import { ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS } from '@/core/auth/access-view-permissions';
+import { redirectInApp } from "@/neup.core/helper/navigation";
+import { ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS } from '@/neup.core/auth/access-view-permissions';
 import { permission } from '@/logica/permission';
 
 type FormData = z.infer<typeof dependentFormSchema>;

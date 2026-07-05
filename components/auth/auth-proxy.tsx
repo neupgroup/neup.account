@@ -1,9 +1,9 @@
 'use client';
 
-import { useSession } from "@/core/providers/session";
+import { useSession } from "@/neup.core/providers/session";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { redirectInApp } from "@/core/helper/navigation";
+import { redirectInApp } from "@/neup.core/helper/navigation";
 
 /**
  * AuthProxy handles the authentication check and redirection logic.

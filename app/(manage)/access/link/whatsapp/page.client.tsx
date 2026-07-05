@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useToast } from "@/core/hooks/use-toast";
+import { useToast } from "@/neup.core/hooks/use-toast";
 import { whatsAppFormSchema, verifyCodeSchema } from "./schema";
 import { sendVerificationCode, linkWhatsAppAccount } from '@/services/manage/accounts/whatsapp';
 
@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/form";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Loader2 } from "@/components/icons";
-import { cn } from "@/core/helpers/utils";
+import { cn } from "@/neup.core/helpers/utils";
 import { BackButton } from "@/components/ui/back-button";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
 

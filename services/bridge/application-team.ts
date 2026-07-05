@@ -1,9 +1,9 @@
 'use server';
 
 import { permission } from '@/logica/permission';
-import prisma from '@/core/helpers/prisma';
-import { verifyAccountToken } from '@/core/auth/accountToken';
-import { logError } from '@/core/helpers/logger';
+import prisma from '@/neup.core/helpers/prisma';
+import { verifyAccountToken } from '@/neup.core/auth/accountToken';
+import { logError } from '@/neup.core/helpers/logger';
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from '@/services/access-model';
 import { validateAuthSession } from '@/services/auth/session';
 import { deriveLegacyRoleScopesFromPolicy, normalizeAuthzScopeFor, normalizeSingleAuthzScopeLevel } from '@/services/applications/authz-scope-policy';

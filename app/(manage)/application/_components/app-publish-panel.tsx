@@ -1,7 +1,7 @@
 'use client';
 
 import { useTransition } from 'react';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '@/neup.core/hooks/use-toast';
 import { requestAppPublication } from '@/services/applications/manage';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

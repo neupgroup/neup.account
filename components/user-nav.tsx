@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from './ui/skeleton';
-import { useSession } from '@/core/providers/session';
+import { useSession } from '@/neup.core/providers/session';
 
 export function UserNav() {
   const { profile, loading } = useSession();

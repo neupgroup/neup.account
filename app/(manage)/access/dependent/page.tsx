@@ -11,8 +11,8 @@ import { getDependentAccounts } from "@/services/manage/accounts/dependent";
 import { User, Plus } from "lucide-react";
 import { AccountListItem } from "@/components/elements/account-item";
 import { BackButton } from "@/components/ui/back-button";
-import { requireAnyPermission404 } from '@/core/auth/permission-guards';
-import { ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
+import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
+import { ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS } from '@/neup.core/auth/access-view-permissions';
 import { permission } from '@/logica/permission';
 
 const pagePermissions = [

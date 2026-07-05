@@ -20,7 +20,7 @@ The result is cached per server process because the schema support only changes 
 */
 
 import { Prisma } from '@/prisma/generated/client/client';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/neup.core/helpers/prisma';
 
 export type AuthzScopePolicyColumnSupport = {
   permission: boolean;

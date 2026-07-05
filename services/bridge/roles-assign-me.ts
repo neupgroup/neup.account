@@ -2,10 +2,10 @@
 
 import jwt from 'jsonwebtoken';
 import type { NextRequest } from 'next/server';
-import prisma from '@/core/helpers/prisma';
-import { verifyAccountToken } from '@/core/auth/accountToken';
+import prisma from '@/neup.core/helpers/prisma';
+import { verifyAccountToken } from '@/neup.core/auth/accountToken';
 import { validateAuthSession } from '@/services/auth/session';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/neup.core/helpers/logger';
 import { assignOwnApplicationRole } from '@/services/applications/access';
 
 function getHeaderToken(request: NextRequest): string | null {

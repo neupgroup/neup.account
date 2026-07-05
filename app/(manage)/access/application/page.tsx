@@ -14,9 +14,9 @@ import { FlowLink } from '@/components/ui/flow-link';
 import { getApplicationAccessPageData } from '../connection/actions';
 import { AssignAppAccessForm } from '../connection/assign-app-access-form';
 import { RevokeAppAccessButton } from '../connection/revoke-app-access-form';
-import { createPageMetadata } from '@/core/metadata';
-import { requireAnyPermission404 } from '@/core/auth/permission-guards';
-import { ACCESS_APPLICATION_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
+import { createPageMetadata } from '@/neup.core/metadata';
+import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
+import { ACCESS_APPLICATION_VIEW_PERMISSIONS } from '@/neup.core/auth/access-view-permissions';
 import { permission } from '@/logica/permission';
 
 export const metadata: Metadata = createPageMetadata('Application Management');

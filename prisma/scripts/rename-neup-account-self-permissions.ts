@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { Prisma } from '../../prisma/generated/client/client';
-import prisma from '../../core/helpers/prisma';
+import prisma from '../../neup.core/helpers/prisma';
 
 const APP_ID = 'neup.account';
 

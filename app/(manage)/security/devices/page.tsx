@@ -4,12 +4,12 @@ import {
 } from "@/components/ui/card";
 import { getUserSessions } from "@/services/security/sessions";
 import { SessionManager } from "@/app/(manage)/security/session-manager";
-import { getActiveSession } from '@/core/auth/verify';
+import { getActiveSession } from '@/neup.core/auth/verify';
 import { BackButton } from "@/components/ui/back-button";
 import { PrimaryHeader } from "@/components/ui/primary-header";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
-import { requireAnyPermission404 } from '@/core/auth/permission-guards';
-import { SECURITY_PERMISSION_GROUPS } from '@/core/auth/security-permissions';
+import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
+import { SECURITY_PERMISSION_GROUPS } from '@/neup.core/auth/security-permissions';
 
 export const dynamic = 'force-dynamic';
 

@@ -17,11 +17,11 @@ Use this form from the application role creation page to define a role before as
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '@/neup.core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { createAppRole } from '@/services/applications/authz-manage';
-import { redirectInApp } from '@/core/helper/navigation';
+import { redirectInApp } from '@/neup.core/helper/navigation';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { AuthzDefinitionSelector } from './authz-definition-selector';
 import type { ApplicationAuthzDefinitionOption } from '@/services/applications/authz-config';

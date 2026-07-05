@@ -3,12 +3,12 @@
 // Server-side user data layer. Fetches profile, contacts, NeupIDs, and permissions
 // for a given account. All functions fall back to the active account if no ID is passed.
 
-import prisma from "@/core/helpers/prisma";
+import prisma from "@/neup.core/helpers/prisma";
 import { Prisma } from "@/prisma/generated/client/client";
-import { logError } from "@/core/helpers/logger";
-import { getActiveAccountId, getPersonalAccountId } from "@/core/auth/verify";
-import { extractGenderFromDetails, resolveDisplayImage } from "@/core/helpers/display-image";
-import { getAccountSelectorContext } from "@/core/auth/accountSelector";
+import { logError } from "@/neup.core/helpers/logger";
+import { getActiveAccountId, getPersonalAccountId } from "@/neup.core/auth/verify";
+import { extractGenderFromDetails, resolveDisplayImage } from "@/neup.core/helpers/display-image";
+import { getAccountSelectorContext } from "@/neup.core/auth/accountSelector";
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from "@/services/access-model";
 import { permission } from '@/logica/permission';
 import { isRootRoleScope, normalizeRoleScope, normalizeRoleScopes } from '@/services/role-scopes';

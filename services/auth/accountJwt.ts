@@ -12,8 +12,8 @@
  */
 
 import jwt from 'jsonwebtoken';
-import prisma from '@/core/helpers/prisma';
-import { logError } from '@/core/helpers/logger';
+import prisma from '@/neup.core/helpers/prisma';
+import { logError } from '@/neup.core/helpers/logger';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 
 /*

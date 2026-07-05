@@ -1,9 +1,9 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import prisma from '@/core/helpers/prisma';
-import { logError } from '@/core/helpers/logger';
+import prisma from '@/neup.core/helpers/prisma';
+import { logError } from '@/neup.core/helpers/logger';
 import { applicationAccessFields, type ApplicationAccessField } from '@/services/applications/types';
 import { writeApplicationDevLog } from '@/services/bridge/dev-logs';
-import { resolveDisplayImage } from '@/core/helpers/display-image';
+import { resolveDisplayImage } from '@/neup.core/helpers/display-image';
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from '@/services/access-model';
 
 export const dynamic = 'force-dynamic';

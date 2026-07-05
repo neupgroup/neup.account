@@ -4,8 +4,8 @@ import { BackButton } from '@/components/ui/back-button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Shield, ChevronRight } from '@/components/icons';
 import { getDirectMembers } from '@/services/manage/access';
-import { getActiveAccountId } from '@/core/auth/verify';
-import prisma from '@/core/helpers/prisma';
+import { getActiveAccountId } from '@/neup.core/auth/verify';
+import prisma from '@/neup.core/helpers/prisma';
 import { getUserProfile, isRootUser } from '@/services/user';
 import { resolveAssetName } from '@/services/manage/access/asset-resolvers';
 import { AddMemberForm } from '../_components/add-member-form';
@@ -13,9 +13,9 @@ import { AssetMemberLookupForm } from '../_components/asset-member-lookup-form';
 import { AddUserForm } from '../add-user-form';
 import { FlowLink } from '@/components/ui/flow-link';
 import { PrimaryHeader } from '@/components/ui/primary-header';
-import { createPageMetadata } from '@/core/metadata';
-import { requireAnyPermission404 } from '@/core/auth/permission-guards';
-import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
+import { createPageMetadata } from '@/neup.core/metadata';
+import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
+import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/neup.core/auth/access-view-permissions';
 import { permission } from '@/logica/permission';
 
 const pagePermissions = [

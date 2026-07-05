@@ -14,7 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { RolesPanel } from '@/app/(manage)/application/_components/roles-panel';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
-import { createPageMetadata } from '@/core/metadata';
+import { createPageMetadata } from '@/neup.core/metadata';
 
 type Props = {
   searchParams: Promise<{ application?: string | string[]; mode?: string }>;

@@ -25,11 +25,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { useToast } from "@/core/hooks/use-toast"
+import { useToast } from "@/neup.core/hooks/use-toast"
 import { createSubbrandAccount, checkSubbrandNeupIdAvailability } from "@/services/manage/accounts/subbrands";
 import { CheckCircle2, XCircle, Loader2 } from "@/components/icons"
 import { BackButton } from "@/components/ui/back-button"
-import { redirectInApp } from "@/core/helper/navigation";
+import { redirectInApp } from "@/neup.core/helper/navigation";
 
 const formSchema = z.object({
     name: z.string().min(1, "Subbrand name is required"),

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { BRAND_OWNER_PERMISSION_NAMES } from '@/core/auth/brand-roles';
-import { hasAnyPermission } from '@/core/auth/profile-permissions';
+import { BRAND_OWNER_PERMISSION_NAMES } from '@/neup.core/auth/brand-roles';
+import { hasAnyPermission } from '@/neup.core/auth/profile-permissions';
 import {
   NEUP_ACCOUNT_PERMISSION_DEFINITIONS,
   resolveNeupAccountPermissionCandidates,

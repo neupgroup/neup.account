@@ -6,7 +6,7 @@ vi.mock('@/core/helpers/prisma', () => ({
     },
 }));
 
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/neup.core/helpers/prisma';
 import { verifyActiveSession } from '@/services/auth/verify';
 
 const mockFindUnique = prisma.authnSession.findUnique as ReturnType<typeof vi.fn>;

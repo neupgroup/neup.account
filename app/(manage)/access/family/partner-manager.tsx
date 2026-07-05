@@ -3,14 +3,14 @@
 "use client";
 
 import { useState, useTransition, useRef } from 'react';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '@/neup.core/hooks/use-toast';
 import { addPartner, removeFamilyMember } from '@/services/manage/people/family';
 import type { FamilyMember, FamilyGroup } from '@/services/manage/people/family';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { UserPlus, Loader2, Trash2, EyeOff, Eye } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { cn } from '@/core/helpers/utils';
+import { cn } from '@/neup.core/helpers/utils';
 import { Label } from '@/components/ui/label';
 
 function PartnerDisplay({ familyId, partner, onRemove, onTogglePrivacy }: { familyId: string, partner: FamilyMember, onRemove: (familyId: string, partnerAccountId: string) => void, onTogglePrivacy: (id: string, isPublic: boolean) => void }) {

@@ -17,7 +17,7 @@ The panel shows each role's `scope_for`, `scope_level`, and default-role state, 
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '@/neup.core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {

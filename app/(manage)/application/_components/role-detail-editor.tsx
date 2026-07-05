@@ -17,7 +17,7 @@ This component powers the role detail page where managers adjust permission memb
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '@/neup.core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -28,7 +28,7 @@ import {
   type AppPermission,
   type AppRole,
 } from '@/services/applications/authz-manage';
-import { redirectInApp } from '@/core/helper/navigation';
+import { redirectInApp } from '@/neup.core/helper/navigation';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { isBuiltInApplicationManagementPermissionName } from '@/services/applications/permission-definitions';
 import { AuthzDefinitionSelector } from './authz-definition-selector';

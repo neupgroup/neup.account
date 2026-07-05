@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { createPageMetadata } from '@/core/metadata';
+import { createPageMetadata } from '@/neup.core/metadata';
 
 export const metadata: Metadata = createPageMetadata('Link WhatsApp');
 

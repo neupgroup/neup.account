@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { bridgeBuildGrantRedirect } from '@/core/auth/handshake';
-import { resolveGuestAccount } from '@/core/auth/guestAccount';
+import { bridgeBuildGrantRedirect } from '@/neup.core/auth/handshake';
+import { resolveGuestAccount } from '@/neup.core/auth/guestAccount';
 
 export const dynamic = 'force-dynamic';
 

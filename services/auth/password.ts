@@ -1,7 +1,7 @@
 "use server";
 
 import bcrypt from 'bcryptjs';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/neup.core/helpers/prisma';
 
 /**
  * Status returned by password validation.

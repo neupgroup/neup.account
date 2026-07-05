@@ -2,24 +2,24 @@
 'use server';
 
 import { permission } from '@/logica/permission';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/neup.core/helpers/prisma';
 import { checkPermissions, getUserProfile } from '@/services/user';
-import { logError } from '@/core/helpers/logger';
-import { switchToBrand as switchToBrandAction, switchToPersonal as switchToPersonalAction } from '@/core/auth/session';
-import { getPersonalAccountId } from '@/core/auth/verify';
+import { logError } from '@/neup.core/helpers/logger';
+import { switchToBrand as switchToBrandAction, switchToPersonal as switchToPersonalAction } from '@/neup.core/auth/session';
+import { getPersonalAccountId } from '@/neup.core/auth/verify';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { brandCreationSchema } from '@/services/manage/accounts/schema';
 import { activeAccessWhere, ensureAccessAsset, ensureAccessMember } from '@/services/access-model';
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
-import { requireAnyPermission404 } from '@/core/auth/permission-guards';
-import { BRAND_OWNER_PERMISSION_NAMES, BRAND_OWNER_ROLE_ID, BRAND_OWNER_ROLE_NAME } from '@/core/auth/brand-roles';
+import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
+import { BRAND_OWNER_PERMISSION_NAMES, BRAND_OWNER_ROLE_ID, BRAND_OWNER_ROLE_NAME } from '@/neup.core/auth/brand-roles';
 import { assetTypeForRefs } from '@/services/access-model';
 import {
   ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS,
   ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS,
-} from '@/core/auth/access-view-permissions';
+} from '@/neup.core/auth/access-view-permissions';
 
 const servicePermissions = [
     permission('access.linked_account.view.self', 'for_individual', 'service'),

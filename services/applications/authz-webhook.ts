@@ -1,9 +1,9 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import prisma from '@/core/helpers/prisma';
-import { getActiveAccountId } from '@/core/auth/verify';
-import { logError } from '@/core/helpers/logger';
+import prisma from '@/neup.core/helpers/prisma';
+import { getActiveAccountId } from '@/neup.core/auth/verify';
+import { logError } from '@/neup.core/helpers/logger';
 import { canCurrentAccountManageApplicationRoles } from '@/services/applications/manage';
 
 const BRIDGE_TYPE = 'authzWebhook';

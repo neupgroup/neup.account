@@ -2,15 +2,15 @@
 
 import { permission } from '@/logica/permission';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/neup.core/helpers/logger';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
-import { getPersonalAccountId } from '@/core/auth/verify';
+import { getPersonalAccountId } from '@/neup.core/auth/verify';
 import { checkPermissions } from '@/services/user';
 import { emailFormSchema } from '@/services/security/schema';
 import { createNotification } from '../notifications';
-import prisma from '@/core/helpers/prisma';
-import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import prisma from '@/neup.core/helpers/prisma';
+import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
 
 const CONTACT_TYPE = 'recoveryEmail';
 

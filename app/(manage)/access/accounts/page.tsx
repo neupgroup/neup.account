@@ -3,7 +3,7 @@ import { BackButton } from '@/components/ui/back-button';
 import { PrimaryHeader } from '@/components/ui/primary-header';
 import { SecondaryHeader } from '@/components/ui/secondary-header';
 import { Card, CardContent } from '@/components/ui/card';
-import { getActiveAccountId } from '@/core/auth/verify';
+import { getActiveAccountId } from '@/neup.core/auth/verify';
 import { getAccessibleAccounts } from '@/services/manage/accounts';
 import { AccountListItem } from '@/components/elements/account-item';
 

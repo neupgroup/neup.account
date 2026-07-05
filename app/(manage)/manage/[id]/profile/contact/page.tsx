@@ -9,7 +9,7 @@ import { z } from "zod"
 
 import { getUserContacts, getUserNeupIds } from '@/services/user'
 import { updateUserProfile } from "@/services/profile"
-import { useToast } from "@/core/hooks/use-toast"
+import { useToast } from "@/neup.core/hooks/use-toast"
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from "@/components/ui/button"

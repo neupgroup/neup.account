@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Search } from '@/components/icons';
 import { TertiaryHeader } from '@/components/ui/tertiary-header';
 import NProgress from 'nprogress';
-import { redirectInApp } from '@/core/helper/navigation';
+import { redirectInApp } from '@/neup.core/helper/navigation';
 
 export function FindUserCard() {
     const [searchQuery, setSearchQuery] = useState('');

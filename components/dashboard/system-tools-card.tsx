@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession } from '@/core/providers/session';
+import { useSession } from '@/neup.core/providers/session';
 import { Card, CardContent } from '@/components/ui/card';
 import { Users, List, Terminal, AppWindow } from '@/components/icons';
 import { SecondaryHeader } from '@/components/ui/secondary-header';

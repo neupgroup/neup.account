@@ -1,15 +1,15 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
 import { permission } from '@/logica/permission';
 import CreateBrandPageClient from './brand-page-client';
 import CreateDependentPageClient from './dependent-page-client';
 import CreateSubbrandPageClient from './subbrand-page-client';
-import { createPageMetadata } from '@/core/metadata';
+import { createPageMetadata } from '@/neup.core/metadata';
 import {
     ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS,
     ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS,
-} from '@/core/auth/access-view-permissions';
+} from '@/neup.core/auth/access-view-permissions';
 
 const pagePermissions = [
     permission('access.account.brand.create.self', 'for_individual', 'page'),

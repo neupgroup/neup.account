@@ -9,8 +9,8 @@ import { format } from "date-fns"
 
 import { getUserProfile } from '@/services/user'
 import { updateUserProfile, parseDateString } from "@/services/profile"
-import { useToast } from "@/core/hooks/use-toast"
-import { cn } from '@/core/helpers/utils'
+import { useToast } from "@/neup.core/hooks/use-toast"
+import { cn } from '@/neup.core/helpers/utils'
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from "@/components/ui/button"

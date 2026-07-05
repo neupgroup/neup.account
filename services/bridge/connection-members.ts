@@ -1,13 +1,13 @@
 'use server';
 
 import { permission } from '@/logica/permission';
-import prisma from '@/core/helpers/prisma';
-import { verifyAccountToken } from '@/core/auth/accountToken';
-import { logError } from '@/core/helpers/logger';
+import prisma from '@/neup.core/helpers/prisma';
+import { verifyAccountToken } from '@/neup.core/auth/accountToken';
+import { logError } from '@/neup.core/helpers/logger';
 import { cleanupExpiredAccessModel } from '@/services/access-model';
 import { validateAuthSession } from '@/services/auth/session';
 import { checkGrantedPermissions, checkPermissions, getUserNeupIds, getUserProfile } from '@/services/user';
-import { ACCESS_CONNECTION_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
+import { ACCESS_CONNECTION_VIEW_PERMISSIONS } from '@/neup.core/auth/access-view-permissions';
 
 const servicePermissions = [
   permission('access.connection.view.self', 'for_individual', 'service'),

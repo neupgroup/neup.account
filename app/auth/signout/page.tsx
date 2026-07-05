@@ -3,8 +3,8 @@
 
 import { useEffect, useRef, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
-import { logoutActiveSession } from "@/core/auth/logout"
-import { redirectInApp } from "@/core/helpers/link"
+import { logoutActiveSession } from "@/neup.core/auth/logout"
+import { redirectInApp } from "@/neup.core/helpers/link"
 
 function SignOut() {
     const searchParams = useSearchParams()

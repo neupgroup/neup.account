@@ -7,7 +7,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getActiveAccountId } from '@/core/auth/verify';
+import { getActiveAccountId } from '@/neup.core/auth/verify';
 import { getSubbrands } from "@/services/manage/accounts/subbrands";
 import {
     Table,
@@ -19,8 +19,8 @@ import {
 } from "@/components/ui/table"
 import { Building, Plus } from "lucide-react";
 import { notFound } from "next/navigation";
-import { requireAnyPermission404 } from '@/core/auth/permission-guards';
-import { LINKED_ACCOUNT_PERMISSION_GROUPS } from '@/core/auth/linked-account-permissions';
+import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
+import { LINKED_ACCOUNT_PERMISSION_GROUPS } from '@/neup.core/auth/linked-account-permissions';
 import { permission } from '@/logica/permission';
 
 const pagePermissions = [

@@ -1,13 +1,13 @@
  'use server';
  
  import { permission } from '@/logica/permission';
- import prisma from '@/core/helpers/prisma';
-import { getPersonalAccountId } from '@/core/auth/verify';
-import { logError } from '@/core/helpers/logger';
+ import prisma from '@/neup.core/helpers/prisma';
+import { getPersonalAccountId } from '@/neup.core/auth/verify';
+import { logError } from '@/neup.core/helpers/logger';
 import { getUserProfile, checkPermissions } from '@/services/user';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
  
  /**
   * Type RecoveryAccount.

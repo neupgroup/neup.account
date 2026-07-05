@@ -5,7 +5,7 @@ import { getNotifications, markNotificationAsRead } from '@/services/notificatio
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, X, Bell } from '@/components/icons';
-import { cn } from '@/core/helpers/utils';
+import { cn } from '@/neup.core/helpers/utils';
 import { Skeleton } from './ui/skeleton';
 import { usePathname } from 'next/navigation';
 import { cva, type VariantProps } from 'class-variance-authority';

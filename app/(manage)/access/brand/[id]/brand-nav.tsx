@@ -3,7 +3,7 @@
 
 import { FlowLink } from '@/components/ui/flow-link';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/core/helpers/utils';
+import { cn } from '@/neup.core/helpers/utils';
 import { buttonVariants } from '@/components/ui/button';
 import { Building, AppWindow, ShieldCheck, Users, UserCircle, ArrowLeft } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';

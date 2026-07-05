@@ -2,15 +2,15 @@ import type {Metadata} from 'next';
 import './globals.css';
 import 'nprogress/nprogress.css';
 import { Toaster } from "@/components/ui/toaster"
-import { GeolocationProvider } from '@/core/providers/geolocation';
-import { SessionProvider } from '@/core/providers/session';
+import { GeolocationProvider } from '@/neup.core/providers/geolocation';
+import { SessionProvider } from '@/neup.core/providers/session';
 import { PageProgressBar } from '@/components/page-progress-bar';
 import { Suspense } from 'react';
 import { UrlErrorBanner } from '@/components/ui/url-error-banner';
 import { PersistentBacksTo } from '@/components/persistent-backs-to';
 import { HeaderV1 } from '@/components/layout/header.v1';
 import { getSiteLogoUrl } from '@/services/manage/site/logo';
-import { APP_NAME } from '@/core/metadata';
+import { APP_NAME } from '@/neup.core/metadata';
 import { AppTitleSync } from '@/components/app-title-sync';
 
 export const metadata: Metadata = {

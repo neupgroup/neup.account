@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/core/helpers/utils';
+import { cn } from '@/neup.core/helpers/utils';
 import {
   ROLE_SCOPE_KEYS,
   normalizeRoleScopes,

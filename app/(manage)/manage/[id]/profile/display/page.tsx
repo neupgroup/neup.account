@@ -1,5 +1,5 @@
 
-import { assertHasProfileDisplayPermission } from '@/core/auth/profile-permissions';
+import { assertHasProfileDisplayPermission } from '@/neup.core/auth/profile-permissions';
 import ManagedUserDisplayPage from './page.client';
 import { permission } from '@/logica/permission';
 

@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from 'react';
-import { cn } from '@/core/helpers/utils';
+import { cn } from '@/neup.core/helpers/utils';
 
 const fieldOutlineClassName =
   'rounded-xl border border-input bg-background transition-colors hover:border-foreground/30 focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/20 focus-visible:ring-offset-0';

@@ -14,7 +14,7 @@ vi.mock('@/core/helpers/logger', () => ({ logError: vi.fn() }));
 vi.mock('next/headers', () => ({ headers: vi.fn(() => ({ get: vi.fn(() => null) })) }));
 vi.mock('@/services/auth/session', () => ({ makeSession: vi.fn().mockResolvedValue({ success: true }) }));
 
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/neup.core/helpers/prisma';
 import {
     submitNameStep,
     submitNeupIdStep,

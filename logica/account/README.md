@@ -11,14 +11,19 @@ application credentials stored in environment variables.
 
 ## Available Helper
 
-- `getNeupConnectionAccountInfo(authAccountToken)`:
-  resolves `accountId`, `connectionId`, `displayName`, and `displayImage` for
-  the signed-in `auth_account` cookie token by calling
-  `NEUP_AUTH_URL + /bridge/api.v1/connection/sign&get`.
+- `connection.ts`: connected-account identity and `sign&get` helpers.
+- `accounts.ts`: account listing, lookup, and connection creation helpers.
+- `accounts.ts`: account listing, lookup, connection creation, and
+  `roles/assign.me` helpers.
+- `profile.ts`: profile and permission helpers.
+- `access.ts`: connection/team access helpers.
+- `application.ts`: application export and app catalog sync helpers.
+- `branding.ts`: branding helpers.
 
 ## Notes
 
 - This module does not use fallback URLs or alternate environment variable
   names.
 - The target application must expose `accountId`, `displayName`, and
-  `displayImage` through its configured bridge response fields.
+  `displayImage` through its configured bridge response fields when using the
+  connection identity helpers.

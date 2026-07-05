@@ -19,10 +19,28 @@ const pagePermissions = [
     permission('access.linked_account.view.self', 'for_individual', 'page'),
 ];
 
-export default async function DependentAccountsPage() {
+type PageProps = {
+    searchParams: Promise<{ selectedProfile?: string; mode?: string; workingProfile?: string }>;
+};
+
+function buildAccessHref(pathname: string, context: { selectedProfile?: string; mode?: string; workingProfile?: string }) {
+    const [basePathname, query = ''] = pathname.split('?', 2);
+    const params = new URLSearchParams(query);
+
+    if (context.selectedProfile) params.set('selectedProfile', context.selectedProfile);
+    if (context.mode) params.set('mode', context.mode);
+    if (context.workingProfile) params.set('workingProfile', context.workingProfile);
+
+    const nextQuery = params.toString();
+    return nextQuery ? `${basePathname}?${nextQuery}` : basePathname;
+}
+
+export default async function DependentAccountsPage({ searchParams }: PageProps) {
+    const { selectedProfile, mode, workingProfile } = await searchParams;
     await requireAnyPermission404([...ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS]);
 
     const dependentAccounts = await getDependentAccounts();
+    const hrefContext = { selectedProfile, mode, workingProfile };
 
     const mappedAccounts = dependentAccounts.map(acc => ({
         aid: acc.id,
@@ -70,7 +88,7 @@ export default async function DependentAccountsPage() {
                 </CardContent>
                 <CardContent className="pt-6 border-t">
                     <Button asChild>
-                        <FlowLink href="/access/createAccount?type=dependent"><Plus className="mr-2 h-4 w-4" />Create New Dependent</FlowLink>
+                        <FlowLink href={buildAccessHref('/access/createAccount?type=dependent', hrefContext)}><Plus className="mr-2 h-4 w-4" />Create New Dependent</FlowLink>
                     </Button>
                 </CardContent>
             </Card>

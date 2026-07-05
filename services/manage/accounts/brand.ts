@@ -16,6 +16,7 @@ import { activityAction } from '@/services/activity-action';
 import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
 import { BRAND_OWNER_PERMISSION_NAMES, BRAND_OWNER_ROLE_ID, BRAND_OWNER_ROLE_NAME } from '@/neup.core/auth/brand-roles';
 import { assetTypeForRefs } from '@/services/access-model';
+import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
 import {
   ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS,
   ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS,
@@ -98,15 +99,23 @@ export async function getBrandAccounts(): Promise<BrandAccount[]> {
  * Function createBrandAccount.
  * Creates the account, neupId, brand profile, optional contact, then grants brand ownership to the creator.
  */
-export async function createBrandAccount(data: z.infer<typeof brandCreationSchema>, geolocation?: string) {
-    await requireAnyPermission404([...ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS]);
-    const canCreate = await checkPermissions([...ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS]);
-    if (!canCreate) {
+export async function createBrandAccount(
+    data: z.infer<typeof brandCreationSchema>,
+    managerAccountId?: string | null,
+    geolocation?: string,
+) {
+    const accessContext = await resolveAccessProfileContext({
+        selectedProfile: managerAccountId,
+        requiredPermissions: ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS,
+    });
+
+    if (!accessContext) {
         return { success: false, error: 'You do not have permission to create a brand account.' };
     }
 
-    const creatorAccountId = await getPersonalAccountId();
-    if (!creatorAccountId) {
+    const ownerAccountId = accessContext.selectedProfile;
+    const actorAccountId = accessContext.signedInProfile;
+    if (!ownerAccountId || !actorAccountId) {
         return { success: false, error: 'User not authenticated.' };
     }
 
@@ -191,7 +200,7 @@ export async function createBrandAccount(data: z.infer<typeof brandCreationSchem
             });
 
             const member = await ensureAccessMember(tx, {
-                childAccountId: creatorAccountId,
+                childAccountId: ownerAccountId,
                 parentAccountId: account.id,
             });
 
@@ -207,7 +216,7 @@ export async function createBrandAccount(data: z.infer<typeof brandCreationSchem
                         { childAccountId: account.id },
                     ),
                     memberId: member.id,
-                    memberAccountId: creatorAccountId,
+                    memberAccountId: ownerAccountId,
                     parentAccountId: account.id,
                     assetId: asset.id,
                     assetAccountId: account.id,
@@ -221,14 +230,14 @@ export async function createBrandAccount(data: z.infer<typeof brandCreationSchem
         });
 
         await logActivity(
-            creatorAccountId,
+            ownerAccountId,
             activityAction.accountBrandCreate(brandAccountId),
             'Success',
             undefined,
-            undefined,
+            actorAccountId,
             geolocation
         );
-        revalidatePath('/access');
+        revalidatePath(`/access?selectedProfile=${ownerAccountId}`);
 
         return { success: true };
 

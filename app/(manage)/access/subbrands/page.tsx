@@ -7,7 +7,6 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getActiveAccountId } from '@/neup.core/auth/verify';
 import { getSubbrands } from "@/services/manage/accounts/subbrands";
 import {
     Table,
@@ -19,9 +18,8 @@ import {
 } from "@/components/ui/table"
 import { Building, Plus } from "lucide-react";
 import { notFound } from "next/navigation";
-import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
-import { LINKED_ACCOUNT_PERMISSION_GROUPS } from '@/neup.core/auth/linked-account-permissions';
 import { permission } from '@/neup.logica/permission';
+import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
 
 const pagePermissions = [
     permission('access.linked_account.view.self', 'for_individual', 'page'),
@@ -31,15 +29,38 @@ const pagePermissions = [
     permission('linked_accounts.brand.manager', 'for_brand', 'page'),
 ];
 
-export default async function BrandSubbrandPage() {
-    await requireAnyPermission404(LINKED_ACCOUNT_PERMISSION_GROUPS.brand);
-    const brandId = await getActiveAccountId();
+type PageProps = {
+    searchParams: Promise<{ selectedProfile?: string; mode?: string; workingProfile?: string }>;
+};
 
-    if (!brandId) {
+function buildAccessHref(pathname: string, context: { selectedProfile?: string; mode?: string; workingProfile?: string }) {
+    const [basePathname, query = ''] = pathname.split('?', 2);
+    const params = new URLSearchParams(query);
+
+    if (context.selectedProfile) params.set('selectedProfile', context.selectedProfile);
+    if (context.mode) params.set('mode', context.mode);
+    if (context.workingProfile) params.set('workingProfile', context.workingProfile);
+
+    const nextQuery = params.toString();
+    return nextQuery ? `${basePathname}?${nextQuery}` : basePathname;
+}
+
+export default async function BrandSubbrandPage({ searchParams }: PageProps) {
+    const { selectedProfile, mode, workingProfile } = await searchParams;
+    const accessContext = await resolveAccessProfileContext({
+        selectedProfile,
+        workingProfile,
+        requiredPermissions: ['linked_accounts.brand.manage'],
+    });
+
+    if (!accessContext) {
         notFound();
     }
+
+    const brandId = accessContext.selectedProfile;
+    const hrefContext = { selectedProfile: brandId, mode, workingProfile };
     
-    const subbrands = await getSubbrands(brandId);
+    const subbrands = await getSubbrands(brandId, { skipPermissionCheck: true });
 
     return (
         <div className="grid gap-8">
@@ -58,7 +79,7 @@ export default async function BrandSubbrandPage() {
                         </CardDescription>
                     </div>
                     <Button asChild>
-                        <FlowLink href="/access/createAccount?type=subbrand"><Plus className="mr-2 h-4 w-4" />Create New Subbrand</FlowLink>
+                        <FlowLink href={buildAccessHref('/access/createAccount?type=subbrand', hrefContext)}><Plus className="mr-2 h-4 w-4" />Create New Subbrand</FlowLink>
                     </Button>
                 </CardHeader>
                 <CardContent>
@@ -93,7 +114,7 @@ export default async function BrandSubbrandPage() {
                                                 Get started by creating your first subbrand account.
                                             </p>
                                              <Button asChild>
-                                                <FlowLink href="/access/createAccount?type=subbrand"><Plus className="mr-2 h-4 w-4" />Create Subbrand</FlowLink>
+                                                <FlowLink href={buildAccessHref('/access/createAccount?type=subbrand', hrefContext)}><Plus className="mr-2 h-4 w-4" />Create Subbrand</FlowLink>
                                             </Button>
                                         </div>
                                     </TableCell>

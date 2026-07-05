@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
 import { permission } from '@/neup.logica/permission';
 import CreateBrandPageClient from './brand-page-client';
 import CreateDependentPageClient from './dependent-page-client';
 import CreateSubbrandPageClient from './subbrand-page-client';
 import { createPageMetadata } from '@/neup.core/metadata';
+import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
+import { getUserProfile } from '@/services/user';
 import {
     ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS,
     ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS,
@@ -18,8 +19,23 @@ const pagePermissions = [
 ];
 
 type PageProps = {
-    searchParams: Promise<{ type?: string }>;
+    searchParams: Promise<{ type?: string; selectedProfile?: string; mode?: string; workingProfile?: string }>;
 };
+
+function buildAccessHref(
+    pathname: string,
+    context: { selectedProfile?: string; mode?: string; workingProfile?: string },
+) {
+    const [basePathname, query = ''] = pathname.split('?', 2);
+    const params = new URLSearchParams(query);
+
+    if (context.selectedProfile) params.set('selectedProfile', context.selectedProfile);
+    if (context.mode) params.set('mode', context.mode);
+    if (context.workingProfile) params.set('workingProfile', context.workingProfile);
+
+    const nextQuery = params.toString();
+    return nextQuery ? `${basePathname}?${nextQuery}` : basePathname;
+}
 
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
     const { type } = await searchParams;
@@ -32,21 +48,67 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 }
 
 export default async function CreateAccountPage({ searchParams }: PageProps) {
-    const { type } = await searchParams;
+    const { type, selectedProfile, mode, workingProfile } = await searchParams;
+    const requiredPermissions =
+        type === 'brand'
+            ? ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS
+            : type === 'dependent'
+                ? ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS
+                : type === 'subbrand' || type === 'branch'
+                    ? (['linked_accounts.brand.manage'] as const)
+                    : null;
+
+    if (!requiredPermissions) {
+        notFound();
+    }
+
+    const accessContext = await resolveAccessProfileContext({
+        selectedProfile,
+        workingProfile,
+        requiredPermissions,
+    });
+
+    if (!accessContext) {
+        notFound();
+    }
+
+    const hrefContext = {
+        selectedProfile: accessContext.selectedProfile,
+        mode,
+        workingProfile,
+    };
+    const backHref = buildAccessHref('/access', hrefContext);
 
     if (type === 'brand') {
-        await requireAnyPermission404([...ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS]);
-        return <CreateBrandPageClient />;
+        return (
+            <CreateBrandPageClient
+                managerAccountId={accessContext.selectedProfile}
+                backHref={backHref}
+            />
+        );
     }
 
     if (type === 'dependent') {
-        await requireAnyPermission404([...ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS]);
-        return <CreateDependentPageClient />;
+        return (
+            <CreateDependentPageClient
+                managerAccountId={accessContext.selectedProfile}
+                backHref={backHref}
+            />
+        );
     }
 
     if (type === 'subbrand' || type === 'branch') {
-        await requireAnyPermission404(['linked_accounts.brand.manage']);
-        return <CreateSubbrandPageClient />;
+        const managerProfile = await getUserProfile(accessContext.selectedProfile);
+        if (managerProfile?.accountType !== 'brand' && managerProfile?.accountType !== 'subbrand') {
+            notFound();
+        }
+
+        return (
+            <CreateSubbrandPageClient
+                managerAccountId={accessContext.selectedProfile}
+                backHref={backHref}
+            />
+        );
     }
 
     notFound();

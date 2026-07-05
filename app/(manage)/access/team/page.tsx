@@ -22,7 +22,7 @@ const pagePermissions = [
 ];
 
 type PageProps = {
-  searchParams: Promise<{ portfolio?: string; asset?: string; mode?: string; workingProfile?: string; account?: string }>;
+  searchParams: Promise<{ portfolio?: string; asset?: string; mode?: string; workingProfile?: string; selectedProfile?: string }>;
 };
 
 export const metadata: Metadata = createPageMetadata('Team Management');
@@ -55,7 +55,7 @@ function appendWorkingProfile(href: string, workingProfile?: string) {
 
 function appendAccessContext(
   href: string,
-  context: { account?: string; mode?: string; workingProfile?: string },
+  context: { selectedProfile?: string; mode?: string; workingProfile?: string },
 ) {
   const params = new URLSearchParams();
   const [pathname, query = ''] = href.split('?', 2);
@@ -64,7 +64,7 @@ function appendAccessContext(
   existingParams.forEach((value, key) => {
     params.append(key, value);
   });
-  if (context.account) params.set('account', context.account);
+  if (context.selectedProfile) params.set('selectedProfile', context.selectedProfile);
   if (context.mode) params.set('mode', context.mode);
   if (context.workingProfile) params.set('workingProfile', context.workingProfile);
 
@@ -181,7 +181,7 @@ async function DirectAccountPage({
   workingProfile?: string;
 }) {
   const { accountName, members } = await getDirectMembers(accountId, { skipPermissionCheck: true });
-  const hrefContext = { account: accountId, mode, workingProfile };
+  const hrefContext = { selectedProfile: accountId, mode, workingProfile };
 
   return (
     <MembersLayout
@@ -227,7 +227,7 @@ async function AssetMembersPage({
   mode?: string;
   workingProfile?: string;
 }) {
-  const hrefContext = { account: accountId, mode, workingProfile };
+  const hrefContext = { selectedProfile: accountId, mode, workingProfile };
 
   const toLogicalAssetId = (row: {
     id: string;
@@ -310,9 +310,9 @@ async function AssetMembersPage({
 }
 
 export default async function TeamPage({ searchParams }: PageProps) {
-  const { portfolio, asset, mode, workingProfile, account } = await searchParams;
+  const { portfolio, asset, mode, workingProfile, selectedProfile } = await searchParams;
   const accessContext = await resolveAccessProfileContext({
-    account,
+    selectedProfile,
     workingProfile,
     requiredPermissions: ACCESS_TEAM_VIEW_PERMISSIONS,
   });

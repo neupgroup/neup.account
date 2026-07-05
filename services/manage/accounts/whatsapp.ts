@@ -1,19 +1,28 @@
  'use server';
  
- import { getActiveAccountId } from '@/neup.core/auth/verify';
  import { logError } from '@/neup.core/helpers/logger';
  import { z } from 'zod';
  import { whatsAppFormSchema, verifyCodeSchema } from '@/app/(manage)/access/link/whatsapp/schema';
  import { revalidatePath } from 'next/cache';
+ import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
+ import { ACCESS_LINKED_ACCOUNT_ADD_PERMISSIONS } from '@/neup.core/auth/access-view-permissions';
  
  /**
   * Function sendVerificationCode.
   */
- export async function sendVerificationCode(data: z.infer<typeof whatsAppFormSchema>): Promise<{ success: boolean; error?: string }> {
-   const accountId = await getActiveAccountId();
-   if (!accountId) {
-     return { success: false, error: 'User not authenticated.' };
+ export async function sendVerificationCode(
+   data: z.infer<typeof whatsAppFormSchema>,
+   managerAccountId?: string | null,
+ ): Promise<{ success: boolean; error?: string }> {
+   const accessContext = await resolveAccessProfileContext({
+     selectedProfile: managerAccountId,
+     requiredPermissions: ACCESS_LINKED_ACCOUNT_ADD_PERMISSIONS,
+   });
+   if (!accessContext) {
+     return { success: false, error: 'You do not have permission to link accounts.' };
    }
+
+   const accountId = accessContext.selectedProfile;
  
    const validation = whatsAppFormSchema.safeParse(data);
    if (!validation.success) {
@@ -35,11 +44,19 @@
  /**
   * Function linkWhatsAppAccount.
   */
- export async function linkWhatsAppAccount(data: z.infer<typeof verifyCodeSchema>): Promise<{ success: boolean; error?: string }> {
-   const accountId = await getActiveAccountId();
-   if (!accountId) {
-     return { success: false, error: 'User not authenticated.' };
+ export async function linkWhatsAppAccount(
+   data: z.infer<typeof verifyCodeSchema>,
+   managerAccountId?: string | null,
+ ): Promise<{ success: boolean; error?: string }> {
+   const accessContext = await resolveAccessProfileContext({
+     selectedProfile: managerAccountId,
+     requiredPermissions: ACCESS_LINKED_ACCOUNT_ADD_PERMISSIONS,
+   });
+   if (!accessContext) {
+     return { success: false, error: 'You do not have permission to link accounts.' };
    }
+
+   const accountId = accessContext.selectedProfile;
  
    const validation = verifyCodeSchema.safeParse(data);
    if (!validation.success) {
@@ -51,7 +68,7 @@
    try {
      if (code === '123456') {
       console.log(`Successfully linked WhatsApp number ${whatsappNumber} to account ${accountId}`);
-      revalidatePath('/access/link/whatsapp');
+      revalidatePath(`/access/link/whatsapp?selectedProfile=${accountId}`);
       return { success: true };
     }
      return { success: false, error: 'The verification code is incorrect.' };

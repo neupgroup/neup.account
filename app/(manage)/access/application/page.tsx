@@ -26,12 +26,12 @@ const pagePermissions = [
 ];
 
 type PageProps = {
-  searchParams: Promise<{ application?: string; mode?: string; account?: string; workingProfile?: string }>;
+  searchParams: Promise<{ application?: string; mode?: string; selectedProfile?: string; workingProfile?: string }>;
 };
 
 function buildAccessHref(
   pathname: string,
-  context: { account?: string; mode?: string; workingProfile?: string; application?: string },
+  context: { selectedProfile?: string; mode?: string; workingProfile?: string; application?: string },
 ) {
   const [basePathname, query = ''] = pathname.split('?', 2);
   const params = new URLSearchParams();
@@ -40,7 +40,7 @@ function buildAccessHref(
   existingParams.forEach((value, key) => {
     params.append(key, value);
   });
-  if (context.account) params.set('account', context.account);
+  if (context.selectedProfile) params.set('selectedProfile', context.selectedProfile);
   if (context.mode) params.set('mode', context.mode);
   if (context.workingProfile) params.set('workingProfile', context.workingProfile);
   if (context.application) params.set('application', context.application);
@@ -66,7 +66,7 @@ async function SelectedApplicationPage({
 }: {
   applicationId: string;
   accountId: string;
-  hrefContext: { account?: string; mode?: string; workingProfile?: string };
+  hrefContext: { selectedProfile?: string; mode?: string; workingProfile?: string };
 }) {
   const apps = await getApplicationAccessPageData({
     accountId,
@@ -224,7 +224,7 @@ async function ApplicationsOverviewPage({
   hrefContext,
 }: {
   accountId: string;
-  hrefContext: { account?: string; mode?: string; workingProfile?: string };
+  hrefContext: { selectedProfile?: string; mode?: string; workingProfile?: string };
 }) {
   const apps = await getApplicationAccessPageData({
     ownerOnly: true,
@@ -336,9 +336,9 @@ async function ApplicationsOverviewPage({
 }
 
 export default async function ApplicationAccessPage({ searchParams }: PageProps) {
-  const { application, mode, account, workingProfile } = await searchParams;
+  const { application, mode, selectedProfile, workingProfile } = await searchParams;
   const accessContext = await resolveAccessProfileContext({
-    account,
+    selectedProfile,
     workingProfile,
     requiredPermissions: ACCESS_APPLICATION_VIEW_PERMISSIONS,
   });
@@ -346,7 +346,7 @@ export default async function ApplicationAccessPage({ searchParams }: PageProps)
   if (!accessContext) notFound();
 
   const hrefContext = {
-    account: accessContext.selectedProfile,
+    selectedProfile: accessContext.selectedProfile,
     mode,
     workingProfile,
   };

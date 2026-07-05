@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useRouter, notFound } from "next/navigation"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -39,10 +39,8 @@ import { dependentFormSchema } from "@/services/manage/accounts/schema"
 import { Label } from "@/components/ui/label"
 import { parseDateString } from "@/services/profile"
 import { BackButton } from "@/components/ui/back-button"
-import { checkPermissions } from '@/services/user'
 import { Loader2 } from "@/components/icons"
 import { redirectInApp } from "@/neup.core/helper/navigation";
-import { ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS } from '@/neup.core/auth/access-view-permissions';
 import { permission } from '@/neup.logica/permission';
 
 type FormData = z.infer<typeof dependentFormSchema>;
@@ -51,22 +49,19 @@ const pagePermissions = [
     permission('access.account.dependent.create.self', 'for_individual', 'page'),
 ];
 
-export default function CreateDependentPageClient() {
+export default function CreateDependentPageClient({
+    managerAccountId,
+    backHref,
+}: {
+    managerAccountId: string;
+    backHref: string;
+}) {
     const router = useRouter()
     const { toast } = useToast()
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [canCreate, setCanCreate] = useState<boolean | null>(null);
 
     const [dateInput, setDateInput] = useState<string>('');
     const [isParsingDate, setIsParsingDate] = useState(false);
-    
-    useEffect(() => {
-        async function verifyPermission() {
-            const hasPermission = await checkPermissions([...ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS]);
-            setCanCreate(hasPermission);
-        }
-        verifyPermission();
-    }, []);
 
     const form = useForm<FormData>({
         resolver: zodResolver(dependentFormSchema),
@@ -111,7 +106,7 @@ export default function CreateDependentPageClient() {
 
     const onSubmit = async (data: FormData) => {
         setIsSubmitting(true);
-        const result = await createDependentAccount(data);
+        const result = await createDependentAccount(data, managerAccountId);
 
         if (result.success) {
             toast({
@@ -119,7 +114,7 @@ export default function CreateDependentPageClient() {
                 description: "Dependent account created successfully.",
                 className: "bg-accent text-accent-foreground"
             });
-            redirectInApp(router, '/access');
+            redirectInApp(router, backHref);
             router.refresh();
         } else {
             toast({
@@ -134,16 +129,9 @@ export default function CreateDependentPageClient() {
         setIsSubmitting(false);
     }
     
-    if (canCreate === null) {
-        return <div>Loading...</div>;
-    }
-    if (canCreate === false) {
-        return notFound();
-    }
-
     return (
         <div className="grid gap-8">
-            <BackButton href="/access" />
+            <BackButton href={backHref} />
              <div>
                 <h1 className="text-3xl font-bold tracking-tight">Create Dependent Account</h1>
                 <p className="text-muted-foreground">

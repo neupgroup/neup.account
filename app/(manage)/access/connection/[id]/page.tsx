@@ -31,12 +31,12 @@ import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-con
  */
 type PageProps = {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ workingProfile?: string; account?: string; mode?: string }>;
+  searchParams: Promise<{ workingProfile?: string; selectedProfile?: string; mode?: string }>;
 };
 
 function appendAccessContext(
   href: string,
-  context: { account?: string; mode?: string; workingProfile?: string },
+  context: { selectedProfile?: string; mode?: string; workingProfile?: string },
 ) {
   const params = new URLSearchParams();
   const [pathname, query = ''] = href.split('?', 2);
@@ -45,7 +45,7 @@ function appendAccessContext(
   existingParams.forEach((value, key) => {
     params.append(key, value);
   });
-  if (context.account) params.set('account', context.account);
+  if (context.selectedProfile) params.set('selectedProfile', context.selectedProfile);
   if (context.mode) params.set('mode', context.mode);
   if (context.workingProfile) params.set('workingProfile', context.workingProfile);
 
@@ -132,9 +132,9 @@ function AccessEmptyState() {
 
 export default async function ConnectionDetailPage({ params, searchParams }: PageProps) {
   const { id } = await params;
-  const { workingProfile, account, mode } = await searchParams;
+  const { workingProfile, selectedProfile, mode } = await searchParams;
   const accessContext = await resolveAccessProfileContext({
-    account,
+    selectedProfile,
     workingProfile,
     requiredPermissions: ACCESS_CONNECTION_VIEW_PERMISSIONS,
   });
@@ -142,7 +142,7 @@ export default async function ConnectionDetailPage({ params, searchParams }: Pag
   if (!accessContext) notFound();
 
   const hrefContext = {
-    account: accessContext.selectedProfile,
+    selectedProfile: accessContext.selectedProfile,
     mode,
     workingProfile,
   };

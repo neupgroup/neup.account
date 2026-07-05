@@ -41,7 +41,13 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export default function CreateSubbrandPageClient() {
+export default function CreateSubbrandPageClient({
+    managerAccountId,
+    backHref,
+}: {
+    managerAccountId: string;
+    backHref: string;
+}) {
     const router = useRouter()
     const { toast } = useToast()
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -67,10 +73,10 @@ export default function CreateSubbrandPageClient() {
             return;
         }
         setNeupIdStatus('checking');
-        const { available, fullNeupId } = await checkSubbrandNeupIdAvailability(subdomain);
+        const { available, fullNeupId } = await checkSubbrandNeupIdAvailability(subdomain, managerAccountId);
         setNeupIdStatus(available ? 'available' : 'unavailable');
         setFullNeupIdPreview(fullNeupId || null);
-    }, []);
+    }, [managerAccountId]);
     
     useEffect(() => {
         checkAvailability(debouncedValue);
@@ -85,18 +91,18 @@ export default function CreateSubbrandPageClient() {
     const onSubmit = async (data: FormData) => {
         setIsSubmitting(true);
 
-        const checkResult = await checkSubbrandNeupIdAvailability(data.neupIdSubdomain);
+        const checkResult = await checkSubbrandNeupIdAvailability(data.neupIdSubdomain, managerAccountId);
         if (!checkResult.available) {
              toast({ variant: "destructive", title: "Creation Failed", description: "The chosen NeupID is not available." });
              setIsSubmitting(false);
              return;
         }
 
-        const result = await createSubbrandAccount(data);
+        const result = await createSubbrandAccount(data, managerAccountId);
 
         if (result.success) {
             toast({ title: "Success", description: "Subbrand account created successfully!", className: "bg-accent text-accent-foreground" });
-            redirectInApp(router, '/access');
+            redirectInApp(router, backHref);
             router.refresh();
         } else {
             toast({
@@ -117,7 +123,7 @@ export default function CreateSubbrandPageClient() {
 
     return (
         <div className="grid gap-6">
-            <BackButton href="/access" />
+            <BackButton href={backHref} />
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Create a New Subbrand</h1>
                 <p className="text-muted-foreground">

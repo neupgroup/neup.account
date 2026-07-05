@@ -14,6 +14,7 @@ import { ensureAccessGrant } from '@/services/access-model';
 import { checkPermissions, getUserProfile, getUserNeupIds } from '@/services/user';
 import { activityAction } from '@/services/activity-action';
 import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
+import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
 import {
   ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS,
   ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS,
@@ -101,15 +102,23 @@ export async function getDependentAccounts(): Promise<DependentAccount[]> {
 /**
  * Function createDependentAccount.
  */
-export async function createDependentAccount(data: z.infer<typeof dependentFormSchema>, geolocation?: string) {
-    await requireAnyPermission404([...ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS]);
-    const canCreate = await checkPermissions([...ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS]);
-    if (!canCreate) {
+export async function createDependentAccount(
+    data: z.infer<typeof dependentFormSchema>,
+    managerAccountId?: string | null,
+    geolocation?: string,
+) {
+    const accessContext = await resolveAccessProfileContext({
+        selectedProfile: managerAccountId,
+        requiredPermissions: ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS,
+    });
+
+    if (!accessContext) {
         return { success: false, error: "You do not have permission to create a dependent account." };
     }
 
-    const guardianAccountId = await getPersonalAccountId();
-    if (!guardianAccountId) {
+    const guardianAccountId = accessContext.selectedProfile;
+    const actorAccountId = accessContext.signedInProfile;
+    if (!guardianAccountId || !actorAccountId) {
         return { success: false, error: "Guardian not authenticated." };
     }
 
@@ -230,15 +239,15 @@ export async function createDependentAccount(data: z.infer<typeof dependentFormS
             activityAction.accountDependentCreate(dependentAccountId),
             'Success',
             undefined,
-            undefined,
+            actorAccountId,
             geolocation
         );
-        revalidatePath('/access');
+        revalidatePath(`/access?selectedProfile=${guardianAccountId}`);
 
         return { success: true, dependentId: dependentAccountId };
 
     } catch (error) {
-        await logActivity('unknown', `Dependent account creation failed: ${neupId}`, 'Failed', undefined, guardianAccountId, geolocation);
+        await logActivity(guardianAccountId, `Dependent account creation failed: ${neupId}`, 'Failed', undefined, actorAccountId, geolocation);
         await logError('database', error, 'createDependentAccount');
         return { success: false, error: 'An unexpected error occurred during account creation.' };
     }

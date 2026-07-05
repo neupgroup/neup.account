@@ -47,22 +47,22 @@ const pagePermissions = [
 ];
 
 type PageProps = {
-  searchParams: Promise<{ portfolio?: string; account?: string; mode?: string; workingProfile?: string }>;
+  searchParams: Promise<{ portfolio?: string; selectedProfile?: string; mode?: string; workingProfile?: string }>;
 };
 
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
-  const { portfolio, account } = await searchParams;
+  const { portfolio, selectedProfile } = await searchParams;
 
   if (portfolio) {
     return createPageMetadata('Access', 'Not Found');
   }
 
-  if (account) {
-    const profile = await getUserProfile(account);
+  if (selectedProfile) {
+    const profile = await getUserProfile(selectedProfile);
     const accountName =
       profile?.nameDisplay ||
       [profile?.nameFirst, profile?.nameLast].filter(Boolean).join(' ').trim() ||
-      account;
+      selectedProfile;
     return createPageMetadata('Access', `${accountName}'s Account`);
   }
 
@@ -72,9 +72,15 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
 function LinkAndCreateFeatures({
   canCreateBrand,
   canCreateDependent,
+  linkHref,
+  brandHref,
+  dependentHref,
 }: {
   canCreateBrand: boolean;
   canCreateDependent: boolean;
+  linkHref: string;
+  brandHref: string;
+  dependentHref: string;
 }) {
   return (
     <>
@@ -82,14 +88,14 @@ function LinkAndCreateFeatures({
         icon={FolderGit2}
         title="Link Other Accounts"
         description="Connect third-party platforms like WhatsApp."
-        href="/access/link"
+        href={linkHref}
       />
       {canCreateBrand && (
         <ListItem
           icon={Building}
           title="Create Brand Account"
           description="Set up a new profile for a business or organization."
-          href="/access/createAccount?type=brand"
+          href={brandHref}
         />
       )}
       {canCreateDependent && (
@@ -97,7 +103,7 @@ function LinkAndCreateFeatures({
           icon={UserPlus}
           title="Create Dependent Account"
           description="Create and manage an account for a family member."
-          href="/access/createAccount?type=dependent"
+          href={dependentHref}
         />
       )}
     </>
@@ -152,25 +158,30 @@ function PeopleAndSharingFeatures({
 function buildAccessHref(
   pathname: string,
   context: {
-    account?: string;
+    selectedProfile?: string;
     mode?: string;
     workingProfile?: string;
   },
 ) {
+  const [basePathname, query = ''] = pathname.split('?', 2);
+  const existingParams = new URLSearchParams(query);
   const params = new URLSearchParams();
 
-  if (context.account) params.set('account', context.account);
+  existingParams.forEach((value, key) => {
+    params.append(key, value);
+  });
+  if (context.selectedProfile) params.set('selectedProfile', context.selectedProfile);
   if (context.mode) params.set('mode', context.mode);
   if (context.workingProfile) params.set('workingProfile', context.workingProfile);
 
-  const query = params.toString();
-  return query ? `${pathname}?${query}` : pathname;
+  const nextQuery = params.toString();
+  return nextQuery ? `${basePathname}?${nextQuery}` : basePathname;
 }
 
 export default async function AccessControlPage({ searchParams }: PageProps) {
   const {
     portfolio: parentPortfolioId,
-    account,
+    selectedProfile,
     mode,
     workingProfile,
   } = await searchParams;
@@ -180,7 +191,7 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
   }
 
   const accessContext = await resolveAccessProfileContext({
-    account,
+    selectedProfile,
     workingProfile,
     requiredPermissions: ACCESS_VIEW_PERMISSIONS,
   });
@@ -215,7 +226,7 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
       : [];
   const previewAccounts = accountsToShow.slice(0, 3);
   const childHrefContext = {
-    account: selectedAccountId,
+    selectedProfile: selectedAccountId,
     mode,
     workingProfile,
   };
@@ -244,6 +255,9 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
               <LinkAndCreateFeatures
                 canCreateBrand={canCreateBrand}
                 canCreateDependent={canCreateDependent}
+                linkHref={buildAccessHref('/access/link', childHrefContext)}
+                brandHref={buildAccessHref('/access/createAccount?type=brand', childHrefContext)}
+                dependentHref={buildAccessHref('/access/createAccount?type=dependent', childHrefContext)}
               />
             </CardContent>
           </Card>

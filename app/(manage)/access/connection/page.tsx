@@ -17,15 +17,15 @@ const pagePermissions = [
 ];
 
 type PageProps = {
-  searchParams: Promise<{ account?: string; mode?: string; workingProfile?: string }>;
+  searchParams: Promise<{ selectedProfile?: string; mode?: string; workingProfile?: string }>;
 };
 
 function buildAccessHref(
   pathname: string,
-  context: { account?: string; mode?: string; workingProfile?: string },
+  context: { selectedProfile?: string; mode?: string; workingProfile?: string },
 ) {
   const params = new URLSearchParams();
-  if (context.account) params.set('account', context.account);
+  if (context.selectedProfile) params.set('selectedProfile', context.selectedProfile);
   if (context.mode) params.set('mode', context.mode);
   if (context.workingProfile) params.set('workingProfile', context.workingProfile);
   const query = params.toString();
@@ -59,9 +59,9 @@ function AccessSummary({ accessCount }: { accessCount: number }) {
 }
 
 export default async function ConnectionPage({ searchParams }: PageProps) {
-  const { account, mode, workingProfile } = await searchParams;
+  const { selectedProfile, mode, workingProfile } = await searchParams;
   const accessContext = await resolveAccessProfileContext({
-    account,
+    selectedProfile,
     workingProfile,
     requiredPermissions: ACCESS_CONNECTION_VIEW_PERMISSIONS,
   });
@@ -70,7 +70,7 @@ export default async function ConnectionPage({ searchParams }: PageProps) {
     notFound();
   }
 
-  const hrefContext = { account: accessContext.selectedProfile, mode, workingProfile };
+  const hrefContext = { selectedProfile: accessContext.selectedProfile, mode, workingProfile };
   const connections = await getConnectionPageData(accessContext.selectedProfile, { skipPermissionCheck: true });
 
   return (

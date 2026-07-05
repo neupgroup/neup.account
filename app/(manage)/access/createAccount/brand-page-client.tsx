@@ -35,7 +35,13 @@ import { redirectInApp } from "@/neup.core/helper/navigation";
 
 type FormData = z.infer<typeof brandCreationSchema>;
 
-export default function CreateBrandPageClient() {
+export default function CreateBrandPageClient({
+    managerAccountId,
+    backHref,
+}: {
+    managerAccountId: string;
+    backHref: string;
+}) {
     const router = useRouter()
     const { toast } = useToast()
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -92,11 +98,11 @@ export default function CreateBrandPageClient() {
                  return;
             }
 
-            const result = await createBrandAccount(data);
+            const result = await createBrandAccount(data, managerAccountId);
 
             if (result.success) {
                 toast({ title: "Success", description: "Brand Account created successfully!", className: "bg-accent text-accent-foreground" });
-                redirectInApp(router, '/access');
+                redirectInApp(router, backHref);
             } else {
                 toast({
                     variant: "destructive",
@@ -125,7 +131,7 @@ export default function CreateBrandPageClient() {
 
     return (
         <div className="grid gap-8">
-            <BackButton href="/access" />
+            <BackButton href={backHref} />
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Create a Brand Account</h1>
                 <p className="text-muted-foreground">

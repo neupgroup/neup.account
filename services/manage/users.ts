@@ -446,7 +446,7 @@ export async function updateManagedAccountAccess(input: {
     });
 
     revalidatePath(`/manage/${input.accountId}`);
-    revalidatePath(`/access?account=${input.accountId}`);
+    revalidatePath(`/access?selectedProfile=${input.accountId}`);
     return { success: true };
   } catch (error) {
     await logError('database', error, `updateManagedAccountAccess:${input.accountId}:${input.memberId}`);
@@ -515,7 +515,7 @@ export async function revokeManagedAccountAccess(input: {
       adminId,
     );
     revalidatePath(`/manage/${input.accountId}`);
-    revalidatePath(`/access?account=${input.accountId}`);
+    revalidatePath(`/access?selectedProfile=${input.accountId}`);
     return { success: true };
   } catch (error) {
     await logError('database', error, `revokeManagedAccountAccess:${input.accountId}:${input.memberId}`);

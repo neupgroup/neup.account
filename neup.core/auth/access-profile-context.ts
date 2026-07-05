@@ -45,7 +45,7 @@ export type AccessProfileContext = {
 };
 
 type ResolveAccessProfileContextInput = {
-  account?: string | null;
+  selectedProfile?: string | null;
   workingProfile?: string | null;
   requiredPermissions?: readonly string[];
 };
@@ -101,7 +101,7 @@ export async function resolveAccessProfileContext(
   if (!workingProfile) return null;
 
   const selectedProfile =
-    normalizeProfileId(await getUrlParam('account', input.account)) ??
+    normalizeProfileId(await getUrlParam('selectedProfile', input.selectedProfile)) ??
     workingProfile;
 
   if (workingProfile !== signedInProfile && workingProfile !== selectedProfile) {

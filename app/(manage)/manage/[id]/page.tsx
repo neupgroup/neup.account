@@ -34,7 +34,7 @@ const accountManagementFeatures = (accountId: string) => [
     icon: ShieldCheck,
     title: 'Access',
     description: 'Grant direct access to other accounts without invitations.',
-    href: `/access?account=${encodeURIComponent(accountId)}`,
+    href: `/access?selectedProfile=${encodeURIComponent(accountId)}`,
   },
   {
     icon: History,

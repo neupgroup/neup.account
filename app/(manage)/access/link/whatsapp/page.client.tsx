@@ -28,7 +28,13 @@ import { cn } from "@/neup.core/helpers/utils";
 import { BackButton } from "@/components/ui/back-button";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
 
-export default function LinkWhatsAppPageClient() {
+export default function LinkWhatsAppPageClient({
+    managerAccountId,
+    backHref,
+}: {
+    managerAccountId?: string | null;
+    backHref: string;
+}) {
     const [step, setStep] = useState(1);
     const [isSubmitting, startTransition] = useTransition();
     const [whatsappNumber, setWhatsappNumber] = useState("");
@@ -46,7 +52,7 @@ export default function LinkWhatsAppPageClient() {
 
     const handleSendCode = async (data: z.infer<typeof whatsAppFormSchema>) => {
         startTransition(async () => {
-            const result = await sendVerificationCode(data);
+            const result = await sendVerificationCode(data, managerAccountId);
             if (result.success) {
                 toast({ title: "Code Sent", description: "A verification code has been sent to your WhatsApp number." });
                 setWhatsappNumber(data.whatsappNumber);
@@ -61,7 +67,7 @@ export default function LinkWhatsAppPageClient() {
     
     const handleLinkAccount = async (data: z.infer<typeof verifyCodeSchema>) => {
         startTransition(async () => {
-            const result = await linkWhatsAppAccount(data);
+            const result = await linkWhatsAppAccount(data, managerAccountId);
             if (result.success) {
                  toast({ title: "Success!", description: "Your WhatsApp account has been linked.", className: "bg-accent text-accent-foreground" });
                  setStep(1);
@@ -76,7 +82,7 @@ export default function LinkWhatsAppPageClient() {
 
     return (
         <div className="grid gap-8">
-            <BackButton href="/access/link" />
+            <BackButton href={backHref} />
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Link WhatsApp Account</h1>
                 <p className="text-muted-foreground">

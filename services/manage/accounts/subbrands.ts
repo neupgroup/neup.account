@@ -12,6 +12,7 @@ import { getActiveAccountId, getPersonalAccountId } from '@/neup.core/auth/verif
 import { activityAction } from '@/services/activity-action';
 import { ensureAccessGrant } from '@/services/access-model';
 import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
+import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
 import {
     BRAND_OWNER_PERMISSION_NAMES,
     BRAND_OWNER_ROLE_ID,
@@ -45,20 +46,27 @@ const formSchema = z.object({
 /**
  * Function createSubbrandAccount.
  */
-export async function createSubbrandAccount(data: z.infer<typeof formSchema>, geolocation?: string) {
-    await requireAnyPermission404(['linked_accounts.brand.manage']);
-    const canManage = await checkPermissions(['linked_accounts.brand.manage']);
-    if (!canManage) {
+export async function createSubbrandAccount(
+    data: z.infer<typeof formSchema>,
+    managerAccountId?: string | null,
+    geolocation?: string,
+) {
+    const accessContext = await resolveAccessProfileContext({
+        selectedProfile: managerAccountId,
+        requiredPermissions: ['linked_accounts.brand.manage'],
+    });
+
+    if (!accessContext) {
         return { success: false, error: 'You do not have permission to create subbrand accounts.' };
     }
 
-    const parentBrandId = await getActiveAccountId();
+    const parentBrandId = accessContext.selectedProfile;
     if (!parentBrandId) {
         return { success: false, error: 'Managing brand account not found.' };
     }
 
-    const personalAccountId = await getPersonalAccountId();
-    if (!personalAccountId) {
+    const actorAccountId = accessContext.signedInProfile;
+    if (!actorAccountId) {
         return { success: false, error: 'User not authenticated.' };
     }
 
@@ -71,6 +79,11 @@ export async function createSubbrandAccount(data: z.infer<typeof formSchema>, ge
     const neupIdSubdomain = validation.data.neupIdSubdomain.toLowerCase();
 
     try {
+        const parentProfile = await getUserProfile(parentBrandId);
+        if (parentProfile?.accountType !== 'brand' && parentProfile?.accountType !== 'subbrand') {
+            return { success: false, error: 'Subbrand accounts can only be created under a brand account.' };
+        }
+
         const parentNeupIds = await getUserNeupIds(parentBrandId);
         if (parentNeupIds.length === 0) {
             return { success: false, error: 'Parent brand does not have a NeupID.' };
@@ -107,13 +120,21 @@ export async function createSubbrandAccount(data: z.infer<typeof formSchema>, ge
 
             await tx.permit.create({
                 data: {
-                    accountId: personalAccountId,
+                    accountId: parentBrandId,
                     memberId: subbrandAccountId,
                     forSelf: false,
                     isRoot: false,
                     permissions: ['individual.default'],
                     restrictions: [],
                 }
+            });
+
+            await tx.accountOwnership.create({
+                data: {
+                    parentId: parentBrandId,
+                    childrenId: subbrandAccountId,
+                    type: 'subbrand',
+                },
             });
 
             // Grant the canonical managed brand owner role on the subbrand.
@@ -136,7 +157,7 @@ export async function createSubbrandAccount(data: z.infer<typeof formSchema>, ge
                 },
             });
             await ensureAccessGrant(tx, {
-                memberAccountId: personalAccountId,
+                memberAccountId: parentBrandId,
                 parentAccountId: subbrandAccountId,
                 childAccountId: subbrandAccountId,
                 accessApplicationId: 'neup.account',
@@ -170,10 +191,11 @@ export async function createSubbrandAccount(data: z.infer<typeof formSchema>, ge
             activityAction.accountSubbrandCreate(result),
             'Success',
             undefined,
-            personalAccountId,
+            actorAccountId,
             geolocation
         );
-        revalidatePath(`/manage/brand/${parentBrandId}/subbrand`);
+        revalidatePath(`/access?selectedProfile=${parentBrandId}`);
+        revalidatePath(`/access/subbrands?selectedProfile=${parentBrandId}`);
 
         return { success: true, subbrandId: result };
     } catch (error) {
@@ -186,9 +208,17 @@ export async function createSubbrandAccount(data: z.infer<typeof formSchema>, ge
 /**
  * Function checkSubbrandNeupIdAvailability.
  */
-export async function checkSubbrandNeupIdAvailability(neupIdSubdomain: string): Promise<{ available: boolean; fullNeupId?: string }> {
-    const parentBrandId = await getActiveAccountId();
-    if (!parentBrandId) return { available: false };
+export async function checkSubbrandNeupIdAvailability(
+    neupIdSubdomain: string,
+    managerAccountId?: string | null,
+): Promise<{ available: boolean; fullNeupId?: string }> {
+    const accessContext = await resolveAccessProfileContext({
+        selectedProfile: managerAccountId,
+        requiredPermissions: ['linked_accounts.brand.manage'],
+    });
+    if (!accessContext) return { available: false };
+
+    const parentBrandId = accessContext.selectedProfile;
 
     const lowerSubdomain = neupIdSubdomain.toLowerCase();
 
@@ -219,12 +249,17 @@ export async function checkSubbrandNeupIdAvailability(neupIdSubdomain: string): 
 /**
  * Function getSubbrands.
  */
-export async function getSubbrands(brandId: string): Promise<SubbrandAccount[]> {
+export async function getSubbrands(
+    brandId: string,
+    options: { skipPermissionCheck?: boolean } = {},
+): Promise<SubbrandAccount[]> {
     if (!brandId) return [];
 
-    await requireAnyPermission404(['linked_accounts.brand.manage']);
-    const canManage = await checkPermissions(['linked_accounts.brand.manage']);
-    if (!canManage) return [];
+    if (!options.skipPermissionCheck) {
+        await requireAnyPermission404(['linked_accounts.brand.manage']);
+        const canManage = await checkPermissions(['linked_accounts.brand.manage']);
+        if (!canManage) return [];
+    }
 
     try {
         const subbrands = await prisma.account.findMany({

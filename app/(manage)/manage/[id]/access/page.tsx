@@ -8,7 +8,7 @@ import { redirect } from 'next/navigation';
  *
  * ::public
  *
- * `/manage/[id]/access` now forwards to `/access?account=[id]` so team, connection, application, family, invitation, and blocked-account navigation can preserve the selected account in the query string.
+ * `/manage/[id]/access` now forwards to `/access?selectedProfile=[id]` so team, connection, application, family, invitation, and blocked-account navigation can preserve the selected account in the query string.
  *
  * ::public end
  *
@@ -27,5 +27,5 @@ export default async function ManagedAccountAccessRedirectPage({
 }) {
   const { id } = await params;
 
-  redirect(`/access?account=${encodeURIComponent(id)}`);
+  redirect(`/access?selectedProfile=${encodeURIComponent(id)}`);
 }

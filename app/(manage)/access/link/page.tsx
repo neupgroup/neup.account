@@ -8,10 +8,29 @@ import { createPageMetadata } from '@/neup.core/metadata';
 
 export const metadata: Metadata = createPageMetadata('Link Other Accounts');
 
-export default function LinkAccountsPage() {
+type PageProps = {
+    searchParams: Promise<{ selectedProfile?: string; mode?: string; workingProfile?: string }>;
+};
+
+function buildAccessHref(pathname: string, context: { selectedProfile?: string; mode?: string; workingProfile?: string }) {
+    const [basePathname, query = ''] = pathname.split('?', 2);
+    const params = new URLSearchParams(query);
+
+    if (context.selectedProfile) params.set('selectedProfile', context.selectedProfile);
+    if (context.mode) params.set('mode', context.mode);
+    if (context.workingProfile) params.set('workingProfile', context.workingProfile);
+
+    const nextQuery = params.toString();
+    return nextQuery ? `${basePathname}?${nextQuery}` : basePathname;
+}
+
+export default async function LinkAccountsPage({ searchParams }: PageProps) {
+    const { selectedProfile, mode, workingProfile } = await searchParams;
+    const hrefContext = { selectedProfile, mode, workingProfile };
+
     return (
         <div className="grid gap-8">
-            <BackButton href="/access" />
+            <BackButton href={buildAccessHref('/access', hrefContext)} />
             <PrimaryHeader
                 title="Link Other Accounts"
                 description="Connect your accounts from other platforms to NeupID for a seamless experience."
@@ -22,7 +41,7 @@ export default function LinkAccountsPage() {
                         icon={Bot}
                         title="Link WhatsApp Account"
                         description="Connect your WhatsApp for notifications and services."
-                        href="/access/link/whatsapp"
+                        href={buildAccessHref('/access/link/whatsapp', hrefContext)}
                     />
                 </CardContent>
             </Card>

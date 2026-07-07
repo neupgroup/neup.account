@@ -21,6 +21,8 @@
 - [ ] Add Neup documentation blocks for `app/bridge/api.v1/accounts/lookup/route.ts` and `app/bridge/api.v1/connection/sign&get/route.ts`, which currently expose bridge contracts with little or no structured route documentation.
 - [ ] Add Neup documentation blocks for `app/bridge/handshake.v1/auth/grant/route.ts` and `app/bridge/api.v1/auth/whoisthis/route.ts`, which still rely on plain comments for important public auth contracts.
 - [ ] Add Neup documentation blocks for `app/bridge/api.v1/roles/assign.me/route.ts` and `app/bridge/resource.v1/sdk/route.ts`, which currently expose public bridge resources without structured route documentation.
+- [ ] Add Neup documentation blocks for `services/bridge/roles-assign-me.ts`, which currently exposes bridge role-assignment logic without structured service documentation.
+- [ ] Add Neup documentation blocks for `services/applications/access.ts`, which currently centralizes application access and role-enrollment logic without structured service documentation.
 - [ ] Fix `prisma/grant-root.ts` so it uses the current `authz_role` schema and looks up NeupID records by `neupId`, not stale role fields.
 - [ ] Document `package.json` authz maintenance commands so `sync:permissions:neup-account` / `rebuild:authz:neup-account` clearly describe when they rebuild database catalog tables versus when they only export snapshots.
 - [ ] Document `logica/basics/roles.json` and `logica/basics/permissions.json` as generated authz snapshots, including which script owns them and how they are used as database rebuild inputs.

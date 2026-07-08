@@ -4,7 +4,7 @@ import { isIP } from 'node:net';
 import { revalidatePath } from 'next/cache';
 import { notFound } from 'next/navigation';
 import { z } from 'zod';
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 import { Prisma } from '@/prisma/generated/client/client';
 import prisma from '@/core/helpers/prisma';
 import { getAccountSelectorContext } from '@/core/auth/accountSelector';

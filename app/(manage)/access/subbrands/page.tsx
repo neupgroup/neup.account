@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/table"
 import { Building, Plus } from "lucide-react";
 import { notFound } from "next/navigation";
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 import { resolveAccessProfileContext } from '@/core/auth/access-profile-context';
 
 const pagePermissions = [

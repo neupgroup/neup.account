@@ -1,6 +1,6 @@
 "use client";
 
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 import { useMemo, type ElementType } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { ShieldCheck, Laptop, Link, AppWindow } from '@/components/icons';

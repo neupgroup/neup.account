@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 import { getApplicationUsers } from '@/services/bridge/application-users';
 import { validateSilentSsoOrigin } from '@/services/auth/silent-sso';
 import prisma from '@/core/helpers/prisma';

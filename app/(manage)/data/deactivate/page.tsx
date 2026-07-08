@@ -1,4 +1,4 @@
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { DATA_PRIVACY_PERMISSION_GROUPS } from '@/core/auth/data-permissions';
 import DeactivateAccountPage from './page.client';

@@ -10,7 +10,7 @@ import { BackButton } from '@/components/ui/back-button';
 import { VerifiedBadge } from '@/components/verified-badge';
 import { UserCircle, ShieldCheck, History, Ban, Trash2, Gem } from '@/components/icons';
 import { ACCOUNT_ACCESS_PERMISSION_GROUPS } from '@/core/auth/account-access-permissions';
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 
 const pagePermissions = [
   permission('root.account.view', 'for_individual', 'page'),

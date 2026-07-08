@@ -41,7 +41,7 @@ import { parseDateString } from "@/services/profile"
 import { BackButton } from "@/components/ui/back-button"
 import { Loader2 } from "@/components/icons"
 import { redirectInApp } from "@/core/helper/navigation";
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 
 type FormData = z.infer<typeof dependentFormSchema>;
 

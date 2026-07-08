@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 import { getApplicationAccess } from '@/services/bridge/application-access';
 
 const routePermissions = [

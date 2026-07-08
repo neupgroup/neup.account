@@ -1,6 +1,6 @@
 'use server';
 
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import prisma from '@/core/helpers/prisma';

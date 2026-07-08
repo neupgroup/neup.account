@@ -24,7 +24,7 @@ import { Loader2 } from "@/components/icons"
 import { useSession } from '@/core/providers/session'
 import { BackButton } from '@/components/ui/back-button'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/auth/profile-permissions'
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 import { useSelectedProfilePage } from '../use-selected-profile-page';
 
 const pagePermissions = [

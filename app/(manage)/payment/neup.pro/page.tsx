@@ -7,7 +7,7 @@ import { BackButton } from "@/components/ui/back-button";
 import { checkPermissions } from '@/services/user';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { notFound } from "next/navigation";
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 
 const pagePermissions = [
     permission('payment.purchase_neup_pro.view', 'for_individual', 'page'),

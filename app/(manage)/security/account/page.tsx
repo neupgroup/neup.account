@@ -1,5 +1,5 @@
 
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getRecoveryAccounts } from "@/services/security/account";
 import { RecoveryAccountManager } from "./recovery-account-manager";

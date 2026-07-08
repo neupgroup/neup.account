@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 
 const layoutPermissions = [
   permission('root.payment_config.view', 'for_individual', 'layout'),

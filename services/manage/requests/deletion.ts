@@ -8,7 +8,7 @@ import { deleteUserAccount } from '@/services/manage/users';
 import { getPersonalAccountId } from '@/core/auth/verify';
 import { logActivity } from '@/services/log-actions';
 import { z } from 'zod';
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 
 /**
  * Type DeletionRequest.

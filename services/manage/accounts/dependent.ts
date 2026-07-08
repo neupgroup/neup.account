@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use server';
 
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 import { z } from 'zod';
 import prisma from '@/core/helpers/prisma';
 import { getPersonalAccountId } from '@/core/auth/verify';

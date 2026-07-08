@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use server';
 
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { Prisma } from '../../prisma/generated/client/client';
 import { getUserNeupIds, getUserProfile as fetchUserProfile, checkPermissions } from '@/services/user';

@@ -14,7 +14,7 @@ route while preserving root-mode access checks.
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 import {
   deleteManagedApplication,
   getManagedApplications,

@@ -12,7 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { BackButton } from '@/components/ui/back-button';
 import { useSession } from '@/core/providers/session';
 import { hasAnyPermission } from '@/core/auth/profile-permissions';
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 import {
     ACCESS_INVITATION_APPROVE_PERMISSIONS,
     ACCESS_INVITATIONS_VIEW_PERMISSIONS,

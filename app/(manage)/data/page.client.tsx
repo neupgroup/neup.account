@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import React from "react";
-import { permission } from "@/neup.logica/permission";
+import { permission } from "@/logica/permission";
 import { getConnectedApplications } from "@/services/applications/connected";
 import { ListItem } from "@/components/ui/list-item";
 import { SecondaryHeader } from "@/components/ui/secondary-header";

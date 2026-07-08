@@ -4,7 +4,7 @@ import { getAccessableAccountsWithPermissions } from '@/services/manage/accounts
 import { resolveAppTokenAuth } from '@/services/auth/appTokenAuth';
 import prisma from '@/core/helpers/prisma';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
-import { permission, type PermissionDeclaration } from '@/neup.logica/permission';
+import { permission, type PermissionDeclaration } from '@/logica/permission';
 
 export const dynamic = 'force-dynamic';
 

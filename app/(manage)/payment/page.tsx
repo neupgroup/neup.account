@@ -7,7 +7,7 @@ import { ListItem } from "@/components/ui/list-item";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
 import { PrimaryHeader } from "@/components/ui/primary-header";
 import { CreditCard, History, Wallet, Gem, Ban } from "@/components/icons";
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 
 const pagePermissions = [
     permission('payment.method.show', 'for_individual', 'page'),

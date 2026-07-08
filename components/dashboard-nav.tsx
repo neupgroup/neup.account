@@ -1,6 +1,6 @@
 'use client';
 
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 import { FlowLink } from '@/components/ui/flow-link'
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useTransition } from "react";

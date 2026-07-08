@@ -6,7 +6,7 @@
 // accountDeletion (uses account.status = 'deletion_requested').
 
 import prisma from '@/core/helpers/prisma';
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 import { checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import { getUserProfile, getUserNeupIds } from '@/services/user';

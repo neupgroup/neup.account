@@ -13,7 +13,7 @@ import { FlowLink } from '@/components/ui/flow-link';
 import { PrimaryHeader } from '@/components/ui/primary-header';
 import { createPageMetadata } from '@/core/metadata';
 import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 import { resolveAccessProfileContext } from '@/core/auth/access-profile-context';
 
 const pagePermissions = [

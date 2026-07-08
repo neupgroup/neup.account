@@ -10,7 +10,7 @@ import { z } from 'zod';
 import { logActivity } from '@/services/log-actions';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { activeAccessWhere, getLogicalAssetId } from '@/services/access-model';
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 import {
   ACCESS_TEAM_ADD_PERMISSIONS,
   ACCESS_TEAM_VIEW_PERMISSIONS,

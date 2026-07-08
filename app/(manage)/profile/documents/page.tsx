@@ -22,7 +22,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Loader2, Camera, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { useSession } from '@/core/providers/session';
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/auth/profile-permissions';
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 import {
     AlertDialog,
     AlertDialogAction,

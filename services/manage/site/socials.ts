@@ -1,6 +1,6 @@
 'use server';
 
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 import {z} from 'zod';
 import {revalidatePath} from 'next/cache';
 import {logError} from '@/core/helpers/logger';

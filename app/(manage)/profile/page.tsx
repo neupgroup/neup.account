@@ -9,7 +9,7 @@ import { logSystemError } from "@/core/helpers/logger";
 import { PROFILE_NAV_PERMISSIONS, PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from "@/core/auth/profile-permissions";
 import { getAccountSelectorContext } from "@/core/auth/accountSelector";
 import { resolveAccessProfileContext } from "@/core/auth/access-profile-context";
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 
 /**
  * ::neup.documentation::profile-options-page

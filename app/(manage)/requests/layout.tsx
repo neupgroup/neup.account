@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { requireAnyPermission404 } from '@/core/auth/permission-guards';
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 
 const layoutPermissions = [
   permission('requests.root_approval.view', 'for_individual', 'layout'),

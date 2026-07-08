@@ -8,7 +8,7 @@ import { SecondaryHeader } from '@/components/ui/secondary-header';
 import { AccessGroupView } from './_components/access-group-view';
 import { ListItem } from '@/components/ui/list-item';
 import { AccountListItem } from '@/components/elements/account-item';
-import { permission } from '@/neup.logica/permission';
+import { permission } from '@/logica/permission';
 import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/core/auth/linked-account-permissions';
 import { getUserProfile } from '@/services/user';
 import { getAccessibleAccounts } from '@/services/manage/accounts';

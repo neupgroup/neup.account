@@ -16,7 +16,12 @@ import {
   getApplicationAuthzConfig,
   getApplicationDetailsForViewerV2,
 } from '@/services/applications/manage';
-import { getAppDefaultRoleId, getAppPermissions, getAppRoles } from '@/services/applications/authz-manage';
+import {
+  getAppDefaultRoleId,
+  getAppRoleAccountCount,
+  getAppPermissions,
+  getAppRoles,
+} from '@/services/applications/authz-manage';
 import { BackButton } from '@/components/ui/back-button';
 import { PrimaryHeader } from '@/components/ui/primary-header';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -68,13 +73,15 @@ export default async function RoleDetailsQueryPage({ params, searchParams }: Pro
   ]);
   const role = roles.find((item) => item.id === roleId);
   if (!role) notFound();
+  const roleAccountCount = await getAppRoleAccountCount(applicationId, role.id);
+  const roleAccountLabel = `${roleAccountCount} account${roleAccountCount === 1 ? '' : 's'}`;
 
   return (
     <div className="grid gap-8">
       <div className="space-y-4">
         <BackButton href={applicationHref('/application/roles', applicationId, mode ? { mode } : undefined)} />
         <PrimaryHeader
-          title={isEditingInfo ? `Edit Role Info: ${role.name}` : `Role: ${role.name}`}
+          title={isEditingInfo ? `Edit Role Info: ${role.name} (${roleAccountLabel})` : `Role: ${role.name} (${roleAccountLabel})`}
           description={isEditingInfo ? 'Update this role metadata only.' : (role.description || 'No description')}
         />
       </div>

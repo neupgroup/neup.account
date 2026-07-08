@@ -1,8 +1,27 @@
 'use server';
 
-// Centralized error logging. Writes to both the console and /core/logs/error.log.
-// Automatically captures the current IP and account ID from the request context.
-// Generates an MD5 signature per error type+message so duplicate errors are identifiable.
+/*
+::neup.documentation::neup-core-helper-logger
+::title Logger Helper
+
+Centralized error logging helpers for file-based and database-backed error traces.
+
+::public
+
+`logError()` writes structured error entries to the server console and to `neup.core/logs/error.log`.
+
+`logSystemError()` writes lightweight persisted error records to the `system_error` table.
+
+::public end
+
+::private
+
+The file log path is rooted at `process.cwd()/neup.core/logs/error.log` so the log file stays with the `neup.core` module rather than the legacy `core` folder path.
+
+::private end
+
+::end
+*/
 
 import { headers } from 'next/headers';
 import { getActiveAccountId } from '@/neup.core/auth/verify';
@@ -55,9 +74,9 @@ export async function logError(
     // eslint-disable-next-line no-console
     console.error("ERROR", logEntry);
 
-    // File-based logging to /core/logs/error.log
+    // File-based logging to /neup.core/logs/error.log
     try {
-        const logFilePath = path.join(process.cwd(), 'core', 'logs', 'error.log');
+        const logFilePath = path.join(process.cwd(), 'neup.core', 'logs', 'error.log');
         const logDir = path.dirname(logFilePath);
         
         // Create the log directory if it doesn't exist yet

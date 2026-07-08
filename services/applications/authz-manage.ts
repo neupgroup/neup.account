@@ -665,6 +665,18 @@ function isMissingTableError(error: unknown, tableName: string): boolean {
   return typeof error.message === 'string' && error.message.includes(`The table \`${tableName}\` does not exist`);
 }
 
+async function countLegacyAssetGrantRowsForRole(roleId: string): Promise<number> {
+  try {
+    return await prisma.authzAssetsAccessGrant.count({ where: { role_id: roleId } });
+  } catch (error) {
+    if (isMissingTableError(error, 'public.authz_assets_access_grant')) {
+      return 0;
+    }
+
+    throw error;
+  }
+}
+
 async function validateRolePermissionSelection(
   tx: any,
   appId: string,
@@ -1122,6 +1134,34 @@ export async function deleteAppPermission(input: {
   }
 }
 
+export async function getAppRoleAccountCount(appId: string, roleId: string): Promise<number> {
+  const auth = await assertCanViewAuthz(appId);
+  if ('error' in auth) return 0;
+
+  try {
+    const accessRows = await prisma.access.findMany({
+      where: {
+        accessApplicationId: appId,
+        roleId,
+        memberAccountId: { not: null },
+        ...activeAccessWhere(),
+      },
+      select: {
+        memberAccountId: true,
+      },
+      distinct: ['memberAccountId'],
+    });
+
+    return accessRows.reduce((count, row) => {
+      const accountId = typeof row.memberAccountId === 'string' ? row.memberAccountId.trim() : '';
+      return accountId ? count + 1 : count;
+    }, 0);
+  } catch (error) {
+    await logError('database', error, `getAppRoleAccountCount:${appId}:${roleId}`);
+    return 0;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Roles
 // ---------------------------------------------------------------------------
@@ -1499,6 +1539,7 @@ export async function deleteAppRole(input: {
     }
 
     const rolePayload = await getRolePayload(input.appId, input.roleId);
+    const assetGrantCount = await countLegacyAssetGrantRowsForRole(input.roleId);
     const deletionCheck = await prisma.$transaction(async (tx) => {
       const role = await tx.authzRole.findFirst({
         where: { id: input.roleId, appId: input.appId },
@@ -1514,15 +1555,6 @@ export async function deleteAppRole(input: {
         tx.access.count({ where: { roleId: input.roleId } }),
         tx.role.count({ where: { roleId: input.roleId } }),
       ]);
-
-      let assetGrantCount = 0;
-      try {
-        assetGrantCount = await tx.authzAssetsAccessGrant.count({ where: { role_id: input.roleId } });
-      } catch (error) {
-        if (!isMissingTableError(error, 'public.authz_assets_access_grant')) {
-          throw error;
-        }
-      }
 
       if (defaultRoleCount > 0) {
         return {

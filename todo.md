@@ -16,6 +16,8 @@
 - [ ] Fix `20260629120000_rename_branch_to_subbrand` so it tolerates databases without legacy tables like `account_ownership`.
 - [ ] Repair stale role snapshot rows in `logica/basics/roles.json` that still reference missing permissions, such as `neup_account.brand_owner` using `brand.*` permissions that are not present in the canonical permission catalog.
 - [ ] Add documentation blocks or module-level documentation for the undocumented Prisma authz/access entities in `prisma/schema.prisma`, especially the legacy `role` snapshot table and its relationship to `authz_role`, `member`, and `access`.
+- [ ] Add Neup documentation blocks for the shared Prisma account models in `prisma/schema.prisma`, especially `Account`, `Asset`, `Member`, and `Access`, which are now described in `neup.logica/account/guide.md` but still lack source-owned model documentation.
+- [ ] Update `neup.logica/README.md`, which still documents the helper path as `logica/account/` instead of `neup.logica/account/`.
 - [ ] Upgrade auth/profile bridge documentation blocks for `core/auth/verify.ts`, `core/auth/cookies.ts`, and `app/bridge/api.v1/profile/route.ts` so they follow `documentation.guide.md` instead of relying on plain comments.
 - [ ] Upgrade auth-session helper documentation for `core/auth/accountToken.ts`, `core/auth/check.ts`, and `core/auth/guard.ts` so they use `::neup.documentation::...` blocks instead of plain comments.
 - [ ] Add Neup documentation blocks for `app/bridge/api.v1/accounts/lookup/route.ts` and `app/bridge/api.v1/connection/sign&get/route.ts`, which currently expose bridge contracts with little or no structured route documentation.
@@ -26,6 +28,7 @@
 - [ ] Fix `prisma/grant-root.ts` so it uses the current `authz_role` schema and looks up NeupID records by `neupId`, not stale role fields.
 - [ ] Document `package.json` authz maintenance commands so `sync:permissions:neup-account` / `rebuild:authz:neup-account` clearly describe when they rebuild database catalog tables versus when they only export snapshots.
 - [ ] Document `logica/basics/roles.json` and `logica/basics/permissions.json` as generated authz snapshots, including which script owns them and how they are used as database rebuild inputs.
+- [ ] Replace or upgrade `access.guide.md`, which still documents old portfolio-era fields and no longer matches the current Prisma `Account` / `Member` / `Asset` / `Access` schema.
 - [ ] Fix the remaining authz tooling path drift from `logica/...` to `neup.logica/...`, especially `package.json` `getRoles` / `postRoles` and the export/post helper scripts that still target the old snapshot tree.
 - [ ] Finish the repo-wide permission literal migration from suffixed names like `.self` / `.managed` / `.root` to the new unsuffixed permission names in page/service declarations and old Prisma maintenance scripts such as `prisma/scripts/runner-neupaccount.ts`.
 - [ ] Add a Neup documentation block for `app/(manage)/config/socials/social-links-manager.tsx`, which currently exposes the socials editor UI without structured source-owned documentation.
@@ -35,6 +38,7 @@
 - [ ] Add Neup documentation blocks for the managed account access module in `app/(manage)/manage/[id]/access/form.tsx`, `services/manage/users.ts`, `app/(manage)/manage/layout.tsx`, and `neup.core/auth/account-access-permissions.ts`, which currently rely on plain comments or no structured documentation.
 - [ ] Upgrade access people services/pages documentation for `services/manage/people/family.ts`, `services/manage/people/invitations.ts`, `services/manage/people/blocked.ts`, `app/(manage)/access/family/page.tsx`, `app/(manage)/access/invitations/page.tsx`, and `app/(manage)/access/blocked/page.tsx` so they use Neup documentation blocks instead of plain comments or no structured page documentation.
 - [ ] Add Neup documentation blocks for selected-account access pages in `app/(manage)/access/page.tsx`, `app/(manage)/access/connection/page.tsx`, and `app/(manage)/access/application/page.tsx`.
+- [ ] Add a Neup documentation block for `app/(manage)/application/add/page.tsx`, which currently exposes the application-creation page without structured page-level documentation.
 - [ ] Add Neup documentation blocks for selected-account profile detail pages in `app/(manage)/profile/display/page.tsx`, `app/(manage)/profile/legal/page.tsx`, `app/(manage)/profile/contact/page.tsx`, `app/(manage)/profile/neupid/page.tsx`, `app/(manage)/profile/demographics/page.tsx`, and `app/(manage)/profile/documents/page.tsx`.
 - [ ] Upgrade KYC profile document service documentation in `services/manage/profile/documents.ts` so it uses Neup documentation blocks instead of plain comments.
 - [ ] Upgrade managed-account NeupID service documentation in `services/manage/accounts/neupid.ts` so it uses Neup documentation blocks instead of plain comments.

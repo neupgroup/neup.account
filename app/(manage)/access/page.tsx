@@ -9,11 +9,11 @@ import { AccessGroupView } from './_components/access-group-view';
 import { ListItem } from '@/components/ui/list-item';
 import { AccountListItem } from '@/components/elements/account-item';
 import { permission } from '@/neup.logica/permission';
-import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/neup.core/auth/linked-account-permissions';
+import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/core/auth/linked-account-permissions';
 import { getUserProfile } from '@/services/user';
 import { getAccessibleAccounts } from '@/services/manage/accounts';
-import { hasAnyPermission } from '@/neup.core/auth/profile-permissions';
-import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
+import { hasAnyPermission } from '@/core/auth/profile-permissions';
+import { resolveAccessProfileContext } from '@/core/auth/access-profile-context';
 import {
   ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS,
   ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS,
@@ -26,8 +26,8 @@ import {
   ACCESS_INVITATIONS_VIEW_PERMISSIONS,
   ACCESS_TEAM_VIEW_PERMISSIONS,
   ACCESS_VIEW_PERMISSIONS,
-} from '@/neup.core/auth/access-view-permissions';
-import { createPageMetadata } from '@/neup.core/metadata';
+} from '@/core/auth/access-view-permissions';
+import { createPageMetadata } from '@/core/metadata';
 
 const pagePermissions = [
   permission('access.view.self', 'for_individual', 'page'),

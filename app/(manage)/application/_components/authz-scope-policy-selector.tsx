@@ -15,7 +15,7 @@ These selectors present the allowed scope-policy values from `services/applicati
 ::end
 */
 
-import { cn } from '@/neup.core/helpers/utils';
+import { cn } from '@/core/helpers/utils';
 import {
   AUTHZ_SCOPE_FOR_META,
   AUTHZ_SCOPE_FOR_VALUES,

@@ -11,8 +11,8 @@ import { format } from "date-fns"
 import { getUserProfile, type UserProfile } from '@/services/user'
 import { parseDateString, updateBrandProfile } from "@/services/profile"
 import { brandProfileFormSchema } from "@/services/profile/schema"
-import { useToast } from "@/neup.core/hooks/use-toast"
-import { cn } from "@/neup.core/helpers/utils"
+import { useToast } from "@/core/hooks/use-toast"
+import { cn } from "@/core/helpers/utils"
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from "@/components/ui/button"
@@ -23,7 +23,7 @@ import { Label } from '@/components/ui/label'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Geolocation } from '@/neup.core/providers/geolocation'
+import { Geolocation } from '@/core/providers/geolocation'
 import { Loader2 } from '@/components/icons'
 
 type BrandFormValues = z.infer<typeof brandProfileFormSchema>;

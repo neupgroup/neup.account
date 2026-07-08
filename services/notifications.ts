@@ -1,12 +1,12 @@
 'use server';
 
-import prisma from '@/neup.core/helpers/prisma';
-import { getActiveAccountId } from '@/neup.core/auth/verify';
-import { logError } from '@/neup.core/helpers/logger';
+import prisma from '@/core/helpers/prisma';
+import { getActiveAccountId } from '@/core/auth/verify';
+import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { getUserProfile } from '@/services/user';
 import { notFound } from 'next/navigation';
-import { hasSelectedAccountAnyPermission } from '@/neup.core/auth/profile-permissions';
+import { hasSelectedAccountAnyPermission } from '@/core/auth/profile-permissions';
 
 /**
  * Type Notification.

@@ -3,10 +3,10 @@
 import { permission } from '@/neup.logica/permission';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import prisma from '@/neup.core/helpers/prisma';
-import { getActiveAccountId, getPersonalAccountId } from '@/neup.core/auth/verify';
+import prisma from '@/core/helpers/prisma';
+import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
 import { getUserProfile } from '@/services/user';
-import { logError } from '@/neup.core/helpers/logger';
+import { logError } from '@/core/helpers/logger';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
 import { checkPermissions } from '@/services/user';
 import {
@@ -14,7 +14,7 @@ import {
   ACCESS_APPLICATION_REMOVE_PERMISSIONS,
   ACCESS_APPLICATION_VIEW_PERMISSIONS,
   ACCESS_CONNECTION_VIEW_PERMISSIONS,
-} from '@/neup.core/auth/access-view-permissions';
+} from '@/core/auth/access-view-permissions';
 
 const servicePermissions = [
   permission('access.application.view.self', 'for_individual', 'service'),

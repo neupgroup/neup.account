@@ -2,12 +2,12 @@
 'use server';
 
 import { permission } from '@/neup.logica/permission';
-import prisma from '@/neup.core/helpers/prisma';
-import { logError } from '@/neup.core/helpers/logger';
+import prisma from '@/core/helpers/prisma';
+import { logError } from '@/core/helpers/logger';
 import { checkPermissions } from '@/services/user';
-import { getPersonalAccountId } from '@/neup.core/auth/verify';
-import type { StoredAccount } from '@/neup.core/auth/session';
-import { resolveDisplayImage } from '@/neup.core/helpers/display-image';
+import { getPersonalAccountId } from '@/core/auth/verify';
+import type { StoredAccount } from '@/core/auth/session';
+import { resolveDisplayImage } from '@/core/helpers/display-image';
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from '@/services/access-model';
 import type { Prisma } from '@/prisma/generated/client/client';
 

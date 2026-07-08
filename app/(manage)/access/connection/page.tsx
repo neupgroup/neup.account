@@ -5,10 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AppWindow, ChevronRight, Users } from '@/components/icons';
 import { FlowLink } from '@/components/ui/flow-link';
 import { getConnectionPageData } from './actions';
-import { createPageMetadata } from '@/neup.core/metadata';
-import { ACCESS_CONNECTION_VIEW_PERMISSIONS } from '@/neup.core/auth/access-view-permissions';
+import { createPageMetadata } from '@/core/metadata';
+import { ACCESS_CONNECTION_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
 import { permission } from '@/neup.logica/permission';
-import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
+import { resolveAccessProfileContext } from '@/core/auth/access-profile-context';
 
 export const metadata: Metadata = createPageMetadata('Connection Management');
 

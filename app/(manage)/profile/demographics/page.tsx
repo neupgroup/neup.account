@@ -8,8 +8,8 @@ import { z } from "zod"
 import { format } from "date-fns"
 
 import { updateUserProfile, parseDateString } from "@/services/profile"
-import { useToast } from "@/neup.core/hooks/use-toast"
-import { cn } from '@/neup.core/helpers/utils'
+import { useToast } from "@/core/hooks/use-toast"
+import { cn } from '@/core/helpers/utils'
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from "@/components/ui/button"
@@ -21,9 +21,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar"
 import { Label } from '@/components/ui/label'
 import { Loader2 } from "@/components/icons"
-import { useSession } from '@/neup.core/providers/session'
+import { useSession } from '@/core/providers/session'
 import { BackButton } from '@/components/ui/back-button'
-import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/neup.core/auth/profile-permissions'
+import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/auth/profile-permissions'
 import { permission } from '@/neup.logica/permission';
 import { useSelectedProfilePage } from '../use-selected-profile-page';
 

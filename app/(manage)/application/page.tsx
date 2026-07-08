@@ -12,7 +12,7 @@ import {
   getQueryParam,
 } from '@/app/(manage)/application/_lib/query-param';
 import { canCurrentAccountUseRootApplicationMode, getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
-import { createPageMetadata } from '@/neup.core/metadata';
+import { createPageMetadata } from '@/core/metadata';
 
 /*
 ::neup.documentation::application-manage-page

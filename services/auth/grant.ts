@@ -1,7 +1,7 @@
-import prisma from '@/neup.core/helpers/prisma';
+import prisma from '@/core/helpers/prisma';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import { logError } from '@/neup.core/helpers/logger';
+import { logError } from '@/core/helpers/logger';
 import { makeNotification } from '@/services/notifications';
 import { getAccountPermission, isRootUser } from '@/services/user';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';

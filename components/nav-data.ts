@@ -1,11 +1,11 @@
 import { permission } from "@/neup.logica/permission";
-import { PROFILE_NAV_PERMISSIONS } from "@/neup.core/auth/profile-permissions";
-import { SECURITY_HUB_PERMISSIONS } from "@/neup.core/auth/security-permissions";
-import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/neup.core/auth/data-permissions";
+import { PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
+import { SECURITY_HUB_PERMISSIONS } from "@/core/auth/security-permissions";
+import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/core/auth/data-permissions";
 import {
     ACCESS_BLOCK_VIEW_PERMISSIONS,
     ACCESS_VIEW_PERMISSIONS,
-} from "@/neup.core/auth/access-view-permissions";
+} from "@/core/auth/access-view-permissions";
 
 const navPermissions = [
     permission("notification.read", "for_individual", "component"),

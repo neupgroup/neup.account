@@ -16,7 +16,7 @@ but no longer persist the removed legacy permission `scope` column.
 import 'dotenv/config';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import prisma from '@/neup.core/helpers/prisma';
+import prisma from '@/core/helpers/prisma';
 
 const CURRENT_APP_ID = 'neup.account';
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useToast } from "@/neup.core/hooks/use-toast"
+import { useToast } from "@/core/hooks/use-toast"
 import {
   Toast,
   ToastClose,

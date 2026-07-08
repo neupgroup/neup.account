@@ -5,10 +5,10 @@ import { ListItem } from "@/components/ui/list-item";
 import { PrimaryHeader } from "@/components/ui/primary-header";
 import { UserCircle, FileText, HeartHandshake, AtSign, Contact, ShieldCheck } from "@/components/icons";
 import { checkGrantedPermissions, checkPermissions, getUserProfile } from "@/services/user";
-import { logSystemError } from "@/neup.core/helpers/logger";
-import { PROFILE_NAV_PERMISSIONS, PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from "@/neup.core/auth/profile-permissions";
-import { getAccountSelectorContext } from "@/neup.core/auth/accountSelector";
-import { resolveAccessProfileContext } from "@/neup.core/auth/access-profile-context";
+import { logSystemError } from "@/core/helpers/logger";
+import { PROFILE_NAV_PERMISSIONS, PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from "@/core/auth/profile-permissions";
+import { getAccountSelectorContext } from "@/core/auth/accountSelector";
+import { resolveAccessProfileContext } from "@/core/auth/access-profile-context";
 import { permission } from '@/neup.logica/permission';
 
 /**

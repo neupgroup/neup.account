@@ -3,22 +3,22 @@
 
 import { permission } from '@/neup.logica/permission';
 import { z } from 'zod';
-import prisma from '@/neup.core/helpers/prisma';
-import { getPersonalAccountId } from '@/neup.core/auth/verify';
+import prisma from '@/core/helpers/prisma';
+import { getPersonalAccountId } from '@/core/auth/verify';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/neup.core/helpers/logger';
+import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
 import { dependentFormSchema } from '@/services/manage/accounts/schema';
 import { ensureAccessGrant } from '@/services/access-model';
 import { checkPermissions, getUserProfile, getUserNeupIds } from '@/services/user';
 import { activityAction } from '@/services/activity-action';
-import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
-import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { resolveAccessProfileContext } from '@/core/auth/access-profile-context';
 import {
   ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS,
   ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS,
-} from '@/neup.core/auth/access-view-permissions';
+} from '@/core/auth/access-view-permissions';
 
 const servicePermissions = [
   permission('access.linked_account.view.self', 'for_individual', 'service'),

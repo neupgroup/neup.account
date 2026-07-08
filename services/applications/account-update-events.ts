@@ -1,8 +1,8 @@
 'use server';
 
 import { createCipheriv, createHash, createHmac, randomBytes, randomUUID } from 'crypto';
-import prisma from '@/neup.core/helpers/prisma';
-import { logError } from '@/neup.core/helpers/logger';
+import prisma from '@/core/helpers/prisma';
+import { logError } from '@/core/helpers/logger';
 import { activeAccessWhere } from '@/services/access-model';
 import {
   deriveLegacyRoleScopesFromPolicy,

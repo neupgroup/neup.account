@@ -8,8 +8,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useRouter } from 'next/navigation';
 import { VerifiedBadge } from '../verified-badge';
-import { useSession } from '@/neup.core/providers/session';
-import { redirectInApp } from '@/neup.core/helper/navigation';
+import { useSession } from '@/core/providers/session';
+import { redirectInApp } from '@/core/helper/navigation';
 
 function getGreeting() {
     const hour = new Date().getHours();

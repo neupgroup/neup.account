@@ -1,11 +1,11 @@
  'use server';
  
- import { logError } from '@/neup.core/helpers/logger';
+ import { logError } from '@/core/helpers/logger';
  import { z } from 'zod';
  import { whatsAppFormSchema, verifyCodeSchema } from '@/app/(manage)/access/link/whatsapp/schema';
  import { revalidatePath } from 'next/cache';
- import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
- import { ACCESS_LINKED_ACCOUNT_ADD_PERMISSIONS } from '@/neup.core/auth/access-view-permissions';
+ import { resolveAccessProfileContext } from '@/core/auth/access-profile-context';
+ import { ACCESS_LINKED_ACCOUNT_ADD_PERMISSIONS } from '@/core/auth/access-view-permissions';
  
  /**
   * Function sendVerificationCode.

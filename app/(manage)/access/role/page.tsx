@@ -5,9 +5,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { UserCircle, Clock } from '@/components/icons';
-import { getActiveAccountId } from '@/neup.core/auth/verify';
+import { getActiveAccountId } from '@/core/auth/verify';
 import { getUserProfile } from '@/services/user';
-import prisma from '@/neup.core/helpers/prisma';
+import prisma from '@/core/helpers/prisma';
 import {
   getDirectMemberDetail,
   getPortfolioMemberDetail,
@@ -27,8 +27,8 @@ import {
 } from '../_components/actions';
 import { FlowLink } from '@/components/ui/flow-link';
 import { DirectMemberAccessForm } from '../_components/direct-member-access-form';
-import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
-import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/neup.core/auth/access-view-permissions';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
 import { permission } from '@/neup.logica/permission';
 
 const pagePermissions = [

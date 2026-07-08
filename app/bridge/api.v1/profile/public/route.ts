@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { permission } from '@/neup.logica/permission';
 import { getUserProfile, getAccountPermission } from '@/services/user';
 import { notFound } from 'next/navigation';
-import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/neup.core/auth/profile-permissions';
+import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/auth/profile-permissions';
 
 const routePermissions = [
     permission('profile.display.view.self', 'for_individual', 'default'),

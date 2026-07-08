@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 import { permission } from '@/neup.logica/permission';
 
 const layoutPermissions = [

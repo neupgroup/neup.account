@@ -2,14 +2,14 @@
 
 import { useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { useToast } from '@/neup.core/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2 } from '@/components/icons';
 import { addUserApplicationAccess, updateUserApplicationPermissions } from '@/services/applications/access';
-import { redirectInApp } from '@/neup.core/helper/navigation';
+import { redirectInApp } from '@/core/helper/navigation';
 
 type ApplicationAccessFormProps = {
   mode: 'add' | 'edit';

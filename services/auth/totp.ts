@@ -1,19 +1,19 @@
 "use server";
 import { permission } from '@/neup.logica/permission';
-import prisma from '@/neup.core/helpers/prisma';
-import { getActiveAccountId } from '@/neup.core/auth/verify';
+import prisma from '@/core/helpers/prisma';
+import { getActiveAccountId } from '@/core/auth/verify';
 import { checkPermissions } from '@/services/user';
 import { authenticator } from 'otplib';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
-import { logError } from '@/neup.core/helpers/logger';
+import { logError } from '@/core/helpers/logger';
 import { createNotification } from '@/services/notifications';
 import { encrypt, decrypt } from '@/services/security/totp';
-import { makeSessionFromRequest } from '@/neup.core/auth/makeSession';
+import { makeSessionFromRequest } from '@/core/auth/makeSession';
 import { getAuthRequest } from './auth-request';
-import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 
 /**
  * Result returned by TOTP helpers.

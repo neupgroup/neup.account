@@ -1,15 +1,15 @@
 
 'use server';
 
-import prisma from '@/neup.core/helpers/prisma';
+import prisma from '@/core/helpers/prisma';
 import bcrypt from 'bcryptjs';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/neup.core/helpers/logger';
+import { logError } from '@/core/helpers/logger';
 import type { z } from 'zod';
 import { getAuthRequest, extendAuthRequest } from '../auth-request';
 import { getAuthTimeoutError } from '../timeout';
 import { verifyPassword } from '../password';
-import { makeSessionFromRequest } from '@/neup.core/auth/makeSession';
+import { makeSessionFromRequest } from '@/core/auth/makeSession';
 import { assignDefaultRole } from '../assignDefaultRole';
 import {
   nameSchema,

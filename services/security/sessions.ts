@@ -1,11 +1,11 @@
 'use server';
 
 import { permission } from '@/neup.logica/permission';
-import prisma from '@/neup.core/helpers/prisma';
-import { getActiveAccountId, getActiveSession } from '@/neup.core/auth/verify';
+import prisma from '@/core/helpers/prisma';
+import { getActiveAccountId, getActiveSession } from '@/core/auth/verify';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/neup.core/helpers/logger';
-import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
+import { logError } from '@/core/helpers/logger';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
 
 const servicePermissions = [
     permission('security.login_devices.view', 'for_individual', 'service'),

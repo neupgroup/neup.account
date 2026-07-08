@@ -7,9 +7,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { FlowLink } from '@/components/ui/flow-link';
 import { Clock, UserCircle } from '@/components/icons';
-import { getActiveAccountId } from '@/neup.core/auth/verify';
+import { getActiveAccountId } from '@/core/auth/verify';
 import { getUserProfile } from '@/services/user';
-import prisma from '@/neup.core/helpers/prisma';
+import prisma from '@/core/helpers/prisma';
 import { getAccessAssetGroup } from '@/services/manage/access/assets';
 import { bulkAssignPermissionsFromForm } from '@/services/manage/access/actions';
 import { AssignPermissionsWizard } from '../_components/assign-permissions-wizard';
@@ -33,8 +33,8 @@ import {
 } from '../_components/actions';
 import { DirectMemberAccessForm } from '../_components/direct-member-access-form';
 import { AddUserForm } from '../add-user-form';
-import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
-import { ACCESS_TEAM_ADD_PERMISSIONS } from '@/neup.core/auth/access-view-permissions';
+import { resolveAccessProfileContext } from '@/core/auth/access-profile-context';
+import { ACCESS_TEAM_ADD_PERMISSIONS } from '@/core/auth/access-view-permissions';
 
 type PageProps = {
   searchParams: Promise<{

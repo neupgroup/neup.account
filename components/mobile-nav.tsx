@@ -29,13 +29,13 @@ import {
 import { type NavSection, navItems, allPermissionsMap } from "./nav-data";
 import { NotificationBell } from "./warning-display";
 import { ListItem } from "./ui/list-item";
-import { useSession } from "@/neup.core/providers/session";
+import { useSession } from "@/core/providers/session";
 import { Skeleton } from "./ui/skeleton";
 import { switchToPersonal } from "@/services/auth/switch";
-import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/neup.core/auth/profile-permissions";
-import { redirectInApp } from "@/neup.core/helper/navigation";
-import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/neup.core/auth/data-permissions";
-import { ACCESS_VIEW_PERMISSIONS } from "@/neup.core/auth/access-view-permissions";
+import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
+import { redirectInApp } from "@/core/helper/navigation";
+import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/core/auth/data-permissions";
+import { ACCESS_VIEW_PERMISSIONS } from "@/core/auth/access-view-permissions";
 
 const componentPermissions = [
     permission("notification.read", "for_individual", "component"),

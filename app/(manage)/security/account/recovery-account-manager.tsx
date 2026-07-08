@@ -3,13 +3,13 @@
 "use client";
 
 import { useState, useTransition, useRef } from 'react';
-import { useToast } from '@/neup.core/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { addRecoveryAccount, removeRecoveryAccount, type RecoveryAccount } from '@/services/security/account';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { UserPlus, Loader2, Trash2 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { cn } from '@/neup.core/helpers/utils';
+import { cn } from '@/core/helpers/utils';
 import { CardFooter } from '@/components/ui/card';
 
 function AccountItem({ account, onRemove }: { account: RecoveryAccount, onRemove: (id: string) => void }) {

@@ -1,5 +1,5 @@
-import prisma from '@/neup.core/helpers/prisma';
-import { logError } from '@/neup.core/helpers/logger';
+import prisma from '@/core/helpers/prisma';
+import { logError } from '@/core/helpers/logger';
 
 /*
 ::neup.documentation::bridge-dev-log-service

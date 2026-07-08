@@ -4,7 +4,7 @@ import { useTransition, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useToast } from '@/neup.core/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { saveAppConfig, addSilentSsoOrigin, removeSilentSsoOrigin, addServerIp, removeServerIp, saveAccountUpdateWebhookUrl, saveRoleUpdateWebhookUrl } from '@/services/applications/manage';
 import {
   applicationResponseFields,

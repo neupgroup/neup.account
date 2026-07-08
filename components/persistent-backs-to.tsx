@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { recordCurrentInAppPath } from '@/neup.core/helpers/back-navigation';
+import { recordCurrentInAppPath } from '@/core/helpers/back-navigation';
 
 const PARAM_KEY = 'backsTo';
 const STORAGE_KEY = `persistent-query-param:${PARAM_KEY}`;

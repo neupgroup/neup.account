@@ -5,11 +5,11 @@ import { PrimaryHeader } from '@/components/ui/primary-header';
 import { SecondaryHeader } from '@/components/ui/secondary-header';
 import { permission } from '@/neup.logica/permission';
 import { notFound } from 'next/navigation';
-import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
-import { hasAnyPermission } from '@/neup.core/auth/profile-permissions';
-import { SECURITY_HUB_ITEMS, SECURITY_HUB_PERMISSIONS } from '@/neup.core/auth/security-permissions';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { hasAnyPermission } from '@/core/auth/profile-permissions';
+import { SECURITY_HUB_ITEMS, SECURITY_HUB_PERMISSIONS } from '@/core/auth/security-permissions';
 import { getCurrentAccountPermission } from '@/services/user';
-import { getActiveAccountId } from '@/neup.core/auth/verify';
+import { getActiveAccountId } from '@/core/auth/verify';
 
 const pagePermissions = [
     permission('security.pass.modify.self', 'for_individual', 'page'),

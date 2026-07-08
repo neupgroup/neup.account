@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition, useContext } from "react";
-import { useToast } from "@/neup.core/hooks/use-toast";
+import { useToast } from "@/core/hooks/use-toast";
 import { deactivateAccount } from "@/services/data/deactivate";
 import {  Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,10 +10,10 @@ import { Loader2, PowerOff } from "@/components/icons";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BackButton } from "@/components/ui/back-button";
-import { Geolocation } from "@/neup.core/providers/geolocation";
+import { Geolocation } from "@/core/providers/geolocation";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
 import { useRouter } from "next/navigation";
-import { redirectInApp } from "@/neup.core/helper/navigation";
+import { redirectInApp } from "@/core/helper/navigation";
 
 
 export default function DeactivateAccountPage() {

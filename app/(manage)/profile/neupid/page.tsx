@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 
 import { getProfileNeupIds, updateUserProfile } from "@/services/profile"
-import { useToast } from "@/neup.core/hooks/use-toast"
+import { useToast } from "@/core/hooks/use-toast"
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from "@/components/ui/button"
@@ -17,9 +17,9 @@ import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form"
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { useSession } from '@/neup.core/providers/session'
+import { useSession } from '@/core/providers/session'
 import { BackButton } from '@/components/ui/back-button'
-import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/neup.core/auth/profile-permissions'
+import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/auth/profile-permissions'
 import { permission } from '@/neup.logica/permission';
 import { useSelectedProfilePage } from '../use-selected-profile-page';
 

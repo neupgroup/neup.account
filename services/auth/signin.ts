@@ -4,9 +4,9 @@ import { z } from 'zod';
 import { validateNeupId } from '@/services/user';
 import { getAuthRequest, extendAuthRequest } from './auth-request';
 import { getAuthTimeoutError } from './timeout';
-import prisma from '@/neup.core/helpers/prisma';
+import prisma from '@/core/helpers/prisma';
 import { verifyPassword } from './password';
-import { makeSessionFromRequest } from '@/neup.core/auth/makeSession';
+import { makeSessionFromRequest } from '@/core/auth/makeSession';
 
 const neupIdSchema = z.object({
     neupId: z.string().min(1, "NeupID is required."),

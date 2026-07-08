@@ -10,7 +10,7 @@ import { z } from "zod"
 import Image from 'next/image'
 
 import { updateUserProfile, getDisplayNameSuggestions, getPastProfilePhotos, getPublicDisplayImages, type PublicDisplayImage } from "@/services/profile"
-import { useToast } from "@/neup.core/hooks/use-toast"
+import { useToast } from "@/core/hooks/use-toast"
 import { uploadFile } from '@/services/upload'
 
 import { Skeleton } from '@/components/ui/skeleton'
@@ -19,13 +19,13 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form"
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { useSession } from '@/neup.core/providers/session'
+import { useSession } from '@/core/providers/session'
 import { BackButton } from '@/components/ui/back-button'
-import { cn } from '@/neup.core/helpers/utils'
+import { cn } from '@/core/helpers/utils'
 import { Check, Loader2, UploadCloud } from '@/components/icons'
 import { SecondaryHeader } from '@/components/ui/secondary-header'
 import { Separator } from '@/components/ui/separator'
-import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/neup.core/auth/profile-permissions'
+import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/auth/profile-permissions'
 import { permission } from '@/neup.logica/permission';
 import { useSelectedProfilePage } from '../use-selected-profile-page';
 

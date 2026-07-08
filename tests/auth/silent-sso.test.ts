@@ -17,7 +17,7 @@ vi.mock('@/core/helpers/logger', () => ({
   logError: vi.fn().mockResolvedValue(undefined),
 }));
 
-import prisma from '@/neup.core/helpers/prisma';
+import prisma from '@/core/helpers/prisma';
 import {
   signIdentityJwt,
   resolveOrCreateIdentity,

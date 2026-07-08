@@ -5,7 +5,7 @@ import { useState, useTransition, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useToast } from "@/neup.core/hooks/use-toast";
+import { useToast } from "@/core/hooks/use-toast";
 import { scheduleMaterialization } from "@/services/data/materialization";
 import {
   Card,
@@ -35,7 +35,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BackButton } from "@/components/ui/back-button";
-import { Geolocation } from "@/neup.core/providers/geolocation";
+import { Geolocation } from "@/core/providers/geolocation";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
 
 const formSchema = z.object({

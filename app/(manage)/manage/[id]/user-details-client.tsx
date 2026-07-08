@@ -9,7 +9,7 @@ import { ActivityList } from './activity/activity-list';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from '@/components/icons';
 import { useRouter } from 'next/navigation';
-import { redirectInApp } from '@/neup.core/helper/navigation';
+import { redirectInApp } from '@/core/helper/navigation';
 
 interface UserDetailsClientProps {
     initialUserDetails: UserDetails;

@@ -4,17 +4,17 @@ import { BackButton } from '@/components/ui/back-button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Shield, ChevronRight } from '@/components/icons';
 import { getDirectMembers } from '@/services/manage/access';
-import prisma from '@/neup.core/helpers/prisma';
+import prisma from '@/core/helpers/prisma';
 import { getUserProfile, isRootUser } from '@/services/user';
 import { resolveAssetName } from '@/services/manage/access/asset-resolvers';
 import { AssetMemberLookupForm } from '../_components/asset-member-lookup-form';
 import { AddUserForm } from '../add-user-form';
 import { FlowLink } from '@/components/ui/flow-link';
 import { PrimaryHeader } from '@/components/ui/primary-header';
-import { createPageMetadata } from '@/neup.core/metadata';
-import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/neup.core/auth/access-view-permissions';
+import { createPageMetadata } from '@/core/metadata';
+import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
 import { permission } from '@/neup.logica/permission';
-import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
+import { resolveAccessProfileContext } from '@/core/auth/access-profile-context';
 
 const pagePermissions = [
   permission('access.team.view.self', 'for_individual', 'page'),

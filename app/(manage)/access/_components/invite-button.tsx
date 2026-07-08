@@ -15,7 +15,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Loader2, UserPlus } from '@/components/icons';
-import { redirectInApp } from '@/neup.core/helper/navigation';
+import { redirectInApp } from '@/core/helper/navigation';
 
 type Props = {
   displayName: string;

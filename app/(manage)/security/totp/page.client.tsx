@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import Image from 'next/image';
-import { useToast } from '@/neup.core/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

@@ -3,21 +3,21 @@
  
  import { permission } from '@/neup.logica/permission';
  import { z } from 'zod';
- import prisma from '@/neup.core/helpers/prisma';
+ import prisma from '@/core/helpers/prisma';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/neup.core/helpers/logger';
+import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { getUserNeupIds, getUserProfile, checkPermissions } from '@/services/user';
-import { getActiveAccountId, getPersonalAccountId } from '@/neup.core/auth/verify';
+import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
 import { activityAction } from '@/services/activity-action';
 import { ensureAccessGrant } from '@/services/access-model';
-import { requireAnyPermission404 } from '@/neup.core/auth/permission-guards';
-import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
+import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { resolveAccessProfileContext } from '@/core/auth/access-profile-context';
 import {
     BRAND_OWNER_PERMISSION_NAMES,
     BRAND_OWNER_ROLE_ID,
     BRAND_OWNER_ROLE_NAME,
-} from '@/neup.core/auth/brand-roles';
+} from '@/core/auth/brand-roles';
 
 const servicePermissions = [
     permission('linked_accounts.brand.manage', 'for_brand', 'service'),

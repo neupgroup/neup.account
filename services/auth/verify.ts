@@ -1,6 +1,6 @@
 'use server';
 
-import prisma from '@/neup.core/helpers/prisma';
+import prisma from '@/core/helpers/prisma';
 
 /*
 ::neup.documentation::verify-service

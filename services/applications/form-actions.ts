@@ -22,9 +22,9 @@ import {
   updateManagedApplicationStatus,
 } from '@/services/applications/manage';
 import { getSignedApplications } from '@/services/applications/connected';
-import { getPersonalAccountId } from '@/neup.core/auth/verify';
-import prisma from '@/neup.core/helpers/prisma';
-import { logError } from '@/neup.core/helpers/logger';
+import { getPersonalAccountId } from '@/core/auth/verify';
+import prisma from '@/core/helpers/prisma';
+import { logError } from '@/core/helpers/logger';
 import type { ApplicationSection, FlatAppItem } from '@/services/applications/types';
 import { revalidateApplicationDetailRoutes } from '@/services/applications/revalidate-routes';
 import {

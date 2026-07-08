@@ -1,20 +1,20 @@
 'use server';
 
 import { permission } from '@/neup.logica/permission';
-import prisma from '@/neup.core/helpers/prisma';
+import prisma from '@/core/helpers/prisma';
 import { Prisma } from '@/prisma/generated/client';
 import { checkPermissions, getUserProfile, isRootUser } from '@/services/user';
-import { getPersonalAccountId, getActiveAccountId } from '@/neup.core/auth/verify';
-import { logError } from '@/neup.core/helpers/logger';
+import { getPersonalAccountId, getActiveAccountId } from '@/core/auth/verify';
+import { logError } from '@/core/helpers/logger';
 import { assignAssetMemberRole, getRolesForAsset } from '@/services/manage/access/assets';
-import { BRAND_OWNER_ROLE_ID } from '@/neup.core/auth/brand-roles';
+import { BRAND_OWNER_ROLE_ID } from '@/core/auth/brand-roles';
 import { resolveNeupAccountPermissionCandidates } from '@/services/neup-account/permission-catalog';
 import { roleMatchesAccountTypeScopePolicy, roleMatchesAssignmentModesPolicy } from '@/services/applications/authz-scope-policy';
 import {
   ACCESS_TEAM_ADD_PERMISSIONS,
   ACCESS_TEAM_REMOVE_PERMISSIONS,
-} from '@/neup.core/auth/access-view-permissions';
-import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
+} from '@/core/auth/access-view-permissions';
+import { resolveAccessProfileContext } from '@/core/auth/access-profile-context';
 
 const servicePermissions = [
   permission('access.team.add.self', 'for_individual', 'service'),

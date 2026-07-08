@@ -12,7 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { PermissionPanel } from '@/app/(manage)/application/_components/permission-panel';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
-import { createPageMetadata } from '@/neup.core/metadata';
+import { createPageMetadata } from '@/core/metadata';
 import { PermissionDetailEditor } from '@/app/(manage)/application/_components/permission-detail-editor';
 import { isBuiltInApplicationManagementPermissionName } from '@/services/applications/permission-definitions';
 

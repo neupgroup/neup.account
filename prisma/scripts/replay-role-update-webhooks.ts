@@ -1,4 +1,4 @@
-import prisma from '@/neup.core/helpers/prisma';
+import prisma from '@/core/helpers/prisma';
 import { dispatchRoleUpdateWebhook, getRolePayload } from '@/services/applications/role-update-events';
 
 async function main() {

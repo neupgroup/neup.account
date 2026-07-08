@@ -4,15 +4,15 @@ import { permission } from '@/neup.logica/permission';
 import { FlowLink } from '@/components/ui/flow-link'
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useTransition } from "react";
-import { cn } from "@/neup.core/helpers/utils"
+import { cn } from "@/core/helpers/utils"
 import { buttonVariants } from "@/components/ui/button"
 import { type NavSection, navItems, allPermissionsMap } from "./nav-data"
 import { Skeleton } from "./ui/skeleton";
-import { useSession } from "@/neup.core/providers/session";
+import { useSession } from "@/core/providers/session";
 import { switchToPersonal } from "@/services/auth/switch";
-import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/neup.core/auth/profile-permissions";
-import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/neup.core/auth/data-permissions";
-import { ACCESS_VIEW_PERMISSIONS } from "@/neup.core/auth/access-view-permissions";
+import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
+import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/core/auth/data-permissions";
+import { ACCESS_VIEW_PERMISSIONS } from "@/core/auth/access-view-permissions";
 
 const componentPermissions = [
     permission('notification.read', 'for_individual', 'component'),

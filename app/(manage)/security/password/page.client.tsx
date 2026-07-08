@@ -4,7 +4,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useToast } from "@/neup.core/hooks/use-toast";
+import { useToast } from "@/core/hooks/use-toast";
 import { changePassword } from "@/services/security/password";
 import { changePasswordSchema } from "@/services/security/schema";
 
@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useState, useContext, useTransition } from "react";
 import { BackButton } from "@/components/ui/back-button";
-import { Geolocation } from "@/neup.core/providers/geolocation";
+import { Geolocation } from "@/core/providers/geolocation";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
 import { Loader2 } from "@/components/icons";
 

@@ -1,16 +1,16 @@
 'use server';
 
 import { permission } from '@/neup.logica/permission';
-import prisma from '@/neup.core/helpers/prisma';
-import { getActiveAccountId } from '@/neup.core/auth/verify';
-import { logError } from '@/neup.core/helpers/logger';
+import prisma from '@/core/helpers/prisma';
+import { getActiveAccountId } from '@/core/auth/verify';
+import { logError } from '@/core/helpers/logger';
 import { getUserProfile, checkPermissions } from '@/services/user';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import {
   ACCESS_FAMILY_MEMBER_UPDATE_PERMISSIONS,
   ACCESS_FAMILY_PARTNER_UPDATE_PERMISSIONS,
-} from '@/neup.core/auth/access-view-permissions';
+} from '@/core/auth/access-view-permissions';
 
 export type FamilyMember = {
   accountId: string;

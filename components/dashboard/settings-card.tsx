@@ -6,12 +6,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ShieldCheck, Laptop, Link, AppWindow } from '@/components/icons';
 import { ListItem } from '../ui/list-item';
 import { SecondaryHeader } from '../ui/secondary-header';
-import { useSession } from '@/neup.core/providers/session';
-import { hasAnyPermission } from '@/neup.core/auth/profile-permissions';
+import { useSession } from '@/core/providers/session';
+import { hasAnyPermission } from '@/core/auth/profile-permissions';
 import {
     SECURITY_PERMISSION_GROUPS,
-} from '@/neup.core/auth/security-permissions';
-import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/neup.core/auth/linked-account-permissions';
+} from '@/core/auth/security-permissions';
+import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/core/auth/linked-account-permissions';
 
 const componentPermissions = [
     permission('security.pass.modify.self', 'for_individual', 'component'),

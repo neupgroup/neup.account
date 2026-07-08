@@ -5,14 +5,14 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState, useEffect, useTransition, Suspense } from 'react';
 import NProgress from 'nprogress';
 
-import { useToast } from '@/neup.core/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { submitNeupId, submitPassword, submitPasswordWithNeupId } from '@/services/auth/signin';
 import { getSignupStepData } from '@/services/auth/signup';
 import { cancelAccountDeletion } from '@/services/data/delete';
 import { handleAuthRequest } from '@/app/auth/handleAuthRequest';
 import { verifyTotpFromPost } from '@/services/auth/totp';
-import { redirectInApp } from '@/neup.core/helpers/link';
-import { appendAuthCallbackContext, appendRedirect, hasAuthCallbackContext, shouldReturnToAuthStartForExternalAuthentication, getFlowParams, appendFlowParams } from '@/neup.core/auth/callback';
+import { redirectInApp } from '@/core/helpers/link';
+import { appendAuthCallbackContext, appendRedirect, hasAuthCallbackContext, shouldReturnToAuthStartForExternalAuthentication, getFlowParams, appendFlowParams } from '@/core/auth/callback';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import prisma from '../../neup.core/helpers/prisma';
+import prisma from '@/core/helpers/prisma';
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not set.');

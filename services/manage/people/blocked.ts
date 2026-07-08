@@ -1,16 +1,16 @@
 'use server';
 
 import { permission } from '@/neup.logica/permission';
-import prisma from '@/neup.core/helpers/prisma';
-import { getActiveAccountId } from '@/neup.core/auth/verify';
+import prisma from '@/core/helpers/prisma';
+import { getActiveAccountId } from '@/core/auth/verify';
 import { getUserProfile, getUserNeupIds, checkPermissions } from '@/services/user';
-import { logError } from '@/neup.core/helpers/logger';
+import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import {
   ACCESS_BLOCK_UPDATE_PERMISSIONS,
   ACCESS_BLOCK_VIEW_PERMISSIONS,
-} from '@/neup.core/auth/access-view-permissions';
+} from '@/core/auth/access-view-permissions';
 
 const neupIdSchema = z.object({
   neupId: z.string().min(3, 'NeupID must be at least 3 characters.'),

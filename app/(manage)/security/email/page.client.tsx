@@ -5,7 +5,7 @@ import { useEffect, useState, useTransition, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useToast } from "@/neup.core/hooks/use-toast";
+import { useToast } from "@/core/hooks/use-toast";
 import { getRecoveryEmail, addRecoveryEmail, removeRecoveryEmail } from "@/services/security/email";
 
 import { Button } from "@/components/ui/button";
@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Loader2, Plus, Trash2 } from "@/components/icons";
-import { cn } from "@/neup.core/helpers/utils";
+import { cn } from "@/core/helpers/utils";
 import { BackButton } from "@/components/ui/back-button";
 import { emailFormSchema } from "@/services/security/schema";
 import { SecondaryHeader } from "@/components/ui/secondary-header";

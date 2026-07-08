@@ -1,9 +1,9 @@
 'use server';
 
 import { permission } from '@/neup.logica/permission';
-import prisma from '@/neup.core/helpers/prisma';
-import { getPersonalAccountId } from '@/neup.core/auth/verify';
-import { logError } from '@/neup.core/helpers/logger';
+import prisma from '@/core/helpers/prisma';
+import { getPersonalAccountId } from '@/core/auth/verify';
+import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { format, isValid, parse as parseWithFormat } from 'date-fns';
@@ -14,9 +14,9 @@ import { activityAction } from '@/services/activity-action';
 import { getAITextResponse } from '@/services/shared/ai';
 import { logDisplayImageResourceForAccount } from '@/services/manage/site/resources';
 import { dispatchAccountUpdatedEvent, type AccountUpdateEventField } from '@/services/applications/account-update-events';
-import { extractGenderFromDetails, resolveDisplayImage } from '@/neup.core/helpers/display-image';
-import { assertHasProfileDisplayPermission } from '@/neup.core/auth/profile-permissions';
-import { resolveAccessProfileContext } from '@/neup.core/auth/access-profile-context';
+import { extractGenderFromDetails, resolveDisplayImage } from '@/core/helpers/display-image';
+import { assertHasProfileDisplayPermission } from '@/core/auth/profile-permissions';
+import { resolveAccessProfileContext } from '@/core/auth/access-profile-context';
 import { createNotification } from '@/services/notifications';
 
 const servicePermissions = [

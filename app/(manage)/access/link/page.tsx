@@ -4,7 +4,7 @@ import { BackButton } from "@/components/ui/back-button";
 import { PrimaryHeader } from "@/components/ui/primary-header";
 import { ListItem } from "@/components/ui/list-item";
 import { Bot } from "@/components/icons";
-import { createPageMetadata } from '@/neup.core/metadata';
+import { createPageMetadata } from '@/core/metadata';
 
 export const metadata: Metadata = createPageMetadata('Link Other Accounts');
 

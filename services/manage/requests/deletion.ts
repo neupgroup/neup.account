@@ -1,11 +1,11 @@
 'use server';
 
-import prisma from '@/neup.core/helpers/prisma';
+import prisma from '@/core/helpers/prisma';
 import { getUserProfile, checkPermissions, isRootUser } from '@/services/user';
-import { logError } from '@/neup.core/helpers/logger';
+import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { deleteUserAccount } from '@/services/manage/users';
-import { getPersonalAccountId } from '@/neup.core/auth/verify';
+import { getPersonalAccountId } from '@/core/auth/verify';
 import { logActivity } from '@/services/log-actions';
 import { z } from 'zod';
 import { permission } from '@/neup.logica/permission';

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, ShieldCheck } from "@/components/icons";
-import { useToast } from "@/neup.core/hooks/use-toast";
+import { useToast } from "@/core/hooks/use-toast";
 import {
   updateDirectMemberAccess,
   type DirectAccessAssignableRole,

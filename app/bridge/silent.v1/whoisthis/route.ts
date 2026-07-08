@@ -1,9 +1,9 @@
 import { NextRequest } from 'next/server';
-import { getSessionCookies } from '@/neup.core/auth/cookies';
-import { getAccounts } from '@/neup.core/auth/accounts';
-import prisma from '@/neup.core/helpers/prisma';
-import { logError } from '@/neup.core/helpers/logger';
-import { resolveGuestAccount } from '@/neup.core/auth/guestAccount';
+import { getSessionCookies } from '@/core/auth/cookies';
+import { getAccounts } from '@/core/auth/accounts';
+import prisma from '@/core/helpers/prisma';
+import { logError } from '@/core/helpers/logger';
+import { resolveGuestAccount } from '@/core/auth/guestAccount';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import {
   checkRateLimit,

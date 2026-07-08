@@ -10,7 +10,7 @@ vi.mock('@/core/helpers/prisma', () => ({
     },
 }));
 
-import prisma from '@/neup.core/helpers/prisma';
+import prisma from '@/core/helpers/prisma';
 import { getAuthRequest } from '@/services/auth/auth-request';
 
 const mockFindUnique = prisma.authnRequest.findUnique as ReturnType<typeof vi.fn>;

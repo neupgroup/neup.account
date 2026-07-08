@@ -1,8 +1,8 @@
 
 'use server';
 
-import { getActiveAccountId, getPersonalAccountId } from '@/neup.core/auth/verify';
-import { logError } from '@/neup.core/helpers/logger';
+import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
+import { logError } from '@/core/helpers/logger';
 
 // Make sure to set this in your environment variables
 const UPLOAD_URL = process.env.NEXT_PUBLIC_UPLOAD_URL || 'https://neupgroup.com/usercontent/bridge/api/upload.php';

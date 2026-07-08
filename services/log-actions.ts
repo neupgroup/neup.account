@@ -3,9 +3,9 @@
 // Handles writing and reading activity logs from the database.
 // Activity logs record user actions (e.g. login, profile update) with status and IP.
 
-import prisma from '@/neup.core/helpers/prisma';
-import { logError } from '@/neup.core/helpers/logger';
-import { getActiveAccountId } from '@/neup.core/auth/verify';
+import prisma from '@/core/helpers/prisma';
+import { logError } from '@/core/helpers/logger';
+import { getActiveAccountId } from '@/core/auth/verify';
 import { checkPermissions } from '@/services/user';
 import { compileActivityAction } from '@/services/activity-action';
 import { permission } from '@/neup.logica/permission';

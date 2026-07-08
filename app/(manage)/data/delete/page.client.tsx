@@ -3,7 +3,7 @@
 "use client";
 
 import { useState, useTransition, useContext, useEffect } from "react";
-import { useToast } from "@/neup.core/hooks/use-toast";
+import { useToast } from "@/core/hooks/use-toast";
 import { requestAccountDeletion } from "@/services/data/delete";
 import {
   Card,
@@ -19,12 +19,12 @@ import { Loader2, Trash2 } from "@/components/icons";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BackButton } from "@/components/ui/back-button";
-import { Geolocation } from "@/neup.core/providers/geolocation";
+import { Geolocation } from "@/core/providers/geolocation";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
 import { getAccountType } from '@/services/user';
-import { getActiveAccountId } from '@/neup.core/auth/verify';
+import { getActiveAccountId } from '@/core/auth/verify';
 import { useRouter } from "next/navigation";
-import { redirectInApp } from "@/neup.core/helper/navigation";
+import { redirectInApp } from "@/core/helper/navigation";
 
 
 export default function DeleteAccountPage() {

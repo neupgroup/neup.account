@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Laptop, MapPin } from 'lucide-react';
 import { logoutSessionById, logoutAllOtherSessions } from '@/services/security/sessions';
 import type { ManagedSession } from '@/services/security/sessions';
-import { useToast } from '@/neup.core/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { CardFooter } from '@/components/ui/card';
 
 export function SessionManager({ initialSessions, currentSessionId }: { initialSessions: ManagedSession[], currentSessionId: string | null }) {

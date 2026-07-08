@@ -3,13 +3,13 @@
 
 import { useEffect, useState, useTransition } from 'react';
 import { getUserProfile } from '@/services/user';
-import type { StoredAccount } from '@/neup.core/auth/session';
+import type { StoredAccount } from '@/core/auth/session';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronRight } from '@/components/icons';
 import { AccountActions } from '@/app/auth/start/start-page-component';
-import { cn } from '@/neup.core/helpers/utils';
-import { deleteSessionData } from '@/neup.core/auth/storage';
+import { cn } from '@/core/helpers/utils';
+import { deleteSessionData } from '@/core/auth/storage';
 
 type CombinedAccount = StoredAccount & {
     displayName?: string;

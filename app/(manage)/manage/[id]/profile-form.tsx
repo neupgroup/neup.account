@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useTransition } from "react";
 import { Loader2 } from "lucide-react";
-import { useToast } from "@/neup.core/hooks/use-toast";
+import { useToast } from "@/core/hooks/use-toast";
 
 const profileFormSchema = z.object({
   nameFirst: z.string().min(1, "First name is required"),

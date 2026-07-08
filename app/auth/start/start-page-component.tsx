@@ -8,13 +8,13 @@ import { useEffect, useRef, useTransition } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import React from 'react';
-import { useToast } from '@/neup.core/hooks/use-toast';
+import { useToast } from '@/core/hooks/use-toast';
 import { AccountListItem } from '@/components/elements/account-item';
-import type { StoredAccount } from '@/neup.core/auth/session';
-import { appendAuthCallbackContext, appendRedirect, getAppDisplayName, shouldReturnToAuthStartForExternalAuthentication } from '@/neup.core/auth/callback';
-import { redirectInApp } from '@/neup.core/helper/navigation';
-import { cleanupExpiredStoredSessions } from '@/neup.core/auth/session';
-import { logoutStoredSession, removeStoredAccount } from '@/neup.core/auth/startSessions';
+import type { StoredAccount } from '@/core/auth/session';
+import { appendAuthCallbackContext, appendRedirect, getAppDisplayName, shouldReturnToAuthStartForExternalAuthentication } from '@/core/auth/callback';
+import { redirectInApp } from '@/core/helper/navigation';
+import { cleanupExpiredStoredSessions } from '@/core/auth/session';
+import { logoutStoredSession, removeStoredAccount } from '@/core/auth/startSessions';
 
 // Inline sign-out / remove actions rendered next to each account on the start page.
 export function AccountActions({ account }: { account: StoredAccount }) {

@@ -1,8 +1,8 @@
 "use server";
 
-import prisma from '@/neup.core/helpers/prisma';
-import { createAndSetSession } from '@/neup.core/auth/session';
-import { getActiveSession } from '@/neup.core/auth/verify';
+import prisma from '@/core/helpers/prisma';
+import { createAndSetSession } from '@/core/auth/session';
+import { getActiveSession } from '@/core/auth/verify';
 import { makeNotification } from '@/services/notifications';
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';

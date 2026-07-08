@@ -1,10 +1,10 @@
-import prisma from '@/neup.core/helpers/prisma';
-import { logError } from '@/neup.core/helpers/logger';
+import prisma from '@/core/helpers/prisma';
+import { logError } from '@/core/helpers/logger';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import type { Identity } from '@/prisma/generated/client';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
-import { extractGenderFromDetails, resolveDisplayImage } from '@/neup.core/helpers/display-image';
+import { extractGenderFromDetails, resolveDisplayImage } from '@/core/helpers/display-image';
 
 /*
 ::neup.documentation::silent-sso-service

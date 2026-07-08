@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { CheckCircle2 } from 'lucide-react';
-import { cn } from '@/neup.core/helpers/utils';
+import { cn } from '@/core/helpers/utils';
 import { getAccountVerification } from '@/services/manage/verifications';
 
 type VerificationDetails = {

@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/neup.core/helpers/prisma';
+import prisma from '@/core/helpers/prisma';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
-import { verifyAccountToken } from '@/neup.core/auth/accountToken';
+import { verifyAccountToken } from '@/core/auth/accountToken';
 import { resolveWhoAmI } from '@/services/auth/whoami';
-import { resolveGuestAccount } from '@/neup.core/auth/guestAccount';
-import { getSessionCookies } from '@/neup.core/auth/cookies';
+import { resolveGuestAccount } from '@/core/auth/guestAccount';
+import { getSessionCookies } from '@/core/auth/cookies';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
-import { extractGenderFromDetails, resolveDisplayImage } from '@/neup.core/helpers/display-image';
+import { extractGenderFromDetails, resolveDisplayImage } from '@/core/helpers/display-image';
 
 export const dynamic = 'force-dynamic';
 

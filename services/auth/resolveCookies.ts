@@ -1,1 +1,1 @@
-export { resolveGuestAccount as resolveCookies } from '@/core/auth/guestAccount';
+export { resolveGuestAccount as resolveCookies } from '@/logica/account/guestAccount';

@@ -5,7 +5,7 @@
 
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
-import { getActiveAccountId } from '@/core/auth/verify';
+import { getActiveAccountId } from '@/logica/account/verify';
 import { checkPermissions } from '@/services/user';
 import { compileActivityAction } from '@/services/activity-action';
 import { permission } from '@/logica/permission';

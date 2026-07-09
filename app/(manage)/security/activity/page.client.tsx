@@ -24,7 +24,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { BackButton } from "@/components/ui/back-button";
 import { useEffect, useState, useCallback } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { redirectInApp } from "@/core/helper/navigation";
+import { redirectInApp } from "@/core/helpers/navigation";
 
 
 const statusVariantMap: { [key: string]: "default" | "destructive" | "secondary" } = {

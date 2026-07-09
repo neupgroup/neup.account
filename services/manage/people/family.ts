@@ -2,7 +2,7 @@
 
 import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
-import { getActiveAccountId } from '@/core/auth/verify';
+import { getActiveAccountId } from '@/logica/account/verify';
 import { logError } from '@/core/helpers/logger';
 import { getUserProfile, checkPermissions } from '@/services/user';
 import { revalidatePath } from 'next/cache';
@@ -10,7 +10,7 @@ import { z } from 'zod';
 import {
   ACCESS_FAMILY_MEMBER_UPDATE_PERMISSIONS,
   ACCESS_FAMILY_PARTNER_UPDATE_PERMISSIONS,
-} from '@/core/auth/access-view-permissions';
+} from '@/logica/account/access-view-permissions';
 
 export type FamilyMember = {
   accountId: string;

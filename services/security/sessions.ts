@@ -2,10 +2,10 @@
 
 import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
-import { getActiveAccountId, getActiveSession } from '@/core/auth/verify';
+import { getActiveAccountId, getActiveSession } from '@/logica/account/verify';
 import { logActivity } from '@/services/log-actions';
 import { logError } from '@/core/helpers/logger';
-import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { requireAnyPermission404 } from '@/logica/account/permission-guards';
 
 const servicePermissions = [
     permission('security.login_devices.view', 'for_individual', 'service'),

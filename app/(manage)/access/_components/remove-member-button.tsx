@@ -15,7 +15,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Loader2 } from '@/components/icons';
-import { redirectInApp } from '@/core/helper/navigation';
+import { redirectInApp } from '@/core/helpers/navigation';
 
 type Props = {
   label: string;

@@ -15,9 +15,9 @@ import { getApplicationAccessPageData } from '../connection/actions';
 import { AssignAppAccessForm } from '../connection/assign-app-access-form';
 import { RevokeAppAccessButton } from '../connection/revoke-app-access-form';
 import { createPageMetadata } from '@/core/metadata';
-import { ACCESS_APPLICATION_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
+import { ACCESS_APPLICATION_VIEW_PERMISSIONS } from '@/logica/account/access-view-permissions';
 import { permission } from '@/logica/permission';
-import { resolveAccessProfileContext } from '@/core/auth/access-profile-context';
+import { resolveAccessProfileContext } from '@/logica/account/access-profile-context';
 
 export const metadata: Metadata = createPageMetadata('Application Management');
 

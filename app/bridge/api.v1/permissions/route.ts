@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { getAccountPermission } from '@/services/user';
-import { getActiveSession } from '@/core/auth/verify';
+import { getActiveSession } from '@/logica/account/verify';
 
 /**
  * ::neup.documentation::bridge-permissions-route-module

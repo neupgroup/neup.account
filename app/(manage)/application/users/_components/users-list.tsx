@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FlowLink } from '@/components/ui/flow-link';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
-import { redirectInApp } from '@/core/helper/navigation';
+import { redirectInApp } from '@/core/helpers/navigation';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,

@@ -1,6 +1,6 @@
 'use server';
 
-import { resolveGuestAccount } from '@/core/auth/guestAccount';
+import { resolveGuestAccount } from '@/logica/account/guestAccount';
 
 /**
  * Server Action — creates a guest account if none exists.

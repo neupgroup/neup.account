@@ -2,7 +2,7 @@
 
 import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
-import { getActiveAccountId } from '@/core/auth/verify';
+import { getActiveAccountId } from '@/logica/account/verify';
 import { getUserProfile, getUserNeupIds, checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
@@ -10,7 +10,7 @@ import { z } from 'zod';
 import {
   ACCESS_BLOCK_UPDATE_PERMISSIONS,
   ACCESS_BLOCK_VIEW_PERMISSIONS,
-} from '@/core/auth/access-view-permissions';
+} from '@/logica/account/access-view-permissions';
 
 const neupIdSchema = z.object({
   neupId: z.string().min(3, 'NeupID must be at least 3 characters.'),

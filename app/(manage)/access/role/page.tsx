@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { UserCircle, Clock } from '@/components/icons';
-import { getActiveAccountId } from '@/core/auth/verify';
+import { getActiveAccountId } from '@/logica/account/verify';
 import { getUserProfile } from '@/services/user';
 import prisma from '@/core/helpers/prisma';
 import {
@@ -27,8 +27,8 @@ import {
 } from '../_components/actions';
 import { FlowLink } from '@/components/ui/flow-link';
 import { DirectMemberAccessForm } from '../_components/direct-member-access-form';
-import { requireAnyPermission404 } from '@/core/auth/permission-guards';
-import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/core/auth/access-view-permissions';
+import { requireAnyPermission404 } from '@/logica/account/permission-guards';
+import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/logica/account/access-view-permissions';
 import { permission } from '@/logica/permission';
 
 const pagePermissions = [

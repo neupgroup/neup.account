@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, UserPlus } from "@/components/icons";
 import { resolveNeupId } from "./actions";
-import { redirectInApp } from "@/core/helper/navigation";
+import { redirectInApp } from "@/core/helpers/navigation";
 
 /**
  * ::neup.documentation::add-member-form

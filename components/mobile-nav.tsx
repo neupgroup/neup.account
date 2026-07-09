@@ -32,10 +32,10 @@ import { ListItem } from "./ui/list-item";
 import { useSession } from "@/core/providers/session";
 import { Skeleton } from "./ui/skeleton";
 import { switchToPersonal } from "@/services/auth/switch";
-import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/core/auth/profile-permissions";
-import { redirectInApp } from "@/core/helper/navigation";
-import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/core/auth/data-permissions";
-import { ACCESS_VIEW_PERMISSIONS } from "@/core/auth/access-view-permissions";
+import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/logica/account/profile-permissions";
+import { redirectInApp } from "@/core/helpers/navigation";
+import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/logica/account/data-permissions";
+import { ACCESS_VIEW_PERMISSIONS } from "@/logica/account/access-view-permissions";
 
 const componentPermissions = [
     permission("notification.read", "for_individual", "component"),

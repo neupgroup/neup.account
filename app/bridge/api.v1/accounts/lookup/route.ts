@@ -3,7 +3,7 @@ import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { applicationAccessFields, type ApplicationAccessField } from '@/services/applications/types';
 import { writeApplicationDevLog } from '@/services/bridge/dev-logs';
-import { resolveDisplayImage } from '@/core/helpers/display-image';
+import { resolveDisplayImage } from '@/logica/display-image';
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from '@/services/access-model';
 
 export const dynamic = 'force-dynamic';

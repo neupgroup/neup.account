@@ -7,10 +7,10 @@ import { logError } from '@/core/helpers/logger';
 import { phoneFormSchema } from '@/services/security/schema';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
-import { getPersonalAccountId } from '@/core/auth/verify';
+import { getPersonalAccountId } from '@/logica/account/verify';
 import { checkPermissions } from '@/services/user';
 import { createNotification } from '../notifications';
-import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { requireAnyPermission404 } from '@/logica/account/permission-guards';
 
 const CONTACT_TYPE = 'recoveryPhone';
 

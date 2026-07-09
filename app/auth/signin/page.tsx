@@ -12,7 +12,7 @@ import { cancelAccountDeletion } from '@/services/data/delete';
 import { handleAuthRequest } from '@/app/auth/handleAuthRequest';
 import { verifyTotpFromPost } from '@/services/auth/totp';
 import { redirectInApp } from '@/core/helpers/link';
-import { appendAuthCallbackContext, appendRedirect, hasAuthCallbackContext, shouldReturnToAuthStartForExternalAuthentication, getFlowParams, appendFlowParams } from '@/core/auth/callback';
+import { appendAuthCallbackContext, appendRedirect, hasAuthCallbackContext, shouldReturnToAuthStartForExternalAuthentication, getFlowParams, appendFlowParams } from '@/core/auth/callbacks';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

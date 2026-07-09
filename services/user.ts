@@ -6,9 +6,9 @@
 import prisma from "@/core/helpers/prisma";
 import { Prisma } from "@/prisma/generated/client/client";
 import { logError } from "@/core/helpers/logger";
-import { getActiveAccountId, getPersonalAccountId } from "@/core/auth/verify";
-import { extractGenderFromDetails, resolveDisplayImage } from "@/core/helpers/display-image";
-import { getAccountSelectorContext } from "@/core/auth/accountSelector";
+import { getActiveAccountId, getPersonalAccountId } from "@/logica/account/verify";
+import { extractGenderFromDetails, resolveDisplayImage } from "@/logica/display-image";
+import { getAccountSelectorContext } from "@/logica/account/accountSelector";
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from "@/services/access-model";
 import { permission } from '@/logica/permission';
 import { isRootRoleScope, normalizeRoleScope, normalizeRoleScopes } from '@/services/role-scopes';

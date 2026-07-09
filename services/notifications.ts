@@ -1,12 +1,12 @@
 'use server';
 
 import prisma from '@/core/helpers/prisma';
-import { getActiveAccountId } from '@/core/auth/verify';
+import { getActiveAccountId } from '@/logica/account/verify';
 import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { getUserProfile } from '@/services/user';
 import { notFound } from 'next/navigation';
-import { hasSelectedAccountAnyPermission } from '@/core/auth/profile-permissions';
+import { hasSelectedAccountAnyPermission } from '@/logica/account/profile-permissions';
 
 /**
  * Type Notification.

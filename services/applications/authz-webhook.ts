@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import prisma from '@/core/helpers/prisma';
-import { getActiveAccountId } from '@/core/auth/verify';
+import { getActiveAccountId } from '@/logica/account/verify';
 import { logError } from '@/core/helpers/logger';
 import { canCurrentAccountManageApplicationRoles } from '@/services/applications/manage';
 

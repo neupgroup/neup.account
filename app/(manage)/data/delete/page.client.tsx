@@ -22,9 +22,9 @@ import { BackButton } from "@/components/ui/back-button";
 import { Geolocation } from "@/core/providers/geolocation";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
 import { getAccountType } from '@/services/user';
-import { getActiveAccountId } from '@/core/auth/verify';
+import { getActiveAccountId } from '@/logica/account/verify';
 import { useRouter } from "next/navigation";
-import { redirectInApp } from "@/core/helper/navigation";
+import { redirectInApp } from "@/core/helpers/navigation";
 
 
 export default function DeleteAccountPage() {

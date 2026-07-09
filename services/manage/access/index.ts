@@ -2,20 +2,20 @@
 'use server';
 
 import prisma from '@/core/helpers/prisma';
-import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
+import { getActiveAccountId, getPersonalAccountId } from '@/logica/account/verify';
 import { getUserProfile, getUserNeupIds, getAccountType, getCurrentAccountPermission, checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { logActivity } from '@/services/log-actions';
-import { requireAnyPermission404 } from '@/core/auth/permission-guards';
+import { requireAnyPermission404 } from '@/logica/account/permission-guards';
 import { activeAccessWhere, getLogicalAssetId } from '@/services/access-model';
 import { permission } from '@/logica/permission';
 import {
   ACCESS_TEAM_ADD_PERMISSIONS,
   ACCESS_TEAM_VIEW_PERMISSIONS,
   ACCESS_VIEW_PERMISSIONS,
-} from '@/core/auth/access-view-permissions';
+} from '@/logica/account/access-view-permissions';
 
 const servicePermissions = [
   permission('access.view.self', 'for_individual', 'service'),

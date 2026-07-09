@@ -2,7 +2,7 @@
 
 import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
-import { getPersonalAccountId } from '@/core/auth/verify';
+import { getPersonalAccountId } from '@/logica/account/verify';
 import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
@@ -14,9 +14,9 @@ import { activityAction } from '@/services/activity-action';
 import { getAITextResponse } from '@/services/shared/ai';
 import { logDisplayImageResourceForAccount } from '@/services/manage/site/resources';
 import { dispatchAccountUpdatedEvent, type AccountUpdateEventField } from '@/services/applications/account-update-events';
-import { extractGenderFromDetails, resolveDisplayImage } from '@/core/helpers/display-image';
-import { assertHasProfileDisplayPermission } from '@/core/auth/profile-permissions';
-import { resolveAccessProfileContext } from '@/core/auth/access-profile-context';
+import { extractGenderFromDetails, resolveDisplayImage } from '@/logica/display-image';
+import { assertHasProfileDisplayPermission } from '@/logica/account/profile-permissions';
+import { resolveAccessProfileContext } from '@/logica/account/access-profile-context';
 import { createNotification } from '@/services/notifications';
 
 const servicePermissions = [

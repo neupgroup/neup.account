@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import prisma from '@/core/helpers/prisma';
-import { getPersonalAccountId } from '@/core/auth/verify';
+import { getPersonalAccountId } from '@/logica/account/verify';
 import { logError } from '@/core/helpers/logger';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';

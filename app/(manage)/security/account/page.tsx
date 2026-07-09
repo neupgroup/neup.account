@@ -5,8 +5,8 @@ import { getRecoveryAccounts } from "@/services/security/account";
 import { RecoveryAccountManager } from "./recovery-account-manager";
 import { BackButton } from "@/components/ui/back-button";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
-import { requireAnyPermission404 } from '@/core/auth/permission-guards';
-import { SECURITY_PERMISSION_GROUPS } from '@/core/auth/security-permissions';
+import { requireAnyPermission404 } from '@/logica/account/permission-guards';
+import { SECURITY_PERMISSION_GROUPS } from '@/logica/account/security-permissions';
 
 const pagePermissions = [
     permission('security.recovery_accounts.view.self', 'for_individual', 'page'),

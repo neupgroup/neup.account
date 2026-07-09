@@ -1,9 +1,9 @@
 import { NextRequest } from 'next/server';
 import { getSessionCookies } from '@/core/auth/cookies';
-import { getAccounts } from '@/core/auth/accounts';
+import { getAccounts } from '@/logica/account/accounts';
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
-import { resolveGuestAccount } from '@/core/auth/guestAccount';
+import { resolveGuestAccount } from '@/logica/account/guestAccount';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import {
   checkRateLimit,

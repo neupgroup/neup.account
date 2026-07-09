@@ -17,7 +17,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Loader2 } from 'lucide-react';
-import { redirectInApp } from '@/core/helper/navigation';
+import { redirectInApp } from '@/core/helpers/navigation';
 import type { UnifiedRequest } from '@/services/manage/requests/types';
 
 // Per-type server actions

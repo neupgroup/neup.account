@@ -5,9 +5,9 @@ import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { checkPermissions } from '@/services/user';
-import { getPersonalAccountId } from '@/core/auth/verify';
-import type { StoredAccount } from '@/core/auth/session';
-import { resolveDisplayImage } from '@/core/helpers/display-image';
+import { getPersonalAccountId } from '@/logica/account/verify';
+import type { StoredAccount } from '@/logica/account/session';
+import { resolveDisplayImage } from '@/logica/display-image';
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from '@/services/access-model';
 import type { Prisma } from '@/prisma/generated/client/client';
 

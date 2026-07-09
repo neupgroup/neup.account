@@ -4,7 +4,7 @@ import { permission } from '@/logica/permission';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import prisma from '@/core/helpers/prisma';
-import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
+import { getActiveAccountId, getPersonalAccountId } from '@/logica/account/verify';
 import { getUserProfile } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
@@ -14,7 +14,7 @@ import {
   ACCESS_APPLICATION_REMOVE_PERMISSIONS,
   ACCESS_APPLICATION_VIEW_PERMISSIONS,
   ACCESS_CONNECTION_VIEW_PERMISSIONS,
-} from '@/core/auth/access-view-permissions';
+} from '@/logica/account/access-view-permissions';
 
 const servicePermissions = [
   permission('access.application.view.self', 'for_individual', 'service'),

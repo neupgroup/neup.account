@@ -25,7 +25,7 @@ import { revalidatePath } from 'next/cache';
 import { permission } from '@/logica/permission';
 import { Prisma } from '@/prisma/generated/client/client';
 import prisma from '@/core/helpers/prisma';
-import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
+import { getActiveAccountId, getPersonalAccountId } from '@/logica/account/verify';
 import { logError } from '@/core/helpers/logger';
 import { dispatchAuthzWebhook } from './authz-webhook';
 import { dispatchRoleUpdateWebhook, getRolePayload } from './role-update-events';

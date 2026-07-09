@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { getActiveSession } from '@/core/auth/verify';
+import { getActiveSession } from '@/logica/account/verify';
 import { getAccessableAccountsWithPermissions } from '@/services/manage/accounts';
 import { resolveAppTokenAuth } from '@/services/auth/appTokenAuth';
 import prisma from '@/core/helpers/prisma';

@@ -1,7 +1,7 @@
 
 'use server';
 
-import { getActiveAccountId, getPersonalAccountId } from '@/core/auth/verify';
+import { getActiveAccountId, getPersonalAccountId } from '@/logica/account/verify';
 import { logError } from '@/core/helpers/logger';
 
 // Make sure to set this in your environment variables

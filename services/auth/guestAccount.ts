@@ -1,7 +1,7 @@
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import crypto from 'crypto';
-import type { StoredAccount } from '@/core/auth/session';
+import type { StoredAccount } from '@/logica/account/session';
 
 const GUEST_SESSION_DURATION_DAYS = 365;
 const ONE_MONTH_MS = 30 * 24 * 60 * 60 * 1000;

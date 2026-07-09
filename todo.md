@@ -18,8 +18,10 @@
 - [ ] Add documentation blocks or module-level documentation for the undocumented Prisma authz/access entities in `prisma/schema.prisma`, especially the legacy `role` snapshot table and its relationship to `authz_role`, `member`, and `access`.
 - [ ] Add Neup documentation blocks for the shared Prisma account models in `prisma/schema.prisma`, especially `Account`, `Asset`, `Member`, and `Access`, which are now described in `neup.logica/account/guide.md` but still lack source-owned model documentation.
 - [ ] Update `neup.logica/README.md`, which still documents the helper path as `logica/account/` instead of `neup.logica/account/`.
-- [ ] Upgrade auth/profile bridge documentation blocks for `core/auth/verify.ts`, `core/auth/cookies.ts`, and `app/bridge/api.v1/profile/route.ts` so they follow `documentation.guide.md` instead of relying on plain comments.
-- [ ] Upgrade auth-session helper documentation for `core/auth/accountToken.ts`, `core/auth/check.ts`, and `core/auth/guard.ts` so they use `::neup.documentation::...` blocks instead of plain comments.
+- [ ] Upgrade auth/profile bridge documentation blocks for `logica/account/verify.ts`, `core/auth/cookies.ts`, and `app/bridge/api.v1/profile/route.ts` so they follow `documentation.guide.md` instead of relying on plain comments.
+- [ ] Upgrade auth-session helper documentation for `core/auth/decoder.ts`, `logica/account/check.ts`, and `logica/account/guard.ts` so they use `::neup.documentation::...` blocks instead of plain comments.
+- [ ] Add Neup documentation blocks for the remaining auth runtime helpers moved into `logica/account/`, especially `guestAccount.ts`, `logout.ts`, `makeSession.ts`, `signPage.ts`, and `startSessions.ts`, which still rely on plain comments or have no structured module documentation.
+- [ ] Add a Neup documentation block for `core/auth/storage.ts`, which currently exposes sessionStorage auth cache helpers without a structured source-owned documentation block.
 - [ ] Add Neup documentation blocks for `app/bridge/api.v1/accounts/lookup/route.ts` and `app/bridge/api.v1/connection/sign&get/route.ts`, which currently expose bridge contracts with little or no structured route documentation.
 - [ ] Add Neup documentation blocks for `app/bridge/handshake.v1/auth/grant/route.ts` and `app/bridge/api.v1/auth/whoisthis/route.ts`, which still rely on plain comments for important public auth contracts.
 - [ ] Add Neup documentation blocks for `app/bridge/api.v1/roles/assign.me/route.ts` and `app/bridge/resource.v1/sdk/route.ts`, which currently expose public bridge resources without structured route documentation.
@@ -32,9 +34,11 @@
 - [ ] Fix the remaining authz tooling path drift from `logica/...` to `neup.logica/...`, especially `package.json` `getRoles` / `postRoles` and the export/post helper scripts that still target the old snapshot tree.
 - [ ] Finish the repo-wide permission literal migration from suffixed names like `.self` / `.managed` / `.root` to the new unsuffixed permission names in page/service declarations and old Prisma maintenance scripts such as `prisma/scripts/runner-neupaccount.ts`.
 - [ ] Add a Neup documentation block for `app/(manage)/config/socials/social-links-manager.tsx`, which currently exposes the socials editor UI without structured source-owned documentation.
-- [ ] Upgrade `neup.core/helpers/link.ts` to `documentation.guide.md` with Neup documentation blocks instead of plain comments.
-- [ ] Upgrade `neup.core/helper/navigation.ts` to `documentation.guide.md` with Neup documentation blocks instead of plain comments.
-- [ ] Upgrade `core/helper/urlHelper.ts` to `documentation.guide.md` with Neup documentation blocks instead of plain comments.
+- [ ] Upgrade `core/helpers/link.ts` to `documentation.guide.md` with Neup documentation blocks instead of plain comments, including the URL-param and request-protocol helpers merged from `urlHelper.ts`.
+- [ ] Add a Neup documentation block for `core/helpers/request-url.ts`, which now owns server-side URL parameter and request protocol helpers without structured source-owned documentation.
+- [ ] Upgrade `core/helpers/navigation.ts` to `documentation.guide.md` with Neup documentation blocks instead of plain comments.
+- [ ] Upgrade `core/helpers/cookie.ts` to `documentation.guide.md` with Neup documentation blocks instead of plain comments.
+- [ ] Add Neup documentation blocks for `logica/display-image.ts`, which now owns shared display-image resolution logic without structured source-owned documentation.
 - [ ] Upgrade `core/appconfig.ts` to `documentation.guide.md` with Neup documentation blocks instead of plain comments.
 - [ ] Add Neup documentation blocks for the root account management pages in `app/(manage)/manage/[id]/page.tsx`, `app/(manage)/manage/[id]/permissions/page.tsx`, and `app/(manage)/manage/[id]/verification/page.tsx`, which currently expose management flows without structured page-level documentation.
 - [ ] Add Neup documentation blocks for the managed account access module in `app/(manage)/manage/[id]/access/form.tsx`, `services/manage/users.ts`, `app/(manage)/manage/layout.tsx`, and `neup.core/auth/account-access-permissions.ts`, which currently rely on plain comments or no structured documentation.
@@ -52,3 +56,5 @@
 - [ ] Add Neup documentation blocks for selected-account create-account pages and services in `app/(manage)/access/createAccount/page.tsx`, `app/(manage)/access/createAccount/brand-page-client.tsx`, `app/(manage)/access/createAccount/dependent-page-client.tsx`, `app/(manage)/access/createAccount/subbrand-page-client.tsx`, `services/manage/accounts/brand.ts`, `services/manage/accounts/dependent.ts`, and `services/manage/accounts/subbrands.ts`.
 - [ ] Add Neup documentation blocks for selected-account link-account pages and services in `app/(manage)/access/link/page.tsx`, `app/(manage)/access/link/whatsapp/page.tsx`, `app/(manage)/access/link/whatsapp/page.client.tsx`, and `services/manage/accounts/whatsapp.ts`.
 - [ ] Add Neup documentation blocks for the root and dashboard layout/session shell files in `app/layout.tsx`, `app/(manage)/layout.tsx`, `app/(manage)/layout-shell.tsx`, and `neup.core/providers/session.tsx`.
+- [ ] Add Neup documentation blocks for `app/auth/signin/page.tsx` and `app/auth/signout/page.tsx`, which currently expose auth flow pages without structured page-level documentation.
+- [ ] Add a Neup documentation block for `logica/account/accountSelector.ts`, which currently resolves selected-account context without structured source-owned documentation.

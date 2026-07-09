@@ -5,7 +5,7 @@ import { getUserProfile } from '@/services/user';
 import { validateExternalRequest } from '@/services/auth/validate';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import { applicationPartyValues, type ApplicationParty } from '@/services/applications/types';
-import { verifyAccountToken } from '@/core/auth/accountToken';
+import { verifyAccountToken } from '@/core/auth/decoder';
 import { validateAuthSession } from '@/services/auth/session';
 
 /*

@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/core/helpers/prisma';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
-import { verifyAccountToken } from '@/core/auth/accountToken';
+import { verifyAccountToken } from '@/core/auth/decoder';
 import { resolveWhoAmI } from '@/services/auth/whoami';
-import { resolveGuestAccount } from '@/core/auth/guestAccount';
+import { resolveGuestAccount } from '@/logica/account/guestAccount';
 import { getSessionCookies } from '@/core/auth/cookies';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
-import { extractGenderFromDetails, resolveDisplayImage } from '@/core/helpers/display-image';
+import { extractGenderFromDetails, resolveDisplayImage } from '@/logica/display-image';
 
 export const dynamic = 'force-dynamic';
 

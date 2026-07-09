@@ -1,6 +1,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
-import { bridgeGetProfile } from '@/core/auth/profileBridge';
+import { bridgeGetProfile } from '@/logica/account/profileBridge';
 
 export const dynamic = 'force-dynamic';
 

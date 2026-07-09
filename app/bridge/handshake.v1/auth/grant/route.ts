@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { bridgeBuildGrantRedirect } from '@/core/auth/handshake';
-import { resolveGuestAccount } from '@/core/auth/guestAccount';
+import { bridgeBuildGrantRedirect } from '@/logica/account/handshake';
+import { resolveGuestAccount } from '@/logica/account/guestAccount';
 
 export const dynamic = 'force-dynamic';
 

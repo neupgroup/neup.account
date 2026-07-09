@@ -15,7 +15,7 @@
 
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
-import { extractGenderFromDetails, resolveDisplayImage } from '@/core/helpers/display-image';
+import { extractGenderFromDetails, resolveDisplayImage } from '@/logica/display-image';
 
 /*
 ::neup.documentation::application-users-service

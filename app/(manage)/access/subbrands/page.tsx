@@ -19,7 +19,7 @@ import {
 import { Building, Plus } from "lucide-react";
 import { notFound } from "next/navigation";
 import { permission } from '@/logica/permission';
-import { resolveAccessProfileContext } from '@/core/auth/access-profile-context';
+import { resolveAccessProfileContext } from '@/logica/account/access-profile-context';
 
 const pagePermissions = [
     permission('access.linked_account.view.self', 'for_individual', 'page'),

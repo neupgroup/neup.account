@@ -22,7 +22,7 @@ import {
   updateManagedApplicationStatus,
 } from '@/services/applications/manage';
 import { getSignedApplications } from '@/services/applications/connected';
-import { getPersonalAccountId } from '@/core/auth/verify';
+import { getPersonalAccountId } from '@/logica/account/verify';
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import type { ApplicationSection, FlatAppItem } from '@/services/applications/types';

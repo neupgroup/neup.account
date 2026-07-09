@@ -1,6 +1,6 @@
 import { permission } from '@/logica/permission';
-import { requireAnyPermission404 } from '@/core/auth/permission-guards';
-import { SECURITY_PERMISSION_GROUPS } from '@/core/auth/security-permissions';
+import { requireAnyPermission404 } from '@/logica/account/permission-guards';
+import { SECURITY_PERMISSION_GROUPS } from '@/logica/account/security-permissions';
 import DataActivityPageClient from './page.client';
 
 const pagePermissions = [

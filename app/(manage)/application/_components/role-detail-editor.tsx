@@ -29,7 +29,7 @@ import {
   type AppPermission,
   type AppRole,
 } from '@/services/applications/authz-manage';
-import { redirectInApp } from '@/core/helper/navigation';
+import { redirectInApp } from '@/core/helpers/navigation';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { isBuiltInApplicationManagementPermissionName } from '@/services/applications/permission-definitions';
 import { AuthzDefinitionSelector } from './authz-definition-selector';

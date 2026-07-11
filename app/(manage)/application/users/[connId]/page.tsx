@@ -22,12 +22,19 @@ import { RoleSelector } from './_components/role-selector';
 
 type Props = {
   params: Promise<{ connId: string }>;
-  searchParams: Promise<{ application?: string | string[]; mode?: string }>;
+  searchParams: Promise<{
+    application?: string | string[];
+    mode?: string;
+    query?: string;
+    status?: string;
+    activeSince?: string;
+    sort?: string;
+  }>;
 };
 
 export default async function ApplicationUserDetailsQueryPage({ params, searchParams }: Props) {
   const { connId } = await params;
-  const { application, mode } = await searchParams;
+  const { application, mode, query, status, activeSince, sort } = await searchParams;
   const appId = getQueryParam(application);
 
   if (!appId) notFound();
@@ -64,7 +71,15 @@ export default async function ApplicationUserDetailsQueryPage({ params, searchPa
     <div className="grid gap-6">
       <div>
         <Button variant="ghost" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
-          <FlowLink href={applicationHref('/application/users', appId, mode ? { mode } : undefined)}>
+          <FlowLink
+            href={applicationHref('/application/users', appId, {
+              mode,
+              query,
+              status,
+              activeSince,
+              sort,
+            })}
+          >
             <ArrowLeft className="h-4 w-4" />
             Back
           </FlowLink>

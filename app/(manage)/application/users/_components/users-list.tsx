@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useTransition, useCallback, Suspense } from 'react';
+import { useEffect, useState, useTransition, useCallback, Suspense, useRef } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -54,12 +54,12 @@ function statusLabel(status: string | null): string {
 }
 
 function UserRow({
-  appId,
+  href,
   user,
   isFirst,
   isLast,
 }: {
-  appId: string;
+  href: string;
   user: AppUserEntry;
   isFirst: boolean;
   isLast: boolean;
@@ -80,7 +80,7 @@ function UserRow({
 
   return (
     <FlowLink
-      href={applicationHref(`/application/users/${user.connectionId}`, appId, { mode: 'root' })}
+      href={href}
       className={`
         flex items-center gap-4 px-4 py-3.5
         border border-border bg-card
@@ -167,39 +167,41 @@ function UsersListInner({ appId }: { appId: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const mode = searchParams.get('mode');
+  const currentQuery = searchParams.get('query') || '';
+  const currentStatus = searchParams.get('status') as AppUserStatus | null;
+  const currentSince = searchParams.get('activeSince') as '1d' | '7d' | '30d' | null;
+  const currentSort = searchParams.get('sort') as AppUserSortKey | null;
+  const validSorts: AppUserSortKey[] = ['newest', 'oldest', 'name_asc', 'name_desc'];
+  const initialStatus = currentStatus && STATUS_TABS.some((t) => t.value === currentStatus) ? currentStatus : 'all';
+  const initialSince = currentSince && SINCE_OPTIONS.some((o) => o.value === currentSince) ? currentSince : 'all';
+  const initialSort = currentSort && validSorts.includes(currentSort) ? currentSort : 'newest';
+  const hasHydratedFromUrl = useRef(false);
 
   const [users, setUsers] = useState<AppUserEntry[]>([]);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [activeStatus, setActiveStatus] = useState<'all' | AppUserStatus>('all');
-  const [activeSince, setActiveSince] = useState<'all' | '1d' | '7d' | '30d'>('all');
-  const [sort, setSort] = useState<AppUserSortKey>('newest');
+  const [search, setSearch] = useState(currentQuery);
+  const [debouncedSearch, setDebouncedSearch] = useState(currentQuery);
+  const [activeStatus, setActiveStatus] = useState<'all' | AppUserStatus>(initialStatus);
+  const [activeSince, setActiveSince] = useState<'all' | '1d' | '7d' | '30d'>(initialSince);
+  const [sort, setSort] = useState<AppUserSortKey>(initialSort);
   const [loading, startTransition] = useTransition();
 
   useEffect(() => {
-    const q = searchParams.get('q') || '';
-    setSearch(q);
-    setDebouncedSearch(q);
-
-    const s = searchParams.get('status') as AppUserStatus | null;
-    setActiveStatus(s && STATUS_TABS.some((t) => t.value === s) ? s : 'all');
-
-    const since = searchParams.get('activeSince') as '1d' | '7d' | '30d' | null;
-    setActiveSince(since && SINCE_OPTIONS.some((o) => o.value === since) ? since : 'all');
-
-    const nextSort = searchParams.get('sort') as AppUserSortKey | null;
-    const validSorts: AppUserSortKey[] = ['newest', 'oldest', 'name_asc', 'name_desc'];
-    setSort(nextSort && validSorts.includes(nextSort) ? nextSort : 'newest');
-  }, [searchParams]);
+    setSearch(currentQuery);
+    setDebouncedSearch(currentQuery);
+    setActiveStatus(initialStatus);
+    setActiveSince(initialSince);
+    setSort(initialSort);
+    hasHydratedFromUrl.current = true;
+  }, [currentQuery, initialSince, initialSort, initialStatus]);
 
   const syncUrl = useCallback((query: string, status: string, since: string, nextSort: AppUserSortKey) => {
     const params = new URLSearchParams();
     params.set('application', appId);
     if (mode) params.set('mode', mode);
-    if (query.trim()) params.set('q', query.trim());
+    if (query.trim()) params.set('query', query.trim());
     if (status !== 'all') params.set('status', status);
     if (since !== 'all') params.set('activeSince', since);
     if (nextSort !== 'newest') params.set('sort', nextSort);
@@ -215,6 +217,7 @@ function UsersListInner({ appId }: { appId: string }) {
 
   useEffect(() => { setPage(1); }, [activeStatus, activeSince, sort]);
   useEffect(() => {
+    if (!hasHydratedFromUrl.current) return;
     syncUrl(debouncedSearch, activeStatus, activeSince, sort);
   }, [debouncedSearch, activeStatus, activeSince, sort, syncUrl]);
 
@@ -239,6 +242,13 @@ function UsersListInner({ appId }: { appId: string }) {
 
   const start = total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
   const end = Math.min(page * PAGE_SIZE, total);
+  const detailLinkParams = {
+    mode: mode ?? undefined,
+    query: debouncedSearch.trim() || undefined,
+    status: activeStatus !== 'all' ? activeStatus : undefined,
+    activeSince: activeSince !== 'all' ? activeSince : undefined,
+    sort: sort !== 'newest' ? sort : undefined,
+  };
 
   return (
     <div className="grid gap-6">
@@ -320,7 +330,7 @@ function UsersListInner({ appId }: { appId: string }) {
         <div>
           {users.map((user, i) => (
             <UserRow
-              appId={appId}
+              href={applicationHref(`/application/users/${user.connectionId}`, appId, detailLinkParams)}
               key={user.connectionId}
               user={user}
               isFirst={i === 0}

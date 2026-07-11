@@ -293,6 +293,7 @@ export default function DisplayInfoPage() {
         if (profileGender === 'custom') return true;
         return true;
     });
+    const displayImageOutlineClass = 'ring-1 ring-black/10';
 
     if (loading || loadingSelectedProfile) {
         return <Skeleton className="h-96 w-full" />
@@ -312,7 +313,7 @@ export default function DisplayInfoPage() {
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="grid md:grid-cols-[150px_1fr] items-start gap-6">
-                                    <Avatar className="h-36 w-36 rounded-lg">
+                                    <Avatar className={cn("h-36 w-36 rounded-lg", displayImageOutlineClass)}>
                                         <AvatarImage src={currentDisplayPhoto || undefined} alt="Current Display Photo" data-ai-hint="person" className="object-cover" />
                                         <AvatarFallback className="rounded-lg" />
                                     </Avatar>
@@ -357,7 +358,10 @@ export default function DisplayInfoPage() {
                                                         <button
                                                             type="button"
                                                             key={index}
-                                                            className="relative p-1 aspect-square w-24 h-24 flex-shrink-0 rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                                                            className={cn(
+                                                                "relative p-1 aspect-square w-24 h-24 flex-shrink-0 rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+                                                                displayImageOutlineClass,
+                                                            )}
                                                             onClick={() => photoForm.setValue('accountPhoto', photo, { shouldDirty: true })}
                                                         >
                                                             <Image src={photo} alt={`Past Photo ${index + 1}`} fill objectFit="cover" className="rounded-md" />
@@ -388,7 +392,10 @@ export default function DisplayInfoPage() {
                                                             <button
                                                                 type="button"
                                                                 key={photo.id}
-                                                                className="relative p-1 h-16 w-16 rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                                                                className={cn(
+                                                                    "relative p-1 h-16 w-16 rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+                                                                    displayImageOutlineClass,
+                                                                )}
                                                                 onClick={() => photoForm.setValue('accountPhoto', photo.value, { shouldDirty: true })}
                                                                 title={photo.title || undefined}
                                                             >

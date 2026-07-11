@@ -4,8 +4,15 @@
 import { getActiveAccountId, getPersonalAccountId } from '@/logica/account/verify';
 import { logError } from '@/core/helpers/logger';
 
-// Make sure to set this in your environment variables
-const UPLOAD_URL = process.env.NEXT_PUBLIC_UPLOAD_URL || 'https://neupgroup.com/usercontent/bridge/api/upload.php';
+const UPLOAD_URL = 'https://cdn.neupgroup.com/bridge/api/v1/upload.php';
+
+function resolveUploadedFileUrl(url: string): string {
+  if (/^https?:\/\//i.test(url)) {
+    return url;
+  }
+
+  return new URL(url, UPLOAD_URL).toString();
+}
 
 /**
  * Function compressImage.
@@ -77,10 +84,11 @@ export async function uploadFile(
   }
   
   const memberId = forAccountId || await getActiveAccountId();
-   if (!memberId) {
+  if (!memberId) {
     return { success: false, error: 'Target account could not be determined.' };
   }
 
+  const contentIds = [memberId, contentId];
 
   try {
     let fileToUpload = file;
@@ -98,8 +106,7 @@ export async function uploadFile(
     const formData = new FormData();
     formData.append('file', fileToUpload);
     formData.append('platform', platform);
-    formData.append('userid', memberId);
-    formData.append('contentid', contentId);
+    formData.append('contentIds', JSON.stringify(contentIds));
     if (name) {
       formData.append('name', name);
     }
@@ -115,7 +122,7 @@ export async function uploadFile(
             status: response.status,
             statusText: response.statusText,
             responseText: errorText,
-            requestData: { platform, userid: memberId, contentid: contentId, name },
+            requestData: { platform, contentIds, name },
             fileInfo: { name: file.name, size: file.size, type: file.type }
         };
         await logError('unknown', new Error(`Upload API failed: ${JSON.stringify(errorDetails)}`), 'file-upload');
@@ -125,14 +132,14 @@ export async function uploadFile(
     const result = await response.json();
 
     if (result.success && result.url) {
-      const fullUrl = `https://neupgroup.com${result.url}`;
+      const fullUrl = resolveUploadedFileUrl(result.url);
 
       return { success: true, url: fullUrl, contentId: contentId };
     } else if (result.success && !result.url) {
         const errorDetails = {
             apiMessage: "API returned success but no URL.",
             apiResponse: result,
-            requestData: { platform, userid: memberId, contentid: contentId, name },
+            requestData: { platform, contentIds, name },
             fileInfo: { name: file.name, size: file.size, type: file.type }
         };
         await logError('unknown', new Error(`Upload API success with missing URL: ${JSON.stringify(errorDetails)}`), 'file-upload');
@@ -140,7 +147,7 @@ export async function uploadFile(
     } else {
         const errorDetails = {
             apiMessage: result.message,
-            requestData: { platform, userid: memberId, contentid: contentId, name },
+            requestData: { platform, contentIds, name },
             fileInfo: { name: file.name, size: file.size, type: file.type }
         };
       await logError('unknown', new Error(`Upload API returned an error: ${JSON.stringify(errorDetails)}`), 'file-upload');
@@ -150,7 +157,7 @@ export async function uploadFile(
   } catch (error: any) {
     const errorDetails = {
         exception: error.message,
-        requestData: { platform, userid: memberId, contentid: contentId, name },
+        requestData: { platform, contentIds, name },
         fileInfo: { name: file.name, size: file.size, type: file.type }
     };
     await logError('unknown', new Error(`Upload action failed: ${JSON.stringify(errorDetails)}`), 'uploadFile-action');

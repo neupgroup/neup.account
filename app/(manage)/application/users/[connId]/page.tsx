@@ -13,6 +13,10 @@ import {
   getApplicationRoleOptions,
   getApplicationUserConnectionDetails,
 } from '@/services/applications/manage';
+import {
+  ROOT_APPLICATION_ACCOUNT_VIEW_PERMISSION,
+  ROOT_APPLICATION_USER_VIEW_PERMISSION,
+} from '@/services/applications/permission-definitions';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 import { RoleSelector } from './_components/role-selector';
 
@@ -29,7 +33,10 @@ export default async function ApplicationUserDetailsQueryPage({ params, searchPa
   if (!appId) notFound();
 
   const [applicationDetails, details] = await Promise.all([
-    getApplicationDetailsForViewerV2(appId, { rootMode: mode === 'root' }),
+    getApplicationDetailsForViewerV2(appId, {
+      rootMode: mode === 'root',
+      rootPermissionNames: [ROOT_APPLICATION_ACCOUNT_VIEW_PERMISSION, ROOT_APPLICATION_USER_VIEW_PERMISSION],
+    }),
     getApplicationUserConnectionDetails({ appId, connectionId: connId }),
   ]);
 

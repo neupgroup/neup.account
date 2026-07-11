@@ -4,7 +4,7 @@ import { permission } from '@/logica/permission';
 import { FlowLink } from '@/components/ui/flow-link'
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useTransition } from "react";
-import { cn } from "@/core/helpers/utils"
+import { cn } from "@/core/utils"
 import { buttonVariants } from "@/components/ui/button"
 import { type NavSection, navItems, allPermissionsMap } from "./nav-data"
 import { Skeleton } from "./ui/skeleton";

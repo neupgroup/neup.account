@@ -8,7 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronRight } from '@/components/icons';
 import { AccountActions } from '@/app/auth/start/start-page-component';
-import { cn } from '@/core/helpers/utils';
+import { cn } from '@/core/utils';
 import { deleteSessionData } from '@/core/auth/storage';
 
 type CombinedAccount = StoredAccount & {

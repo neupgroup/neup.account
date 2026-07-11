@@ -5,7 +5,7 @@ import * as React from "react"
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
 import { Check, ChevronRight, Circle } from "@/components/icons"
 
-import { cn } from "@/core/helpers/utils"
+import { cn } from "@/core/utils"
 
 const DropdownMenu = ({
   modal = false,

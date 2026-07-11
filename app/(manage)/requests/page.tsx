@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Ban, ChevronRight } from '@/components/icons';
 import { FlowLink } from '@/components/ui/flow-link';
 import Link from 'next/link';
-import { cn } from '@/core/helpers/utils';
+import { cn } from '@/core/utils';
 import { permission } from '@/logica/permission';
 
 type Props = {

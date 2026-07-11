@@ -201,9 +201,19 @@ const APPLICATION_MUTATION_BASES: ApplicationPermissionBase[] = [
 ];
 
 export async function hasRootApplicationPermission(permissionName: string): Promise<boolean> {
-  const { personalAccountId, isManagingOtherAccount } = await getAccountSelectorContext();
-  if (!personalAccountId || isManagingOtherAccount) return false;
+  const { personalAccountId } = await getAccountSelectorContext();
+  if (!personalAccountId) return false;
   return checkPermissions([permissionName], personalAccountId, { roleScope: ROOT_PERMISSION_SCOPE });
+}
+
+async function hasAnyRootApplicationPermission(permissionNames: readonly string[]): Promise<boolean> {
+  if (permissionNames.length === 0) return false;
+
+  const results = await Promise.all(
+    Array.from(new Set(permissionNames)).map((permissionName) => hasRootApplicationPermission(permissionName)),
+  );
+
+  return results.some(Boolean);
 }
 
 async function canCurrentAccountCreateApplication(): Promise<boolean> {
@@ -291,13 +301,21 @@ export async function resolveAvailableApplicationId(input: {
   }
 }
 
-export async function canCurrentAccountUseRootApplicationMode(): Promise<boolean> {
-  return hasRootApplicationPermission(ROOT_APPLICATION_VIEW_PERMISSION);
+export async function canCurrentAccountUseRootApplicationMode(
+  additionalPermissionNames: readonly string[] = [],
+): Promise<boolean> {
+  return hasAnyRootApplicationPermission([
+    ROOT_APPLICATION_VIEW_PERMISSION,
+    ...additionalPermissionNames,
+  ]);
 }
 
-async function canAccessRootApplicationMode(rootMode?: boolean): Promise<boolean> {
+async function canAccessRootApplicationMode(
+  rootMode?: boolean,
+  additionalPermissionNames: readonly string[] = [],
+): Promise<boolean> {
   if (!rootMode) return true;
-  return canCurrentAccountUseRootApplicationMode();
+  return canCurrentAccountUseRootApplicationMode(additionalPermissionNames);
 }
 
 function extractPermissionNames(raw: unknown): string[] {
@@ -1430,11 +1448,12 @@ export async function removeServerIp(input: {
  */
 export async function getApplicationDetailsForViewerV2(
   appId: string,
-  options?: { rootMode?: boolean },
+  options?: { rootMode?: boolean; rootPermissionNames?: readonly string[] },
 ): Promise<ApplicationDetailsV2 | null> {
+  const rootPermissionNames = options?.rootPermissionNames ?? [];
   const [isRootViewer, canUseRootMode] = await Promise.all([
-    hasRootApplicationPermission(ROOT_APPLICATION_VIEW_PERMISSION),
-    canAccessRootApplicationMode(options?.rootMode),
+    hasAnyRootApplicationPermission([ROOT_APPLICATION_VIEW_PERMISSION, ...rootPermissionNames]),
+    canAccessRootApplicationMode(options?.rootMode, rootPermissionNames),
   ]);
   if (!canUseRootMode) return null;
 

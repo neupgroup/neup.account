@@ -10,7 +10,7 @@ import { AlertTriangle, X, Bell, type LucideIcon, Handshake, UserPlus, MessageSq
 import type { AllNotifications, Notification } from '@/services/notifications';
 import { Card, CardContent } from '@/components/ui/card';
 import { markNotificationAsRead, deleteNotification } from '@/services/notifications';
-import { cn } from '@/core/helpers/utils';
+import { cn } from '@/core/utils';
 import { cva } from 'class-variance-authority';
 import { ListItem } from '@/components/ui/list-item';
 

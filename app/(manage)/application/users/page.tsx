@@ -3,7 +3,14 @@ import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { FlowLink } from '@/components/ui/flow-link';
 import { ArrowLeft } from '@/components/icons';
-import { canCurrentAccountViewApplicationUsers, getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
+import {
+  canCurrentAccountViewApplicationUsers,
+  getApplicationDetailsForViewerV2,
+} from '@/services/applications/manage';
+import {
+  ROOT_APPLICATION_ACCOUNT_VIEW_PERMISSION,
+  ROOT_APPLICATION_USER_VIEW_PERMISSION,
+} from '@/services/applications/permission-definitions';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 import { UsersList } from './_components/users-list';
 import { createPageMetadata } from '@/core/metadata';
@@ -20,7 +27,10 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     return createPageMetadata('Users', 'Application Management');
   }
 
-  const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
+  const details = await getApplicationDetailsForViewerV2(applicationId, {
+    rootMode: mode === 'root',
+    rootPermissionNames: [ROOT_APPLICATION_ACCOUNT_VIEW_PERMISSION, ROOT_APPLICATION_USER_VIEW_PERMISSION],
+  });
   return createPageMetadata('Users', details?.name ? `${details.name} Management` : 'Application Management');
 }
 
@@ -29,7 +39,10 @@ export default async function ApplicationUsersQueryPage({ searchParams }: Props)
   const applicationId = getQueryParam(application);
 
   if (!applicationId) notFound();
-  const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
+  const details = await getApplicationDetailsForViewerV2(applicationId, {
+    rootMode: mode === 'root',
+    rootPermissionNames: [ROOT_APPLICATION_ACCOUNT_VIEW_PERMISSION, ROOT_APPLICATION_USER_VIEW_PERMISSION],
+  });
   if (!details) notFound();
   const canViewUsers = await canCurrentAccountViewApplicationUsers(applicationId);
   if (!canViewUsers) notFound();

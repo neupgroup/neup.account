@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Loader2, Plus, Trash2 } from "@/components/icons";
-import { cn } from "@/core/helpers/utils";
+import { cn } from "@/core/utils";
 import { BackButton } from "@/components/ui/back-button";
 import { emailFormSchema } from "@/services/security/schema";
 import { SecondaryHeader } from "@/components/ui/secondary-header";

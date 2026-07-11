@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/select"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Checkbox } from "@/components/ui/checkbox"
-import { cn } from "@/core/helpers/utils"
+import { cn } from "@/core/utils"
 import { useToast } from "@/core/hooks/use-toast"
 import { createDependentAccount } from "@/services/manage/accounts/dependent"
 import { dependentFormSchema } from "@/services/manage/accounts/schema"

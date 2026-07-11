@@ -12,7 +12,7 @@ import { getUserProfile, type UserProfile } from '@/services/user'
 import { parseDateString, updateBrandProfile } from "@/services/profile"
 import { brandProfileFormSchema } from "@/services/profile/schema"
 import { useToast } from "@/core/hooks/use-toast"
-import { cn } from "@/core/helpers/utils"
+import { cn } from "@/core/utils"
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from "@/components/ui/button"

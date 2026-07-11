@@ -11,7 +11,7 @@ import { getUserProfile, getUserNeupIds, getUserContacts, type UserProfile, type
 import { updateUserProfile, parseDateString } from "@/services/profile"
 import { profileFormSchema } from "@/services/profile/schema"
 import { useToast } from "@/core/hooks/use-toast"
-import { cn } from "@/core/helpers/utils"
+import { cn } from "@/core/utils"
 
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'

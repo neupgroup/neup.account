@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { DashboardNav } from '@/components/dashboard-nav';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from '@/components/icons';
-import { cn } from '@/core/helpers/utils';
+import { cn } from '@/core/utils';
 import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';

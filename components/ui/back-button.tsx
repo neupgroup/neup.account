@@ -3,7 +3,7 @@
 
 import { ChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { cn } from '@/core/helpers/utils';
+import { cn } from '@/core/utils';
 import { FlowLink } from '@/components/ui/flow-link';
 import { hasPreviousInAppPath } from '@/core/helpers/back-navigation';
 

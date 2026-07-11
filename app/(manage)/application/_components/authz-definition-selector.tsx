@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/core/helpers/utils';
+import { cn } from '@/core/utils';
 import type { ApplicationAuthzDefinitionOption } from '@/services/applications/authz-config';
 
 type Props = {

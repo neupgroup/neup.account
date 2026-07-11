@@ -3,7 +3,7 @@ import { permission } from '@/logica/permission';
 import { getApplicationAccess } from '@/services/bridge/application-access';
 
 const routePermissions = [
-  permission('application.user.view', 'for_individual'),
+  permission('application.account.view', 'for_individual'),
 ];
 
 export const dynamic = 'force-dynamic';

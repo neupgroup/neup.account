@@ -6,7 +6,7 @@ import prisma from '@/core/helpers/prisma';
 import { writeApplicationDevLog } from '@/services/bridge/dev-logs';
 
 const routePermissions = [
-  permission('application.user.view', 'for_individual'),
+  permission('application.account.view', 'for_individual'),
 ];
 
 export const dynamic = 'force-dynamic';

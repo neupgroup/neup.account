@@ -30,6 +30,9 @@ import {
   ROOT_APPLICATION_ROLES_MANAGE_PERMISSION,
   ROOT_APPLICATION_ROLES_RESET_PUSH_PERMISSION,
   ROOT_APPLICATION_ROLES_VIEW_PERMISSION,
+  ROOT_APPLICATION_ACCOUNT_DELETE_PERMISSION,
+  ROOT_APPLICATION_ACCOUNT_ROLE_UPDATE_PERMISSION,
+  ROOT_APPLICATION_ACCOUNT_VIEW_PERMISSION,
   ROOT_APPLICATION_USER_REMOVE_PERMISSION,
   ROOT_APPLICATION_USER_UPDATE_ROLE_PERMISSION,
   ROOT_APPLICATION_USER_VIEW_PERMISSION,
@@ -97,6 +100,11 @@ const servicePermissions = [
   permission('application.roles.view.root', 'for_individual', 'service'),
   permission('application.roles.manage.root', 'for_individual', 'service'),
   permission('application.roles.resetPush.root', 'for_individual', 'service'),
+  permission('application.account.view.root', 'for_individual', 'service'),
+  permission('application.account.delete.root', 'for_individual', 'service'),
+  permission('application.account.profile.update.root', 'for_individual', 'service'),
+  permission('application.account.role.update.root', 'for_individual', 'service'),
+  permission('application.account.connection.assign.root', 'for_individual', 'service'),
   permission('application.user.view.root', 'for_individual', 'service'),
   permission('application.user.remove.root', 'for_individual', 'service'),
   permission('application.user.updateBasics.root', 'for_individual', 'service'),
@@ -166,6 +174,11 @@ const APPLICATION_VIEW_BASES: ApplicationPermissionBase[] = [
   'roles.view',
   'roles.manage',
   'roles.resetPush',
+  'account.view',
+  'account.delete',
+  'account.profile.update',
+  'account.role.update',
+  'account.connection.assign',
   'user.view',
   'user.remove',
   'user.updateBasics',
@@ -178,6 +191,10 @@ const APPLICATION_MUTATION_BASES: ApplicationPermissionBase[] = [
   'devlogs.clear',
   'roles.manage',
   'roles.resetPush',
+  'account.delete',
+  'account.profile.update',
+  'account.role.update',
+  'account.connection.assign',
   'user.remove',
   'user.updateBasics',
   'user.updateRole',
@@ -325,12 +342,18 @@ async function canCurrentAccountAccessApplicationByBase(
   appId: string,
   appBases: readonly ApplicationPermissionBase[],
   rootPermissionName: string,
+  fallbackRootPermissionName?: string,
 ): Promise<boolean> {
   const accountId = await getActiveAccountId();
   if (!accountId) return false;
 
   const [hasRootPermission, permissionNames] = await Promise.all([
-    hasRootApplicationPermission(rootPermissionName),
+    fallbackRootPermissionName
+      ? Promise.all([
+          hasRootApplicationPermission(rootPermissionName),
+          hasRootApplicationPermission(fallbackRootPermissionName),
+        ]).then((results) => results.some(Boolean))
+      : hasRootApplicationPermission(rootPermissionName),
     getCurrentScopedApplicationPermissionNames(accountId, appBases),
   ]);
 
@@ -1587,15 +1610,30 @@ export async function canCurrentAccountViewApplicationUsers(appId: string): Prom
     canCurrentAccountUpdateApplicationUserRole(appId),
   ]);
   if (canRemoveUser || canUpdateRole) return true;
-  return canCurrentAccountAccessApplicationByBase(appId, ['user.view'], ROOT_APPLICATION_USER_VIEW_PERMISSION);
+  return canCurrentAccountAccessApplicationByBase(
+    appId,
+    ['account.view', 'user.view'],
+    ROOT_APPLICATION_ACCOUNT_VIEW_PERMISSION,
+    ROOT_APPLICATION_USER_VIEW_PERMISSION,
+  );
 }
 
 export async function canCurrentAccountRemoveApplicationUser(appId: string): Promise<boolean> {
-  return canCurrentAccountAccessApplicationByBase(appId, ['user.remove'], ROOT_APPLICATION_USER_REMOVE_PERMISSION);
+  return canCurrentAccountAccessApplicationByBase(
+    appId,
+    ['account.delete', 'user.remove'],
+    ROOT_APPLICATION_ACCOUNT_DELETE_PERMISSION,
+    ROOT_APPLICATION_USER_REMOVE_PERMISSION,
+  );
 }
 
 export async function canCurrentAccountUpdateApplicationUserRole(appId: string): Promise<boolean> {
-  return canCurrentAccountAccessApplicationByBase(appId, ['user.updateRole'], ROOT_APPLICATION_USER_UPDATE_ROLE_PERMISSION);
+  return canCurrentAccountAccessApplicationByBase(
+    appId,
+    ['account.role.update', 'account.connection.assign', 'user.updateRole'],
+    ROOT_APPLICATION_ACCOUNT_ROLE_UPDATE_PERMISSION,
+    ROOT_APPLICATION_USER_UPDATE_ROLE_PERMISSION,
+  );
 }
 
 export async function canCurrentAccountViewApplicationLogs(appId: string): Promise<boolean> {

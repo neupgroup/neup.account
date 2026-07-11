@@ -20,6 +20,11 @@ import {
 } from '@/services/applications/authz-scope-policy';
 
 export type ApplicationPermissionBase =
+  | 'account.connection.assign'
+  | 'account.delete'
+  | 'account.profile.update'
+  | 'account.role.update'
+  | 'account.view'
   | 'basics.edit'
   | 'config.update'
   | 'config.view'
@@ -49,7 +54,35 @@ type ApplicationPermissionPolicyDefinition = {
   scopeLevel: AuthzScopeLevel[];
 };
 
+const APPLICATION_ACCOUNT_MANAGEMENT_BASES = new Set<ApplicationPermissionBase>([
+  'account.connection.assign',
+  'account.delete',
+  'account.profile.update',
+  'account.role.update',
+  'account.view',
+]);
+
 const APPLICATION_PERMISSION_DEFINITION_MAP: Record<ApplicationPermissionBase, ApplicationPermissionDefinition> = {
+  'account.connection.assign': {
+    suffix: 'account.connection.assign',
+    description: 'Assign or change application account connections.',
+  },
+  'account.delete': {
+    suffix: 'account.delete',
+    description: 'Delete or remove an account connection from the application.',
+  },
+  'account.profile.update': {
+    suffix: 'account.profile.update',
+    description: 'Update application-account profile details.',
+  },
+  'account.role.update': {
+    suffix: 'account.role.update',
+    description: 'Assign or change application account roles.',
+  },
+  'account.view': {
+    suffix: 'account.view',
+    description: 'View connected accounts for the application.',
+  },
   'basics.edit': {
     suffix: 'basics.edit',
     description: 'Edit application basics such as name, description, icon, website, and status requests.',
@@ -128,23 +161,30 @@ function permissionDescription(base: ApplicationPermissionBase, audience: Applic
   return baseDescription;
 }
 
-function permissionPolicyDefinition(audience: ApplicationPermissionAudience): ApplicationPermissionPolicyDefinition {
+function permissionPolicyDefinition(
+  base: ApplicationPermissionBase,
+  audience: ApplicationPermissionAudience,
+): ApplicationPermissionPolicyDefinition {
+  const scopeFor: AuthzScopeFor[] = APPLICATION_ACCOUNT_MANAGEMENT_BASES.has(base)
+    ? ['for_individual', 'for_dependent']
+    : ['for_individual'];
+
   if (audience === 'root') {
     return {
-      scopeFor: ['for_individual'],
+      scopeFor,
       scopeLevel: ['rootManaged'],
     };
   }
 
   if (audience === 'managed') {
     return {
-      scopeFor: ['for_individual'],
+      scopeFor,
       scopeLevel: ['assignable'],
     };
   }
 
   return {
-    scopeFor: ['for_individual'],
+    scopeFor,
     scopeLevel: ['publiclyEnrollable'],
   };
 }
@@ -187,7 +227,7 @@ export function getApplicationPermissionDefinitions(
   for (const audience of audiences) {
     for (const base of Object.keys(APPLICATION_PERMISSION_DEFINITION_MAP) as ApplicationPermissionBase[]) {
       const name = permissionName(base, audience);
-      const policy = permissionPolicyDefinition(audience);
+      const policy = permissionPolicyDefinition(base, audience);
       const existing = definitions.get(name);
       const storedPolicy = getStoredPolicyForScopeLevel(policy.scopeLevel[0] ?? 'assignable');
 
@@ -223,6 +263,12 @@ export const ROOT_APPLICATION_DEVLOGS_CLEAR_PERMISSION = getApplicationPermissio
 export const ROOT_APPLICATION_ROLES_VIEW_PERMISSION = getApplicationPermissionName('roles.view', 'root');
 export const ROOT_APPLICATION_ROLES_MANAGE_PERMISSION = getApplicationPermissionName('roles.manage', 'root');
 export const ROOT_APPLICATION_ROLES_RESET_PUSH_PERMISSION = getApplicationPermissionName('roles.resetPush', 'root');
+export const ROOT_APPLICATION_ACCOUNT_VIEW_PERMISSION = getApplicationPermissionName('account.view', 'root');
+export const ROOT_APPLICATION_ACCOUNT_DELETE_PERMISSION = getApplicationPermissionName('account.delete', 'root');
+export const ROOT_APPLICATION_ACCOUNT_ROLE_UPDATE_PERMISSION = getApplicationPermissionName('account.role.update', 'root');
+export const ROOT_APPLICATION_ACCOUNT_PROFILE_UPDATE_PERMISSION = getApplicationPermissionName('account.profile.update', 'root');
+export const ROOT_APPLICATION_ACCOUNT_CONNECTION_ASSIGN_PERMISSION =
+  getApplicationPermissionName('account.connection.assign', 'root');
 export const ROOT_APPLICATION_USER_VIEW_PERMISSION = getApplicationPermissionName('user.view', 'root');
 export const ROOT_APPLICATION_USER_REMOVE_PERMISSION = getApplicationPermissionName('user.remove', 'root');
 export const ROOT_APPLICATION_USER_UPDATE_BASICS_PERMISSION = getApplicationPermissionName('user.updateBasics', 'root');

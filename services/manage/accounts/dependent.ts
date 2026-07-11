@@ -25,6 +25,24 @@ const servicePermissions = [
   permission('access.account.dependent.create.self', 'for_individual', 'service'),
 ];
 
+const DEPENDENT_ACCOUNT_MANAGEMENT_PERMISSIONS = [
+  'application.account.view',
+  'application.account.delete',
+  'application.account.role.update',
+  'application.account.profile.update',
+  'application.account.connection.assign',
+];
+
+const DEPENDENT_ACCOUNT_SELF_PERMISSIONS = [
+  'access.connection.create.dependent.self',
+  ...DEPENDENT_ACCOUNT_MANAGEMENT_PERMISSIONS,
+];
+
+const DEPENDENT_GUARDIAN_PERMISSIONS = [
+  'access.connection.create.dependent.managed',
+  ...DEPENDENT_ACCOUNT_MANAGEMENT_PERMISSIONS,
+];
+
 
 /**
  * Type DependentAccount.
@@ -188,14 +206,14 @@ export async function createDependentAccount(
                     name: 'account.guardian',
                     scope: 'account',
                     appId: 'neup.account',
-                    permissions: ['access.connection.create.dependent.managed'],
+                    permissions: DEPENDENT_GUARDIAN_PERMISSIONS,
                 },
                 create: {
                     id: 'account.guardian',
                     name: 'account.guardian',
                     scope: 'account',
                     appId: 'neup.account',
-                    permissions: ['access.connection.create.dependent.managed'],
+                    permissions: DEPENDENT_GUARDIAN_PERMISSIONS,
                 },
             });
             await tx.authzRole.upsert({
@@ -204,14 +222,14 @@ export async function createDependentAccount(
                     name: 'account.dependent',
                     scope: 'account',
                     appId: 'neup.account',
-                    permissions: ['access.connection.create.dependent.self'],
+                    permissions: DEPENDENT_ACCOUNT_SELF_PERMISSIONS,
                 },
                 create: {
                     id: 'account.dependent',
                     name: 'account.dependent',
                     scope: 'account',
                     appId: 'neup.account',
-                    permissions: ['access.connection.create.dependent.self'],
+                    permissions: DEPENDENT_ACCOUNT_SELF_PERMISSIONS,
                 },
             });
 

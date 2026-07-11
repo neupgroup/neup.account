@@ -5,6 +5,14 @@ import {
   ROOT_APPLICATION_VIEW_PERMISSION,
 } from '@/services/applications/permission-definitions';
 
+const APPLICATION_ACCOUNT_MANAGEMENT_PERMISSION_NAMES = [
+  'application.account.view',
+  'application.account.delete',
+  'application.account.role.update',
+  'application.account.profile.update',
+  'application.account.connection.assign',
+];
+
 describe('application system owner permissions', () => {
   it('excludes application.create from the system owner role', () => {
     expect(
@@ -36,5 +44,18 @@ describe('application system owner permissions', () => {
       scopeFor: ['for_individual'],
       scopeLevel: ['publiclyEnrollable', 'assignable', 'rootManaged'],
     });
+  });
+
+  it('defines application account-management permissions for individual, dependent, and root-managed sets', () => {
+    for (const permissionName of APPLICATION_ACCOUNT_MANAGEMENT_PERMISSION_NAMES) {
+      expect(
+        APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS.find(
+          (permission) => permission.name === permissionName,
+        ),
+      ).toMatchObject({
+        scopeFor: ['for_individual', 'for_dependent'],
+        scopeLevel: ['publiclyEnrollable', 'assignable', 'rootManaged'],
+      });
+    }
   });
 });

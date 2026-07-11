@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from './ui/skeleton';
 import { useSession } from '@/core/providers/session';
+import { getFallbackDisplayImage } from '@/logica/display-image';
 
 export function UserNav() {
   const { profile, loading } = useSession();
@@ -30,7 +31,11 @@ export function UserNav() {
         )}
       </div>
       <Avatar className="h-9 w-9">
-        <AvatarImage src={profile.accountPhoto || "https://neupgroup.com/assets/user.png"} alt={profile.nameDisplay || ''} data-ai-hint="person logo" />
+        <AvatarImage
+          src={profile.accountPhoto || getFallbackDisplayImage({ accountType: profile.accountType, gender: profile.gender })}
+          alt={profile.nameDisplay || ''}
+          data-ai-hint="person logo"
+        />
         <AvatarFallback />
       </Avatar>
     </div>

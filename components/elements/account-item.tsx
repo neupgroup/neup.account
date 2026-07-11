@@ -10,6 +10,7 @@ import { ChevronRight } from '@/components/icons';
 import { AccountActions } from '@/app/auth/start/start-page-component';
 import { cn } from '@/core/utils';
 import { deleteSessionData } from '@/core/auth/storage';
+import { getFallbackDisplayImage } from '@/logica/display-image';
 
 type CombinedAccount = StoredAccount & {
     displayName?: string;
@@ -21,10 +22,13 @@ type CombinedAccount = StoredAccount & {
 };
 
 export function AccountListItem({ account, isActive }: { account: CombinedAccount; isActive?: boolean }) {
+    const initialFallbackPhoto = getFallbackDisplayImage({
+        accountType: account.accountType ?? (account.isBrand ? 'brand' : 'individual'),
+    });
     const [details, setDetails] = useState<Partial<CombinedAccount>>({
         displayName: account.displayName,
         neupId: account.nid || account.neupId,
-        displayPhoto: account.displayPhoto || (account.isBrand ? 'https://neupgroup.com/assets/brand.png' : 'https://neupgroup.com/assets/user.png'),
+        displayPhoto: account.displayPhoto || initialFallbackPhoto,
     });
     const [loading, setLoading] = useState(true);
     const [isSwitching, startSwitchTransition] = useTransition();
@@ -38,7 +42,7 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
             const accountId = account.accountId || account.aid;
             if (!accountId || account.isUnknown) {
                 if (isMounted) {
-                    setDetails({ isUnknown: true, displayName: 'Unknown Account', neupId: 'unknown', displayPhoto: 'https://neupgroup.com/assets/user.png' });
+                    setDetails({ isUnknown: true, displayName: 'Unknown Account', neupId: 'unknown', displayPhoto: initialFallbackPhoto });
                     setLoading(false);
                 }
                 return;
@@ -57,12 +61,12 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
                     setDetails({
                         displayName: profile?.nameDisplay || `Account ${accountId.substring(0, 6)}`,
                         neupId: account.nid || account.neupId || profile?.neupIdPrimary || 'N/A',
-                        displayPhoto: profile?.accountPhoto || (profile?.accountType === 'brand' ? 'https://neupgroup.com/assets/brand.png' : 'https://neupgroup.com/assets/user.png'),
+                        displayPhoto: profile?.accountPhoto || getFallbackDisplayImage({ accountType: profile?.accountType, gender: profile?.gender }),
                     });
                 }
             } catch (e) {
                 if (isMounted) {
-                    setDetails({ isUnknown: true, displayName: 'Error Loading', neupId: 'error', displayPhoto: 'https://neupgroup.com/assets/user.png' });
+                    setDetails({ isUnknown: true, displayName: 'Error Loading', neupId: 'error', displayPhoto: initialFallbackPhoto });
                 }
             } finally {
                 if (isMounted) setLoading(false);

@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useSession } from '@/core/providers/session';
+import { getFallbackDisplayImage } from '@/logica/display-image';
 
 const STATIC_LOGO_URL = 'https://neupcdn.com/neupaccount/assets/logo.svg';
 const HEADER_HEIGHT = '4rem';
@@ -48,7 +49,7 @@ function MobileHeaderProfileCard() {
       <div className="flex items-center gap-3">
         <Avatar className="h-12 w-12">
           <AvatarImage
-            src={profile.accountPhoto || 'https://neupgroup.com/assets/user.png'}
+            src={profile.accountPhoto || getFallbackDisplayImage({ accountType: profile.accountType, gender: profile.gender })}
             alt={profile.nameDisplay || ''}
             data-ai-hint="person logo"
           />

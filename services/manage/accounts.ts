@@ -7,7 +7,7 @@ import { logError } from '@/core/helpers/logger';
 import { checkPermissions } from '@/services/user';
 import { getPersonalAccountId } from '@/logica/account/verify';
 import type { StoredAccount } from '@/logica/account/session';
-import { resolveDisplayImage } from '@/logica/display-image';
+import { extractGenderFromDetails, resolveDisplayImage } from '@/logica/display-image';
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from '@/services/access-model';
 import type { Prisma } from '@/prisma/generated/client/client';
 
@@ -143,6 +143,11 @@ export async function getAccessibleAccounts(): Promise<AccessibleAccount[]> {
             include: {
                 parentAccount: {
                     include: {
+                        individualProfile: {
+                            select: {
+                                details: true,
+                            },
+                        },
                         neupIds: {
                             where: { isPrimary: true },
                         },
@@ -176,6 +181,10 @@ export async function getAccessibleAccounts(): Promise<AccessibleAccount[]> {
                 displayPhoto: resolveDisplayImage({
                     displayImage: ownerAccount.displayImage,
                     accountType: ownerAccount.accountType,
+                    gender: extractGenderFromDetails({
+                        accountDetails: ownerAccount.details,
+                        individualDetails: ownerAccount.individualProfile?.details,
+                    }),
                 }),
             };
             return accessibleAccount;
@@ -551,9 +560,15 @@ export async function getAllAccountsPaginated(params: {
                     id: true,
                     displayName: true,
                     displayImage: true,
+                    details: true,
                     status: true,
                     isVerified: true,
                     accountType: true,
+                    individualProfile: {
+                        select: {
+                            details: true,
+                        },
+                    },
                     neupIds: {
                         where: { isPrimary: true },
                         select: { neupId: true },
@@ -577,16 +592,27 @@ export async function getAllAccountsPaginated(params: {
             latestActivities.map((a) => [a.memberId, a._max?.timestamp ?? null]),
         );
 
-        let accounts = rows.map((a) => ({
-            id: a.id,
-            displayName: a.displayName,
-            displayImage: resolveDisplayImage({ displayImage: a.displayImage, accountType: a.accountType }),
-            status: a.status,
-            isVerified: a.isVerified,
-            accountType: a.accountType,
-            lastActivityAt: activityMap.get(a.id) ?? null,
-            neupId: a.neupIds[0]?.neupId ?? null,
-        }));
+        let accounts = rows.map((a) => {
+            const gender = extractGenderFromDetails({
+                accountDetails: a.details,
+                individualDetails: a.individualProfile?.details,
+            });
+
+            return {
+                id: a.id,
+                displayName: a.displayName,
+                displayImage: resolveDisplayImage({
+                    displayImage: a.displayImage,
+                    accountType: a.accountType,
+                    gender,
+                }),
+                status: a.status,
+                isVerified: a.isVerified,
+                accountType: a.accountType,
+                lastActivityAt: activityMap.get(a.id) ?? null,
+                neupId: a.neupIds[0]?.neupId ?? null,
+            };
+        });
 
         // For last_active sort: sort by activity timestamp then paginate in memory
         if (sort === 'last_active') {
@@ -629,9 +655,15 @@ export async function getAllAccounts(): Promise<AccountBasics[]> {
                 id: true,
                 displayName: true,
                 displayImage: true,
+                details: true,
                 status: true,
                 isVerified: true,
                 accountType: true,
+                individualProfile: {
+                    select: {
+                        details: true,
+                    },
+                },
                 neupIds: {
                     where: { isPrimary: true },
                     select: { neupId: true },
@@ -644,7 +676,14 @@ export async function getAllAccounts(): Promise<AccountBasics[]> {
         return accounts.map((a) => ({
             id: a.id,
             displayName: a.displayName,
-            displayImage: resolveDisplayImage({ displayImage: a.displayImage, accountType: a.accountType }),
+            displayImage: resolveDisplayImage({
+                displayImage: a.displayImage,
+                accountType: a.accountType,
+                gender: extractGenderFromDetails({
+                    accountDetails: a.details,
+                    individualDetails: a.individualProfile?.details,
+                }),
+            }),
             status: a.status,
             isVerified: a.isVerified,
             accountType: a.accountType,
@@ -706,9 +745,15 @@ export async function getAccessableBrandAccounts(accountId: string): Promise<Acc
                 id: true,
                 displayName: true,
                 displayImage: true,
+                details: true,
                 status: true,
                 isVerified: true,
                 accountType: true,
+                individualProfile: {
+                    select: {
+                        details: true,
+                    },
+                },
                 neupIds: {
                     where: { isPrimary: true },
                     select: { neupId: true },
@@ -790,7 +835,14 @@ export async function getAccountBasics(accountId: string): Promise<AccountBasics
         return {
             id: account.id,
             displayName: account.displayName,
-            displayImage: resolveDisplayImage({ displayImage: account.displayImage, accountType: account.accountType }),
+            displayImage: resolveDisplayImage({
+                displayImage: account.displayImage,
+                accountType: account.accountType,
+                gender: extractGenderFromDetails({
+                    accountDetails: account.details,
+                    individualDetails: account.individualProfile?.details,
+                }),
+            }),
             status: account.status,
             isVerified: account.isVerified,
             accountType: account.accountType,
@@ -886,9 +938,15 @@ export async function getAccessableAccountsWithPermissions(
                     id: true,
                     displayName: true,
                     displayImage: true,
+                    details: true,
                     status: true,
                     isVerified: true,
                     accountType: true,
+                    individualProfile: {
+                        select: {
+                            details: true,
+                        },
+                    },
                 },
             }),
             // Fetch all grants for this accessor across all owner accounts in one query
@@ -935,7 +993,14 @@ export async function getAccessableAccountsWithPermissions(
             .map((a) => ({
                 id: a.id,
                 displayName: a.displayName,
-                displayImage: resolveDisplayImage({ displayImage: a.displayImage, accountType: a.accountType }),
+                displayImage: resolveDisplayImage({
+                    displayImage: a.displayImage,
+                    accountType: a.accountType,
+                    gender: extractGenderFromDetails({
+                        accountDetails: a.details,
+                        individualDetails: a.individualProfile?.details,
+                    }),
+                }),
                 status: a.status,
                 isVerified: a.isVerified,
                 accountType: a.accountType,

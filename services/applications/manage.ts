@@ -86,6 +86,7 @@ import {
   normalizeApplicationAuthzDefinitions,
   type ApplicationAuthzConfig,
 } from '@/services/applications/authz-config';
+import { extractGenderFromDetails, resolveDisplayImage } from '@/logica/display-image';
 
 const servicePermissions = [
   permission('application.view.root', 'for_individual', 'service'),
@@ -2484,25 +2485,42 @@ export async function getApplicationUsersPaginated(params: {
               id: true,
               displayName: true,
               displayImage: true,
+              details: true,
               accountType: true,
               isVerified: true,
               status: true,
+              individualProfile: {
+                select: {
+                  details: true,
+                },
+              },
             },
           },
         },
       }),
     ]);
 
-    const users: AppUserEntry[] = rows.map((r) => ({
-      connectionId: r.id,
-      accountId: r.account.id,
-      displayName: r.account.displayName,
-      displayImage: r.account.displayImage,
-      accountType: r.account.accountType,
-      isVerified: r.account.isVerified,
-      connectedAt: r.connectedAt,
-      status: r.account.status,
-    }));
+    const users: AppUserEntry[] = rows.map((r) => {
+      const gender = extractGenderFromDetails({
+        accountDetails: r.account.details,
+        individualDetails: r.account.individualProfile?.details,
+      });
+
+      return {
+        connectionId: r.id,
+        accountId: r.account.id,
+        displayName: r.account.displayName,
+        displayImage: resolveDisplayImage({
+          displayImage: r.account.displayImage,
+          accountType: r.account.accountType,
+          gender,
+        }),
+        accountType: r.account.accountType,
+        isVerified: r.account.isVerified,
+        connectedAt: r.connectedAt,
+        status: r.account.status,
+      };
+    });
 
     return {
       users,
@@ -2546,10 +2564,16 @@ export async function getApplicationUserConnectionDetails(params: {
               id: true,
               displayName: true,
               displayImage: true,
+              details: true,
               accountType: true,
               isVerified: true,
               status: true,
               createdAt: true,
+              individualProfile: {
+                select: {
+                  details: true,
+                },
+              },
               neupIds: {
                 where: { isPrimary: true },
                 take: 1,
@@ -2618,6 +2642,11 @@ export async function getApplicationUserConnectionDetails(params: {
       ),
     );
 
+    const gender = extractGenderFromDetails({
+      accountDetails: row.account.details,
+      individualDetails: row.account.individualProfile?.details,
+    });
+
     return {
       connectionId: row.id,
       appId: row.appId,
@@ -2628,7 +2657,11 @@ export async function getApplicationUserConnectionDetails(params: {
       roleIds,
       pendingRoleIds,
       displayName: row.account.displayName,
-      displayImage: row.account.displayImage,
+      displayImage: resolveDisplayImage({
+        displayImage: row.account.displayImage,
+        accountType: row.account.accountType,
+        gender,
+      }),
       accountType: row.account.accountType,
       isVerified: row.account.isVerified,
       accountStatus: row.account.status,

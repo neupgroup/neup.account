@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition, Suspense, useCallback } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,9 +72,12 @@ function AccountRow({ acc, isFirst, isLast }: { acc: AccountBasics; isFirst: boo
                     ${!isFirst ? '-mt-px' : ''}
                 `}
             >
-                <div className="h-9 w-9 rounded-md bg-muted flex items-center justify-center shrink-0 text-sm font-semibold text-muted-foreground select-none">
-                    {acc.displayName?.charAt(0).toUpperCase() ?? '?'}
-                </div>
+                <Avatar className="h-9 w-9 rounded-md shrink-0">
+                    <AvatarImage src={acc.displayImage ?? undefined} alt={acc.displayName ?? ''} className="object-cover" />
+                    <AvatarFallback className="rounded-md text-sm font-semibold">
+                        {acc.displayName?.charAt(0).toUpperCase() ?? '?'}
+                    </AvatarFallback>
+                </Avatar>
 
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">

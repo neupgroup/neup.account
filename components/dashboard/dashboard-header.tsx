@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { VerifiedBadge } from '../verified-badge';
 import { useSession } from '@/core/providers/session';
 import { redirectInApp } from '@/core/helpers/navigation';
+import { getFallbackDisplayImage } from '@/logica/display-image';
 
 function getGreeting() {
     const hour = new Date().getHours();
@@ -52,7 +53,11 @@ export function DashboardHeader() {
         <div className="space-y-4">
             <div className="flex items-center gap-4">
                  <Avatar className="h-16 w-16 rounded-lg">
-                    <AvatarImage src={profile?.accountPhoto || "https://neupgroup.com/assets/user.png"} alt={profile?.nameDisplay} data-ai-hint="person" />
+                    <AvatarImage
+                        src={profile?.accountPhoto || getFallbackDisplayImage({ accountType: profile?.accountType, gender: profile?.gender })}
+                        alt={profile?.nameDisplay}
+                        data-ai-hint="person"
+                    />
                     <AvatarFallback className="rounded-lg text-xl">
                         {`${profile?.nameDisplay?.[0] || ''}`.toUpperCase()}
                     </AvatarFallback>

@@ -12,7 +12,7 @@ import {
   getQueryParam,
 } from '@/app/(manage)/application/_lib/query-param';
 import { canCurrentAccountUseRootApplicationMode, getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
-import { createPageMetadata } from '@/core/metadata';
+import { formMetadata } from '@/core/metadata';
 
 /*
 ::neup.documentation::application-manage-page
@@ -72,18 +72,20 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   if (rootMode) {
     const canUseRootMode = await canCurrentAccountUseRootApplicationMode();
     if (!canUseRootMode) {
-      return createPageMetadata('Application Management');
+      return formMetadata({ title: 'Application Management' });
     }
   }
 
   if (!applicationId) {
-    return createPageMetadata('Application Management');
+    return formMetadata({ title: 'Application Management' });
   }
 
   const details = await getApplicationDetailsForViewerV2(applicationId, {
     rootMode,
   });
-  return createPageMetadata(details?.name ? `${details.name}'s Management` : 'Application Management');
+  return formMetadata({
+    title: details?.name ? `${details.name}'s Management` : 'Application Management',
+  });
 }
 
 export default async function ApplicationsManagePage({ searchParams }: Props) {

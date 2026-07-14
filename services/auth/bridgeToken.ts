@@ -2,7 +2,7 @@
 
 import prisma from '@/core/helpers/prisma';
 import jwt from 'jsonwebtoken';
-import { verifyAccountToken } from '@/core/auth/decoder';
+import { verifyAccountToken } from '@/services/auth/account-token';
 import { validateAuthSession, expireSession } from '@/services/auth/session';
 
 /*

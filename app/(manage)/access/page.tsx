@@ -27,7 +27,7 @@ import {
   ACCESS_TEAM_VIEW_PERMISSIONS,
   ACCESS_VIEW_PERMISSIONS,
 } from '@/logica/account/access-view-permissions';
-import { createPageMetadata } from '@/core/metadata';
+import { formMetadata } from '@/core/metadata';
 
 const pagePermissions = [
   permission('access.view.self', 'for_individual', 'page'),
@@ -54,7 +54,7 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
   const { portfolio, selectedProfile } = await searchParams;
 
   if (portfolio) {
-    return createPageMetadata('Access', 'Not Found');
+    return formMetadata({ title: 'Access, Not Found' });
   }
 
   if (selectedProfile) {
@@ -63,10 +63,10 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
       profile?.nameDisplay ||
       [profile?.nameFirst, profile?.nameLast].filter(Boolean).join(' ').trim() ||
       selectedProfile;
-    return createPageMetadata('Access', `${accountName}'s Account`);
+    return formMetadata({ title: `Access, ${accountName}'s Account` });
   }
 
-  return createPageMetadata('Access & Control');
+  return formMetadata({ title: 'Access & Control' });
 }
 
 function LinkAndCreateFeatures({

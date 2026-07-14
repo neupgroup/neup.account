@@ -9,7 +9,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronRight } from '@/components/icons';
 import { AccountActions } from '@/app/auth/start/start-page-component';
 import { cn } from '@/core/utils';
-import { deleteSessionData } from '@/core/auth/storage';
+import { deleteSessionData } from '@/inapp/auth/storage';
 import { getFallbackDisplayImage } from '@/logica/display-image';
 
 type CombinedAccount = StoredAccount & {

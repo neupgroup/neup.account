@@ -6,7 +6,7 @@
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { appendFlowParamsObject, getFlowParams } from '@/core/auth/callbacks';
+import { appendFlowParamsObject, getFlowParams } from '@/inapp/auth/callbacks';
 import { appendApplicationRootMode } from '@/app/(manage)/application/_lib/application-mode';
 import { appendStickyQueryParams } from '@/core/helpers/navigation';
 import type { ComponentProps } from 'react';

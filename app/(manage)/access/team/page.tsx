@@ -11,7 +11,7 @@ import { AssetMemberLookupForm } from '../_components/asset-member-lookup-form';
 import { AddUserForm } from '../add-user-form';
 import { FlowLink } from '@/components/ui/flow-link';
 import { PrimaryHeader } from '@/components/ui/primary-header';
-import { createPageMetadata } from '@/core/metadata';
+import { formMetadata } from '@/core/metadata';
 import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/logica/account/access-view-permissions';
 import { permission } from '@/logica/permission';
 import { resolveAccessProfileContext } from '@/logica/account/access-profile-context';
@@ -24,7 +24,7 @@ type PageProps = {
   searchParams: Promise<{ portfolio?: string; asset?: string; mode?: string; workingProfile?: string; selectedProfile?: string }>;
 };
 
-export const metadata: Metadata = createPageMetadata('Team Management');
+export const metadata: Metadata = formMetadata({ title: 'Team Management' });
 
 type MemberStatus = 'active' | 'invited' | 'on_hold' | 'expired';
 

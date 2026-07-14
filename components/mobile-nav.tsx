@@ -29,7 +29,7 @@ import {
 import { type NavSection, navItems, allPermissionsMap } from "./nav-data";
 import { NotificationBell } from "./warning-display";
 import { ListItem } from "./ui/list-item";
-import { useSession } from "@/core/providers/session";
+import { useSession } from "@/inapp/auth/session-context";
 import { Skeleton } from "./ui/skeleton";
 import { switchToPersonal } from "@/services/auth/switch";
 import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/logica/account/profile-permissions";

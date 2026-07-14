@@ -10,7 +10,7 @@ import { cn } from '@/core/utils';
 import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useSession } from '@/core/providers/session';
+import { useSession } from '@/inapp/auth/session-context';
 import { getFallbackDisplayImage } from '@/logica/display-image';
 
 const STATIC_LOGO_URL = 'https://neupcdn.com/neupaccount/assets/logo.svg';

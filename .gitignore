@@ -60,4 +60,6 @@ app.public.key
 
 # Neup Standard files.
 logica
+neup.logica
 core
+neup.core

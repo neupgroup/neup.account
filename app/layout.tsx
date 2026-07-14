@@ -10,12 +10,12 @@ import { UrlErrorBanner } from '@/components/ui/url-error-banner';
 import { PersistentBacksTo } from '@/components/persistent-backs-to';
 import { HeaderV1 } from '@/components/layout/header.v1';
 import { getSiteLogoUrl } from '@/services/manage/site/logo';
-import { APP_NAME } from '@/core/metadata';
+import { APP_NAME, DEFAULT_META_DESCRIPTION } from '@/core/metadata';
 import { AppTitleSync } from '@/components/app-title-sync';
 
 export const metadata: Metadata = {
   title: APP_NAME,
-  description: 'Create an account to access NeupID products and services.',
+  description: DEFAULT_META_DESCRIPTION,
   metadataBase: new URL('https://neupgroup.com/account'),
 };
 

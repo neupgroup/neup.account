@@ -6,10 +6,10 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/ca
 import { BackButton } from '@/components/ui/back-button';
 import { checkPermissions } from '@/services/user';
 import { PrimaryHeader } from '@/components/ui/primary-header';
-import { createPageMetadata } from '@/core/metadata';
+import { formMetadata } from '@/core/metadata';
 import { permission } from '@/logica/permission';
 
-export const metadata: Metadata = createPageMetadata('Site Configuration');
+export const metadata: Metadata = formMetadata({ title: 'Site Configuration' });
 
 const pagePermissions = [
   permission('root.payment_config.view', 'for_individual', 'page'),

@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ShieldCheck, Laptop, Link, AppWindow } from '@/components/icons';
 import { ListItem } from '../ui/list-item';
 import { SecondaryHeader } from '../ui/secondary-header';
-import { useSession } from '@/core/providers/session';
+import { useSession } from '@/inapp/auth/session-context';
 import { hasAnyPermission } from '@/logica/account/profile-permissions';
 import {
     SECURITY_PERMISSION_GROUPS,

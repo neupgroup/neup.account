@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { recordCurrentInAppPath } from '@/core/helpers/back-navigation';
+import { writeHistory } from '@/core/helpers/navigation';
 
 const PARAM_KEY = 'backsTo';
 const STORAGE_KEY = `persistent-query-param:${PARAM_KEY}`;
@@ -63,8 +63,9 @@ export function PersistentBacksTo() {
 
   useEffect(() => {
     const query = searchParams?.toString();
-    const currentPath = `${pathname || '/'}${query ? `?${query}` : ''}`;
-    recordCurrentInAppPath(currentPath);
+    const hash = typeof window !== 'undefined' ? window.location.hash : '';
+    const currentPath = `${pathname || '/'}${query ? `?${query}` : ''}${hash}`;
+    writeHistory(currentPath);
   }, [pathname, searchParams]);
 
   useEffect(() => {

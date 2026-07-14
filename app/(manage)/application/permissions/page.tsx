@@ -12,7 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { PermissionPanel } from '@/app/(manage)/application/_components/permission-panel';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
-import { createPageMetadata } from '@/core/metadata';
+import { formMetadata } from '@/core/metadata';
 import { PermissionDetailEditor } from '@/app/(manage)/application/_components/permission-detail-editor';
 import { isBuiltInApplicationManagementPermissionName } from '@/services/applications/permission-definitions';
 
@@ -47,23 +47,27 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   const permissionId = getQueryParam(resolvedSearchParams.permission);
 
   if (!applicationId) {
-    return createPageMetadata('Permissions', 'Application Management');
+    return formMetadata({ title: 'Permissions, Application Management' });
   }
 
   const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: resolvedSearchParams.mode === 'root' });
   if (!permissionId) {
-    return createPageMetadata('Permissions', details?.name ? `${details.name} Management` : 'Application Management');
+    return formMetadata({
+      title: details?.name ? `Permissions, ${details.name} Management` : 'Permissions, Application Management',
+    });
   }
 
   const permissions = (await getAppPermissions(applicationId)).filter(
     (permission) => !(applicationId === 'neup.account' && isBuiltInApplicationManagementPermissionName(permission.name)),
   );
   const permission = permissions.find((item) => item.id === permissionId);
-  return createPageMetadata(
-    permission?.name ?? 'Permission',
-    'Permissions',
-    details?.name ? `${details.name} Management` : 'Application Management',
-  );
+  return formMetadata({
+    title: [
+      permission?.name ?? 'Permission',
+      'Permissions',
+      details?.name ? `${details.name} Management` : 'Application Management',
+    ].join(', '),
+  });
 }
 
 export default async function ApplicationPermissionsQueryPage({ searchParams }: Props) {

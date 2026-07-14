@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession } from '@/core/providers/session';
+import { useSession } from '@/inapp/auth/session-context';
 import { Card, CardContent } from '@/components/ui/card';
 import { Users, List, Terminal, AppWindow } from '@/components/icons';
 import { SecondaryHeader } from '@/components/ui/secondary-header';

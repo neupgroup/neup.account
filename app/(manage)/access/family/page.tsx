@@ -8,14 +8,14 @@ import { getActiveAccountId } from '@/logica/account/verify';
 import { getUserProfile, checkPermissions } from '@/services/user';
 import { notFound } from "next/navigation";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
-import { createPageMetadata } from '@/core/metadata';
+import { formMetadata } from '@/core/metadata';
 import { permission } from '@/logica/permission';
 import {
     ACCESS_FAMILY_MEMBER_UPDATE_PERMISSIONS,
     ACCESS_FAMILY_PARTNER_UPDATE_PERMISSIONS,
 } from '@/logica/account/access-view-permissions';
 
-export const metadata: Metadata = createPageMetadata('Family Management');
+export const metadata: Metadata = formMetadata({ title: 'Family Management' });
 
 const pagePermissions = [
     permission('access.family.member.update.self', 'for_individual', 'page'),

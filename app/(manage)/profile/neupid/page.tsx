@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form"
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
-import { useSession } from '@/core/providers/session'
+import { useSession } from '@/inapp/auth/session-context'
 import { BackButton } from '@/components/ui/back-button'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/logica/account/profile-permissions'
 import { permission } from '@/logica/permission';

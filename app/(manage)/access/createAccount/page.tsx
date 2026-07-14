@@ -4,7 +4,7 @@ import { permission } from '@/logica/permission';
 import CreateBrandPageClient from './brand-page-client';
 import CreateDependentPageClient from './dependent-page-client';
 import CreateSubbrandPageClient from './subbrand-page-client';
-import { createPageMetadata } from '@/core/metadata';
+import { formMetadata } from '@/core/metadata';
 import { resolveAccessProfileContext } from '@/logica/account/access-profile-context';
 import { getUserProfile } from '@/services/user';
 import {
@@ -41,10 +41,10 @@ export async function generateMetadata({ searchParams }: PageProps): Promise<Met
     const { type } = await searchParams;
 
     if (type === 'brand' || type === 'dependent' || type === 'subbrand' || type === 'branch') {
-        return createPageMetadata('Create Account');
+        return formMetadata({ title: 'Create Account' });
     }
 
-    return createPageMetadata('Access & Control');
+    return formMetadata({ title: 'Access & Control' });
 }
 
 export default async function CreateAccountPage({ searchParams }: PageProps) {

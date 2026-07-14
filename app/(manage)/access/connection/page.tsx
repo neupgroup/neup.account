@@ -5,12 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AppWindow, ChevronRight, Users } from '@/components/icons';
 import { FlowLink } from '@/components/ui/flow-link';
 import { getConnectionPageData } from './actions';
-import { createPageMetadata } from '@/core/metadata';
+import { formMetadata } from '@/core/metadata';
 import { ACCESS_CONNECTION_VIEW_PERMISSIONS } from '@/logica/account/access-view-permissions';
 import { permission } from '@/logica/permission';
 import { resolveAccessProfileContext } from '@/logica/account/access-profile-context';
 
-export const metadata: Metadata = createPageMetadata('Connection Management');
+export const metadata: Metadata = formMetadata({ title: 'Connection Management' });
 
 const pagePermissions = [
   permission('access.connection.view.self', 'for_individual', 'page'),

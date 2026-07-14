@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getSessionCookies } from '@/core/auth/cookies';
+import { getSessionCookies } from '@/services/auth/session-cookies';
 import { getAccounts } from '@/logica/account/accounts';
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';

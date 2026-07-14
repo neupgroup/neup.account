@@ -16,7 +16,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { PhoneInput } from "@/components/ui/phone-input"
-import { useSession } from '@/core/providers/session'
+import { useSession } from '@/inapp/auth/session-context'
 import { BackButton } from '@/components/ui/back-button'
 import { Separator } from '@/components/ui/separator'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/logica/account/profile-permissions'

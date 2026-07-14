@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Check, X, Loader2, Users, Handshake } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BackButton } from '@/components/ui/back-button';
-import { useSession } from '@/core/providers/session';
+import { useSession } from '@/inapp/auth/session-context';
 import { hasAnyPermission } from '@/logica/account/profile-permissions';
 import { permission } from '@/logica/permission';
 import {

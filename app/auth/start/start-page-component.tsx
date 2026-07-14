@@ -11,7 +11,7 @@ import React from 'react';
 import { useToast } from '@/core/hooks/use-toast';
 import { AccountListItem } from '@/components/elements/account-item';
 import type { StoredAccount } from '@/logica/account/session';
-import { appendAuthCallbackContext, appendRedirect, getAppDisplayName, shouldReturnToAuthStartForExternalAuthentication } from '@/core/auth/callbacks';
+import { appendAuthCallbackContext, appendRedirect, getAppDisplayName, shouldReturnToAuthStartForExternalAuthentication } from '@/inapp/auth/callbacks';
 import { redirectInApp } from '@/core/helpers/navigation';
 import { cleanupExpiredStoredSessions } from '@/logica/account/session';
 import { logoutStoredSession, removeStoredAccount } from '@/logica/account/startSessions';

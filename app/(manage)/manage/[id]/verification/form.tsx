@@ -18,7 +18,7 @@ import { CheckCircle2, Loader2, ShieldCheck, XCircle } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { useSession } from '@/core/providers/session';
+import { useSession } from '@/inapp/auth/session-context';
 
 const grantSchema = z.object({
   category: z.string().min(3, "Category is required."),

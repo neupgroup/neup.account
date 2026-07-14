@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/core/helpers/prisma';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
-import { verifyAccountToken } from '@/core/auth/decoder';
+import { verifyAccountToken } from '@/services/auth/account-token';
 import { resolveWhoAmI } from '@/services/auth/whoami';
 import { resolveGuestAccount } from '@/logica/account/guestAccount';
-import { getSessionCookies } from '@/core/auth/cookies';
+import { getSessionCookies } from '@/services/auth/session-cookies';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import { extractGenderFromDetails, resolveDisplayImage } from '@/logica/display-image';
 

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { createPageMetadata } from '@/core/metadata';
+import { formMetadata } from '@/core/metadata';
 import LinkWhatsAppPageClient from './page.client';
 
-export const metadata: Metadata = createPageMetadata('Link WhatsApp');
+export const metadata: Metadata = formMetadata({ title: 'Link WhatsApp' });
 
 type PageProps = {
   searchParams: Promise<{ selectedProfile?: string; mode?: string; workingProfile?: string }>;

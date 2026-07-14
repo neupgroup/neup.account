@@ -44,8 +44,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { countries } from "./countries";
 import { redirectInApp } from "@/core/helpers/navigation";
-import { appendAuthCallbackContext, hasAuthCallbackContext, shouldReturnToAuthStartForExternalAuthentication, getFlowParams } from "@/core/auth/callbacks";
-import { announceAuthStateChanged } from "@/logica/account/events";
+import { appendAuthCallbackContext, hasAuthCallbackContext, shouldReturnToAuthStartForExternalAuthentication, getFlowParams } from "@/inapp/auth/callbacks";
+import { announceAuthStateChanged } from "@/inapp/auth/events";
 
 const SIGNUP_TIMEOUT_DESCRIPTION = 'Exceeded the time for SignUp.';
 

@@ -4,9 +4,9 @@ import { BackButton } from "@/components/ui/back-button";
 import { PrimaryHeader } from "@/components/ui/primary-header";
 import { ListItem } from "@/components/ui/list-item";
 import { Bot } from "@/components/icons";
-import { createPageMetadata } from '@/core/metadata';
+import { formMetadata } from '@/core/metadata';
 
-export const metadata: Metadata = createPageMetadata('Link Other Accounts');
+export const metadata: Metadata = formMetadata({ title: 'Link Other Accounts' });
 
 type PageProps = {
     searchParams: Promise<{ selectedProfile?: string; mode?: string; workingProfile?: string }>;

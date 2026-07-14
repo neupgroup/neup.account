@@ -1,11 +1,11 @@
 import { permission } from "@/logica/permission";
-import { PROFILE_NAV_PERMISSIONS } from "@/logica/account/profile-permissions";
-import { SECURITY_HUB_PERMISSIONS } from "@/logica/account/security-permissions";
-import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/logica/account/data-permissions";
+import { PROFILE_NAV_PERMISSIONS } from "@/core/account/profile-permissions";
+import { SECURITY_HUB_PERMISSIONS } from "@/core/account/security-permissions";
+import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/core/account/data-permissions";
 import {
     ACCESS_BLOCK_VIEW_PERMISSIONS,
     ACCESS_VIEW_PERMISSIONS,
-} from "@/logica/account/access-view-permissions";
+} from "@/core/account/access-view-permissions";
 
 const navPermissions = [
     permission("notification.read", "for_individual", "component"),

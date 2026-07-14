@@ -5,7 +5,7 @@ import { getUserProfile, checkPermissions, isRootUser } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { deleteUserAccount } from '@/services/manage/users';
-import { getPersonalAccountId } from '@/logica/account/verify';
+import { getPersonalAccountId } from '@/services/account/verify';
 import { logActivity } from '@/services/log-actions';
 import { z } from 'zod';
 import { permission } from '@/logica/permission';

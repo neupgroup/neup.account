@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { FlowLink } from '@/components/ui/flow-link';
 import { Clock, UserCircle } from '@/components/icons';
-import { getActiveAccountId } from '@/logica/account/verify';
+import { getActiveAccountId } from '@/services/account/verify';
 import { getUserProfile } from '@/services/user';
 import prisma from '@/core/helpers/prisma';
 import { getAccessAssetGroup } from '@/services/manage/access/assets';
@@ -33,8 +33,8 @@ import {
 } from '../_components/actions';
 import { DirectMemberAccessForm } from '../_components/direct-member-access-form';
 import { AddUserForm } from '../add-user-form';
-import { resolveAccessProfileContext } from '@/logica/account/access-profile-context';
-import { ACCESS_TEAM_ADD_PERMISSIONS } from '@/logica/account/access-view-permissions';
+import { resolveAccessProfileContext } from '@/services/account/access-profile-context';
+import { ACCESS_TEAM_ADD_PERMISSIONS } from '@/core/account/access-view-permissions';
 
 type PageProps = {
   searchParams: Promise<{

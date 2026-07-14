@@ -3,7 +3,7 @@
 // Handles applications the user has connected to or signed into.
 
 import prisma from '@/core/helpers/prisma';
-import { getPersonalAccountId } from '@/logica/account/verify';
+import { getPersonalAccountId } from '@/services/account/verify';
 import { logError } from '@/core/helpers/logger';
 import type { Application } from '@/services/applications/types';
 

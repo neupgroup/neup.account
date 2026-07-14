@@ -29,7 +29,7 @@ import { Prisma } from '@/prisma/generated/client/client';
 import {
   NEUP_ACCOUNT_PERMISSION_DEFINITIONS,
   stripPermissionAudience,
-} from '@/services/neup-account/permission-catalog';
+} from '@/core/account/permission-catalog';
 
 const APP_ID = 'neup.account';
 const PERMISSIONS_FILE = resolve(process.cwd(), 'neup.logica/basics/permissions.json');

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { requireAnyPermission404 } from '@/logica/account/permission-guards';
+import { requireAnyPermission404 } from '@/services/account/permission-guards';
 import { permission } from '@/logica/permission';
 
 const layoutPermissions = [

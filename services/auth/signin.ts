@@ -6,7 +6,7 @@ import { getAuthRequest, extendAuthRequest } from './auth-request';
 import { getAuthTimeoutError } from './timeout';
 import prisma from '@/core/helpers/prisma';
 import { verifyPassword } from './password';
-import { makeSessionFromRequest } from '@/logica/account/makeSession';
+import { makeSessionFromRequest } from '@/services/account/makeSession';
 
 const neupIdSchema = z.object({
     neupId: z.string().min(1, "NeupID is required."),

@@ -2,13 +2,13 @@
 
 import { permission } from "@/logica/permission";
 import { z } from "zod";
-import { getActiveAccountId } from "@/logica/account/verify";
+import { getActiveAccountId } from "@/services/account/verify";
 import { logActivity } from "@/services/log-actions";
 import { logError } from "@/core/helpers/logger";
 import prisma from "@/core/helpers/prisma";
 import bcrypt from "bcryptjs";
-import { requireAnyPermission404 } from "@/logica/account/permission-guards";
-import { DATA_PRIVACY_PERMISSION_GROUPS } from "@/logica/account/data-permissions";
+import { requireAnyPermission404 } from "@/services/account/permission-guards";
+import { DATA_PRIVACY_PERMISSION_GROUPS } from "@/core/account/data-permissions";
 
 const formSchema = z.object({
     inactivityDays: z.string().min(1, "Please select a time period."),

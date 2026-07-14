@@ -1,6 +1,6 @@
 import { permission } from '@/logica/permission';
-import { requireAnyPermission404 } from '@/logica/account/permission-guards';
-import { DATA_PRIVACY_NAV_PERMISSIONS } from '@/logica/account/data-permissions';
+import { requireAnyPermission404 } from '@/services/account/permission-guards';
+import { DATA_PRIVACY_NAV_PERMISSIONS } from '@/core/account/data-permissions';
 import DataAndPrivacyPage from './page.client';
 
 const pagePermissions = [

@@ -23,7 +23,7 @@ import { Label } from '@/components/ui/label'
 import { Loader2 } from "@/components/icons"
 import { useSession } from '@/inapp/auth/session-context'
 import { BackButton } from '@/components/ui/back-button'
-import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/logica/account/profile-permissions'
+import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/account/profile-permissions'
 import { permission } from '@/logica/permission';
 import { useSelectedProfilePage } from '../use-selected-profile-page';
 

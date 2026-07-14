@@ -27,7 +27,7 @@ import {
   NEUP_ACCOUNT_DEFAULT_ROLE_PERMISSION_NAMES,
   NEUP_ACCOUNT_PERMISSION_DEFINITIONS,
   NEUP_ACCOUNT_ROOT_ROLE_PERMISSION_NAMES,
-} from '../services/neup-account/permission-catalog';
+} from '../core/account/permission-catalog';
 
 // Root permissions are now managed via authz_role_capability in the database.
 // This legacy seed writes to the Permit table for backward compatibility.

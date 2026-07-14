@@ -10,7 +10,7 @@ import { permission } from '@/logica/permission';
 import { checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import { getUserProfile, getUserNeupIds } from '@/services/user';
-import { getActiveAccountId } from '@/logica/account/verify';
+import { getActiveAccountId } from '@/services/account/verify';
 import { canCurrentAccountViewApplicationRoles } from '@/services/applications/manage';
 import { REQUEST_TYPE_LABELS, UnifiedRequest, GetRequestsOptions } from './types';
 

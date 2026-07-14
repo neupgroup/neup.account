@@ -1,8 +1,8 @@
 "use server";
 
 import prisma from '@/core/helpers/prisma';
-import { createAndSetSession } from '@/logica/account/session';
-import { getActiveSession } from '@/logica/account/verify';
+import { createAndSetSession } from '@/services/account/session';
+import { getActiveSession } from '@/services/account/verify';
 import { makeNotification } from '@/services/notifications';
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';

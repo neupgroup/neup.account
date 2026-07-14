@@ -1,4 +1,4 @@
-import { requireValidSession } from "@/logica/account/guard";
+import { requireValidSession } from "@/services/account/guard";
 import { DashboardLayoutShell } from "./layout-shell";
 
 export const dynamic = 'force-dynamic';

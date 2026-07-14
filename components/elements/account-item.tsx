@@ -3,7 +3,7 @@
 
 import { useEffect, useState, useTransition } from 'react';
 import { getUserProfile } from '@/services/user';
-import type { StoredAccount } from '@/logica/account/session';
+import type { StoredAccount } from '@/services/account/session';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronRight } from '@/components/icons';

@@ -6,10 +6,10 @@ import { logActivity } from "@/services/log-actions";
 import { logError } from "@/core/helpers/logger";
 import prisma from "@/core/helpers/prisma";
 import bcrypt from "bcryptjs";
-import { getActiveAccountId } from "@/logica/account/verify";
-import { logoutActiveSession } from "@/logica/account/logout";
-import { requireAnyPermission404 } from "@/logica/account/permission-guards";
-import { DATA_PRIVACY_PERMISSION_GROUPS } from "@/logica/account/data-permissions";
+import { getActiveAccountId } from "@/services/account/verify";
+import { logoutActiveSession } from "@/services/account/logout";
+import { requireAnyPermission404 } from "@/services/account/permission-guards";
+import { DATA_PRIVACY_PERMISSION_GROUPS } from "@/core/account/data-permissions";
 
 const formSchema = z.object({
     password: z.string().min(1, "Password is required to deactivate your account."),

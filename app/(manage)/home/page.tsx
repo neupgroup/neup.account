@@ -5,7 +5,7 @@ import { DashboardHeader } from '@/components/dashboard/dashboard-header';
 import { BillingCard } from '@/components/dashboard/billing-card';
 import { SettingsCard } from '@/components/dashboard/settings-card';
 import { WarningDisplay } from '@/components/warning-display';
-import { getActiveAccountId } from '@/logica/account/verify';
+import { getActiveAccountId } from '@/services/account/verify';
 import { NotificationsCard } from '@/components/dashboard/notifications-card';
 import { ManageStatsCard } from '@/components/dashboard/manage-stats-card';
 import { FindUserCard } from '@/components/dashboard/find-user-card';

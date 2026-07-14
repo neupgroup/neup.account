@@ -4,12 +4,12 @@ import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { checkPermissions } from '@/services/user';
-import { getPersonalAccountId } from '@/logica/account/verify';
+import { getPersonalAccountId } from '@/services/account/verify';
 import { revalidatePath } from 'next/cache';
-import { requireAnyPermission404 } from '@/logica/account/permission-guards';
+import { requireAnyPermission404 } from '@/services/account/permission-guards';
 import { cleanupExpiredAccessModel } from '@/services/access-model';
-import { BRAND_OWNER_ROLE_ID } from '@/logica/account/brand-roles';
-import { ACCESS_ACCOUNTS_SWITCH_PERMISSIONS } from '@/logica/account/access-view-permissions';
+import { BRAND_OWNER_ROLE_ID } from '@/core/account/brand-roles';
+import { ACCESS_ACCOUNTS_SWITCH_PERMISSIONS } from '@/core/account/access-view-permissions';
 
 const servicePermissions = [
   permission('access.accounts.switch.self', 'for_individual', 'service'),

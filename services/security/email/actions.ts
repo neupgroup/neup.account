@@ -2,14 +2,14 @@
 
 import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
-import { getPersonalAccountId } from '@/logica/account/verify';
+import { getPersonalAccountId } from '@/services/account/verify';
 import { logActivity } from '@/services/log-actions';
 import { logError } from '@/core/helpers/logger';
 import { emailFormSchema } from '@/services/security/schema';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { checkPermissions } from '@/services/user';
-import { requireAnyPermission404 } from '@/logica/account/permission-guards';
+import { requireAnyPermission404 } from '@/services/account/permission-guards';
 
 const CONTACT_TYPE = 'recoveryEmail';
 

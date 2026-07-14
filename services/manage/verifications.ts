@@ -7,7 +7,7 @@ import { logActivity } from '@/services/log-actions';
 import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { getPersonalAccountId } from '@/logica/account/verify';
+import { getPersonalAccountId } from '@/services/account/verify';
 import { activityAction } from '@/services/activity-action';
 
 const servicePermissions = [

@@ -5,22 +5,22 @@ import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { checkPermissions, getUserProfile } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
-import { switchToBrand as switchToBrandAction, switchToPersonal as switchToPersonalAction } from '@/logica/account/session';
-import { getPersonalAccountId } from '@/logica/account/verify';
+import { switchToBrand as switchToBrandAction, switchToPersonal as switchToPersonalAction } from '@/services/account/session';
+import { getPersonalAccountId } from '@/services/account/verify';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { brandCreationSchema } from '@/services/manage/accounts/schema';
 import { activeAccessWhere, ensureAccessAsset, ensureAccessMember } from '@/services/access-model';
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
-import { requireAnyPermission404 } from '@/logica/account/permission-guards';
-import { BRAND_OWNER_PERMISSION_NAMES, BRAND_OWNER_ROLE_ID, BRAND_OWNER_ROLE_NAME } from '@/logica/account/brand-roles';
+import { requireAnyPermission404 } from '@/services/account/permission-guards';
+import { BRAND_OWNER_PERMISSION_NAMES, BRAND_OWNER_ROLE_ID, BRAND_OWNER_ROLE_NAME } from '@/core/account/brand-roles';
 import { assetTypeForRefs } from '@/services/access-model';
-import { resolveAccessProfileContext } from '@/logica/account/access-profile-context';
+import { resolveAccessProfileContext } from '@/services/account/access-profile-context';
 import {
   ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS,
   ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS,
-} from '@/logica/account/access-view-permissions';
+} from '@/core/account/access-view-permissions';
 
 const servicePermissions = [
     permission('access.linked_account.view.self', 'for_individual', 'service'),

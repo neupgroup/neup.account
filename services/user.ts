@@ -6,9 +6,9 @@
 import prisma from "@/core/helpers/prisma";
 import { Prisma } from "@/prisma/generated/client/client";
 import { logError } from "@/core/helpers/logger";
-import { getActiveAccountId, getPersonalAccountId } from "@/logica/account/verify";
+import { getActiveAccountId, getPersonalAccountId } from "@/services/account/verify";
 import { extractGenderFromDetails, resolveDisplayImage } from "@/logica/display-image";
-import { getAccountSelectorContext } from "@/logica/account/accountSelector";
+import { getAccountSelectorContext } from "@/services/account/accountSelector";
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from "@/services/access-model";
 import { permission } from '@/logica/permission';
 import { isRootRoleScope, normalizeRoleScope, normalizeRoleScopes } from '@/services/role-scopes';
@@ -19,7 +19,7 @@ import {
 } from '@/services/applications/authz-scope-policy';
 import {
   resolveNeupAccountPermissionCandidates,
-} from '@/services/neup-account/permission-catalog';
+} from '@/core/account/permission-catalog';
 
 const servicePermissions = [
   permission('root.account.view', 'for_individual', 'service'),

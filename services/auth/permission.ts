@@ -3,7 +3,7 @@
 import prisma from '@/core/helpers/prisma';
 import { logError } from '@/core/helpers/logger';
 import { activeAccessWhere, extractRolePermissionNames } from '@/services/access-model';
-import { resolveNeupAccountPermissionCandidates } from '@/services/neup-account/permission-catalog';
+import { resolveNeupAccountPermissionCandidates } from '@/core/account/permission-catalog';
 
 /**
  * Reasons returned when permission lookup fails.

@@ -4,7 +4,7 @@ import { getFamilyGroups } from "@/services/manage/people/family";
 import { FamilyManager } from "./family-manager";
 import { PartnerManager } from "./partner-manager";
 import { BackButton } from "@/components/ui/back-button";
-import { getActiveAccountId } from '@/logica/account/verify';
+import { getActiveAccountId } from '@/services/account/verify';
 import { getUserProfile, checkPermissions } from '@/services/user';
 import { notFound } from "next/navigation";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
@@ -13,7 +13,7 @@ import { permission } from '@/logica/permission';
 import {
     ACCESS_FAMILY_MEMBER_UPDATE_PERMISSIONS,
     ACCESS_FAMILY_PARTNER_UPDATE_PERMISSIONS,
-} from '@/logica/account/access-view-permissions';
+} from '@/core/account/access-view-permissions';
 
 export const metadata: Metadata = formMetadata({ title: 'Family Management' });
 

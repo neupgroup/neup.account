@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import prisma from '@/core/helpers/prisma';
-import { getActiveAccountId } from '@/logica/account/verify';
+import { getActiveAccountId } from '@/services/account/verify';
 import { checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';

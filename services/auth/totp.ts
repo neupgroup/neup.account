@@ -1,7 +1,7 @@
 "use server";
 import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
-import { getActiveAccountId } from '@/logica/account/verify';
+import { getActiveAccountId } from '@/services/account/verify';
 import { checkPermissions } from '@/services/user';
 import { authenticator } from 'otplib';
 import { z } from 'zod';
@@ -11,9 +11,9 @@ import { activityAction } from '@/services/activity-action';
 import { logError } from '@/core/helpers/logger';
 import { createNotification } from '@/services/notifications';
 import { encrypt, decrypt } from '@/services/security/totp';
-import { makeSessionFromRequest } from '@/logica/account/makeSession';
+import { makeSessionFromRequest } from '@/services/account/makeSession';
 import { getAuthRequest } from './auth-request';
-import { requireAnyPermission404 } from '@/logica/account/permission-guards';
+import { requireAnyPermission404 } from '@/services/account/permission-guards';
 
 /**
  * Result returned by TOTP helpers.

@@ -5,11 +5,11 @@ import { PrimaryHeader } from '@/components/ui/primary-header';
 import { SecondaryHeader } from '@/components/ui/secondary-header';
 import { permission } from '@/logica/permission';
 import { notFound } from 'next/navigation';
-import { requireAnyPermission404 } from '@/logica/account/permission-guards';
-import { hasAnyPermission } from '@/logica/account/profile-permissions';
-import { SECURITY_HUB_ITEMS, SECURITY_HUB_PERMISSIONS } from '@/logica/account/security-permissions';
+import { requireAnyPermission404 } from '@/services/account/permission-guards';
+import { hasAnyPermission } from '@/core/account/profile-permissions';
+import { SECURITY_HUB_ITEMS, SECURITY_HUB_PERMISSIONS } from '@/core/account/security-permissions';
 import { getCurrentAccountPermission } from '@/services/user';
-import { getActiveAccountId } from '@/logica/account/verify';
+import { getActiveAccountId } from '@/services/account/verify';
 
 const pagePermissions = [
     permission('security.pass.modify.self', 'for_individual', 'page'),

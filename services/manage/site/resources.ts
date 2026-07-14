@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import prisma from '@/core/helpers/prisma';
 import { checkPermissions } from '@/services/user';
-import { getPersonalAccountId } from '@/logica/account/verify';
+import { getPersonalAccountId } from '@/services/account/verify';
 import { logError } from '@/core/helpers/logger';
 
 const servicePermissions = [

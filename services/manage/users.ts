@@ -5,7 +5,7 @@ import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { Prisma } from '../../prisma/generated/client/client';
 import { getUserNeupIds, getUserProfile as fetchUserProfile, checkPermissions } from '@/services/user';
-import { getPersonalAccountId } from '@/logica/account/verify';
+import { getPersonalAccountId } from '@/services/account/verify';
 import { revalidatePath } from 'next/cache';
 import { logActivity } from '@/services/log-actions';
 import { logError } from '@/core/helpers/logger';
@@ -15,7 +15,7 @@ import { createNotification } from '../notifications';
 import { warningReasons } from '@/app/(manage)/manage/[id]/forms';
 import type { UserProfile } from '@/services/user';
 import { cleanupExpiredAccessModel, extractRolePermissionNames, ensureAccessGrant } from '@/services/access-model';
-import { ACCOUNT_ACCESS_PERMISSION_GROUPS } from '@/logica/account/account-access-permissions';
+import { ACCOUNT_ACCESS_PERMISSION_GROUPS } from '@/core/account/account-access-permissions';
 
 const servicePermissions = [
   permission('root.account.access.edit', 'for_individual', 'service'),

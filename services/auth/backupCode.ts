@@ -3,12 +3,12 @@
 import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import crypto from 'crypto';
-import { getPersonalAccountId } from '@/logica/account/verify';
+import { getPersonalAccountId } from '@/services/account/verify';
 import { checkPermissions } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
 import { logError } from '@/core/helpers/logger';
 import { createNotification } from '@/services/notifications';
-import { requireAnyPermission404 } from '@/logica/account/permission-guards';
+import { requireAnyPermission404 } from '@/services/account/permission-guards';
 
 /**
  * Public backup code shape.

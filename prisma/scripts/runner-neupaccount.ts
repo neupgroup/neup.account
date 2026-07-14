@@ -30,7 +30,7 @@ import bcrypt from 'bcryptjs';
 import { Prisma } from '@/prisma/generated/client';
 import prisma from '@/core/helpers/prisma';
 import { ensureAccessGrant } from '@/services/access-model';
-import { BRAND_OWNER_PERMISSION_NAMES, BRAND_OWNER_ROLE_ID, BRAND_OWNER_ROLE_NAME, BRAND_ROOT_PERMISSION_NAMES } from '@/logica/account/brand-roles';
+import { BRAND_OWNER_PERMISSION_NAMES, BRAND_OWNER_ROLE_ID, BRAND_OWNER_ROLE_NAME, BRAND_ROOT_PERMISSION_NAMES } from '@/core/account/brand-roles';
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not set.');

@@ -4,14 +4,14 @@
 import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { getUserProfile, checkPermissions, getUserNeupIds } from '@/services/user';
-import { getActiveAccountId } from '@/logica/account/verify';
+import { getActiveAccountId } from '@/services/account/verify';
 import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
 import { ensureAccessMember } from '@/services/access-model';
 import {
   ACCESS_INVITATION_APPROVE_PERMISSIONS,
   ACCESS_INVITATIONS_VIEW_PERMISSIONS,
-} from '@/logica/account/access-view-permissions';
+} from '@/core/account/access-view-permissions';
 
 const servicePermissions = [
     permission('access.invitations.view.self', 'for_individual', 'service'),

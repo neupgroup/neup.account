@@ -22,7 +22,7 @@ import { BackButton } from "@/components/ui/back-button";
 import { Geolocation } from "@/core/providers/geolocation";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
 import { getAccountType } from '@/services/user';
-import { getActiveAccountId } from '@/logica/account/verify';
+import { getActiveAccountId } from '@/services/account/verify';
 import { useRouter } from "next/navigation";
 import { redirectInApp } from "@/core/helpers/navigation";
 

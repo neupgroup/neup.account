@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { verifyAccountToken } from '@/services/auth/account-token';
 import { resolveWhoAmI } from '@/services/auth/whoami';
-import { resolveGuestAccount } from '@/logica/account/guestAccount';
+import { resolveGuestAccount } from '@/services/account/guestAccount';
 import { getSessionCookies } from '@/services/auth/session-cookies';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import { extractGenderFromDetails, resolveDisplayImage } from '@/logica/display-image';

@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { BRAND_OWNER_PERMISSION_NAMES } from '@/logica/account/brand-roles';
-import { hasAnyPermission } from '@/logica/account/profile-permissions';
+import { BRAND_OWNER_PERMISSION_NAMES } from '@/core/account/brand-roles';
+import { hasAnyPermission } from '@/core/account/profile-permissions';
 import {
   NEUP_ACCOUNT_PERMISSION_DEFINITIONS,
   resolveNeupAccountPermissionCandidates,
-} from '@/services/neup-account/permission-catalog';
+} from '@/core/account/permission-catalog';
 
 describe('brand owner permissions', () => {
   it('uses unsuffixed permissions for managed account features', () => {

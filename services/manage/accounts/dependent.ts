@@ -4,7 +4,7 @@
 import { permission } from '@/logica/permission';
 import { z } from 'zod';
 import prisma from '@/core/helpers/prisma';
-import { getPersonalAccountId } from '@/logica/account/verify';
+import { getPersonalAccountId } from '@/services/account/verify';
 import { logActivity } from '@/services/log-actions';
 import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
@@ -13,12 +13,12 @@ import { dependentFormSchema } from '@/services/manage/accounts/schema';
 import { ensureAccessGrant } from '@/services/access-model';
 import { checkPermissions, getUserProfile, getUserNeupIds } from '@/services/user';
 import { activityAction } from '@/services/activity-action';
-import { requireAnyPermission404 } from '@/logica/account/permission-guards';
-import { resolveAccessProfileContext } from '@/logica/account/access-profile-context';
+import { requireAnyPermission404 } from '@/services/account/permission-guards';
+import { resolveAccessProfileContext } from '@/services/account/access-profile-context';
 import {
   ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS,
   ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS,
-} from '@/logica/account/access-view-permissions';
+} from '@/core/account/access-view-permissions';
 
 const servicePermissions = [
   permission('access.linked_account.view.self', 'for_individual', 'service'),

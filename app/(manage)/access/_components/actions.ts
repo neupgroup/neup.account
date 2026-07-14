@@ -4,17 +4,17 @@ import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { Prisma } from '@/prisma/generated/client';
 import { checkPermissions, getUserProfile, isRootUser } from '@/services/user';
-import { getPersonalAccountId, getActiveAccountId } from '@/logica/account/verify';
+import { getPersonalAccountId, getActiveAccountId } from '@/services/account/verify';
 import { logError } from '@/core/helpers/logger';
 import { assignAssetMemberRole, getRolesForAsset } from '@/services/manage/access/assets';
-import { BRAND_OWNER_ROLE_ID } from '@/logica/account/brand-roles';
-import { resolveNeupAccountPermissionCandidates } from '@/services/neup-account/permission-catalog';
+import { BRAND_OWNER_ROLE_ID } from '@/core/account/brand-roles';
+import { resolveNeupAccountPermissionCandidates } from '@/core/account/permission-catalog';
 import { roleMatchesAccountTypeScopePolicy, roleMatchesAssignmentModesPolicy } from '@/services/applications/authz-scope-policy';
 import {
   ACCESS_TEAM_ADD_PERMISSIONS,
   ACCESS_TEAM_REMOVE_PERMISSIONS,
-} from '@/logica/account/access-view-permissions';
-import { resolveAccessProfileContext } from '@/logica/account/access-profile-context';
+} from '@/core/account/access-view-permissions';
+import { resolveAccessProfileContext } from '@/services/account/access-profile-context';
 
 const servicePermissions = [
   permission('access.team.add.self', 'for_individual', 'service'),

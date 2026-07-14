@@ -25,7 +25,7 @@ import { cn } from '@/core/utils'
 import { Check, Loader2, UploadCloud } from '@/components/icons'
 import { SecondaryHeader } from '@/components/ui/secondary-header'
 import { Separator } from '@/components/ui/separator'
-import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/logica/account/profile-permissions'
+import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/account/profile-permissions'
 import { permission } from '@/logica/permission';
 import { useSelectedProfilePage } from '../use-selected-profile-page';
 

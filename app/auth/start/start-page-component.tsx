@@ -10,11 +10,11 @@ import { Button } from '@/components/ui/button';
 import React from 'react';
 import { useToast } from '@/core/hooks/use-toast';
 import { AccountListItem } from '@/components/elements/account-item';
-import type { StoredAccount } from '@/logica/account/session';
+import type { StoredAccount } from '@/services/account/session';
 import { appendAuthCallbackContext, appendRedirect, getAppDisplayName, shouldReturnToAuthStartForExternalAuthentication } from '@/inapp/auth/callbacks';
 import { redirectInApp } from '@/core/helpers/navigation';
-import { cleanupExpiredStoredSessions } from '@/logica/account/session';
-import { logoutStoredSession, removeStoredAccount } from '@/logica/account/startSessions';
+import { cleanupExpiredStoredSessions } from '@/services/account/session';
+import { logoutStoredSession, removeStoredAccount } from '@/services/account/startSessions';
 
 // Inline sign-out / remove actions rendered next to each account on the start page.
 export function AccountActions({ account }: { account: StoredAccount }) {

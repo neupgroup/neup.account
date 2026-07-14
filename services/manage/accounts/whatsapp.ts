@@ -4,8 +4,8 @@
  import { z } from 'zod';
  import { whatsAppFormSchema, verifyCodeSchema } from '@/app/(manage)/access/link/whatsapp/schema';
  import { revalidatePath } from 'next/cache';
- import { resolveAccessProfileContext } from '@/logica/account/access-profile-context';
- import { ACCESS_LINKED_ACCOUNT_ADD_PERMISSIONS } from '@/logica/account/access-view-permissions';
+ import { resolveAccessProfileContext } from '@/services/account/access-profile-context';
+ import { ACCESS_LINKED_ACCOUNT_ADD_PERMISSIONS } from '@/core/account/access-view-permissions';
  
  /**
   * Function sendVerificationCode.

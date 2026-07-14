@@ -6,7 +6,7 @@ import { getUserProfile, checkPermissions } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
 import { logError } from '@/core/helpers/logger';
 import { revalidatePath } from 'next/cache';
-import { getPersonalAccountId } from '@/logica/account/verify';
+import { getPersonalAccountId } from '@/services/account/verify';
 
 const servicePermissions = [
   permission('requests.root_approval.view', 'for_individual', 'service'),

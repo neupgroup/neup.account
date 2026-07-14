@@ -1,12 +1,12 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { permission } from '@/logica/permission';
 import { getUserProfile } from '@/services/user';
-import { getActiveSession } from '@/logica/account/verify';
+import { getActiveSession } from '@/services/account/verify';
 import { logError } from '@/core/helpers/logger';
 import { notFound } from 'next/navigation';
 import { getAccountPermission } from '@/services/user';
 import { getProfileContacts, getProfileNeupIds } from '@/services/profile';
-import { PROFILE_NAV_PERMISSIONS, hasAnyPermission } from '@/logica/account/profile-permissions';
+import { PROFILE_NAV_PERMISSIONS, hasAnyPermission } from '@/core/account/profile-permissions';
 
 const routePermissions = [
     permission('profile.display.view.self', 'for_individual', 'default'),

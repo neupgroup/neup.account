@@ -2,7 +2,7 @@
 
 import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
-import { getActiveAccountId } from '@/logica/account/verify';
+import { getActiveAccountId } from '@/services/account/verify';
 import { getUserNeupIds, checkPermissions } from '@/services/user';
 import { authenticator } from 'otplib';
 import qrcode from 'qrcode';
@@ -15,7 +15,7 @@ import { totpEnableSchema, totpDisableSchema } from '@/services/security/schema'
 import { createNotification } from '../notifications';
 import { createHash, randomBytes } from 'crypto';
 import { activityAction } from '@/services/activity-action';
-import { requireAnyPermission404 } from '@/logica/account/permission-guards';
+import { requireAnyPermission404 } from '@/services/account/permission-guards';
 
 // We need a consistent secret for encryption. STORE THIS IN A SECURE VAULT.
 // For this example, it's in an environment variable.

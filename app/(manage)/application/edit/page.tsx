@@ -6,7 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { AppEditForm } from '@/app/(manage)/application/_components/app-edit-form';
 import prisma from '@/core/helpers/prisma';
-import { getActiveAccountId } from '@/logica/account/verify';
+import { getActiveAccountId } from '@/services/account/verify';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = {

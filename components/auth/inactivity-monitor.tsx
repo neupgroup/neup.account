@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { logoutActiveSession } from '@/logica/account/logout';
+import { logoutActiveSession } from '@/services/account/logout';
 import { redirectInApp } from '@/core/helpers/navigation';
 
 // 7 minutes 30 seconds in milliseconds

@@ -9,7 +9,7 @@ import type { z } from 'zod';
 import { getAuthRequest, extendAuthRequest } from '../auth-request';
 import { getAuthTimeoutError } from '../timeout';
 import { verifyPassword } from '../password';
-import { makeSessionFromRequest } from '@/logica/account/makeSession';
+import { makeSessionFromRequest } from '@/services/account/makeSession';
 import { assignDefaultRole } from '../assignDefaultRole';
 import {
   nameSchema,

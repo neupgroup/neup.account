@@ -6,7 +6,7 @@ import { logError } from '@/core/helpers/logger';
 import { notFound } from 'next/navigation';
 import { getAccountPermission } from '@/services/user';
 import { getProfileContacts, getProfileNeupIds } from '@/services/profile';
-import { PROFILE_NAV_PERMISSIONS, hasAnyPermission } from '@/core/account/profile-permissions';
+import { PROFILE_NAV_PERMISSIONS, hasAnyPermission } from '@/inapp/permissions/profile-permissions';
 
 const routePermissions = [
     permission('profile.display.view.self', 'for_individual', 'default'),

@@ -15,7 +15,7 @@ import { getApplicationAccessPageData } from '../connection/actions';
 import { AssignAppAccessForm } from '../connection/assign-app-access-form';
 import { RevokeAppAccessButton } from '../connection/revoke-app-access-form';
 import { formMetadata } from '@/core/metadata';
-import { ACCESS_APPLICATION_VIEW_PERMISSIONS } from '@/core/account/access-view-permissions';
+import { ACCESS_APPLICATION_VIEW_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';
 import { permission } from '@/logica/permission';
 import { resolveAccessProfileContext } from '@/services/account/access-profile-context';
 

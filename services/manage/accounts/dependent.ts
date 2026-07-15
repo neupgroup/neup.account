@@ -18,7 +18,7 @@ import { resolveAccessProfileContext } from '@/services/account/access-profile-c
 import {
   ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS,
   ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS,
-} from '@/core/account/access-view-permissions';
+} from '@/inapp/permissions/access-view-permissions';
 
 const servicePermissions = [
   permission('access.linked_account.view.self', 'for_individual', 'service'),
@@ -34,12 +34,12 @@ const DEPENDENT_ACCOUNT_MANAGEMENT_PERMISSIONS = [
 ];
 
 const DEPENDENT_ACCOUNT_SELF_PERMISSIONS = [
-  'access.connection.create.dependent.self',
+  'access.connection.create.dependent',
   ...DEPENDENT_ACCOUNT_MANAGEMENT_PERMISSIONS,
 ];
 
 const DEPENDENT_GUARDIAN_PERMISSIONS = [
-  'access.connection.create.dependent.managed',
+  'access.connection.create.dependent',
   ...DEPENDENT_ACCOUNT_MANAGEMENT_PERMISSIONS,
 ];
 

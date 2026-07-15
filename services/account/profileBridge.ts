@@ -1,7 +1,7 @@
 'use server';
 
 import prisma from '@/core/helpers/prisma';
-import { hasAnyPermission, PROFILE_SECTION_PERMISSIONS } from '@/core/account/profile-permissions';
+import { hasAnyPermission, PROFILE_SECTION_PERMISSIONS } from '@/inapp/permissions/profile-permissions';
 import { validateAuthSession } from '@/services/auth/session';
 import { getAccountPermission, getGrantedAccountPermission, getUserProfile } from '@/services/user';
 import { permission } from '@/logica/permission';

@@ -34,7 +34,7 @@ import {
 import { DirectMemberAccessForm } from '../_components/direct-member-access-form';
 import { AddUserForm } from '../add-user-form';
 import { resolveAccessProfileContext } from '@/services/account/access-profile-context';
-import { ACCESS_TEAM_ADD_PERMISSIONS } from '@/core/account/access-view-permissions';
+import { ACCESS_TEAM_ADD_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';
 
 type PageProps = {
   searchParams: Promise<{

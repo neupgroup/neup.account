@@ -15,7 +15,7 @@ import { createNotification } from '../notifications';
 import { warningReasons } from '@/app/(manage)/manage/[id]/forms';
 import type { UserProfile } from '@/services/user';
 import { cleanupExpiredAccessModel, extractRolePermissionNames, ensureAccessGrant } from '@/services/access-model';
-import { ACCOUNT_ACCESS_PERMISSION_GROUPS } from '@/core/account/account-access-permissions';
+import { ACCOUNT_ACCESS_PERMISSION_GROUPS } from '@/inapp/permissions/account-access-permissions';
 
 const servicePermissions = [
   permission('root.account.access.edit', 'for_individual', 'service'),

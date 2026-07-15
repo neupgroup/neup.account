@@ -7,11 +7,11 @@ import { ShieldCheck, Laptop, Link, AppWindow } from '@/components/icons';
 import { ListItem } from '../ui/list-item';
 import { SecondaryHeader } from '../ui/secondary-header';
 import { useSession } from '@/inapp/auth/session-context';
-import { hasAnyPermission } from '@/core/account/profile-permissions';
+import { hasAnyPermission } from '@/inapp/permissions/profile-permissions';
 import {
     SECURITY_PERMISSION_GROUPS,
-} from '@/core/account/security-permissions';
-import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/core/account/linked-account-permissions';
+} from '@/inapp/permissions/security-permissions';
+import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/inapp/permissions/linked-account-permissions';
 
 const componentPermissions = [
     permission('security.pass.modify.self', 'for_individual', 'component'),

@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { FlowLink } from '@/components/ui/flow-link';
 import { AppWindow, ChevronRight, Plus, UserCircle, Users } from '@/components/icons';
 import { getConnectionDetail } from '../actions';
-import { ACCESS_CONNECTION_VIEW_PERMISSIONS } from '@/core/account/access-view-permissions';
+import { ACCESS_CONNECTION_VIEW_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';
 import { resolveAccessProfileContext } from '@/services/account/access-profile-context';
 
 /**

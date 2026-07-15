@@ -21,7 +21,7 @@ import { BackButton } from '@/components/ui/back-button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Loader2, Camera, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { useSession } from '@/inapp/auth/session-context';
-import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/account/profile-permissions';
+import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/inapp/permissions/profile-permissions';
 import { permission } from '@/logica/permission';
 import {
     AlertDialog,

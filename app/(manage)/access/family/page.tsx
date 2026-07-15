@@ -13,7 +13,7 @@ import { permission } from '@/logica/permission';
 import {
     ACCESS_FAMILY_MEMBER_UPDATE_PERMISSIONS,
     ACCESS_FAMILY_PARTNER_UPDATE_PERMISSIONS,
-} from '@/core/account/access-view-permissions';
+} from '@/inapp/permissions/access-view-permissions';
 
 export const metadata: Metadata = formMetadata({ title: 'Family Management' });
 

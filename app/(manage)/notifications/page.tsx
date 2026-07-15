@@ -1,6 +1,6 @@
 import { permission } from '@/logica/permission';
 import { getActiveAccountId } from '@/services/account/verify';
-import { NOTIFICATION_PERMISSIONS } from '@/core/account/profile-permissions';
+import { NOTIFICATION_PERMISSIONS } from '@/inapp/permissions/profile-permissions';
 import { assertHasSelectedAccountAnyPermission } from '@/services/account/profile-permissions';
 import { notFound } from 'next/navigation';
 import NotificationsPageClient from './page.client';

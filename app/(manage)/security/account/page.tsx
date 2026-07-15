@@ -6,7 +6,7 @@ import { RecoveryAccountManager } from "./recovery-account-manager";
 import { BackButton } from "@/components/ui/back-button";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
-import { SECURITY_PERMISSION_GROUPS } from '@/core/account/security-permissions';
+import { SECURITY_PERMISSION_GROUPS } from '@/inapp/permissions/security-permissions';
 
 const pagePermissions = [
     permission('security.recovery_accounts.view.self', 'for_individual', 'page'),

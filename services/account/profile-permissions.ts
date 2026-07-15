@@ -5,7 +5,7 @@ import { permission } from '@/logica/permission';
 import {
   hasAnyPermission,
   PROFILE_DISPLAY_PERMISSION_GROUPS,
-} from '@/core/account/profile-permissions';
+} from '@/inapp/permissions/profile-permissions';
 
 const helperPermissions = [
   permission('profile.display.view.self', 'for_individual', 'helper'),

@@ -10,7 +10,7 @@ import { z } from 'zod';
 import {
   ACCESS_FAMILY_MEMBER_UPDATE_PERMISSIONS,
   ACCESS_FAMILY_PARTNER_UPDATE_PERMISSIONS,
-} from '@/core/account/access-view-permissions';
+} from '@/inapp/permissions/access-view-permissions';
 
 export type FamilyMember = {
   accountId: string;

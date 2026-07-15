@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { useSession } from '@/inapp/auth/session-context'
 import { BackButton } from '@/components/ui/back-button'
-import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/core/account/profile-permissions'
+import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/inapp/permissions/profile-permissions'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Geolocation } from '@/core/providers/geolocation'
 import { permission } from '@/logica/permission';

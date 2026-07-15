@@ -171,6 +171,12 @@ export function PermissionPanel({
     }
 
     const createdPermission = result.permission;
+    if (result.existing) {
+      setAddOpen(false);
+      redirectInApp(router, applicationHref('/application/permissions', appId, { permission: createdPermission.id, mode }));
+      return;
+    }
+
     setPermissions((prev) => [...prev, createdPermission]);
     setAddName('');
     setAddDesc('');

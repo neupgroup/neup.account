@@ -35,6 +35,9 @@ const CAPABILITIES = APPLICATION_SYSTEM_OWNER_PERMISSION_DEFINITIONS.map((permis
   id: `cap-appowner-${index + 1}-${permission.name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}`,
   name: permission.name,
   description: permission.description,
+  scopeFor: permission.scopeFor,
+  scopeLevel: permission.scopeLevel,
+  approvalPolicy: permission.approvalPolicy,
 }));
 
 // ---------------------------------------------------------------------------
@@ -62,12 +65,18 @@ async function main() {
         name: cap.name,
         description: cap.description,
         appId: APP_ID,
+        scopeFor: cap.scopeFor,
+        scopeLevel: cap.scopeLevel,
+        approvalPolicy: cap.approvalPolicy,
       },
       create: {
         id: cap.id,
         name: cap.name,
         description: cap.description,
         appId: APP_ID,
+        scopeFor: cap.scopeFor,
+        scopeLevel: cap.scopeLevel,
+        approvalPolicy: cap.approvalPolicy,
       },
       select: {
         id: true,

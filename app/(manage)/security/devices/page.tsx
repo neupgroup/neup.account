@@ -9,7 +9,7 @@ import { BackButton } from "@/components/ui/back-button";
 import { PrimaryHeader } from "@/components/ui/primary-header";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
-import { SECURITY_PERMISSION_GROUPS } from '@/core/account/security-permissions';
+import { SECURITY_PERMISSION_GROUPS } from '@/inapp/permissions/security-permissions';
 
 export const dynamic = 'force-dynamic';
 

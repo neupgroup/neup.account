@@ -9,10 +9,10 @@ import { AccessGroupView } from './_components/access-group-view';
 import { ListItem } from '@/components/ui/list-item';
 import { AccountListItem } from '@/components/elements/account-item';
 import { permission } from '@/logica/permission';
-import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/core/account/linked-account-permissions';
+import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/inapp/permissions/linked-account-permissions';
 import { getUserProfile } from '@/services/user';
 import { getAccessibleAccounts } from '@/services/manage/accounts';
-import { hasAnyPermission } from '@/core/account/profile-permissions';
+import { hasAnyPermission } from '@/inapp/permissions/profile-permissions';
 import { resolveAccessProfileContext } from '@/services/account/access-profile-context';
 import {
   ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS,
@@ -26,7 +26,7 @@ import {
   ACCESS_INVITATIONS_VIEW_PERMISSIONS,
   ACCESS_TEAM_VIEW_PERMISSIONS,
   ACCESS_VIEW_PERMISSIONS,
-} from '@/core/account/access-view-permissions';
+} from '@/inapp/permissions/access-view-permissions';
 import { formMetadata } from '@/core/metadata';
 
 const pagePermissions = [

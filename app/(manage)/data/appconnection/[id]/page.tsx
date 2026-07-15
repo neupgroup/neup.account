@@ -1,5 +1,5 @@
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
-import { DATA_PRIVACY_PERMISSION_GROUPS } from '@/core/account/data-permissions';
+import { DATA_PRIVACY_PERMISSION_GROUPS } from '@/inapp/permissions/data-permissions';
 import ApplicationDetailPage from './page.client';
 import { permission } from '@/logica/permission';
 

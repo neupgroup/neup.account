@@ -7,13 +7,13 @@ import { checkPermissions, getUserProfile, isRootUser } from '@/services/user';
 import { getPersonalAccountId, getActiveAccountId } from '@/services/account/verify';
 import { logError } from '@/core/helpers/logger';
 import { assignAssetMemberRole, getRolesForAsset } from '@/services/manage/access/assets';
-import { BRAND_OWNER_ROLE_ID } from '@/core/account/brand-roles';
-import { resolveNeupAccountPermissionCandidates } from '@/core/account/permission-catalog';
+import { BRAND_OWNER_ROLE_ID } from '@/inapp/permissions/brand-roles';
+import { resolveNeupAccountPermissionCandidates } from '@/inapp/permissions/permission-catalog';
 import { roleMatchesAccountTypeScopePolicy, roleMatchesAssignmentModesPolicy } from '@/services/applications/authz-scope-policy';
 import {
   ACCESS_TEAM_ADD_PERMISSIONS,
   ACCESS_TEAM_REMOVE_PERMISSIONS,
-} from '@/core/account/access-view-permissions';
+} from '@/inapp/permissions/access-view-permissions';
 import { resolveAccessProfileContext } from '@/services/account/access-profile-context';
 
 const servicePermissions = [

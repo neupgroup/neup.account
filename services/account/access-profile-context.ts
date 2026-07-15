@@ -6,12 +6,12 @@ import {
   getAccountPermission,
   getGrantedAccountPermission,
 } from '@/services/user';
-import { hasAnyPermission } from '@/core/account/profile-permissions';
+import { hasAnyPermission } from '@/inapp/permissions/profile-permissions';
 import {
   getCanonicalPermissionAudience,
   resolveNeupAccountPermissionCandidates,
   stripPermissionAudience,
-} from '@/core/account/permission-catalog';
+} from '@/inapp/permissions/permission-catalog';
 
 /**
  * ::neup.documentation::access-profile-context

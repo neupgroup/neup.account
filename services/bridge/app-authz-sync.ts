@@ -193,7 +193,7 @@ function serializePermission(permission: {
   description: string | null;
   scopeFor: unknown;
   scopeLevel: unknown;
-  acquisitionType: string | null;
+  acquisitionType?: string | null;
   approvalPolicy: string | null;
   rules: string | null;
   status: string | null;
@@ -205,7 +205,7 @@ function serializePermission(permission: {
     description: permission.description,
     scopeFor: normalizeJsonValue(permission.scopeFor),
     scopeLevel: normalizeJsonValue(permission.scopeLevel),
-    acquisitionType: permission.acquisitionType,
+    acquisitionType: permission.acquisitionType ?? null,
     approvalPolicy: permission.approvalPolicy,
     rules: permission.rules,
     status: permission.status,
@@ -361,7 +361,6 @@ export async function postSyncedAppPermissions(credentials: AppCredentials, inpu
             description: permission.description?.trim() || null,
             scopeFor: toJsonInput(permission.scopeFor, []),
             scopeLevel: toJsonInput(permission.scopeLevel, []),
-            acquisitionType: permission.acquisitionType?.trim() || 'assignment',
             approvalPolicy: permission.approvalPolicy?.trim() || 'none',
             rules: permission.rules?.trim() || null,
             status: permission.status?.trim() || null,
@@ -374,7 +373,6 @@ export async function postSyncedAppPermissions(credentials: AppCredentials, inpu
             description: permission.description?.trim() || null,
             scopeFor: toJsonInput(permission.scopeFor, []),
             scopeLevel: toJsonInput(permission.scopeLevel, []),
-            acquisitionType: permission.acquisitionType?.trim() || 'assignment',
             approvalPolicy: permission.approvalPolicy?.trim() || 'none',
             rules: permission.rules?.trim() || null,
             status: permission.status?.trim() || null,

@@ -17,7 +17,7 @@ import {
     BRAND_OWNER_PERMISSION_NAMES,
     BRAND_OWNER_ROLE_ID,
     BRAND_OWNER_ROLE_NAME,
-} from '@/core/account/brand-roles';
+} from '@/inapp/permissions/brand-roles';
 
 const servicePermissions = [
     permission('linked_accounts.brand.manage', 'for_brand', 'service'),

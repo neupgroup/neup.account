@@ -1,64 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { getActiveSession } from '@/services/account/verify';
-import { getAccessableAccountsWithPermissions } from '@/services/manage/accounts';
 import { resolveAppTokenAuth } from '@/services/auth/appTokenAuth';
 import prisma from '@/core/helpers/prisma';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
-import { permission, type PermissionDeclaration } from '@/logica/permission';
+import { canCreateConnectionForAccount, getCreatableConnectionAccounts } from '@/services/bridge/creatable-connections';
 
 export const dynamic = 'force-dynamic';
-
-const ACCOUNT_CONNECTION_CREATE_PERMISSIONS: Record<string, readonly PermissionDeclaration[]> = {
-    individual: [
-        permission('access.connection.create.individual.self', 'for_individual'),
-        permission('access.connection.create.individual.managed', 'for_individual'),
-        permission('access.connection.create.individual.root', 'for_individual'),
-        permission('access.application.add.self', 'for_individual'),
-        permission('access.application.add.managed', 'for_individual'),
-        permission('access.application.add.root', 'for_individual'),
-    ],
-    brand: [
-        permission('access.connection.create.brand.self', 'for_brand'),
-        permission('access.connection.create.brand.managed', 'for_brand'),
-        permission('access.connection.create.brand.root', 'for_brand'),
-        permission('brand.platforms.manage', 'for_brand'),
-        permission('linked_accounts.brand.manage', 'for_brand', 'brand'),
-        permission('linked_accounts.brand.manager', 'for_brand', 'brand'),
-        permission('access.application.add.self', 'for_individual'),
-        permission('access.application.add.managed', 'for_individual'),
-        permission('access.application.add.root', 'for_individual'),
-    ],
-    subbrand: [
-        permission('access.connection.create.brand.self', 'for_brand'),
-        permission('access.connection.create.brand.managed', 'for_brand'),
-        permission('access.connection.create.brand.root', 'for_brand'),
-        permission('brand.platforms.manage', 'for_brand'),
-        permission('linked_accounts.brand.manage', 'for_brand', 'brand'),
-        permission('linked_accounts.brand.manager', 'for_brand', 'brand'),
-        permission('access.application.add.self', 'for_individual'),
-        permission('access.application.add.managed', 'for_individual'),
-        permission('access.application.add.root', 'for_individual'),
-    ],
-    branch: [
-        permission('access.connection.create.brand.self', 'for_brand'),
-        permission('access.connection.create.brand.managed', 'for_brand'),
-        permission('access.connection.create.brand.root', 'for_brand'),
-        permission('brand.platforms.manage', 'for_brand'),
-        permission('linked_accounts.brand.manage', 'for_brand', 'brand'),
-        permission('linked_accounts.brand.manager', 'for_brand', 'brand'),
-        permission('access.application.add.self', 'for_individual'),
-        permission('access.application.add.managed', 'for_individual'),
-        permission('access.application.add.root', 'for_individual'),
-    ],
-    dependent: [
-        permission('access.connection.create.dependent.self', 'for_individual'),
-        permission('access.connection.create.dependent.managed', 'for_individual'),
-        permission('access.connection.create.dependent.root', 'for_individual'),
-        permission('access.application.add.self', 'for_individual'),
-        permission('access.application.add.managed', 'for_individual'),
-        permission('access.application.add.root', 'for_individual'),
-    ],
-};
 
 /**
  * ::neup.documentation::bridge-accounts-route-module
@@ -135,40 +82,6 @@ function readNormalizedBodyValue(body: Record<string, unknown>, canonical: strin
     return null;
 }
 
-function canCreateConnectionForAccount(account: {
-    accountType: string;
-    permissions: string[];
-}): boolean {
-    /**
-     * ::neup.documentation::bridge-accounts-route-can-create-connection-for-account
-     * ::function canCreateConnectionForAccount(account)
-     *
-     * Checks whether one accessible account has the permissions required to create an application connection.
-     *
-     * ::public
-     *
-     * The decision is based on the target account type and the effective permissions granted on that account.
-     *
-     * ::public end
-     *
-     * ::private
-     *
-     * The permission matrix is kept local to this route because it defines the external bridge contract for who may establish connections.
-     *
-     * ::private end
-     *
-     * ::end
-     */
-    const allowedPermissions = ACCOUNT_CONNECTION_CREATE_PERMISSIONS[account.accountType];
-    if (!allowedPermissions || allowedPermissions.length === 0) {
-        return false;
-    }
-
-    return account.permissions.some((permission) =>
-        allowedPermissions.some((allowedPermission) => allowedPermission.id === permission),
-    );
-}
-
 /**
  * ::neup.documentation::bridge-accounts-get-endpoint
  * ::api GET /bridge/api.v1/accounts
@@ -220,8 +133,7 @@ export async function GET(_request: NextRequest) {
         accountId = resolved.accountId;
     }
 
-    const accounts = (await getAccessableAccountsWithPermissions(accountId))
-        .filter((account) => canCreateConnectionForAccount(account));
+    const accounts = await getCreatableConnectionAccounts(accountId);
 
     return NextResponse.json({
         success: true,

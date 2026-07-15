@@ -5,7 +5,7 @@
  import { whatsAppFormSchema, verifyCodeSchema } from '@/app/(manage)/access/link/whatsapp/schema';
  import { revalidatePath } from 'next/cache';
  import { resolveAccessProfileContext } from '@/services/account/access-profile-context';
- import { ACCESS_LINKED_ACCOUNT_ADD_PERMISSIONS } from '@/core/account/access-view-permissions';
+ import { ACCESS_LINKED_ACCOUNT_ADD_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';
  
  /**
   * Function sendVerificationCode.

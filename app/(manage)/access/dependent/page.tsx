@@ -12,7 +12,7 @@ import { User, Plus } from "lucide-react";
 import { AccountListItem } from "@/components/elements/account-item";
 import { BackButton } from "@/components/ui/back-button";
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
-import { ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS } from '@/core/account/access-view-permissions';
+import { ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';
 import { permission } from '@/logica/permission';
 
 const pagePermissions = [

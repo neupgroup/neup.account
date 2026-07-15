@@ -58,4 +58,22 @@ describe('application system owner permissions', () => {
       });
     }
   });
+
+  it('defines application user basic updates for all account scopes and acquisition levels', () => {
+    expect(
+      APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS.find(
+        (permission) => permission.name === 'application.user.updateBasics',
+      ),
+    ).toMatchObject({
+      scopeFor: ['for_brand', 'for_individual', 'for_dependent', 'for_subBrand'],
+      scopeLevel: [
+        'assignable',
+        'publiclyEnrollable',
+        'selfAssigned',
+        'rootManaged',
+        'publiclyRequestable',
+        'requestableToOwner',
+      ],
+    });
+  });
 });

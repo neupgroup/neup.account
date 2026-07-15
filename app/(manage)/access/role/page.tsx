@@ -28,7 +28,7 @@ import {
 import { FlowLink } from '@/components/ui/flow-link';
 import { DirectMemberAccessForm } from '../_components/direct-member-access-form';
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
-import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/core/account/access-view-permissions';
+import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';
 import { permission } from '@/logica/permission';
 
 const pagePermissions = [

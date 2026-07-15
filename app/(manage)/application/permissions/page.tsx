@@ -14,7 +14,6 @@ import { PermissionPanel } from '@/app/(manage)/application/_components/permissi
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 import { formMetadata } from '@/core/metadata';
 import { PermissionDetailEditor } from '@/app/(manage)/application/_components/permission-detail-editor';
-import { isBuiltInApplicationManagementPermissionName } from '@/services/applications/permission-definitions';
 
 /*
 ::neup.documentation::manage-application-permissions-page
@@ -27,12 +26,6 @@ Renders the application permission list and detail editor.
 This page loads the target application, checks permission-management access, and renders either the permission list or a selected permission detail editor.
 
 ::public end
-
-::private
-
-Built-in Neup Account management permissions are filtered out from the generic editor flow.
-
-::private end
 
 ::end
 */
@@ -57,9 +50,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     });
   }
 
-  const permissions = (await getAppPermissions(applicationId)).filter(
-    (permission) => !(applicationId === 'neup.account' && isBuiltInApplicationManagementPermissionName(permission.name)),
-  );
+  const permissions = await getAppPermissions(applicationId);
   const permission = permissions.find((item) => item.id === permissionId);
   return formMetadata({
     title: [
@@ -104,10 +95,7 @@ export default async function ApplicationPermissionsQueryPage({ searchParams }: 
     );
   }
 
-  const rawPermissions = await getAppPermissions(applicationId);
-  const permissions = rawPermissions.filter(
-    (permission) => !(applicationId === 'neup.account' && isBuiltInApplicationManagementPermissionName(permission.name)),
-  );
+  const permissions = await getAppPermissions(applicationId);
 
   if (permissionId) {
     const permission = permissions.find((item) => item.id === permissionId);

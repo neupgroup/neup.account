@@ -6,8 +6,8 @@ import { SecondaryHeader } from '@/components/ui/secondary-header';
 import { permission } from '@/logica/permission';
 import { notFound } from 'next/navigation';
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
-import { hasAnyPermission } from '@/core/account/profile-permissions';
-import { SECURITY_HUB_ITEMS, SECURITY_HUB_PERMISSIONS } from '@/core/account/security-permissions';
+import { hasAnyPermission } from '@/inapp/permissions/profile-permissions';
+import { SECURITY_HUB_ITEMS, SECURITY_HUB_PERMISSIONS } from '@/inapp/permissions/security-permissions';
 import { getCurrentAccountPermission } from '@/services/user';
 import { getActiveAccountId } from '@/services/account/verify';
 
@@ -32,7 +32,7 @@ const pagePermissions = [
     permission('access.connection.add.self', 'for_individual', 'page'),
     permission('access.connection.remove.self', 'for_individual', 'page'),
     permission('access.application.view.self', 'for_individual', 'page'),
-    permission('access.application.add.self', 'for_individual', 'page'),
+    permission('access.application.add', 'for_individual', 'managable'),
     permission('access.application.remove.self', 'for_individual', 'page'),
 ];
 

@@ -6,7 +6,7 @@ import { ListItem } from "@/components/ui/list-item";
 import { SecondaryHeader } from "@/components/ui/secondary-header";
 import { History, Trash2, PowerOff, CalendarClock, AppWindow, Share2, type LucideIcon } from "@/components/icons";
 import { checkPermissions } from "@/services/user";
-import { DATA_PRIVACY_PERMISSION_GROUPS } from "@/core/account/data-permissions";
+import { DATA_PRIVACY_PERMISSION_GROUPS } from "@/inapp/permissions/data-permissions";
 
 const pagePermissions = [
     permission("data.delete_account.start", "for_individual", "page"),

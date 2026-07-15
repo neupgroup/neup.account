@@ -10,7 +10,7 @@ import { z } from 'zod';
 import {
   ACCESS_BLOCK_UPDATE_PERMISSIONS,
   ACCESS_BLOCK_VIEW_PERMISSIONS,
-} from '@/core/account/access-view-permissions';
+} from '@/inapp/permissions/access-view-permissions';
 
 const neupIdSchema = z.object({
   neupId: z.string().min(3, 'NeupID must be at least 3 characters.'),

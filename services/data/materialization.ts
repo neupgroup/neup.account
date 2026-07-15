@@ -8,7 +8,7 @@ import { logError } from "@/core/helpers/logger";
 import prisma from "@/core/helpers/prisma";
 import bcrypt from "bcryptjs";
 import { requireAnyPermission404 } from "@/services/account/permission-guards";
-import { DATA_PRIVACY_PERMISSION_GROUPS } from "@/core/account/data-permissions";
+import { DATA_PRIVACY_PERMISSION_GROUPS } from "@/inapp/permissions/data-permissions";
 
 const formSchema = z.object({
     inactivityDays: z.string().min(1, "Please select a time period."),

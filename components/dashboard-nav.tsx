@@ -10,9 +10,9 @@ import { type NavSection, navItems, allPermissionsMap } from "./nav-data"
 import { Skeleton } from "./ui/skeleton";
 import { useSession } from "@/inapp/auth/session-context";
 import { switchToPersonal } from "@/services/auth/switch";
-import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/core/account/profile-permissions";
-import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/core/account/data-permissions";
-import { ACCESS_VIEW_PERMISSIONS } from "@/core/account/access-view-permissions";
+import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/inapp/permissions/profile-permissions";
+import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/inapp/permissions/data-permissions";
+import { ACCESS_VIEW_PERMISSIONS } from "@/inapp/permissions/access-view-permissions";
 
 const componentPermissions = [
     permission('notification.read', 'for_individual', 'component'),

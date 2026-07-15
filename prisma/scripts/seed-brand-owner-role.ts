@@ -25,7 +25,7 @@ import {
   BRAND_ROOT_PERMISSION_NAMES,
   BRAND_OWNER_ROLE_ID,
   BRAND_OWNER_ROLE_NAME,
-} from '@/core/account/brand-roles';
+} from '@/inapp/permissions/brand-roles';
 
 const APP_ID = 'neup.account';
 const LEGACY_ROLE_ID = 'brand-owner-neup-account';
@@ -95,11 +95,13 @@ async function main() {
         update: {
           name: permissionName,
           appId: APP_ID,
+          scopeFor: ['for_brand'],
         },
         create: {
           id: permissionId,
           name: permissionName,
           appId: APP_ID,
+          scopeFor: ['for_brand'],
         },
         select: { id: true },
       });
@@ -145,11 +147,13 @@ async function main() {
         update: {
           name: permissionName,
           appId: APP_ID,
+          scopeFor: ['for_brand'],
         },
         create: {
           id: permissionId,
           name: permissionName,
           appId: APP_ID,
+          scopeFor: ['for_brand'],
         },
       });
     }

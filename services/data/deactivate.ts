@@ -9,7 +9,7 @@ import bcrypt from "bcryptjs";
 import { getActiveAccountId } from "@/services/account/verify";
 import { logoutActiveSession } from "@/services/account/logout";
 import { requireAnyPermission404 } from "@/services/account/permission-guards";
-import { DATA_PRIVACY_PERMISSION_GROUPS } from "@/core/account/data-permissions";
+import { DATA_PRIVACY_PERMISSION_GROUPS } from "@/inapp/permissions/data-permissions";
 
 const formSchema = z.object({
     password: z.string().min(1, "Password is required to deactivate your account."),

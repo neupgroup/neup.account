@@ -14,13 +14,13 @@ import { activeAccessWhere, ensureAccessAsset, ensureAccessMember } from '@/serv
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
-import { BRAND_OWNER_PERMISSION_NAMES, BRAND_OWNER_ROLE_ID, BRAND_OWNER_ROLE_NAME } from '@/core/account/brand-roles';
+import { BRAND_OWNER_PERMISSION_NAMES, BRAND_OWNER_ROLE_ID, BRAND_OWNER_ROLE_NAME } from '@/inapp/permissions/brand-roles';
 import { assetTypeForRefs } from '@/services/access-model';
 import { resolveAccessProfileContext } from '@/services/account/access-profile-context';
 import {
   ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS,
   ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS,
-} from '@/core/account/access-view-permissions';
+} from '@/inapp/permissions/access-view-permissions';
 
 const servicePermissions = [
     permission('access.linked_account.view.self', 'for_individual', 'service'),

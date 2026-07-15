@@ -62,6 +62,22 @@ const APPLICATION_ACCOUNT_MANAGEMENT_BASES = new Set<ApplicationPermissionBase>(
   'account.view',
 ]);
 
+const APPLICATION_USER_UPDATE_BASICS_SCOPE_FOR: AuthzScopeFor[] = [
+  'for_brand',
+  'for_individual',
+  'for_dependent',
+  'for_subBrand',
+];
+
+const APPLICATION_USER_UPDATE_BASICS_SCOPE_LEVEL: AuthzScopeLevel[] = [
+  'assignable',
+  'publiclyEnrollable',
+  'selfAssigned',
+  'rootManaged',
+  'publiclyRequestable',
+  'requestableToOwner',
+];
+
 const APPLICATION_PERMISSION_DEFINITION_MAP: Record<ApplicationPermissionBase, ApplicationPermissionDefinition> = {
   'account.connection.assign': {
     suffix: 'account.connection.assign',
@@ -165,6 +181,13 @@ function permissionPolicyDefinition(
   base: ApplicationPermissionBase,
   audience: ApplicationPermissionAudience,
 ): ApplicationPermissionPolicyDefinition {
+  if (base === 'user.updateBasics') {
+    return {
+      scopeFor: APPLICATION_USER_UPDATE_BASICS_SCOPE_FOR,
+      scopeLevel: APPLICATION_USER_UPDATE_BASICS_SCOPE_LEVEL,
+    };
+  }
+
   const scopeFor: AuthzScopeFor[] = APPLICATION_ACCOUNT_MANAGEMENT_BASES.has(base)
     ? ['for_individual', 'for_dependent']
     : ['for_individual'];

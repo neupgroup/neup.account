@@ -9,7 +9,7 @@ import { Prisma } from '@/prisma/generated/client/client';
 import prisma from '@/core/helpers/prisma';
 import { getAccountSelectorContext } from '@/services/account/accountSelector';
 import { getActiveAccountId, getPersonalAccountId } from '@/services/account/verify';
-import { ACCESS_APPLICATION_VIEW_PERMISSIONS } from '@/core/account/access-view-permissions';
+import { ACCESS_APPLICATION_VIEW_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';
 import { checkPermissions } from '@/services/user';
 import { logError } from '@/core/helpers/logger';
 import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';
@@ -711,8 +711,23 @@ export async function createManagedApplication(input: { name: string; idPrefix: 
       for (const cap of permissionDefinitions) {
         const permission = await tx.authzPermission.upsert({
           where: { name_appId: { name: cap.name, appId: 'neup.account' } },
-          update: { name: cap.name, description: cap.description, appId: 'neup.account' },
-          create: { id: cap.id, name: cap.name, description: cap.description, appId: 'neup.account' },
+          update: {
+            name: cap.name,
+            description: cap.description,
+            appId: 'neup.account',
+            scopeFor: cap.scopeFor,
+            scopeLevel: cap.scopeLevel,
+            approvalPolicy: cap.approvalPolicy,
+          },
+          create: {
+            id: cap.id,
+            name: cap.name,
+            description: cap.description,
+            appId: 'neup.account',
+            scopeFor: cap.scopeFor,
+            scopeLevel: cap.scopeLevel,
+            approvalPolicy: cap.approvalPolicy,
+          },
           select: { id: true, name: true, description: true },
         });
         permissions.push(permission);

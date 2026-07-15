@@ -14,12 +14,12 @@ import {
   ACCESS_APPLICATION_REMOVE_PERMISSIONS,
   ACCESS_APPLICATION_VIEW_PERMISSIONS,
   ACCESS_CONNECTION_VIEW_PERMISSIONS,
-} from '@/core/account/access-view-permissions';
+} from '@/inapp/permissions/access-view-permissions';
 
 const servicePermissions = [
   permission('access.application.view.self', 'for_individual', 'service'),
   permission('access.connection.view.self', 'for_individual', 'service'),
-  permission('access.application.add.self', 'for_individual', 'service'),
+  permission('access.application.add', 'for_individual', 'managable'),
   permission('access.application.remove.self', 'for_individual', 'service'),
 ];
 

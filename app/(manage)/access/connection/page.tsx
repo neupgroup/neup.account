@@ -6,7 +6,7 @@ import { AppWindow, ChevronRight, Users } from '@/components/icons';
 import { FlowLink } from '@/components/ui/flow-link';
 import { getConnectionPageData } from './actions';
 import { formMetadata } from '@/core/metadata';
-import { ACCESS_CONNECTION_VIEW_PERMISSIONS } from '@/core/account/access-view-permissions';
+import { ACCESS_CONNECTION_VIEW_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';
 import { permission } from '@/logica/permission';
 import { resolveAccessProfileContext } from '@/services/account/access-profile-context';
 

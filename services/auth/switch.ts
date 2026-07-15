@@ -8,8 +8,8 @@ import { getPersonalAccountId } from '@/services/account/verify';
 import { revalidatePath } from 'next/cache';
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
 import { cleanupExpiredAccessModel } from '@/services/access-model';
-import { BRAND_OWNER_ROLE_ID } from '@/core/account/brand-roles';
-import { ACCESS_ACCOUNTS_SWITCH_PERMISSIONS } from '@/core/account/access-view-permissions';
+import { BRAND_OWNER_ROLE_ID } from '@/inapp/permissions/brand-roles';
+import { ACCESS_ACCOUNTS_SWITCH_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';
 
 const servicePermissions = [
   permission('access.accounts.switch.self', 'for_individual', 'service'),

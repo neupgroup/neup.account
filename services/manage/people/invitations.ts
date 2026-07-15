@@ -11,7 +11,7 @@ import { ensureAccessMember } from '@/services/access-model';
 import {
   ACCESS_INVITATION_APPROVE_PERMISSIONS,
   ACCESS_INVITATIONS_VIEW_PERMISSIONS,
-} from '@/core/account/access-view-permissions';
+} from '@/inapp/permissions/access-view-permissions';
 
 const servicePermissions = [
     permission('access.invitations.view.self', 'for_individual', 'service'),

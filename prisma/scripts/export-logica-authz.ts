@@ -50,7 +50,7 @@ async function exportPermissions() {
     description: permission.description,
     scopeFor: normalizeJsonValue(permission.scopeFor),
     scopeLevel: normalizeJsonValue(permission.scopeLevel),
-    acquisitionType: permission.acquisitionType,
+    acquisitionType: null,
     approvalPolicy: permission.approvalPolicy,
     rules: permission.rules,
     status: permission.status,

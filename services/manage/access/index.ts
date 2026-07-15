@@ -15,7 +15,7 @@ import {
   ACCESS_TEAM_ADD_PERMISSIONS,
   ACCESS_TEAM_VIEW_PERMISSIONS,
   ACCESS_VIEW_PERMISSIONS,
-} from '@/core/account/access-view-permissions';
+} from '@/inapp/permissions/access-view-permissions';
 
 const servicePermissions = [
   permission('access.view.self', 'for_individual', 'service'),

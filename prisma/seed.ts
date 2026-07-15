@@ -27,7 +27,7 @@ import {
   NEUP_ACCOUNT_DEFAULT_ROLE_PERMISSION_NAMES,
   NEUP_ACCOUNT_PERMISSION_DEFINITIONS,
   NEUP_ACCOUNT_ROOT_ROLE_PERMISSION_NAMES,
-} from '../core/account/permission-catalog';
+} from '../inapp/permissions/permission-catalog';
 
 // Root permissions are now managed via authz_role_capability in the database.
 // This legacy seed writes to the Permit table for backward compatibility.
@@ -211,7 +211,7 @@ async function main() {
           name: permissionName,
           description: permissionDefinition.description,
           appId: APP_ID,
-          acquisitionType: permissionDefinition.acquisitionType,
+          scopeFor: ['for_individual'],
           approvalPolicy: permissionDefinition.approvalPolicy,
         },
         create: {
@@ -219,7 +219,7 @@ async function main() {
           name: permissionName,
           description: permissionDefinition.description,
           appId: APP_ID,
-          acquisitionType: permissionDefinition.acquisitionType,
+          scopeFor: ['for_individual'],
           approvalPolicy: permissionDefinition.approvalPolicy,
         },
         select: { id: true },
@@ -254,7 +254,7 @@ async function main() {
           name: permissionName,
           description: permissionDefinition.description,
           appId: APP_ID,
-          acquisitionType: permissionDefinition.acquisitionType,
+          scopeFor: ['for_individual'],
           approvalPolicy: permissionDefinition.approvalPolicy,
         },
         create: {
@@ -262,7 +262,7 @@ async function main() {
           name: permissionName,
           description: permissionDefinition.description,
           appId: APP_ID,
-          acquisitionType: permissionDefinition.acquisitionType,
+          scopeFor: ['for_individual'],
           approvalPolicy: permissionDefinition.approvalPolicy,
         },
         select: { id: true },

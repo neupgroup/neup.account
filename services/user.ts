@@ -19,7 +19,7 @@ import {
 } from '@/services/applications/authz-scope-policy';
 import {
   resolveNeupAccountPermissionCandidates,
-} from '@/core/account/permission-catalog';
+} from '@/inapp/permissions/permission-catalog';
 
 const servicePermissions = [
   permission('root.account.view', 'for_individual', 'service'),

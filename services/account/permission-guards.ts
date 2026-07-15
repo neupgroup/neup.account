@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getAccountPermission, getCurrentAccountPermission } from '@/services/user';
-import { hasAnyPermission } from '@/core/account/profile-permissions';
+import { hasAnyPermission } from '@/inapp/permissions/profile-permissions';
 import { permission } from '@/logica/permission';
 
 const helperPermissions = [

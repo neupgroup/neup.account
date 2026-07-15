@@ -7,7 +7,7 @@ import { logError } from '@/core/helpers/logger';
 import { cleanupExpiredAccessModel } from '@/services/access-model';
 import { validateAuthSession } from '@/services/auth/session';
 import { checkGrantedPermissions, checkPermissions, getUserNeupIds, getUserProfile } from '@/services/user';
-import { ACCESS_CONNECTION_VIEW_PERMISSIONS } from '@/core/account/access-view-permissions';
+import { ACCESS_CONNECTION_VIEW_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';
 
 const servicePermissions = [
   permission('access.connection.view.self', 'for_individual', 'service'),

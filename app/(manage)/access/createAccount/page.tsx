@@ -10,7 +10,7 @@ import { getUserProfile } from '@/services/user';
 import {
     ACCESS_ACCOUNT_BRAND_CREATE_PERMISSIONS,
     ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS,
-} from '@/core/account/access-view-permissions';
+} from '@/inapp/permissions/access-view-permissions';
 
 const pagePermissions = [
     permission('access.account.brand.create.self', 'for_individual', 'page'),

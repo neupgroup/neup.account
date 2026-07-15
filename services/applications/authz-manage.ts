@@ -14,7 +14,7 @@ This service validates authz editor input, persists role and permission metadata
 
 ::private
 
-The service stores `scope_for` / `scope_level` directly while still deriving legacy acquisition and approval columns for compatibility with older consumers.
+The service stores `scope_for` / `scope_level` directly while deriving legacy approval values for compatibility with older consumers.
 
 ::private end
 
@@ -42,7 +42,7 @@ import {
 import {
   PERMISSION_ACQUISITION_TYPES,
   PERMISSION_APPROVAL_POLICIES,
-} from '@/core/account/permission-catalog';
+} from '@/inapp/permissions/permission-catalog';
 import { hasRootApplicationPermission } from '@/services/applications/manage';
 import {
   revalidateApplicationConfigRoutes,
@@ -279,6 +279,47 @@ function mapPermissionRecord(record: any): AppPermission {
   };
 }
 
+function getAppPermissionSelect(columnSupport: Awaited<ReturnType<typeof getAuthzScopePolicyColumnSupport>>) {
+  return columnSupport.permission ? {
+    id: true,
+    name: true,
+    description: true,
+    scopeFor: true,
+    scopeLevel: true,
+    approvalPolicy: true,
+    rules: true,
+    status: true,
+  } as any : {
+    id: true,
+    name: true,
+    description: true,
+    acquisitionType: true,
+    approvalPolicy: true,
+    rules: true,
+    status: true,
+  } as any;
+}
+
+async function getExistingAppPermission(input: {
+  appId: string;
+  permissionId: string;
+  name: string;
+}): Promise<AppPermission | null> {
+  const columnSupport = await getAuthzScopePolicyColumnSupport();
+  const record = await prisma.authzPermission.findFirst({
+    where: {
+      appId: input.appId,
+      OR: [
+        { id: input.permissionId },
+        { name: input.name },
+      ],
+    },
+    select: getAppPermissionSelect(columnSupport),
+  }) as any;
+
+  return record ? mapPermissionRecord(record) : null;
+}
+
 function mapRoleRecord(record: any): AppRole {
   return {
     id: record.id,
@@ -331,7 +372,7 @@ async function loadAppRolesWithMalformedJsonFallback(
           p."name",
           p."description",
           ${permissionScopePolicySelect}
-          p."acquisition_type" AS "acquisitionType",
+          NULL::text AS "acquisitionType",
           p."approval_policy" AS "approvalPolicy",
           p."rules",
           p."status"
@@ -518,7 +559,6 @@ async function upsertPermissionsForApp(
         scopeFor: definition.scopeFor,
         scopeLevel: definition.scopeLevel,
       } : {}),
-      acquisitionType: storedPolicy.acquisitionType,
       approvalPolicy: storedPolicy.approvalPolicy,
     });
 
@@ -574,7 +614,7 @@ async function syncRolePermissionMappings(tx: any, roleId: string, permissionIds
   const permissions = await tx.authzPermission.findMany({
     where: { id: { in: permissionIds } },
     select: columnSupport.permission
-      ? { id: true, scopeFor: true, scopeLevel: true, acquisitionType: true, approvalPolicy: true }
+      ? { id: true, scopeFor: true, scopeLevel: true, approvalPolicy: true }
       : { id: true, acquisitionType: true, approvalPolicy: true },
   });
 
@@ -665,6 +705,10 @@ function isMissingTableError(error: unknown, tableName: string): boolean {
   return typeof error.message === 'string' && error.message.includes(`The table \`${tableName}\` does not exist`);
 }
 
+function isUniqueConstraintError(error: unknown): boolean {
+  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002';
+}
+
 async function countLegacyAssetGrantRowsForRole(roleId: string): Promise<number> {
   try {
     return await prisma.authzAssetsAccessGrant.count({ where: { role_id: roleId } });
@@ -689,7 +733,7 @@ async function validateRolePermissionSelection(
   const permissions = await tx.authzPermission.findMany({
     where: { id: { in: permissionIds }, appId },
     select: columnSupport.permission
-      ? { id: true, name: true, scopeFor: true, scopeLevel: true, acquisitionType: true, approvalPolicy: true }
+      ? { id: true, name: true, scopeFor: true, scopeLevel: true, approvalPolicy: true }
       : { id: true, name: true, acquisitionType: true, approvalPolicy: true },
   });
 
@@ -915,25 +959,7 @@ export async function getAppPermissions(appId: string): Promise<AppPermission[]>
     const records = await prisma.authzPermission.findMany({
       where: { appId },
       orderBy: { name: 'asc' },
-      select: columnSupport.permission ? {
-        id: true,
-        name: true,
-        description: true,
-        scopeFor: true,
-        scopeLevel: true,
-        acquisitionType: true,
-        approvalPolicy: true,
-        rules: true,
-        status: true,
-      } as any : {
-        id: true,
-        name: true,
-        description: true,
-        acquisitionType: true,
-        approvalPolicy: true,
-        rules: true,
-        status: true,
-      } as any,
+      select: getAppPermissionSelect(columnSupport),
     }) as Array<any>;
     return records.map(mapPermissionRecord);
   } catch (error) {
@@ -950,7 +976,7 @@ export async function createAppPermission(input: {
   scopeLevel?: string[];
   rules?: string;
   status?: string;
-}): Promise<{ success: boolean; permission?: AppPermission; error?: string }> {
+}): Promise<{ success: boolean; permission?: AppPermission; existing?: boolean; error?: string }> {
   const auth = await assertCanManageAuthz(input.appId);
   if ('error' in auth) return { success: false, error: auth.error };
 
@@ -963,12 +989,9 @@ export async function createAppPermission(input: {
     return { success: false, error: 'Permission title must include letters or numbers.' };
   }
 
-  const existing = await prisma.authzPermission.findUnique({
-    where: { id: permissionId },
-    select: { id: true },
-  });
+  const existing = await getExistingAppPermission({ appId: input.appId, permissionId, name });
   if (existing) {
-    return { success: false, error: `A permission with this title already exists for this application.` };
+    return { success: true, permission: existing, existing: true };
   }
 
   try {
@@ -983,31 +1006,12 @@ export async function createAppPermission(input: {
         name,
         description: input.description?.trim() || null,
         ...(columnSupport.permission ? { scopeFor, scopeLevel } : {}),
-        acquisitionType: storedPolicy.acquisitionType,
         approvalPolicy: storedPolicy.approvalPolicy,
         rules: input.rules?.trim() || null,
         status: input.status?.trim() || null,
         appId: input.appId,
       } as any,
-      select: columnSupport.permission ? {
-        id: true,
-        name: true,
-        description: true,
-        scopeFor: true,
-        scopeLevel: true,
-        acquisitionType: true,
-        approvalPolicy: true,
-        rules: true,
-        status: true,
-      } as any : {
-        id: true,
-        name: true,
-        description: true,
-        acquisitionType: true,
-        approvalPolicy: true,
-        rules: true,
-        status: true,
-      } as any,
+      select: getAppPermissionSelect(columnSupport),
     }) as any;
 
     revalidatePath(`/data/appconnection/${input.appId}`);
@@ -1016,6 +1020,13 @@ export async function createAppPermission(input: {
       permission: mapPermissionRecord(record),
     };
   } catch (error) {
+    if (isUniqueConstraintError(error)) {
+      const existingAfterRace = await getExistingAppPermission({ appId: input.appId, permissionId, name });
+      if (existingAfterRace) return { success: true, permission: existingAfterRace, existing: true };
+
+      return { success: false, error: 'A permission with this title already exists for this application.' };
+    }
+
     await logError('database', error, `createAppPermission:${input.appId}`);
     return { success: false, error: 'Failed to create permission.' };
   }
@@ -1062,7 +1073,6 @@ export async function updateAppPermission(input: {
         data: {
           description: input.description?.trim() || null,
           ...(columnSupport.permission ? { scopeFor, scopeLevel } : {}),
-          acquisitionType: storedPolicy.acquisitionType,
           approvalPolicy: storedPolicy.approvalPolicy,
           rules: input.rules?.trim() || null,
           status: input.status?.trim() || null,
@@ -1073,7 +1083,6 @@ export async function updateAppPermission(input: {
           description: true,
           scopeFor: true,
           scopeLevel: true,
-          acquisitionType: true,
           approvalPolicy: true,
           rules: true,
           status: true,
@@ -1194,7 +1203,6 @@ export async function getAppRoles(appId: string): Promise<AppRole[]> {
                 description: true,
                 scopeFor: true,
                 scopeLevel: true,
-                acquisitionType: true,
                 approvalPolicy: true,
                 rules: true,
                 status: true,

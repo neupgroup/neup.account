@@ -556,24 +556,23 @@ model Role {
  * Permissions belong to one application and persist their `scope_for` / `scope_level` policy together with optional descriptive metadata.
  * ::public end
  * ::private
- * The legacy permission `scope` column has been removed. Runtime compatibility now derives any needed legacy semantics from `scope_for`, `scope_level`, `acquisition_type`, and `approval_policy`.
+ * The legacy permission `scope` column has been removed. Runtime compatibility now derives any needed legacy semantics from `scope_for`, `scope_level`, and `approval_policy`.
  * ::private end
  * ::end
  */
 model AuthzPermission {
-  id              String                   @id @default(uuid())
-  name            String
-  description     String?
-  appId           String?                  @map("app_id")
-  scopeFor        Json?                    @default("[]") @map("scope_for")
-  scopeLevel      Json?                    @default("[]") @map("scope_level")
-  acquisitionType String?                  @default("assignment") @map("acquisition_type")
-  approvalPolicy  String?                  @default("none") @map("approval_policy")
-  rules           String?
-  status          String?
-  tag             Json?
-  application     Application?             @relation(fields: [appId], references: [id])
-  roleMappings    AuthzRolePermissionMap[]
+  id             String                   @id @default(uuid())
+  name           String
+  description    String?
+  appId          String?                  @map("app_id")
+  scopeFor       Json?                    @default("[]") @map("scope_for")
+  scopeLevel     Json?                    @default("[]") @map("scope_level")
+  approvalPolicy String?                  @default("none") @map("approval_policy")
+  rules          String?
+  status         String?
+  tag            Json?
+  application    Application?             @relation(fields: [appId], references: [id])
+  roleMappings   AuthzRolePermissionMap[]
 
   @@unique([name, appId], map: "authz_permission_name_app_id_key")
   @@map("authz_permission")

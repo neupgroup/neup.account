@@ -29,7 +29,7 @@ import { Prisma } from '@/prisma/generated/client/client';
 import {
   NEUP_ACCOUNT_PERMISSION_DEFINITIONS,
   stripPermissionAudience,
-} from '@/core/account/permission-catalog';
+} from '@/inapp/permissions/permission-catalog';
 
 const APP_ID = 'neup.account';
 const PERMISSIONS_FILE = resolve(process.cwd(), 'neup.logica/basics/permissions.json');
@@ -396,9 +396,8 @@ async function main() {
           name: permissionName,
           description: normalizeString(permission.description) ?? null,
           appId: APP_ID,
-          scopeFor: normalizeJsonArray(permission.scopeFor),
           scopeLevel: normalizeJsonArray(permission.scopeLevel),
-          acquisitionType: normalizeString(permission.acquisitionType) ?? 'assignment',
+          scopeFor: normalizeJsonArray(permission.scopeFor),
           approvalPolicy: normalizeString(permission.approvalPolicy) ?? 'none',
           rules: normalizeString(permission.rules) ?? null,
           status: normalizeString(permission.status) ?? null,
@@ -409,9 +408,8 @@ async function main() {
           name: permissionName,
           description: normalizeString(permission.description) ?? null,
           appId: APP_ID,
-          scopeFor: normalizeJsonArray(permission.scopeFor),
           scopeLevel: normalizeJsonArray(permission.scopeLevel),
-          acquisitionType: normalizeString(permission.acquisitionType) ?? 'assignment',
+          scopeFor: normalizeJsonArray(permission.scopeFor),
           approvalPolicy: normalizeString(permission.approvalPolicy) ?? 'none',
           rules: normalizeString(permission.rules) ?? null,
           status: normalizeString(permission.status) ?? null,

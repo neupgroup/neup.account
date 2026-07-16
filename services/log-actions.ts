@@ -4,7 +4,7 @@
 // Activity logs record user actions (e.g. login, profile update) with status and IP.
 
 import prisma from '@/core/helpers/prisma';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { getActiveAccountId } from '@/services/account/verify';
 import { checkPermissions } from '@/services/user';
 import { compileActivityAction } from '@/services/activity-action';

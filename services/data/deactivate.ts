@@ -3,7 +3,7 @@
 import { permission } from "@/logica/permission";
 import { z } from "zod";
 import { logActivity } from "@/services/log-actions";
-import { logError } from "@/core/helpers/logger";
+import { logError } from "@/logica/logger/files";
 import prisma from "@/core/helpers/prisma";
 import bcrypt from "bcryptjs";
 import { getActiveAccountId } from "@/services/account/verify";

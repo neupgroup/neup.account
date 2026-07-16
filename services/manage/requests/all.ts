@@ -8,7 +8,7 @@
 import prisma from '@/core/helpers/prisma';
 import { permission } from '@/logica/permission';
 import { checkPermissions } from '@/services/user';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { getUserProfile, getUserNeupIds } from '@/services/user';
 import { getActiveAccountId } from '@/services/account/verify';
 import { canCurrentAccountViewApplicationRoles } from '@/services/applications/manage';

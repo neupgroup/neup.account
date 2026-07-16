@@ -8,7 +8,7 @@ import { z } from 'zod';
 import bcrypt from 'bcryptjs';
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { createNotification } from '@/services/notifications';
 import { encrypt, decrypt } from '@/services/security/totp';
 import { makeSessionFromRequest } from '@/services/account/makeSession';

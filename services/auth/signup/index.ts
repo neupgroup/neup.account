@@ -4,7 +4,7 @@
 import prisma from '@/core/helpers/prisma';
 import bcrypt from 'bcryptjs';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import type { z } from 'zod';
 import { getAuthRequest, extendAuthRequest } from '../auth-request';
 import { getAuthTimeoutError } from '../timeout';

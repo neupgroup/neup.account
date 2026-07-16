@@ -2,7 +2,7 @@
 'use server';
 
 import { permission } from '@/logica/permission';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { checkPermissions } from '@/services/user';
 import prisma from '@/core/helpers/prisma';
 

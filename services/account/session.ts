@@ -7,7 +7,7 @@
 import prisma from '@/core/helpers/prisma';
 import crypto from 'crypto';
 
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 
 // Represents an active session with both shorthand and legacy field names.
 export type Session = {

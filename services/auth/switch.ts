@@ -2,7 +2,7 @@
 
 import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { checkPermissions } from '@/services/user';
 import { getPersonalAccountId } from '@/services/account/verify';
 import { revalidatePath } from 'next/cache';

@@ -11,7 +11,7 @@ import { Prisma } from '@/prisma/generated/client';
 import { getActiveAccountId } from '@/services/account/verify';
 import { checkPermissions } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { canCurrentAccountEditApplicationBasics } from '@/services/applications/manage';
 import { revalidateApplicationDetailRoutes, revalidateApplicationEditRoutes } from '@/services/applications/revalidate-routes';
 import { permission } from '@/logica/permission';

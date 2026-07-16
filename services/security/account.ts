@@ -3,7 +3,7 @@
  import { permission } from '@/logica/permission';
  import prisma from '@/core/helpers/prisma';
 import { getPersonalAccountId } from '@/services/account/verify';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { getUserProfile, checkPermissions } from '@/services/user';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';

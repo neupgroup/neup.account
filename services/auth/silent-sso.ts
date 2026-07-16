@@ -1,5 +1,5 @@
 import prisma from '@/core/helpers/prisma';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import type { Identity } from '@/prisma/generated/client';

@@ -3,7 +3,7 @@
 import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { checkPermissions } from '@/services/user';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 
 const servicePermissions = [
   permission('requests.root_approval.approve', 'for_individual', 'service'),

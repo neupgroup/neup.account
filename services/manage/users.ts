@@ -8,7 +8,7 @@ import { getUserNeupIds, getUserProfile as fetchUserProfile, checkPermissions } 
 import { getPersonalAccountId } from '@/services/account/verify';
 import { revalidatePath } from 'next/cache';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import crypto from 'crypto';
 import { z } from 'zod';
 import { createNotification } from '../notifications';

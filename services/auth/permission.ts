@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from '@/core/helpers/prisma';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { activeAccessWhere, extractRolePermissionNames } from '@/services/access-model';
 import { resolveNeupAccountPermissionCandidates } from '@/inapp/permissions/permission-catalog';
 

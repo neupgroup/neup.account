@@ -6,7 +6,7 @@ import { z } from 'zod';
 import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId, getPersonalAccountId } from '@/services/account/verify';
 import { getUserProfile } from '@/services/user';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
 import { checkPermissions } from '@/services/user';
 import {

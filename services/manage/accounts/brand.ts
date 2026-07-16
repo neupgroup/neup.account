@@ -4,7 +4,7 @@
 import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { checkPermissions, getUserProfile } from '@/services/user';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { switchToBrand as switchToBrandAction, switchToPersonal as switchToPersonalAction } from '@/services/account/session';
 import { getPersonalAccountId } from '@/services/account/verify';
 import { z } from 'zod';

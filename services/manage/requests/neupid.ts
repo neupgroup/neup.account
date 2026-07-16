@@ -5,7 +5,7 @@ import prisma from '@/core/helpers/prisma';
 import { Prisma } from '@/prisma/generated/client';
 import { getUserProfile, getUserNeupIds, checkPermissions } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 
 const servicePermissions = [
     permission('requests.root_approval.view', 'for_individual', 'service'),

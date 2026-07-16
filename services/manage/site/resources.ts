@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache';
 import prisma from '@/core/helpers/prisma';
 import { checkPermissions } from '@/services/user';
 import { getPersonalAccountId } from '@/services/account/verify';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 
 const servicePermissions = [
   permission('root.display_images.view', 'for_individual', 'service'),

@@ -6,7 +6,7 @@ import { getActiveAccountId } from '@/services/account/verify';
 import { checkPermissions } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { changePasswordSchema } from '@/services/security/schema';
 import { createNotification } from '../notifications';
 import { changePassword as changePasswordForAccount } from '@/services/auth/password';

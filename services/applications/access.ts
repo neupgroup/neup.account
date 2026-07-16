@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import prisma from '@/core/helpers/prisma';
 import { getPersonalAccountId } from '@/services/account/verify';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';
 import { logActivity } from '@/services/log-actions';

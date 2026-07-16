@@ -4,7 +4,7 @@ import { permission } from "@/logica/permission";
 import { z } from "zod";
 import { getActiveAccountId } from "@/services/account/verify";
 import { logActivity } from "@/services/log-actions";
-import { logError } from "@/core/helpers/logger";
+import { logError } from "@/logica/logger/files";
 import prisma from "@/core/helpers/prisma";
 import bcrypt from "bcryptjs";
 import { requireAnyPermission404 } from "@/services/account/permission-guards";

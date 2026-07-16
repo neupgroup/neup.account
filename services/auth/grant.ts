@@ -1,7 +1,7 @@
 import prisma from '@/core/helpers/prisma';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { makeNotification } from '@/services/notifications';
 import { getAccountPermission, isRootUser } from '@/services/user';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';

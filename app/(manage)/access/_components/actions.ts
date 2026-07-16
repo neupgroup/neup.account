@@ -5,7 +5,7 @@ import prisma from '@/core/helpers/prisma';
 import { Prisma } from '@/prisma/generated/client';
 import { checkPermissions, getUserProfile, isRootUser } from '@/services/user';
 import { getPersonalAccountId, getActiveAccountId } from '@/services/account/verify';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { assignAssetMemberRole, getRolesForAsset } from '@/services/manage/access/assets';
 import { BRAND_OWNER_ROLE_ID } from '@/inapp/permissions/brand-roles';
 import { resolveNeupAccountPermissionCandidates } from '@/inapp/permissions/permission-catalog';

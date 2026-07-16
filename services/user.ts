@@ -5,7 +5,7 @@
 
 import prisma from "@/core/helpers/prisma";
 import { Prisma } from "@/prisma/generated/client/client";
-import { logError } from "@/core/helpers/logger";
+import { logError } from "@/logica/logger/files";
 import { getActiveAccountId, getPersonalAccountId } from "@/services/account/verify";
 import { extractGenderFromDetails, resolveDisplayImage } from "@/logica/display-image";
 import { getAccountSelectorContext } from "@/services/account/accountSelector";

@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId } from '@/services/account/verify';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { canCurrentAccountManageApplicationRoles } from '@/services/applications/manage';
 
 const BRIDGE_TYPE = 'authzWebhook';

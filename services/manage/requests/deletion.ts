@@ -2,7 +2,7 @@
 
 import prisma from '@/core/helpers/prisma';
 import { getUserProfile, checkPermissions, isRootUser } from '@/services/user';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { revalidatePath } from 'next/cache';
 import { deleteUserAccount } from '@/services/manage/users';
 import { getPersonalAccountId } from '@/services/account/verify';

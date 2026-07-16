@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import prisma from '@/core/helpers/prisma';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { applicationAccessFields, type ApplicationAccessField } from '@/services/applications/types';
 import { writeApplicationDevLog } from '@/services/bridge/dev-logs';
 import { resolveDisplayImage } from '@/logica/display-image';

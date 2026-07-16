@@ -10,7 +10,7 @@ vi.mock('@/core/helpers/prisma', () => ({
 }));
 
 vi.mock('@/services/log-actions', () => ({ logActivity: vi.fn() }));
-vi.mock('@/core/helpers/logger', () => ({ logError: vi.fn() }));
+vi.mock('@/logica/logger/files', () => ({ logError: vi.fn() }));
 vi.mock('next/headers', () => ({ headers: vi.fn(() => ({ get: vi.fn(() => null) })) }));
 vi.mock('@/services/auth/session', () => ({ makeSession: vi.fn().mockResolvedValue({ success: true }) }));
 

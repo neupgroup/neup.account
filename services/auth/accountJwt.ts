@@ -13,7 +13,7 @@
 
 import jwt from 'jsonwebtoken';
 import prisma from '@/core/helpers/prisma';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 
 /*

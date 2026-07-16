@@ -4,7 +4,7 @@
  import prisma from '@/core/helpers/prisma';
  import { getPersonalAccountId } from '@/services/account/verify';
  import { logActivity } from '@/services/log-actions';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { checkPermissions, getUserNeupIds } from '@/services/user';
 import { revalidatePath } from 'next/cache';
 import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';

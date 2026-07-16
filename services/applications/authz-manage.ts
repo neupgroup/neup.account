@@ -26,7 +26,7 @@ import { permission } from '@/logica/permission';
 import { Prisma } from '@/prisma/generated/client/client';
 import prisma from '@/core/helpers/prisma';
 import { getActiveAccountId, getPersonalAccountId } from '@/services/account/verify';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { dispatchAuthzWebhook } from './authz-webhook';
 import { dispatchRoleUpdateWebhook, getRolePayload } from './role-update-events';
 import { activeAccessWhere } from '@/services/access-model';

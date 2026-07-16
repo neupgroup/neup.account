@@ -1,5 +1,5 @@
 import { getActiveSession } from '@/services/account/verify';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import prisma from '@/core/helpers/prisma';
 import crypto from 'crypto';
 

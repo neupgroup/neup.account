@@ -11,7 +11,7 @@ import { getAccountSelectorContext } from '@/services/account/accountSelector';
 import { getActiveAccountId, getPersonalAccountId } from '@/services/account/verify';
 import { ACCESS_APPLICATION_VIEW_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';
 import { checkPermissions } from '@/services/user';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';

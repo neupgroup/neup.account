@@ -6,7 +6,7 @@ import { z } from 'zod';
 import prisma from '@/core/helpers/prisma';
 import { getPersonalAccountId } from '@/services/account/verify';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
 import { dependentFormSchema } from '@/services/manage/accounts/schema';

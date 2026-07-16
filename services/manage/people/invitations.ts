@@ -5,7 +5,7 @@ import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { getUserProfile, checkPermissions, getUserNeupIds } from '@/services/user';
 import { getActiveAccountId } from '@/services/account/verify';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { revalidatePath } from 'next/cache';
 import { ensureAccessMember } from '@/services/access-model';
 import {

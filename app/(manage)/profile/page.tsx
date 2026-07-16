@@ -5,7 +5,7 @@ import { ListItem } from "@/components/ui/list-item";
 import { PrimaryHeader } from "@/components/ui/primary-header";
 import { UserCircle, FileText, HeartHandshake, AtSign, Contact, ShieldCheck } from "@/components/icons";
 import { checkGrantedPermissions, checkPermissions, getUserProfile } from "@/services/user";
-import { logSystemError } from "@/core/helpers/logger";
+import { logSystemError } from "@/logica/logger/files";
 import { PROFILE_NAV_PERMISSIONS, PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from "@/inapp/permissions/profile-permissions";
 import { getAccountSelectorContext } from "@/services/account/accountSelector";
 import { resolveAccessProfileContext } from "@/services/account/access-profile-context";

@@ -14,7 +14,7 @@
  */
 
 import prisma from '@/core/helpers/prisma';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { extractGenderFromDetails, resolveDisplayImage } from '@/logica/display-image';
 
 /*

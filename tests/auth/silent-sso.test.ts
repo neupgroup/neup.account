@@ -13,7 +13,7 @@ vi.mock('@/core/helpers/prisma', () => ({
   },
 }));
 
-vi.mock('@/core/helpers/logger', () => ({
+vi.mock('@/logica/logger/files', () => ({
   logError: vi.fn().mockResolvedValue(undefined),
 }));
 

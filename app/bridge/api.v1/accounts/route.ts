@@ -4,6 +4,7 @@ import { resolveAppTokenAuth } from '@/services/auth/appTokenAuth';
 import prisma from '@/core/helpers/prisma';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import { canCreateConnectionForAccount, getCreatableConnectionAccounts } from '@/services/bridge/creatable-connections';
+import { getAccessableAccountsWithPermissions } from '@/services/manage/accounts';
 
 export const dynamic = 'force-dynamic';
 

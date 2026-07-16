@@ -8,7 +8,7 @@ import { authenticator } from 'otplib';
 import qrcode from 'qrcode';
 import bcrypt from 'bcryptjs';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { z } from 'zod';
 import crypto from 'crypto';
 import { totpEnableSchema, totpDisableSchema } from '@/services/security/schema';

@@ -3,7 +3,7 @@
 import { permission } from '@/logica/permission';
 import prisma from '@/core/helpers/prisma';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { phoneFormSchema } from '@/services/security/schema';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';

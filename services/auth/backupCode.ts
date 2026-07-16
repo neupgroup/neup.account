@@ -6,7 +6,7 @@ import crypto from 'crypto';
 import { getPersonalAccountId } from '@/services/account/verify';
 import { checkPermissions } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/core/helpers/logger';
+import { logError } from '@/logica/logger/files';
 import { createNotification } from '@/services/notifications';
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
 

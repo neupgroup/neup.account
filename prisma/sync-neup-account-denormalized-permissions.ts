@@ -13,7 +13,7 @@ Run this script to rewrite the Neup Account authz catalog in the database so `au
 
 ::private
 
-The script treats `neup.logica/basics/permissions.json` and `neup.logica/basics/roles.json` as the
+The script treats `local/basics/permissions.json` and `local/basics/roles.json` as the
 source of truth, updates only `app_id = neup.account`, and leaves unrelated apps untouched.
 
 ::private end
@@ -32,8 +32,8 @@ import {
 } from '@/inapp/permissions/permission-catalog';
 
 const APP_ID = 'neup.account';
-const PERMISSIONS_FILE = resolve(process.cwd(), 'neup.logica/basics/permissions.json');
-const ROLES_FILE = resolve(process.cwd(), 'neup.logica/basics/roles.json');
+const PERMISSIONS_FILE = resolve(process.cwd(), 'local/basics/permissions.json');
+const ROLES_FILE = resolve(process.cwd(), 'local/basics/roles.json');
 
 type PermissionSnapshot = {
   id: string;

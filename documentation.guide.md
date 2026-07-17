@@ -2438,8 +2438,8 @@ The object keys are:
 * `tag`: optional grouping label. Use an empty string when no tag is needed.
 
 Do not place full permission catalog records in pages, services, or API route
-files. Full records belong in `logica/accounts/permissions.json` and generated
-snapshots such as `logica/basics/permissions.json`.
+files. Full records belong in `local/accounts/permissions.json` and generated
+snapshots such as `local/basics/permissions.json`.
 
 Example:
 

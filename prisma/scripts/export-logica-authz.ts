@@ -1,7 +1,8 @@
 /*
 ::neup.documentation::export-logica-authz-script
 
-Exports authz roles, permissions, and basic application metadata into `logica/*`.
+Exports authz roles, permissions, and basic application metadata into generated
+snapshot files under `local/*` plus `logica/basics/appinfo.json`.
 
 The generated JSON keeps the user-facing `title` alias for `name` while also
 persisting the rest of each table row so downstream consumers can read the
@@ -34,8 +35,8 @@ function normalizeJsonValue(value: unknown): unknown {
 }
 
 async function exportPermissions() {
-  await mkdir(resolve(process.cwd(), 'logica/accounts'), { recursive: true });
-  await mkdir(resolve(process.cwd(), 'logica/basics'), { recursive: true });
+  await mkdir(resolve(process.cwd(), 'local/accounts'), { recursive: true });
+  await mkdir(resolve(process.cwd(), 'local/basics'), { recursive: true });
 
   const permissions = await prisma.authzPermission.findMany({
     where: { appId: CURRENT_APP_ID },
@@ -58,21 +59,21 @@ async function exportPermissions() {
   }));
 
   await writeFile(
-    resolve(process.cwd(), 'logica/accounts/permissions.json'),
+    resolve(process.cwd(), 'local/accounts/permissions.json'),
     `${JSON.stringify(serialized, null, 2)}\n`,
     'utf8',
   );
 
   await writeFile(
-    resolve(process.cwd(), 'logica/basics/permissions.json'),
+    resolve(process.cwd(), 'local/basics/permissions.json'),
     `${JSON.stringify(serialized, null, 2)}\n`,
     'utf8',
   );
 }
 
 async function exportRoles() {
-  await mkdir(resolve(process.cwd(), 'logica/accounts'), { recursive: true });
-  await mkdir(resolve(process.cwd(), 'logica/basics'), { recursive: true });
+  await mkdir(resolve(process.cwd(), 'local/accounts'), { recursive: true });
+  await mkdir(resolve(process.cwd(), 'local/basics'), { recursive: true });
 
   const roles = await prisma.authzRole.findMany({
     where: { appId: CURRENT_APP_ID },
@@ -95,13 +96,13 @@ async function exportRoles() {
   }));
 
   await writeFile(
-    resolve(process.cwd(), 'logica/accounts/roles.json'),
+    resolve(process.cwd(), 'local/accounts/roles.json'),
     `${JSON.stringify(serialized, null, 2)}\n`,
     'utf8',
   );
 
   await writeFile(
-    resolve(process.cwd(), 'logica/basics/roles.json'),
+    resolve(process.cwd(), 'local/basics/roles.json'),
     `${JSON.stringify(serialized, null, 2)}\n`,
     'utf8',
   );

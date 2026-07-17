@@ -63,3 +63,7 @@ logica
 neup.logica
 core
 neup.core
+local/accounts/permissions.json
+local/accounts/roles.json
+local/basics/permissions.json
+local/basics/roles.json

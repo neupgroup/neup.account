@@ -14,7 +14,7 @@
 ## Migration Follow-Ups
 
 - [ ] Fix `20260629120000_rename_branch_to_subbrand` so it tolerates databases without legacy tables like `account_ownership`.
-- [ ] Repair stale role snapshot rows in `logica/basics/roles.json` that still reference missing permissions, such as `neup_account.brand_owner` using `brand.*` permissions that are not present in the canonical permission catalog.
+- [ ] Repair stale role snapshot rows in `local/basics/roles.json` that still reference missing permissions, such as `neup_account.brand_owner` using `brand.*` permissions that are not present in the canonical permission catalog.
 - [ ] Add documentation blocks or module-level documentation for the undocumented Prisma authz/access entities in `prisma/schema.prisma`, especially the legacy `role` snapshot table and its relationship to `authz_role`, `member`, and `access`.
 - [ ] Add Neup documentation blocks for the shared Prisma account models in `prisma/schema.prisma`, especially `Account`, `Asset`, `Member`, and `Access`, which are now described in `neup.logica/account/guide.md` but still lack source-owned model documentation.
 - [ ] Update `neup.logica/README.md`, which still documents the helper path as `logica/account/` instead of `neup.logica/account/`.
@@ -29,7 +29,7 @@
 - [ ] Add Neup documentation blocks for `services/applications/access.ts`, which currently centralizes application access and role-enrollment logic without structured service documentation.
 - [ ] Fix `prisma/grant-root.ts` so it uses the current `authz_role` schema and looks up NeupID records by `neupId`, not stale role fields.
 - [ ] Document `package.json` authz maintenance commands so `sync:permissions:neup-account` / `rebuild:authz:neup-account` clearly describe when they rebuild database catalog tables versus when they only export snapshots.
-- [ ] Document `logica/basics/roles.json` and `logica/basics/permissions.json` as generated authz snapshots, including which script owns them and how they are used as database rebuild inputs.
+- [ ] Document `local/basics/roles.json` and `local/basics/permissions.json` as generated authz snapshots, including which script owns them and how they are used as database rebuild inputs.
 - [ ] Replace or upgrade `access.guide.md`, which still documents old portfolio-era fields and no longer matches the current Prisma `Account` / `Member` / `Asset` / `Access` schema.
 - [ ] Fix the remaining authz tooling path drift from `logica/...` to `neup.logica/...`, especially `package.json` `getRoles` / `postRoles` and the export/post helper scripts that still target the old snapshot tree.
 - [ ] Finish the repo-wide permission literal migration from suffixed names like `.self` / `.managed` / `.root` to the new unsuffixed permission names in page/service declarations and old Prisma maintenance scripts such as `prisma/scripts/runner-neupaccount.ts`.

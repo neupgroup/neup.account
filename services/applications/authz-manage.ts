@@ -509,6 +509,57 @@ const AUTHZ_SYSTEM_SYNC_TRANSACTION_OPTIONS = {
   maxWait: 10_000,
   timeout: 20_000,
 } as const;
+type ApplicationManagementPermissionDefinition = {
+  id: string;
+  name: string;
+  description: string;
+  scopeFor: AuthzScopeFor[];
+  scopeLevel: AuthzScopeLevel[];
+};
+
+type RolePermissionMappingRow = {
+  roleId: string;
+  permissionId: string;
+  scopeFor: AuthzScopeFor;
+  scopeLevel: AuthzScopeLevel;
+};
+
+function getApplicationManagementPermissionDefinitions(): ApplicationManagementPermissionDefinition[] {
+  return APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS.map((permission, index) => ({
+    id: `cap-appmanage-${index + 1}-${permission.name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}`,
+    ...permission,
+  }));
+}
+
+function normalizeStringSet(value: unknown): Set<string> {
+  const values = Array.isArray(value) ? value : [];
+  return new Set(
+    values
+      .map((item) => (typeof item === 'string' ? item.trim() : ''))
+      .filter(Boolean),
+  );
+}
+
+function equalStringSets(actual: unknown, expected: readonly string[]): boolean {
+  const actualSet = normalizeStringSet(actual);
+  const expectedSet = new Set(expected);
+  if (actualSet.size !== expectedSet.size) return false;
+
+  for (const item of expectedSet) {
+    if (!actualSet.has(item)) return false;
+  }
+
+  return true;
+}
+
+function rolePermissionMappingKey(row: {
+  roleId: string;
+  permissionId: string;
+  scopeFor: string;
+  scopeLevel: string;
+}): string {
+  return `${row.roleId}\u0000${row.permissionId}\u0000${row.scopeFor}\u0000${row.scopeLevel}`;
+}
 
 function getSystemRoleScopeFor(roleId: string): AuthzScopeFor[] {
   void roleId;
@@ -606,8 +657,10 @@ async function syncRolePermissionMappings(tx: any, roleId: string, permissionIds
   const columnSupport = await getAuthzScopePolicyColumnSupport();
   const role = await loadManagedRoleRecord(tx, { roleId });
 
-  await tx.authzRolePermissionMap.deleteMany({ where: { roleId } });
-  if (!role || permissionIds.length === 0) return;
+  if (!role || permissionIds.length === 0) {
+    await tx.authzRolePermissionMap.deleteMany({ where: { roleId } });
+    return;
+  }
 
   const roleScopeFor = getRoleScopeFor(role);
   const roleScopeLevel = formatRoleScopeLevel((role as any).scopeLevel, role.acquisitionType, role.approvalPolicy);
@@ -618,7 +671,7 @@ async function syncRolePermissionMappings(tx: any, roleId: string, permissionIds
       : { id: true, acquisitionType: true, approvalPolicy: true },
   });
 
-  const rows = permissions.flatMap((permission: any) =>
+  const rows: RolePermissionMappingRow[] = permissions.flatMap((permission: any) =>
     getCompatibleRolePermissionScopePairs({
       roleScopeFor,
       roleScopeLevel,
@@ -632,6 +685,22 @@ async function syncRolePermissionMappings(tx: any, roleId: string, permissionIds
     })),
   );
 
+  const existingRows = await tx.authzRolePermissionMap.findMany({
+    where: { roleId },
+    select: {
+      roleId: true,
+      permissionId: true,
+      scopeFor: true,
+      scopeLevel: true,
+    },
+  });
+  const existingKeys = new Set(existingRows.map(rolePermissionMappingKey));
+  const nextKeys = new Set(rows.map(rolePermissionMappingKey));
+  const mappingsCurrent = existingKeys.size === nextKeys.size && Array.from(nextKeys).every((key) => existingKeys.has(key));
+
+  if (mappingsCurrent) return;
+
+  await tx.authzRolePermissionMap.deleteMany({ where: { roleId } });
   if (rows.length === 0) return;
 
   await tx.authzRolePermissionMap.createMany({
@@ -694,6 +763,125 @@ async function syncRolePermissionsForRoleIds(roleIds: string[]): Promise<void> {
   for (const roleId of Array.from(new Set(roleIds))) {
     await syncRolePermissionsDenormalized(prisma, roleId);
   }
+}
+
+async function areApplicationManagementRolesCurrent(
+  permissionDefinitions: ApplicationManagementPermissionDefinition[],
+): Promise<boolean> {
+  const columnSupport = await getAuthzScopePolicyColumnSupport();
+  const expectedPermissionNames = permissionDefinitions.map((permission) => permission.name);
+  const expectedPermissionByName = new Map(permissionDefinitions.map((permission) => [permission.name, permission]));
+  const permissions = await prisma.authzPermission.findMany({
+    where: {
+      appId: GLOBAL_AUTHZ_APP_ID,
+      name: { in: expectedPermissionNames },
+    },
+    select: columnSupport.permission
+      ? { id: true, name: true, description: true, scopeFor: true, scopeLevel: true, approvalPolicy: true }
+      : { id: true, name: true, description: true, approvalPolicy: true },
+  }) as any[];
+
+  if (permissions.length !== expectedPermissionNames.length) return false;
+
+  const permissionIdByName = new Map<string, string>();
+  for (const permissionRecord of permissions) {
+    const expected = expectedPermissionByName.get(permissionRecord.name);
+    if (!expected) return false;
+    if (permissionRecord.description !== expected.description) return false;
+    if (permissionRecord.approvalPolicy !== getStoredPolicyForScopeLevel(expected.scopeLevel[0] ?? 'assignable').approvalPolicy) {
+      return false;
+    }
+    if (columnSupport.permission) {
+      if (!equalStringSets(permissionRecord.scopeFor, expected.scopeFor)) return false;
+      if (!equalStringSets(permissionRecord.scopeLevel, expected.scopeLevel)) return false;
+    }
+    permissionIdByName.set(permissionRecord.name, permissionRecord.id);
+  }
+
+  const roleIds = Array.from(GLOBAL_AUTHZ_SYSTEM_ROLE_IDS);
+  const roles = await prisma.authzRole.findMany({
+    where: {
+      id: { in: roleIds },
+      appId: GLOBAL_AUTHZ_APP_ID,
+    },
+    select: columnSupport.role
+      ? {
+        id: true,
+        name: true,
+        description: true,
+        scopeFor: true,
+        scopeLevel: true,
+        acquisitionType: true,
+        approvalPolicy: true,
+        permissions: true,
+      }
+      : {
+        id: true,
+        name: true,
+        description: true,
+        acquisitionType: true,
+        approvalPolicy: true,
+        permissions: true,
+      },
+  }) as any[];
+
+  if (roles.length !== roleIds.length) return false;
+
+  const expectedMappingKeys = new Set<string>();
+  for (const role of roles) {
+    const expectedPermissionNamesForRole =
+      role.id === 'application.owner'
+        ? APPLICATION_SYSTEM_OWNER_PERMISSION_DEFINITIONS.map((permission) => permission.name)
+        : expectedPermissionNames;
+    const expectedDescription =
+      role.id === 'application.owner'
+        ? 'Full ownership of an application.'
+        : 'Manage application settings, roles, and permissions.';
+    const roleScopeFor = getSystemRoleScopeFor(role.id);
+    const roleScopeLevel = getSystemRoleScopeLevel(role.id);
+
+    if (role.name !== role.id) return false;
+    if (role.description !== expectedDescription) return false;
+    if (role.acquisitionType !== 'system_generated') return false;
+    if (role.approvalPolicy !== 'none') return false;
+    if (!equalStringSets(role.permissions, expectedPermissionNamesForRole)) return false;
+    if (columnSupport.role) {
+      if (!equalStringSets(role.scopeFor, roleScopeFor)) return false;
+      if (role.scopeLevel !== roleScopeLevel) return false;
+    }
+
+    for (const permissionName of expectedPermissionNamesForRole) {
+      const permission = expectedPermissionByName.get(permissionName);
+      const permissionId = permissionIdByName.get(permissionName);
+      if (!permission || !permissionId) return false;
+
+      for (const pair of getCompatibleRolePermissionScopePairs({
+        roleScopeFor,
+        roleScopeLevel,
+        permissionScopeFor: permission.scopeFor,
+        permissionScopeLevels: permission.scopeLevel,
+      })) {
+        expectedMappingKeys.add(rolePermissionMappingKey({
+          roleId: role.id,
+          permissionId,
+          scopeFor: pair.scopeFor,
+          scopeLevel: pair.scopeLevel,
+        }));
+      }
+    }
+  }
+
+  const mappings = await prisma.authzRolePermissionMap.findMany({
+    where: { roleId: { in: roleIds } },
+    select: {
+      roleId: true,
+      permissionId: true,
+      scopeFor: true,
+      scopeLevel: true,
+    },
+  });
+  const actualMappingKeys = new Set(mappings.map(rolePermissionMappingKey));
+  return actualMappingKeys.size === expectedMappingKeys.size && Array.from(expectedMappingKeys).every((key) => actualMappingKeys.has(key));
 }
 
 function isMissingTableError(error: unknown, tableName: string): boolean {
@@ -760,10 +948,8 @@ async function validateRolePermissionSelection(
 }
 
 async function ensureApplicationManagementRoles(): Promise<void> {
-  const permissionDefinitions = APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS.map((permission, index) => ({
-    id: `cap-appmanage-${index + 1}-${permission.name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}`,
-    ...permission,
-  }));
+  const permissionDefinitions = getApplicationManagementPermissionDefinitions();
+  if (await areApplicationManagementRolesCurrent(permissionDefinitions)) return;
 
   await prisma.$transaction(async (tx) => {
     const permissions = await upsertPermissionsForApp(tx, GLOBAL_AUTHZ_APP_ID, permissionDefinitions);

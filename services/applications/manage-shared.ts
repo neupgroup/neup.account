@@ -35,6 +35,9 @@ import {
   ROOT_APPLICATION_USER_UPDATE_ROLE_PERMISSION,
   ROOT_APPLICATION_USER_VIEW_PERMISSION,
   ROOT_APPLICATION_VIEW_PERMISSION,
+  APPLICATION_USER_ROLE_ASSIGN_PUBLIC_REQUESTABLE_ROLES_PERMISSION,
+  APPLICATION_USER_ROLE_ASSIGN_PUBLIC_ROLES_PERMISSION,
+  APPLICATION_USER_ROLE_ASSIGN_ROOT_ROLES_PERMISSION,
   getApplicationPermissionNames,
   type ApplicationPermissionBase,
   type ApplicationPermissionAudience,
@@ -109,6 +112,9 @@ export const servicePermissions = [
   permission('application.user.remove.root', 'for_individual', 'service'),
   permission('application.user.updateBasics.root', 'for_individual', 'service'),
   permission('application.user.updateRole.root', 'for_individual', 'service'),
+  permission(APPLICATION_USER_ROLE_ASSIGN_PUBLIC_ROLES_PERMISSION, 'for_individual', 'service'),
+  permission(APPLICATION_USER_ROLE_ASSIGN_PUBLIC_REQUESTABLE_ROLES_PERMISSION, 'for_individual', 'service'),
+  permission(APPLICATION_USER_ROLE_ASSIGN_ROOT_ROLES_PERMISSION, 'for_individual', 'service'),
 ];
 
 export const responseAccessSet = new Set<ApplicationAccessField>(applicationResponseFields);
@@ -196,6 +202,9 @@ export const APPLICATION_MUTATION_BASES: ApplicationPermissionBase[] = [
   'account.role.update',
   'account.connection.assign',
   'user.remove',
+  'user.role.assignPublicRoles',
+  'user.role.assignPublicRequestableRoles',
+  'user.role.assignRootRoles',
   'user.updateBasics',
   'user.updateRole',
 ];

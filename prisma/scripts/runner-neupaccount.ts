@@ -226,6 +226,9 @@ INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-root-admin-application-user-remove',        'application.user.remove',        '${APP_ID}', 'individual.root'),
   ('cap-root-admin-application-user-update-basics', 'application.user.updateBasics',  '${APP_ID}', 'individual.root'),
   ('cap-root-admin-application-user-update-role',   'application.user.updateRole',    '${APP_ID}', 'individual.root'),
+  ('cap-root-admin-application-user-role-assign-public', 'application.user.role.assignPublicRoles', '${APP_ID}', 'individual.root'),
+  ('cap-root-admin-application-user-role-assign-public-requestable', 'application.user.role.assignPublicRequestableRoles', '${APP_ID}', 'individual.root'),
+  ('cap-root-admin-application-user-role-assign-root', 'application.user.role.assignRootRoles', '${APP_ID}', 'individual.root'),
   ('cap-root-brand-delete',               'account.brand.delete',                   '${APP_ID}', 'individual.root'),
   ('cap-root-brand-kyc-submit',           'account.brand.kyc.submit',               '${APP_ID}', 'individual.root'),
   ('cap-root-brand-kyc-view',             'account.brand.kyc.view',                 '${APP_ID}', 'individual.root'),
@@ -298,6 +301,9 @@ SELECT
     'application.user.remove',
     'application.user.updateBasics',
     'application.user.updateRole',
+    'application.user.role.assignPublicRoles',
+    'application.user.role.assignPublicRequestableRoles',
+    'application.user.role.assignRootRoles',
     ...BRAND_ROOT_PERMISSION_NAMES,
     'root.permission.view',
     'root.permission.edit',
@@ -346,7 +352,10 @@ INSERT INTO "authz_capability" ("id", "name", "app_id", "scope") VALUES
   ('cap-appowner-application-user-update-basics-public', 'application.user.updateBasics',  '${APP_ID}', 'individual.public'),
   ('cap-appowner-application-user-update-basics-managed','application.user.updateBasics',  '${APP_ID}', 'managable'),
   ('cap-appowner-application-user-update-role-public',   'application.user.updateRole',    '${APP_ID}', 'individual.public'),
-  ('cap-appowner-application-user-update-role-managed',  'application.user.updateRole',    '${APP_ID}', 'managable')
+  ('cap-appowner-application-user-update-role-managed',  'application.user.updateRole',    '${APP_ID}', 'managable'),
+  ('cap-appowner-application-user-role-assign-public',   'application.user.role.assignPublicRoles', '${APP_ID}', 'individual.public'),
+  ('cap-appowner-application-user-role-assign-public-requestable', 'application.user.role.assignPublicRequestableRoles', '${APP_ID}', 'individual.public'),
+  ('cap-appowner-application-user-role-assign-root',     'application.user.role.assignRootRoles', '${APP_ID}', 'individual.root')
 ON CONFLICT ("id") DO NOTHING;
 
 INSERT INTO "authz_role_capability" (
@@ -359,7 +368,7 @@ SELECT
   'application',
   '${APP_ID}',
   'application.owner',
-  '["application.view","application.basics.edit","application.delete","application.config.view","application.config.update","application.logs.view","application.devlogs.view","application.devlogs.clear","application.roles.view","application.roles.manage","application.roles.resetPush","application.user.view","application.user.remove","application.user.updateBasics","application.user.updateRole"]'::jsonb
+  '["application.view","application.basics.edit","application.delete","application.config.view","application.config.update","application.logs.view","application.devlogs.view","application.devlogs.clear","application.roles.view","application.roles.manage","application.roles.resetPush","application.user.view","application.user.remove","application.user.updateBasics","application.user.updateRole","application.user.role.assignPublicRoles","application.user.role.assignPublicRequestableRoles","application.user.role.assignRootRoles"]'::jsonb
 FROM "authz_capability" c
 WHERE c."app_id" = '${APP_ID}'
   AND c."scope"  = 'application'

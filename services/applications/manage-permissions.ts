@@ -17,6 +17,9 @@ import { activeAccessWhere, cleanupExpiredAccessModel, ensureAccessGrant } from 
 import {
   APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS,
   APPLICATION_SYSTEM_OWNER_PERMISSION_DEFINITIONS,
+  APPLICATION_USER_ROLE_ASSIGN_PUBLIC_REQUESTABLE_ROLES_PERMISSION,
+  APPLICATION_USER_ROLE_ASSIGN_PUBLIC_ROLES_PERMISSION,
+  APPLICATION_USER_ROLE_ASSIGN_ROOT_ROLES_PERMISSION,
   ROOT_APPLICATION_BASICS_EDIT_PERMISSION,
   ROOT_APPLICATION_CONFIG_UPDATE_PERMISSION,
   ROOT_APPLICATION_CONFIG_VIEW_PERMISSION,
@@ -172,13 +175,31 @@ export async function canCurrentAccountRemoveApplicationUser(appId: string, opti
 }
 
 export async function canCurrentAccountUpdateApplicationUserRole(appId: string, options?: ApplicationRootModeOption): Promise<boolean> {
-  return canCurrentAccountAccessApplicationByBase(
-    appId,
-    ['account.role.update', 'account.connection.assign', 'user.updateRole'],
-    ROOT_APPLICATION_ACCOUNT_ROLE_UPDATE_PERMISSION,
-    ROOT_APPLICATION_USER_UPDATE_ROLE_PERMISSION,
-    options,
-  );
+  const [canUpdateRole, canAssignScopedRolesAsRoot] = await Promise.all([
+    canCurrentAccountAccessApplicationByBase(
+      appId,
+      [
+        'account.role.update',
+        'account.connection.assign',
+        'user.updateRole',
+        'user.role.assignPublicRoles',
+        'user.role.assignPublicRequestableRoles',
+        'user.role.assignRootRoles',
+      ],
+      ROOT_APPLICATION_ACCOUNT_ROLE_UPDATE_PERMISSION,
+      ROOT_APPLICATION_USER_UPDATE_ROLE_PERMISSION,
+      options,
+    ),
+    options?.rootMode === true
+      ? hasAnyRootApplicationPermission([
+          APPLICATION_USER_ROLE_ASSIGN_PUBLIC_ROLES_PERMISSION,
+          APPLICATION_USER_ROLE_ASSIGN_PUBLIC_REQUESTABLE_ROLES_PERMISSION,
+          APPLICATION_USER_ROLE_ASSIGN_ROOT_ROLES_PERMISSION,
+        ])
+      : Promise.resolve(false),
+  ]);
+
+  return canUpdateRole || canAssignScopedRolesAsRoot;
 }
 
 export async function canCurrentAccountViewApplicationLogs(appId: string, options?: ApplicationRootModeOption): Promise<boolean> {

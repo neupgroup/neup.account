@@ -21,10 +21,15 @@ const INITIAL_VISIBLE = 5;
 const LOAD_MORE_COUNT = 10;
 
 export function RoleSelector({ appId, connectionId, roles, currentRoleIds, pendingRoleIds, rootMode }: RoleSelectorProps) {
+  const manageableRoleIdSet = useMemo(() => new Set(roles.map((role) => role.id)), [roles]);
   const [query, setQuery] = useState('');
   const [visible, setVisible] = useState(INITIAL_VISIBLE);
-  const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>(() => Array.from(new Set([...currentRoleIds, ...pendingRoleIds])));
-  const [pendingSelections, setPendingSelections] = useState<string[]>(pendingRoleIds);
+  const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>(() =>
+    Array.from(new Set([...currentRoleIds, ...pendingRoleIds])).filter((roleId) => manageableRoleIdSet.has(roleId)),
+  );
+  const [pendingSelections, setPendingSelections] = useState<string[]>(() =>
+    pendingRoleIds.filter((roleId) => manageableRoleIdSet.has(roleId)),
+  );
   const [message, setMessage] = useState<string>('');
   const [pending, startTransition] = useTransition();
   const hasUsableScope = (value: unknown) => normalizeRoleScopes(value).length > 0;

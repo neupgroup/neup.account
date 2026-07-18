@@ -32,23 +32,25 @@ import {
   ROOT_APPLICATION_ACCOUNT_ROLE_UPDATE_PERMISSION,
   ROOT_APPLICATION_ACCOUNT_VIEW_PERMISSION,
   ROOT_APPLICATION_USER_REMOVE_PERMISSION,
-  ROOT_APPLICATION_USER_UPDATE_ROLE_PERMISSION,
   ROOT_APPLICATION_USER_VIEW_PERMISSION,
   ROOT_APPLICATION_VIEW_PERMISSION,
+  APPLICATION_USER_ROLE_ASSIGN_PUBLIC_REQUESTABLE_ROLES_PERMISSION,
+  APPLICATION_USER_ROLE_ASSIGN_PUBLIC_ROLES_PERMISSION,
+  APPLICATION_USER_ROLE_ASSIGN_ROOT_ROLES_PERMISSION,
   getApplicationPermissionNames,
   type ApplicationPermissionBase,
   type ApplicationPermissionAudience,
 } from '@/services/applications/permission-definitions';
 import {
-  getRoleAccessFlags,
-  isRoleDirectlyAssignable,
   roleRequestTarget,
 } from '@/services/role-scopes';
 import {
   deriveLegacyRoleScopesFromPolicy,
+  type AuthzScopeLevel,
   normalizeAuthzScopeFor,
   normalizeSingleAuthzScopeLevel,
   roleMatchesAssignmentModesPolicy,
+  scopeForForAccountType,
 } from '@/services/applications/authz-scope-policy';
 import {
   revalidateApplicationConfigRoutes,
@@ -299,19 +301,52 @@ function hasUsableRoleScope(scope: unknown): boolean {
   return Array.isArray(scope) && scope.length > 0;
 }
 
-function canManageConnectionRoleFromUserPage(
-  acquisitionType: string | null | undefined,
-  approvalPolicy: string | null | undefined,
-  actor: 'manager' | 'root',
-): boolean {
-  if (actor === 'manager') return isRoleDirectlyAssignable(acquisitionType, approvalPolicy, 'manager');
+const APPLICATION_USER_ROLE_ASSIGN_PERMISSION_BY_SCOPE_LEVEL = {
+  'assignable.publicly': APPLICATION_USER_ROLE_ASSIGN_PUBLIC_ROLES_PERMISSION,
+  'assignable.publicly.byRequest': APPLICATION_USER_ROLE_ASSIGN_PUBLIC_REQUESTABLE_ROLES_PERMISSION,
+  'assignable.byRoot': APPLICATION_USER_ROLE_ASSIGN_ROOT_ROLES_PERMISSION,
+} satisfies Partial<Record<AuthzScopeLevel, string>>;
 
-  const flags = getRoleAccessFlags(acquisitionType, approvalPolicy);
-  return flags.assignable
-    || flags.publiclyEnrollable
-    || flags.publiclyRequestable
-    || flags.rootAssigned
-    || flags.assignable;
+const APPLICATION_USER_ROLE_ASSIGNABLE_SCOPE_LEVELS = Object.keys(
+  APPLICATION_USER_ROLE_ASSIGN_PERMISSION_BY_SCOPE_LEVEL,
+) as AuthzScopeLevel[];
+
+async function getCurrentApplicationRoleAssignmentScopeLevels(
+  appId: string,
+  options?: ApplicationRootModeOption,
+): Promise<Set<AuthzScopeLevel>> {
+  const accountId = await getActiveAccountId();
+  if (!accountId) return new Set();
+
+  const permissionEntries = Object.entries(APPLICATION_USER_ROLE_ASSIGN_PERMISSION_BY_SCOPE_LEVEL) as Array<[AuthzScopeLevel, string]>;
+  const [appPermissionResults, rootPermissionResults] = await Promise.all([
+    Promise.all(permissionEntries.map(([, permissionName]) => hasApplicationPermission(accountId, appId, [permissionName]))),
+    options?.rootMode === true
+      ? Promise.all(permissionEntries.map(([, permissionName]) => hasRootApplicationPermission(permissionName)))
+      : Promise.resolve(permissionEntries.map(() => false)),
+  ]);
+
+  return new Set(
+    permissionEntries.flatMap(([scopeLevel], index) =>
+      appPermissionResults[index] || rootPermissionResults[index] ? [scopeLevel] : [],
+    ),
+  );
+}
+
+function canAssignRoleForApplicationUser(input: {
+  accountType: string | null | undefined;
+  role: { scopeFor: unknown; scopeLevel: unknown };
+  allowedScopeLevels: ReadonlySet<AuthzScopeLevel>;
+}): boolean {
+  const requiredScopeFor = scopeForForAccountType(input.accountType);
+  if (!requiredScopeFor) return false;
+
+  const roleScopeFor = normalizeAuthzScopeFor(input.role.scopeFor);
+  const roleScopeLevel = normalizeSingleAuthzScopeLevel(input.role.scopeLevel);
+
+  return roleScopeFor.includes(requiredScopeFor)
+    && APPLICATION_USER_ROLE_ASSIGNABLE_SCOPE_LEVELS.includes(roleScopeLevel)
+    && input.allowedScopeLevels.has(roleScopeLevel);
 }
 
 function parseStoredJsonText(value: string | null | undefined): Prisma.JsonValue | string | null {
@@ -807,11 +842,11 @@ export async function getApplicationRoleOptions(appId: string, targetAccountType
   const accountId = await getActiveAccountId();
   if (!accountId) return [];
 
-  const isRootEditor = options?.rootMode === true
-    ? await hasRootApplicationPermission(ROOT_APPLICATION_USER_UPDATE_ROLE_PERMISSION)
-    : false;
-  const canView = await canCurrentAccountViewApplicationUsers(appId, options);
-  if (!canView) return [];
+  const [canView, allowedScopeLevels] = await Promise.all([
+    canCurrentAccountViewApplicationUsers(appId, options),
+    getCurrentApplicationRoleAssignmentScopeLevels(appId, options),
+  ]);
+  if (!canView || allowedScopeLevels.size === 0) return [];
 
   try {
     const roles = await loadApplicationRoleOptionRows(appId);
@@ -826,23 +861,22 @@ export async function getApplicationRoleOptions(appId: string, targetAccountType
     }));
 
     if (!targetAccountType) {
-      return normalizedRoles.filter(
-        (role) => hasUsableRoleScope(role.scope) &&
-          canManageConnectionRoleFromUserPage(role.acquisitionType, role.approvalPolicy, isRootEditor ? 'root' : 'manager'),
+      return normalizedRoles.filter((role) =>
+        hasUsableRoleScope(role.scope) &&
+        APPLICATION_USER_ROLE_ASSIGNABLE_SCOPE_LEVELS.includes(normalizeSingleAuthzScopeLevel((role as any).scopeLevel)) &&
+        allowedScopeLevels.has(normalizeSingleAuthzScopeLevel((role as any).scopeLevel)),
       );
     }
 
     return normalizedRoles.filter((role) => {
       if (!hasUsableRoleScope(role.scope)) return false;
-      if (!canManageConnectionRoleFromUserPage(role.acquisitionType, role.approvalPolicy, isRootEditor ? 'root' : 'manager')) return false;
-      const modes = isRootEditor
-        ? ['public', 'toApprove', 'root'] as const
-        : ['public', 'toApprove'] as const;
-      return roleMatchesAssignmentModesPolicy({
+      return canAssignRoleForApplicationUser({
         accountType: targetAccountType,
-        scopeFor: (role as any).scopeFor ?? [],
-        scopeLevel: (role as any).scopeLevel ?? 'assignable.byTeam',
-        modes,
+        role: {
+          scopeFor: (role as any).scopeFor ?? [],
+          scopeLevel: (role as any).scopeLevel ?? 'assignable.byTeam',
+        },
+        allowedScopeLevels,
       });
     });
   } catch (error) {
@@ -860,13 +894,9 @@ export async function assignApplicationConnectionRole(input: {
   const accountId = await getActiveAccountId();
   if (!accountId) return { success: false, error: 'Not signed in.' };
 
-  const [isRootEditor, canManageRoles] = await Promise.all([
-    input.rootMode === true
-      ? hasRootApplicationPermission(ROOT_APPLICATION_USER_UPDATE_ROLE_PERMISSION)
-      : Promise.resolve(false),
-    canCurrentAccountUpdateApplicationUserRole(input.appId, { rootMode: input.rootMode === true }),
-  ]);
-  if (!isRootEditor && !canManageRoles) {
+  const canManageRoles = await canCurrentAccountUpdateApplicationUserRole(input.appId, { rootMode: input.rootMode === true });
+  const allowedScopeLevels = await getCurrentApplicationRoleAssignmentScopeLevels(input.appId, { rootMode: input.rootMode === true });
+  if (!canManageRoles || allowedScopeLevels.size === 0) {
     return { success: false, error: 'Permission denied.' };
   }
 
@@ -904,12 +934,10 @@ export async function assignApplicationConnectionRole(input: {
     }
 
     const assignableRoles = roles.filter((role) =>
-      canManageConnectionRoleFromUserPage(role.acquisitionType, role.approvalPolicy, isRootEditor ? 'root' : 'manager') &&
-      roleMatchesAssignmentModesPolicy({
+      canAssignRoleForApplicationUser({
         accountType: connection.account.accountType,
-        scopeFor: role.scopeFor,
-        scopeLevel: role.scopeLevel,
-        modes: isRootEditor ? ['public', 'root'] : ['public'],
+        role,
+        allowedScopeLevels,
       }),
     );
     const immediateRoles = assignableRoles.filter((role) => roleRequestTarget(role.acquisitionType, role.approvalPolicy) === null);
@@ -944,13 +972,11 @@ export async function assignApplicationConnectionRole(input: {
       new Set(
         existingAssignedRows
           .filter((row) => row.role.appId === input.appId)
-          .filter((row) => canManageConnectionRoleFromUserPage(row.role.acquisitionType, row.role.approvalPolicy, isRootEditor ? 'root' : 'manager'))
           .filter((row) =>
-            roleMatchesAssignmentModesPolicy({
+            canAssignRoleForApplicationUser({
               accountType: connection.account.accountType,
-              scopeFor: row.role.scopeFor,
-              scopeLevel: row.role.scopeLevel,
-              modes: isRootEditor ? ['public', 'root'] : ['public'],
+              role: row.role,
+              allowedScopeLevels,
             }),
           )
           .map((row) => row.roleId),

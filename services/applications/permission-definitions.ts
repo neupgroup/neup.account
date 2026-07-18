@@ -37,6 +37,9 @@ export type ApplicationPermissionBase =
   | 'roles.resetPush'
   | 'roles.view'
   | 'user.remove'
+  | 'user.role.assignPublicRequestableRoles'
+  | 'user.role.assignPublicRoles'
+  | 'user.role.assignRootRoles'
   | 'user.updateBasics'
   | 'user.updateRole'
   | 'user.view'
@@ -146,6 +149,18 @@ const APPLICATION_PERMISSION_DEFINITION_MAP: Record<ApplicationPermissionBase, A
     suffix: 'user.remove',
     description: 'Remove a user connection from the application.',
   },
+  'user.role.assignPublicRoles': {
+    suffix: 'user.role.assignPublicRoles',
+    description: 'Assign publicly available application-user roles.',
+  },
+  'user.role.assignPublicRequestableRoles': {
+    suffix: 'user.role.assignPublicRequestableRoles',
+    description: 'Request or approve publicly requestable application-user roles.',
+  },
+  'user.role.assignRootRoles': {
+    suffix: 'user.role.assignRootRoles',
+    description: 'Assign root-managed application-user roles.',
+  },
   'user.updateBasics': {
     suffix: 'user.updateBasics',
     description: 'Update basic application-user details.',
@@ -184,6 +199,24 @@ function permissionPolicyDefinition(
     return {
       scopeFor: APPLICATION_USER_UPDATE_BASICS_SCOPE_FOR,
       scopeLevel: APPLICATION_USER_UPDATE_BASICS_SCOPE_LEVEL,
+    };
+  }
+  if (base === 'user.role.assignPublicRoles') {
+    return {
+      scopeFor: ['for_individual'],
+      scopeLevel: ['assignable.publicly'],
+    };
+  }
+  if (base === 'user.role.assignPublicRequestableRoles') {
+    return {
+      scopeFor: ['for_individual'],
+      scopeLevel: ['assignable.publicly.byRequest'],
+    };
+  }
+  if (base === 'user.role.assignRootRoles') {
+    return {
+      scopeFor: ['for_individual'],
+      scopeLevel: ['assignable.byRoot'],
     };
   }
 
@@ -295,6 +328,12 @@ export const ROOT_APPLICATION_USER_VIEW_PERMISSION = getApplicationPermissionNam
 export const ROOT_APPLICATION_USER_REMOVE_PERMISSION = getApplicationPermissionName('user.remove', 'root');
 export const ROOT_APPLICATION_USER_UPDATE_BASICS_PERMISSION = getApplicationPermissionName('user.updateBasics', 'root');
 export const ROOT_APPLICATION_USER_UPDATE_ROLE_PERMISSION = getApplicationPermissionName('user.updateRole', 'root');
+export const APPLICATION_USER_ROLE_ASSIGN_PUBLIC_ROLES_PERMISSION =
+  getApplicationPermissionName('user.role.assignPublicRoles', 'public');
+export const APPLICATION_USER_ROLE_ASSIGN_PUBLIC_REQUESTABLE_ROLES_PERMISSION =
+  getApplicationPermissionName('user.role.assignPublicRequestableRoles', 'public');
+export const APPLICATION_USER_ROLE_ASSIGN_ROOT_ROLES_PERMISSION =
+  getApplicationPermissionName('user.role.assignRootRoles', 'root');
 
 export const APPLICATION_PUBLIC_PERMISSION_DEFINITIONS = getApplicationPermissionDefinitions(['public']);
 export const APPLICATION_MANAGED_PERMISSION_DEFINITIONS = getApplicationPermissionDefinitions(['managed']);

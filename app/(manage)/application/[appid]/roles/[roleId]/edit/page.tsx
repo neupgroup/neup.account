@@ -5,8 +5,8 @@ type Props = {
   searchParams: Promise<{ mode?: string }>;
 };
 
-export default async function RoleDetailsCanonicalPage({ params, searchParams }: Props) {
+export default async function RoleInfoEditCanonicalPage({ params, searchParams }: Props) {
   const { appid, roleId } = await params;
   const { mode } = await searchParams;
-  return RoleDetailsPage({ applicationId: appid, roleId, mode });
+  return RoleDetailsPage({ applicationId: appid, roleId, mode, editingInfo: true });
 }

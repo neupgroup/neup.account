@@ -3,7 +3,7 @@
 
 Server-rendered role details page for application authz management.
 
-The page supports a dedicated `edit=info` mode that renders only the role-info
+The page supports a dedicated edit route that renders only the role-info
 editor, instead of the full role detail layout.
 
 ::end
@@ -33,12 +33,12 @@ import { toApplicationAuthzDefinitionOptions } from '@/services/applications/aut
 
 type Props = {
   params: Promise<{ roleId: string }>;
-  searchParams: Promise<{ application?: string | string[]; mode?: string; edit?: string }>;
+  searchParams: Promise<{ application?: string | string[]; mode?: string }>;
 };
 
 export default async function RoleDetailsQueryPage({ params, searchParams }: Props) {
   const { roleId } = await params;
-  const { application, mode, edit } = await searchParams;
+  const { application, mode } = await searchParams;
   const applicationId = getQueryParam(application);
 
   if (applicationId) notFound();
@@ -49,14 +49,14 @@ export async function RoleDetailsPage({
   applicationId,
   roleId,
   mode,
-  edit,
+  editingInfo,
 }: {
   applicationId: string;
   roleId: string;
   mode?: string;
-  edit?: string;
+  editingInfo?: boolean;
 }) {
-  const isEditingInfo = edit === 'info';
+  const isEditingInfo = editingInfo === true;
   const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
   if (!details) notFound();
   if (mode === 'root') await logRootApplicationActivity(applicationId, `roles/${roleId}`);

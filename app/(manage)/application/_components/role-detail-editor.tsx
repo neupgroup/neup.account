@@ -354,7 +354,7 @@ export function RoleDetailEditor({
         <Button
           type="button"
           variant="outline"
-          onClick={() => redirectInApp(router, applicationHref(`/application/roles/${role.id}`, appId, { edit: 'info', ...(mode ? { mode } : {}) }))}
+          onClick={() => redirectInApp(router, applicationHref(`/application/roles/${role.id}/edit`, appId, mode ? { mode } : undefined))}
         >
           Edit info
         </Button>

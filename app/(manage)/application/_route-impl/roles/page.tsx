@@ -5,6 +5,7 @@ import {
   canCurrentAccountResetApplicationRolePush,
   canCurrentAccountViewApplicationRoles,
   getApplicationDetailsForViewerV2,
+  logRootApplicationActivity,
 } from '@/services/applications/manage';
 import { getAppDefaultRoleId, getAppRoles } from '@/services/applications/authz-manage';
 import { getAuthzWebhookUrl } from '@/services/applications/authz-webhook';
@@ -67,11 +68,12 @@ export default async function ApplicationRolesQueryPage({ searchParams }: Props)
 export async function ApplicationRolesPage({ applicationId, mode }: { applicationId: string; mode?: string }) {
   const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
   if (!details) notFound();
+  if (mode === 'root') await logRootApplicationActivity(applicationId, 'roles');
 
   const [canViewRoles, canManageRoles, canResetPush] = await Promise.all([
-    canCurrentAccountViewApplicationRoles(applicationId),
-    canCurrentAccountManageApplicationRoles(applicationId),
-    canCurrentAccountResetApplicationRolePush(applicationId),
+    canCurrentAccountViewApplicationRoles(applicationId, { rootMode: mode === 'root' }),
+    canCurrentAccountManageApplicationRoles(applicationId, { rootMode: mode === 'root' }),
+    canCurrentAccountResetApplicationRolePush(applicationId, { rootMode: mode === 'root' }),
   ]);
   if (!canViewRoles) {
     return (

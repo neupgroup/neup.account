@@ -14,12 +14,13 @@ type RoleSelectorProps = {
   roles: AppRoleOption[];
   currentRoleIds: string[];
   pendingRoleIds: string[];
+  rootMode?: boolean;
 };
 
 const INITIAL_VISIBLE = 5;
 const LOAD_MORE_COUNT = 10;
 
-export function RoleSelector({ appId, connectionId, roles, currentRoleIds, pendingRoleIds }: RoleSelectorProps) {
+export function RoleSelector({ appId, connectionId, roles, currentRoleIds, pendingRoleIds, rootMode }: RoleSelectorProps) {
   const [query, setQuery] = useState('');
   const [visible, setVisible] = useState(INITIAL_VISIBLE);
   const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>(() => Array.from(new Set([...currentRoleIds, ...pendingRoleIds])));
@@ -50,7 +51,7 @@ export function RoleSelector({ appId, connectionId, roles, currentRoleIds, pendi
       : [...selectedRoleIds, roleId];
 
     startTransition(async () => {
-      const result = await assignApplicationConnectionRole({ appId, connectionId, roleIds: nextSelectedRoleIds });
+      const result = await assignApplicationConnectionRole({ appId, connectionId, roleIds: nextSelectedRoleIds, rootMode });
       if (!result.success) {
         setMessage(result.error || 'Could not update roles.');
         return;

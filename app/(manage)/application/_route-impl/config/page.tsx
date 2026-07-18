@@ -5,6 +5,7 @@ import {
   canCurrentAccountViewApplicationConfig,
   getApplicationDetailsForViewerV2,
   getAppConfigData,
+  logRootApplicationActivity,
 } from '@/services/applications/manage';
 import { BackButton } from '@/components/ui/back-button';
 import { PrimaryHeader } from '@/components/ui/primary-header';
@@ -35,10 +36,11 @@ export async function ApplicationConfigPage({ applicationId, mode }: { applicati
 
   const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode });
   if (!details) notFound();
+  if (rootMode) await logRootApplicationActivity(applicationId, 'config');
 
   const [canViewConfig, canUpdateConfig] = await Promise.all([
-    canCurrentAccountViewApplicationConfig(applicationId),
-    canCurrentAccountUpdateApplicationConfig(applicationId),
+    canCurrentAccountViewApplicationConfig(applicationId, { rootMode }),
+    canCurrentAccountUpdateApplicationConfig(applicationId, { rootMode }),
   ]);
 
   if (!canViewConfig) {

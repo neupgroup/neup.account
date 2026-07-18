@@ -6,6 +6,7 @@ import { formMetadata } from '@/core/metadata';
 import {
   canCurrentAccountUseRootApplicationMode,
   getApplicationDetailsForViewerV2,
+  logRootApplicationActivity,
 } from '@/services/applications/manage';
 
 type Props = {
@@ -41,6 +42,7 @@ export default async function ApplicationCanonicalPage({ params, searchParams }:
   if (resolvedMode === 'root') {
     const canUseRootMode = await canCurrentAccountUseRootApplicationMode();
     if (!canUseRootMode) notFound();
+    await logRootApplicationActivity(appid, 'overview');
   }
 
   return <ApplicationDetailPage applicationId={appid} mode={resolvedMode} />;

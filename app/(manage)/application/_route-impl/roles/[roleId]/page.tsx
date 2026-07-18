@@ -15,6 +15,7 @@ import {
   canCurrentAccountViewApplicationRoles,
   getApplicationAuthzConfig,
   getApplicationDetailsForViewerV2,
+  logRootApplicationActivity,
 } from '@/services/applications/manage';
 import {
   getAppDefaultRoleId,
@@ -58,10 +59,11 @@ export async function RoleDetailsPage({
   const isEditingInfo = edit === 'info';
   const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
   if (!details) notFound();
+  if (mode === 'root') await logRootApplicationActivity(applicationId, `roles/${roleId}`);
 
   const [canViewRoles, canManageRoles] = await Promise.all([
-    canCurrentAccountViewApplicationRoles(applicationId),
-    canCurrentAccountManageApplicationRoles(applicationId),
+    canCurrentAccountViewApplicationRoles(applicationId, { rootMode: mode === 'root' }),
+    canCurrentAccountManageApplicationRoles(applicationId, { rootMode: mode === 'root' }),
   ]);
   if (!canViewRoles) {
     return (

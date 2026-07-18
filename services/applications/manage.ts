@@ -362,17 +362,20 @@ async function canCurrentAccountAccessApplicationByBase(
   appBases: readonly ApplicationPermissionBase[],
   rootPermissionName: string,
   fallbackRootPermissionName?: string,
+  options?: { rootMode?: boolean },
 ): Promise<boolean> {
   const accountId = await getActiveAccountId();
   if (!accountId) return false;
 
   const [hasRootPermission, permissionNames] = await Promise.all([
-    fallbackRootPermissionName
+    options?.rootMode === true && fallbackRootPermissionName
       ? Promise.all([
           hasRootApplicationPermission(rootPermissionName),
           hasRootApplicationPermission(fallbackRootPermissionName),
         ]).then((results) => results.some(Boolean))
-      : hasRootApplicationPermission(rootPermissionName),
+      : options?.rootMode === true
+        ? hasRootApplicationPermission(rootPermissionName)
+        : Promise.resolve(false),
     getCurrentScopedApplicationPermissionNames(accountId, appBases),
   ]);
 
@@ -1468,7 +1471,9 @@ export async function getApplicationDetailsForViewerV2(
 ): Promise<ApplicationDetailsV2 | null> {
   const rootPermissionNames = options?.rootPermissionNames ?? [];
   const [isRootViewer, canUseRootMode] = await Promise.all([
-    hasAnyRootApplicationPermission([ROOT_APPLICATION_VIEW_PERMISSION, ...rootPermissionNames]),
+    options?.rootMode === true
+      ? hasAnyRootApplicationPermission([ROOT_APPLICATION_VIEW_PERMISSION, ...rootPermissionNames])
+      : Promise.resolve(false),
     canAccessRootApplicationMode(options?.rootMode, rootPermissionNames),
   ]);
   if (!canUseRootMode) return null;
@@ -1521,7 +1526,9 @@ export async function getApplicationDetailsForViewerV2(
 
     const [canDelete, accessForAccount] = await Promise.all([
       (async () => {
-        const isRootDeleter = await hasRootApplicationPermission(ROOT_APPLICATION_DELETE_PERMISSION);
+        const isRootDeleter = options?.rootMode === true
+          ? await hasRootApplicationPermission(ROOT_APPLICATION_DELETE_PERMISSION)
+          : false;
         if (isRootDeleter) return true;
         return hasApplicationPermission(activeAccountId, appId, deletePermissionNames);
       })(),
@@ -1578,13 +1585,13 @@ export async function getApplicationDetailPageData(
     canViewApplicationAccess,
     logPermissions,
   ] = await Promise.all([
-    canCurrentAccountEditApplicationBasics(appId),
-    canCurrentAccountViewApplicationConfig(appId),
-    canCurrentAccountViewApplicationRoles(appId),
-    canCurrentAccountViewApplicationUsers(appId),
-    canCurrentAccountDeleteApplication(appId),
+    canCurrentAccountEditApplicationBasics(appId, options),
+    canCurrentAccountViewApplicationConfig(appId, options),
+    canCurrentAccountViewApplicationRoles(appId, options),
+    canCurrentAccountViewApplicationUsers(appId, options),
+    canCurrentAccountDeleteApplication(appId, options),
     checkPermissions([...ACCESS_APPLICATION_VIEW_PERMISSIONS]),
-    getApplicationLogPermissions(appId),
+    getApplicationLogPermissions(appId, options),
   ]);
 
   const userStats = canViewUsers ? await getApplicationUserStats(appId) : null;
@@ -1604,45 +1611,47 @@ export async function getApplicationDetailPageData(
   };
 }
 
-export async function canCurrentAccountManageApplicationRoles(appId: string): Promise<boolean> {
-  return canCurrentAccountAccessApplicationByBase(appId, ['roles.manage'], ROOT_APPLICATION_ROLES_MANAGE_PERMISSION);
+type ApplicationRootModeOption = { rootMode?: boolean };
+
+export async function canCurrentAccountManageApplicationRoles(appId: string, options?: ApplicationRootModeOption): Promise<boolean> {
+  return canCurrentAccountAccessApplicationByBase(appId, ['roles.manage'], ROOT_APPLICATION_ROLES_MANAGE_PERMISSION, undefined, options);
 }
 
-export async function canCurrentAccountEditApplicationBasics(appId: string): Promise<boolean> {
-  return canCurrentAccountAccessApplicationByBase(appId, ['basics.edit'], ROOT_APPLICATION_BASICS_EDIT_PERMISSION);
+export async function canCurrentAccountEditApplicationBasics(appId: string, options?: ApplicationRootModeOption): Promise<boolean> {
+  return canCurrentAccountAccessApplicationByBase(appId, ['basics.edit'], ROOT_APPLICATION_BASICS_EDIT_PERMISSION, undefined, options);
 }
 
-export async function canCurrentAccountDeleteApplication(appId: string): Promise<boolean> {
-  return canCurrentAccountAccessApplicationByBase(appId, ['delete'], ROOT_APPLICATION_DELETE_PERMISSION);
+export async function canCurrentAccountDeleteApplication(appId: string, options?: ApplicationRootModeOption): Promise<boolean> {
+  return canCurrentAccountAccessApplicationByBase(appId, ['delete'], ROOT_APPLICATION_DELETE_PERMISSION, undefined, options);
 }
 
-export async function canCurrentAccountViewApplicationConfig(appId: string): Promise<boolean> {
-  const canUpdate = await canCurrentAccountUpdateApplicationConfig(appId);
+export async function canCurrentAccountViewApplicationConfig(appId: string, options?: ApplicationRootModeOption): Promise<boolean> {
+  const canUpdate = await canCurrentAccountUpdateApplicationConfig(appId, options);
   if (canUpdate) return true;
-  return canCurrentAccountAccessApplicationByBase(appId, ['config.view'], ROOT_APPLICATION_CONFIG_VIEW_PERMISSION);
+  return canCurrentAccountAccessApplicationByBase(appId, ['config.view'], ROOT_APPLICATION_CONFIG_VIEW_PERMISSION, undefined, options);
 }
 
-export async function canCurrentAccountUpdateApplicationConfig(appId: string): Promise<boolean> {
-  return canCurrentAccountAccessApplicationByBase(appId, ['config.update'], ROOT_APPLICATION_CONFIG_UPDATE_PERMISSION);
+export async function canCurrentAccountUpdateApplicationConfig(appId: string, options?: ApplicationRootModeOption): Promise<boolean> {
+  return canCurrentAccountAccessApplicationByBase(appId, ['config.update'], ROOT_APPLICATION_CONFIG_UPDATE_PERMISSION, undefined, options);
 }
 
-export async function canCurrentAccountViewApplicationRoles(appId: string): Promise<boolean> {
+export async function canCurrentAccountViewApplicationRoles(appId: string, options?: ApplicationRootModeOption): Promise<boolean> {
   const [canManageRoles, canResetPush] = await Promise.all([
-    canCurrentAccountManageApplicationRoles(appId),
-    canCurrentAccountResetApplicationRolePush(appId),
+    canCurrentAccountManageApplicationRoles(appId, options),
+    canCurrentAccountResetApplicationRolePush(appId, options),
   ]);
   if (canManageRoles || canResetPush) return true;
-  return canCurrentAccountAccessApplicationByBase(appId, ['roles.view'], ROOT_APPLICATION_ROLES_VIEW_PERMISSION);
+  return canCurrentAccountAccessApplicationByBase(appId, ['roles.view'], ROOT_APPLICATION_ROLES_VIEW_PERMISSION, undefined, options);
 }
 
-export async function canCurrentAccountResetApplicationRolePush(appId: string): Promise<boolean> {
-  return canCurrentAccountAccessApplicationByBase(appId, ['roles.resetPush'], ROOT_APPLICATION_ROLES_RESET_PUSH_PERMISSION);
+export async function canCurrentAccountResetApplicationRolePush(appId: string, options?: ApplicationRootModeOption): Promise<boolean> {
+  return canCurrentAccountAccessApplicationByBase(appId, ['roles.resetPush'], ROOT_APPLICATION_ROLES_RESET_PUSH_PERMISSION, undefined, options);
 }
 
-export async function canCurrentAccountViewApplicationUsers(appId: string): Promise<boolean> {
+export async function canCurrentAccountViewApplicationUsers(appId: string, options?: ApplicationRootModeOption): Promise<boolean> {
   const [canRemoveUser, canUpdateRole] = await Promise.all([
-    canCurrentAccountRemoveApplicationUser(appId),
-    canCurrentAccountUpdateApplicationUserRole(appId),
+    canCurrentAccountRemoveApplicationUser(appId, options),
+    canCurrentAccountUpdateApplicationUserRole(appId, options),
   ]);
   if (canRemoveUser || canUpdateRole) return true;
   return canCurrentAccountAccessApplicationByBase(
@@ -1650,41 +1659,44 @@ export async function canCurrentAccountViewApplicationUsers(appId: string): Prom
     ['account.view', 'user.view'],
     ROOT_APPLICATION_ACCOUNT_VIEW_PERMISSION,
     ROOT_APPLICATION_USER_VIEW_PERMISSION,
+    options,
   );
 }
 
-export async function canCurrentAccountRemoveApplicationUser(appId: string): Promise<boolean> {
+export async function canCurrentAccountRemoveApplicationUser(appId: string, options?: ApplicationRootModeOption): Promise<boolean> {
   return canCurrentAccountAccessApplicationByBase(
     appId,
     ['account.delete', 'user.remove'],
     ROOT_APPLICATION_ACCOUNT_DELETE_PERMISSION,
     ROOT_APPLICATION_USER_REMOVE_PERMISSION,
+    options,
   );
 }
 
-export async function canCurrentAccountUpdateApplicationUserRole(appId: string): Promise<boolean> {
+export async function canCurrentAccountUpdateApplicationUserRole(appId: string, options?: ApplicationRootModeOption): Promise<boolean> {
   return canCurrentAccountAccessApplicationByBase(
     appId,
     ['account.role.update', 'account.connection.assign', 'user.updateRole'],
     ROOT_APPLICATION_ACCOUNT_ROLE_UPDATE_PERMISSION,
     ROOT_APPLICATION_USER_UPDATE_ROLE_PERMISSION,
+    options,
   );
 }
 
-export async function canCurrentAccountViewApplicationLogs(appId: string): Promise<boolean> {
-  return canCurrentAccountAccessApplicationByBase(appId, ['logs.view'], ROOT_APPLICATION_LOGS_VIEW_PERMISSION);
+export async function canCurrentAccountViewApplicationLogs(appId: string, options?: ApplicationRootModeOption): Promise<boolean> {
+  return canCurrentAccountAccessApplicationByBase(appId, ['logs.view'], ROOT_APPLICATION_LOGS_VIEW_PERMISSION, undefined, options);
 }
 
-export async function canCurrentAccountViewApplicationDevLogs(appId: string): Promise<boolean> {
-  return canCurrentAccountAccessApplicationByBase(appId, ['devlogs.view'], ROOT_APPLICATION_DEVLOGS_VIEW_PERMISSION);
+export async function canCurrentAccountViewApplicationDevLogs(appId: string, options?: ApplicationRootModeOption): Promise<boolean> {
+  return canCurrentAccountAccessApplicationByBase(appId, ['devlogs.view'], ROOT_APPLICATION_DEVLOGS_VIEW_PERMISSION, undefined, options);
 }
 
-export async function canCurrentAccountClearApplicationDevLogs(appId: string): Promise<boolean> {
-  return canCurrentAccountAccessApplicationByBase(appId, ['devlogs.clear'], ROOT_APPLICATION_DEVLOGS_CLEAR_PERMISSION);
+export async function canCurrentAccountClearApplicationDevLogs(appId: string, options?: ApplicationRootModeOption): Promise<boolean> {
+  return canCurrentAccountAccessApplicationByBase(appId, ['devlogs.clear'], ROOT_APPLICATION_DEVLOGS_CLEAR_PERMISSION, undefined, options);
 }
 
-async function canCurrentAccountViewApplication(appId: string): Promise<boolean> {
-  return canCurrentAccountAccessApplicationByBase(appId, APPLICATION_VIEW_BASES, ROOT_APPLICATION_VIEW_PERMISSION);
+async function canCurrentAccountViewApplication(appId: string, options?: ApplicationRootModeOption): Promise<boolean> {
+  return canCurrentAccountAccessApplicationByBase(appId, APPLICATION_VIEW_BASES, ROOT_APPLICATION_VIEW_PERMISSION, undefined, options);
 }
 
 
@@ -2689,12 +2701,14 @@ export async function getApplicationUserConnectionDetails(params: {
   }
 }
 
-export async function getApplicationRoleOptions(appId: string, targetAccountType?: string | null): Promise<AppRoleOption[]> {
+export async function getApplicationRoleOptions(appId: string, targetAccountType?: string | null, options?: ApplicationRootModeOption): Promise<AppRoleOption[]> {
   const accountId = await getActiveAccountId();
   if (!accountId) return [];
 
-  const isRootEditor = await hasRootApplicationPermission(ROOT_APPLICATION_USER_UPDATE_ROLE_PERMISSION);
-  const canView = await canCurrentAccountViewApplicationUsers(appId);
+  const isRootEditor = options?.rootMode === true
+    ? await hasRootApplicationPermission(ROOT_APPLICATION_USER_UPDATE_ROLE_PERMISSION)
+    : false;
+  const canView = await canCurrentAccountViewApplicationUsers(appId, options);
   if (!canView) return [];
 
   try {
@@ -2738,13 +2752,16 @@ export async function assignApplicationConnectionRole(input: {
   appId: string;
   connectionId: string;
   roleIds: string[];
+  rootMode?: boolean;
 }): Promise<{ success: boolean; error?: string; pendingApproval?: boolean; roleIds?: string[]; pendingRoleIds?: string[] }> {
   const accountId = await getActiveAccountId();
   if (!accountId) return { success: false, error: 'Not signed in.' };
 
   const [isRootEditor, canManageRoles] = await Promise.all([
-    hasRootApplicationPermission(ROOT_APPLICATION_USER_UPDATE_ROLE_PERMISSION),
-    canCurrentAccountUpdateApplicationUserRole(input.appId),
+    input.rootMode === true
+      ? hasRootApplicationPermission(ROOT_APPLICATION_USER_UPDATE_ROLE_PERMISSION)
+      : Promise.resolve(false),
+    canCurrentAccountUpdateApplicationUserRole(input.appId, { rootMode: input.rootMode === true }),
   ]);
   if (!isRootEditor && !canManageRoles) {
     return { success: false, error: 'Permission denied.' };
@@ -3143,7 +3160,7 @@ export async function getAppConfigData(appId: string, options?: { rootMode?: boo
   if (!accountId) return null;
   if (!(await canAccessRootApplicationMode(options?.rootMode))) return null;
 
-  const canEdit = await canCurrentAccountViewApplicationConfig(appId);
+  const canEdit = await canCurrentAccountViewApplicationConfig(appId, options);
   if (!canEdit) return null;
 
   try {
@@ -3460,12 +3477,19 @@ export async function clearApplicationDevLogs(appId: string): Promise<{ success:
   }
 }
 
-export async function getApplicationLogPermissions(appId: string): Promise<{
+export async function getApplicationLogPermissions(appId: string, options?: ApplicationRootModeOption): Promise<{
   canViewLogs: boolean;
   canViewDevLogs: boolean;
 }> {
   return {
-    canViewLogs: await canCurrentAccountViewApplicationLogs(appId),
-    canViewDevLogs: await canCurrentAccountViewApplicationDevLogs(appId),
+    canViewLogs: await canCurrentAccountViewApplicationLogs(appId, options),
+    canViewDevLogs: await canCurrentAccountViewApplicationDevLogs(appId, options),
   };
+}
+
+export async function logRootApplicationActivity(appId: string, page: string): Promise<void> {
+  const accountId = await getActiveAccountId();
+  if (!accountId) return;
+
+  await logActivity(appId, `Root application access: ${page}`, 'Success', undefined, accountId);
 }

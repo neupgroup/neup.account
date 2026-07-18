@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { canCurrentAccountEditApplicationBasics, getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
+import { canCurrentAccountEditApplicationBasics, getApplicationDetailsForViewerV2, logRootApplicationActivity } from '@/services/applications/manage';
 import { BackButton } from '@/components/ui/back-button';
 import { PrimaryHeader } from '@/components/ui/primary-header';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -24,8 +24,9 @@ export default async function ApplicationEditQueryPage({ searchParams }: Props) 
 export async function ApplicationEditPage({ applicationId, mode }: { applicationId: string; mode?: string }) {
   const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
   if (!details) notFound();
+  if (mode === 'root') await logRootApplicationActivity(applicationId, 'edit');
 
-  const canEditBasics = await canCurrentAccountEditApplicationBasics(applicationId);
+  const canEditBasics = await canCurrentAccountEditApplicationBasics(applicationId, { rootMode: mode === 'root' });
   if (!canEditBasics) {
     return (
       <div className="grid gap-8">

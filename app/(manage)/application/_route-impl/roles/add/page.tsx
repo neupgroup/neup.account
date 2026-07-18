@@ -3,6 +3,7 @@ import {
   canCurrentAccountManageApplicationRoles,
   getApplicationAuthzConfig,
   getApplicationDetailsForViewerV2,
+  logRootApplicationActivity,
 } from '@/services/applications/manage';
 import { BackButton } from '@/components/ui/back-button';
 import { PrimaryHeader } from '@/components/ui/primary-header';
@@ -27,8 +28,9 @@ export default async function AddRoleQueryPage({ searchParams }: Props) {
 export async function AddRolePage({ applicationId, mode }: { applicationId: string; mode?: string }) {
   const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
   if (!details) notFound();
+  if (mode === 'root') await logRootApplicationActivity(applicationId, 'roles/add');
 
-  const canManageRoles = await canCurrentAccountManageApplicationRoles(applicationId);
+  const canManageRoles = await canCurrentAccountManageApplicationRoles(applicationId, { rootMode: mode === 'root' });
   if (!canManageRoles) {
     return (
       <div className="grid gap-8">

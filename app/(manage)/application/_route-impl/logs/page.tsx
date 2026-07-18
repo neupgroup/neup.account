@@ -10,6 +10,7 @@ import {
   clearApplicationDevLogs,
   getApplicationDetailsForViewerV2,
   getApplicationDevLogsPaginated,
+  logRootApplicationActivity,
 } from '@/services/applications/manage';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 import { LogsAccordion } from './logs-accordion';
@@ -76,7 +77,8 @@ export async function ApplicationLogsPage({
 
   const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
   if (!details) notFound();
-  const canClearDevLogs = await canCurrentAccountClearApplicationDevLogs(applicationId);
+  if (mode === 'root') await logRootApplicationActivity(applicationId, 'logs');
+  const canClearDevLogs = await canCurrentAccountClearApplicationDevLogs(applicationId, { rootMode: mode === 'root' });
 
   const logPage = await getApplicationDevLogsPaginated({ appId: applicationId, page, pageSize });
   if (logPage === null) notFound();

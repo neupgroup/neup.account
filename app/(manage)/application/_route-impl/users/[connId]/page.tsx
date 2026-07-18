@@ -12,6 +12,7 @@ import {
   getApplicationDetailsForViewerV2,
   getApplicationRoleOptions,
   getApplicationUserConnectionDetails,
+  logRootApplicationActivity,
 } from '@/services/applications/manage';
 import {
   ROOT_APPLICATION_ACCOUNT_VIEW_PERMISSION,
@@ -68,13 +69,14 @@ export async function ApplicationUserDetailsPage({
   ]);
 
   if (!applicationDetails || !details) notFound();
+  if (mode === 'root') await logRootApplicationActivity(appId, `users/${connId}`);
   const [canViewUsers, canUpdateUserRole, canRemoveUser] = await Promise.all([
-    canCurrentAccountViewApplicationUsers(appId),
-    canCurrentAccountUpdateApplicationUserRole(appId),
-    canCurrentAccountRemoveApplicationUser(appId),
+    canCurrentAccountViewApplicationUsers(appId, { rootMode: mode === 'root' }),
+    canCurrentAccountUpdateApplicationUserRole(appId, { rootMode: mode === 'root' }),
+    canCurrentAccountRemoveApplicationUser(appId, { rootMode: mode === 'root' }),
   ]);
   if (!canViewUsers) notFound();
-  const roles = canUpdateUserRole ? await getApplicationRoleOptions(appId, details.accountType) : [];
+  const roles = canUpdateUserRole ? await getApplicationRoleOptions(appId, details.accountType, { rootMode: mode === 'root' }) : [];
 
   const initials = details.displayName?.charAt(0).toUpperCase() ?? '?';
   const statusVariant = (status: string | null): 'default' | 'secondary' | 'destructive' | 'outline' => {
@@ -175,6 +177,7 @@ export async function ApplicationUserDetailsPage({
             roles={roles}
             currentRoleIds={details.roleIds}
             pendingRoleIds={details.pendingRoleIds}
+            rootMode={mode === 'root'}
           />
         </div>
       ) : null}

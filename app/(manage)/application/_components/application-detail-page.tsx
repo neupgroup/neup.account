@@ -76,7 +76,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
     permissions.canViewRoles
       ? {
           key: 'roles',
-          href: applicationHref('/application/roles', applicationId, { mode: 'root' }),
+          href: applicationHref('/application/roles', applicationId, mode ? { mode } : undefined),
           title: 'Roles & Permissions',
           description: 'Define permissions and group them into roles for access grants.',
         }
@@ -84,7 +84,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
     permissions.canViewRoles
       ? {
           key: 'permissions',
-          href: applicationHref('/application/permissions', applicationId, { mode: 'root' }),
+          href: applicationHref('/application/permissions', applicationId, mode ? { mode } : undefined),
           title: 'Permissions',
           description: 'Create and manage permission definitions for this application.',
         }
@@ -92,7 +92,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
     permissions.canViewRoles
       ? {
           key: 'requests',
-          href: applicationHref('/application/requests', applicationId, { mode: 'root' }),
+          href: applicationHref('/application/requests', applicationId, mode ? { mode } : undefined),
           title: 'Requests',
           description: 'Review role assignment requests waiting for approval.',
         }

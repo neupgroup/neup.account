@@ -155,6 +155,7 @@ export function ApplicationsPillView({ sections, canCreateApplication, initialTa
 
   const currentSection = sections.find((s) => s.label === active);
   const showCreate = canCreateApplication && showCreateOn.includes(active);
+  const activeMode = active === 'Root' ? 'root' : mode;
 
   return (
     <div className="grid gap-6">
@@ -196,12 +197,12 @@ export function ApplicationsPillView({ sections, canCreateApplication, initialTa
           </div>
         ) : (
           <div className="overflow-hidden rounded-2xl border bg-card">
-            {showCreate && <CreateAppRow mode={mode} />}
+            {showCreate && <CreateAppRow mode={activeMode} />}
             {currentSection.apps.map((app) => (
               <AppRow
                 key={app.id}
                 app={app}
-                mode={mode}
+                mode={activeMode}
                 showStatus={currentSection.label === 'Root'}
               />
             ))}

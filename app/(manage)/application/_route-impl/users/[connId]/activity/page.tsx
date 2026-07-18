@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FlowLink } from '@/components/ui/flow-link';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
-import { canCurrentAccountViewApplicationUsers } from '@/services/applications/manage';
+import { canCurrentAccountViewApplicationUsers, logRootApplicationActivity } from '@/services/applications/manage';
 
 type Props = {
   params: Promise<{ connId: string }>;
@@ -20,9 +20,10 @@ export default async function ApplicationUserActivityQueryPage({ params, searchP
   notFound();
 }
 
-export async function ApplicationUserActivityPage({ applicationId, connId }: { applicationId: string; connId: string }) {
-  const canViewUsers = await canCurrentAccountViewApplicationUsers(applicationId);
+export async function ApplicationUserActivityPage({ applicationId, connId, mode }: { applicationId: string; connId: string; mode?: string }) {
+  const canViewUsers = await canCurrentAccountViewApplicationUsers(applicationId, { rootMode: mode === 'root' });
   if (!canViewUsers) notFound();
+  if (mode === 'root') await logRootApplicationActivity(applicationId, `users/${connId}/activity`);
 
   return (
     <div className="grid gap-6">

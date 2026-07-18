@@ -4,6 +4,7 @@ import {
   canCurrentAccountManageApplicationRoles,
   canCurrentAccountViewApplicationRoles,
   getApplicationDetailsForViewerV2,
+  logRootApplicationActivity,
 } from '@/services/applications/manage';
 import { getAppPermissions } from '@/services/applications/authz-manage';
 import { BackButton } from '@/components/ui/back-button';
@@ -81,10 +82,11 @@ export async function ApplicationPermissionsPage({
 }) {
   const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode: mode === 'root' });
   if (!details) notFound();
+  if (mode === 'root') await logRootApplicationActivity(applicationId, 'permissions');
 
   const [canViewPermissions, canManagePermissions] = await Promise.all([
-    canCurrentAccountViewApplicationRoles(applicationId),
-    canCurrentAccountManageApplicationRoles(applicationId),
+    canCurrentAccountViewApplicationRoles(applicationId, { rootMode: mode === 'root' }),
+    canCurrentAccountManageApplicationRoles(applicationId, { rootMode: mode === 'root' }),
   ]);
 
   if (!canViewPermissions) {

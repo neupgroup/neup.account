@@ -6,6 +6,7 @@ import { ArrowLeft } from '@/components/icons';
 import {
   canCurrentAccountViewApplicationUsers,
   getApplicationDetailsForViewerV2,
+  logRootApplicationActivity,
 } from '@/services/applications/manage';
 import {
   ROOT_APPLICATION_ACCOUNT_VIEW_PERMISSION,
@@ -50,7 +51,8 @@ export async function ApplicationUsersPage({ applicationId, mode }: { applicatio
     rootPermissionNames: [ROOT_APPLICATION_ACCOUNT_VIEW_PERMISSION, ROOT_APPLICATION_USER_VIEW_PERMISSION],
   });
   if (!details) notFound();
-  const canViewUsers = await canCurrentAccountViewApplicationUsers(applicationId);
+  if (mode === 'root') await logRootApplicationActivity(applicationId, 'users');
+  const canViewUsers = await canCurrentAccountViewApplicationUsers(applicationId, { rootMode: mode === 'root' });
   if (!canViewUsers) notFound();
 
   return (

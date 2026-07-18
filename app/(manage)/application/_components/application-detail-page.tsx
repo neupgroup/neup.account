@@ -172,13 +172,16 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
           <CardContent className="grid divide-y p-0 md:grid-cols-2 md:divide-x md:divide-y-0 lg:grid-cols-4">
             {[
               { label: 'Total Users', value: userStats?.total ?? 0, description: 'All connected accounts', icon: Users },
-              { label: 'Last 24 Hours', value: userStats?.last24h ?? 0, description: 'New connections today', icon: UserPlus },
-              { label: 'Last 7 Days', value: userStats?.lastWeek ?? 0, description: 'New connections this week', icon: UserPlus },
-              { label: 'Last 30 Days', value: userStats?.lastMonth ?? 0, description: 'New connections this month', icon: UserPlus },
-            ].map(({ label, value, description, icon: StatIcon }) => (
+              { label: 'Last 24 Hours', value: userStats?.last24h ?? 0, description: 'New connections today', icon: UserPlus, activeSince: '1d' },
+              { label: 'Last 7 Days', value: userStats?.lastWeek ?? 0, description: 'New connections this week', icon: UserPlus, activeSince: '7d' },
+              { label: 'Last 30 Days', value: userStats?.lastMonth ?? 0, description: 'New connections this month', icon: UserPlus, activeSince: '30d' },
+            ].map(({ label, value, description, icon: StatIcon, activeSince }) => (
               <FlowLink
                 key={label}
-                href={applicationHref('/application/users', applicationId, mode ? { mode } : undefined)}
+                href={applicationHref('/application/users', applicationId, {
+                  ...(mode ? { mode } : {}),
+                  activeSince,
+                })}
                 className="group p-6 transition-colors hover:bg-muted/40"
               >
                 <div className="flex flex-row items-center justify-between space-y-0 pb-2">

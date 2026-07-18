@@ -1594,7 +1594,7 @@ export async function getApplicationDetailPageData(
     getApplicationLogPermissions(appId, options),
   ]);
 
-  const userStats = canViewUsers ? await getApplicationUserStats(appId) : null;
+  const userStats = canViewUsers ? await getApplicationUserStats(appId, options) : null;
 
   return {
     details,
@@ -2055,11 +2055,14 @@ export type ApplicationDetailPageData = {
  * Returns user counts for an application based on ApplicationConnection records.
  * Accessible to any authenticated user who can view the application.
  */
-export async function getApplicationUserStats(appId: string): Promise<ApplicationUserStats | null> {
+export async function getApplicationUserStats(
+  appId: string,
+  options?: ApplicationRootModeOption,
+): Promise<ApplicationUserStats | null> {
   const accountId = await getActiveAccountId();
   if (!accountId) return null;
 
-  const canViewUsers = await canCurrentAccountViewApplicationUsers(appId);
+  const canViewUsers = await canCurrentAccountViewApplicationUsers(appId, options);
   if (!canViewUsers) return null;
 
   try {
@@ -2307,11 +2310,12 @@ export async function getApplicationUsersPaginated(params: {
   status?: AppUserStatus;
   activeSince?: '1d' | '7d' | '30d';
   sort?: AppUserSortKey;
+  rootMode?: boolean;
 }): Promise<AppUsersPage> {
   const accountId = await getActiveAccountId();
   if (!accountId) return { users: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
 
-  const canView = await canCurrentAccountViewApplicationUsers(params.appId);
+  const canView = await canCurrentAccountViewApplicationUsers(params.appId, { rootMode: params.rootMode });
   if (!canView) return { users: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
 
   const { appId, page, pageSize = 20, search = '', status, activeSince, sort = 'newest' } = params;

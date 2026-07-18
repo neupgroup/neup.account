@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useState, useTransition, useCallback, Suspense, useRef } from 'react';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FlowLink } from '@/components/ui/flow-link';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
+import { APP_BASE_PATH } from '@/core/appconfig';
 import { redirectInApp } from '@/core/helpers/navigation';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -165,7 +166,6 @@ function UserListSkeleton() {
 function UsersListInner({ appId }: { appId: string }) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const pathname = usePathname();
   const mode = searchParams.get('mode');
   const currentQuery = searchParams.get('query') || '';
   const currentStatus = searchParams.get('status') as AppUserStatus | null;
@@ -198,17 +198,18 @@ function UsersListInner({ appId }: { appId: string }) {
   }, [currentQuery, initialSince, initialSort, initialStatus]);
 
   const syncUrl = useCallback((query: string, status: string, since: string, nextSort: AppUserSortKey) => {
-    const params = new URLSearchParams();
-    params.set('application', appId);
-    if (mode) params.set('mode', mode);
-    if (query.trim()) params.set('query', query.trim());
-    if (status !== 'all') params.set('status', status);
-    if (since !== 'all') params.set('activeSince', since);
-    if (nextSort !== 'newest') params.set('sort', nextSort);
-    const qs = params.toString();
-    if (qs === searchParams.toString()) return;
-    redirectInApp(router, `${pathname}${qs ? `?${qs}` : ''}`, { replace: true, scroll: false });
-  }, [appId, mode, router, pathname, searchParams]);
+    const params: Record<string, string | undefined> = {};
+    if (mode) params.mode = mode;
+    if (query.trim()) params.query = query.trim();
+    if (status !== 'all') params.status = status;
+    if (since !== 'all') params.activeSince = since;
+    if (nextSort !== 'newest') params.sort = nextSort;
+
+    const href = applicationHref('/application/users', appId, params);
+    const currentHref = `${window.location.pathname}${window.location.search}`;
+    if (href === currentHref || `${APP_BASE_PATH}${href}` === currentHref) return;
+    redirectInApp(router, href, { replace: true, scroll: false });
+  }, [appId, mode, router]);
 
   useEffect(() => {
     const t = setTimeout(() => { setDebouncedSearch(search); setPage(1); }, 300);
@@ -231,6 +232,7 @@ function UsersListInner({ appId }: { appId: string }) {
         status: activeStatus === 'all' ? undefined : activeStatus,
         activeSince: activeSince === 'all' ? undefined : activeSince,
         sort,
+        rootMode: mode === 'root',
       });
       setUsers(result.users);
       setTotal(result.total);

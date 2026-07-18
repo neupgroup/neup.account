@@ -1,8 +1,8 @@
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import { logError } from '@/logica/logger/files';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import type { Identity } from '@/prisma/generated/client';
+import type { Identity } from '@/core/database/prisma';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import { extractGenderFromDetails, resolveDisplayImage } from '@/logica/display-image';
 

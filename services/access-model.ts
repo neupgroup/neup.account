@@ -1,6 +1,6 @@
-import prisma from '@/core/helpers/prisma';
-import { Prisma } from '@/prisma/generated/client/client';
-import type { AccessType, AssetType } from '@/prisma/generated/client';
+import prisma from '@/core/database/prisma';
+import { Prisma } from '@/core/database/prisma';
+import type { AccessType, AssetType } from '@/core/database/prisma';
 import { normalizeSingleAuthzScopeLevel } from '@/services/applications/authz-scope-policy';
 
 /**

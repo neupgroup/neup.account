@@ -6,8 +6,8 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import prisma from '@/core/helpers/prisma';
-import { Prisma } from '@/prisma/generated/client';
+import prisma from '@/core/database/prisma';
+import { Prisma } from '@/core/database/prisma';
 import { getActiveAccountId } from '@/services/account/verify';
 import { checkPermissions } from '@/services/user';
 import { logActivity } from '@/services/log-actions';

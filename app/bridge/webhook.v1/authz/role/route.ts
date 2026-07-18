@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import { logError } from '@/logica/logger/files';
 import { ensureAccessGrant } from '@/services/access-model';
 import { getCompatibleRolePermissionScopePairs, normalizeAuthzScopeFor, normalizeAuthzScopeLevels, normalizeSingleAuthzScopeLevel } from '@/services/applications/authz-scope-policy';

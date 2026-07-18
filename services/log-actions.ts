@@ -3,7 +3,7 @@
 // Handles writing and reading activity logs from the database.
 // Activity logs record user actions (e.g. login, profile update) with status and IP.
 
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import { logError } from '@/logica/logger/files';
 import { getActiveAccountId } from '@/services/account/verify';
 import { checkPermissions } from '@/services/user';

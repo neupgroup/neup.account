@@ -19,7 +19,7 @@ The script ensures the root authz role exists before creating the access grant.
 */
 
 import 'dotenv/config';
-import prisma from '../core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import { ensureAccessGrant } from '../services/access-model';
 
 // Root permissions are now managed via authz_role_capability in the database.

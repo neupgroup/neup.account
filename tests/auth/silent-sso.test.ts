@@ -3,7 +3,7 @@ import fc from 'fast-check';
 import jwt from 'jsonwebtoken';
 
 // Mock prisma before importing the module under test
-vi.mock('@/core/helpers/prisma', () => ({
+vi.mock('@/core/database/prisma', () => ({
   default: {
     applicationBridge: { findMany: vi.fn() },
     identity: { upsert: vi.fn(), findFirst: vi.fn(), create: vi.fn(), update: vi.fn() },
@@ -17,7 +17,7 @@ vi.mock('@/logica/logger/files', () => ({
   logError: vi.fn().mockResolvedValue(undefined),
 }));
 
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import {
   signIdentityJwt,
   resolveOrCreateIdentity,
@@ -26,7 +26,7 @@ import {
   checkRateLimit,
   rateLimitMap,
 } from '@/services/auth/silent-sso';
-import type { Identity } from '@/prisma/generated/client';
+import type { Identity } from '@/core/database/prisma';
 
 const mockApplicationFindUnique = prisma.application.findUnique as ReturnType<typeof vi.fn>;
 const mockIdentityUpsert = prisma.identity.upsert as ReturnType<typeof vi.fn>;

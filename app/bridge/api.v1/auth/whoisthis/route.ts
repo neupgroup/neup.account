@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { verifyAccountToken } from '@/services/auth/account-token';

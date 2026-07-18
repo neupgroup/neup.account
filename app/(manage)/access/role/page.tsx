@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { UserCircle, Clock } from '@/components/icons';
 import { getActiveAccountId } from '@/services/account/verify';
 import { getUserProfile } from '@/services/user';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import {
   getDirectMemberDetail,
   getPortfolioMemberDetail,

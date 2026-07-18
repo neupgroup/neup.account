@@ -9,9 +9,7 @@
  * Safe to run multiple times — skips rows that already exist.
  */
 
-import { PrismaClient } from '../generated/client/client';
-
-const prisma = new PrismaClient();
+import prisma from '@/core/database/prisma';
 
 const ACCOUNT_ASSET_TYPE = 'acc_in_acc' as const;
 const APPLICATION_ASSET_TYPE = 'app_in_acc' as const;

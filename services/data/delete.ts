@@ -6,7 +6,7 @@ import { z } from "zod";
 import { getActiveAccountId } from "@/services/account/verify";
 import { logActivity } from "@/services/log-actions";
 import { logError } from "@/logica/logger/files";
-import prisma from "@/core/helpers/prisma";
+import prisma from '@/core/database/prisma';
 import bcrypt from "bcryptjs";
 import { logoutActiveSession } from "@/services/account/logout";
 import { requireAnyPermission404 } from "@/services/account/permission-guards";

@@ -24,8 +24,8 @@ source of truth, updates only `app_id = neup.account`, and leaves unrelated apps
 import 'dotenv/config';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import prisma from '../core/helpers/prisma';
-import { Prisma } from '@/prisma/generated/client/client';
+import prisma from '@/core/database/prisma';
+import { Prisma } from '@/core/database/prisma';
 import {
   NEUP_ACCOUNT_PERMISSION_DEFINITIONS,
   stripPermissionAudience,

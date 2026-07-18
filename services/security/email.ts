@@ -9,7 +9,7 @@ import { getPersonalAccountId } from '@/services/account/verify';
 import { checkPermissions } from '@/services/user';
 import { emailFormSchema } from '@/services/security/schema';
 import { createNotification } from '../notifications';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
 
 const CONTACT_TYPE = 'recoveryEmail';

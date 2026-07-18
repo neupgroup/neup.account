@@ -1,7 +1,7 @@
 'use server';
 
 import { permission } from '@/logica/permission';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import { getActiveAccountId } from '@/services/account/verify';
 import { getUserNeupIds, checkPermissions } from '@/services/user';
 import { authenticator } from 'otplib';

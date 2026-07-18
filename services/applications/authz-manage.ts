@@ -23,8 +23,8 @@ The service stores `scope_for` / `scope_level` directly while deriving legacy ap
 
 import { revalidatePath } from 'next/cache';
 import { permission } from '@/logica/permission';
-import { Prisma } from '@/prisma/generated/client/client';
-import prisma from '@/core/helpers/prisma';
+import { Prisma } from '@/core/database/prisma';
+import prisma from '@/core/database/prisma';
 import { getActiveAccountId, getPersonalAccountId } from '@/services/account/verify';
 import { logError } from '@/logica/logger/files';
 import { dispatchAuthzWebhook } from './authz-webhook';

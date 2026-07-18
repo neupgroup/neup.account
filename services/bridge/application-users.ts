@@ -13,7 +13,7 @@
  * Auth: appId + appSecret as query params (same pattern as /accounts/lookup).
  */
 
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import { logError } from '@/logica/logger/files';
 import { extractGenderFromDetails, resolveDisplayImage } from '@/logica/display-image';
 

@@ -4,7 +4,7 @@
 // This is the main session layer — it creates sessions, validates stored accounts,
 // and handles switching between personal, brand, dependent, and delegated contexts.
 
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import crypto from 'crypto';
 
 import { logError } from '@/logica/logger/files';

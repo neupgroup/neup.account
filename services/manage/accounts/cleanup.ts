@@ -1,7 +1,7 @@
 'use server';
 
-import prisma from '@/core/helpers/prisma';
-import type { Prisma } from '@/prisma/generated/client/client';
+import prisma from '@/core/database/prisma';
+import type { Prisma } from '@/core/database/prisma';
 import { checkPermissions } from '@/services/user';
 import { getPersonalAccountId } from '@/services/account/verify';
 import { logError } from '@/logica/logger/files';

@@ -4,7 +4,7 @@ import { BackButton } from '@/components/ui/back-button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Shield, ChevronRight } from '@/components/icons';
 import { getDirectMembers } from '@/services/manage/access';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import { getUserProfile, isRootUser } from '@/services/user';
 import { resolveAssetName } from '@/services/manage/access/asset-resolvers';
 import { AssetMemberLookupForm } from '../_components/asset-member-lookup-form';

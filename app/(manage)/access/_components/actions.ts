@@ -1,8 +1,8 @@
 'use server';
 
 import { permission } from '@/logica/permission';
-import prisma from '@/core/helpers/prisma';
-import { Prisma } from '@/prisma/generated/client';
+import prisma from '@/core/database/prisma';
+import { Prisma } from '@/core/database/prisma';
 import { checkPermissions, getUserProfile, isRootUser } from '@/services/user';
 import { getPersonalAccountId, getActiveAccountId } from '@/services/account/verify';
 import { logError } from '@/logica/logger/files';

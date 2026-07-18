@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { validateNeupId } from '@/services/user';
 import { getAuthRequest, extendAuthRequest } from './auth-request';
 import { getAuthTimeoutError } from './timeout';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import { verifyPassword } from './password';
 import { makeSessionFromRequest } from '@/services/account/makeSession';
 

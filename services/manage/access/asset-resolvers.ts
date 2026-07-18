@@ -1,6 +1,6 @@
 'use server';
 
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import { logError } from '@/logica/logger/files';
 
 export type ResolvedAsset = {

@@ -1,7 +1,7 @@
 'use server';
 
 import jwt from 'jsonwebtoken';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 
 /*
 ::neup.documentation::app-token-auth-service

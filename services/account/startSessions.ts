@@ -1,7 +1,7 @@
 'use server';
 
 import { clearSessionCookies, getSessionCookies } from '@/services/auth/session-cookies';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import { makeNotification } from '@/services/notifications';
 
 export async function logoutStoredSession(sessionId: string): Promise<{ success: boolean; error?: string }> {

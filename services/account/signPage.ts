@@ -1,7 +1,7 @@
 import { getSessionCookies } from '@/services/auth/session-cookies';
 import { getValidatedStoredAccounts } from '@/services/account/session';
 import { getAppDisplayName, buildAuthQuery, getServerAuthContext, buildAuthPath, buildAuthCallbackWithStatus, getServerFlowParams } from '@/inapp/auth/callbacks';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import { randomBytes } from 'crypto';
 import jwt from 'jsonwebtoken';
 import { getUserProfile } from '@/services/user';

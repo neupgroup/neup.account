@@ -24,10 +24,19 @@ export const JWT_KEY = 'jwt';
 
 export type StoredProfileInfo = {
     firstName?: string;
+    middleName?: string;
     lastName?: string;
+    nameFirst?: string;
+    nameMiddle?: string;
+    nameLast?: string;
+    nameDisplay?: string;
+    displayName?: string;
     neupId?: string;
+    neupIdPrimary?: string;
     accountType?: string;
     accountPhoto?: string;
+    gender?: string;
+    verified?: boolean;
 };
 
 type SessionDataMap = {

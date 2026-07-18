@@ -1,4 +1,4 @@
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import { getActiveSession } from '@/services/account/verify';
 import { getValidatedStoredAccounts } from '@/services/account/session';
 import { extractGenderFromDetails, resolveDisplayImage } from '@/logica/display-image';

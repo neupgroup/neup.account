@@ -1,7 +1,7 @@
 'use server';
 
 import { createCipheriv, createHash, createHmac, randomBytes, randomUUID } from 'crypto';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import { logError } from '@/logica/logger/files';
 import { activeAccessWhere } from '@/services/access-model';
 import {

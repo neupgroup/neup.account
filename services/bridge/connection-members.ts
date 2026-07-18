@@ -1,7 +1,7 @@
 'use server';
 
 import { permission } from '@/logica/permission';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import { verifyAccountToken } from '@/services/auth/account-token';
 import { logError } from '@/logica/logger/files';
 import { cleanupExpiredAccessModel } from '@/services/access-model';

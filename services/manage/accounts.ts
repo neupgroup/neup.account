@@ -2,14 +2,14 @@
 'use server';
 
 import { permission } from '@/logica/permission';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import { logError } from '@/logica/logger/files';
 import { checkPermissions } from '@/services/user';
 import { getPersonalAccountId } from '@/services/account/verify';
 import type { StoredAccount } from '@/services/account/session';
 import { extractGenderFromDetails, resolveDisplayImage } from '@/logica/display-image';
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from '@/services/access-model';
-import type { Prisma } from '@/prisma/generated/client/client';
+import type { Prisma } from '@/core/database/prisma';
 
 const servicePermissions = [
     permission('root.dashboard.view', 'for_individual', 'service'),

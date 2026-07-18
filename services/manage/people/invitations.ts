@@ -2,7 +2,7 @@
 'use server';
 
 import { permission } from '@/logica/permission';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import { getUserProfile, checkPermissions, getUserNeupIds } from '@/services/user';
 import { getActiveAccountId } from '@/services/account/verify';
 import { logError } from '@/logica/logger/files';

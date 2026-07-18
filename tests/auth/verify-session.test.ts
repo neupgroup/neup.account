@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('@/core/helpers/prisma', () => ({
+vi.mock('@/core/database/prisma', () => ({
     default: {
         authnSession: { findUnique: vi.fn() },
     },
 }));
 
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import { verifyActiveSession } from '@/services/auth/verify';
 
 const mockFindUnique = prisma.authnSession.findUnique as ReturnType<typeof vi.fn>;

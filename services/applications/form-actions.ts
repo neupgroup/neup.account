@@ -23,7 +23,7 @@ import {
 } from '@/services/applications/manage';
 import { getSignedApplications } from '@/services/applications/connected';
 import { getPersonalAccountId } from '@/services/account/verify';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import { logError } from '@/logica/logger/files';
 import type { ApplicationSection, FlatAppItem } from '@/services/applications/types';
 import { revalidateApplicationDetailRoutes } from '@/services/applications/revalidate-routes';

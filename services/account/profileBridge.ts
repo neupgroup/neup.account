@@ -1,6 +1,6 @@
 'use server';
 
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import { hasAnyPermission, PROFILE_SECTION_PERMISSIONS } from '@/inapp/permissions/profile-permissions';
 import { validateAuthSession } from '@/services/auth/session';
 import { getAccountPermission, getGrantedAccountPermission, getUserProfile } from '@/services/user';

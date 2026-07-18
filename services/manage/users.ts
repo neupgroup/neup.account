@@ -2,8 +2,8 @@
 'use server';
 
 import { permission } from '@/logica/permission';
-import prisma from '@/core/helpers/prisma';
-import { Prisma } from '../../prisma/generated/client/client';
+import prisma from '@/core/database/prisma';
+import { Prisma } from '@/core/database/prisma';
 import { getUserNeupIds, getUserProfile as fetchUserProfile, checkPermissions } from '@/services/user';
 import { getPersonalAccountId } from '@/services/account/verify';
 import { revalidatePath } from 'next/cache';

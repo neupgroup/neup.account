@@ -9,7 +9,7 @@ import { FlowLink } from '@/components/ui/flow-link';
 import { Clock, UserCircle } from '@/components/icons';
 import { getActiveAccountId } from '@/services/account/verify';
 import { getUserProfile } from '@/services/user';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import { getAccessAssetGroup } from '@/services/manage/access/assets';
 import { bulkAssignPermissionsFromForm } from '@/services/manage/access/actions';
 import { AssignPermissionsWizard } from '../_components/assign-permissions-wizard';

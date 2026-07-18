@@ -1,7 +1,7 @@
 "use server";
 
 import { permission } from '@/logica/permission';
-import prisma from '@/core/helpers/prisma';
+import prisma from '@/core/database/prisma';
 import crypto from 'crypto';
 import { getPersonalAccountId } from '@/services/account/verify';
 import { checkPermissions } from '@/services/user';

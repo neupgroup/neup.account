@@ -56,6 +56,26 @@ export function applicationHref(
   applicationId: string,
   params?: Record<string, string | number | undefined | null>,
 ): string {
+  const canonicalApplicationPath = pathname === '/application'
+    ? `/application/${encodeURIComponent(applicationId)}`
+    : pathname.startsWith('/application/')
+      ? `/application/${encodeURIComponent(applicationId)}${pathname.slice('/application'.length)}`
+      : null;
+
+  if (canonicalApplicationPath) {
+    const searchParams = new URLSearchParams();
+
+    if (params) {
+      for (const [key, value] of Object.entries(params)) {
+        if (value === undefined || value === null || value === '') continue;
+        searchParams.set(key, String(value));
+      }
+    }
+
+    const query = searchParams.toString();
+    return query ? `${canonicalApplicationPath}?${query}` : canonicalApplicationPath;
+  }
+
   const searchParams = new URLSearchParams();
   searchParams.set('application', applicationId);
 

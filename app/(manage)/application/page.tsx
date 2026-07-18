@@ -5,13 +5,12 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle } from '@/components/icons';
 import { Suspense } from 'react';
 import { ApplicationsPillView } from '@/app/(manage)/application/_components/applications-pill-view';
-import { ApplicationDetailPage } from '@/app/(manage)/application/_components/application-detail-page';
 import {
   getApplicationMode,
   getApplicationOverviewTab,
   getQueryParam,
 } from '@/app/(manage)/application/_lib/query-param';
-import { canCurrentAccountUseRootApplicationMode, getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
+import { canCurrentAccountUseRootApplicationMode } from '@/services/applications/manage';
 import { formMetadata } from '@/core/metadata';
 
 /*
@@ -66,7 +65,6 @@ function ApplicationsPillViewSkeleton() {
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const resolvedSearchParams = await searchParams;
-  const applicationId = getQueryParam(resolvedSearchParams.application);
   const rootMode = getApplicationMode(resolvedSearchParams.mode) === 'root';
 
   if (rootMode) {
@@ -76,16 +74,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     }
   }
 
-  if (!applicationId) {
-    return formMetadata({ title: 'Application Management' });
-  }
-
-  const details = await getApplicationDetailsForViewerV2(applicationId, {
-    rootMode,
-  });
-  return formMetadata({
-    title: details?.name ? `${details.name}'s Management` : 'Application Management',
-  });
+  return formMetadata({ title: 'Application Management' });
 }
 
 export default async function ApplicationsManagePage({ searchParams }: Props) {
@@ -100,9 +89,7 @@ export default async function ApplicationsManagePage({ searchParams }: Props) {
     if (!canUseRootMode) notFound();
   }
 
-  if (applicationId) {
-    return <ApplicationDetailPage applicationId={applicationId} mode={mode} />;
-  }
+  if (applicationId) notFound();
 
   const pageData = await getApplicationsManagePageData({ rootMode });
   if (!pageData) notFound();

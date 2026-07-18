@@ -25,6 +25,7 @@ Bridge authentication endpoints for redirect grants, session verification, token
 | produce app/team/access snapshot for a session | `GET|POST|PATCH /bridge/api.v1/auth/access` | `services/auth/access.ts` |
 | sign into an application from an existing trusted account session | `POST /bridge/api.v1/auth/sign` | `services/auth/sign.ts` |
 | verify an internal session triplet | `POST /bridge/api.v1/auth/verify` | `services/auth/verify.ts` |
+| hydrate the current first-party account session | `GET /bridge/api.v1/auth/me` | `services/account/check.ts` |
 | describe the active user from bridge auth | `GET /bridge/api.v1/auth/whoami`, `GET /bridge/api.v1/auth/whoisthis` | `services/auth/whoami.ts`, `services/auth/whoami.ts` |
 
 ## Core Contracts

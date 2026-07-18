@@ -13,7 +13,7 @@
 
 ## Migration Follow-Ups
 
-- [ ] Fix `SessionState` typing drift so `profile`, `accountId`, `permissions`, `isManaging`, and `personalAccountId` usages match the canonical session provider contract.
+- [ ] Fix the ignored `core/database/prisma.ts` Prisma 7 wrapper/export mismatch: TypeScript currently sees `@prisma/client` without `PrismaClient`, `Prisma`, `AccessType`, `AssetType`, or `Identity` exports expected by migrated callers.
 - [ ] Fix `20260629120000_rename_branch_to_subbrand` so it tolerates databases without legacy tables like `account_ownership`.
 - [ ] Repair stale role snapshot rows in `local/basics/roles.json` that still reference missing permissions, such as `neup_account.brand_owner` using `brand.*` permissions that are not present in the canonical permission catalog.
 - [ ] Add documentation blocks or module-level documentation for the undocumented Prisma authz/access entities in `prisma/schema.prisma`, especially the legacy `role` snapshot table and its relationship to `authz_role`, `member`, and `access`.

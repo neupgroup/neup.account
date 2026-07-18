@@ -1,11 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { checkSession } from '@/services/account/check';
-import { logError } from '@/logica/logger/files';
 
 /*
-::neup.documentation::api-auth-me-route
+::neup.documentation::bridge-auth-me-route
 ::title Current Account Session Endpoint
-::api GET /api/auth/me
+::api GET /bridge/api.v1/auth/me
 
 ::public
 
@@ -46,8 +45,7 @@ export async function GET(request: NextRequest) {
       },
       { status: 200 },
     );
-  } catch (error) {
-    await logError('auth', error, 'api.auth.me');
+  } catch {
     return NextResponse.json(
       { success: false, error: 'internal_server_error' },
       { status: 500 },

@@ -3,7 +3,7 @@ import './globals.css';
 import 'nprogress/nprogress.css';
 import { Toaster } from "@/components/ui/toaster"
 import { GeolocationProvider } from '@/core/providers/geolocation';
-import { SessionProvider } from '@/core/providers/session';
+import { SessionProvider } from '@/inapp/auth/session-context';
 import { PageProgressBar } from '@/components/page-progress-bar';
 import { Suspense } from 'react';
 import { UrlErrorBanner } from '@/components/ui/url-error-banner';
@@ -12,6 +12,7 @@ import { HeaderV1 } from '@/components/layout/header.v1';
 import { getSiteLogoUrl } from '@/services/manage/site/logo';
 import { APP_NAME, DEFAULT_META_DESCRIPTION } from '@/core/metadata';
 import { AppTitleSync } from '@/components/app-title-sync';
+import { checkSession } from '@/services/account/check';
 
 export const metadata: Metadata = {
   title: APP_NAME,
@@ -26,7 +27,18 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const logoUrl = await getSiteLogoUrl();
+  const [logoUrl, session] = await Promise.all([
+    getSiteLogoUrl(),
+    checkSession(),
+  ]);
+  const initialSession = session.valid
+    ? {
+        profileInfo: session.profileInfo,
+        permissions: session.permissions,
+        accountId: session.accountId,
+        personalAccountId: session.personalAccountId,
+      }
+    : null;
 
   return (
     <html lang="en" className="[scrollbar-gutter:stable]">
@@ -37,7 +49,7 @@ export default async function RootLayout({
       </head>
       <body className="font-body antialiased">
         <GeolocationProvider>
-          <SessionProvider>
+          <SessionProvider initialSession={initialSession}>
             <AppTitleSync />
             <PersistentBacksTo />
             <PageProgressBar />

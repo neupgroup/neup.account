@@ -2,6 +2,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -21,8 +22,13 @@ function getGreeting() {
 
 export function DashboardHeader() {
     const [searchTerm, setSearchTerm] = useState('');
+    const [greeting, setGreeting] = useState('Welcome');
     const router = useRouter();
     const { profile, loading, isManaging, accountId } = useSession();
+
+    useEffect(() => {
+        setGreeting(getGreeting());
+    }, []);
 
     const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -63,7 +69,7 @@ export function DashboardHeader() {
                     </AvatarFallback>
                 </Avatar>
                 <div>
-                    <p className="text-muted-foreground">{getGreeting()}</p>
+                    <p className="text-muted-foreground">{greeting}</p>
                     <div className="flex items-center gap-2">
                         <h1 className="text-3xl font-bold tracking-tight">{greetingName || 'User'}!</h1>
                         {accountId && <VerifiedBadge accountId={accountId} className="h-6 w-6" />}

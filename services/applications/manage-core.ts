@@ -306,7 +306,7 @@ export async function createManagedApplication(input: { name: string; idPrefix: 
           description: 'Full ownership of an application.',
           appId: 'neup.account',
           scopeFor: ['for_individual'],
-          scopeLevel: 'selfAssigned',
+          scopeLevel: 'assignable',
         },
         create: {
           id: 'application.owner',
@@ -314,7 +314,7 @@ export async function createManagedApplication(input: { name: string; idPrefix: 
           description: 'Full ownership of an application.',
           appId: 'neup.account',
           scopeFor: ['for_individual'],
-          scopeLevel: 'selfAssigned',
+          scopeLevel: 'assignable',
         },
       });
       await tx.authzRolePermissionMap.deleteMany({
@@ -325,7 +325,7 @@ export async function createManagedApplication(input: { name: string; idPrefix: 
           roleId: 'application.owner',
           permissionId: cap.id,
           scopeFor: 'for_individual',
-          scopeLevel: 'selfAssigned',
+          scopeLevel: 'assignable',
         })),
         skipDuplicates: true,
       });

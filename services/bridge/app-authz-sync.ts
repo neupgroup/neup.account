@@ -107,7 +107,12 @@ function toJsonInput(value: unknown, fallback: Prisma.InputJsonValue): Prisma.In
 
 function normalizeRoleScopeLevel(value: unknown): string {
   const first = Array.isArray(value) ? value[0] : value;
-  return typeof first === 'string' && first.trim() ? first.trim() : 'assignable';
+  if (typeof first !== 'string') return 'assignable';
+  const normalized = first.trim();
+  if (!normalized) return 'assignable';
+  if (normalized === 'selfAssigned') return 'assignable';
+  if (normalized === 'rootManaged') return 'rootAssigned';
+  return normalized;
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {

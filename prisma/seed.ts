@@ -274,7 +274,7 @@ async function main() {
             roleId: ROLE_ROOT_ID,
             permissionId: permission.id,
             scopeFor: 'for_individual',
-            scopeLevel: 'rootManaged',
+            scopeLevel: 'rootAssigned',
           },
         } as any,
         update: {},
@@ -283,7 +283,7 @@ async function main() {
           permissionId: permission.id,
           scope: 'root.individual',
           scopeFor: 'for_individual',
-          scopeLevel: 'rootManaged',
+          scopeLevel: 'rootAssigned',
         },
       });
     }

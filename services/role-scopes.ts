@@ -35,8 +35,8 @@ The helpers in this module translate between the current persisted acquisition a
 The storage mapping intentionally remains backward-compatible:
 - `assignment` + `none` => `assignable`
 - `public_request` + `none` => `publiclyEnrollable`
-- `system_generated` => `selfAssigned`
-- `invitation` + `none` => `rootManaged`
+- `system_generated` => `assignable`
+- `invitation` + `none` => `rootAssigned`
 - `public_request` + `approval_required` => `publiclyRequestable`
 - `invitation` + `approval_required` => `requestableToOwner`
 
@@ -55,8 +55,7 @@ export type RoleRequestTarget = 'admin' | 'owner';
 export type RoleAccessFlags = {
   assignable: boolean;
   publiclyEnrollable: boolean;
-  selfAssigned: boolean;
-  rootManaged: boolean;
+  rootAssigned: boolean;
   publiclyRequestable: boolean;
   requestableToOwner: boolean;
 };
@@ -412,8 +411,7 @@ export function emptyRoleAccessFlags(): RoleAccessFlags {
   return {
     assignable: false,
     publiclyEnrollable: false,
-    selfAssigned: false,
-    rootManaged: false,
+    rootAssigned: false,
     publiclyRequestable: false,
     requestableToOwner: false,
   };
@@ -425,8 +423,7 @@ export function normalizeRoleAccessFlags(
   return {
     assignable: value?.assignable === true,
     publiclyEnrollable: value?.publiclyEnrollable === true,
-    selfAssigned: value?.selfAssigned === true,
-    rootManaged: value?.rootManaged === true,
+    rootAssigned: value?.rootAssigned === true,
     publiclyRequestable: value?.publiclyRequestable === true,
     requestableToOwner: value?.requestableToOwner === true,
   };
@@ -440,7 +437,7 @@ export function getRoleAccessFlags(
   const normalizedApprovalPolicy = normalizeRoleApprovalPolicy(approvalPolicy);
 
   if (normalizedAcquisitionType === 'system_generated') {
-    return { ...emptyRoleAccessFlags(), selfAssigned: true };
+    return { ...emptyRoleAccessFlags(), assignable: true };
   }
 
   if (normalizedAcquisitionType === 'invitation' && normalizedApprovalPolicy === 'approval_required') {
@@ -448,7 +445,7 @@ export function getRoleAccessFlags(
   }
 
   if (normalizedAcquisitionType === 'invitation') {
-    return { ...emptyRoleAccessFlags(), rootManaged: true };
+    return { ...emptyRoleAccessFlags(), rootAssigned: true };
   }
 
   if (normalizedAcquisitionType === 'public_request' && normalizedApprovalPolicy === 'approval_required') {
@@ -468,8 +465,7 @@ export function getStoredRoleAccessPolicy(
   const hasExplicitFlags = !!input && (
     'assignable' in input ||
     'publiclyEnrollable' in input ||
-    'selfAssigned' in input ||
-    'rootManaged' in input ||
+    'rootAssigned' in input ||
     'publiclyRequestable' in input ||
     'requestableToOwner' in input
   );
@@ -481,13 +477,13 @@ export function getStoredRoleAccessPolicy(
         (input as { approvalPolicy?: string | null } | null | undefined)?.approvalPolicy,
       );
 
-  if (flags.selfAssigned) {
-    return { acquisitionType: 'system_generated', approvalPolicy: 'none', flags };
+  if (flags.assignable) {
+    return { acquisitionType: 'assignment', approvalPolicy: 'none', flags };
   }
   if (flags.requestableToOwner) {
     return { acquisitionType: 'invitation', approvalPolicy: 'approval_required', flags };
   }
-  if (flags.rootManaged) {
+  if (flags.rootAssigned) {
     return { acquisitionType: 'invitation', approvalPolicy: 'none', flags };
   }
   if (flags.publiclyRequestable) {
@@ -506,7 +502,7 @@ export function isRoleDirectlyAssignable(
   actor: 'manager' | 'root' = 'manager',
 ): boolean {
   const flags = getRoleAccessFlags(acquisitionType, approvalPolicy);
-  return flags.assignable || (actor === 'root' && flags.rootManaged);
+  return flags.assignable || (actor === 'root' && flags.rootAssigned);
 }
 
 export function isDirectlyAssignableRoleAcquisitionType(value: string | null | undefined): boolean {

@@ -72,10 +72,9 @@ const APPLICATION_USER_UPDATE_BASICS_SCOPE_FOR: AuthzScopeFor[] = [
 const APPLICATION_USER_UPDATE_BASICS_SCOPE_LEVEL: AuthzScopeLevel[] = [
   'assignable',
   'publiclyEnrollable',
-  'selfAssigned',
-  'rootManaged',
   'publiclyRequestable',
   'requestableToOwner',
+  'rootAssigned',
 ];
 
 const APPLICATION_PERMISSION_DEFINITION_MAP: Record<ApplicationPermissionBase, ApplicationPermissionDefinition> = {
@@ -195,7 +194,7 @@ function permissionPolicyDefinition(
   if (audience === 'root') {
     return {
       scopeFor,
-      scopeLevel: ['rootManaged'],
+      scopeLevel: ['rootAssigned'],
     };
   }
 

@@ -310,8 +310,8 @@ function canManageConnectionRoleFromUserPage(
   return flags.assignable
     || flags.publiclyEnrollable
     || flags.publiclyRequestable
-    || flags.rootManaged
-    || flags.selfAssigned;
+    || flags.rootAssigned
+    || flags.assignable;
 }
 
 function parseStoredJsonText(value: string | null | undefined): Prisma.JsonValue | string | null {

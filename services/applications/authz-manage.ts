@@ -567,8 +567,8 @@ function getSystemRoleScopeFor(roleId: string): AuthzScopeFor[] {
 }
 
 function getSystemRoleScopeLevel(roleId: string): AuthzScopeLevel {
-  if (roleId === 'application.manage') return 'rootManaged';
-  return 'selfAssigned';
+  if (roleId === 'application.manage') return 'rootAssigned';
+  return 'assignable';
 }
 
 function isGlobalAuthzSystemRole(roleId: string): boolean {

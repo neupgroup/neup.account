@@ -66,7 +66,7 @@ function accessTypeForGrant(input: AccessGrantInput, roleScopeLevel: unknown): A
   const isSelfGrant = 'parentAccountId' in input && input.parentAccountId === input.memberAccountId;
   if (!isSelfGrant) return assetTypeForRefs(input, input);
 
-  return normalizeSingleAuthzScopeLevel(roleScopeLevel) === 'rootManaged'
+  return normalizeSingleAuthzScopeLevel(roleScopeLevel) === 'rootAssigned'
     ? 'acc_self_root'
     : 'acc_self';
 }

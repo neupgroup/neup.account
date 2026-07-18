@@ -25,13 +25,8 @@ export const ACCESS_FLAG_MODE_OPTIONS = [
     description: 'Can be enrolled publicly by any account.',
   },
   {
-    value: 'selfAssigned',
-    label: 'selfAssigned',
-    description: 'Assigned by the system to the account owner only.',
-  },
-  {
-    value: 'rootManaged',
-    label: 'rootManaged',
+    value: 'rootAssigned',
+    label: 'rootAssigned',
     description: 'Can only be assigned by another root user.',
   },
   {
@@ -51,16 +46,15 @@ export type AccessFlagMode = (typeof ACCESS_FLAG_MODE_OPTIONS)[number]['value'];
 type AccessFlagInput = {
   assignable?: boolean;
   publiclyEnrollable?: boolean;
-  selfAssigned?: boolean;
-  rootManaged?: boolean;
+  rootAssigned?: boolean;
   publiclyRequestable?: boolean;
   requestableToOwner?: boolean;
 };
 
 export function getAccessFlagMode(value: AccessFlagInput): AccessFlagMode {
-  if (value.selfAssigned) return 'selfAssigned';
+  if (value.assignable) return 'assignable';
   if (value.requestableToOwner) return 'requestableToOwner';
-  if (value.rootManaged) return 'rootManaged';
+  if (value.rootAssigned) return 'rootAssigned';
   if (value.publiclyRequestable) return 'publiclyRequestable';
   if (value.publiclyEnrollable) return 'publiclyEnrollable';
   return 'assignable';
@@ -70,8 +64,7 @@ export function getAccessFlagPayload(mode: AccessFlagMode) {
   return {
     assignable: mode === 'assignable',
     publiclyEnrollable: mode === 'publiclyEnrollable',
-    selfAssigned: mode === 'selfAssigned',
-    rootManaged: mode === 'rootManaged',
+    rootAssigned: mode === 'rootAssigned',
     publiclyRequestable: mode === 'publiclyRequestable',
     requestableToOwner: mode === 'requestableToOwner',
   };

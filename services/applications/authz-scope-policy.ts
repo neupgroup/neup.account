@@ -29,10 +29,9 @@ export const AUTHZ_SCOPE_FOR_VALUES = [
 export const AUTHZ_SCOPE_LEVEL_VALUES = [
   'assignable',
   'publiclyEnrollable',
-  'selfAssigned',
-  'rootManaged',
   'publiclyRequestable',
   'requestableToOwner',
+  'rootAssigned',
 ] as const;
 
 export type AuthzScopeFor = (typeof AUTHZ_SCOPE_FOR_VALUES)[number];
@@ -72,14 +71,6 @@ export const AUTHZ_SCOPE_LEVEL_META: Record<AuthzScopeLevel, { label: string; de
     label: 'publiclyEnrollable',
     description: 'Can be enrolled publicly without approval.',
   },
-  selfAssigned: {
-    label: 'selfAssigned',
-    description: 'Assigned by the system to the owner.',
-  },
-  rootManaged: {
-    label: 'rootManaged',
-    description: 'Can only be assigned by root management.',
-  },
   publiclyRequestable: {
     label: 'publiclyRequestable',
     description: 'Can be requested publicly and approved by an admin.',
@@ -87,6 +78,10 @@ export const AUTHZ_SCOPE_LEVEL_META: Record<AuthzScopeLevel, { label: string; de
   requestableToOwner: {
     label: 'requestableToOwner',
     description: 'Can be requested and approved by the owner.',
+  },
+  rootAssigned: {
+    label: 'rootAssigned',
+    description: 'Can only be assigned by root management.',
   },
 };
 
@@ -96,6 +91,13 @@ function isKnownScopeFor(value: string): value is AuthzScopeFor {
 
 function isKnownScopeLevel(value: string): value is AuthzScopeLevel {
   return AUTHZ_SCOPE_LEVEL_VALUES.includes(value as AuthzScopeLevel);
+}
+
+function normalizeLegacyScopeLevelValue(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed === 'selfAssigned') return 'assignable';
+  if (trimmed === 'rootManaged') return 'rootAssigned';
+  return trimmed;
 }
 
 export function normalizeAuthzScopeFor(value: unknown, allowMultiple = true): AuthzScopeFor[] {
@@ -117,7 +119,7 @@ export function normalizeAuthzScopeLevels(value: unknown, allowMultiple = true):
   const normalized = Array.from(
     new Set(
       rawValues
-        .map((item) => (typeof item === 'string' ? item.trim() : ''))
+        .map((item) => (typeof item === 'string' ? normalizeLegacyScopeLevelValue(item) : ''))
         .filter(isKnownScopeLevel),
     ),
   );
@@ -153,7 +155,7 @@ export function deriveLegacyRoleScopesFromPolicy(
   scopeFor: readonly AuthzScopeFor[],
   scopeLevel: AuthzScopeLevel,
 ): string[] {
-  if (scopeLevel === 'rootManaged' && scopeFor.includes('for_individual')) {
+  if (scopeLevel === 'rootAssigned' && scopeFor.includes('for_individual')) {
     return ['rootMgmt.self'];
   }
   if (scopeFor.includes('for_brand') && scopeFor.includes('for_subBrand')) {
@@ -182,7 +184,7 @@ export function roleMatchesAssignmentModesPolicy(input: {
   const roleScopeLevel = normalizeAssignableScopeLevel(input.scopeLevel);
   if (!roleScopeFor.includes(requiredScopeFor)) return false;
 
-  if (roleScopeLevel === 'rootManaged') {
+  if (roleScopeLevel === 'rootAssigned') {
     return input.modes.includes('root');
   }
 
@@ -207,11 +209,9 @@ export function roleMatchesAccountTypeScopePolicy(input: {
 
 export function getStoredPolicyForScopeLevel(scopeLevel: AuthzScopeLevel): LegacyStoredPolicy {
   switch (scopeLevel) {
-    case 'selfAssigned':
-      return { acquisitionType: 'system_generated', approvalPolicy: 'none' };
     case 'requestableToOwner':
       return { acquisitionType: 'invitation', approvalPolicy: 'approval_required' };
-    case 'rootManaged':
+    case 'rootAssigned':
       return { acquisitionType: 'invitation', approvalPolicy: 'none' };
     case 'publiclyRequestable':
       return { acquisitionType: 'public_request', approvalPolicy: 'approval_required' };
@@ -227,9 +227,9 @@ export function getScopeLevelsFromStoredPolicy(
   acquisitionType: string | null | undefined,
   approvalPolicy: string | null | undefined,
 ): AuthzScopeLevel[] {
-  if (acquisitionType === 'system_generated') return ['selfAssigned'];
+  if (acquisitionType === 'system_generated') return ['assignable'];
   if (acquisitionType === 'invitation' && approvalPolicy === 'approval_required') return ['requestableToOwner'];
-  if (acquisitionType === 'invitation') return ['rootManaged'];
+  if (acquisitionType === 'invitation') return ['rootAssigned'];
   if (acquisitionType === 'public_request' && approvalPolicy === 'approval_required') return ['publiclyRequestable'];
   if (acquisitionType === 'public_request') return ['publiclyEnrollable'];
   return ['assignable'];

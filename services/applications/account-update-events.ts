@@ -252,8 +252,7 @@ export async function dispatchAccountUpdatedEvent(input: DispatchInput): Promise
       approvalPolicy: string;
       assignable: boolean;
       publiclyEnrollable: boolean;
-      selfAssigned: boolean;
-      rootManaged: boolean;
+      rootAssigned: boolean;
       publiclyRequestable: boolean;
       requestableToOwner: boolean;
       applicableFor: string[];

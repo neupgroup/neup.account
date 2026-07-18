@@ -107,7 +107,10 @@ function normalizeJsonArray(value: unknown, fallback: string[] = []): Prisma.Inp
 
 function normalizeRoleScopeLevel(value: unknown): string {
   const candidate = Array.isArray(value) ? value[0] : value;
-  return normalizeString(candidate) ?? 'assignable';
+  const normalized = normalizeString(candidate);
+  if (normalized === 'selfAssigned') return 'assignable';
+  if (normalized === 'rootManaged') return 'rootAssigned';
+  return normalized ?? 'assignable';
 }
 
 function slugifyPermission(name: string): string {
@@ -115,15 +118,15 @@ function slugifyPermission(name: string): string {
 }
 
 function audienceSuffixForRoleScopeLevel(scopeLevel: string): 'self' | 'managed' | 'root' {
-  if (scopeLevel === 'rootManaged') return 'root';
+  if (scopeLevel === 'rootAssigned') return 'root';
   if (scopeLevel === 'assignable') return 'managed';
   return 'self';
 }
 
 function scopeLevelForCanonicalDefinition(definition: (typeof NEUP_ACCOUNT_PERMISSION_DEFINITIONS)[number]): string[] {
-  if (definition.rootManaged) return ['rootManaged'];
+  if (definition.rootManaged) return ['rootAssigned'];
   if (definition.assignable) return ['assignable'];
-  if (definition.selfAssigned) return ['selfAssigned'];
+  if (definition.selfAssigned) return ['assignable'];
   if (definition.publiclyEnrollable) return ['publiclyEnrollable'];
   return [];
 }

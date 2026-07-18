@@ -242,8 +242,6 @@ function UsersListInner({ appId }: { appId: string }) {
 
   useEffect(() => { fetchPage(); }, [fetchPage]);
 
-  const start = total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
-  const end = Math.min(page * PAGE_SIZE, total);
   const detailLinkParams = {
     mode: mode ?? undefined,
     query: debouncedSearch.trim() || undefined,
@@ -254,14 +252,6 @@ function UsersListInner({ appId }: { appId: string }) {
 
   return (
     <div className="grid gap-6">
-      <p className="text-muted-foreground text-sm">
-        {loading
-          ? 'Loading…'
-          : total === 0
-            ? 'No users found'
-            : `${start}–${end} of ${total} user${total !== 1 ? 's' : ''}`}
-      </p>
-
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input

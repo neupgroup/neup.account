@@ -6,6 +6,7 @@ import { ArrowLeft } from '@/components/icons';
 import {
   canCurrentAccountViewApplicationUsers,
   getApplicationDetailsForViewerV2,
+  getApplicationUserStats,
   logRootApplicationActivity,
 } from '@/services/applications/manage';
 import {
@@ -54,6 +55,8 @@ export async function ApplicationUsersPage({ applicationId, mode }: { applicatio
   if (mode === 'root') await logRootApplicationActivity(applicationId, 'users');
   const canViewUsers = await canCurrentAccountViewApplicationUsers(applicationId, { rootMode: mode === 'root' });
   if (!canViewUsers) notFound();
+  const userStats = await getApplicationUserStats(applicationId, { rootMode: mode === 'root' });
+  const userCount = userStats?.total ?? 0;
 
   return (
     <div className="grid gap-6">
@@ -67,8 +70,21 @@ export async function ApplicationUsersPage({ applicationId, mode }: { applicatio
       </div>
 
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Users</h1>
-        <p className="text-muted-foreground">{details.name}</p>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Users{' '}
+          <span className="text-muted-foreground">
+            of{' '}
+            <FlowLink
+              href={applicationHref('/application', applicationId, mode ? { mode } : undefined)}
+              className="underline-offset-4 hover:text-foreground hover:underline"
+            >
+              {details.name}
+            </FlowLink>
+          </span>
+        </h1>
+        <p className="text-muted-foreground">
+          {userCount.toLocaleString()} user{userCount === 1 ? '' : 's'} found for the application.
+        </p>
       </div>
 
       <UsersList appId={applicationId} />

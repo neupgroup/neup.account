@@ -54,6 +54,10 @@ type PermissionSearchFilters = {
   sort: 'asc' | 'desc';
 };
 
+function permissionDetailPath(permissionId: string): string {
+  return `/application/permissions/${encodeURIComponent(permissionId)}`;
+}
+
 function parsePermissionSearch(input: string): PermissionSearchFilters {
   const filters: PermissionSearchFilters = {
     nameTerms: [],
@@ -173,7 +177,7 @@ export function PermissionPanel({
     const createdPermission = result.permission;
     if (result.existing) {
       setAddOpen(false);
-      redirectInApp(router, applicationHref('/application/permissions', appId, { permission: createdPermission.id, mode }));
+      redirectInApp(router, applicationHref(permissionDetailPath(createdPermission.id), appId, { mode }));
       return;
     }
 
@@ -186,7 +190,7 @@ export function PermissionPanel({
     setAddStatus('');
     setAddOpen(false);
     toast({ title: 'Permission created' });
-    redirectInApp(router, applicationHref('/application/permissions', appId, { permission: createdPermission.id, mode }));
+    redirectInApp(router, applicationHref(permissionDetailPath(createdPermission.id), appId, { mode }));
   };
 
   return (
@@ -221,7 +225,7 @@ export function PermissionPanel({
             return (
               <FlowLink
                 key={permission.id}
-                href={applicationHref('/application/permissions', appId, { permission: permission.id, mode })}
+                href={applicationHref(permissionDetailPath(permission.id), appId, { mode })}
                 className="group flex items-center justify-between gap-4 border-b px-4 py-4 last:border-b-0 transition-colors hover:bg-muted/40 sm:px-5"
               >
                 <div className="min-w-0 flex-1">

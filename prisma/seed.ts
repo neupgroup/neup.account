@@ -231,7 +231,7 @@ async function main() {
             roleId: ROLE_DEFAULT_ID,
             permissionId: permission.id,
             scopeFor: 'for_individual',
-            scopeLevel: 'assignable.publicly',
+            scopeLevel: 'assignable.toSelf.publicly',
           },
         } as any,
         update: {},
@@ -240,7 +240,7 @@ async function main() {
           permissionId: permission.id,
           scope: 'public.individual',
           scopeFor: 'for_individual',
-          scopeLevel: 'assignable.publicly',
+          scopeLevel: 'assignable.toSelf.publicly',
         },
       });
     }

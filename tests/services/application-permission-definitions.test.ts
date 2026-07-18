@@ -38,11 +38,11 @@ describe('application system owner permissions', () => {
 
     expect(publicView).toMatchObject({
       scopeFor: ['for_individual'],
-      scopeLevel: ['assignable.publicly', 'assignable.byTeam', 'assignable.byRoot'],
+      scopeLevel: ['assignable.toSelf.publicly', 'assignable.byTeam', 'assignable.byRoot'],
     });
     expect(rootView).toMatchObject({
       scopeFor: ['for_individual'],
-      scopeLevel: ['assignable.publicly', 'assignable.byTeam', 'assignable.byRoot'],
+      scopeLevel: ['assignable.toSelf.publicly', 'assignable.byTeam', 'assignable.byRoot'],
     });
   });
 
@@ -54,7 +54,7 @@ describe('application system owner permissions', () => {
         ),
       ).toMatchObject({
         scopeFor: ['for_individual', 'for_dependent'],
-        scopeLevel: ['assignable.publicly', 'assignable.byTeam', 'assignable.byRoot'],
+        scopeLevel: ['assignable.toSelf.publicly', 'assignable.byTeam', 'assignable.byRoot'],
       });
     }
   });
@@ -68,8 +68,8 @@ describe('application system owner permissions', () => {
       scopeFor: ['for_brand', 'for_individual', 'for_dependent', 'for_subBrand'],
       scopeLevel: [
         'assignable.byTeam',
-        'assignable.publicly',
-        'assignable.publicly.byRequest',
+        'assignable.toSelf.publicly',
+        'assignable.toSelf.publicly.byRequest',
         'assignable.byTeam.fromRequest',
         'assignable.byRoot',
       ],

@@ -20,8 +20,8 @@ export const ACCESS_FLAG_MODE_OPTIONS = [
     description: 'Can be assigned to members with account access.',
   },
   {
-    value: 'assignable.publicly',
-    label: 'assignable.publicly',
+    value: 'assignable.toSelf.publicly',
+    label: 'assignable.toSelf.publicly',
     description: 'Can be enrolled publicly by any account.',
   },
   {
@@ -30,8 +30,8 @@ export const ACCESS_FLAG_MODE_OPTIONS = [
     description: 'Can only be assigned by another root user.',
   },
   {
-    value: 'assignable.publicly.byRequest',
-    label: 'assignable.publicly.byRequest',
+    value: 'assignable.toSelf.publicly.byRequest',
+    label: 'assignable.toSelf.publicly.byRequest',
     description: 'Can be requested by anyone and approved by an admin.',
   },
   {
@@ -55,17 +55,17 @@ export function getAccessFlagMode(value: AccessFlagInput): AccessFlagMode {
   if (value.assignable) return 'assignable.byTeam';
   if (value.requestableToOwner) return 'assignable.byTeam.fromRequest';
   if (value.rootAssigned) return 'assignable.byRoot';
-  if (value.publiclyRequestable) return 'assignable.publicly.byRequest';
-  if (value.publiclyEnrollable) return 'assignable.publicly';
+  if (value.publiclyRequestable) return 'assignable.toSelf.publicly.byRequest';
+  if (value.publiclyEnrollable) return 'assignable.toSelf.publicly';
   return 'assignable.byTeam';
 }
 
 export function getAccessFlagPayload(mode: AccessFlagMode) {
   return {
     assignable: mode === 'assignable.byTeam',
-    publiclyEnrollable: mode === 'assignable.publicly',
+    publiclyEnrollable: mode === 'assignable.toSelf.publicly',
     rootAssigned: mode === 'assignable.byRoot',
-    publiclyRequestable: mode === 'assignable.publicly.byRequest',
+    publiclyRequestable: mode === 'assignable.toSelf.publicly.byRequest',
     requestableToOwner: mode === 'assignable.byTeam.fromRequest',
   };
 }

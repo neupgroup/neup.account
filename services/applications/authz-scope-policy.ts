@@ -28,8 +28,8 @@ export const AUTHZ_SCOPE_FOR_VALUES = [
 
 export const AUTHZ_SCOPE_LEVEL_VALUES = [
   'assignable.byTeam',
-  'assignable.publicly',
-  'assignable.publicly.byRequest',
+  'assignable.toSelf.publicly',
+  'assignable.toSelf.publicly.byRequest',
   'assignable.byTeam.fromRequest',
   'assignable.byRoot',
 ] as const;
@@ -67,12 +67,12 @@ export const AUTHZ_SCOPE_LEVEL_META: Record<AuthzScopeLevel, { label: string; de
     label: 'assignable.byTeam',
     description: 'Can be assigned directly.',
   },
-  'assignable.publicly': {
-    label: 'assignable.publicly',
+  'assignable.toSelf.publicly': {
+    label: 'assignable.toSelf.publicly',
     description: 'Can be enrolled publicly without approval.',
   },
-  'assignable.publicly.byRequest': {
-    label: 'assignable.publicly.byRequest',
+  'assignable.toSelf.publicly.byRequest': {
+    label: 'assignable.toSelf.publicly.byRequest',
     description: 'Can be requested publicly and approved by an admin.',
   },
   'assignable.byTeam.fromRequest': {
@@ -96,8 +96,10 @@ function isKnownScopeLevel(value: string): value is AuthzScopeLevel {
 function normalizeLegacyScopeLevelValue(value: string): string {
   const trimmed = value.trim();
   if (trimmed === 'assignable' || trimmed === 'selfAssigned') return 'assignable.byTeam';
-  if (trimmed === 'publiclyEnrollable') return 'assignable.publicly';
-  if (trimmed === 'publiclyRequestable') return 'assignable.publicly.byRequest';
+  if (trimmed === 'assignable.publicly') return 'assignable.toSelf.publicly';
+  if (trimmed === 'assignable.publicly.byRequest') return 'assignable.toSelf.publicly.byRequest';
+  if (trimmed === 'publiclyEnrollable') return 'assignable.toSelf.publicly';
+  if (trimmed === 'publiclyRequestable') return 'assignable.toSelf.publicly.byRequest';
   if (trimmed === 'requestableToOwner' || trimmed === 'requestToOwner') return 'assignable.byTeam.fromRequest';
   if (trimmed === 'rootAssigned' || trimmed === 'rootManaged') return 'assignable.byRoot';
   return trimmed;
@@ -216,9 +218,9 @@ export function getStoredPolicyForScopeLevel(scopeLevel: AuthzScopeLevel): Legac
       return { acquisitionType: 'invitation', approvalPolicy: 'approval_required' };
     case 'assignable.byRoot':
       return { acquisitionType: 'invitation', approvalPolicy: 'none' };
-    case 'assignable.publicly.byRequest':
+    case 'assignable.toSelf.publicly.byRequest':
       return { acquisitionType: 'public_request', approvalPolicy: 'approval_required' };
-    case 'assignable.publicly':
+    case 'assignable.toSelf.publicly':
       return { acquisitionType: 'public_request', approvalPolicy: 'none' };
     case 'assignable.byTeam':
     default:
@@ -233,8 +235,8 @@ export function getScopeLevelsFromStoredPolicy(
   if (acquisitionType === 'system_generated') return ['assignable.byTeam'];
   if (acquisitionType === 'invitation' && approvalPolicy === 'approval_required') return ['assignable.byTeam.fromRequest'];
   if (acquisitionType === 'invitation') return ['assignable.byRoot'];
-  if (acquisitionType === 'public_request' && approvalPolicy === 'approval_required') return ['assignable.publicly.byRequest'];
-  if (acquisitionType === 'public_request') return ['assignable.publicly'];
+  if (acquisitionType === 'public_request' && approvalPolicy === 'approval_required') return ['assignable.toSelf.publicly.byRequest'];
+  if (acquisitionType === 'public_request') return ['assignable.toSelf.publicly'];
   return ['assignable.byTeam'];
 }
 

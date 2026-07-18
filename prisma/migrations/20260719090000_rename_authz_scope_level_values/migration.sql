@@ -5,8 +5,10 @@ UPDATE "authz_role"
 SET "scope_level" = CASE "scope_level"
   WHEN 'assignable' THEN 'assignable.byTeam'
   WHEN 'selfAssigned' THEN 'assignable.byTeam'
-  WHEN 'publiclyEnrollable' THEN 'assignable.publicly'
-  WHEN 'publiclyRequestable' THEN 'assignable.publicly.byRequest'
+  WHEN 'assignable.publicly' THEN 'assignable.toSelf.publicly'
+  WHEN 'assignable.publicly.byRequest' THEN 'assignable.toSelf.publicly.byRequest'
+  WHEN 'publiclyEnrollable' THEN 'assignable.toSelf.publicly'
+  WHEN 'publiclyRequestable' THEN 'assignable.toSelf.publicly.byRequest'
   WHEN 'requestableToOwner' THEN 'assignable.byTeam.fromRequest'
   WHEN 'requestToOwner' THEN 'assignable.byTeam.fromRequest'
   WHEN 'rootAssigned' THEN 'assignable.byRoot'
@@ -16,6 +18,8 @@ END
 WHERE "scope_level" IN (
   'assignable',
   'selfAssigned',
+  'assignable.publicly',
+  'assignable.publicly.byRequest',
   'publiclyEnrollable',
   'publiclyRequestable',
   'requestableToOwner',
@@ -28,8 +32,10 @@ UPDATE "authz_role_permission_map"
 SET "scope_level" = CASE "scope_level"
   WHEN 'assignable' THEN 'assignable.byTeam'
   WHEN 'selfAssigned' THEN 'assignable.byTeam'
-  WHEN 'publiclyEnrollable' THEN 'assignable.publicly'
-  WHEN 'publiclyRequestable' THEN 'assignable.publicly.byRequest'
+  WHEN 'assignable.publicly' THEN 'assignable.toSelf.publicly'
+  WHEN 'assignable.publicly.byRequest' THEN 'assignable.toSelf.publicly.byRequest'
+  WHEN 'publiclyEnrollable' THEN 'assignable.toSelf.publicly'
+  WHEN 'publiclyRequestable' THEN 'assignable.toSelf.publicly.byRequest'
   WHEN 'requestableToOwner' THEN 'assignable.byTeam.fromRequest'
   WHEN 'requestToOwner' THEN 'assignable.byTeam.fromRequest'
   WHEN 'rootAssigned' THEN 'assignable.byRoot'
@@ -39,6 +45,8 @@ END
 WHERE "scope_level" IN (
   'assignable',
   'selfAssigned',
+  'assignable.publicly',
+  'assignable.publicly.byRequest',
   'publiclyEnrollable',
   'publiclyRequestable',
   'requestableToOwner',
@@ -56,8 +64,10 @@ SET "scope_level" = (CASE
         CASE element #>> '{}'
           WHEN 'assignable' THEN to_jsonb('assignable.byTeam'::text)
           WHEN 'selfAssigned' THEN to_jsonb('assignable.byTeam'::text)
-          WHEN 'publiclyEnrollable' THEN to_jsonb('assignable.publicly'::text)
-          WHEN 'publiclyRequestable' THEN to_jsonb('assignable.publicly.byRequest'::text)
+          WHEN 'assignable.publicly' THEN to_jsonb('assignable.toSelf.publicly'::text)
+          WHEN 'assignable.publicly.byRequest' THEN to_jsonb('assignable.toSelf.publicly.byRequest'::text)
+          WHEN 'publiclyEnrollable' THEN to_jsonb('assignable.toSelf.publicly'::text)
+          WHEN 'publiclyRequestable' THEN to_jsonb('assignable.toSelf.publicly.byRequest'::text)
           WHEN 'requestableToOwner' THEN to_jsonb('assignable.byTeam.fromRequest'::text)
           WHEN 'requestToOwner' THEN to_jsonb('assignable.byTeam.fromRequest'::text)
           WHEN 'rootAssigned' THEN to_jsonb('assignable.byRoot'::text)
@@ -73,8 +83,10 @@ SET "scope_level" = (CASE
     CASE "scope_level" #>> '{}'
       WHEN 'assignable' THEN to_jsonb('assignable.byTeam'::text)
       WHEN 'selfAssigned' THEN to_jsonb('assignable.byTeam'::text)
-      WHEN 'publiclyEnrollable' THEN to_jsonb('assignable.publicly'::text)
-      WHEN 'publiclyRequestable' THEN to_jsonb('assignable.publicly.byRequest'::text)
+      WHEN 'assignable.publicly' THEN to_jsonb('assignable.toSelf.publicly'::text)
+      WHEN 'assignable.publicly.byRequest' THEN to_jsonb('assignable.toSelf.publicly.byRequest'::text)
+      WHEN 'publiclyEnrollable' THEN to_jsonb('assignable.toSelf.publicly'::text)
+      WHEN 'publiclyRequestable' THEN to_jsonb('assignable.toSelf.publicly.byRequest'::text)
       WHEN 'requestableToOwner' THEN to_jsonb('assignable.byTeam.fromRequest'::text)
       WHEN 'requestToOwner' THEN to_jsonb('assignable.byTeam.fromRequest'::text)
       WHEN 'rootAssigned' THEN to_jsonb('assignable.byRoot'::text)

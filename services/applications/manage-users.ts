@@ -302,8 +302,8 @@ function hasUsableRoleScope(scope: unknown): boolean {
 }
 
 const APPLICATION_USER_ROLE_ASSIGN_PERMISSION_BY_SCOPE_LEVEL = {
-  'assignable.publicly': APPLICATION_USER_ROLE_ASSIGN_PUBLIC_ROLES_PERMISSION,
-  'assignable.publicly.byRequest': APPLICATION_USER_ROLE_ASSIGN_PUBLIC_REQUESTABLE_ROLES_PERMISSION,
+  'assignable.toSelf.publicly': APPLICATION_USER_ROLE_ASSIGN_PUBLIC_ROLES_PERMISSION,
+  'assignable.toSelf.publicly.byRequest': APPLICATION_USER_ROLE_ASSIGN_PUBLIC_REQUESTABLE_ROLES_PERMISSION,
   'assignable.byRoot': APPLICATION_USER_ROLE_ASSIGN_ROOT_ROLES_PERMISSION,
 } satisfies Partial<Record<AuthzScopeLevel, string>>;
 

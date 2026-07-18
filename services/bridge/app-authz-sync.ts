@@ -111,8 +111,10 @@ function normalizeRoleScopeLevel(value: unknown): string {
   const normalized = first.trim();
   if (!normalized) return 'assignable.byTeam';
   if (normalized === 'assignable' || normalized === 'selfAssigned') return 'assignable.byTeam';
-  if (normalized === 'publiclyEnrollable') return 'assignable.publicly';
-  if (normalized === 'publiclyRequestable') return 'assignable.publicly.byRequest';
+  if (normalized === 'assignable.publicly') return 'assignable.toSelf.publicly';
+  if (normalized === 'assignable.publicly.byRequest') return 'assignable.toSelf.publicly.byRequest';
+  if (normalized === 'publiclyEnrollable') return 'assignable.toSelf.publicly';
+  if (normalized === 'publiclyRequestable') return 'assignable.toSelf.publicly.byRequest';
   if (normalized === 'requestableToOwner' || normalized === 'requestToOwner') return 'assignable.byTeam.fromRequest';
   if (normalized === 'rootAssigned' || normalized === 'rootManaged') return 'assignable.byRoot';
   if (normalized === 'assignable.byTeam') return 'assignable.byTeam';

@@ -74,8 +74,8 @@ const APPLICATION_USER_UPDATE_BASICS_SCOPE_FOR: AuthzScopeFor[] = [
 
 const APPLICATION_USER_UPDATE_BASICS_SCOPE_LEVEL: AuthzScopeLevel[] = [
   'assignable.byTeam',
-  'assignable.publicly',
-  'assignable.publicly.byRequest',
+  'assignable.toSelf.publicly',
+  'assignable.toSelf.publicly.byRequest',
   'assignable.byTeam.fromRequest',
   'assignable.byRoot',
 ];
@@ -204,13 +204,13 @@ function permissionPolicyDefinition(
   if (base === 'user.role.assignPublicRoles') {
     return {
       scopeFor: ['for_individual'],
-      scopeLevel: ['assignable.publicly'],
+      scopeLevel: ['assignable.toSelf.publicly'],
     };
   }
   if (base === 'user.role.assignPublicRequestableRoles') {
     return {
       scopeFor: ['for_individual'],
-      scopeLevel: ['assignable.publicly.byRequest'],
+      scopeLevel: ['assignable.toSelf.publicly.byRequest'],
     };
   }
   if (base === 'user.role.assignRootRoles') {
@@ -240,7 +240,7 @@ function permissionPolicyDefinition(
 
   return {
     scopeFor,
-    scopeLevel: ['assignable.publicly'],
+    scopeLevel: ['assignable.toSelf.publicly'],
   };
 }
 

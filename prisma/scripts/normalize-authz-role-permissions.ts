@@ -94,7 +94,7 @@ async function main() {
               roleId: role.id,
               permissionId,
               scopeFor: Array.isArray(role.scopeFor) && role.scopeFor.length > 0 ? String(role.scopeFor[0]) : 'for_individual',
-              scopeLevel: typeof role.scopeLevel === 'string' && role.scopeLevel.trim().length > 0 ? role.scopeLevel : 'assignable',
+              scopeLevel: typeof role.scopeLevel === 'string' && role.scopeLevel.trim().length > 0 ? role.scopeLevel : 'assignable.byTeam',
             })),
             skipDuplicates: true,
           });

@@ -225,60 +225,67 @@ export async function getApplicationRoles(params: {
       'roleScope',
       'roleAcquisitionType',
       'roleApprovalPolicy',
-      'assignable',
-      'publiclyEnrollable',
-      'assignable',
-      'rootAssigned',
-      'publiclyRequestable',
-      'requestableToOwner',
+      'assignable.byTeam',
+      'assignable.publicly',
+      'assignable.byRoot',
+      'assignable.publicly.byRequest',
+      'assignable.byTeam.fromRequest',
       'pushed',
       'permissions',
     ];
 
-    const data = roles.map((r) => ({
-      roleId: r.id,
-      roleName: r.name,
-      roleDescription: r.description,
-      roleScope: deriveLegacyRoleScopesFromPolicy(
-        normalizeAuthzScopeFor(r.scopeFor),
-        normalizeSingleAuthzScopeLevel(r.scopeLevel),
-      ),
-      roleAcquisitionType: r.acquisitionType,
-      roleApprovalPolicy: r.approvalPolicy,
-      ...getRoleAccessFlags(r.acquisitionType, r.approvalPolicy),
-      pushed: true,
-      permissions: Array.isArray(r.permissions)
-        ? r.permissions.flatMap((p) => {
-            if (typeof p === 'string') {
-              const name = p.trim();
-              return name
-                ? [{
-                    rolePermissionId: null,
-                    permissionId: null,
-                    permissionName: name,
-                    permissionDescription: null,
-                    permissionTag: null,
-                    denormalized: [name],
-                  }]
-                : [];
-            }
+    const data = roles.map((r) => {
+      const accessFlags = getRoleAccessFlags(r.acquisitionType, r.approvalPolicy);
 
-            if (!p || typeof p !== 'object' || Array.isArray(p)) return [];
-            const obj = p as { id?: string; name?: string; description?: string | null; tag?: unknown };
-            const name = typeof obj.name === 'string' ? obj.name.trim() : '';
-            if (!name) return [];
+      return {
+        roleId: r.id,
+        roleName: r.name,
+        roleDescription: r.description,
+        roleScope: deriveLegacyRoleScopesFromPolicy(
+          normalizeAuthzScopeFor(r.scopeFor),
+          normalizeSingleAuthzScopeLevel(r.scopeLevel),
+        ),
+        roleAcquisitionType: r.acquisitionType,
+        roleApprovalPolicy: r.approvalPolicy,
+        'assignable.byTeam': accessFlags.assignable,
+        'assignable.publicly': accessFlags.publiclyEnrollable,
+        'assignable.byRoot': accessFlags.rootAssigned,
+        'assignable.publicly.byRequest': accessFlags.publiclyRequestable,
+        'assignable.byTeam.fromRequest': accessFlags.requestableToOwner,
+        pushed: true,
+        permissions: Array.isArray(r.permissions)
+          ? r.permissions.flatMap((p) => {
+              if (typeof p === 'string') {
+                const name = p.trim();
+                return name
+                  ? [{
+                      rolePermissionId: null,
+                      permissionId: null,
+                      permissionName: name,
+                      permissionDescription: null,
+                      permissionTag: null,
+                      denormalized: [name],
+                    }]
+                  : [];
+              }
 
-            return [{
-              rolePermissionId: typeof obj.id === 'string' ? `${r.id}::${obj.id}` : null,
-              permissionId: typeof obj.id === 'string' ? obj.id : null,
-              permissionName: name,
-              permissionDescription: typeof obj.description === 'string' ? obj.description : null,
-              permissionTag: obj.tag ?? null,
-              denormalized: [name],
-            }];
-          })
-        : [],
-    }));
+              if (!p || typeof p !== 'object' || Array.isArray(p)) return [];
+              const obj = p as { id?: string; name?: string; description?: string | null; tag?: unknown };
+              const name = typeof obj.name === 'string' ? obj.name.trim() : '';
+              if (!name) return [];
+
+              return [{
+                rolePermissionId: typeof obj.id === 'string' ? `${r.id}::${obj.id}` : null,
+                permissionId: typeof obj.id === 'string' ? obj.id : null,
+                permissionName: name,
+                permissionDescription: typeof obj.description === 'string' ? obj.description : null,
+                permissionTag: obj.tag ?? null,
+                denormalized: [name],
+              }];
+            })
+          : [],
+      };
+    });
 
     const startedAt = roles.length > 0 ? roles[0].id : null;
     const endedAt = roles.length > 0 ? roles[roles.length - 1].id : null;

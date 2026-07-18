@@ -592,7 +592,7 @@ model AuthzRole {
   description            String?
   appId                  String?                  @map("app_id")
   scopeFor               Json                     @default("[]") @map("scope_for")
-  scopeLevel             String                   @default("assignable") @map("scope_level")
+  scopeLevel             String                   @default("assignable.byTeam") @map("scope_level")
   acquisitionType        String                   @default("assignment") @map("acquisition_type")
   approvalPolicy         String                   @default("none") @map("approval_policy")
   pushed                 Boolean                  @default(false)

@@ -107,11 +107,16 @@ function toJsonInput(value: unknown, fallback: Prisma.InputJsonValue): Prisma.In
 
 function normalizeRoleScopeLevel(value: unknown): string {
   const first = Array.isArray(value) ? value[0] : value;
-  if (typeof first !== 'string') return 'assignable';
+  if (typeof first !== 'string') return 'assignable.byTeam';
   const normalized = first.trim();
-  if (!normalized) return 'assignable';
-  if (normalized === 'selfAssigned') return 'assignable';
-  if (normalized === 'rootManaged') return 'rootAssigned';
+  if (!normalized) return 'assignable.byTeam';
+  if (normalized === 'assignable' || normalized === 'selfAssigned') return 'assignable.byTeam';
+  if (normalized === 'publiclyEnrollable') return 'assignable.publicly';
+  if (normalized === 'publiclyRequestable') return 'assignable.publicly.byRequest';
+  if (normalized === 'requestableToOwner' || normalized === 'requestToOwner') return 'assignable.byTeam.fromRequest';
+  if (normalized === 'rootAssigned' || normalized === 'rootManaged') return 'assignable.byRoot';
+  if (normalized === 'assignable.byTeam') return 'assignable.byTeam';
+  if (normalized === 'assignable.byRoot') return 'assignable.byRoot';
   return normalized;
 }
 

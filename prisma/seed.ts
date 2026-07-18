@@ -231,7 +231,7 @@ async function main() {
             roleId: ROLE_DEFAULT_ID,
             permissionId: permission.id,
             scopeFor: 'for_individual',
-            scopeLevel: 'publiclyEnrollable',
+            scopeLevel: 'assignable.publicly',
           },
         } as any,
         update: {},
@@ -240,7 +240,7 @@ async function main() {
           permissionId: permission.id,
           scope: 'public.individual',
           scopeFor: 'for_individual',
-          scopeLevel: 'publiclyEnrollable',
+          scopeLevel: 'assignable.publicly',
         },
       });
     }
@@ -274,7 +274,7 @@ async function main() {
             roleId: ROLE_ROOT_ID,
             permissionId: permission.id,
             scopeFor: 'for_individual',
-            scopeLevel: 'rootAssigned',
+            scopeLevel: 'assignable.byRoot',
           },
         } as any,
         update: {},
@@ -283,7 +283,7 @@ async function main() {
           permissionId: permission.id,
           scope: 'root.individual',
           scopeFor: 'for_individual',
-          scopeLevel: 'rootAssigned',
+          scopeLevel: 'assignable.byRoot',
         },
       });
     }

@@ -39,7 +39,7 @@ export function RoleCreateForm({ appId, applicableForOptions }: Props) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [scopeFor, setScopeFor] = useState<AuthzScopeFor[]>(['for_individual']);
-  const [scopeLevel, setScopeLevel] = useState<AuthzScopeLevel[]>(['assignable']);
+  const [scopeLevel, setScopeLevel] = useState<AuthzScopeLevel[]>(['assignable.byTeam']);
   const [applicableFor, setApplicableFor] = useState<string[]>([]);
   const [pending, setPending] = useState(false);
 
@@ -74,7 +74,7 @@ export function RoleCreateForm({ appId, applicableForOptions }: Props) {
       <Input value={name} onChange={(event) => setName(event.target.value)} placeholder="Role title, e.g. Viewer" />
       <Input value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Description (optional)" />
       <ScopeForSelector value={scopeFor} onChange={setScopeFor} />
-      <ScopeLevelSelector value={scopeLevel} onChange={(value) => setScopeLevel([value[0] ?? 'assignable'])} allowMultiple={false} />
+      <ScopeLevelSelector value={scopeLevel} onChange={(value) => setScopeLevel([value[0] ?? 'assignable.byTeam'])} allowMultiple={false} />
       <AuthzDefinitionSelector
         label="Applicable for"
         description="Choose the configured applicable-for targets for this role."

@@ -841,7 +841,7 @@ export async function getApplicationRoleOptions(appId: string, targetAccountType
       return roleMatchesAssignmentModesPolicy({
         accountType: targetAccountType,
         scopeFor: (role as any).scopeFor ?? [],
-        scopeLevel: (role as any).scopeLevel ?? 'assignable',
+        scopeLevel: (role as any).scopeLevel ?? 'assignable.byTeam',
         modes,
       });
     });

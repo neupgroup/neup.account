@@ -108,9 +108,14 @@ function normalizeJsonArray(value: unknown, fallback: string[] = []): Prisma.Inp
 function normalizeRoleScopeLevel(value: unknown): string {
   const candidate = Array.isArray(value) ? value[0] : value;
   const normalized = normalizeString(candidate);
-  if (normalized === 'selfAssigned') return 'assignable';
-  if (normalized === 'rootManaged') return 'rootAssigned';
-  return normalized ?? 'assignable';
+  if (normalized === 'assignable' || normalized === 'selfAssigned') return 'assignable.byTeam';
+  if (normalized === 'publiclyEnrollable') return 'assignable.publicly';
+  if (normalized === 'publiclyRequestable') return 'assignable.publicly.byRequest';
+  if (normalized === 'requestableToOwner' || normalized === 'requestToOwner') return 'assignable.byTeam.fromRequest';
+  if (normalized === 'rootAssigned' || normalized === 'rootManaged') return 'assignable.byRoot';
+  if (normalized === 'assignable.byTeam') return 'assignable.byTeam';
+  if (normalized === 'assignable.byRoot') return 'assignable.byRoot';
+  return normalized ?? 'assignable.byTeam';
 }
 
 function slugifyPermission(name: string): string {
@@ -118,16 +123,16 @@ function slugifyPermission(name: string): string {
 }
 
 function audienceSuffixForRoleScopeLevel(scopeLevel: string): 'self' | 'managed' | 'root' {
-  if (scopeLevel === 'rootAssigned') return 'root';
-  if (scopeLevel === 'assignable') return 'managed';
+  if (scopeLevel === 'assignable.byRoot') return 'root';
+  if (scopeLevel === 'assignable.byTeam') return 'managed';
   return 'self';
 }
 
 function scopeLevelForCanonicalDefinition(definition: (typeof NEUP_ACCOUNT_PERMISSION_DEFINITIONS)[number]): string[] {
-  if (definition.rootManaged) return ['rootAssigned'];
-  if (definition.assignable) return ['assignable'];
-  if (definition.selfAssigned) return ['assignable'];
-  if (definition.publiclyEnrollable) return ['publiclyEnrollable'];
+  if (definition.rootManaged) return ['assignable.byRoot'];
+  if (definition.assignable) return ['assignable.byTeam'];
+  if (definition.selfAssigned) return ['assignable.byTeam'];
+  if (definition.publiclyEnrollable) return ['assignable.publicly'];
   return [];
 }
 

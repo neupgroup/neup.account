@@ -113,11 +113,11 @@ function extractApplicableFor(raw: unknown): string[] {
 
 function deriveScopeLevelFromLegacyPolicy(scopeLevel: unknown, acquisitionType: string | null | undefined, approvalPolicy: string | null | undefined): AuthzScopeLevel {
   const normalized = normalizeSingleAuthzScopeLevel(scopeLevel);
-  if (normalized !== 'assignable' || scopeLevel === 'assignable') {
+  if (normalized !== 'assignable.byTeam' || scopeLevel === 'assignable.byTeam') {
     return normalized;
   }
 
-  return getScopeLevelsFromStoredPolicy(acquisitionType, approvalPolicy)[0] ?? 'assignable';
+  return getScopeLevelsFromStoredPolicy(acquisitionType, approvalPolicy)[0] ?? 'assignable.byTeam';
 }
 
 export async function dispatchRoleUpdateWebhook(input: {

@@ -116,7 +116,7 @@ export function PermissionPanel({
   const [addName, setAddName] = useState('');
   const [addDesc, setAddDesc] = useState('');
   const [addScopeFor, setAddScopeFor] = useState<AppPermission['scopeFor']>(['for_individual']);
-  const [addScopeLevel, setAddScopeLevel] = useState<AppPermission['scopeLevel']>(['assignable']);
+  const [addScopeLevel, setAddScopeLevel] = useState<AppPermission['scopeLevel']>(['assignable.byTeam']);
   const [addRules, setAddRules] = useState('');
   const [addStatus, setAddStatus] = useState('');
   const [addPending, setAddPending] = useState(false);
@@ -181,7 +181,7 @@ export function PermissionPanel({
     setAddName('');
     setAddDesc('');
     setAddScopeFor(['for_individual']);
-    setAddScopeLevel(['assignable']);
+    setAddScopeLevel(['assignable.byTeam']);
     setAddRules('');
     setAddStatus('');
     setAddOpen(false);
@@ -266,7 +266,7 @@ export function PermissionPanel({
             setAddName('');
             setAddDesc('');
             setAddScopeFor(['for_individual']);
-            setAddScopeLevel(['assignable']);
+            setAddScopeLevel(['assignable.byTeam']);
             setAddRules('');
             setAddStatus('');
           }

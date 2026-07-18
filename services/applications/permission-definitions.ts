@@ -70,11 +70,11 @@ const APPLICATION_USER_UPDATE_BASICS_SCOPE_FOR: AuthzScopeFor[] = [
 ];
 
 const APPLICATION_USER_UPDATE_BASICS_SCOPE_LEVEL: AuthzScopeLevel[] = [
-  'assignable',
-  'publiclyEnrollable',
-  'publiclyRequestable',
-  'requestableToOwner',
-  'rootAssigned',
+  'assignable.byTeam',
+  'assignable.publicly',
+  'assignable.publicly.byRequest',
+  'assignable.byTeam.fromRequest',
+  'assignable.byRoot',
 ];
 
 const APPLICATION_PERMISSION_DEFINITION_MAP: Record<ApplicationPermissionBase, ApplicationPermissionDefinition> = {
@@ -194,20 +194,20 @@ function permissionPolicyDefinition(
   if (audience === 'root') {
     return {
       scopeFor,
-      scopeLevel: ['rootAssigned'],
+      scopeLevel: ['assignable.byRoot'],
     };
   }
 
   if (audience === 'managed') {
     return {
       scopeFor,
-      scopeLevel: ['assignable'],
+      scopeLevel: ['assignable.byTeam'],
     };
   }
 
   return {
     scopeFor,
-    scopeLevel: ['publiclyEnrollable'],
+    scopeLevel: ['assignable.publicly'],
   };
 }
 
@@ -251,7 +251,7 @@ export function getApplicationPermissionDefinitions(
       const name = permissionName(base, audience);
       const policy = permissionPolicyDefinition(base, audience);
       const existing = definitions.get(name);
-      const storedPolicy = getStoredPolicyForScopeLevel(policy.scopeLevel[0] ?? 'assignable');
+      const storedPolicy = getStoredPolicyForScopeLevel(policy.scopeLevel[0] ?? 'assignable.byTeam');
 
       if (existing) {
         existing.scopeFor = Array.from(new Set([...existing.scopeFor, ...policy.scopeFor]));

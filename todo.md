@@ -13,6 +13,7 @@
 
 ## Migration Follow-Ups
 
+- [ ] Make `tests/services/brand-owner-permissions.test.ts` order-insensitive or align `resolveNeupAccountPermissionCandidates` ordering; the current full suite fails because it returns the expected candidates in a different order.
 - [ ] Fix application user role toggles so existing publicly-enrollable roles are not resubmitted as manager-assignable roles.
 - [ ] Fix the ignored `core/database/prisma.ts` Prisma 7 wrapper/export mismatch: TypeScript currently sees `@prisma/client` without `PrismaClient`, `Prisma`, `AccessType`, `AssetType`, or `Identity` exports expected by migrated callers.
 - [ ] Fix `20260629120000_rename_branch_to_subbrand` so it tolerates databases without legacy tables like `account_ownership`.

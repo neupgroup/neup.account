@@ -237,11 +237,11 @@ function formatRoleScopeLevel(
   approvalPolicy?: string | null,
 ): AuthzScopeLevel {
   const normalized = normalizeSingleAuthzScopeLevel(value);
-  if (normalized !== 'assignable' || value === 'assignable') {
+  if (normalized !== 'assignable.byTeam' || value === 'assignable.byTeam') {
     return normalized;
   }
 
-  return getScopeLevelsFromStoredPolicy(acquisitionType, approvalPolicy)[0] ?? 'assignable';
+  return getScopeLevelsFromStoredPolicy(acquisitionType, approvalPolicy)[0] ?? 'assignable.byTeam';
 }
 
 function getPermissionScopeFor(record: {
@@ -567,8 +567,8 @@ function getSystemRoleScopeFor(roleId: string): AuthzScopeFor[] {
 }
 
 function getSystemRoleScopeLevel(roleId: string): AuthzScopeLevel {
-  if (roleId === 'application.manage') return 'rootAssigned';
-  return 'assignable';
+  if (roleId === 'application.manage') return 'assignable.byRoot';
+  return 'assignable.byTeam';
 }
 
 function isGlobalAuthzSystemRole(roleId: string): boolean {
@@ -601,7 +601,7 @@ async function upsertPermissionsForApp(
   let columnSupport = await getAuthzScopePolicyColumnSupport();
 
   for (const definition of definitions) {
-    const storedPolicy = getStoredPolicyForScopeLevel(definition.scopeLevel[0] ?? 'assignable');
+    const storedPolicy = getStoredPolicyForScopeLevel(definition.scopeLevel[0] ?? 'assignable.byTeam');
     const buildData = (includeScopePolicyColumns: boolean) => ({
       name: definition.name,
       description: definition.description,
@@ -788,7 +788,7 @@ async function areApplicationManagementRolesCurrent(
     const expected = expectedPermissionByName.get(permissionRecord.name);
     if (!expected) return false;
     if (permissionRecord.description !== expected.description) return false;
-    if (permissionRecord.approvalPolicy !== getStoredPolicyForScopeLevel(expected.scopeLevel[0] ?? 'assignable').approvalPolicy) {
+    if (permissionRecord.approvalPolicy !== getStoredPolicyForScopeLevel(expected.scopeLevel[0] ?? 'assignable.byTeam').approvalPolicy) {
       return false;
     }
     if (columnSupport.permission) {
@@ -1183,7 +1183,7 @@ export async function createAppPermission(input: {
   try {
     const scopeFor = validatePermissionScopeForInput(input.scopeFor);
     const scopeLevel = validatePermissionScopeLevelInput(input.scopeLevel);
-    const storedPolicy = getStoredPolicyForScopeLevel(scopeLevel[0] ?? 'assignable');
+    const storedPolicy = getStoredPolicyForScopeLevel(scopeLevel[0] ?? 'assignable.byTeam');
     const columnSupport = await getAuthzScopePolicyColumnSupport();
 
     const record = await prisma.authzPermission.create({
@@ -1244,7 +1244,7 @@ export async function updateAppPermission(input: {
 
     const scopeFor = validatePermissionScopeForInput(input.scopeFor);
     const scopeLevel = validatePermissionScopeLevelInput(input.scopeLevel);
-    const storedPolicy = getStoredPolicyForScopeLevel(scopeLevel[0] ?? 'assignable');
+    const storedPolicy = getStoredPolicyForScopeLevel(scopeLevel[0] ?? 'assignable.byTeam');
     const columnSupport = await getAuthzScopePolicyColumnSupport();
 
     const record = await prisma.$transaction(async (tx) => {

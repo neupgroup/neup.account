@@ -60,7 +60,7 @@ async function main() {
           description: 'Brand ownership role for brand accounts.',
           appId: APP_ID,
           scopeFor: ['for_brand'],
-          scopeLevel: 'assignable',
+          scopeLevel: 'assignable.byTeam',
           permissions: BRAND_OWNER_PERMISSION_NAMES,
         },
       });
@@ -72,7 +72,7 @@ async function main() {
           description: 'Brand ownership role for brand accounts.',
           appId: APP_ID,
           scopeFor: ['for_brand'],
-          scopeLevel: 'assignable',
+          scopeLevel: 'assignable.byTeam',
           permissions: BRAND_OWNER_PERMISSION_NAMES,
         },
         create: {
@@ -81,7 +81,7 @@ async function main() {
           description: 'Brand ownership role for brand accounts.',
           appId: APP_ID,
           scopeFor: ['for_brand'],
-          scopeLevel: 'assignable',
+          scopeLevel: 'assignable.byTeam',
           permissions: BRAND_OWNER_PERMISSION_NAMES,
         },
       });
@@ -118,7 +118,7 @@ async function main() {
           roleId: BRAND_OWNER_ROLE_ID,
           permissionId: permission.id,
           scopeFor: 'for_brand',
-          scopeLevel: 'assignable',
+          scopeLevel: 'assignable.byTeam',
         } as any,
       });
     }

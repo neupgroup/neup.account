@@ -70,7 +70,7 @@ describe('authz scope policy account type matching', () => {
   it('allows default roles scoped for individual and dependent accounts only on those account types', () => {
     const input = {
       scopeFor: ['for_individual', 'for_dependent'],
-      scopeLevel: 'assignable',
+      scopeLevel: 'assignable.byTeam',
       modes: ['manageable'] as const,
     };
 
@@ -84,19 +84,19 @@ describe('authz scope policy account type matching', () => {
     expect(roleMatchesAssignmentModesPolicy({
       accountType: 'brand',
       scopeFor: ['for_brand'],
-      scopeLevel: 'assignable',
+      scopeLevel: 'assignable.byTeam',
       modes: ['manageable'],
     })).toBe(true);
     expect(roleMatchesAssignmentModesPolicy({
       accountType: 'subbrand',
       scopeFor: ['for_brand'],
-      scopeLevel: 'assignable',
+      scopeLevel: 'assignable.byTeam',
       modes: ['manageable'],
     })).toBe(false);
     expect(roleMatchesAssignmentModesPolicy({
       accountType: 'subbrand',
       scopeFor: ['for_brand', 'for_subBrand'],
-      scopeLevel: 'assignable',
+      scopeLevel: 'assignable.byTeam',
       modes: ['manageable'],
     })).toBe(true);
   });

@@ -27,11 +27,11 @@ export const AUTHZ_SCOPE_FOR_VALUES = [
 ] as const;
 
 export const AUTHZ_SCOPE_LEVEL_VALUES = [
-  'assignable',
-  'publiclyEnrollable',
-  'publiclyRequestable',
-  'requestableToOwner',
-  'rootAssigned',
+  'assignable.byTeam',
+  'assignable.publicly',
+  'assignable.publicly.byRequest',
+  'assignable.byTeam.fromRequest',
+  'assignable.byRoot',
 ] as const;
 
 export type AuthzScopeFor = (typeof AUTHZ_SCOPE_FOR_VALUES)[number];
@@ -63,24 +63,24 @@ export const AUTHZ_SCOPE_FOR_META: Record<AuthzScopeFor, { label: string; descri
 };
 
 export const AUTHZ_SCOPE_LEVEL_META: Record<AuthzScopeLevel, { label: string; description: string }> = {
-  assignable: {
-    label: 'assignable',
+  'assignable.byTeam': {
+    label: 'assignable.byTeam',
     description: 'Can be assigned directly.',
   },
-  publiclyEnrollable: {
-    label: 'publiclyEnrollable',
+  'assignable.publicly': {
+    label: 'assignable.publicly',
     description: 'Can be enrolled publicly without approval.',
   },
-  publiclyRequestable: {
-    label: 'publiclyRequestable',
+  'assignable.publicly.byRequest': {
+    label: 'assignable.publicly.byRequest',
     description: 'Can be requested publicly and approved by an admin.',
   },
-  requestableToOwner: {
-    label: 'requestableToOwner',
+  'assignable.byTeam.fromRequest': {
+    label: 'assignable.byTeam.fromRequest',
     description: 'Can be requested and approved by the owner.',
   },
-  rootAssigned: {
-    label: 'rootAssigned',
+  'assignable.byRoot': {
+    label: 'assignable.byRoot',
     description: 'Can only be assigned by root management.',
   },
 };
@@ -95,8 +95,11 @@ function isKnownScopeLevel(value: string): value is AuthzScopeLevel {
 
 function normalizeLegacyScopeLevelValue(value: string): string {
   const trimmed = value.trim();
-  if (trimmed === 'selfAssigned') return 'assignable';
-  if (trimmed === 'rootManaged') return 'rootAssigned';
+  if (trimmed === 'assignable' || trimmed === 'selfAssigned') return 'assignable.byTeam';
+  if (trimmed === 'publiclyEnrollable') return 'assignable.publicly';
+  if (trimmed === 'publiclyRequestable') return 'assignable.publicly.byRequest';
+  if (trimmed === 'requestableToOwner' || trimmed === 'requestToOwner') return 'assignable.byTeam.fromRequest';
+  if (trimmed === 'rootAssigned' || trimmed === 'rootManaged') return 'assignable.byRoot';
   return trimmed;
 }
 
@@ -129,13 +132,13 @@ export function normalizeAuthzScopeLevels(value: unknown, allowMultiple = true):
 }
 
 export function normalizeSingleAuthzScopeLevel(value: unknown): AuthzScopeLevel {
-  return normalizeAuthzScopeLevels(value, false)[0] ?? 'assignable';
+  return normalizeAuthzScopeLevels(value, false)[0] ?? 'assignable.byTeam';
 }
 
 export function normalizeAssignableScopeLevel(value: unknown): AuthzScopeLevel {
   const normalized = typeof value === 'string' ? value.trim() : '';
   if (normalized === 'manageable' || normalized === 'managable') {
-    return 'assignable';
+    return 'assignable.byTeam';
   }
 
   return normalizeSingleAuthzScopeLevel(value);
@@ -155,7 +158,7 @@ export function deriveLegacyRoleScopesFromPolicy(
   scopeFor: readonly AuthzScopeFor[],
   scopeLevel: AuthzScopeLevel,
 ): string[] {
-  if (scopeLevel === 'rootAssigned' && scopeFor.includes('for_individual')) {
+  if (scopeLevel === 'assignable.byRoot' && scopeFor.includes('for_individual')) {
     return ['rootMgmt.self'];
   }
   if (scopeFor.includes('for_brand') && scopeFor.includes('for_subBrand')) {
@@ -184,7 +187,7 @@ export function roleMatchesAssignmentModesPolicy(input: {
   const roleScopeLevel = normalizeAssignableScopeLevel(input.scopeLevel);
   if (!roleScopeFor.includes(requiredScopeFor)) return false;
 
-  if (roleScopeLevel === 'rootAssigned') {
+  if (roleScopeLevel === 'assignable.byRoot') {
     return input.modes.includes('root');
   }
 
@@ -209,15 +212,15 @@ export function roleMatchesAccountTypeScopePolicy(input: {
 
 export function getStoredPolicyForScopeLevel(scopeLevel: AuthzScopeLevel): LegacyStoredPolicy {
   switch (scopeLevel) {
-    case 'requestableToOwner':
+    case 'assignable.byTeam.fromRequest':
       return { acquisitionType: 'invitation', approvalPolicy: 'approval_required' };
-    case 'rootAssigned':
+    case 'assignable.byRoot':
       return { acquisitionType: 'invitation', approvalPolicy: 'none' };
-    case 'publiclyRequestable':
+    case 'assignable.publicly.byRequest':
       return { acquisitionType: 'public_request', approvalPolicy: 'approval_required' };
-    case 'publiclyEnrollable':
+    case 'assignable.publicly':
       return { acquisitionType: 'public_request', approvalPolicy: 'none' };
-    case 'assignable':
+    case 'assignable.byTeam':
     default:
       return { acquisitionType: 'assignment', approvalPolicy: 'none' };
   }
@@ -227,12 +230,12 @@ export function getScopeLevelsFromStoredPolicy(
   acquisitionType: string | null | undefined,
   approvalPolicy: string | null | undefined,
 ): AuthzScopeLevel[] {
-  if (acquisitionType === 'system_generated') return ['assignable'];
-  if (acquisitionType === 'invitation' && approvalPolicy === 'approval_required') return ['requestableToOwner'];
-  if (acquisitionType === 'invitation') return ['rootAssigned'];
-  if (acquisitionType === 'public_request' && approvalPolicy === 'approval_required') return ['publiclyRequestable'];
-  if (acquisitionType === 'public_request') return ['publiclyEnrollable'];
-  return ['assignable'];
+  if (acquisitionType === 'system_generated') return ['assignable.byTeam'];
+  if (acquisitionType === 'invitation' && approvalPolicy === 'approval_required') return ['assignable.byTeam.fromRequest'];
+  if (acquisitionType === 'invitation') return ['assignable.byRoot'];
+  if (acquisitionType === 'public_request' && approvalPolicy === 'approval_required') return ['assignable.publicly.byRequest'];
+  if (acquisitionType === 'public_request') return ['assignable.publicly'];
+  return ['assignable.byTeam'];
 }
 
 export function expandAuthzScopePairs(

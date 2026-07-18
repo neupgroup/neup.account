@@ -121,7 +121,7 @@ async function main() {
         roleId: ROLE.id,
         permissionId: cap.id,
         scopeFor: 'for_individual',
-        scopeLevel: 'assignable',
+        scopeLevel: 'assignable.byTeam',
       },
     });
     console.log(`  ✓ Role-permission map upserted: ${ROLE.id} → ${cap.id}`);

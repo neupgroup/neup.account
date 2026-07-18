@@ -105,7 +105,7 @@ export async function bridgeSignIntoApplication(input: { appId?: string; appType
 			const activeTill = new Date();
 			activeTill.setDate(activeTill.getDate() + 30);
 
-			const defaultRoleId = await getApplicationDefaultRoleId(appId);
+			const defaultRoleId = await getApplicationDefaultRoleId(appId, { accountType: profile.accountType });
 			await prisma.connection.upsert({
 				where: {
 					accountId_appId: {
@@ -215,7 +215,12 @@ export async function bridgeConnectionSignAndGet(input: {
       return { status: 403, body: { success: false, error: 'You do not have permission to access this endpoint.' } };
     }
 
-    const defaultRoleId = await getApplicationDefaultRoleId(appId);
+    const profile = await getUserProfile(accountId);
+    if (!profile) {
+      return { status: 404, body: { success: false, error: 'User profile not found.' } };
+    }
+
+    const defaultRoleId = await getApplicationDefaultRoleId(appId, { accountType: profile.accountType });
     const connection = await prisma.connection.upsert({
       where: { accountId_appId: { accountId, appId } },
       update: {},
@@ -234,11 +239,6 @@ export async function bridgeConnectionSignAndGet(input: {
         status: 403,
         body: { success: false, error: `connection_${connection.status}` },
       };
-    }
-
-    const profile = await getUserProfile(accountId);
-    if (!profile) {
-      return { status: 404, body: { success: false, error: 'User profile not found.' } };
     }
 
     const selectedFields = new Set(

@@ -38,7 +38,7 @@ function resolveAppId(input: { app?: string }): string | null {
 }
 
 // Resolves the role name and permission set for an account in the context of an external app.
-async function resolveAccountGrant(accountId: string, appId: string): Promise<{ role: string; permissions: string[] }> {
+async function resolveAccountGrant(accountId: string, appId: string): Promise<{ role: string; permissions: string[]; accountType: string | null }> {
   const [account, permissions, isRoot] = await Promise.all([
     prisma.account.findUnique({ where: { id: accountId }, select: { accountType: true } }),
     getAccountPermission(accountId),
@@ -46,7 +46,7 @@ async function resolveAccountGrant(accountId: string, appId: string): Promise<{ 
   ]);
 
   const role = isRoot ? 'root' : (account?.accountType ?? 'individual');
-  return { role, permissions };
+  return { role, permissions, accountType: account?.accountType ?? null };
 }
 
 /**
@@ -128,7 +128,7 @@ export async function bridgeIssueGrant(input: {
       };
     }
 
-    const { role: roleName, permissions } = await resolveAccountGrant(request.accountId, appId);
+    const { role: roleName, permissions, accountType } = await resolveAccountGrant(request.accountId, appId);
 
     const skey = crypto.randomBytes(32).toString('hex');
 
@@ -162,7 +162,7 @@ export async function bridgeIssueGrant(input: {
       };
     }
 
-    const defaultRoleId = await getApplicationDefaultRoleId(appId);
+    const defaultRoleId = await getApplicationDefaultRoleId(appId, { accountType });
     await prisma.connection.upsert({
       where: {
         accountId_appId: {

@@ -278,7 +278,13 @@ export async function GET(request: NextRequest): Promise<Response> {
   if (isAuthenticated && accountId) {
     // Ensure ApplicationConnection exists and get its stable ID
     try {
-      const defaultRoleId = await getApplicationDefaultRoleId(appId);
+      const account = await prisma.account.findUnique({
+        where: { id: accountId },
+        select: { accountType: true },
+      });
+      const defaultRoleId = await getApplicationDefaultRoleId(appId, {
+        accountType: account?.accountType ?? null,
+      });
       const connection = await prisma.connection.upsert({
         where: { accountId_appId: { accountId, appId } },
         update: {},

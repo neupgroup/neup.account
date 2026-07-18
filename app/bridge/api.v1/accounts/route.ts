@@ -278,7 +278,9 @@ export async function POST(request: NextRequest) {
         );
     }
 
-    const defaultRoleId = await getApplicationDefaultRoleId(appId);
+    const defaultRoleId = await getApplicationDefaultRoleId(appId, {
+        accountType: targetAccount.accountType,
+    });
     const connection = await prisma.connection.upsert({
         where: { accountId_appId: { accountId, appId } },
         update: {},

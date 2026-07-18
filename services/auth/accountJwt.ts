@@ -168,8 +168,23 @@ export async function issueAccountToken(input: {
       };
     }
 
+    const account = await prisma.account.findUnique({
+      where: { id: aid },
+      select: { accountType: true },
+    });
+    if (!account) {
+      return {
+        status: 404,
+        body: {
+          success: false,
+          error: 'account_not_found',
+          error_description: 'Account not found',
+        },
+      };
+    }
+
     // 3. Ensure Connection exists — get its ID
-    const defaultRoleId = await getApplicationDefaultRoleId(appId);
+    const defaultRoleId = await getApplicationDefaultRoleId(appId, { accountType: account.accountType });
     const connection = await prisma.connection.upsert({
       where: { accountId_appId: { accountId: aid, appId } },
       update: {},

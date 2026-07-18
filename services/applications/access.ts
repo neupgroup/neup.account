@@ -124,7 +124,7 @@ export async function assignOwnApplicationRole(input: {
     const connectionDetails = await prisma.$transaction(async (tx) => {
       await cleanupExpiredAccessModel(tx);
 
-      const defaultRoleId = await getApplicationDefaultRoleId(appId);
+      const defaultRoleId = await getApplicationDefaultRoleId(appId, { accountType: account.accountType });
       const existingConnection = await tx.connection.findUnique({
         where: { accountId_appId: { accountId, appId } },
         select: { id: true },
@@ -351,7 +351,7 @@ export async function addUserApplicationAccess(input: { appId: string; permissio
         select: { id: true },
       });
 
-      const defaultRoleId = await getApplicationDefaultRoleId(appId);
+      const defaultRoleId = await getApplicationDefaultRoleId(appId, { accountType: account.accountType });
       const connection = existingConnection
         ? existingConnection
         : await tx.connection.create({

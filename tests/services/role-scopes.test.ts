@@ -10,6 +10,7 @@ import {
   normalizeRoleScope,
 } from '@/services/role-scopes';
 import { normalizePermissionScopes } from '@/services/applications/permission-scopes';
+import { roleMatchesAssignmentModesPolicy } from '@/services/applications/authz-scope-policy';
 
 describe('role scope normalization', () => {
   it('uses named scopes as the canonical form', () => {
@@ -65,12 +66,48 @@ describe('permission scope normalization', () => {
   });
 });
 
+describe('authz scope policy account type matching', () => {
+  it('allows default roles scoped for individual and dependent accounts only on those account types', () => {
+    const input = {
+      scopeFor: ['for_individual', 'for_dependent'],
+      scopeLevel: 'assignable',
+      modes: ['manageable'] as const,
+    };
+
+    expect(roleMatchesAssignmentModesPolicy({ ...input, accountType: 'individual' })).toBe(true);
+    expect(roleMatchesAssignmentModesPolicy({ ...input, accountType: 'dependent' })).toBe(true);
+    expect(roleMatchesAssignmentModesPolicy({ ...input, accountType: 'brand' })).toBe(false);
+    expect(roleMatchesAssignmentModesPolicy({ ...input, accountType: 'subbrand' })).toBe(false);
+  });
+
+  it('matches brand-scoped and subbrand-scoped roles only to covered account types', () => {
+    expect(roleMatchesAssignmentModesPolicy({
+      accountType: 'brand',
+      scopeFor: ['for_brand'],
+      scopeLevel: 'assignable',
+      modes: ['manageable'],
+    })).toBe(true);
+    expect(roleMatchesAssignmentModesPolicy({
+      accountType: 'subbrand',
+      scopeFor: ['for_brand'],
+      scopeLevel: 'assignable',
+      modes: ['manageable'],
+    })).toBe(false);
+    expect(roleMatchesAssignmentModesPolicy({
+      accountType: 'subbrand',
+      scopeFor: ['for_brand', 'for_subBrand'],
+      scopeLevel: 'assignable',
+      modes: ['manageable'],
+    })).toBe(true);
+  });
+});
+
 describe('role access flag mapping', () => {
   it('maps persisted role policies into the new access flags', () => {
     expect(getRoleAccessFlags('assignment', 'none')).toMatchObject({ assignable: true });
     expect(getRoleAccessFlags('public_request', 'none')).toMatchObject({ publiclyEnrollable: true });
-    expect(getRoleAccessFlags('system_generated', 'none')).toMatchObject({ selfAssigned: true });
-    expect(getRoleAccessFlags('invitation', 'none')).toMatchObject({ rootManaged: true });
+    expect(getRoleAccessFlags('system_generated', 'none')).toMatchObject({ assignable: true });
+    expect(getRoleAccessFlags('invitation', 'none')).toMatchObject({ rootAssigned: true });
     expect(getRoleAccessFlags('public_request', 'approval_required')).toMatchObject({ publiclyRequestable: true });
     expect(getRoleAccessFlags('invitation', 'approval_required')).toMatchObject({ requestableToOwner: true });
   });

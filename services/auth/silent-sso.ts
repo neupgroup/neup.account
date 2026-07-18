@@ -314,7 +314,13 @@ export async function ensureApplicationConnection(
   appId: string
 ): Promise<void> {
   try {
-    const defaultRoleId = await getApplicationDefaultRoleId(appId);
+    const account = await prisma.account.findUnique({
+      where: { id: accountId },
+      select: { accountType: true },
+    });
+    const defaultRoleId = await getApplicationDefaultRoleId(appId, {
+      accountType: account?.accountType ?? null,
+    });
     await prisma.connection.upsert({
       where: { accountId_appId: { accountId, appId } },
       update: {},

@@ -19,6 +19,7 @@ import {
   ACCESS_ACCOUNT_DEPENDENT_CREATE_PERMISSIONS,
   ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS,
 } from '@/inapp/permissions/access-view-permissions';
+import { assignDefaultRole } from '@/services/auth/assignDefaultRole';
 
 const servicePermissions = [
   permission('access.linked_account.view.self', 'for_individual', 'service'),
@@ -251,6 +252,8 @@ export async function createDependentAccount(
 
             return accountId;
         });
+
+        await assignDefaultRole(dependentAccountId);
 
         await logActivity(
             guardianAccountId,

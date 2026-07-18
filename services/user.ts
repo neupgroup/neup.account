@@ -3,7 +3,7 @@
 // Server-side user data layer. Fetches profile, contacts, NeupIDs, and permissions
 // for a given account. All functions fall back to the active account if no ID is passed.
 
-import prisma from "@/core/helpers/prisma";
+import prisma from "@/core/database/prisma";
 import { Prisma } from "@/prisma/generated/client/client";
 import { logError } from "@/logica/logger/files";
 import { getActiveAccountId, getPersonalAccountId } from "@/services/account/verify";

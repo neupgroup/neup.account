@@ -2569,19 +2569,23 @@ export async function getApplicationUsersPaginated(params: {
 export async function getApplicationUserConnectionDetails(params: {
   appId: string;
   connectionId: string;
+  rootMode?: boolean;
 }): Promise<AppUserConnectionDetails | null> {
   const accountId = await getActiveAccountId();
   if (!accountId) return null;
 
-  const canView = await canCurrentAccountViewApplicationUsers(params.appId);
+  const canView = await canCurrentAccountViewApplicationUsers(params.appId, { rootMode: params.rootMode });
   if (!canView) return null;
 
   try {
     const [row, pendingRequests] = await Promise.all([
       prisma.connection.findFirst({
         where: {
-          id: params.connectionId,
           appId: params.appId,
+          OR: [
+            { id: params.connectionId },
+            { accountId: params.connectionId },
+          ],
         },
         select: {
           id: true,

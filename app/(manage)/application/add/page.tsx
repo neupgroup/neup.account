@@ -1,5 +1,5 @@
 import { FlowLink } from '@/components/ui/flow-link';
-import { notFound } from 'next/navigation';
+import { forbidden } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ApplicationCreateForm } from '@/app/(manage)/application/_components/application-create-form';
@@ -9,7 +9,7 @@ import { ROOT_APPLICATION_CREATE_PERMISSION } from '@/services/applications/perm
 export default async function AddApplicationPage() {
   const canCreateApplication = await hasRootApplicationPermission(ROOT_APPLICATION_CREATE_PERMISSION);
   if (!canCreateApplication) {
-    notFound();
+    forbidden();
   }
 
   return (

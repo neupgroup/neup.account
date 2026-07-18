@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { forbidden } from 'next/navigation';
 import { ApplicationDetailPage } from '@/app/(manage)/application/_components/application-detail-page';
 import { getApplicationMode } from '@/app/(manage)/application/_lib/query-param';
 import { formMetadata } from '@/core/metadata';
@@ -41,7 +41,7 @@ export default async function ApplicationCanonicalPage({ params, searchParams }:
 
   if (resolvedMode === 'root') {
     const canUseRootMode = await canCurrentAccountUseRootApplicationMode();
-    if (!canUseRootMode) notFound();
+    if (!canUseRootMode) forbidden();
     await logRootApplicationActivity(appid, 'overview');
   }
 

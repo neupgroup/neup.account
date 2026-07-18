@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { forbidden, notFound } from 'next/navigation';
 import { ArrowLeft, CheckCircle2, ChevronRight } from '@/components/icons';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { FlowLink } from '@/components/ui/flow-link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   canCurrentAccountRemoveApplicationUser,
+  canCurrentAccountUseRootApplicationMode,
   canCurrentAccountUpdateApplicationUserRole,
   canCurrentAccountViewApplicationUsers,
   getApplicationDetailsForViewerV2,
@@ -59,13 +60,22 @@ export async function ApplicationUserDetailsPage({
   activeSince?: string;
   sort?: string;
 }) {
+  if (
+    mode === 'root' &&
+    !(await canCurrentAccountUseRootApplicationMode([
+      ROOT_APPLICATION_ACCOUNT_VIEW_PERMISSION,
+      ROOT_APPLICATION_USER_VIEW_PERMISSION,
+    ]))
+  ) {
+    forbidden();
+  }
 
   const [applicationDetails, details] = await Promise.all([
     getApplicationDetailsForViewerV2(appId, {
       rootMode: mode === 'root',
       rootPermissionNames: [ROOT_APPLICATION_ACCOUNT_VIEW_PERMISSION, ROOT_APPLICATION_USER_VIEW_PERMISSION],
     }),
-    getApplicationUserConnectionDetails({ appId, connectionId: connId }),
+    getApplicationUserConnectionDetails({ appId, connectionId: connId, rootMode: mode === 'root' }),
   ]);
 
   if (!applicationDetails || !details) notFound();
@@ -75,7 +85,7 @@ export async function ApplicationUserDetailsPage({
     canCurrentAccountUpdateApplicationUserRole(appId, { rootMode: mode === 'root' }),
     canCurrentAccountRemoveApplicationUser(appId, { rootMode: mode === 'root' }),
   ]);
-  if (!canViewUsers) notFound();
+  if (!canViewUsers) forbidden();
   const roles = canUpdateUserRole ? await getApplicationRoleOptions(appId, details.accountType, { rootMode: mode === 'root' }) : [];
 
   const initials = details.displayName?.charAt(0).toUpperCase() ?? '?';
@@ -173,7 +183,7 @@ export async function ApplicationUserDetailsPage({
           </div>
           <RoleSelector
             appId={appId}
-            connectionId={connId}
+            connectionId={details.connectionId}
             roles={roles}
             currentRoleIds={details.roleIds}
             pendingRoleIds={details.pendingRoleIds}
@@ -185,7 +195,7 @@ export async function ApplicationUserDetailsPage({
       <div className="overflow-hidden rounded-2xl border bg-card">
         {canRemoveUser ? (
           <FlowLink
-            href={applicationHref(`/application/users/${connId}/delete`, appId, mode ? { mode } : undefined)}
+            href={applicationHref(`/application/users/${details.connectionId}/delete`, appId, mode ? { mode } : undefined)}
             className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5"
           >
             <div className="min-w-0">
@@ -197,7 +207,7 @@ export async function ApplicationUserDetailsPage({
         ) : null}
 
         <FlowLink
-          href={applicationHref(`/application/users/${connId}/activity`, appId, mode ? { mode } : undefined)}
+          href={applicationHref(`/application/users/${details.connectionId}/activity`, appId, mode ? { mode } : undefined)}
           className="group flex items-center justify-between gap-4 px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5"
         >
           <div className="min-w-0">

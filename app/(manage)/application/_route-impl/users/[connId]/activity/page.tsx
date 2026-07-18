@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { forbidden, notFound } from 'next/navigation';
 import { ArrowLeft } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,7 +22,7 @@ export default async function ApplicationUserActivityQueryPage({ params, searchP
 
 export async function ApplicationUserActivityPage({ applicationId, connId, mode }: { applicationId: string; connId: string; mode?: string }) {
   const canViewUsers = await canCurrentAccountViewApplicationUsers(applicationId, { rootMode: mode === 'root' });
-  if (!canViewUsers) notFound();
+  if (!canViewUsers) forbidden();
   if (mode === 'root') await logRootApplicationActivity(applicationId, `users/${connId}/activity`);
 
   return (

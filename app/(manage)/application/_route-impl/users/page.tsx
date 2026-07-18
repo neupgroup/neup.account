@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { forbidden, notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { FlowLink } from '@/components/ui/flow-link';
 import { ArrowLeft } from '@/components/icons';
 import {
+  canCurrentAccountUseRootApplicationMode,
   canCurrentAccountViewApplicationUsers,
   getApplicationDetailsForViewerV2,
   getApplicationUserStats,
@@ -47,6 +48,16 @@ export default async function ApplicationUsersQueryPage({ searchParams }: Props)
 }
 
 export async function ApplicationUsersPage({ applicationId, mode }: { applicationId: string; mode?: string }) {
+  if (
+    mode === 'root' &&
+    !(await canCurrentAccountUseRootApplicationMode([
+      ROOT_APPLICATION_ACCOUNT_VIEW_PERMISSION,
+      ROOT_APPLICATION_USER_VIEW_PERMISSION,
+    ]))
+  ) {
+    forbidden();
+  }
+
   const details = await getApplicationDetailsForViewerV2(applicationId, {
     rootMode: mode === 'root',
     rootPermissionNames: [ROOT_APPLICATION_ACCOUNT_VIEW_PERMISSION, ROOT_APPLICATION_USER_VIEW_PERMISSION],
@@ -54,7 +65,7 @@ export async function ApplicationUsersPage({ applicationId, mode }: { applicatio
   if (!details) notFound();
   if (mode === 'root') await logRootApplicationActivity(applicationId, 'users');
   const canViewUsers = await canCurrentAccountViewApplicationUsers(applicationId, { rootMode: mode === 'root' });
-  if (!canViewUsers) notFound();
+  if (!canViewUsers) forbidden();
   const userStats = await getApplicationUserStats(applicationId, { rootMode: mode === 'root' });
   const userCount = userStats?.total ?? 0;
 

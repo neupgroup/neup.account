@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { forbidden, notFound } from 'next/navigation';
 import { getApplicationsManagePageData } from '@/services/applications/form-actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle } from '@/components/icons';
@@ -86,7 +86,7 @@ export default async function ApplicationsManagePage({ searchParams }: Props) {
 
   if (rootMode) {
     const canUseRootMode = await canCurrentAccountUseRootApplicationMode();
-    if (!canUseRootMode) notFound();
+    if (!canUseRootMode) forbidden();
   }
 
   if (applicationId) notFound();

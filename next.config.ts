@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   // assetPrefix: '',
   basePath: '/account',
   assetPrefix: '/account',
+  experimental: {
+    authInterrupts: true,
+  },
   typescript: {
     ignoreBuildErrors: false,
   },

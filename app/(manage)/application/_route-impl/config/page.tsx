@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { forbidden, notFound } from 'next/navigation';
 import {
   canCurrentAccountUseRootApplicationMode,
   canCurrentAccountUpdateApplicationConfig,
@@ -31,7 +31,7 @@ export async function ApplicationConfigPage({ applicationId, mode }: { applicati
 
   if (rootMode) {
     const canUseRootMode = await canCurrentAccountUseRootApplicationMode();
-    if (!canUseRootMode) notFound();
+    if (!canUseRootMode) forbidden();
   }
 
   const details = await getApplicationDetailsForViewerV2(applicationId, { rootMode });

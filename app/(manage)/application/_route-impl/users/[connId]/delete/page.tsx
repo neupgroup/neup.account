@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { forbidden, notFound } from 'next/navigation';
 import { ArrowLeft } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,7 +22,7 @@ export default async function ApplicationUserDeleteQueryPage({ params, searchPar
 
 export async function ApplicationUserDeletePage({ applicationId, connId, mode }: { applicationId: string; connId: string; mode?: string }) {
   const canRemoveUser = await canCurrentAccountRemoveApplicationUser(applicationId, { rootMode: mode === 'root' });
-  if (!canRemoveUser) notFound();
+  if (!canRemoveUser) forbidden();
   if (mode === 'root') await logRootApplicationActivity(applicationId, `users/${connId}/delete`);
 
   return (

@@ -1,25 +1,61 @@
 
 'use client';
 
+import { usePathname, useSearchParams } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import { cn } from '@/core/utils';
-import { FlowLink } from '@/components/ui/flow-link';
-import { goBack, hasBackHistory } from '@/core/helpers/navigation';
+import { resolveBackNavigationHref, type NavigationBackTargets } from '@/core/helpers/navigation';
+import { Suspense } from 'react';
 
-export function BackButton({ href, className }: { href: string, className?: string }) {
+type BackButtonProps = {
+  backsTo?: string;
+  href?: string;
+  className?: string;
+  navigationTargets?: NavigationBackTargets;
+};
+
+function BackButtonInner({ backsTo, href, className, navigationTargets }: BackButtonProps) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const search = searchParams.toString();
+  const urlBacksTo = searchParams.get('backsTo');
+  const targetHref = resolveBackNavigationHref({
+    backsTo: urlBacksTo ?? backsTo ?? href,
+    currentPathname: pathname || '/',
+    currentSearch: search ? `?${search}` : '',
+    currentHash: typeof window === 'undefined' ? '' : window.location.hash,
+    targets: navigationTargets,
+  });
+
   return (
-    <FlowLink
-      href={href}
+    <a
+      href={targetHref}
       className={cn("flex items-center gap-2 text-sm font-bold text-foreground hover:underline underline-offset-4", className)}
       onClick={(event) => {
-        if (!hasBackHistory()) return;
-
         event.preventDefault();
-        goBack(false);
+        window.location.assign(targetHref);
       }}
     >
         <ChevronLeft className="h-4 w-4" />
         Go back
-    </FlowLink>
+    </a>
+  );
+}
+
+export function BackButton(props: BackButtonProps) {
+  return (
+    <Suspense
+      fallback={(
+        <a
+          href={props.backsTo ?? props.href ?? '/account'}
+          className={cn("flex items-center gap-2 text-sm font-bold text-foreground hover:underline underline-offset-4", props.className)}
+        >
+          <ChevronLeft className="h-4 w-4" />
+          Go back
+        </a>
+      )}
+    >
+      <BackButtonInner {...props} />
+    </Suspense>
   );
 }

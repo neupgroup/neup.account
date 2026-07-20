@@ -301,15 +301,26 @@ function hasUsableRoleScope(scope: unknown): boolean {
   return Array.isArray(scope) && scope.length > 0;
 }
 
-const APPLICATION_USER_ROLE_ASSIGN_PERMISSION_BY_SCOPE_LEVEL = {
-  'assignable.toSelf.publicly': APPLICATION_USER_ROLE_ASSIGN_PUBLIC_ROLES_PERMISSION,
-  'assignable.toSelf.publicly.byRequest': APPLICATION_USER_ROLE_ASSIGN_PUBLIC_REQUESTABLE_ROLES_PERMISSION,
-  'assignable.byRoot': APPLICATION_USER_ROLE_ASSIGN_ROOT_ROLES_PERMISSION,
-} satisfies Partial<Record<AuthzScopeLevel, string>>;
+const APPLICATION_USER_ROLE_ASSIGNABLE_SCOPE_LEVELS: readonly AuthzScopeLevel[] = [
+  'assignable.toSelf.publicly',
+  'assignable.toSelf.publicly.byRequest',
+  'assignable.byRoot',
+] as const;
 
-const APPLICATION_USER_ROLE_ASSIGNABLE_SCOPE_LEVELS = Object.keys(
-  APPLICATION_USER_ROLE_ASSIGN_PERMISSION_BY_SCOPE_LEVEL,
-) as AuthzScopeLevel[];
+const APPLICATION_USER_ROLE_ASSIGN_SCOPE_LEVELS_BY_PERMISSION = [
+  {
+    permissionName: APPLICATION_USER_ROLE_ASSIGN_PUBLIC_ROLES_PERMISSION,
+    scopeLevels: ['assignable.toSelf.publicly'],
+  },
+  {
+    permissionName: APPLICATION_USER_ROLE_ASSIGN_PUBLIC_REQUESTABLE_ROLES_PERMISSION,
+    scopeLevels: ['assignable.toSelf.publicly', 'assignable.toSelf.publicly.byRequest'],
+  },
+  {
+    permissionName: APPLICATION_USER_ROLE_ASSIGN_ROOT_ROLES_PERMISSION,
+    scopeLevels: ['assignable.toSelf.publicly', 'assignable.toSelf.publicly.byRequest', 'assignable.byRoot'],
+  },
+] as const satisfies ReadonlyArray<{ permissionName: string; scopeLevels: readonly AuthzScopeLevel[] }>;
 
 async function getCurrentApplicationRoleAssignmentScopeLevels(
   appId: string,
@@ -318,17 +329,17 @@ async function getCurrentApplicationRoleAssignmentScopeLevels(
   const accountId = await getActiveAccountId();
   if (!accountId) return new Set();
 
-  const permissionEntries = Object.entries(APPLICATION_USER_ROLE_ASSIGN_PERMISSION_BY_SCOPE_LEVEL) as Array<[AuthzScopeLevel, string]>;
+  const permissionEntries = APPLICATION_USER_ROLE_ASSIGN_SCOPE_LEVELS_BY_PERMISSION;
   const [appPermissionResults, rootPermissionResults] = await Promise.all([
-    Promise.all(permissionEntries.map(([, permissionName]) => hasApplicationPermission(accountId, appId, [permissionName]))),
+    Promise.all(permissionEntries.map(({ permissionName }) => hasApplicationPermission(accountId, appId, [permissionName]))),
     options?.rootMode === true
-      ? Promise.all(permissionEntries.map(([, permissionName]) => hasRootApplicationPermission(permissionName)))
+      ? Promise.all(permissionEntries.map(({ permissionName }) => hasRootApplicationPermission(permissionName)))
       : Promise.resolve(permissionEntries.map(() => false)),
   ]);
 
   return new Set(
-    permissionEntries.flatMap(([scopeLevel], index) =>
-      appPermissionResults[index] || rootPermissionResults[index] ? [scopeLevel] : [],
+    permissionEntries.flatMap(({ scopeLevels }, index) =>
+      appPermissionResults[index] || rootPermissionResults[index] ? scopeLevels : [],
     ),
   );
 }

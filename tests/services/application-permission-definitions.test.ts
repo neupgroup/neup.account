@@ -65,7 +65,7 @@ describe('application system owner permissions', () => {
         (permission) => permission.name === 'application.user.updateBasics',
       ),
     ).toMatchObject({
-      scopeFor: ['for_brand', 'for_individual', 'for_dependent', 'for_subBrand'],
+      scopeFor: ['for_brand', 'for_individual', 'for_dependent', 'for_subBrand', 'for_guest'],
       scopeLevel: [
         'assignable.byTeam',
         'assignable.toSelf.publicly',

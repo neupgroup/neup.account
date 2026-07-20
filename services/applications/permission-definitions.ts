@@ -70,6 +70,7 @@ const APPLICATION_USER_UPDATE_BASICS_SCOPE_FOR: AuthzScopeFor[] = [
   'for_individual',
   'for_dependent',
   'for_subBrand',
+  'for_guest',
 ];
 
 const APPLICATION_USER_UPDATE_BASICS_SCOPE_LEVEL: AuthzScopeLevel[] = [

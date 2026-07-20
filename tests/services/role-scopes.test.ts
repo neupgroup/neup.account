@@ -100,6 +100,18 @@ describe('authz scope policy account type matching', () => {
       modes: ['manageable'],
     })).toBe(true);
   });
+
+  it('matches guest-scoped roles only to guest accounts', () => {
+    const input = {
+      scopeFor: ['for_guest'],
+      scopeLevel: 'assignable.byTeam',
+      modes: ['manageable'] as const,
+    };
+
+    expect(roleMatchesAssignmentModesPolicy({ ...input, accountType: 'guest' })).toBe(true);
+    expect(roleMatchesAssignmentModesPolicy({ ...input, accountType: 'individual' })).toBe(false);
+    expect(roleMatchesAssignmentModesPolicy({ ...input, accountType: 'brand' })).toBe(false);
+  });
 });
 
 describe('role access flag mapping', () => {

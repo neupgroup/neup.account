@@ -24,6 +24,7 @@ export const AUTHZ_SCOPE_FOR_VALUES = [
   'for_individual',
   'for_dependent',
   'for_subBrand',
+  'for_guest',
 ] as const;
 
 export const AUTHZ_SCOPE_LEVEL_VALUES = [
@@ -59,6 +60,10 @@ export const AUTHZ_SCOPE_FOR_META: Record<AuthzScopeFor, { label: string; descri
   for_subBrand: {
     label: 'for_subBrand',
     description: 'Applies to subBrand accounts.',
+  },
+  for_guest: {
+    label: 'for_guest',
+    description: 'Applies to guest accounts.',
   },
 };
 
@@ -153,6 +158,7 @@ export function scopeForForAccountType(accountType: string | null | undefined): 
   if (normalized === 'branch' || normalized === 'subbrand') return 'for_subBrand';
   if (normalized === 'dependent') return 'for_dependent';
   if (normalized === 'individual') return 'for_individual';
+  if (normalized === 'guest') return 'for_guest';
   return null;
 }
 

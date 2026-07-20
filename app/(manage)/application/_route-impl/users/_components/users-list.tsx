@@ -43,13 +43,15 @@ const SINCE_OPTIONS: { value: 'all' | '1d' | '7d' | '30d'; label: string }[] = [
   { value: '30d', label: 'Last 30 days' },
 ];
 
-function statusVariant(status: string | null): 'default' | 'secondary' | 'destructive' | 'outline' {
+function statusVariant(status: string | null, accountType?: string): 'default' | 'secondary' | 'destructive' | 'outline' {
+  if (accountType === 'guest') return 'secondary';
   if (status === 'active') return 'default';
   if (status === 'deactivated') return 'destructive';
   return 'outline';
 }
 
-function statusLabel(status: string | null): string {
+function statusLabel(status: string | null, accountType?: string): string {
+  if (accountType === 'guest') return 'Guest';
   if (!status) return 'Pending';
   return status.charAt(0).toUpperCase() + status.slice(1);
 }
@@ -90,7 +92,7 @@ function UserRow({
         ${!isFirst ? '-mt-px' : ''}
       `}
     >
-      <Avatar className="h-9 w-9 rounded-md shrink-0">
+      <Avatar className="h-9 w-9 rounded-md shrink-0 ring-1 ring-black/20 dark:ring-white/25">
         <AvatarImage src={user.displayImage ?? undefined} alt={user.displayName ?? ''} />
         <AvatarFallback className="rounded-md text-sm font-semibold">
           {initials}
@@ -111,8 +113,8 @@ function UserRow({
         </p>
       </div>
 
-      <Badge variant={statusVariant(user.status)} className="capitalize shrink-0">
-        {statusLabel(user.status)}
+      <Badge variant={statusVariant(user.status, user.accountType)} className="capitalize shrink-0">
+        {statusLabel(user.status, user.accountType)}
       </Badge>
     </FlowLink>
   );

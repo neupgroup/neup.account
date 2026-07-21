@@ -132,18 +132,20 @@ model Activity {
 }
 
 model Notification {
-  id          String    @id(map: "notifications_pkey") @default(uuid())
-  accountId   String
-  action      String?
-  title       String?
-  message     String?
-  type        String    @default("info")
-  read        Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  deletableOn DateTime?
-  persistence String?
-  detail      Json?
-  account     Account   @relation(fields: [accountId], references: [id], map: "notifications_accountId_fkey")
+  id            String       @id(map: "notifications_pkey") @default(uuid())
+  accountId     String
+  applicationId String?
+  action        String?
+  title         String?
+  message       String?
+  type          String       @default("info")
+  read          Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+  deletableOn   DateTime?
+  persistence   String?
+  detail        Json?
+  account       Account      @relation(fields: [accountId], references: [id], map: "notifications_accountId_fkey")
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade, map: "notification_applicationId_fkey")
 
   @@map("notification")
 }
@@ -303,6 +305,7 @@ model Application {
   authzPermissions AuthzPermission[]
   authzRoles       AuthzRole[]
   identities       Identity[]
+  notifications    Notification[]
   childAssets      Asset[]              @relation("AssetChildApplication")
   assetAccessRows  Access[]             @relation("AccessAssetApplication")
   accessRows       Access[]             @relation("AccessApplication")
@@ -361,18 +364,18 @@ model Asset {
 }
 
 model Member {
-  id                String   @id @default(uuid())
-  memberType        String   @map("member_type")
-  memberAccountId   String?  @map("child_account_id")
-  parentAccountId   String?  @map("parent_account_id")
-  status            String   @default("active")
-  isTemporary       DateTime? @map("is_temporary")
-  details           Json?
+  id              String    @id @default(uuid())
+  memberType      String    @map("member_type")
+  memberAccountId String?   @map("child_account_id")
+  parentAccountId String?   @map("parent_account_id")
+  status          String    @default("active")
+  isTemporary     DateTime? @map("is_temporary")
+  details         Json?
 
-  memberAccount   Account?    @relation("MemberChildAccount", fields: [memberAccountId], references: [id], onDelete: Cascade, map: "member_child_account_id_fkey")
-  parentAccount   Account?    @relation("MemberParentAccount", fields: [parentAccountId], references: [id], onDelete: Cascade, map: "member_parent_account_id_fkey")
-  accessRows      Access[]
-  roles           Role[]
+  memberAccount Account? @relation("MemberChildAccount", fields: [memberAccountId], references: [id], onDelete: Cascade, map: "member_child_account_id_fkey")
+  parentAccount Account? @relation("MemberParentAccount", fields: [parentAccountId], references: [id], onDelete: Cascade, map: "member_parent_account_id_fkey")
+  accessRows    Access[]
+  roles         Role[]
 
   @@index([memberType], map: "member_member_type_idx")
   @@index([memberAccountId], map: "member_child_account_id_idx")
@@ -438,19 +441,19 @@ model AccountOwnership {
 }
 
 model Connection {
-  id          String      @id(map: "user_app_connections_pkey") @default(uuid())
-  accountId   String      @map("account_id")
-  appId       String      @map("app_id")
-  roleId      String?     @map("role_id")
-  status      String      @default("active")
-  connectedAt DateTime    @default(now()) @map("connected_at")
-  details     Json?
-  account     Account     @relation(fields: [accountId], references: [id], onDelete: Cascade, map: "user_app_connections_accountId_fkey")
-  application Application @relation(fields: [appId], references: [id], map: "user_app_connections_appId_fkey")
-  role        AuthzRole?  @relation("ConnectionRole", fields: [roleId], references: [id], map: "connection_role_id_fkey")
-  childAssets       Asset[]   @relation("AssetChildConnection")
-  assetAccessRows   Access[]  @relation("AccessAssetConnection")
-  denormRoles       Role[]    @relation("RoleConnection")
+  id              String      @id(map: "user_app_connections_pkey") @default(uuid())
+  accountId       String      @map("account_id")
+  appId           String      @map("app_id")
+  roleId          String?     @map("role_id")
+  status          String      @default("active")
+  connectedAt     DateTime    @default(now()) @map("connected_at")
+  details         Json?
+  account         Account     @relation(fields: [accountId], references: [id], onDelete: Cascade, map: "user_app_connections_accountId_fkey")
+  application     Application @relation(fields: [appId], references: [id], map: "user_app_connections_appId_fkey")
+  role            AuthzRole?  @relation("ConnectionRole", fields: [roleId], references: [id], map: "connection_role_id_fkey")
+  childAssets     Asset[]     @relation("AssetChildConnection")
+  assetAccessRows Access[]    @relation("AccessAssetConnection")
+  denormRoles     Role[]      @relation("RoleConnection")
 
   @@unique([accountId, appId], map: "user_app_connections_accountId_appId_key")
   @@map("connection")
@@ -548,39 +551,31 @@ model Role {
   @@map("role")
 }
 
-/*
-::neup.documentation::authz-permission-model
-::title Authz Permission Model
-
-Stores application permission metadata and scope-policy fields.
-
-::public
-
-Permissions belong to one application and persist their `scope_for` / `scope_level` policy together with optional descriptive metadata.
-
-::public end
-
-::private
-
-The legacy permission `scope` column has been removed. Runtime compatibility now derives any needed legacy semantics from `scope_for`, `scope_level`, and `approval_policy`.
-
-::private end
-
-::end
-*/
+/**
+ * ::neup.documentation::authz-permission-model
+ * ::title Authz Permission Model
+ * Stores application permission metadata and scope-policy fields.
+ * ::public
+ * Permissions belong to one application and persist their `scope_for` / `scope_level` policy together with optional descriptive metadata.
+ * ::public end
+ * ::private
+ * The legacy permission `scope` column has been removed. Runtime compatibility now derives any needed legacy semantics from `scope_for`, `scope_level`, and `approval_policy`.
+ * ::private end
+ * ::end
+ */
 model AuthzPermission {
-  id           String                   @id @default(uuid())
-  name         String
-  description  String?
-  appId        String?                  @map("app_id")
-  scopeFor     Json?                    @default("[]") @map("scope_for")
-  scopeLevel   Json?                    @default("[]") @map("scope_level")
-  approvalPolicy  String?               @default("none") @map("approval_policy")
-  rules        String?
-  status       String?
-  tag          Json?
-  application  Application?             @relation(fields: [appId], references: [id])
-  roleMappings AuthzRolePermissionMap[]
+  id             String                   @id @default(uuid())
+  name           String
+  description    String?
+  appId          String?                  @map("app_id")
+  scopeFor       Json?                    @default("[]") @map("scope_for")
+  scopeLevel     Json?                    @default("[]") @map("scope_level")
+  approvalPolicy String?                  @default("none") @map("approval_policy")
+  rules          String?
+  status         String?
+  tag            Json?
+  application    Application?             @relation(fields: [appId], references: [id])
+  roleMappings   AuthzRolePermissionMap[]
 
   @@unique([name, appId], map: "authz_permission_name_app_id_key")
   @@map("authz_permission")
@@ -627,16 +622,16 @@ model AuthzRolePermissionMap {
 }
 
 model AuthzAssetsAccessGrant {
-  id           String  @id @default(uuid())
-  asset_id     String  @map("asset_id")
-  account_id   String  @map("account_id")
-  role_id      String  @map("role_id")
-  app_id       String  @map("app_id")
-  asset_type   String? @map("asset_type")
+  id         String  @id @default(uuid())
+  asset_id   String  @map("asset_id")
+  account_id String  @map("account_id")
+  role_id    String  @map("role_id")
+  app_id     String  @map("app_id")
+  asset_type String? @map("asset_type")
 
-  asset     Asset      @relation(fields: [asset_id], references: [id], map: "authz_assets_access_grant_asset_id_fkey")
-  account   Account    @relation(fields: [account_id], references: [id], map: "authz_assets_access_grant_account_id_fkey")
-  role      AuthzRole  @relation(fields: [role_id], references: [id], map: "authz_assets_access_grant_role_id_fkey")
+  asset   Asset     @relation(fields: [asset_id], references: [id], map: "authz_assets_access_grant_asset_id_fkey")
+  account Account   @relation(fields: [account_id], references: [id], map: "authz_assets_access_grant_account_id_fkey")
+  role    AuthzRole @relation(fields: [role_id], references: [id], map: "authz_assets_access_grant_role_id_fkey")
 
   @@index([asset_id], map: "authz_assets_access_grant_asset_id_idx")
   @@index([account_id], map: "authz_assets_access_grant_account_id_idx")

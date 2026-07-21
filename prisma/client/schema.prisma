@@ -132,18 +132,20 @@ model Activity {
 }
 
 model Notification {
-  id          String    @id(map: "notifications_pkey") @default(uuid())
-  accountId   String
-  action      String?
-  title       String?
-  message     String?
-  type        String    @default("info")
-  read        Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  deletableOn DateTime?
-  persistence String?
-  detail      Json?
-  account     Account   @relation(fields: [accountId], references: [id], map: "notifications_accountId_fkey")
+  id            String       @id(map: "notifications_pkey") @default(uuid())
+  accountId     String
+  applicationId String?
+  action        String?
+  title         String?
+  message       String?
+  type          String       @default("info")
+  read          Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+  deletableOn   DateTime?
+  persistence   String?
+  detail        Json?
+  account       Account      @relation(fields: [accountId], references: [id], map: "notifications_accountId_fkey")
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade, map: "notification_applicationId_fkey")
 
   @@map("notification")
 }
@@ -303,6 +305,7 @@ model Application {
   authzPermissions AuthzPermission[]
   authzRoles       AuthzRole[]
   identities       Identity[]
+  notifications    Notification[]
   childAssets      Asset[]              @relation("AssetChildApplication")
   assetAccessRows  Access[]             @relation("AccessAssetApplication")
   accessRows       Access[]             @relation("AccessApplication")

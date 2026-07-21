@@ -155,24 +155,17 @@ export type ApplicationPolicy = $Result.DefaultSelection<Prisma.$ApplicationPoli
 export type Role = $Result.DefaultSelection<Prisma.$RolePayload>
 /**
  * Model AuthzPermission
- * ::neup.documentation::authz-permission-model
- * ::title Authz Permission Model
- * 
- * Stores application permission metadata and scope-policy fields.
- * 
- * ::public
- * 
- * Permissions belong to one application and persist their `scope_for` / `scope_level` policy together with optional descriptive metadata.
- * 
- * ::public end
- * 
- * ::private
- * 
- * The legacy permission `scope` column has been removed. Runtime compatibility now derives any needed legacy semantics from `scope_for`, `scope_level`, and `approval_policy`.
- * 
- * ::private end
- * 
- * ::end
+ * *
+ *  * ::neup.documentation::authz-permission-model
+ *  * ::title Authz Permission Model
+ *  * Stores application permission metadata and scope-policy fields.
+ *  * ::public
+ *  * Permissions belong to one application and persist their `scope_for` / `scope_level` policy together with optional descriptive metadata.
+ *  * ::public end
+ *  * ::private
+ *  * The legacy permission `scope` column has been removed. Runtime compatibility now derives any needed legacy semantics from `scope_for`, `scope_level`, and `approval_policy`.
+ *  * ::private end
+ *  * ::end
  */
 export type AuthzPermission = $Result.DefaultSelection<Prisma.$AuthzPermissionPayload>
 /**
@@ -4299,6 +4292,7 @@ export namespace Prisma {
     authzPermissions: number
     authzRoles: number
     identities: number
+    notifications: number
     childAssets: number
     assetAccessRows: number
     accessRows: number
@@ -4312,6 +4306,7 @@ export namespace Prisma {
     authzPermissions?: boolean | ApplicationCountOutputTypeCountAuthzPermissionsArgs
     authzRoles?: boolean | ApplicationCountOutputTypeCountAuthzRolesArgs
     identities?: boolean | ApplicationCountOutputTypeCountIdentitiesArgs
+    notifications?: boolean | ApplicationCountOutputTypeCountNotificationsArgs
     childAssets?: boolean | ApplicationCountOutputTypeCountChildAssetsArgs
     assetAccessRows?: boolean | ApplicationCountOutputTypeCountAssetAccessRowsArgs
     accessRows?: boolean | ApplicationCountOutputTypeCountAccessRowsArgs
@@ -4369,6 +4364,13 @@ export namespace Prisma {
    */
   export type ApplicationCountOutputTypeCountIdentitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: IdentityWhereInput
+  }
+
+  /**
+   * ApplicationCountOutputType without action
+   */
+  export type ApplicationCountOutputTypeCountNotificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NotificationWhereInput
   }
 
   /**
@@ -12889,6 +12891,7 @@ export namespace Prisma {
   export type NotificationMinAggregateOutputType = {
     id: string | null
     accountId: string | null
+    applicationId: string | null
     action: string | null
     title: string | null
     message: string | null
@@ -12902,6 +12905,7 @@ export namespace Prisma {
   export type NotificationMaxAggregateOutputType = {
     id: string | null
     accountId: string | null
+    applicationId: string | null
     action: string | null
     title: string | null
     message: string | null
@@ -12915,6 +12919,7 @@ export namespace Prisma {
   export type NotificationCountAggregateOutputType = {
     id: number
     accountId: number
+    applicationId: number
     action: number
     title: number
     message: number
@@ -12931,6 +12936,7 @@ export namespace Prisma {
   export type NotificationMinAggregateInputType = {
     id?: true
     accountId?: true
+    applicationId?: true
     action?: true
     title?: true
     message?: true
@@ -12944,6 +12950,7 @@ export namespace Prisma {
   export type NotificationMaxAggregateInputType = {
     id?: true
     accountId?: true
+    applicationId?: true
     action?: true
     title?: true
     message?: true
@@ -12957,6 +12964,7 @@ export namespace Prisma {
   export type NotificationCountAggregateInputType = {
     id?: true
     accountId?: true
+    applicationId?: true
     action?: true
     title?: true
     message?: true
@@ -13044,6 +13052,7 @@ export namespace Prisma {
   export type NotificationGroupByOutputType = {
     id: string
     accountId: string
+    applicationId: string | null
     action: string | null
     title: string | null
     message: string | null
@@ -13075,6 +13084,7 @@ export namespace Prisma {
   export type NotificationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     accountId?: boolean
+    applicationId?: boolean
     action?: boolean
     title?: boolean
     message?: boolean
@@ -13085,11 +13095,13 @@ export namespace Prisma {
     persistence?: boolean
     detail?: boolean
     account?: boolean | AccountDefaultArgs<ExtArgs>
+    application?: boolean | Notification$applicationArgs<ExtArgs>
   }, ExtArgs["result"]["notification"]>
 
   export type NotificationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     accountId?: boolean
+    applicationId?: boolean
     action?: boolean
     title?: boolean
     message?: boolean
@@ -13100,11 +13112,13 @@ export namespace Prisma {
     persistence?: boolean
     detail?: boolean
     account?: boolean | AccountDefaultArgs<ExtArgs>
+    application?: boolean | Notification$applicationArgs<ExtArgs>
   }, ExtArgs["result"]["notification"]>
 
   export type NotificationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     accountId?: boolean
+    applicationId?: boolean
     action?: boolean
     title?: boolean
     message?: boolean
@@ -13115,11 +13129,13 @@ export namespace Prisma {
     persistence?: boolean
     detail?: boolean
     account?: boolean | AccountDefaultArgs<ExtArgs>
+    application?: boolean | Notification$applicationArgs<ExtArgs>
   }, ExtArgs["result"]["notification"]>
 
   export type NotificationSelectScalar = {
     id?: boolean
     accountId?: boolean
+    applicationId?: boolean
     action?: boolean
     title?: boolean
     message?: boolean
@@ -13131,25 +13147,30 @@ export namespace Prisma {
     detail?: boolean
   }
 
-  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "accountId" | "action" | "title" | "message" | "type" | "read" | "createdAt" | "deletableOn" | "persistence" | "detail", ExtArgs["result"]["notification"]>
+  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "accountId" | "applicationId" | "action" | "title" | "message" | "type" | "read" | "createdAt" | "deletableOn" | "persistence" | "detail", ExtArgs["result"]["notification"]>
   export type NotificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     account?: boolean | AccountDefaultArgs<ExtArgs>
+    application?: boolean | Notification$applicationArgs<ExtArgs>
   }
   export type NotificationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     account?: boolean | AccountDefaultArgs<ExtArgs>
+    application?: boolean | Notification$applicationArgs<ExtArgs>
   }
   export type NotificationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     account?: boolean | AccountDefaultArgs<ExtArgs>
+    application?: boolean | Notification$applicationArgs<ExtArgs>
   }
 
   export type $NotificationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Notification"
     objects: {
       account: Prisma.$AccountPayload<ExtArgs>
+      application: Prisma.$ApplicationPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       accountId: string
+      applicationId: string | null
       action: string | null
       title: string | null
       message: string | null
@@ -13554,6 +13575,7 @@ export namespace Prisma {
   export interface Prisma__NotificationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     account<T extends AccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AccountDefaultArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    application<T extends Notification$applicationArgs<ExtArgs> = {}>(args?: Subset<T, Notification$applicationArgs<ExtArgs>>): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -13585,6 +13607,7 @@ export namespace Prisma {
   interface NotificationFieldRefs {
     readonly id: FieldRef<"Notification", 'String'>
     readonly accountId: FieldRef<"Notification", 'String'>
+    readonly applicationId: FieldRef<"Notification", 'String'>
     readonly action: FieldRef<"Notification", 'String'>
     readonly title: FieldRef<"Notification", 'String'>
     readonly message: FieldRef<"Notification", 'String'>
@@ -13987,6 +14010,25 @@ export namespace Prisma {
      * Limit how many Notifications to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Notification.application
+   */
+  export type Notification$applicationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Application
+     */
+    select?: ApplicationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Application
+     */
+    omit?: ApplicationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApplicationInclude<ExtArgs> | null
+    where?: ApplicationWhereInput
   }
 
   /**
@@ -25100,6 +25142,7 @@ export namespace Prisma {
     authzPermissions?: boolean | Application$authzPermissionsArgs<ExtArgs>
     authzRoles?: boolean | Application$authzRolesArgs<ExtArgs>
     identities?: boolean | Application$identitiesArgs<ExtArgs>
+    notifications?: boolean | Application$notificationsArgs<ExtArgs>
     childAssets?: boolean | Application$childAssetsArgs<ExtArgs>
     assetAccessRows?: boolean | Application$assetAccessRowsArgs<ExtArgs>
     accessRows?: boolean | Application$accessRowsArgs<ExtArgs>
@@ -25178,6 +25221,7 @@ export namespace Prisma {
     authzPermissions?: boolean | Application$authzPermissionsArgs<ExtArgs>
     authzRoles?: boolean | Application$authzRolesArgs<ExtArgs>
     identities?: boolean | Application$identitiesArgs<ExtArgs>
+    notifications?: boolean | Application$notificationsArgs<ExtArgs>
     childAssets?: boolean | Application$childAssetsArgs<ExtArgs>
     assetAccessRows?: boolean | Application$assetAccessRowsArgs<ExtArgs>
     accessRows?: boolean | Application$accessRowsArgs<ExtArgs>
@@ -25204,6 +25248,7 @@ export namespace Prisma {
       authzPermissions: Prisma.$AuthzPermissionPayload<ExtArgs>[]
       authzRoles: Prisma.$AuthzRolePayload<ExtArgs>[]
       identities: Prisma.$IdentityPayload<ExtArgs>[]
+      notifications: Prisma.$NotificationPayload<ExtArgs>[]
       childAssets: Prisma.$AssetPayload<ExtArgs>[]
       assetAccessRows: Prisma.$AccessPayload<ExtArgs>[]
       accessRows: Prisma.$AccessPayload<ExtArgs>[]
@@ -25628,6 +25673,7 @@ export namespace Prisma {
     authzPermissions<T extends Application$authzPermissionsArgs<ExtArgs> = {}>(args?: Subset<T, Application$authzPermissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     authzRoles<T extends Application$authzRolesArgs<ExtArgs> = {}>(args?: Subset<T, Application$authzRolesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthzRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     identities<T extends Application$identitiesArgs<ExtArgs> = {}>(args?: Subset<T, Application$identitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IdentityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    notifications<T extends Application$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, Application$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     childAssets<T extends Application$childAssetsArgs<ExtArgs> = {}>(args?: Subset<T, Application$childAssetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     assetAccessRows<T extends Application$assetAccessRowsArgs<ExtArgs> = {}>(args?: Subset<T, Application$assetAccessRowsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     accessRows<T extends Application$accessRowsArgs<ExtArgs> = {}>(args?: Subset<T, Application$accessRowsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccessPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -26252,6 +26298,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: IdentityScalarFieldEnum | IdentityScalarFieldEnum[]
+  }
+
+  /**
+   * Application.notifications
+   */
+  export type Application$notificationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Notification
+     */
+    select?: NotificationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Notification
+     */
+    omit?: NotificationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NotificationInclude<ExtArgs> | null
+    where?: NotificationWhereInput
+    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
+    cursor?: NotificationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
   }
 
   /**
@@ -43953,6 +44023,7 @@ export namespace Prisma {
   export const NotificationScalarFieldEnum: {
     id: 'id',
     accountId: 'accountId',
+    applicationId: 'applicationId',
     action: 'action',
     title: 'title',
     message: 'message',
@@ -45026,6 +45097,7 @@ export namespace Prisma {
     NOT?: NotificationWhereInput | NotificationWhereInput[]
     id?: StringFilter<"Notification"> | string
     accountId?: StringFilter<"Notification"> | string
+    applicationId?: StringNullableFilter<"Notification"> | string | null
     action?: StringNullableFilter<"Notification"> | string | null
     title?: StringNullableFilter<"Notification"> | string | null
     message?: StringNullableFilter<"Notification"> | string | null
@@ -45036,11 +45108,13 @@ export namespace Prisma {
     persistence?: StringNullableFilter<"Notification"> | string | null
     detail?: JsonNullableFilter<"Notification">
     account?: XOR<AccountScalarRelationFilter, AccountWhereInput>
+    application?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
   }
 
   export type NotificationOrderByWithRelationInput = {
     id?: SortOrder
     accountId?: SortOrder
+    applicationId?: SortOrderInput | SortOrder
     action?: SortOrderInput | SortOrder
     title?: SortOrderInput | SortOrder
     message?: SortOrderInput | SortOrder
@@ -45051,6 +45125,7 @@ export namespace Prisma {
     persistence?: SortOrderInput | SortOrder
     detail?: SortOrderInput | SortOrder
     account?: AccountOrderByWithRelationInput
+    application?: ApplicationOrderByWithRelationInput
   }
 
   export type NotificationWhereUniqueInput = Prisma.AtLeast<{
@@ -45059,6 +45134,7 @@ export namespace Prisma {
     OR?: NotificationWhereInput[]
     NOT?: NotificationWhereInput | NotificationWhereInput[]
     accountId?: StringFilter<"Notification"> | string
+    applicationId?: StringNullableFilter<"Notification"> | string | null
     action?: StringNullableFilter<"Notification"> | string | null
     title?: StringNullableFilter<"Notification"> | string | null
     message?: StringNullableFilter<"Notification"> | string | null
@@ -45069,11 +45145,13 @@ export namespace Prisma {
     persistence?: StringNullableFilter<"Notification"> | string | null
     detail?: JsonNullableFilter<"Notification">
     account?: XOR<AccountScalarRelationFilter, AccountWhereInput>
+    application?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
   }, "id">
 
   export type NotificationOrderByWithAggregationInput = {
     id?: SortOrder
     accountId?: SortOrder
+    applicationId?: SortOrderInput | SortOrder
     action?: SortOrderInput | SortOrder
     title?: SortOrderInput | SortOrder
     message?: SortOrderInput | SortOrder
@@ -45094,6 +45172,7 @@ export namespace Prisma {
     NOT?: NotificationScalarWhereWithAggregatesInput | NotificationScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Notification"> | string
     accountId?: StringWithAggregatesFilter<"Notification"> | string
+    applicationId?: StringNullableWithAggregatesFilter<"Notification"> | string | null
     action?: StringNullableWithAggregatesFilter<"Notification"> | string | null
     title?: StringNullableWithAggregatesFilter<"Notification"> | string | null
     message?: StringNullableWithAggregatesFilter<"Notification"> | string | null
@@ -45754,6 +45833,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionListRelationFilter
     authzRoles?: AuthzRoleListRelationFilter
     identities?: IdentityListRelationFilter
+    notifications?: NotificationListRelationFilter
     childAssets?: AssetListRelationFilter
     assetAccessRows?: AccessListRelationFilter
     accessRows?: AccessListRelationFilter
@@ -45785,6 +45865,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionOrderByRelationAggregateInput
     authzRoles?: AuthzRoleOrderByRelationAggregateInput
     identities?: IdentityOrderByRelationAggregateInput
+    notifications?: NotificationOrderByRelationAggregateInput
     childAssets?: AssetOrderByRelationAggregateInput
     assetAccessRows?: AccessOrderByRelationAggregateInput
     accessRows?: AccessOrderByRelationAggregateInput
@@ -45819,6 +45900,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionListRelationFilter
     authzRoles?: AuthzRoleListRelationFilter
     identities?: IdentityListRelationFilter
+    notifications?: NotificationListRelationFilter
     childAssets?: AssetListRelationFilter
     assetAccessRows?: AccessListRelationFilter
     accessRows?: AccessListRelationFilter
@@ -47690,11 +47772,13 @@ export namespace Prisma {
     persistence?: string | null
     detail?: NullableJsonNullValueInput | InputJsonValue
     account: AccountCreateNestedOneWithoutNotificationsInput
+    application?: ApplicationCreateNestedOneWithoutNotificationsInput
   }
 
   export type NotificationUncheckedCreateInput = {
     id?: string
     accountId: string
+    applicationId?: string | null
     action?: string | null
     title?: string | null
     message?: string | null
@@ -47718,11 +47802,13 @@ export namespace Prisma {
     persistence?: NullableStringFieldUpdateOperationsInput | string | null
     detail?: NullableJsonNullValueInput | InputJsonValue
     account?: AccountUpdateOneRequiredWithoutNotificationsNestedInput
+    application?: ApplicationUpdateOneWithoutNotificationsNestedInput
   }
 
   export type NotificationUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     accountId?: StringFieldUpdateOperationsInput | string
+    applicationId?: NullableStringFieldUpdateOperationsInput | string | null
     action?: NullableStringFieldUpdateOperationsInput | string | null
     title?: NullableStringFieldUpdateOperationsInput | string | null
     message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47737,6 +47823,7 @@ export namespace Prisma {
   export type NotificationCreateManyInput = {
     id?: string
     accountId: string
+    applicationId?: string | null
     action?: string | null
     title?: string | null
     message?: string | null
@@ -47764,6 +47851,7 @@ export namespace Prisma {
   export type NotificationUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     accountId?: StringFieldUpdateOperationsInput | string
+    applicationId?: NullableStringFieldUpdateOperationsInput | string | null
     action?: NullableStringFieldUpdateOperationsInput | string | null
     title?: NullableStringFieldUpdateOperationsInput | string | null
     message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -48439,6 +48527,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationCreateNestedManyWithoutApplicationInput
     childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessCreateNestedManyWithoutAccessApplicationInput
@@ -48468,6 +48557,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApplicationInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessUncheckedCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessUncheckedCreateNestedManyWithoutAccessApplicationInput
@@ -48497,6 +48587,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUpdateManyWithoutAccessApplicationNestedInput
@@ -48526,6 +48617,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUncheckedUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUncheckedUpdateManyWithoutAccessApplicationNestedInput
@@ -50461,9 +50553,15 @@ export namespace Prisma {
     geolocation?: SortOrder
   }
 
+  export type ApplicationNullableScalarRelationFilter = {
+    is?: ApplicationWhereInput | null
+    isNot?: ApplicationWhereInput | null
+  }
+
   export type NotificationCountOrderByAggregateInput = {
     id?: SortOrder
     accountId?: SortOrder
+    applicationId?: SortOrder
     action?: SortOrder
     title?: SortOrder
     message?: SortOrder
@@ -50478,6 +50576,7 @@ export namespace Prisma {
   export type NotificationMaxOrderByAggregateInput = {
     id?: SortOrder
     accountId?: SortOrder
+    applicationId?: SortOrder
     action?: SortOrder
     title?: SortOrder
     message?: SortOrder
@@ -50491,6 +50590,7 @@ export namespace Prisma {
   export type NotificationMinOrderByAggregateInput = {
     id?: SortOrder
     accountId?: SortOrder
+    applicationId?: SortOrder
     action?: SortOrder
     title?: SortOrder
     message?: SortOrder
@@ -51030,11 +51130,6 @@ export namespace Prisma {
   export type ConnectionNullableScalarRelationFilter = {
     is?: ConnectionWhereInput | null
     isNot?: ConnectionWhereInput | null
-  }
-
-  export type ApplicationNullableScalarRelationFilter = {
-    is?: ApplicationWhereInput | null
-    isNot?: ApplicationWhereInput | null
   }
 
   export type AssetCountOrderByAggregateInput = {
@@ -52900,12 +52995,28 @@ export namespace Prisma {
     connect?: AccountWhereUniqueInput
   }
 
+  export type ApplicationCreateNestedOneWithoutNotificationsInput = {
+    create?: XOR<ApplicationCreateWithoutNotificationsInput, ApplicationUncheckedCreateWithoutNotificationsInput>
+    connectOrCreate?: ApplicationCreateOrConnectWithoutNotificationsInput
+    connect?: ApplicationWhereUniqueInput
+  }
+
   export type AccountUpdateOneRequiredWithoutNotificationsNestedInput = {
     create?: XOR<AccountCreateWithoutNotificationsInput, AccountUncheckedCreateWithoutNotificationsInput>
     connectOrCreate?: AccountCreateOrConnectWithoutNotificationsInput
     upsert?: AccountUpsertWithoutNotificationsInput
     connect?: AccountWhereUniqueInput
     update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutNotificationsInput, AccountUpdateWithoutNotificationsInput>, AccountUncheckedUpdateWithoutNotificationsInput>
+  }
+
+  export type ApplicationUpdateOneWithoutNotificationsNestedInput = {
+    create?: XOR<ApplicationCreateWithoutNotificationsInput, ApplicationUncheckedCreateWithoutNotificationsInput>
+    connectOrCreate?: ApplicationCreateOrConnectWithoutNotificationsInput
+    upsert?: ApplicationUpsertWithoutNotificationsInput
+    disconnect?: ApplicationWhereInput | boolean
+    delete?: ApplicationWhereInput | boolean
+    connect?: ApplicationWhereUniqueInput
+    update?: XOR<XOR<ApplicationUpdateToOneWithWhereWithoutNotificationsInput, ApplicationUpdateWithoutNotificationsInput>, ApplicationUncheckedUpdateWithoutNotificationsInput>
   }
 
   export type AccountCreateNestedOneWithoutReceivedRequestsInput = {
@@ -53212,6 +53323,13 @@ export namespace Prisma {
     connect?: IdentityWhereUniqueInput | IdentityWhereUniqueInput[]
   }
 
+  export type NotificationCreateNestedManyWithoutApplicationInput = {
+    create?: XOR<NotificationCreateWithoutApplicationInput, NotificationUncheckedCreateWithoutApplicationInput> | NotificationCreateWithoutApplicationInput[] | NotificationUncheckedCreateWithoutApplicationInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutApplicationInput | NotificationCreateOrConnectWithoutApplicationInput[]
+    createMany?: NotificationCreateManyApplicationInputEnvelope
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  }
+
   export type AssetCreateNestedManyWithoutChildApplicationInput = {
     create?: XOR<AssetCreateWithoutChildApplicationInput, AssetUncheckedCreateWithoutChildApplicationInput> | AssetCreateWithoutChildApplicationInput[] | AssetUncheckedCreateWithoutChildApplicationInput[]
     connectOrCreate?: AssetCreateOrConnectWithoutChildApplicationInput | AssetCreateOrConnectWithoutChildApplicationInput[]
@@ -53280,6 +53398,13 @@ export namespace Prisma {
     connectOrCreate?: IdentityCreateOrConnectWithoutApplicationInput | IdentityCreateOrConnectWithoutApplicationInput[]
     createMany?: IdentityCreateManyApplicationInputEnvelope
     connect?: IdentityWhereUniqueInput | IdentityWhereUniqueInput[]
+  }
+
+  export type NotificationUncheckedCreateNestedManyWithoutApplicationInput = {
+    create?: XOR<NotificationCreateWithoutApplicationInput, NotificationUncheckedCreateWithoutApplicationInput> | NotificationCreateWithoutApplicationInput[] | NotificationUncheckedCreateWithoutApplicationInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutApplicationInput | NotificationCreateOrConnectWithoutApplicationInput[]
+    createMany?: NotificationCreateManyApplicationInputEnvelope
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
   }
 
   export type AssetUncheckedCreateNestedManyWithoutChildApplicationInput = {
@@ -53432,6 +53557,20 @@ export namespace Prisma {
     deleteMany?: IdentityScalarWhereInput | IdentityScalarWhereInput[]
   }
 
+  export type NotificationUpdateManyWithoutApplicationNestedInput = {
+    create?: XOR<NotificationCreateWithoutApplicationInput, NotificationUncheckedCreateWithoutApplicationInput> | NotificationCreateWithoutApplicationInput[] | NotificationUncheckedCreateWithoutApplicationInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutApplicationInput | NotificationCreateOrConnectWithoutApplicationInput[]
+    upsert?: NotificationUpsertWithWhereUniqueWithoutApplicationInput | NotificationUpsertWithWhereUniqueWithoutApplicationInput[]
+    createMany?: NotificationCreateManyApplicationInputEnvelope
+    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    update?: NotificationUpdateWithWhereUniqueWithoutApplicationInput | NotificationUpdateWithWhereUniqueWithoutApplicationInput[]
+    updateMany?: NotificationUpdateManyWithWhereWithoutApplicationInput | NotificationUpdateManyWithWhereWithoutApplicationInput[]
+    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  }
+
   export type AssetUpdateManyWithoutChildApplicationNestedInput = {
     create?: XOR<AssetCreateWithoutChildApplicationInput, AssetUncheckedCreateWithoutChildApplicationInput> | AssetCreateWithoutChildApplicationInput[] | AssetUncheckedCreateWithoutChildApplicationInput[]
     connectOrCreate?: AssetCreateOrConnectWithoutChildApplicationInput | AssetCreateOrConnectWithoutChildApplicationInput[]
@@ -53570,6 +53709,20 @@ export namespace Prisma {
     update?: IdentityUpdateWithWhereUniqueWithoutApplicationInput | IdentityUpdateWithWhereUniqueWithoutApplicationInput[]
     updateMany?: IdentityUpdateManyWithWhereWithoutApplicationInput | IdentityUpdateManyWithWhereWithoutApplicationInput[]
     deleteMany?: IdentityScalarWhereInput | IdentityScalarWhereInput[]
+  }
+
+  export type NotificationUncheckedUpdateManyWithoutApplicationNestedInput = {
+    create?: XOR<NotificationCreateWithoutApplicationInput, NotificationUncheckedCreateWithoutApplicationInput> | NotificationCreateWithoutApplicationInput[] | NotificationUncheckedCreateWithoutApplicationInput[]
+    connectOrCreate?: NotificationCreateOrConnectWithoutApplicationInput | NotificationCreateOrConnectWithoutApplicationInput[]
+    upsert?: NotificationUpsertWithWhereUniqueWithoutApplicationInput | NotificationUpsertWithWhereUniqueWithoutApplicationInput[]
+    createMany?: NotificationCreateManyApplicationInputEnvelope
+    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+    update?: NotificationUpdateWithWhereUniqueWithoutApplicationInput | NotificationUpdateWithWhereUniqueWithoutApplicationInput[]
+    updateMany?: NotificationUpdateManyWithWhereWithoutApplicationInput | NotificationUpdateManyWithWhereWithoutApplicationInput[]
+    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
   }
 
   export type AssetUncheckedUpdateManyWithoutChildApplicationNestedInput = {
@@ -55303,10 +55456,12 @@ export namespace Prisma {
     deletableOn?: Date | string | null
     persistence?: string | null
     detail?: NullableJsonNullValueInput | InputJsonValue
+    application?: ApplicationCreateNestedOneWithoutNotificationsInput
   }
 
   export type NotificationUncheckedCreateWithoutAccountInput = {
     id?: string
+    applicationId?: string | null
     action?: string | null
     title?: string | null
     message?: string | null
@@ -56404,6 +56559,7 @@ export namespace Prisma {
     NOT?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
     id?: StringFilter<"Notification"> | string
     accountId?: StringFilter<"Notification"> | string
+    applicationId?: StringNullableFilter<"Notification"> | string | null
     action?: StringNullableFilter<"Notification"> | string | null
     title?: StringNullableFilter<"Notification"> | string | null
     message?: StringNullableFilter<"Notification"> | string | null
@@ -57852,6 +58008,69 @@ export namespace Prisma {
     create: XOR<AccountCreateWithoutNotificationsInput, AccountUncheckedCreateWithoutNotificationsInput>
   }
 
+  export type ApplicationCreateWithoutNotificationsInput = {
+    id: string
+    name: string
+    description?: string | null
+    icon?: string | null
+    website?: string | null
+    appSecret?: string | null
+    createdAt?: Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    isInternal?: boolean
+    responseFields?: ApplicationCreateresponseFieldsInput | string[]
+    tokenFields?: ApplicationCreatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: number
+    provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
+    defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
+    connections?: ConnectionCreateNestedManyWithoutApplicationInput
+    bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
+    policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
+    authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
+    authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
+    identities?: IdentityCreateNestedManyWithoutApplicationInput
+    childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
+    assetAccessRows?: AccessCreateNestedManyWithoutAssetApplicationInput
+    accessRows?: AccessCreateNestedManyWithoutAccessApplicationInput
+    devLogs?: ApplicationDevLogCreateNestedManyWithoutApplicationInput
+  }
+
+  export type ApplicationUncheckedCreateWithoutNotificationsInput = {
+    id: string
+    name: string
+    description?: string | null
+    icon?: string | null
+    website?: string | null
+    appSecret?: string | null
+    createdAt?: Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    isInternal?: boolean
+    responseFields?: ApplicationCreateresponseFieldsInput | string[]
+    tokenFields?: ApplicationCreatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: number
+    providerId?: string | null
+    defaultRoleId?: string | null
+    connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
+    bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
+    policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
+    authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
+    authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
+    identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
+    assetAccessRows?: AccessUncheckedCreateNestedManyWithoutAssetApplicationInput
+    accessRows?: AccessUncheckedCreateNestedManyWithoutAccessApplicationInput
+    devLogs?: ApplicationDevLogUncheckedCreateNestedManyWithoutApplicationInput
+  }
+
+  export type ApplicationCreateOrConnectWithoutNotificationsInput = {
+    where: ApplicationWhereUniqueInput
+    create: XOR<ApplicationCreateWithoutNotificationsInput, ApplicationUncheckedCreateWithoutNotificationsInput>
+  }
+
   export type AccountUpsertWithoutNotificationsInput = {
     update: XOR<AccountUpdateWithoutNotificationsInput, AccountUncheckedUpdateWithoutNotificationsInput>
     create: XOR<AccountCreateWithoutNotificationsInput, AccountUncheckedCreateWithoutNotificationsInput>
@@ -57943,6 +58162,75 @@ export namespace Prisma {
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
     errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
     verifications?: VerificationUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
+  export type ApplicationUpsertWithoutNotificationsInput = {
+    update: XOR<ApplicationUpdateWithoutNotificationsInput, ApplicationUncheckedUpdateWithoutNotificationsInput>
+    create: XOR<ApplicationCreateWithoutNotificationsInput, ApplicationUncheckedCreateWithoutNotificationsInput>
+    where?: ApplicationWhereInput
+  }
+
+  export type ApplicationUpdateToOneWithWhereWithoutNotificationsInput = {
+    where?: ApplicationWhereInput
+    data: XOR<ApplicationUpdateWithoutNotificationsInput, ApplicationUncheckedUpdateWithoutNotificationsInput>
+  }
+
+  export type ApplicationUpdateWithoutNotificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    appSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    responseFields?: ApplicationUpdateresponseFieldsInput | string[]
+    tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: IntFieldUpdateOperationsInput | number
+    provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
+    defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
+    connections?: ConnectionUpdateManyWithoutApplicationNestedInput
+    bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
+    policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
+    authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
+    authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
+    identities?: IdentityUpdateManyWithoutApplicationNestedInput
+    childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
+    assetAccessRows?: AccessUpdateManyWithoutAssetApplicationNestedInput
+    accessRows?: AccessUpdateManyWithoutAccessApplicationNestedInput
+    devLogs?: ApplicationDevLogUpdateManyWithoutApplicationNestedInput
+  }
+
+  export type ApplicationUncheckedUpdateWithoutNotificationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    appSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    responseFields?: ApplicationUpdateresponseFieldsInput | string[]
+    tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: IntFieldUpdateOperationsInput | number
+    providerId?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
+    connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
+    bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
+    policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
+    authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
+    authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
+    identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
+    assetAccessRows?: AccessUncheckedUpdateManyWithoutAssetApplicationNestedInput
+    accessRows?: AccessUncheckedUpdateManyWithoutAccessApplicationNestedInput
+    devLogs?: ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput
   }
 
   export type AccountCreateWithoutReceivedRequestsInput = {
@@ -59845,6 +60133,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationCreateNestedManyWithoutApplicationInput
     childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessCreateNestedManyWithoutAccessApplicationInput
@@ -59873,6 +60162,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApplicationInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessUncheckedCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessUncheckedCreateNestedManyWithoutAccessApplicationInput
@@ -60182,6 +60472,44 @@ export namespace Prisma {
 
   export type IdentityCreateManyApplicationInputEnvelope = {
     data: IdentityCreateManyApplicationInput | IdentityCreateManyApplicationInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type NotificationCreateWithoutApplicationInput = {
+    id?: string
+    action?: string | null
+    title?: string | null
+    message?: string | null
+    type?: string
+    read?: boolean
+    createdAt?: Date | string
+    deletableOn?: Date | string | null
+    persistence?: string | null
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    account: AccountCreateNestedOneWithoutNotificationsInput
+  }
+
+  export type NotificationUncheckedCreateWithoutApplicationInput = {
+    id?: string
+    accountId: string
+    action?: string | null
+    title?: string | null
+    message?: string | null
+    type?: string
+    read?: boolean
+    createdAt?: Date | string
+    deletableOn?: Date | string | null
+    persistence?: string | null
+    detail?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type NotificationCreateOrConnectWithoutApplicationInput = {
+    where: NotificationWhereUniqueInput
+    create: XOR<NotificationCreateWithoutApplicationInput, NotificationUncheckedCreateWithoutApplicationInput>
+  }
+
+  export type NotificationCreateManyApplicationInputEnvelope = {
+    data: NotificationCreateManyApplicationInput | NotificationCreateManyApplicationInput[]
     skipDuplicates?: boolean
   }
 
@@ -60590,6 +60918,22 @@ export namespace Prisma {
     details?: JsonFilter<"Identity">
   }
 
+  export type NotificationUpsertWithWhereUniqueWithoutApplicationInput = {
+    where: NotificationWhereUniqueInput
+    update: XOR<NotificationUpdateWithoutApplicationInput, NotificationUncheckedUpdateWithoutApplicationInput>
+    create: XOR<NotificationCreateWithoutApplicationInput, NotificationUncheckedCreateWithoutApplicationInput>
+  }
+
+  export type NotificationUpdateWithWhereUniqueWithoutApplicationInput = {
+    where: NotificationWhereUniqueInput
+    data: XOR<NotificationUpdateWithoutApplicationInput, NotificationUncheckedUpdateWithoutApplicationInput>
+  }
+
+  export type NotificationUpdateManyWithWhereWithoutApplicationInput = {
+    where: NotificationScalarWhereInput
+    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyWithoutApplicationInput>
+  }
+
   export type AssetUpsertWithWhereUniqueWithoutChildApplicationInput = {
     where: AssetWhereUniqueInput
     update: XOR<AssetUpdateWithoutChildApplicationInput, AssetUncheckedUpdateWithoutChildApplicationInput>
@@ -60698,6 +61042,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationCreateNestedManyWithoutApplicationInput
     childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessCreateNestedManyWithoutAccessApplicationInput
@@ -60726,6 +61071,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApplicationInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessUncheckedCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessUncheckedCreateNestedManyWithoutAccessApplicationInput
@@ -60770,6 +61116,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUpdateManyWithoutAccessApplicationNestedInput
@@ -60798,6 +61145,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUncheckedUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUncheckedUpdateManyWithoutAccessApplicationNestedInput
@@ -61029,6 +61377,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationCreateNestedManyWithoutApplicationInput
     assetAccessRows?: AccessCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessCreateNestedManyWithoutAccessApplicationInput
     devLogs?: ApplicationDevLogCreateNestedManyWithoutApplicationInput
@@ -61057,6 +61406,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApplicationInput
     assetAccessRows?: AccessUncheckedCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessUncheckedCreateNestedManyWithoutAccessApplicationInput
     devLogs?: ApplicationDevLogUncheckedCreateNestedManyWithoutApplicationInput
@@ -61428,6 +61778,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUpdateManyWithoutApplicationNestedInput
     assetAccessRows?: AccessUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUpdateManyWithoutAccessApplicationNestedInput
     devLogs?: ApplicationDevLogUpdateManyWithoutApplicationNestedInput
@@ -61456,6 +61807,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApplicationNestedInput
     assetAccessRows?: AccessUncheckedUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUncheckedUpdateManyWithoutAccessApplicationNestedInput
     devLogs?: ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput
@@ -62354,6 +62706,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationCreateNestedManyWithoutApplicationInput
     childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
     accessRows?: AccessCreateNestedManyWithoutAccessApplicationInput
     devLogs?: ApplicationDevLogCreateNestedManyWithoutApplicationInput
@@ -62382,6 +62735,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApplicationInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
     accessRows?: AccessUncheckedCreateNestedManyWithoutAccessApplicationInput
     devLogs?: ApplicationDevLogUncheckedCreateNestedManyWithoutApplicationInput
@@ -62415,6 +62769,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationCreateNestedManyWithoutApplicationInput
     childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessCreateNestedManyWithoutAssetApplicationInput
     devLogs?: ApplicationDevLogCreateNestedManyWithoutApplicationInput
@@ -62443,6 +62798,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApplicationInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessUncheckedCreateNestedManyWithoutAssetApplicationInput
     devLogs?: ApplicationDevLogUncheckedCreateNestedManyWithoutApplicationInput
@@ -62916,6 +63272,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
     accessRows?: AccessUpdateManyWithoutAccessApplicationNestedInput
     devLogs?: ApplicationDevLogUpdateManyWithoutApplicationNestedInput
@@ -62944,6 +63301,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
     accessRows?: AccessUncheckedUpdateManyWithoutAccessApplicationNestedInput
     devLogs?: ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput
@@ -62983,6 +63341,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUpdateManyWithoutAssetApplicationNestedInput
     devLogs?: ApplicationDevLogUpdateManyWithoutApplicationNestedInput
@@ -63011,6 +63370,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUncheckedUpdateManyWithoutAssetApplicationNestedInput
     devLogs?: ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput
@@ -63534,6 +63894,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationCreateNestedManyWithoutApplicationInput
     childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessCreateNestedManyWithoutAccessApplicationInput
@@ -63562,6 +63923,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApplicationInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessUncheckedCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessUncheckedCreateNestedManyWithoutAccessApplicationInput
@@ -63860,6 +64222,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUpdateManyWithoutAccessApplicationNestedInput
@@ -63888,6 +64251,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUncheckedUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUncheckedUpdateManyWithoutAccessApplicationNestedInput
@@ -64013,6 +64377,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationCreateNestedManyWithoutApplicationInput
     childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessCreateNestedManyWithoutAccessApplicationInput
@@ -64041,6 +64406,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApplicationInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessUncheckedCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessUncheckedCreateNestedManyWithoutAccessApplicationInput
@@ -64085,6 +64451,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUpdateManyWithoutAccessApplicationNestedInput
@@ -64113,6 +64480,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUncheckedUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUncheckedUpdateManyWithoutAccessApplicationNestedInput
@@ -64141,6 +64509,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationCreateNestedManyWithoutApplicationInput
     childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessCreateNestedManyWithoutAccessApplicationInput
@@ -64169,6 +64538,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApplicationInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessUncheckedCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessUncheckedCreateNestedManyWithoutAccessApplicationInput
@@ -64213,6 +64583,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUpdateManyWithoutAccessApplicationNestedInput
@@ -64241,6 +64612,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUncheckedUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUncheckedUpdateManyWithoutAccessApplicationNestedInput
@@ -64737,6 +65109,7 @@ export namespace Prisma {
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationCreateNestedManyWithoutApplicationInput
     childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessCreateNestedManyWithoutAccessApplicationInput
@@ -64765,6 +65138,7 @@ export namespace Prisma {
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApplicationInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessUncheckedCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessUncheckedCreateNestedManyWithoutAccessApplicationInput
@@ -64835,6 +65209,7 @@ export namespace Prisma {
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUpdateManyWithoutAccessApplicationNestedInput
@@ -64863,6 +65238,7 @@ export namespace Prisma {
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUncheckedUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUncheckedUpdateManyWithoutAccessApplicationNestedInput
@@ -64919,6 +65295,7 @@ export namespace Prisma {
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationCreateNestedManyWithoutApplicationInput
     childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessCreateNestedManyWithoutAccessApplicationInput
@@ -64947,6 +65324,7 @@ export namespace Prisma {
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApplicationInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessUncheckedCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessUncheckedCreateNestedManyWithoutAccessApplicationInput
@@ -65146,6 +65524,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
     identities?: IdentityCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationCreateNestedManyWithoutApplicationInput
     childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessCreateNestedManyWithoutAccessApplicationInput
@@ -65174,6 +65553,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
     identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApplicationInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessUncheckedCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessUncheckedCreateNestedManyWithoutAccessApplicationInput
@@ -65223,6 +65603,7 @@ export namespace Prisma {
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUpdateManyWithoutAccessApplicationNestedInput
@@ -65251,6 +65632,7 @@ export namespace Prisma {
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUncheckedUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUncheckedUpdateManyWithoutAccessApplicationNestedInput
@@ -66239,6 +66621,7 @@ export namespace Prisma {
     policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
     authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationCreateNestedManyWithoutApplicationInput
     childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessCreateNestedManyWithoutAccessApplicationInput
@@ -66267,6 +66650,7 @@ export namespace Prisma {
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
     authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApplicationInput
     childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
     assetAccessRows?: AccessUncheckedCreateNestedManyWithoutAssetApplicationInput
     accessRows?: AccessUncheckedCreateNestedManyWithoutAccessApplicationInput
@@ -66311,6 +66695,7 @@ export namespace Prisma {
     policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUpdateManyWithoutAccessApplicationNestedInput
@@ -66339,6 +66724,7 @@ export namespace Prisma {
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUncheckedUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUncheckedUpdateManyWithoutAccessApplicationNestedInput
@@ -66390,6 +66776,7 @@ export namespace Prisma {
 
   export type NotificationCreateManyAccountInput = {
     id?: string
+    applicationId?: string | null
     action?: string | null
     title?: string | null
     message?: string | null
@@ -66781,10 +67168,12 @@ export namespace Prisma {
     deletableOn?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     persistence?: NullableStringFieldUpdateOperationsInput | string | null
     detail?: NullableJsonNullValueInput | InputJsonValue
+    application?: ApplicationUpdateOneWithoutNotificationsNestedInput
   }
 
   export type NotificationUncheckedUpdateWithoutAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
+    applicationId?: NullableStringFieldUpdateOperationsInput | string | null
     action?: NullableStringFieldUpdateOperationsInput | string | null
     title?: NullableStringFieldUpdateOperationsInput | string | null
     message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -66798,6 +67187,7 @@ export namespace Prisma {
 
   export type NotificationUncheckedUpdateManyWithoutAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
+    applicationId?: NullableStringFieldUpdateOperationsInput | string | null
     action?: NullableStringFieldUpdateOperationsInput | string | null
     title?: NullableStringFieldUpdateOperationsInput | string | null
     message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -67655,6 +68045,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUpdateManyWithoutAccessApplicationNestedInput
@@ -67683,6 +68074,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUncheckedUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUncheckedUpdateManyWithoutAccessApplicationNestedInput
@@ -67763,6 +68155,20 @@ export namespace Prisma {
     refreshesOn: Date | string
     validTill: Date | string
     details?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type NotificationCreateManyApplicationInput = {
+    id?: string
+    accountId: string
+    action?: string | null
+    title?: string | null
+    message?: string | null
+    type?: string
+    read?: boolean
+    createdAt?: Date | string
+    deletableOn?: Date | string | null
+    persistence?: string | null
+    detail?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type AssetCreateManyChildApplicationInput = {
@@ -68017,6 +68423,48 @@ export namespace Prisma {
     refreshesOn?: DateTimeFieldUpdateOperationsInput | Date | string
     validTill?: DateTimeFieldUpdateOperationsInput | Date | string
     details?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type NotificationUpdateWithoutApplicationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    read?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletableOn?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    persistence?: NullableStringFieldUpdateOperationsInput | string | null
+    detail?: NullableJsonNullValueInput | InputJsonValue
+    account?: AccountUpdateOneRequiredWithoutNotificationsNestedInput
+  }
+
+  export type NotificationUncheckedUpdateWithoutApplicationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    action?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    read?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletableOn?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    persistence?: NullableStringFieldUpdateOperationsInput | string | null
+    detail?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type NotificationUncheckedUpdateManyWithoutApplicationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    action?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: StringFieldUpdateOperationsInput | string
+    read?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deletableOn?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    persistence?: NullableStringFieldUpdateOperationsInput | string | null
+    detail?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type AssetUpdateWithoutChildApplicationInput = {
@@ -68945,6 +69393,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUpdateManyWithoutAccessApplicationNestedInput
@@ -68973,6 +69422,7 @@ export namespace Prisma {
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
     authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
     identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApplicationNestedInput
     childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
     assetAccessRows?: AccessUncheckedUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUncheckedUpdateManyWithoutAccessApplicationNestedInput

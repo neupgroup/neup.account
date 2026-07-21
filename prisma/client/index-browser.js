@@ -191,6 +191,7 @@ exports.Prisma.ActivityScalarFieldEnum = {
 exports.Prisma.NotificationScalarFieldEnum = {
   id: 'id',
   accountId: 'accountId',
+  applicationId: 'applicationId',
   action: 'action',
   title: 'title',
   message: 'message',

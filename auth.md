@@ -172,6 +172,7 @@ purpose: Account notification table for auth events, requests, verification upda
 
 id: `String`, not nullable, primary key, default `uuid()`.
 accountId: `String`, not nullable, references `account.id`.
+applicationId: `String`, nullable, references `application.id` with cascade delete.
 action: `String`, nullable.
 title: `String`, nullable.
 message: `String`, nullable.

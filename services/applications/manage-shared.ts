@@ -98,7 +98,6 @@ export const servicePermissions = [
   permission('application.config.update.root', 'for_individual', 'service'),
   permission('application.delete.root', 'for_individual', 'service'),
   permission('application.logs.view.root', 'for_individual', 'service'),
-  permission('application.devlogs.view.root', 'for_individual', 'service'),
   permission('application.devlogs.clear.root', 'for_individual', 'service'),
   permission('application.roles.view.root', 'for_individual', 'service'),
   permission('application.roles.manage.root', 'for_individual', 'service'),

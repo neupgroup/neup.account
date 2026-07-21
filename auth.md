@@ -21,6 +21,468 @@ The system should avoid duplicated business logic. Permission definitions and ro
 
 Field names below use the Prisma model property when it is the clearer application-facing name. Where the database column differs materially, the mapped table or column name is called out in the section heading or field description.
 
+## Table Field Reference
+
+This reference lists the database table name associated with each auth-related model and every stored column in that table. Relation-only Prisma properties are not listed because they are not database columns.
+
+table: `account`
+purpose: Root identity table for every account that can authenticate, own resources, receive grants, or act in audit logs.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+displayName: `String`, nullable.
+accountType: `String`, not nullable, default `individual`.
+displayImage: `String`, nullable.
+status: `String`, nullable.
+isVerified: `Boolean`, not nullable, default `false`.
+details: `Json`, nullable.
+createdAt: `DateTime`, not nullable, default `now()`.
+linkedAccountId: `String`, nullable, references `account.id`.
+
+
+
+======>
+table: `resources`
+purpose: Uploaded or linked resources associated with accounts, including identity or verification documents when used by auth flows.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+type: `String`, not nullable.
+accountId: `String`, nullable, references `account.id` with set null on delete.
+uploadedBy: `String`, not nullable, references `account.id` with cascade delete.
+value: `String`, not nullable.
+details: `Json`, nullable.
+uploadedOn: `DateTime`, not nullable, default `now()`.
+
+action: let's drop this table, this will come from the drive application.
+=======>
+
+
+=======>
+table: `account_individual`
+purpose: Type-specific profile data for individual accounts.
+
+accountId: `String`, not nullable, primary key, unique, references `account.id` with cascade delete.
+firstName: `String`, nullable.
+middleName: `String`, nullable.
+lastName: `String`, nullable.
+dateOfBirth: `DateTime`, nullable.
+countryOfResidence: `String`, nullable.
+details: `Json`, nullable.
+roleId: `String`, nullable.
+=======>
+
+
+=======>
+table: `account_brand`
+purpose: Type-specific profile data for brand accounts.
+
+accountId: `String`, not nullable, primary key, unique, references `account.id` with cascade delete.
+brandName: `String`, nullable.
+isLegalEntity: `Boolean`, not nullable, default `false`.
+originCountry: `String`, nullable.
+details: `Json`, nullable.
+=======>
+
+
+=======>
+table: `system_config`
+purpose: System-level configuration storage for auth, policy, or application settings.
+
+key: `String`, not nullable, primary key.
+data: `Json`, not nullable.
+updatedAt: `DateTime`, not nullable, default `now()`, auto-updated.
+
+action: drop this table after the file based system is active.
+=======>
+
+
+=======>done
+table: `authn_request`
+purpose: Temporary authentication or authorization flow state, such as login, verification, consent, and step-up requests.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+type: `String`, not nullable.
+status: `String`, not nullable, default `pending`.
+data: `Json`, not nullable, default `{}`.
+accountId: `String`, nullable.
+createdAt: `DateTime`, not nullable, default `now()`.
+expiresAt: `DateTime`, not nullable.
+
+=======>done
+table: `authn_method`
+purpose: Login methods and credential records for an account.
+
+accountId: `String`, not nullable, references `account.id`.
+value: `String`, not nullable.
+id: `String`, not nullable, primary key, default `uuid()`.
+type: `String`, not nullable.
+order: `String`, not nullable.
+status: `String`, not nullable.
+detail: `Json`, nullable.
+
+=======>done
+table: `authn_session`
+purpose: Active and historical login sessions used to authenticate requests.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+accountId: `String`, not nullable, references `account.id`.
+key: `String`, nullable.
+ipAddress: `String`, not nullable.
+userAgent: `String`, not nullable.
+validTill: `DateTime`, nullable.
+lastLoggedIn: `DateTime`, not nullable.
+loginType: `String`, not nullable.
+geolocation: `String`, nullable.
+deviceType: `String`, nullable.
+
+
+=======>
+table: `activity`
+purpose: Security and auth audit log for actions performed by one account against another target.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+targetAccountId: `String`, not nullable.
+actorAccountId: `String`, not nullable.
+action: `String`, not nullable.
+status: `String`, not nullable.
+ip: `String`, not nullable.
+timestamp: `DateTime`, not nullable, default `now()`.
+geolocation: `String`, nullable.
+
+action: make a standard payload system and use that on all applications.
+=======>
+
+
+=======>
+table: `system_error`
+purpose: Diagnostic error log with optional account and request metadata.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+message: `String`, not nullable.
+context: `String`, not nullable.
+timestamp: `DateTime`, not nullable, default `now()`.
+accountId: `String`, nullable, references `account.id`.
+geolocation: `String`, nullable.
+ipAddress: `String`, nullable.
+=======>
+
+
+=======>
+table: `notification`
+purpose: Account notification table for auth events, requests, verification updates, and access changes.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+accountId: `String`, not nullable, references `account.id`.
+action: `String`, nullable.
+title: `String`, nullable.
+message: `String`, nullable.
+type: `String`, not nullable, default `info`.
+read: `Boolean`, not nullable, default `false`.
+createdAt: `DateTime`, not nullable, default `now()`.
+deletableOn: `DateTime`, nullable.
+persistence: `String`, nullable.
+detail: `Json`, nullable.
+
+action: use this as the base notification provider for all the applications of NeupEcosystem and other apps as well. make a standard action and readAs payload format for this.
+=======>
+
+
+=======>
+table: `application_dev_log`
+purpose: Application API request and response log for debugging, status tracking, and auth failure visibility.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+app_id: `String`, not nullable, references `application.id` with cascade delete.
+endpoint: `String`, not nullable.
+method: `String`, not nullable.
+status_code: `Int`, not nullable.
+requester_ip: `String`, nullable.
+origin: `String`, nullable.
+referer: `String`, nullable.
+user_agent: `String`, nullable.
+request_body: `Json`, nullable.
+query: `Json`, nullable.
+request_meta: `Json`, nullable.
+response_body: `Json`, nullable.
+error: `String`, nullable.
+created_at: `DateTime`, not nullable, default `now()`.
+
+action: change the table name and also change the dev log payload and make it standard, make a system so that all apps in neup ecosystem use this dev logger.
+=======>
+
+
+=======>done
+table: `authz_permission`
+purpose: Canonical permission catalog for application and system permissions.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+name: `String`, not nullable.
+description: `String`, nullable.
+app_id: `String`, nullable, references `application.id`.
+scope_for: `Json`, nullable, default `[]`.
+scope_level: `Json`, nullable, default `[]`.
+approval_policy: `String`, nullable, default `none`.
+rules: `String`, nullable.
+status: `String`, nullable.
+tag: `Json`, nullable.
+=======>
+
+
+=======>done
+table: `authz_role`
+purpose: Canonical role definition table for application and system roles.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+name: `String`, not nullable.
+description: `String`, nullable.
+app_id: `String`, nullable, references `application.id`.
+scope_for: `Json`, not nullable, default `[]`.
+scope_level: `String`, not nullable, default `assignable.byTeam`.
+acquisition_type: `String`, not nullable, default `assignment`.
+approval_policy: `String`, not nullable, default `none`.
+pushed: `Boolean`, not nullable, default `false`.
+applicable_for: `Json`, not nullable, default `[]`.
+permissions: `Json`, nullable.
+=======>
+
+
+=======>done
+table: `authz_role_permission_map`
+purpose: Canonical many-to-many mapping from roles to permissions with scope metadata.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+role_id: `String`, not nullable, references `authz_role.id` with cascade delete.
+permission_id: `String`, not nullable, references `authz_permission.id` with cascade delete.
+scope_for: `String`, not nullable.
+scope_level: `String`, not nullable.
+created_at: `DateTime`, not nullable, default `now()`.
+=======>
+
+
+=======>
+table: `member`
+purpose: Subject relationship table that represents an account as a member under a parent account.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+member_type: `String`, not nullable.
+child_account_id: `String`, nullable, references `account.id` with cascade delete.
+parent_account_id: `String`, nullable, references `account.id` with cascade delete.
+status: `String`, not nullable, default `active`.
+is_temporary: `DateTime`, nullable.
+details: `Json`, nullable.
+
+action: rename child_account_id to targetAccountId and parentAccountId to actorAccountId, then drop the member_type field, and finally if the member_type is acc_self, set the same value for child_account_id/actorAccountId and targetAccountId/child_account_id
+=======>
+
+
+=======>
+table: `assets`
+purpose: Protected resource relationship table for account, application, and connection assets under a parent account.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+type: `AssetType`, not nullable.
+child_account_id: `String`, nullable, references `account.id` with cascade delete.
+child_connection_id: `String`, nullable, references `connection.id` with cascade delete.
+child_application_id: `String`, nullable, references `application.id` with cascade delete.
+parent_account_id: `String`, nullable, references `account.id` with cascade delete.
+is_temporary: `DateTime`, nullable.
+status: `String`, not nullable, default `active`.
+details: `Json`, nullable.
+=======>
+
+
+table: `access`
+purpose: Materialized runtime grant table that connects a member, protected asset, and assigned authz role.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+access_type: `AccessType`, not nullable.
+member_id: `String`, not nullable, references `member.id` with cascade delete.
+member_account_id: `String`, nullable, references `account.id` with cascade delete.
+parent_account_id: `String`, nullable, references `account.id` with cascade delete.
+asset_id: `String`, not nullable, references `assets.id` with cascade delete.
+asset_account_id: `String`, nullable, references `account.id` with cascade delete.
+asset_connection_id: `String`, nullable, references `connection.id` with cascade delete.
+asset_application_id: `String`, nullable, references `application.id` with cascade delete.
+access_application_id: `String`, nullable, references `application.id` with set null on delete.
+is_temporary: `DateTime`, nullable.
+role_id: `String`, not nullable, references `authz_role.id`.
+status: `String`, not nullable, default `active`.
+details: `Json`, nullable.
+
+table: `role`
+purpose: Denormalized member role assignment read model for account, connection, and asset contexts.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+member_id: `String`, not nullable, references `member.id` with cascade delete.
+account_id: `String`, nullable, references `account.id`.
+connection_id: `String`, nullable, references `connection.id`.
+asset_id: `String`, nullable, references `assets.id`.
+asset_type: `String`, nullable.
+asset_id_denorm: `String`, nullable.
+role_id: `String`, not nullable, references `authz_role.id`.
+role_name: `String`, nullable.
+permissions: `Json`, nullable.
+status: `String`, not nullable, default `active`.
+details: `Json`, nullable.
+
+table: `account_ownership`
+purpose: Account hierarchy table that tracks parent-child ownership relationships.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+parent_id: `String`, not nullable, references `account.id` with cascade delete.
+children_id: `String`, not nullable, references `account.id` with cascade delete.
+type: `String`, not nullable.
+created_at: `DateTime`, not nullable, default `now()`.
+
+table: `authz_assets_access_grant`
+purpose: Compact app-scoped grant index for account-to-asset authorization sync and fast lookup.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+asset_id: `String`, not nullable, references `assets.id`.
+account_id: `String`, not nullable, references `account.id`.
+role_id: `String`, not nullable, references `authz_role.id`.
+app_id: `String`, not nullable.
+asset_type: `String`, nullable.
+
+table: `permit`
+purpose: Legacy direct account-to-account permission grant table.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+account_id: `String`, not nullable, references `account.id` with cascade delete.
+target_account_id: `String`, not nullable, references `account.id` with cascade delete.
+for_self: `Boolean`, not nullable, default `false`.
+is_root: `Boolean`, not nullable, default `false`.
+permissions: `String[]`, not nullable, default `[]`.
+restrictions: `String[]`, not nullable, default `[]`.
+created_at: `DateTime`, not nullable, default `now()`.
+updated_at: `DateTime`, not nullable, auto-updated.
+
+table: `application`
+purpose: Application registry and owner of app-specific authz definitions, sessions, tokens, and external auth behavior.
+
+id: `String`, not nullable, primary key.
+name: `String`, not nullable.
+description: `String`, nullable.
+icon: `String`, nullable.
+website: `String`, nullable.
+app_secret: `String`, nullable.
+created_at: `DateTime`, not nullable, default `now()`.
+endpoints: `Json`, nullable.
+status: `String`, not nullable, default `development`.
+is_internal: `Boolean`, not nullable, default `false`.
+response_fields: `String[]`, not nullable, default `[]`.
+token_fields: `String[]`, not nullable, default `[]`.
+details: `Json`, nullable.
+party: `Int`, not nullable, default `1`.
+provider_id: `String`, nullable, references `application_provider.id`.
+def_role_id: `String`, nullable, references `authz_role.id`.
+
+table: `application_provider`
+purpose: Provider records for applications and app secret ownership.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+provider_name: `String`, not nullable.
+provider_site: `String`, not nullable.
+secret_hash: `String`, not nullable.
+
+table: `connection`
+purpose: Account-to-application connection table.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+account_id: `String`, not nullable, references `account.id` with cascade delete.
+app_id: `String`, not nullable, references `application.id`.
+role_id: `String`, nullable, references `authz_role.id`.
+status: `String`, not nullable, default `active`.
+connected_at: `DateTime`, not nullable, default `now()`.
+details: `Json`, nullable.
+
+table: `application_policies`
+purpose: Application-level policy records for authz behavior, consent, scope, and assignment rules.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+app_id: `String`, not nullable, references `application.id` with cascade delete.
+policy_type: `String`, not nullable.
+policy_value: `Json`, not nullable.
+created_at: `DateTime`, not nullable, default `now()`.
+
+table: `application_bridge`
+purpose: Bridge configuration for app integrations and downstream authz sync.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+app_id: `String`, not nullable, references `application.id` with cascade delete.
+type: `String`, not nullable.
+value: `String`, not nullable.
+details: `Json`, nullable.
+created_at: `DateTime`, not nullable, default `now()`.
+
+table: `identity`
+purpose: Per-application identity records keyed by guest account or tracking id.
+
+id: `String`, not nullable, primary key, default `cuid()`.
+track_id: `String`, not nullable.
+app_id: `String`, not nullable, references `application.id`.
+originated_on: `DateTime`, not nullable, default `now()`.
+refreshes_on: `DateTime`, not nullable.
+valid_till: `DateTime`, not nullable.
+details: `Json`, not nullable, default `[]`.
+
+table: `contact`
+purpose: Contact and login-address records associated with accounts.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+accountId: `String`, not nullable, references `account.id`.
+contactType: `String`, not nullable.
+value: `String`, not nullable.
+
+table: `neupid`
+purpose: Neup ID aliases for accounts.
+
+id: `String`, not nullable, primary key.
+accountId: `String`, not nullable, references `account.id`.
+neupId: `String`, not nullable, unique.
+isPrimary: `Boolean`, not nullable, default `false`.
+dateAdded: `DateTime`, not nullable, default `now()`.
+
+table: `family`
+purpose: Family grouping table for account relationship workflows.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+created_by: `String`, not nullable.
+created_at: `DateTime`, not nullable, default `now()`.
+
+table: `family_member`
+purpose: Join table between family groups and account members.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+family_id: `String`, not nullable, references `family.id`.
+member_id: `String`, not nullable, references `account.id`.
+role: `String`, not nullable, default `member`.
+
+table: `verification`
+purpose: Account verification workflow records.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+account_id: `String`, not nullable, references `account.id` with cascade delete.
+status: `String`, not nullable, default `pending`.
+reason: `String`, nullable.
+category: `String`, nullable.
+done_by: `String`, nullable, references `account.id`.
+done_at: `DateTime`, not nullable, default `now()`.
+previously: `String`, nullable.
+created_at: `DateTime`, not nullable, default `now()`.
+
+table: `request`
+purpose: Account-to-account request workflow table for invitations, access requests, and related actions.
+
+id: `String`, not nullable, primary key, default `uuid()`.
+senderId: `String`, not nullable, references `account.id`.
+recipient_id: `String`, not nullable, references `account.id`.
+status: `String`, not nullable, default `pending`.
+action: `String`, not nullable.
+type: `String`, nullable.
+data: `Json`, nullable, default `{}`.
+created_at: `DateTime`, not nullable, default `now()`.
+updated_at: `DateTime`, not nullable, auto-updated.
+
 ## Authn Data
 
 Authentication data answers "who is this actor and how did they prove it?"

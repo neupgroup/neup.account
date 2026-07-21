@@ -16,7 +16,7 @@ model Account {
   isVerified      Boolean  @default(false)
   details         Json?
   createdAt       DateTime @default(now())
-  linkedAccountId String?  @map("linked_account_id")
+  linkedAccountId String?
 
   brandProfile            AccountTypeBrand?
   individualProfile       AccountTypeIndividual?
@@ -57,11 +57,11 @@ model Account {
 model Resource {
   id         String   @id @default(uuid())
   type       String
-  accountId  String?  @map("account_id")
-  uploadedBy String   @map("uploaded_by")
+  accountId  String?
+  uploadedBy String
   value      String
   details    Json?
-  uploadedOn DateTime @default(now()) @map("uploaded_on")
+  uploadedOn DateTime @default(now())
 
   account  Account? @relation("ResourceAccount", fields: [accountId], references: [id], onDelete: SetNull)
   uploader Account  @relation("ResourceUploader", fields: [uploadedBy], references: [id], onDelete: Cascade)
@@ -120,8 +120,8 @@ model AuthnRequest {
 
 model Activity {
   id             String   @id(map: "activity_logs_pkey") @default(uuid())
-  memberId       String   @map("target_account_id")
-  actorAccountId String   @map("actor_account_id")
+  memberId       String   @map("targetAccountId")
+  actorAccountId String
   action         String
   status         String
   ip             String
@@ -133,14 +133,14 @@ model Activity {
 
 model Notification {
   id          String    @id(map: "notifications_pkey") @default(uuid())
-  accountId   String    @map("account_id")
+  accountId   String
   action      String?
   title       String?
   message     String?
   type        String    @default("info")
   read        Boolean   @default(false)
-  createdAt   DateTime  @default(now()) @map("created_at")
-  deletableOn DateTime? @map("deletable_on")
+  createdAt   DateTime  @default(now())
+  deletableOn DateTime?
   persistence String?
   detail      Json?
   account     Account   @relation(fields: [accountId], references: [id], map: "notifications_accountId_fkey")

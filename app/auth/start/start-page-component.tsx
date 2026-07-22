@@ -97,17 +97,17 @@ export function StartPageComponent({ accounts, hasActiveSession, appName }: Star
   }, []);
 
   useEffect(() => {
-    if (error === 'inactivity') {
+    if (error === 'inactivity' && !hasActiveSession) {
       toastRef.current({
         variant: 'default',
         title: 'Signed Out',
-        description: 'Signed Out because of Inactvity',
+        description: 'Signed Out because of Inactivity',
         className: 'bg-yellow-500 text-white border-none',
       });
     }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [error]);
+  }, [error, hasActiveSession]);
 
   const getUrlWithReturn = (baseUrl: string) => {
     const withContext = appendAuthCallbackContext(baseUrl, searchParams);
@@ -128,6 +128,7 @@ export function StartPageComponent({ accounts, hasActiveSession, appName }: Star
 
   const displayAppName = getAppDisplayName(appName);
   const showSignedInChoices = hasActiveSession && Boolean(activeAccount);
+  const showError = Boolean(error) && !(hasActiveSession && error === 'inactivity');
 
   return (
     <div className="flex min-h-screen items-start justify-center bg-card md:bg-background md:items-center">
@@ -143,7 +144,7 @@ export function StartPageComponent({ accounts, hasActiveSession, appName }: Star
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {error && (
+            {showError && (
               <Alert variant="destructive">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertTitle>Authentication Error</AlertTitle>

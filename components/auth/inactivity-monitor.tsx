@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { logoutActiveSession } from '@/services/account/logout';
+import { APP_BASE_PATH } from '@/core/appconfig';
 import { redirectInApp } from '@/core/helpers/navigation';
 
 // 7 minutes 30 seconds in milliseconds
@@ -10,7 +11,10 @@ const INACTIVITY_LIMIT_MS = 7 * 60 * 1000 + 30 * 1000;
 
 export function InactivityMonitor() {
     const router = useRouter();
+    const pathname = usePathname();
     const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const authStartPaths = new Set(['/auth/start', `${APP_BASE_PATH}/auth/start`]);
+    const ignoresInactivity = authStartPaths.has(pathname);
 
     const handleLogout = useCallback(async () => {
         // Clear the timer
@@ -33,9 +37,7 @@ export function InactivityMonitor() {
             console.error("Logout failed", error);
         }
 
-        // Redirect to start page with error message
-        // preventing console logging or visible timers is handled by using internal setTimeout
-        redirectInApp(router, '/auth/start?error=inactivity&error_description=Signed+Out+because+of+Inactvity');
+        redirectInApp(router, '/auth/start?error=inactivity&error_description=Signed+Out+because+of+Inactivity');
     }, [router]);
 
     const resetTimer = useCallback(() => {
@@ -47,6 +49,14 @@ export function InactivityMonitor() {
     }, [handleLogout]);
 
     useEffect(() => {
+        if (ignoresInactivity) {
+            if (timerRef.current) {
+                clearTimeout(timerRef.current);
+                timerRef.current = null;
+            }
+            return;
+        }
+
         // Events to listen for
         const events = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart'];
 
@@ -69,7 +79,7 @@ export function InactivityMonitor() {
                 document.removeEventListener(event, onEvent);
             });
         };
-    }, [resetTimer]);
+    }, [ignoresInactivity, resetTimer]);
 
     return null; // This component renders nothing
 }

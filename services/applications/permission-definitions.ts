@@ -196,6 +196,13 @@ function permissionPolicyDefinition(
   base: ApplicationPermissionBase,
   audience: ApplicationPermissionAudience,
 ): ApplicationPermissionPolicyDefinition {
+  if (base === 'create') {
+    return {
+      scopeFor: ['for_individual', 'for_dependent'],
+      scopeLevel: ['assignable.toSelf.publicly', 'assignable.byTeam', 'assignable.byRoot'],
+    };
+  }
+
   if (base === 'user.updateBasics') {
     return {
       scopeFor: APPLICATION_USER_UPDATE_BASICS_SCOPE_FOR,
@@ -308,7 +315,7 @@ export function getApplicationPermissionDefinitions(
 }
 
 export const ROOT_APPLICATION_VIEW_PERMISSION = getApplicationPermissionName('view', 'root');
-export const ROOT_APPLICATION_CREATE_PERMISSION = getApplicationPermissionName('create', 'root');
+export const APPLICATION_CREATE_PERMISSION = getApplicationPermissionName('create', 'public');
 export const ROOT_APPLICATION_BASICS_EDIT_PERMISSION = getApplicationPermissionName('basics.edit', 'root');
 export const ROOT_APPLICATION_CONFIG_VIEW_PERMISSION = getApplicationPermissionName('config.view', 'root');
 export const ROOT_APPLICATION_CONFIG_UPDATE_PERMISSION = getApplicationPermissionName('config.update', 'root');

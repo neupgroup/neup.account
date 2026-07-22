@@ -21,7 +21,21 @@ type CombinedAccount = StoredAccount & {
     accountType?: string;
 };
 
-export function AccountListItem({ account, isActive }: { account: CombinedAccount; isActive?: boolean }) {
+type AccountListItemProps = {
+    account: CombinedAccount;
+    isActive?: boolean;
+    interactive?: boolean;
+    showActions?: boolean;
+    showChevron?: boolean;
+};
+
+export function AccountListItem({
+    account,
+    isActive,
+    interactive = true,
+    showActions = true,
+    showChevron = true,
+}: AccountListItemProps) {
     const initialFallbackPhoto = getFallbackDisplayImage({
         accountType: account.accountType ?? (account.isBrand ? 'brand' : 'individual'),
     });
@@ -83,6 +97,8 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
     const effectiveWorkingProfileId = workingProfileId || (isOwnerAccount ? currentAccountId : null);
 
     const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!interactive) return;
+
         // Prevent navigation if the click is on a button inside AccountActions
         if ((e.target as HTMLElement).closest('[data-action-button]')) {
             return;
@@ -131,16 +147,19 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
 
     return (
         <div
-            onClick={handleClick}
+            onClick={interactive ? handleClick : undefined}
             className={cn(
-                "w-full flex items-center justify-between p-4 border rounded-lg transition-colors cursor-pointer",
+                "w-full flex items-center justify-between p-4 border rounded-lg transition-colors",
+                interactive && "cursor-pointer",
                 isSelected
                     ? "bg-accent/10 border-accent hover:bg-accent/20"
-                    : "hover:bg-muted/50"
+                    : interactive && "hover:bg-muted/50"
             )}
-            role="button"
-            tabIndex={0}
+            role={interactive ? "button" : undefined}
+            tabIndex={interactive ? 0 : undefined}
+            aria-disabled={interactive ? undefined : true}
             onKeyDown={(e) => {
+                if (!interactive) return;
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     handleClick(e as any);
@@ -161,11 +180,11 @@ export function AccountListItem({ account, isActive }: { account: CombinedAccoun
                         <p className="text-sm text-muted-foreground">
                             @{finalAccount.neupId}
                         </p>
-                        <AccountActions account={finalAccount} />
+                        {showActions && <AccountActions account={finalAccount} />}
                     </div>
                 </div>
             </div>
-            <ChevronRight className={cn("h-5 w-5", isSelected ? "text-accent" : "text-muted-foreground")} />
+            {showChevron && <ChevronRight className={cn("h-5 w-5", isSelected ? "text-accent" : "text-muted-foreground")} />}
         </div>
     );
 }

@@ -56,7 +56,7 @@ action: let's drop this table, this will come from the drive application.
 =======>
 
 
-=======>
+=======>done
 table: `account_individual`
 purpose: Type-specific profile data for individual accounts.
 
@@ -71,7 +71,7 @@ roleId: `String`, nullable.
 =======>
 
 
-=======>
+=======>done
 table: `account_brand`
 purpose: Type-specific profile data for brand accounts.
 
@@ -148,12 +148,12 @@ ip: `String`, not nullable.
 timestamp: `DateTime`, not nullable, default `now()`.
 geolocation: `String`, nullable.
 
-action: make a standard payload system and use that on all applications.
+action: make a standard payload system and use that on all applications. independent system meaning all the application will have this table and will be used directly but that can be read by the neup account using standard api endpoints and specific number of parameters in the url, and webhook optimization.
 =======>
 
 
 =======>
-table: `system_error`
+table: `system_error` -> let's push this to the neup.cloud
 purpose: Diagnostic error log with optional account and request metadata.
 
 id: `String`, not nullable, primary key, default `uuid()`.
@@ -167,11 +167,11 @@ ipAddress: `String`, nullable.
 
 
 =======>
-table: `notification`
+table: `notification`done
 purpose: Account notification table for auth events, requests, verification updates, and access changes.
 
 id: `String`, not nullable, primary key, default `uuid()`.
-accountId: `String`, not nullable, references `account.id`.
+accountId: `String`, not nullable, references `account.id` .
 applicationId: `String`, nullable, references `application.id` with cascade delete.
 action: `String`, nullable.
 title: `String`, nullable.
@@ -182,13 +182,11 @@ createdAt: `DateTime`, not nullable, default `now()`.
 deletableOn: `DateTime`, nullable.
 persistence: `String`, nullable.
 detail: `Json`, nullable.
-
-action: use this as the base notification provider for all the applications of NeupEcosystem and other apps as well. make a standard action and readAs payload format for this.
 =======>
 
 
 =======>
-table: `application_dev_log`
+table: `application_dev_log` -> if possible let's push this to cloud
 purpose: Application API request and response log for debugging, status tracking, and auth failure visibility.
 
 id: `String`, not nullable, primary key, default `uuid()`.
@@ -365,17 +363,24 @@ name: `String`, not nullable.
 description: `String`, nullable.
 icon: `String`, nullable.
 website: `String`, nullable.
-app_secret: `String`, nullable.
-created_at: `DateTime`, not nullable, default `now()`.
+app_secret: `String`, nullable. -> rename to appSecret
+created_at: `DateTime`, not nullable, default `now()`. -> rename to createdAt
 endpoints: `Json`, nullable.
 status: `String`, not nullable, default `development`.
-is_internal: `Boolean`, not nullable, default `false`.
-response_fields: `String[]`, not nullable, default `[]`.
-token_fields: `String[]`, not nullable, default `[]`.
+is_internal: `Boolean`, not nullable, default `false`. -> drop this field
+response_fields: `String[]`, not nullable, default `[]`. -> rename to responseFields
+token_fields: `String[]`, not nullable, default `[]`. -> rename to tokenFields
 details: `Json`, nullable.
 party: `Int`, not nullable, default `1`.
-provider_id: `String`, nullable, references `application_provider.id`.
+provider_id: `String`, nullable, references `application_provider.id`. -> drop thsi field
 def_role_id: `String`, nullable, references `authz_role.id`.
+permissionType: `String`, not nullable, either of the following `parent`, `self`, `hybrid`
+
+
+action: add these fields:
+developerAccountId: `String` not nullable, references account.id;
+parentApplicationId: `String` not nullable, references application.id
+def_role_id: `String`, nullable, references `authz_role.id`. -> rename to defaultRoleId
 
 table: `application_provider`
 purpose: Provider records for applications and app secret ownership.

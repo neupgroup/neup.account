@@ -18,6 +18,7 @@ import { permission } from '@/logica/permission';
 import {
   deleteManagedApplication,
   getManagedApplications,
+  canCurrentAccountCreateApplication,
   hasRootApplicationPermission,
   updateManagedApplicationStatus,
 } from '@/services/applications/manage';
@@ -29,12 +30,12 @@ import type { ApplicationSection, FlatAppItem } from '@/services/applications/ty
 import { revalidateApplicationDetailRoutes } from '@/services/applications/revalidate-routes';
 import {
   ROOT_APPLICATION_BASICS_EDIT_PERMISSION,
-  ROOT_APPLICATION_CREATE_PERMISSION,
   ROOT_APPLICATION_VIEW_PERMISSION,
 } from '@/services/applications/permission-definitions';
 
 const servicePermissions = [
-  permission('application.create.root', 'for_individual', 'service'),
+  permission('application.create', 'for_individual', 'service'),
+  permission('application.create', 'for_dependent', 'service'),
   permission('application.view.root', 'for_individual', 'service'),
   permission('application.basics.edit.root', 'for_individual', 'service'),
 ];
@@ -45,7 +46,7 @@ export type { FlatAppItem } from '@/services/applications/types';
 export async function getApplicationsPageData() {
   const managedApplications = await getManagedApplications();
   const { internal, external } = await getSignedApplications();
-  const canCreateApplication = await hasRootApplicationPermission(ROOT_APPLICATION_CREATE_PERMISSION);
+  const canCreateApplication = await canCurrentAccountCreateApplication();
   const connectedApplications = [...internal, ...external];
 
   const managedItems: FlatAppItem[] = managedApplications.map((app) => ({
@@ -142,7 +143,7 @@ export async function getApplicationsPageDataV2(): Promise<{
         return prisma.application.findMany({ orderBy: { createdAt: 'desc' } });
       })(),
     ]),
-    hasRootApplicationPermission(ROOT_APPLICATION_CREATE_PERMISSION),
+    canCurrentAccountCreateApplication(),
   ]);
 
   const sections: ApplicationSection[] = [];
@@ -361,7 +362,7 @@ export async function getApplicationsManagePageData(options?: { rootMode?: boole
         return prisma.application.findMany({ orderBy: { createdAt: 'desc' } });
       })(),
     ]),
-    hasRootApplicationPermission(ROOT_APPLICATION_CREATE_PERMISSION),
+    canCurrentAccountCreateApplication(),
   ]);
 
   const sections: ApplicationSection[] = [];

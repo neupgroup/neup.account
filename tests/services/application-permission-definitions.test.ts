@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS,
+  APPLICATION_CREATE_PERMISSION,
   APPLICATION_SYSTEM_OWNER_PERMISSION_DEFINITIONS,
   ROOT_APPLICATION_VIEW_PERMISSION,
 } from '@/services/applications/permission-definitions';
@@ -17,15 +18,27 @@ describe('application system owner permissions', () => {
   it('excludes application.create from the system owner role', () => {
     expect(
       APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS.some(
-        (permission) => permission.name === 'application.create',
+        (permission) => permission.name === APPLICATION_CREATE_PERMISSION,
       ),
     ).toBe(true);
 
     expect(
       APPLICATION_SYSTEM_OWNER_PERMISSION_DEFINITIONS.some(
-        (permission) => permission.name === 'application.create',
+        (permission) => permission.name === APPLICATION_CREATE_PERMISSION,
       ),
     ).toBe(false);
+  });
+
+  it('defines application.create as a flat permission for self, team, and root assignment', () => {
+    expect(
+      APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS.find(
+        (permission) => permission.name === APPLICATION_CREATE_PERMISSION,
+      ),
+    ).toMatchObject({
+      name: 'application.create',
+      scopeFor: ['for_individual', 'for_dependent'],
+      scopeLevel: ['assignable.toSelf.publicly', 'assignable.byTeam', 'assignable.byRoot'],
+    });
   });
 
   it('marks public, managed, and root permissions with scope_for and scope_level', () => {

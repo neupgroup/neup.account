@@ -17,10 +17,10 @@ import { activeAccessWhere, cleanupExpiredAccessModel, ensureAccessGrant } from 
 import {
   APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS,
   APPLICATION_SYSTEM_OWNER_PERMISSION_DEFINITIONS,
+  APPLICATION_CREATE_PERMISSION,
   ROOT_APPLICATION_BASICS_EDIT_PERMISSION,
   ROOT_APPLICATION_CONFIG_UPDATE_PERMISSION,
   ROOT_APPLICATION_CONFIG_VIEW_PERMISSION,
-  ROOT_APPLICATION_CREATE_PERMISSION,
   ROOT_APPLICATION_DELETE_PERMISSION,
   ROOT_APPLICATION_DEVLOGS_CLEAR_PERMISSION,
   ROOT_APPLICATION_DEVLOGS_VIEW_PERMISSION,
@@ -92,7 +92,8 @@ import { extractGenderFromDetails, resolveDisplayImage } from '@/logica/display-
 
 export const servicePermissions = [
   permission('application.view.root', 'for_individual', 'service'),
-  permission('application.create.root', 'for_individual', 'service'),
+  permission('application.create', 'for_individual', 'service'),
+  permission('application.create', 'for_dependent', 'service'),
   permission('application.basics.edit.root', 'for_individual', 'service'),
   permission('application.config.view.root', 'for_individual', 'service'),
   permission('application.config.update.root', 'for_individual', 'service'),
@@ -225,7 +226,42 @@ export async function hasAnyRootApplicationPermission(permissionNames: readonly 
 }
 
 export async function canCurrentAccountCreateApplication(): Promise<boolean> {
-  return hasRootApplicationPermission(ROOT_APPLICATION_CREATE_PERMISSION);
+  return checkPermissions([APPLICATION_CREATE_PERMISSION]);
+}
+
+export async function resolveApplicationCreateOwnerAccountId(
+  requestedOwnerAccountId?: string | null,
+): Promise<{ success: true; accountId: string; actorAccountId: string } | { success: false; error: string }> {
+  const { activeAccountId, personalAccountId } = await getAccountSelectorContext(requestedOwnerAccountId);
+  if (!activeAccountId || !personalAccountId) {
+    return { success: false, error: 'Not signed in.' };
+  }
+
+  const requested = requestedOwnerAccountId?.trim();
+  let ownerAccountId = activeAccountId;
+  if (requested && requested !== activeAccountId) {
+    const canCreateForOtherAccount = await hasRootApplicationPermission(APPLICATION_CREATE_PERMISSION);
+    if (!canCreateForOtherAccount) {
+      return { success: false, error: 'Permission denied.' };
+    }
+    ownerAccountId = requested;
+  } else {
+    const canCreateForActiveAccount = await canCurrentAccountCreateApplication();
+    if (!canCreateForActiveAccount) {
+      return { success: false, error: 'Permission denied.' };
+    }
+  }
+
+  const account = await prisma.account.findUnique({
+    where: { id: ownerAccountId },
+    select: { accountType: true },
+  });
+
+  if (!account || !['individual', 'dependent'].includes(account.accountType)) {
+    return { success: false, error: 'Applications can only be created for individual or dependent accounts.' };
+  }
+
+  return { success: true, accountId: ownerAccountId, actorAccountId: personalAccountId };
 }
 
 export async function reserveAvailableApplicationId(

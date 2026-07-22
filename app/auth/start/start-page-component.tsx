@@ -12,7 +12,6 @@ import { useToast } from '@/core/hooks/use-toast';
 import { AccountListItem } from '@/components/elements/account-item';
 import type { StoredAccount } from '@/services/account/session';
 import { appendAuthCallbackContext, appendRedirect, getAppDisplayName, shouldReturnToAuthStartForExternalAuthentication } from '@/inapp/auth/callbacks';
-import { redirectInApp } from '@/core/helpers/navigation';
 import { cleanupExpiredStoredSessions } from '@/services/account/session';
 import { logoutStoredSession, removeStoredAccount } from '@/services/account/startSessions';
 
@@ -79,15 +78,14 @@ function isSafeRedirectTarget(target: string) {
 }
 
 export function StartPageComponent({ accounts, hasActiveSession, appName }: StartPageComponentProps) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const toastRef = useRef(toast);
   const error = searchParams.get('error');
   const errorDescription = searchParams.get('error_description');
   const redirects = searchParams.get('redirects');
-  const didRedirectRef = useRef(false);
   const visibleAccounts = accounts.filter((account) => Boolean(account.aid) && !account.isUnknown && !account.guest);
+  const activeAccount = visibleAccounts.find((account) => account.def === 1);
 
   useEffect(() => {
     // Run cleanup at most once per browser session to avoid DB calls on every visit.
@@ -108,36 +106,28 @@ export function StartPageComponent({ accounts, hasActiveSession, appName }: Star
       });
     }
 
-    if (didRedirectRef.current) return;
-
-    if (hasActiveSession && !error) {
-      const preferredTarget =
-        redirects && isSafeRedirectTarget(redirects)
-          ? redirects
-          : shouldReturnToAuthStartForExternalAuthentication(searchParams)
-            ? appendAuthCallbackContext('/auth/sign', searchParams)
-            : null;
-
-      if (preferredTarget && typeof window !== 'undefined') {
-        const current = window.location.pathname + window.location.search + window.location.hash;
-        const desiredUrl = new URL(preferredTarget, window.location.href);
-        const desired = desiredUrl.pathname + desiredUrl.search + desiredUrl.hash;
-
-        if (desired !== current) {
-          didRedirectRef.current = true;
-          redirectInApp(router, preferredTarget, { replace: true });
-        }
-      }
-    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [error, hasActiveSession, redirects, router]);
+  }, [error]);
 
   const getUrlWithReturn = (baseUrl: string) => {
     const withContext = appendAuthCallbackContext(baseUrl, searchParams);
     return appendRedirect(withContext, redirects);
   };
 
+  const getContinueUrl = () => {
+    if (redirects && isSafeRedirectTarget(redirects)) {
+      return redirects;
+    }
+
+    if (shouldReturnToAuthStartForExternalAuthentication(searchParams)) {
+      return appendAuthCallbackContext('/auth/sign', searchParams);
+    }
+
+    return '/home';
+  };
+
   const displayAppName = getAppDisplayName(appName);
+  const showSignedInChoices = hasActiveSession && Boolean(activeAccount);
 
   return (
     <div className="flex min-h-screen items-start justify-center bg-card md:bg-background md:items-center">
@@ -163,52 +153,92 @@ export function StartPageComponent({ accounts, hasActiveSession, appName }: Star
               </Alert>
             )}
 
-            {visibleAccounts.length > 0 && (
+            {showSignedInChoices ? (
               <div className="space-y-2">
-                 {visibleAccounts.map((acc) => (
-                    <AccountListItem
+                <AccountListItem
+                  account={activeAccount!}
+                  isActive
+                  interactive={false}
+                  showActions={false}
+                  showChevron={false}
+                />
+
+                <FlowLink
+                  href={getContinueUrl()}
+                  className="flex w-full items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                >
+                  <div>
+                    <h3 className="font-semibold">Continue</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {appName ? `Continue to ${displayAppName} with this account.` : 'Continue with this account.'}
+                    </p>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                </FlowLink>
+
+                <FlowLink
+                  href={getUrlWithReturn("/auth/signin?step=neupid")}
+                  className="flex w-full items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                >
+                  <div>
+                    <h3 className="font-semibold">Continue with other account</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Sign in with a different NeupID.
+                    </p>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                </FlowLink>
+              </div>
+            ) : (
+              <>
+                {visibleAccounts.length > 0 && (
+                  <div className="space-y-2">
+                    {visibleAccounts.map((acc) => (
+                      <AccountListItem
                         key={acc.aid}
                         account={acc}
                         isActive={acc.def === 1}
-                    />
-                ))}
-              </div>
-            )}
+                      />
+                    ))}
+                  </div>
+                )}
 
-            <FlowLink
-              href={getUrlWithReturn("/auth/signin?step=neupid")}
-              className="flex w-full items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-            >
-              <div>
-                <h3 className="font-semibold">Sign In</h3>
-                <p className="text-sm text-muted-foreground">Sign in with NeupID and continue using NeupID Group Products and Services.</p>
-              </div>
-              <ChevronRight className="h-5 w-5 text-muted-foreground" />
-            </FlowLink>
-            <FlowLink
-              href={getUrlWithReturn("/auth/signup?step=name")}
-              className="flex w-full items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-            >
-              <div>
-                <h3 className="font-semibold">Sign Up</h3>
-                <p className="text-sm text-muted-foreground">
-                  Sign up for a NeupID to use NeupID Group Products and Services.
-                </p>
-              </div>
-              <ChevronRight className="h-5 w-5 text-muted-foreground" />
-            </FlowLink>
-            <FlowLink
-              href={getUrlWithReturn('/auth/forget')}
-              className="flex w-full items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-            >
-              <div>
-                <h3 className="font-semibold">Forget NeupID</h3>
-                <p className="text-sm text-muted-foreground">
-                  Can't remember your NeupID? We can help you recover your ID.
-                </p>
-              </div>
-              <ChevronRight className="h-5 w-5 text-muted-foreground" />
-            </FlowLink>
+                <FlowLink
+                  href={getUrlWithReturn("/auth/signin?step=neupid")}
+                  className="flex w-full items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                >
+                  <div>
+                    <h3 className="font-semibold">Sign In</h3>
+                    <p className="text-sm text-muted-foreground">Sign in with NeupID and continue using NeupID Group Products and Services.</p>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                </FlowLink>
+                <FlowLink
+                  href={getUrlWithReturn("/auth/signup?step=name")}
+                  className="flex w-full items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                >
+                  <div>
+                    <h3 className="font-semibold">Sign Up</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Sign up for a NeupID to use NeupID Group Products and Services.
+                    </p>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                </FlowLink>
+                <FlowLink
+                  href={getUrlWithReturn('/auth/forget')}
+                  className="flex w-full items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                >
+                  <div>
+                    <h3 className="font-semibold">Forget NeupID</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Can't remember your NeupID? We can help you recover your ID.
+                    </p>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                </FlowLink>
+              </>
+            )}
 
           </div>
         </CardContent>

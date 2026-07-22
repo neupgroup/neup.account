@@ -20,7 +20,6 @@ import {
   ROOT_APPLICATION_BASICS_EDIT_PERMISSION,
   ROOT_APPLICATION_CONFIG_UPDATE_PERMISSION,
   ROOT_APPLICATION_CONFIG_VIEW_PERMISSION,
-  ROOT_APPLICATION_CREATE_PERMISSION,
   ROOT_APPLICATION_DELETE_PERMISSION,
   ROOT_APPLICATION_DEVLOGS_CLEAR_PERMISSION,
   ROOT_APPLICATION_DEVLOGS_VIEW_PERMISSION,
@@ -92,7 +91,6 @@ import {
   applicationAuthzDefinitionTupleSchema,
   canAccessRootApplicationMode,
   canCurrentAccountAccessApplicationByBase,
-  canCurrentAccountCreateApplication,
   createApplicationSchema,
   extractPermissionNames,
   getApplicationAuthorization,
@@ -108,6 +106,7 @@ import {
   normalizeText,
   ownerRoleKeys,
   reserveAvailableApplicationId,
+  resolveApplicationCreateOwnerAccountId,
   resolveApplicationAccessForAccount,
   responseAccessSet,
   saveAccessSchema,
@@ -245,7 +244,7 @@ export async function deleteManagedApplication(appId: string): Promise<{ success
 /**
  * Function createManagedApplication.
  */
-export async function createManagedApplication(input: { name: string; idPrefix: string; idSuffix: string }) {
+export async function createManagedApplication(input: { name: string; idPrefix: string; idSuffix: string; ownerAccountId?: string | null }) {
   const parsed = createApplicationSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: 'Invalid application details.' };
@@ -256,15 +255,12 @@ export async function createManagedApplication(input: { name: string; idPrefix: 
     return { success: false, error: 'Application identifier may only contain letters and numbers.' };
   }
 
-  const canCreateApplication = await canCurrentAccountCreateApplication();
-  if (!canCreateApplication) {
-    return { success: false, error: 'Permission denied.' };
+  const createOwner = await resolveApplicationCreateOwnerAccountId(input.ownerAccountId);
+  if (!createOwner.success) {
+    return { success: false, error: createOwner.error };
   }
-
-  const accountId = await getActiveAccountId();
-  if (!accountId) {
-    return { success: false, error: 'Not signed in.' };
-  }
+  const accountId = createOwner.accountId;
+  const actorAccountId = createOwner.actorAccountId;
 
   try {
     const application = await prisma.$transaction(async (tx) => {
@@ -368,7 +364,7 @@ export async function createManagedApplication(input: { name: string; idPrefix: 
       return { id: createdApp.id };
     });
 
-    await logActivity(accountId, activityAction.applicationCreated(application.id), 'Success');
+    await logActivity(actorAccountId, activityAction.applicationCreated(application.id), 'Success');
 
     revalidatePath('/application');
     return { success: true, appId: application.id };

@@ -2,6 +2,7 @@
 
 import {
   canCurrentAccountUseRootApplicationMode as canCurrentAccountUseRootApplicationModeImpl,
+  canCurrentAccountCreateApplication as canCurrentAccountCreateApplicationImpl,
   hasRootApplicationPermission as hasRootApplicationPermissionImpl,
   isApplicationOwnerForAccount as isApplicationOwnerForAccountImpl,
   resolveAvailableApplicationId as resolveAvailableApplicationIdImpl,
@@ -87,6 +88,10 @@ export type { ApplicationUserStats, AppRoleOption, AppUserConnectionDetails, App
 
 export async function canCurrentAccountUseRootApplicationMode(...args: Parameters<typeof canCurrentAccountUseRootApplicationModeImpl>): Promise<Awaited<ReturnType<typeof canCurrentAccountUseRootApplicationModeImpl>>> {
   return canCurrentAccountUseRootApplicationModeImpl(...args);
+}
+
+export async function canCurrentAccountCreateApplication(...args: Parameters<typeof canCurrentAccountCreateApplicationImpl>): Promise<Awaited<ReturnType<typeof canCurrentAccountCreateApplicationImpl>>> {
+  return canCurrentAccountCreateApplicationImpl(...args);
 }
 
 export async function hasRootApplicationPermission(...args: Parameters<typeof hasRootApplicationPermissionImpl>): Promise<Awaited<ReturnType<typeof hasRootApplicationPermissionImpl>>> {

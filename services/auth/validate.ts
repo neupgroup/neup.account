@@ -3,6 +3,7 @@
 import prisma from '@/core/database/prisma';
 import { z } from 'zod';
 import { getUserProfile, getUserNeupIds } from '@/services/user';
+import { normalizeApplicationId } from '@/services/applications/identifiers';
 
 const ValidateInputSchema = z.object({
   appId: z.string().min(1),
@@ -53,7 +54,6 @@ export async function validateExternalRequest(input: ValidateInput): Promise<Val
     return { success: false, error: 'Missing required parameters.', status: 400 };
   }
   const { 
-    appId, 
     appType, 
     appSecret, 
     key, 
@@ -63,6 +63,10 @@ export async function validateExternalRequest(input: ValidateInput): Promise<Val
     auth_skey,
     signup
   } = parsed.data;
+  const appId = normalizeApplicationId(parsed.data.appId);
+  if (!appId) {
+    return { success: false, error: 'Missing required parameters.', status: 400 };
+  }
 
   const internalAid = auth_aid;
   const internalSid = auth_sid;
@@ -144,7 +148,7 @@ export async function validateExternalRequest(input: ValidateInput): Promise<Val
     select: { id: true, type: true, status: true, data: true, accountId: true, expiresAt: true },
   });
   const requestData = (request?.data as Record<string, any> | null) || {};
-  const requestAppId = typeof requestData.appId === 'string' ? requestData.appId : null;
+  const requestAppId = normalizeApplicationId(typeof requestData.appId === 'string' ? requestData.appId : null);
 
   if (
     !request ||

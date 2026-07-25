@@ -5,6 +5,7 @@ import { logError } from '@/logica/logger/files';
 import { makeNotification } from '@/services/notifications';
 import { getAccountPermission, isRootUser } from '@/services/user';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
+import { normalizeApplicationId } from '@/services/applications/identifiers';
 
 /*
 ::neup.documentation::grant-service
@@ -33,8 +34,7 @@ function externalLoginType(appId: string) {
 }
 
 function resolveAppId(input: { app?: string }): string | null {
-  const raw = (input.app || '').trim();
-  return raw ? raw : null;
+  return normalizeApplicationId(input.app);
 }
 
 // Resolves the role name and permission set for an account in the context of an external app.
@@ -117,7 +117,7 @@ export async function bridgeIssueGrant(input: {
     }
 
     const requestData = (request.data as Record<string, any> | null) || {};
-    const requestAppId = typeof requestData.appId === 'string' ? requestData.appId : null;
+    const requestAppId = normalizeApplicationId(typeof requestData.appId === 'string' ? requestData.appId : null);
 
     // Validate expiry and appId after consumption — if invalid, the token is still
     // marked used so it cannot be replayed.

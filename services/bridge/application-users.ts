@@ -16,6 +16,7 @@
 import prisma from '@/core/database/prisma';
 import { logError } from '@/logica/logger/files';
 import { extractGenderFromDetails, resolveDisplayImage } from '@/inapp/display-image';
+import { normalizeApplicationId } from '@/services/applications/identifiers';
 
 /*
 ::neup.documentation::application-users-service
@@ -108,7 +109,8 @@ export async function getApplicationUsers(params: {
   fromDate: string | null;
   toDate: string | null;
 }): Promise<ApplicationUsersResult> {
-  const { appId, appSecret, offset, start, end, startFrom, limit, fromDate, toDate } = params;
+  const appId = normalizeApplicationId(params.appId);
+  const { appSecret, offset, start, end, startFrom, limit, fromDate, toDate } = params;
 
   // 1. Validate credentials
   if (!appId || !appSecret) {

@@ -5,6 +5,7 @@ import { hasAnyPermission, PROFILE_SECTION_PERMISSIONS } from '@/inapp/permissio
 import { validateAuthSession } from '@/services/auth/session';
 import { getAccountPermission, getGrantedAccountPermission, getUserProfile } from '@/services/user';
 import { permission } from '@/logica/permission';
+import { normalizeApplicationId } from '@/services/applications/identifiers';
 
 const servicePermissions = [
   permission('profile.display.view.self', 'for_individual', 'service'),
@@ -72,7 +73,7 @@ async function resolveAuthenticatedAccountId(input: BridgeGetProfileInput): Prom
    * ::end
    */
   const tempToken = input.tempToken?.trim();
-  const appId = input.appId?.trim();
+  const appId = normalizeApplicationId(input.appId);
 
   if (tempToken && appId) {
     const request = await prisma.authnRequest.findUnique({

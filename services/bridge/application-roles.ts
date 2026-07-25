@@ -18,6 +18,7 @@ import { logError } from '@/logica/logger/files';
 import { activeAccessWhere } from '@/services/access-model';
 import { getRoleAccessFlags } from '@/services/role-scopes';
 import { deriveLegacyRoleScopesFromPolicy, normalizeAuthzScopeFor, normalizeSingleAuthzScopeLevel } from '@/services/applications/authz-scope-policy';
+import { normalizeApplicationId } from '@/services/applications/identifiers';
 
 /*
 ::neup.documentation::application-roles-service
@@ -110,7 +111,8 @@ export async function getApplicationRoles(params: {
   fromDate: string | null;
   toDate: string | null;
 }): Promise<ApplicationRolesResult> {
-  const { appId, appSecret, account, start, end, startFrom, limit } = params;
+  const appId = normalizeApplicationId(params.appId);
+  const { appSecret, account, start, end, startFrom, limit } = params;
 
   // 1. Validate credentials
   if (!appId || !appSecret) {

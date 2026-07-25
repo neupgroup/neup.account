@@ -8,6 +8,7 @@ import { resolveGuestAccount } from '@/services/account/guestAccount';
 import { getSessionCookies } from '@/services/auth/session-cookies';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import { extractGenderFromDetails, resolveDisplayImage } from '@/inapp/display-image';
+import { normalizeApplicationId } from '@/services/applications/identifiers';
 
 export const dynamic = 'force-dynamic';
 
@@ -125,8 +126,7 @@ async function resolveAppIdFromToken(token: string | null): Promise<string> {
 
   // 2) External-app grant token (HS256) may include appId.
   const decoded = jwt.decode(token) as any;
-  const appId = typeof decoded?.appId === 'string' ? decoded.appId.trim() : '';
-  return appId || DEFAULT_APP_ID;
+  return normalizeApplicationId(typeof decoded?.appId === 'string' ? decoded.appId : null) || DEFAULT_APP_ID;
 }
 
 async function ensureConnectionForApp(accountId: string, appId: string): Promise<{
@@ -207,7 +207,7 @@ async function handleWhoIsThis(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
   const appIdParamPresent = searchParams.has('app_id');
-  const appIdFromQuery = (searchParams.get('app_id') || '').trim();
+  const appIdFromQuery = normalizeApplicationId(searchParams.get('app_id')) || '';
   if (appIdParamPresent && !appIdFromQuery) {
     return errorJson(400, 'no_app_id', 'app_id query parameter is required when provided', origin);
   }
@@ -249,7 +249,7 @@ async function handleWhoIsThis(request: NextRequest) {
 
     const aid = typeof decoded?.aid === 'string' ? decoded.aid : null;
     const sid = typeof decoded?.sid === 'string' ? decoded.sid : null;
-    const tokenAppId = typeof decoded?.appId === 'string' ? decoded.appId : null;
+    const tokenAppId = normalizeApplicationId(typeof decoded?.appId === 'string' ? decoded.appId : null);
 
     if (!aid || !sid || (tokenAppId && tokenAppId !== appId)) {
       return errorJson(401, 'unauthorized', 'Invalid token payload', origin);

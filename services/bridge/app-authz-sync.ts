@@ -1,6 +1,7 @@
 import prisma from '@/core/database/prisma';
 import { logError } from '@/logica/logger/files';
 import { Prisma } from '@/core/database/prisma';
+import { normalizeApplicationId } from '@/services/applications/identifiers';
 
 /*
 ::neup.documentation::app-authz-sync-service
@@ -155,7 +156,7 @@ async function validateApplicationCredentials(credentials: AppCredentials): Prom
       app: { id: string; name: string; description: string | null; appSecret: string | null };
     }
 > {
-  const appId = credentials.neupAppId?.trim();
+  const appId = normalizeApplicationId(credentials.neupAppId);
   const appSecret = credentials.neupAppSecret?.trim();
 
   if (!appId || !appSecret) {

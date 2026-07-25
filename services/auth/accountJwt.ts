@@ -15,6 +15,7 @@ import jwt from 'jsonwebtoken';
 import prisma from '@/core/database/prisma';
 import { logError } from '@/logica/logger/files';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
+import { normalizeApplicationId } from '@/services/applications/identifiers';
 
 /*
 ::neup.documentation::account-jwt-service
@@ -128,7 +129,8 @@ export async function issueAccountToken(input: {
   skey?: string;
   appId?: string;
 }): Promise<IssueTokenResult> {
-  const { aid, sid, skey, appId } = input;
+  const { aid, sid, skey } = input;
+  const appId = normalizeApplicationId(input.appId);
 
   if (!aid || !sid || !skey || !appId) {
     return {

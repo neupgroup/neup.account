@@ -13,6 +13,7 @@ import {
   ensureApplicationConnection,
   issueSilentAuthCode,
 } from '@/services/auth/silent-sso';
+import { normalizeApplicationId } from '@/services/applications/identifiers';
 
 export const dynamic = 'force-dynamic';
 
@@ -140,7 +141,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       origin || '*'
     );
   }
-  const queryAppId = searchParams.get('app');
+  const queryAppId = normalizeApplicationId(searchParams.get('app'));
   let allowDevModeForApp = false;
 
   // If ?app is missing, treat this as the base account system / first-party usage.

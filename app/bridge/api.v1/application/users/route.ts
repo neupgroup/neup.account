@@ -4,6 +4,7 @@ import { getApplicationUsers } from '@/services/bridge/application-users';
 import { validateSilentSsoOrigin } from '@/services/auth/silent-sso';
 import prisma from '@/core/database/prisma';
 import { writeApplicationDevLog } from '@/services/bridge/dev-logs';
+import { normalizeApplicationId } from '@/services/applications/identifiers';
 
 const routePermissions = [
   permission('application.account.view', 'for_individual'),
@@ -192,7 +193,7 @@ export async function POST(request: NextRequest) {
   }
   requestBodyForLog = body as Record<string, unknown>;
 
-  const appId = readNormalizedBodyValue(body as Record<string, unknown>, 'appid');
+  const appId = normalizeApplicationId(readNormalizedBodyValue(body as Record<string, unknown>, 'appid'));
   appIdForLog = appId;
   const appSecret = readNormalizedBodyValue(body as Record<string, unknown>, 'appsecret');
   if (!appId || !appSecret) {

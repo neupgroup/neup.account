@@ -5,6 +5,7 @@ import prisma from '@/core/database/prisma';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import { canCreateConnectionForAccount, getCreatableConnectionAccounts } from '@/services/bridge/creatable-connections';
 import { getAccessableAccountsWithPermissions } from '@/services/manage/accounts';
+import { normalizeApplicationId } from '@/services/applications/identifiers';
 
 export const dynamic = 'force-dynamic';
 
@@ -203,7 +204,7 @@ export async function POST(request: NextRequest) {
     }
 
     const payload = body as Record<string, unknown>;
-    const appId = readNormalizedBodyValue(payload, 'appId');
+    const appId = normalizeApplicationId(readNormalizedBodyValue(payload, 'appId'));
     const appSecret = readNormalizedBodyValue(payload, 'appSecret');
     const accountId = readNormalizedBodyValue(payload, 'accountId');
 

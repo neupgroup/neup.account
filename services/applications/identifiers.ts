@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 
-const APPLICATION_ID_PREFIX_PATTERN = /^[0-9A-Za-z]+$/;
-const APPLICATION_ID_SEGMENT_PATTERN = /^[0-9A-Za-z]+$/;
+const APPLICATION_ID_PREFIX_PATTERN = /^[0-9a-z]+$/;
+const APPLICATION_ID_SEGMENT_PATTERN = /^[0-9a-z]+$/;
 
 /**
  * ::neup.documentation::application-identifiers-module
@@ -24,7 +24,7 @@ const APPLICATION_ID_SEGMENT_PATTERN = /^[0-9A-Za-z]+$/;
  * ::end
  */
 export function normalizeApplicationIdPrefix(value: string): string {
-  return value.replace(/[^0-9A-Za-z]/g, '');
+  return value.replace(/[^0-9A-Za-z]/g, '').toLowerCase();
 }
 
 export function isValidApplicationIdPrefix(value: string): boolean {
@@ -58,11 +58,11 @@ export function buildApplicationId(prefix: string, suffix = generateApplicationI
    *
    * ::end
    */
-  return `${prefix}.${suffix}`;
+  return `${normalizeApplicationIdPrefix(prefix)}.${normalizeApplicationIdSegment(suffix)}`;
 }
 
 export function normalizeApplicationIdSegment(value: string): string {
-  return value.replace(/[^0-9A-Za-z]/g, '');
+  return value.replace(/[^0-9A-Za-z]/g, '').toLowerCase();
 }
 
 export function isValidApplicationIdSegment(value: string): boolean {
@@ -78,13 +78,12 @@ export function camelCaseApplicationIdSegment(value: string): string {
 
   if (parts.length === 0) return '';
 
-  return parts
-    .map((part, index) => {
-      const lower = part.toLowerCase();
-      if (index === 0) return lower;
-      return lower.charAt(0).toUpperCase() + lower.slice(1);
-    })
-    .join('');
+  return parts.map((part) => part.toLowerCase()).join('');
+}
+
+export function normalizeApplicationId(value: string | null | undefined): string | null {
+  const normalized = value?.trim().toLowerCase();
+  return normalized ? normalized : null;
 }
 
 export function slugifyAuthzTitle(value: string): string {
@@ -121,7 +120,7 @@ export function buildAuthzEntityId(appId: string, title: string): string {
   if (!slug) {
     throw new Error('Identifier title is required.');
   }
-  return `${appId}.${slug}`;
+  return `${normalizeApplicationId(appId)}.${slug}`;
 }
 
 export function humanizeIdentifier(value: string): string {

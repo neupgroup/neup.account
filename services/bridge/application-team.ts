@@ -8,6 +8,7 @@ import { cleanupExpiredAccessModel, extractRolePermissionNames } from '@/service
 import { validateAuthSession } from '@/services/auth/session';
 import { deriveLegacyRoleScopesFromPolicy, normalizeAuthzScopeFor, normalizeSingleAuthzScopeLevel } from '@/services/applications/authz-scope-policy';
 import { checkGrantedPermissions, getUserNeupIds, getUserProfile } from '@/services/user';
+import { normalizeApplicationId } from '@/services/applications/identifiers';
 
 const servicePermissions = [
   permission('access.view', 'for_individual', 'service'),
@@ -174,7 +175,7 @@ export async function getApplicationTeamMembers(input: {
    *
    * ::end
    */
-  const appId = input.appId?.trim() || '';
+  const appId = normalizeApplicationId(input.appId) || '';
   const authToken = input.authToken?.trim() || '';
   const requestedProfileAccountId = input.profileAccountId?.trim() || null;
 

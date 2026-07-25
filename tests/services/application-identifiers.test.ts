@@ -12,22 +12,22 @@ import { extractRolePermissionNames } from '@/services/access-model';
 
 describe('application identifiers', () => {
   it('normalizes application prefixes to alphanumeric characters only', () => {
-    expect(normalizeApplicationIdPrefix('Acme Portal_01')).toBe('AcmePortal01');
+    expect(normalizeApplicationIdPrefix('Acme Portal_01')).toBe('acmeportal01');
   });
 
   it('builds application ids with a fixed suffix shape', () => {
-    expect(buildApplicationId('AcmePortal', 'abc123xyz')).toBe('AcmePortal.abc123xyz');
+    expect(buildApplicationId('AcmePortal', 'Abc123xyz')).toBe('acmeportal.abc123xyz');
   });
 
-  it('builds camelCase application suffixes without special characters', () => {
-    expect(camelCaseApplicationIdSegment('My sample app')).toBe('mySampleApp');
-    expect(normalizeApplicationIdSegment('my Sample-App_01')).toBe('mySampleApp01');
+  it('builds lowercase application suffixes without special characters', () => {
+    expect(camelCaseApplicationIdSegment('My sample app')).toBe('mysampleapp');
+    expect(normalizeApplicationIdSegment('my Sample-App_01')).toBe('mysampleapp01');
   });
 
   it('slugifies authz titles for deterministic ids', () => {
     expect(slugifyAuthzTitle('Orders Read / Write')).toBe('orders-read-write');
     expect(buildAuthzEntityId('AcmePortal.abc123xyz', 'Orders Read')).toBe(
-      'AcmePortal.abc123xyz.orders-read',
+      'acmeportal.abc123xyz.orders-read',
     );
   });
 

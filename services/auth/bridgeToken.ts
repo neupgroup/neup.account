@@ -4,6 +4,7 @@ import prisma from '@/core/database/prisma';
 import jwt from 'jsonwebtoken';
 import { verifyAccountToken } from '@/services/auth/account-token';
 import { validateAuthSession, expireSession } from '@/services/auth/session';
+import { normalizeApplicationId } from '@/services/applications/identifiers';
 
 /*
 ::neup.documentation::bridge-token-service
@@ -32,8 +33,7 @@ function externalLoginType(appId: string) {
 }
 
 function resolveAppId(input: { app?: string }): string | null {
-  const raw = (input.app || '').trim();
-  return raw ? raw : null;
+  return normalizeApplicationId(input.app);
 }
 
 // ---------------------------------------------------------------------------
@@ -113,7 +113,7 @@ export async function bridgeValidateToken(input: {
 
   const aid = typeof decoded?.aid === 'string' ? decoded.aid : null;
   const sid = typeof decoded?.sid === 'string' ? decoded.sid : null;
-  const tokenAppId = typeof decoded?.appId === 'string' ? decoded.appId : null;
+  const tokenAppId = normalizeApplicationId(typeof decoded?.appId === 'string' ? decoded.appId : null);
 
   if (!aid || !sid || (tokenAppId && tokenAppId !== appId)) {
     return { status: 401, body: { success: false, error: 'invalid_grant' } };
@@ -213,7 +213,7 @@ export async function bridgeExpireToken(input: {
 
   const aid = typeof decoded?.aid === 'string' ? decoded.aid : null;
   const sid = typeof decoded?.sid === 'string' ? decoded.sid : null;
-  const tokenAppId = typeof decoded?.appId === 'string' ? decoded.appId : null;
+  const tokenAppId = normalizeApplicationId(typeof decoded?.appId === 'string' ? decoded.appId : null);
 
   if (!aid || !sid || (tokenAppId && tokenAppId !== appId)) {
     return { status: 401, body: { success: false, error: 'invalid_grant' } };

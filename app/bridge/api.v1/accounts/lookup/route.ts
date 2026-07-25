@@ -5,6 +5,7 @@ import { applicationAccessFields, type ApplicationAccessField } from '@/services
 import { writeApplicationDevLog } from '@/services/bridge/dev-logs';
 import { resolveDisplayImage } from '@/inapp/display-image';
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from '@/services/access-model';
+import { normalizeApplicationId } from '@/services/applications/identifiers';
 
 export const dynamic = 'force-dynamic';
 const accessFieldSet = new Set<ApplicationAccessField>(applicationAccessFields);
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
 
   const respond = async (payload: Record<string, unknown>, status: number, appIdForLog?: string | null) => {
     await writeApplicationDevLog({
-      appId: appIdForLog ?? (typeof requestBodyForLog?.appId === 'string' ? requestBodyForLog.appId : null),
+      appId: appIdForLog ?? normalizeApplicationId(typeof requestBodyForLog?.appId === 'string' ? requestBodyForLog.appId : null),
       endpoint: '/bridge/api.v1/accounts/lookup',
       method: 'POST',
       requestHeaders: {
@@ -87,7 +88,14 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     requestBodyForLog = body && typeof body === 'object' ? (body as Record<string, unknown>) : null;
-    appId = typeof body?.appId === 'string' ? body.appId.trim() : null;
+    appId = normalizeApplicationId(
+      typeof body?.appId === 'string' ? body.appId :
+        typeof body?.AppId === 'string' ? body.AppId :
+          typeof body?.appid === 'string' ? body.appid :
+            typeof body?.app_id === 'string' ? body.app_id :
+              typeof body?.['app-id'] === 'string' ? body['app-id'] :
+                null,
+    );
     appSecret = typeof body?.appSecret === 'string' ? body.appSecret.trim() : null;
     accountId = typeof body?.accountId === 'string' ? body.accountId.trim() : null;
   } catch {

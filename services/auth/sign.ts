@@ -7,6 +7,7 @@ import { getApplicationDefaultRoleId } from '@/services/applications/default-rol
 import { applicationPartyValues, type ApplicationParty } from '@/services/applications/types';
 import { verifyAccountToken } from '@/services/auth/account-token';
 import { validateAuthSession } from '@/services/auth/session';
+import { normalizeApplicationId } from '@/services/applications/identifiers';
 
 /*
 ::neup.documentation::sign-service
@@ -56,7 +57,7 @@ The function validates the upstream request, ensures the application connection 
 */
 export async function bridgeSignIntoApplication(input: { appId?: string; appType?: string; [key: string]: any }): Promise<{ status: number; body: Record<string, any> }> {
 	try {
-		const appId = input?.appId;
+		const appId = normalizeApplicationId(input?.appId);
 		const appType = input?.appType;
 
 		if (!appId) {
@@ -166,7 +167,7 @@ export async function bridgeConnectionSignAndGet(input: {
   [key: string]: any;
 }): Promise<{ status: number; body: Record<string, any> }> {
   try {
-    const appId = input?.appId;
+    const appId = normalizeApplicationId(input?.appId);
     const appSecret = input?.appSecret?.trim();
     const authAccountToken = input?.authAccountToken?.trim();
     if (!appId) {

@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { permission } from '@/logica/permission';
 import { getApplicationTeamMembers } from '@/services/bridge/application-team';
+import { normalizeApplicationId } from '@/services/applications/identifiers';
 
 const routePermissions = [
   permission('access.view', 'for_individual', 'api'),
@@ -96,7 +97,7 @@ async function handle(
     );
   }
 
-  const appId = body?.app?.trim() || searchParams.get('app');
+  const appId = normalizeApplicationId(body?.app || searchParams.get('app'));
   const profileAccountId = body?.profile?.trim() || searchParams.get('profile');
   const authToken = getAuthToken(request);
 

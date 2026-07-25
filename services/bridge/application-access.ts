@@ -18,6 +18,7 @@ import prisma from '@/core/database/prisma';
 import { logError } from '@/logica/logger/files';
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from '@/services/access-model';
 import { deriveLegacyRoleScopesFromPolicy, normalizeAuthzScopeFor, normalizeSingleAuthzScopeLevel } from '@/services/applications/authz-scope-policy';
+import { normalizeApplicationId } from '@/services/applications/identifiers';
 
 /*
 ::neup.documentation::application-access-service
@@ -111,7 +112,8 @@ export async function getApplicationAccess(params: {
   fromDate: string | null;
   toDate: string | null;
 }): Promise<ApplicationAccessResult> {
-  const { appId, appSecret, accountId, forAccount, start, end, startFrom, limit } = params;
+  const appId = normalizeApplicationId(params.appId);
+  const { appSecret, accountId, forAccount, start, end, startFrom, limit } = params;
 
   // 1. Validate credentials
   if (!appId || !appSecret) {

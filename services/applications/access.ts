@@ -10,6 +10,7 @@ import { dispatchAccountUpdatedEvent } from '@/services/applications/account-upd
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
+import { normalizeApplicationId } from '@/services/applications/identifiers';
 import {
   expectedRoleScopesForAccount,
   getRoleAccessFlags,
@@ -76,7 +77,7 @@ export async function assignOwnApplicationRole(input: {
   requestSource?: string;
 }): Promise<AssignOwnApplicationRoleResult> {
   const accountId = input.accountId?.trim();
-  const appId = input.appId?.trim();
+  const appId = normalizeApplicationId(input.appId);
   const roleReference = input.roleReference?.trim();
 
   if (!accountId || !appId || !roleReference) {

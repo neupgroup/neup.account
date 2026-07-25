@@ -14,7 +14,7 @@ import { activityAction } from '@/services/activity-action';
 import { getAITextResponse } from '@/services/shared/ai';
 import { logDisplayImageResourceForAccount } from '@/services/manage/site/resources';
 import { dispatchAccountUpdatedEvent, type AccountUpdateEventField } from '@/services/applications/account-update-events';
-import { extractGenderFromDetails, resolveDisplayImage } from '@/logica/display-image';
+import { extractGenderFromDetails, resolveDisplayImage } from '@/inapp/display-image';
 import { assertHasProfileDisplayPermission } from '@/services/account/profile-permissions';
 import { resolveAccessProfileContext } from '@/services/account/access-profile-context';
 import { createNotification } from '@/services/notifications';

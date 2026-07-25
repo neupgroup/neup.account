@@ -10,7 +10,7 @@ import { ChevronRight } from '@/components/icons';
 import { AccountActions } from '@/app/auth/start/start-page-component';
 import { cn } from '@/core/utils';
 import { deleteSessionData } from '@/inapp/auth/storage';
-import { getFallbackDisplayImage } from '@/logica/display-image';
+import { getFallbackDisplayImage } from '@/inapp/display-image';
 
 type CombinedAccount = StoredAccount & {
     displayName?: string;

@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 import { VerifiedBadge } from '../verified-badge';
 import { useSession } from '@/inapp/auth/session-context';
 import { redirectInApp } from '@/core/helpers/navigation';
-import { getFallbackDisplayImage } from '@/logica/display-image';
+import { getFallbackDisplayImage } from '@/inapp/display-image';
 
 function getGreeting() {
     const hour = new Date().getHours();

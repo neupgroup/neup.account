@@ -4,7 +4,7 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import type { Identity } from '@/core/database/prisma';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
-import { extractGenderFromDetails, resolveDisplayImage } from '@/logica/display-image';
+import { extractGenderFromDetails, resolveDisplayImage } from '@/inapp/display-image';
 
 /*
 ::neup.documentation::silent-sso-service

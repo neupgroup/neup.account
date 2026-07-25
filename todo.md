@@ -42,7 +42,6 @@
 - [ ] Add a Neup documentation block for `core/helpers/request-url.ts`, which now owns server-side URL parameter and request protocol helpers without structured source-owned documentation.
 - [ ] Upgrade `core/helpers/cookie.ts` to `documentation.guide.md` with Neup documentation blocks instead of plain comments.
 - [ ] Add a Neup documentation block for `services/upload.ts`, which currently owns the shared profile and KYC upload bridge without structured service documentation.
-- [ ] Add Neup documentation blocks for `logica/display-image.ts`, which now owns shared display-image resolution logic without structured source-owned documentation.
 - [ ] Upgrade `core/appconfig.ts` to `documentation.guide.md` with Neup documentation blocks instead of plain comments.
 - [ ] Add Neup documentation blocks for the root account management pages in `app/(manage)/manage/[id]/page.tsx`, `app/(manage)/manage/[id]/permissions/page.tsx`, and `app/(manage)/manage/[id]/verification/page.tsx`, which currently expose management flows without structured page-level documentation.
 - [ ] Add Neup documentation blocks for the managed account access module in `app/(manage)/manage/[id]/access/form.tsx`, `services/manage/users.ts`, `app/(manage)/manage/layout.tsx`, and `neup.core/auth/account-access-permissions.ts`, which currently rely on plain comments or no structured documentation.

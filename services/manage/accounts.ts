@@ -7,7 +7,7 @@ import { logError } from '@/logica/logger/files';
 import { checkPermissions } from '@/services/user';
 import { getPersonalAccountId } from '@/services/account/verify';
 import type { StoredAccount } from '@/services/account/session';
-import { extractGenderFromDetails, resolveDisplayImage } from '@/logica/display-image';
+import { extractGenderFromDetails, resolveDisplayImage } from '@/inapp/display-image';
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from '@/services/access-model';
 import type { Prisma } from '@/core/database/prisma';
 

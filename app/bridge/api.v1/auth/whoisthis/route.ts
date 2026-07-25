@@ -7,7 +7,7 @@ import { resolveWhoAmI } from '@/services/auth/whoami';
 import { resolveGuestAccount } from '@/services/account/guestAccount';
 import { getSessionCookies } from '@/services/auth/session-cookies';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
-import { extractGenderFromDetails, resolveDisplayImage } from '@/logica/display-image';
+import { extractGenderFromDetails, resolveDisplayImage } from '@/inapp/display-image';
 
 export const dynamic = 'force-dynamic';
 

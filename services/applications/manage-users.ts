@@ -86,7 +86,7 @@ import {
   normalizeApplicationAuthzDefinitions,
   type ApplicationAuthzConfig,
 } from '@/services/applications/authz-config';
-import { extractGenderFromDetails, resolveDisplayImage } from '@/logica/display-image';
+import { extractGenderFromDetails, resolveDisplayImage } from '@/inapp/display-image';
 import {
   APPLICATION_MUTATION_BASES,
   APPLICATION_VIEW_BASES,

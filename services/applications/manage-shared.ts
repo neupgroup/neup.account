@@ -88,7 +88,7 @@ import {
   normalizeApplicationAuthzDefinitions,
   type ApplicationAuthzConfig,
 } from '@/services/applications/authz-config';
-import { extractGenderFromDetails, resolveDisplayImage } from '@/logica/display-image';
+import { extractGenderFromDetails, resolveDisplayImage } from '@/inapp/display-image';
 
 export const servicePermissions = [
   permission('application.view.root', 'for_individual', 'service'),

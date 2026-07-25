@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useSession } from '@/inapp/auth/session-context';
-import { getFallbackDisplayImage } from '@/logica/display-image';
+import { getFallbackDisplayImage } from '@/inapp/display-image';
 
 const STATIC_LOGO_URL = 'https://neupcdn.com/neupaccount/assets/logo.svg';
 const HEADER_HEIGHT = '4rem';

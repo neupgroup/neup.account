@@ -9,7 +9,7 @@ import { verifyActiveSession } from '@/services/auth/verify';
 import { getSessionCookies } from '@/services/auth/session-cookies';
 import { getAccountSelectorContext } from '@/services/account/accountSelector';
 import { getCookie } from '@/core/helpers/cookie';
-import { validateAuthAccountCookieSession } from '@/logica/auth/validation';
+import { validateAuthAccountCookieSession } from '@/services/account/session-validation';
 
 // Represents an active session with both shorthand and legacy field names.
 export type Session = {

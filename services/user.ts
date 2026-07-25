@@ -7,7 +7,7 @@ import prisma from '@/core/database/prisma';
 import { Prisma } from '@/core/database/prisma';
 import { logError } from "@/logica/logger/files";
 import { getActiveAccountId, getPersonalAccountId } from "@/services/account/verify";
-import { extractGenderFromDetails, resolveDisplayImage } from "@/logica/display-image";
+import { extractGenderFromDetails, resolveDisplayImage } from "@/inapp/display-image";
 import { getAccountSelectorContext } from "@/services/account/accountSelector";
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from "@/services/access-model";
 import { permission } from '@/logica/permission';

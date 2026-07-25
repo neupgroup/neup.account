@@ -51,10 +51,13 @@ async function getPublicKey(): Promise<CryptoKey | null> {
   }
 
   try {
-    const pemBody = pem
+    const normalizedPem = pem.trim().replace(/\\n/g, '\n');
+    const pemWithLineBreaks = normalizedPem.includes('-----/n') || normalizedPem.includes('/n-----')
+      ? normalizedPem.replace(/\/n/g, '\n')
+      : normalizedPem;
+    const pemBody = pemWithLineBreaks
       .replace(/-----BEGIN PUBLIC KEY-----/g, '')
       .replace(/-----END PUBLIC KEY-----/g, '')
-      .replace(/\\n/g, '')   // handle literal \n from .env
       .replace(/\s/g, '');
 
     const keyBuffer = Uint8Array.from(atob(pemBody), c => c.charCodeAt(0));

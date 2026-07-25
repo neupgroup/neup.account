@@ -53,7 +53,10 @@ function base64urlDecode(input: string): string {
 }
 
 function normalizePem(pem: string): string {
-  return pem.replace(/\\n/g, '\n');
+  const normalized = pem.trim().replace(/\\n/g, '\n');
+  return normalized.includes('-----/n') || normalized.includes('/n-----')
+    ? normalized.replace(/\/n/g, '\n')
+    : normalized;
 }
 
 function decryptPublicKeyPayload(input: string): BodyObject {

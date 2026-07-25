@@ -22,7 +22,8 @@ export async function getAuthStartPageData(searchParams: Record<string, string |
   // Filter out guest accounts — they cannot sign in and should not appear in the UI
   let accounts = (await getValidatedStoredAccounts()).filter(a => !a.guest);
   const activeSession = await getActiveSession();
-  const appId = getFirstValue(searchParams.appId) || getFirstValue(searchParams.appid);
+  const appId = getFirstValue(searchParams.app) || getFirstValue(searchParams.appId) || getFirstValue(searchParams.appid);
+  const authenticatesTo = getFirstValue(searchParams.authenticatesTo) || getFirstValue(searchParams.authenticatesto);
 
   try {
     const uniqueIds = Array.from(new Set(accounts.map((account) => account.aid).filter(Boolean)));
@@ -70,13 +71,37 @@ export async function getAuthStartPageData(searchParams: Record<string, string |
   const application = appId
     ? await prisma.application.findUnique({
         where: { id: appId },
-        select: { name: true },
+        select: { name: true, party: true },
       })
     : null;
+
+  let firstPartyAppRedirectUrl: string | null = null;
+
+  if (application?.party === 0 && appId && authenticatesTo) {
+    try {
+      new URL(authenticatesTo);
+
+      const authenticatesToRecord = await prisma.applicationBridge.findFirst({
+        where: {
+          appId,
+          type: 'authenticatesTo',
+          value: authenticatesTo,
+        },
+        select: { id: true },
+      });
+
+      if (authenticatesToRecord) {
+        firstPartyAppRedirectUrl = authenticatesTo;
+      }
+    } catch {
+      firstPartyAppRedirectUrl = null;
+    }
+  }
 
   return {
     accounts,
     hasActiveSession: Boolean(activeSession),
     appName: application?.name,
+    firstPartyAppRedirectUrl,
   };
 }

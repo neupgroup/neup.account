@@ -21,6 +21,7 @@ export default async function StartPage({ searchParams }: StartPageProps) {
         accounts={pageData.accounts}
         hasActiveSession={pageData.hasActiveSession}
         appName={pageData.appName}
+        firstPartyAppRedirectUrl={pageData.firstPartyAppRedirectUrl}
       />
     </React.Suspense>
   )

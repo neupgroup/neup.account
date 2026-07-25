@@ -69,6 +69,7 @@ interface StartPageComponentProps {
   accounts: StoredAccount[];
   hasActiveSession: boolean;
   appName?: string | null;
+  firstPartyAppRedirectUrl?: string | null;
 }
 
 function isSafeRedirectTarget(target: string) {
@@ -77,7 +78,7 @@ function isSafeRedirectTarget(target: string) {
   return target.startsWith('/') || target.startsWith('?');
 }
 
-export function StartPageComponent({ accounts, hasActiveSession, appName }: StartPageComponentProps) {
+export function StartPageComponent({ accounts, hasActiveSession, appName, firstPartyAppRedirectUrl }: StartPageComponentProps) {
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const toastRef = useRef(toast);
@@ -164,18 +165,33 @@ export function StartPageComponent({ accounts, hasActiveSession, appName }: Star
                   showChevron={false}
                 />
 
-                <FlowLink
-                  href={getContinueUrl()}
-                  className="flex w-full items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                >
-                  <div>
-                    <h3 className="font-semibold">Continue</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {appName ? `Continue to ${displayAppName} with this account.` : 'Continue with this account.'}
-                    </p>
-                  </div>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                </FlowLink>
+                {firstPartyAppRedirectUrl ? (
+                  <a
+                    href={firstPartyAppRedirectUrl}
+                    className="flex w-full items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                  >
+                    <div>
+                      <h3 className="font-semibold">Continue</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {appName ? `Continue to ${displayAppName} with this account.` : 'Continue with this account.'}
+                      </p>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                  </a>
+                ) : (
+                  <FlowLink
+                    href={getContinueUrl()}
+                    className="flex w-full items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                  >
+                    <div>
+                      <h3 className="font-semibold">Continue</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {appName ? `Continue to ${displayAppName} with this account.` : 'Continue with this account.'}
+                      </p>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                  </FlowLink>
+                )}
 
                 <FlowLink
                   href={getUrlWithReturn("/auth/signin?step=neupid")}

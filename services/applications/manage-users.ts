@@ -31,6 +31,7 @@ import {
   ROOT_APPLICATION_ACCOUNT_ROLE_UPDATE_PERMISSION,
   ROOT_APPLICATION_ACCOUNT_VIEW_PERMISSION,
   ROOT_APPLICATION_USER_REMOVE_PERMISSION,
+  ROOT_APPLICATION_USER_UPDATE_ROLE_PERMISSION,
   ROOT_APPLICATION_USER_VIEW_PERMISSION,
   ROOT_APPLICATION_VIEW_PERMISSION,
   APPLICATION_USER_ROLE_ASSIGN_PUBLIC_REQUESTABLE_ROLES_PERMISSION,
@@ -302,9 +303,18 @@ function hasUsableRoleScope(scope: unknown): boolean {
 }
 
 const APPLICATION_USER_ROLE_ASSIGNABLE_SCOPE_LEVELS: readonly AuthzScopeLevel[] = [
+  'assignable.byTeam',
   'assignable.toSelf.publicly',
   'assignable.toSelf.publicly.byRequest',
+  'assignable.byTeam.fromRequest',
   'assignable.byRoot',
+] as const;
+
+const APPLICATION_USER_ROLE_UPDATE_SCOPE_LEVELS: readonly AuthzScopeLevel[] = [
+  'assignable.byTeam',
+  'assignable.toSelf.publicly',
+  'assignable.toSelf.publicly.byRequest',
+  'assignable.byTeam.fromRequest',
 ] as const;
 
 const APPLICATION_USER_ROLE_ASSIGN_SCOPE_LEVELS_BY_PERMISSION = [
@@ -330,17 +340,32 @@ async function getCurrentApplicationRoleAssignmentScopeLevels(
   if (!accountId) return new Set();
 
   const permissionEntries = APPLICATION_USER_ROLE_ASSIGN_SCOPE_LEVELS_BY_PERMISSION;
-  const [appPermissionResults, rootPermissionResults] = await Promise.all([
+  const roleUpdatePermissionNames = getApplicationPermissionNames(
+    ['account.role.update', 'user.updateRole'],
+    ['public', 'managed'],
+  );
+  const [appPermissionResults, rootPermissionResults, canUpdateRoles, canUpdateRolesAsRoot] = await Promise.all([
     Promise.all(permissionEntries.map(({ permissionName }) => hasApplicationPermission(accountId, appId, [permissionName]))),
     options?.rootMode === true
       ? Promise.all(permissionEntries.map(({ permissionName }) => hasRootApplicationPermission(permissionName)))
       : Promise.resolve(permissionEntries.map(() => false)),
+    hasApplicationPermission(accountId, appId, roleUpdatePermissionNames),
+    options?.rootMode === true
+      ? hasAnyRootApplicationPermission([
+          ROOT_APPLICATION_ACCOUNT_ROLE_UPDATE_PERMISSION,
+          ROOT_APPLICATION_USER_UPDATE_ROLE_PERMISSION,
+        ])
+      : Promise.resolve(false),
   ]);
 
   return new Set(
-    permissionEntries.flatMap(({ scopeLevels }, index) =>
-      appPermissionResults[index] || rootPermissionResults[index] ? scopeLevels : [],
-    ),
+    [
+      ...(canUpdateRoles ? APPLICATION_USER_ROLE_UPDATE_SCOPE_LEVELS : []),
+      ...(canUpdateRolesAsRoot ? APPLICATION_USER_ROLE_ASSIGNABLE_SCOPE_LEVELS : []),
+      ...permissionEntries.flatMap(({ scopeLevels }, index) =>
+        appPermissionResults[index] || rootPermissionResults[index] ? scopeLevels : [],
+      ),
+    ],
   );
 }
 

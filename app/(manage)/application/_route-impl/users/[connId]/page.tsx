@@ -7,11 +7,10 @@ import { FlowLink } from '@/components/ui/flow-link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   canCurrentAccountRemoveApplicationUser,
-  canCurrentAccountUseRootApplicationMode,
   canCurrentAccountUpdateApplicationUserRole,
+  canCurrentAccountUseRootApplicationMode,
   canCurrentAccountViewApplicationUsers,
   getApplicationDetailsForViewerV2,
-  getApplicationRoleOptions,
   getApplicationUserConnectionDetails,
   logRootApplicationActivity,
 } from '@/services/applications/manage';
@@ -20,7 +19,6 @@ import {
   ROOT_APPLICATION_USER_VIEW_PERMISSION,
 } from '@/services/applications/permission-definitions';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
-import { RoleSelector } from './_components/role-selector';
 
 type Props = {
   params: Promise<{ connId: string }>;
@@ -89,12 +87,6 @@ export async function ApplicationUserDetailsPage({
     canCurrentAccountRemoveApplicationUser(appId, { rootMode: mode === 'root' }),
   ]);
   if (!canViewUsers) forbidden();
-  const roles = canUpdateUserRole
-    ? await getApplicationRoleOptions(appId, details.accountType, {
-        rootMode: mode === 'root',
-        includeRoleIds: [...details.roleIds, ...details.pendingRoleIds],
-      })
-    : [];
 
   const initials = details.displayName?.charAt(0).toUpperCase() ?? '?';
   const statusVariant = (status: string | null): 'default' | 'secondary' | 'destructive' | 'outline' => {
@@ -184,24 +176,20 @@ export async function ApplicationUserDetailsPage({
         </CardContent>
       </Card>
 
-      {canUpdateUserRole ? (
-        <div className="grid gap-2">
-          <div className="grid gap-0.5">
-            <h2 className="text-lg font-semibold tracking-tight">Role Management</h2>
-            <p className="text-sm text-muted-foreground">Toggle public, root, and approval-based roles for this user connection.</p>
-          </div>
-          <RoleSelector
-            appId={appId}
-            connectionId={details.connectionId}
-            roles={roles}
-            currentRoleIds={details.roleIds}
-            pendingRoleIds={details.pendingRoleIds}
-            rootMode={mode === 'root'}
-          />
-        </div>
-      ) : null}
-
       <div className="overflow-hidden rounded-2xl border bg-card">
+        {canUpdateUserRole ? (
+          <FlowLink
+            href={applicationHref(`/application/users/${details.connectionId}/roles`, appId, mode ? { mode } : undefined)}
+            className="group flex items-center justify-between gap-4 border-b px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5"
+          >
+            <div className="min-w-0">
+              <p className="font-medium">Role Management</p>
+              <p className="text-sm text-muted-foreground">Toggle public, root, and approval-based roles for this user connection.</p>
+            </div>
+            <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+          </FlowLink>
+        ) : null}
+
         {canRemoveUser ? (
           <FlowLink
             href={applicationHref(`/application/users/${details.connectionId}/delete`, appId, mode ? { mode } : undefined)}

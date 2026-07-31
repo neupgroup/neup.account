@@ -165,10 +165,11 @@ function UserListSkeleton() {
  *
  * ::end
  */
-function UsersListInner({ appId }: { appId: string }) {
+function UsersListInner({ appId, roleId }: { appId: string; roleId?: string }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const mode = searchParams.get('mode');
+  const currentRoleId = roleId || searchParams.get('role') || undefined;
   const currentQuery = searchParams.get('query') || '';
   const currentStatus = searchParams.get('status') as AppUserStatus | null;
   const currentSince = searchParams.get('activeSince') as '1d' | '7d' | '30d' | null;
@@ -202,6 +203,7 @@ function UsersListInner({ appId }: { appId: string }) {
   const syncUrl = useCallback((query: string, status: string, since: string, nextSort: AppUserSortKey) => {
     const params: Record<string, string | undefined> = {};
     if (mode) params.mode = mode;
+    if (currentRoleId) params.role = currentRoleId;
     if (query.trim()) params.query = query.trim();
     if (status !== 'all') params.status = status;
     if (since !== 'all') params.activeSince = since;
@@ -211,14 +213,14 @@ function UsersListInner({ appId }: { appId: string }) {
     const currentHref = `${window.location.pathname}${window.location.search}`;
     if (href === currentHref || `${APP_BASE_PATH}${href}` === currentHref) return;
     redirectInApp(router, href, { replace: true, scroll: false });
-  }, [appId, mode, router]);
+  }, [appId, currentRoleId, mode, router]);
 
   useEffect(() => {
     const t = setTimeout(() => { setDebouncedSearch(search); setPage(1); }, 300);
     return () => clearTimeout(t);
   }, [search]);
 
-  useEffect(() => { setPage(1); }, [activeStatus, activeSince, sort]);
+  useEffect(() => { setPage(1); }, [activeStatus, activeSince, sort, currentRoleId]);
   useEffect(() => {
     if (!hasHydratedFromUrl.current) return;
     syncUrl(debouncedSearch, activeStatus, activeSince, sort);
@@ -233,6 +235,7 @@ function UsersListInner({ appId }: { appId: string }) {
         search: debouncedSearch,
         status: activeStatus === 'all' ? undefined : activeStatus,
         activeSince: activeSince === 'all' ? undefined : activeSince,
+        role: currentRoleId,
         sort,
         rootMode: mode === 'root',
       });
@@ -240,12 +243,13 @@ function UsersListInner({ appId }: { appId: string }) {
       setTotal(result.total);
       setTotalPages(result.totalPages);
     });
-  }, [appId, page, debouncedSearch, activeStatus, activeSince, sort]);
+  }, [appId, page, debouncedSearch, activeStatus, activeSince, currentRoleId, mode, sort]);
 
   useEffect(() => { fetchPage(); }, [fetchPage]);
 
   const detailLinkParams = {
     mode: mode ?? undefined,
+    role: currentRoleId,
     query: debouncedSearch.trim() || undefined,
     status: activeStatus !== 'all' ? activeStatus : undefined,
     activeSince: activeSince !== 'all' ? activeSince : undefined,
@@ -394,10 +398,10 @@ function UsersListInner({ appId }: { appId: string }) {
   );
 }
 
-export function UsersList({ appId }: { appId: string }) {
+export function UsersList({ appId, roleId }: { appId: string; roleId?: string }) {
   return (
     <Suspense fallback={<UserListSkeleton />}>
-      <UsersListInner appId={appId} />
+      <UsersListInner appId={appId} roleId={roleId} />
     </Suspense>
   );
 }

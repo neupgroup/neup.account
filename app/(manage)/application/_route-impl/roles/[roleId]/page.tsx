@@ -10,6 +10,7 @@ editor, instead of the full role detail layout.
 */
 
 import { notFound } from 'next/navigation';
+import { FlowLink } from '@/components/ui/flow-link';
 import {
   canCurrentAccountManageApplicationRoles,
   canCurrentAccountViewApplicationRoles,
@@ -90,16 +91,30 @@ export async function RoleDetailsPage({
   const role = roles.find((item) => item.id === roleId);
   if (!role) notFound();
   const roleAccountCount = await getAppRoleAccountCount(applicationId, role.id);
-  const roleAccountLabel = `${roleAccountCount} account${roleAccountCount === 1 ? '' : 's'}`;
+  const roleAccountLabel = `${roleAccountCount.toLocaleString()} Account`;
+  const roleUsersHref = applicationHref('/application/users', applicationId, {
+    ...(mode ? { mode } : undefined),
+    role: role.id,
+  });
 
   return (
     <div className="grid gap-8">
       <div className="space-y-4">
         <BackButton href={applicationHref('/application/roles', applicationId, mode ? { mode } : undefined)} />
-        <PrimaryHeader
-          title={isEditingInfo ? `Edit Role Info: ${role.name} (${roleAccountLabel})` : `Role: ${role.name} (${roleAccountLabel})`}
-          description={isEditingInfo ? 'Update this role metadata only.' : (role.description || 'No description')}
-        />
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {isEditingInfo ? `Edit Role Info: ${role.name}` : `Role: ${role.name}`}{' '}
+            <FlowLink
+              href={roleUsersHref}
+              className="text-muted-foreground underline-offset-4 hover:underline"
+            >
+              {roleAccountLabel}
+            </FlowLink>
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            {isEditingInfo ? 'Update this role metadata only.' : (role.description || 'No description')}
+          </p>
+        </div>
       </div>
       <RoleDetailEditor
         appId={applicationId}

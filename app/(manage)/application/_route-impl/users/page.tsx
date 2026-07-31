@@ -19,7 +19,7 @@ import { UsersList } from './_components/users-list';
 import { formMetadata } from '@/core/metadata';
 
 type Props = {
-  searchParams: Promise<{ application?: string | string[]; mode?: string }>;
+  searchParams: Promise<{ application?: string | string[]; mode?: string; role?: string | string[] }>;
 };
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
@@ -47,7 +47,15 @@ export default async function ApplicationUsersQueryPage({ searchParams }: Props)
   notFound();
 }
 
-export async function ApplicationUsersPage({ applicationId, mode }: { applicationId: string; mode?: string }) {
+export async function ApplicationUsersPage({
+  applicationId,
+  mode,
+  role,
+}: {
+  applicationId: string;
+  mode?: string;
+  role?: string;
+}) {
   if (
     mode === 'root' &&
     !(await canCurrentAccountUseRootApplicationMode([
@@ -94,11 +102,13 @@ export async function ApplicationUsersPage({ applicationId, mode }: { applicatio
           </span>
         </h1>
         <p className="text-muted-foreground">
-          {userCount.toLocaleString()} user{userCount === 1 ? '' : 's'} found for the application.
+          {role
+            ? 'Showing users assigned to the selected role.'
+            : `${userCount.toLocaleString()} user${userCount === 1 ? '' : 's'} found for the application.`}
         </p>
       </div>
 
-      <UsersList appId={applicationId} />
+      <UsersList appId={applicationId} roleId={role} />
     </div>
   );
 }

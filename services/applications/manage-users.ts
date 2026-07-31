@@ -446,6 +446,7 @@ export async function getApplicationUsersPaginated(params: {
   page: number;
   pageSize?: number;
   search?: string;
+  role?: string;
   status?: AppUserStatus;
   activeSince?: '1d' | '7d' | '30d';
   sort?: AppUserSortKey;
@@ -457,10 +458,11 @@ export async function getApplicationUsersPaginated(params: {
   const canView = await canCurrentAccountViewApplicationUsers(params.appId, { rootMode: params.rootMode });
   if (!canView) return { users: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
 
-  const { appId, page, pageSize = 20, search = '', status, activeSince, sort = 'newest' } = params;
+  const { appId, page, pageSize = 20, search = '', role, status, activeSince, sort = 'newest' } = params;
 
   try {
     const parsedSearch = parseApplicationUserSearch(search);
+    const roleFilter = role?.trim() || parsedSearch.roleName;
     const now = new Date();
     const sinceMap: Record<string, number> = { '1d': 1, '7d': 7, '30d': 30 };
     const connectionSinceDate = activeSince
@@ -529,7 +531,31 @@ export async function getApplicationUsersPaginated(params: {
       connectionWhere.account = accountWhere;
     }
 
-    if (parsedSearch.roleName) {
+    const applyAccountIdFilter = (accountIds: string[]): boolean => {
+      const uniqueAccountIds = Array.from(new Set(accountIds));
+      if (uniqueAccountIds.length === 0) return false;
+
+      const currentAccountWhere = (connectionWhere.account as Record<string, unknown> | undefined) ?? {};
+      const currentAccountIdFilter = currentAccountWhere.id;
+      let narrowedAccountIds = uniqueAccountIds;
+
+      if (currentAccountIdFilter && typeof currentAccountIdFilter === 'object' && currentAccountIdFilter !== null && 'in' in currentAccountIdFilter) {
+        const existingIds = Array.isArray((currentAccountIdFilter as { in?: unknown }).in)
+          ? (currentAccountIdFilter as { in: unknown[] }).in.filter((value): value is string => typeof value === 'string')
+          : [];
+        narrowedAccountIds = uniqueAccountIds.filter((id) => existingIds.includes(id));
+      }
+
+      if (narrowedAccountIds.length === 0) return false;
+
+      connectionWhere.account = {
+        ...currentAccountWhere,
+        id: { in: narrowedAccountIds },
+      };
+      return true;
+    };
+
+    if (roleFilter) {
       const [directRoleConnections, grantedRoleAccessRows] = await Promise.all([
         prisma.connection.findMany({
           where: {
@@ -538,7 +564,7 @@ export async function getApplicationUsersPaginated(params: {
               {
                 role: {
                   id: {
-                    equals: parsedSearch.roleName,
+                    equals: roleFilter,
                     mode: 'insensitive',
                   },
                 },
@@ -546,14 +572,14 @@ export async function getApplicationUsersPaginated(params: {
               {
                 role: {
                   name: {
-                    equals: parsedSearch.roleName,
+                    equals: roleFilter,
                     mode: 'insensitive',
                   },
                 },
               },
               {
                 roleId: {
-                  equals: parsedSearch.roleName,
+                  equals: roleFilter,
                   mode: 'insensitive',
                 },
               },
@@ -571,13 +597,13 @@ export async function getApplicationUsersPaginated(params: {
               OR: [
                 {
                   id: {
-                    equals: parsedSearch.roleName,
+                    equals: roleFilter,
                     mode: 'insensitive',
                   },
                 },
                 {
                   name: {
-                    equals: parsedSearch.roleName,
+                    equals: roleFilter,
                     mode: 'insensitive',
                   },
                 },
@@ -594,29 +620,9 @@ export async function getApplicationUsersPaginated(params: {
         ...grantedRoleAccessRows.map((row) => row.memberAccountId).filter((value): value is string => typeof value === 'string' && value.length > 0),
       ]));
 
-      if (matchingAccountIds.length === 0) {
+      if (!applyAccountIdFilter(matchingAccountIds)) {
         return { users: [], total: 0, page, pageSize, totalPages: 0 };
       }
-
-      const currentAccountWhere = (connectionWhere.account as Record<string, unknown> | undefined) ?? {};
-      const currentAccountIdFilter = currentAccountWhere.id;
-      let narrowedAccountIds = matchingAccountIds;
-
-      if (currentAccountIdFilter && typeof currentAccountIdFilter === 'object' && currentAccountIdFilter !== null && 'in' in currentAccountIdFilter) {
-        const existingIds = Array.isArray((currentAccountIdFilter as { in?: unknown }).in)
-          ? (currentAccountIdFilter as { in: unknown[] }).in.filter((value): value is string => typeof value === 'string')
-          : [];
-        narrowedAccountIds = matchingAccountIds.filter((id) => existingIds.includes(id));
-      }
-
-      if (narrowedAccountIds.length === 0) {
-        return { users: [], total: 0, page, pageSize, totalPages: 0 };
-      }
-
-      connectionWhere.account = {
-        ...currentAccountWhere,
-        id: { in: narrowedAccountIds },
-      };
     }
 
     if (parsedSearch.activeSince) {
@@ -626,15 +632,9 @@ export async function getApplicationUsersPaginated(params: {
       });
 
       const activeAccountIds = activeAccounts.map((entry) => entry.memberId);
-      if (activeAccountIds.length === 0) {
+      if (!applyAccountIdFilter(activeAccountIds)) {
         return { users: [], total: 0, page, pageSize, totalPages: 0 };
       }
-
-      const currentAccountWhere = (connectionWhere.account as Record<string, unknown> | undefined) ?? {};
-      connectionWhere.account = {
-        ...currentAccountWhere,
-        id: { in: activeAccountIds },
-      };
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -6,10 +6,11 @@ import {
   ROOT_APPLICATION_ACCOUNT_VIEW_PERMISSION,
   ROOT_APPLICATION_USER_VIEW_PERMISSION,
 } from '@/services/applications/permission-definitions';
+import { getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = {
   params: Promise<{ appid: string }>;
-  searchParams: Promise<{ mode?: string }>;
+  searchParams: Promise<{ mode?: string; role?: string | string[] }>;
 };
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
@@ -26,6 +27,6 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 
 export default async function ApplicationUsersCanonicalPage({ params, searchParams }: Props) {
   const { appid } = await params;
-  const { mode } = await searchParams;
-  return ApplicationUsersPage({ applicationId: appid, mode });
+  const { mode, role } = await searchParams;
+  return ApplicationUsersPage({ applicationId: appid, mode, role: getQueryParam(role) });
 }

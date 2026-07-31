@@ -1334,23 +1334,34 @@ export async function getAppRoleAccountCount(appId: string, roleId: string): Pro
   if ('error' in auth) return 0;
 
   try {
-    const accessRows = await prisma.access.findMany({
+    const grantedRoleAccessRows = await prisma.access.findMany({
       where: {
-        accessApplicationId: appId,
         roleId,
         memberAccountId: { not: null },
-        ...activeAccessWhere(),
+        AND: [
+          { OR: [
+            { accessApplicationId: appId },
+            { assetApplicationId: appId },
+          ] },
+          activeAccessWhere(),
+        ],
       },
-      select: {
-        memberAccountId: true,
-      },
+      select: { memberAccountId: true },
       distinct: ['memberAccountId'],
     });
+    const grantedAccountIds = grantedRoleAccessRows
+      .map((row) => (typeof row.memberAccountId === 'string' ? row.memberAccountId.trim() : ''))
+      .filter(Boolean);
 
-    return accessRows.reduce((count, row) => {
-      const accountId = typeof row.memberAccountId === 'string' ? row.memberAccountId.trim() : '';
-      return accountId ? count + 1 : count;
-    }, 0);
+    return await prisma.connection.count({
+      where: {
+        appId,
+        OR: [
+          { roleId },
+          ...(grantedAccountIds.length > 0 ? [{ accountId: { in: grantedAccountIds } }] : []),
+        ],
+      },
+    });
   } catch (error) {
     await logError('database', error, `getAppRoleAccountCount:${appId}:${roleId}`);
     return 0;

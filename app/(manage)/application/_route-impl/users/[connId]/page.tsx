@@ -28,6 +28,7 @@ type Props = {
     application?: string | string[];
     mode?: string;
     query?: string;
+    role?: string;
     status?: string;
     activeSince?: string;
     sort?: string;
@@ -36,7 +37,7 @@ type Props = {
 
 export default async function ApplicationUserDetailsQueryPage({ params, searchParams }: Props) {
   const { connId } = await params;
-  const { application, mode, query, status, activeSince, sort } = await searchParams;
+  const { application } = await searchParams;
   const appId = getQueryParam(application);
 
   if (appId) notFound();
@@ -48,6 +49,7 @@ export async function ApplicationUserDetailsPage({
   connId,
   mode,
   query,
+  role,
   status,
   activeSince,
   sort,
@@ -56,6 +58,7 @@ export async function ApplicationUserDetailsPage({
   connId: string;
   mode?: string;
   query?: string;
+  role?: string;
   status?: string;
   activeSince?: string;
   sort?: string;
@@ -86,7 +89,12 @@ export async function ApplicationUserDetailsPage({
     canCurrentAccountRemoveApplicationUser(appId, { rootMode: mode === 'root' }),
   ]);
   if (!canViewUsers) forbidden();
-  const roles = canUpdateUserRole ? await getApplicationRoleOptions(appId, details.accountType, { rootMode: mode === 'root' }) : [];
+  const roles = canUpdateUserRole
+    ? await getApplicationRoleOptions(appId, details.accountType, {
+        rootMode: mode === 'root',
+        includeRoleIds: [...details.roleIds, ...details.pendingRoleIds],
+      })
+    : [];
 
   const initials = details.displayName?.charAt(0).toUpperCase() ?? '?';
   const statusVariant = (status: string | null): 'default' | 'secondary' | 'destructive' | 'outline' => {
@@ -107,6 +115,7 @@ export async function ApplicationUserDetailsPage({
             href={applicationHref('/application/users', appId, {
               mode,
               query,
+              role,
               status,
               activeSince,
               sort,

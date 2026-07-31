@@ -284,6 +284,7 @@ export type AppRoleOption = {
   scope: string[];
   acquisitionType: string;
   approvalPolicy: string;
+  assignable: boolean;
 };
 
 type RawAppRoleOptionRow = {
@@ -590,8 +591,13 @@ export async function getApplicationUsersPaginated(params: {
         prisma.access.findMany({
           where: {
             memberAccountId: { not: null },
-            accessApplicationId: appId,
-            ...activeAccessWhere(),
+            AND: [
+              { OR: [
+                { accessApplicationId: appId },
+                { assetApplicationId: appId },
+              ] },
+              activeAccessWhere(),
+            ],
             role: {
               appId,
               OR: [
@@ -772,8 +778,13 @@ export async function getApplicationUserConnectionDetails(params: {
       where: {
         memberAccountId: row.accountId,
         parentAccountId: row.accountId,
-        assetApplicationId: params.appId,
-        ...activeAccessWhere(),
+        AND: [
+          { OR: [
+            { accessApplicationId: params.appId },
+            { assetApplicationId: params.appId },
+          ] },
+          activeAccessWhere(),
+        ],
       },
       select: {
         roleId: true,
@@ -789,7 +800,9 @@ export async function getApplicationUserConnectionDetails(params: {
 
     const roleIds = Array.from(
       new Set(
-        accessRows
+        [
+          ...(row.roleId ? [row.roleId] : []),
+          ...accessRows
           .filter((accessRow) => accessRow.role.appId === params.appId)
           .filter((accessRow) =>
             roleMatchesAssignmentModesPolicy({
@@ -800,6 +813,7 @@ export async function getApplicationUserConnectionDetails(params: {
             }),
           )
           .map((accessRow) => accessRow.roleId),
+        ],
       ),
     );
 
@@ -848,7 +862,11 @@ export async function getApplicationUserConnectionDetails(params: {
   }
 }
 
-export async function getApplicationRoleOptions(appId: string, targetAccountType?: string | null, options?: ApplicationRootModeOption): Promise<AppRoleOption[]> {
+export async function getApplicationRoleOptions(
+  appId: string,
+  targetAccountType?: string | null,
+  options?: ApplicationRootModeOption & { includeRoleIds?: string[] },
+): Promise<AppRoleOption[]> {
   const accountId = await getActiveAccountId();
   if (!accountId) return [];
 
@@ -868,19 +886,23 @@ export async function getApplicationRoleOptions(appId: string, targetAccountType
       ),
       acquisitionType: role.acquisitionType ?? 'assignment',
       approvalPolicy: role.approvalPolicy ?? 'none',
+      assignable: false,
     }));
+    const includeRoleIdSet = new Set((options?.includeRoleIds ?? []).map((roleId) => roleId.trim()).filter(Boolean));
 
     if (!targetAccountType) {
-      return normalizedRoles.filter((role) =>
-        hasUsableRoleScope(role.scope) &&
-        APPLICATION_USER_ROLE_ASSIGNABLE_SCOPE_LEVELS.includes(normalizeSingleAuthzScopeLevel((role as any).scopeLevel)) &&
-        allowedScopeLevels.has(normalizeSingleAuthzScopeLevel((role as any).scopeLevel)),
-      );
+      return normalizedRoles.flatMap((role) => {
+        const assignable =
+          hasUsableRoleScope(role.scope) &&
+          APPLICATION_USER_ROLE_ASSIGNABLE_SCOPE_LEVELS.includes(normalizeSingleAuthzScopeLevel((role as any).scopeLevel)) &&
+          allowedScopeLevels.has(normalizeSingleAuthzScopeLevel((role as any).scopeLevel));
+        if (!assignable && !includeRoleIdSet.has(role.id)) return [];
+        return [{ ...role, assignable }];
+      });
     }
 
-    return normalizedRoles.filter((role) => {
-      if (!hasUsableRoleScope(role.scope)) return false;
-      return canAssignRoleForApplicationUser({
+    return normalizedRoles.flatMap((role) => {
+      const assignable = hasUsableRoleScope(role.scope) && canAssignRoleForApplicationUser({
         accountType: targetAccountType,
         role: {
           scopeFor: (role as any).scopeFor ?? [],
@@ -888,6 +910,8 @@ export async function getApplicationRoleOptions(appId: string, targetAccountType
         },
         allowedScopeLevels,
       });
+      if (!assignable && !includeRoleIdSet.has(role.id)) return [];
+      return [{ ...role, assignable }];
     });
   } catch (error) {
     await logError('database', error, `getApplicationRoleOptions:${appId}`);
@@ -961,8 +985,13 @@ export async function assignApplicationConnectionRole(input: {
       where: {
         memberAccountId: connection.accountId,
         parentAccountId: connection.accountId,
-        assetApplicationId: input.appId,
-        ...activeAccessWhere(),
+        AND: [
+          { OR: [
+            { accessApplicationId: input.appId },
+            { assetApplicationId: input.appId },
+          ] },
+          activeAccessWhere(),
+        ],
       },
       select: {
         roleId: true,
@@ -1022,7 +1051,13 @@ export async function assignApplicationConnectionRole(input: {
           where: {
             memberAccountId: connection.accountId,
             parentAccountId: connection.accountId,
-            assetApplicationId: input.appId,
+            AND: [
+              { OR: [
+                { accessApplicationId: input.appId },
+                { assetApplicationId: input.appId },
+              ] },
+              activeAccessWhere(),
+            ],
             roleId: { in: roleIdsToRemove },
           },
         });

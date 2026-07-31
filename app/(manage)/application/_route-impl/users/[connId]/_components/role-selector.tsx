@@ -22,6 +22,7 @@ const LOAD_MORE_COUNT = 10;
 
 export function RoleSelector({ appId, connectionId, roles, currentRoleIds, pendingRoleIds, rootMode }: RoleSelectorProps) {
   const manageableRoleIdSet = useMemo(() => new Set(roles.map((role) => role.id)), [roles]);
+  const assignableRoleIdSet = useMemo(() => new Set(roles.filter((role) => role.assignable).map((role) => role.id)), [roles]);
   const [query, setQuery] = useState('');
   const [visible, setVisible] = useState(INITIAL_VISIBLE);
   const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>(() =>
@@ -49,14 +50,17 @@ export function RoleSelector({ appId, connectionId, roles, currentRoleIds, pendi
   const hasMore = visible < filtered.length;
 
   const handleToggle = (roleId: string) => {
+    if (!assignableRoleIdSet.has(roleId)) return;
+
     setMessage('');
 
     const nextSelectedRoleIds = selectedRoleIds.includes(roleId)
       ? selectedRoleIds.filter((id) => id !== roleId)
       : [...selectedRoleIds, roleId];
+    const nextAssignableRoleIds = nextSelectedRoleIds.filter((id) => assignableRoleIdSet.has(id));
 
     startTransition(async () => {
-      const result = await assignApplicationConnectionRole({ appId, connectionId, roleIds: nextSelectedRoleIds, rootMode });
+      const result = await assignApplicationConnectionRole({ appId, connectionId, roleIds: nextAssignableRoleIds, rootMode });
       if (!result.success) {
         setMessage(result.error || 'Could not update roles.');
         return;
@@ -96,13 +100,14 @@ export function RoleSelector({ appId, connectionId, roles, currentRoleIds, pendi
           {visibleRoles.length > 0 ? visibleRoles.map((role) => {
             const isSelected = selectedRoleIds.includes(role.id);
             const isPendingSelection = pendingSelections.includes(role.id);
+            const isAssignable = role.assignable;
 
             return (
               <button
                 key={role.id}
                 type="button"
                 onClick={() => handleToggle(role.id)}
-                disabled={pending}
+                disabled={pending || !isAssignable}
                 className="rounded-none border-0 border-t bg-card p-3 text-left transition-colors hover:bg-muted/40 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <div className="flex items-center justify-between gap-3">
@@ -112,6 +117,7 @@ export function RoleSelector({ appId, connectionId, roles, currentRoleIds, pendi
                   <div className="flex items-center gap-2">
                     {isPendingSelection ? <Badge variant="outline">Pending</Badge> : null}
                     {isSelected ? <Badge>Selected</Badge> : null}
+                    {!isAssignable ? <Badge variant="secondary">Locked</Badge> : null}
                   </div>
                 </div>
                 {role.description ? <p className="mt-1 text-xs text-muted-foreground">{role.description}</p> : null}

@@ -5,6 +5,7 @@ type Props = {
   searchParams: Promise<{
     mode?: string;
     query?: string;
+    role?: string;
     status?: string;
     activeSince?: string;
     sort?: string;
@@ -13,12 +14,13 @@ type Props = {
 
 export default async function ApplicationUserDetailsCanonicalPage({ params, searchParams }: Props) {
   const { appid, userid } = await params;
-  const { mode, query, status, activeSince, sort } = await searchParams;
+  const { mode, query, role, status, activeSince, sort } = await searchParams;
   return ApplicationUserDetailsPage({
     appId: appid,
     connId: userid,
     mode,
     query,
+    role,
     status,
     activeSince,
     sort,

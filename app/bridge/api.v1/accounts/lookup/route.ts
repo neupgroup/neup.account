@@ -7,6 +7,56 @@ import { normalizeApplicationId } from '@/services/applications/identifiers';
 import { verifyAccountToken } from '@/services/auth/account-token';
 import { validateAuthSession } from '@/services/auth/session';
 
+/*
+::neup.documentation::bridge-accounts-lookup-route
+::api POST /bridge/api.v1/accounts/lookup
+::title Bridge Account User Info Lookup
+
+Looks up user information for an application integration.
+
+::public
+
+Send JSON only. Do not pass `appId`, `appSecret`, `accountId`, or `connectionId`
+in query parameters or headers.
+
+Supported lookup modes:
+
+1. App-secret account lookup: send `appId`, `appSecret`, and `accountId`.
+2. App-secret connection lookup: send `appId`, `appSecret`, and `connectionId`.
+3. Auth-cookie self lookup: send `appId` and the `auth_account` cookie.
+
+When `fields` is omitted, the response profile includes the basic fields:
+`displayName`, `displayImage`, `connectionId`, `accountId`, and `accountType`.
+When `fields` is provided, only requested allowed fields are returned.
+
+For party `0` and `1` applications, app-secret lookup may return any supported
+lookup field. For party `2` and `3` applications, app-secret lookup requires an
+active connection with the requested account, and the response is capped to:
+`connectionId`, `appId`, `displayName`, `displayImage`, `gender`, `isMinor`,
+`birthDate`, and `createdAt`.
+
+Auth-cookie lookup returns the signed-in account's user-info payload for the
+provided `appId`.
+
+::public end
+
+::private
+
+The route validates application credentials before app-secret lookups, validates
+`auth_account` through `verifyAccountToken()` and `validateAuthSession()` for
+cookie lookups, and writes every response through application dev logs.
+
+Status codes:
+`200` for successful lookups, `400` for malformed or mixed lookup inputs, `401`
+for invalid app credentials or invalid cookies, `403` for inactive restricted
+party connections, `404` for missing applications/accounts/connections, and
+`500` for unexpected server errors.
+
+::private end
+
+::end
+*/
+
 export const dynamic = 'force-dynamic';
 type LookupField =
   | 'neupid'
@@ -102,7 +152,10 @@ function asLookupFields(value: unknown): LookupField[] | null {
 }
 
 function selectFields(fields: LookupField[] | null, allowedFields = lookupFieldSet): LookupField[] {
+  // Missing `fields` means the caller gets the default public identity snapshot.
   const requested = fields?.length ? fields : [...defaultLookupFields];
+
+  // Party restrictions are enforced by passing a smaller allowed-field set.
   return requested.filter((field) => allowedFields.has(field));
 }
 
@@ -200,6 +253,7 @@ function buildProfile(input: {
   lastActive: string | null;
   fields: LookupField[];
 }): Record<string, unknown> {
+  // Profile values can live in account.details, individual profile details, or direct account columns.
   const accountDetails = readDetails(input.account.details);
   const nestedProfile = readDetails(accountDetails.profile);
   const individualDetails = readDetails(input.account.individualProfile?.details);
@@ -239,6 +293,7 @@ function buildProfile(input: {
     createdAt: input.account.createdAt.toISOString(),
   };
 
+  // Return only fields selected for this request and party policy.
   const profile: Record<string, unknown> = {};
   for (const field of input.fields) {
     profile[field] = valueByField[field];
@@ -352,6 +407,7 @@ export async function POST(request: NextRequest) {
     let targetAccountId: string | null = accountId;
     let connection: ConnectionRecord | null = null;
 
+    // Server-to-server integrations authenticate with appSecret and can target an account or connection.
     if (appSecret) {
       lookupMode = 'appSecret';
 
@@ -383,6 +439,7 @@ export async function POST(request: NextRequest) {
         targetAccountId = connection.accountId;
       }
     } else {
+      // Browser/session integrations authenticate only through the auth_account cookie.
       lookupMode = 'authAccount';
 
       if (accountId || connectionId) {
@@ -446,9 +503,12 @@ export async function POST(request: NextRequest) {
     }
 
     const party = [0, 1, 2, 3].includes(application.party) ? application.party : 1;
+
+    // Party 2/3 app-secret callers may only inspect users actively registered with the app.
     const isRestrictedAppSecretLookup = lookupMode === 'appSecret' && (party === 2 || party === 3);
     const allowedFields = isRestrictedAppSecretLookup ? thirdPartyLookupFieldSet : lookupFieldSet;
 
+    // Resolve the connection when available so connectionId can be returned and restrictions can be checked.
     if (!connection) {
       connection = await getLookupConnection({ appId, accountId: account.id });
     }

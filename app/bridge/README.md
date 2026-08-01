@@ -11,6 +11,7 @@ HTTP integration surface for authentication, profile lookup, application access,
 ## Documentation
 
 - [API v1 Overview](api.v1/README.md)
+- [Account Lookup](api.v1/accounts/lookup/README.md)
 - [Auth Endpoints](api.v1/auth/README.md)
 - [Application Endpoints](api.v1/application/README.md)
 - [Silent SSO](silent.v1/README.md)

@@ -13,6 +13,7 @@ Shared API v1 bridge routes for account/profile access and auth/application subt
 | Route | Method | Purpose | Primary owner |
 | --- | --- | --- | --- |
 | `/bridge/api.v1/accounts` | `GET` | list accounts accessible to the authenticated user or bearer-token subject | `services/manage/accounts.ts`, `services/auth/appTokenAuth.ts` |
+| `/bridge/api.v1/accounts/lookup` | `POST` | return selected account identity fields by app credentials or `auth_account` cookie | `app/bridge/api.v1/accounts/lookup/route.ts` |
 | `/bridge/api.v1/profile` | `GET` | resolve self or target profile from session headers or `tempToken` flow | `core/auth/profileBridge.ts` |
 | `/bridge/api.v1/permissions` | `GET` | return current signed-in account permission set | `services/user.ts` |
 
@@ -23,7 +24,7 @@ Top-level API v1 routes outside the auth and application subfolders.
 
 ::public
 
-Use `/bridge/api.v1/profile` for profile reads, `/bridge/api.v1/accounts` for delegated account lists, and `/bridge/api.v1/permissions` for the current session permission snapshot.
+Use `/bridge/api.v1/accounts/lookup` for selected account identity fields, `/bridge/api.v1/profile` for profile reads, `/bridge/api.v1/accounts` for delegated account lists, and `/bridge/api.v1/permissions` for the current session permission snapshot.
 
 ::public end
 

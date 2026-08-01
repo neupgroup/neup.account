@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CheckCircle2 } from '@/components/icons';
 import { createManagedApplication, resolveAvailableApplicationId } from '@/services/applications/manage';
-import { redirectInApp } from '@/core/helpers/navigation';
+import { redirectInApp } from '@/core/helpers/link/navigation';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import {
   camelCaseApplicationIdSegment,

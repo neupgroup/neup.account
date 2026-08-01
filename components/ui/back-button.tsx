@@ -4,7 +4,7 @@
 import { usePathname, useSearchParams } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import { cn } from '@/core/utils';
-import { resolveBackNavigationHref, type NavigationBackTargets } from '@/core/helpers/navigation';
+import { resolveBackNavigationHref, type NavigationBackTargets } from '@/core/helpers/link/navigation';
 import { Suspense } from 'react';
 
 type BackButtonProps = {

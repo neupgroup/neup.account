@@ -29,7 +29,7 @@ import { useToast } from "@/core/hooks/use-toast"
 import { createSubbrandAccount, checkSubbrandNeupIdAvailability } from "@/services/manage/accounts/subbrands";
 import { CheckCircle2, XCircle, Loader2 } from "@/components/icons"
 import { BackButton } from "@/components/ui/back-button"
-import { redirectInApp } from "@/core/helpers/navigation";
+import { redirectInApp } from "@/core/helpers/link/navigation";
 
 const formSchema = z.object({
     name: z.string().min(1, "Subbrand name is required"),

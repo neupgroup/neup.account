@@ -37,7 +37,7 @@ import {
   type AppPermission,
 } from '@/services/applications/authz-manage';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
-import { redirectInApp } from '@/core/helpers/navigation';
+import { redirectInApp } from '@/core/helpers/link/navigation';
 import { FlowLink } from '@/components/ui/flow-link';
 import { ScopeForSelector, ScopeLevelSelector } from './authz-scope-policy-selector';
 

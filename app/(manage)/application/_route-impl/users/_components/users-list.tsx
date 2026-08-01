@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { FlowLink } from '@/components/ui/flow-link';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { APP_BASE_PATH } from '@/core/appconfig';
-import { redirectInApp } from '@/core/helpers/navigation';
+import { redirectInApp } from '@/core/helpers/link/navigation';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,

@@ -33,7 +33,7 @@ import { useSession } from "@/inapp/auth/session-context";
 import { Skeleton } from "./ui/skeleton";
 import { switchToPersonal } from "@/services/auth/switch";
 import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/inapp/permissions/profile-permissions";
-import { redirectInApp } from "@/core/helpers/navigation";
+import { redirectInApp } from "@/core/helpers/link/navigation";
 import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/inapp/permissions/data-permissions";
 import { ACCESS_VIEW_PERMISSIONS } from "@/inapp/permissions/access-view-permissions";
 

@@ -11,7 +11,7 @@ import { getSignupStepData } from '@/services/auth/signup';
 import { cancelAccountDeletion } from '@/services/data/delete';
 import { handleAuthRequest } from '@/app/auth/handleAuthRequest';
 import { verifyTotpFromPost } from '@/services/auth/totp';
-import { redirectInApp } from '@/core/helpers/link';
+import { redirectInApp } from '@/core/helpers/link/redirect';
 import { appendAuthCallbackContext, appendRedirect, hasAuthCallbackContext, shouldReturnToAuthStartForExternalAuthentication, getFlowParams, appendFlowParams } from '@/inapp/auth/callbacks';
 
 import { Button } from '@/components/ui/button';

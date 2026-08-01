@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { writeHistory } from '@/core/helpers/navigation';
+import { writeHistory } from '@/core/helpers/link/navigation';
 
 const PARAM_KEY = 'backsTo';
 const STORAGE_KEY = `persistent-query-param:${PARAM_KEY}`;

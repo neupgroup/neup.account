@@ -16,7 +16,7 @@ import { TertiaryHeader } from '@/components/ui/tertiary-header';
 import { approveAccountDeletion, cancelAccountDeletion, getDeletionStatus, requestAccountDeletionByAdmin } from '@/services/manage/requests/deletion';
 import { useRouter } from 'next/navigation';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { redirectInApp } from '@/core/helpers/navigation';
+import { redirectInApp } from '@/core/helpers/link/navigation';
 
 type DeletionStatus = {
     status: 'none' | 'pending' | 'deleted' | 'is_root';

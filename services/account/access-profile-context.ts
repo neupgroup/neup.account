@@ -1,6 +1,6 @@
 'use server';
 
-import { getUrlParam } from '@/core/helpers/url';
+import { getUrlParam } from '@/core/helpers/link/url';
 import { getPersonalAccountId } from '@/services/account/verify';
 import {
   getAccountPermission,

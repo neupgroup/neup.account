@@ -2,7 +2,7 @@
 
 import prisma from '@/core/database/prisma';
 import { getSessionCookies } from '@/services/auth/session-cookies';
-import { getUrlParam } from '@/core/helpers/url';
+import { getUrlParam } from '@/core/helpers/link/url';
 
 export type AccountSelectorContext = {
   personalAccountId: string | null;

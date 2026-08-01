@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/dialog';
 import { Plus, Loader2 } from '@/components/icons';
 import { createAssetGroup } from '@/services/manage/access/assets';
-import { redirectInApp } from '@/core/helpers/navigation';
+import { redirectInApp } from '@/core/helpers/link/navigation';
 
 export function CreateAssetGroupCard({ variant = 'card' }: { variant?: 'card' | 'row' }) {
   const router = useRouter();

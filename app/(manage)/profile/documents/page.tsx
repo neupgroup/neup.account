@@ -34,7 +34,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { redirectInApp } from '@/core/helpers/navigation';
+import { redirectInApp } from '@/core/helpers/link/navigation';
 import { useSelectedProfilePage } from '../use-selected-profile-page';
 
 const pagePermissions = [

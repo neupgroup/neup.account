@@ -43,7 +43,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { countries } from "./countries";
-import { redirectInApp } from "@/core/helpers/navigation";
+import { redirectInApp } from "@/core/helpers/link/navigation";
 import { appendAuthCallbackContext, hasAuthCallbackContext, shouldReturnToAuthStartForExternalAuthentication, getFlowParams } from "@/inapp/auth/callbacks";
 import { announceAuthStateChanged } from "@/inapp/auth/events";
 

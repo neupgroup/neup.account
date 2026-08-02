@@ -41,7 +41,7 @@ export function AccountListItem({
     });
     const [details, setDetails] = useState<Partial<CombinedAccount>>({
         displayName: account.displayName,
-        neupId: account.nid || account.neupId,
+        nid: account.nid,
         displayPhoto: account.displayPhoto || initialFallbackPhoto,
     });
     const [loading, setLoading] = useState(true);
@@ -56,7 +56,7 @@ export function AccountListItem({
             const accountId = account.accountId || account.aid;
             if (!accountId || account.isUnknown) {
                 if (isMounted) {
-                    setDetails({ isUnknown: true, displayName: 'Unknown Account', neupId: 'unknown', displayPhoto: initialFallbackPhoto });
+                    setDetails({ isUnknown: true, displayName: 'Unknown Account', nid: 'unknown', displayPhoto: initialFallbackPhoto });
                     setLoading(false);
                 }
                 return;
@@ -74,13 +74,13 @@ export function AccountListItem({
                 if (isMounted) {
                     setDetails({
                         displayName: profile?.nameDisplay || `Account ${accountId.substring(0, 6)}`,
-                        neupId: account.nid || account.neupId || profile?.neupIdPrimary || 'N/A',
+                        nid: account.nid || profile?.neupIdPrimary || 'N/A',
                         displayPhoto: profile?.accountPhoto || getFallbackDisplayImage({ accountType: profile?.accountType, gender: profile?.gender }),
                     });
                 }
             } catch (e) {
                 if (isMounted) {
-                    setDetails({ isUnknown: true, displayName: 'Error Loading', neupId: 'error', displayPhoto: initialFallbackPhoto });
+                    setDetails({ isUnknown: true, displayName: 'Error Loading', nid: 'error', displayPhoto: initialFallbackPhoto });
                 }
             } finally {
                 if (isMounted) setLoading(false);
@@ -89,7 +89,7 @@ export function AccountListItem({
 
         fetchAccountDetails();
         return () => { isMounted = false; };
-    }, [account.accountId, account.aid, account.isUnknown, account.nid, account.neupId, account.isBrand, account.displayName, account.displayPhoto]);
+    }, [account.accountId, account.aid, account.isUnknown, account.nid, account.isBrand, account.displayName, account.displayPhoto]);
 
     const finalAccount = { ...account, ...details };
     const currentAccountId = finalAccount.aid || finalAccount.accountId || '';
@@ -178,7 +178,7 @@ export function AccountListItem({
                     </h3>
                     <div className="flex items-center gap-2">
                         <p className="text-sm text-muted-foreground">
-                            @{finalAccount.neupId}
+                            @{finalAccount.nid}
                         </p>
                         {showActions && <AccountActions account={finalAccount} />}
                     </div>

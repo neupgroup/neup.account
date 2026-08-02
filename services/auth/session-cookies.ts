@@ -31,7 +31,6 @@ export type StoredAccount = {
   skey?: string;
   def: 0 | 1;
   nid?: string;
-  neupId?: string;
   guest?: 1;
 };
 
@@ -98,8 +97,7 @@ export async function getSessionCookies(): Promise<SessionCookiePayload> {
       sid: payload.sid,
       skey: payload.skey,
       def: 1 as const,
-      nid: payload.nid ?? payload.neupId ?? '',
-      neupId: payload.neupId ?? payload.nid ?? '',
+      nid: payload.nid ?? '',
       guest: payload.guest,
     } satisfies StoredAccount;
 
@@ -136,12 +134,12 @@ export async function setStoredAccountsCookie(accounts: StoredAccount[]): Promis
   const active = accounts.find((account) => account.def === 1) ?? accounts[0];
   if (!active) return;
 
-  const isGuest = !active.nid && !active.neupId;
+  const isGuest = !active.nid;
 
   const token = await signAccountToken(
     isGuest
       ? { aid: active.aid, sid: active.sid ?? '', skey: active.skey ?? '', guest: 1 }
-      : { aid: active.aid, sid: active.sid ?? '', skey: active.skey ?? '', nid: active.nid ?? active.neupId ?? '' },
+      : { aid: active.aid, sid: active.sid ?? '', skey: active.skey ?? '', nid: active.nid ?? '' },
   );
 
   await setCookies('auth_account', token, LONG_LIVED_COOKIE_OPTIONS);

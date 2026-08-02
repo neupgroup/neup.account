@@ -27,7 +27,6 @@ export type AuthAccountCookiePayload = {
   sessionId?: string;
   sessionKey?: string;
   nid?: string;
-  neupId?: string;
   guest?: boolean | 1;
   exp?: number;
   expiresAt?: string | number | Date;

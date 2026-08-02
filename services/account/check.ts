@@ -19,10 +19,14 @@ export type SessionCheckResult =
           personalAccountId: string;
       };
 
+type CheckSessionOptions = {
+    authAccountToken?: string | null;
+};
+
 // Verifies the active session and returns the profile, permissions, and account IDs.
 // Returns { valid: false } if the session is invalid or the profile cannot be loaded.
-export async function checkSession(selectedAccountId?: string | null): Promise<SessionCheckResult> {
-    const session = await getActiveSession();
+export async function checkSession(selectedAccountId?: string | null, options: CheckSessionOptions = {}): Promise<SessionCheckResult> {
+    const session = await getActiveSession({ authAccountToken: options.authAccountToken });
     if (!session) {
         return { valid: false };
     }

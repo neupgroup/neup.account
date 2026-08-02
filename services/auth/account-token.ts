@@ -24,7 +24,6 @@ export type AccountTokenPayload = {
   sid: string;
   skey: string;
   nid?: string;
-  neupId?: string;
   guest?: 1;
 };
 

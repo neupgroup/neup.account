@@ -40,7 +40,7 @@ function payloadToStoredAccount(p: AccountTokenPayload): StoredAccount {
     sid: p.sid,
     skey: p.skey,
     def: 1,
-    ...(p.nid ? { nid: p.nid, neupId: p.nid } : {}),
+    ...(p.nid ? { nid: p.nid } : {}),
     guest: p.guest,
   };
 }

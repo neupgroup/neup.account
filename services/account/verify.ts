@@ -24,6 +24,7 @@ export type Session = {
 
 type GetActiveSessionOptions = {
   expectedGuest?: boolean;
+  authAccountToken?: string | null;
 };
 
 // Returns true if the three required session cookie values exist on the device.
@@ -36,7 +37,7 @@ export async function hasActiveSessionCookies(): Promise<boolean> {
 // Reads the session from cookies and validates it against the database via services/auth/verify.
 // Returns null if the session is missing, expired, or tampered with.
 export async function getActiveSession(options: GetActiveSessionOptions = {}): Promise<Session | null> {
-  const rawToken = await getCookie('auth_account');
+  const rawToken = options.authAccountToken?.trim() || await getCookie('auth_account');
   const { verifyAccountToken } = await import('@/services/auth/account-token');
   const result = await validateAuthAccountCookieSession({
     token: rawToken,

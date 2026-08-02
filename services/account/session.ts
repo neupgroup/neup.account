@@ -28,7 +28,6 @@ export type StoredAccount = {
   skey?: string;
   def: 0 | 1;
   nid?: string;
-  neupId?: string; // legacy compat — kept so callers that read neupId still work
   guest?: 1;       // only present on guest accounts (accountType = 'guest', no nid)
   isBrand?: boolean;
   isUnknown?: boolean;
@@ -48,12 +47,12 @@ import { getUserNeupIds, validateNeupId } from '@/services/user';
 
 const SESSION_DURATION_DAYS = 30;
 
-// Normalizes a stored account by resolving legacy field aliases into canonical fields.
+// Normalizes a stored account by resolving session field aliases into canonical fields.
 function normalizeStoredAccount(account: StoredAccount): StoredAccount {
   const sid = account.sid ?? account.sessionId;
   const skey = account.skey ?? account.sessionKey;
   const aid = account.aid ?? account.accountId ?? '';
-  const nid = account.nid || account.neupId || '';
+  const nid = account.nid || '';
 
   return {
     ...account,
@@ -62,7 +61,6 @@ function normalizeStoredAccount(account: StoredAccount): StoredAccount {
     skey,
     def: account.def ?? 0,
     nid,
-    neupId: nid,
   };
 }
 
@@ -260,7 +258,7 @@ export async function switchToAccountByNeupId(neupId: string): Promise<{ success
 
   const accounts = await getValidatedStoredAccounts();
   const matchedAccount = accounts.find(
-    (account) => (account.nid || account.neupId)?.toLowerCase() === normalizedNeupId
+    (account) => account.nid?.toLowerCase() === normalizedNeupId
   );
 
   if (!matchedAccount) {

@@ -23,10 +23,20 @@ The route delegates all session validation and permission resolution to `service
 
 export const dynamic = 'force-dynamic';
 
+function getAuthAccountHeader(request: NextRequest): string | null {
+  return (
+    request.headers.get('x-auth-account') ??
+    request.headers.get('auth-account') ??
+    request.headers.get('auth_account')
+  )?.trim() || null;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const workingProfile = request.nextUrl.searchParams.get('workingProfile');
-    const result = await checkSession(workingProfile);
+    const result = await checkSession(workingProfile, {
+      authAccountToken: getAuthAccountHeader(request),
+    });
 
     if (!result.valid) {
       return NextResponse.json(

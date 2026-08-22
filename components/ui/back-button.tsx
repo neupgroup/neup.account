@@ -4,7 +4,11 @@
 import { usePathname, useSearchParams } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import { cn } from '@/core/utils';
-import { resolveBackNavigationHref, type NavigationBackTargets } from '@/core/helpers/link/navigation';
+import {
+  resolveBackNavigationHref,
+  resolvePreviousRawPath,
+  type NavigationBackTargets,
+} from '@/core/helpers/link/navigation';
 import { Suspense } from 'react';
 
 type BackButtonProps = {
@@ -19,13 +23,16 @@ function BackButtonInner({ backsTo, href, className, navigationTargets }: BackBu
   const searchParams = useSearchParams();
   const search = searchParams.toString();
   const urlBacksTo = searchParams.get('backsTo');
-  const targetHref = resolveBackNavigationHref({
-    backsTo: urlBacksTo ?? backsTo ?? href,
-    currentPathname: pathname || '/',
-    currentSearch: search ? `?${search}` : '',
-    currentHash: typeof window === 'undefined' ? '' : window.location.hash,
-    targets: navigationTargets,
-  });
+  const explicitHref = urlBacksTo ?? backsTo ?? href;
+  const targetHref = explicitHref
+    ? explicitHref
+    : resolveBackNavigationHref({
+        backsTo: resolvePreviousRawPath(pathname || '/', search ? `?${search}` : '', typeof window === 'undefined' ? '' : window.location.hash),
+        currentPathname: pathname || '/',
+        currentSearch: search ? `?${search}` : '',
+        currentHash: typeof window === 'undefined' ? '' : window.location.hash,
+        targets: navigationTargets,
+      });
 
   return (
     <a

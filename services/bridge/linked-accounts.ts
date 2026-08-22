@@ -42,6 +42,15 @@ export type LinkedAccountSummary = {
   accountLabel: string | null;
 };
 
+export type LinkedAccountTokenRecord = {
+  id: string;
+  platform: string;
+  createdOn: Date;
+  ownerId: string;
+  connectedBy: string;
+  tokenData: JsonRecord;
+};
+
 type StoreLinkedAccountResult =
   | { success: true; id: string }
   | { success: false; status: number; error: string };
@@ -86,6 +95,31 @@ function extractLinkedAccountLabel(tokenData: unknown): string | null {
     ['profile', 'login'],
     ['profile', 'name'],
     ['profile', 'email'],
+  ] as const;
+
+  for (const source of sources) {
+    const value = readNestedString(tokenData, [...source]);
+    if (value) return value;
+  }
+
+  return null;
+}
+
+function extractOauthToken(tokenData: unknown): string | null {
+  const sources = [
+    ['access_token'],
+    ['accessToken'],
+    ['token'],
+    ['oauth_token'],
+    ['oauthToken'],
+    ['data', 'access_token'],
+    ['data', 'accessToken'],
+    ['data', 'token'],
+    ['payload', 'access_token'],
+    ['payload', 'accessToken'],
+    ['payload', 'token'],
+    ['github', 'access_token'],
+    ['github', 'accessToken'],
   ] as const;
 
   for (const source of sources) {
@@ -213,4 +247,86 @@ export async function getLatestLinkedAccount(
     await logError('database', error, `getLatestLinkedAccount:${ownerId}:${platform}`);
     return null;
   }
+}
+
+export async function getLatestLinkedAccountTokenRecord(
+  ownerId: string,
+  platform: string,
+): Promise<LinkedAccountTokenRecord | null> {
+  /**
+   * ::neup.documentation::get-latest-linked-account-token-record
+   * ::function getLatestLinkedAccountTokenRecord(ownerId, platform)
+   *
+   * Returns the most recent linked-account record including its stored token payload.
+   *
+   * ::public
+   *
+   * Use this when a trusted server flow needs the raw stored callback token data instead of only display metadata.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * The route layer remains responsible for validating the caller before using the stored token payload.
+   *
+   * ::private end
+   *
+   * ::end
+   */
+  try {
+    const record = await prisma.linkedAccount.findFirst({
+      where: { ownerId, platform },
+      orderBy: { createdOn: 'desc' },
+      select: {
+        id: true,
+        platform: true,
+        createdOn: true,
+        ownerId: true,
+        connectedBy: true,
+        tokenData: true,
+      },
+    });
+
+    if (!record) return null;
+
+    return {
+      id: record.id,
+      platform: record.platform,
+      createdOn: record.createdOn,
+      ownerId: record.ownerId,
+      connectedBy: record.connectedBy,
+      tokenData: readJsonRecord(record.tokenData),
+    };
+  } catch (error) {
+    await logError('database', error, `getLatestLinkedAccountTokenRecord:${ownerId}:${platform}`);
+    return null;
+  }
+}
+
+export async function getLatestLinkedAccountOauthToken(
+  ownerId: string,
+  platform: string,
+): Promise<string | null> {
+  /**
+   * ::neup.documentation::get-latest-linked-account-oauth-token
+   * ::function getLatestLinkedAccountOauthToken(ownerId, platform)
+   *
+   * Returns the latest stored OAuth access token for one linked-account platform.
+   *
+   * ::public
+   *
+   * Use this for trusted server-to-server handoff flows that need the stored third-party access token for the authenticated account owner.
+   *
+   * ::public end
+   *
+   * ::private
+   *
+   * Token extraction is best-effort across common callback shapes and returns `null` when no known access-token field is present.
+   *
+   * ::private end
+   *
+   * ::end
+   */
+  const record = await getLatestLinkedAccountTokenRecord(ownerId, platform);
+  return record ? extractOauthToken(record.tokenData) : null;
 }

@@ -185,16 +185,18 @@ export async function createBrandAccount(
                 update: {
                     name: BRAND_OWNER_ROLE_NAME,
                     description: 'Brand ownership role for brand accounts.',
-                    scope: 'managed.brand',
                     appId: 'neup.account',
+                    scopeFor: ['for_brand'],
+                    scopeLevel: 'assignable.byTeam',
                     permissions: BRAND_OWNER_PERMISSION_NAMES,
                 },
                 create: {
                     id: BRAND_OWNER_ROLE_ID,
                     name: BRAND_OWNER_ROLE_NAME,
                     description: 'Brand ownership role for brand accounts.',
-                    scope: 'managed.brand',
                     appId: 'neup.account',
+                    scopeFor: ['for_brand'],
+                    scopeLevel: 'assignable.byTeam',
                     permissions: BRAND_OWNER_PERMISSION_NAMES,
                 },
             });

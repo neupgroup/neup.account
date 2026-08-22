@@ -3,7 +3,7 @@
 "use client";
 
 import { useState, useTransition, useRef } from 'react';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '@/core/hooks/useToast';
 import { addRecoveryAccount, removeRecoveryAccount, type RecoveryAccount } from '@/services/security/account';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition, useContext } from "react";
-import { useToast } from "@/core/hooks/use-toast";
+import { useToast } from "@/core/hooks/useToast";
 import { deactivateAccount } from "@/services/data/deactivate";
 import {  Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

@@ -3,7 +3,7 @@
 "use client";
 
 import { useState, useTransition, useContext, useEffect } from "react";
-import { useToast } from "@/core/hooks/use-toast";
+import { useToast } from "@/core/hooks/useToast";
 import { requestAccountDeletion } from "@/services/data/delete";
 import {
   Card,

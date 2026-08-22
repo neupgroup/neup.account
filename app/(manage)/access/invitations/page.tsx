@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import { notFound } from 'next/navigation';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '@/core/hooks/useToast';
 import { getInvitations, acceptRequest, rejectRequest } from '@/services/manage/people/invitations';
 import type { Invitation } from '@/services/manage/people/invitations';
 import { Card, CardContent } from '@/components/ui/card';

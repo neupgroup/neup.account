@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 
 import { getProfileNeupIds, updateUserProfile } from "@/services/profile"
-import { useToast } from "@/core/hooks/use-toast"
+import { useToast } from "@/core/hooks/useToast"
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from "@/components/ui/button"

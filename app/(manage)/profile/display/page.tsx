@@ -10,7 +10,7 @@ import { z } from "zod"
 import Image from 'next/image'
 
 import { updateUserProfile, getDisplayNameSuggestions, getPastProfilePhotos, getPublicDisplayImages, type PublicDisplayImage } from "@/services/profile"
-import { useToast } from "@/core/hooks/use-toast"
+import { useToast } from "@/core/hooks/useToast"
 import { uploadFile } from '@/services/upload'
 
 import { Skeleton } from '@/components/ui/skeleton'

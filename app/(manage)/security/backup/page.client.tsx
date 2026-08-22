@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useTransition } from 'react';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '@/core/hooks/useToast';
 import { getBackupCodes, generateBackupCodes, type BackupCode } from '@/services/security/backup';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

@@ -10,7 +10,7 @@ import { Calendar as CalendarIcon } from "lucide-react"
 import { getUserProfile, getUserNeupIds, getUserContacts, type UserProfile, type UserContacts } from '@/services/user'
 import { updateUserProfile, parseDateString } from "@/services/profile"
 import { profileFormSchema } from "@/services/profile/schema"
-import { useToast } from "@/core/hooks/use-toast"
+import { useToast } from "@/core/hooks/useToast"
 import { cn } from "@/core/utils"
 
 import { Badge } from '@/components/ui/badge'

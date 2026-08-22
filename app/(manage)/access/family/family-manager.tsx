@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useTransition, useRef } from 'react';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '@/core/hooks/useToast';
 import { addFamilyMember, removeFamilyMember } from '@/services/manage/people/family';
 import type { FamilyMember, FamilyGroup } from '@/services/manage/people/family';
 import { Button } from '@/components/ui/button';

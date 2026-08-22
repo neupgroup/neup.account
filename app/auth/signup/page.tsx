@@ -9,7 +9,7 @@ import { z } from "zod";
 import NProgress from 'nprogress';
 import { format } from "date-fns";
 
-import { useToast } from "@/core/hooks/use-toast";
+import { useToast } from "@/core/hooks/useToast";
 import { 
     submitNameStep, 
     getSignupStepData, 

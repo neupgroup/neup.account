@@ -8,7 +8,7 @@ import { z } from "zod"
 import { format } from "date-fns"
 
 import { updateUserProfile, parseDateString } from "@/services/profile"
-import { useToast } from "@/core/hooks/use-toast"
+import { useToast } from "@/core/hooks/useToast"
 import { cn } from '@/core/utils'
 
 import { Skeleton } from '@/components/ui/skeleton'

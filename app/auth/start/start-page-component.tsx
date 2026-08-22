@@ -8,7 +8,7 @@ import { useEffect, useRef, useTransition } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import React from 'react';
-import { useToast } from '@/core/hooks/use-toast';
+import { useToast } from '@/core/hooks/useToast';
 import { AccountListItem } from '@/components/elements/account-item';
 import type { StoredAccount } from '@/services/account/session';
 import { appendAuthCallbackContext, appendRedirect, getAppDisplayName, shouldReturnToAuthStartForExternalAuthentication } from '@/inapp/auth/callbacks';

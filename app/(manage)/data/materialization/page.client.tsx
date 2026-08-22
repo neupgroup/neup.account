@@ -5,7 +5,7 @@ import { useState, useTransition, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useToast } from "@/core/hooks/use-toast";
+import { useToast } from "@/core/hooks/useToast";
 import { scheduleMaterialization } from "@/services/data/materialization";
 import {
   Card,

@@ -5,7 +5,7 @@ import { useEffect, useState, useTransition, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useToast } from "@/core/hooks/use-toast";
+import { useToast } from "@/core/hooks/useToast";
 import { getRecoveryEmail, addRecoveryEmail, removeRecoveryEmail } from "@/services/security/email";
 
 import { Button } from "@/components/ui/button";

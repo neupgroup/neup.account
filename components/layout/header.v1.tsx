@@ -2,7 +2,7 @@
 
 import { NeupIdLogo } from '@/components/neupid-logo';
 import { UserNav } from '@/components/user-nav';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { DashboardNav } from '@/components/dashboard-nav';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from '@/components/icons';
@@ -71,10 +71,13 @@ function MobileHeaderProfileCard() {
 
 export function HeaderV1({ showUserNavOnAuth = false, logoUrl }: HeaderV1Props) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isAuthPath = pathname?.startsWith('/auth');
   const shouldShowUserNav = showUserNavOnAuth || !isAuthPath;
   const resolvedLogoUrl = logoUrl || STATIC_LOGO_URL;
+  const workingProfile = searchParams.get('workingProfile')?.trim();
+  const homeHref = workingProfile ? `/home?workingProfile=${encodeURIComponent(workingProfile)}` : '/home';
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -115,7 +118,7 @@ export function HeaderV1({ showUserNavOnAuth = false, logoUrl }: HeaderV1Props) 
               mobileMenuOpen && shouldShowUserNav && 'border-b'
             )}
           >
-            <NeupIdLogo iconHref="https://neupgroup.com" textHref="/" logoUrl={resolvedLogoUrl} />
+            <NeupIdLogo iconHref={homeHref} textHref={homeHref} logoUrl={resolvedLogoUrl} />
             {shouldShowUserNav ? (
               <>
                 <div className="hidden lg:block">

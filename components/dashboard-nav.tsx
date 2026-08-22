@@ -2,8 +2,8 @@
 
 import { permission } from '@/logica/permission';
 import { FlowLink } from '@/components/ui/flow-link'
-import { usePathname, useRouter } from "next/navigation";
-import { useMemo, useTransition } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { cn } from "@/core/utils"
 import { buttonVariants } from "@/components/ui/button"
 import { type NavSection, navItems, allPermissionsMap } from "./nav-data"
@@ -13,6 +13,7 @@ import { switchToPersonal } from "@/services/auth/switch";
 import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/inapp/permissions/profile-permissions";
 import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/inapp/permissions/data-permissions";
 import { ACCESS_VIEW_PERMISSIONS } from "@/inapp/permissions/access-view-permissions";
+import { APP_BASE_PATH } from '@/core/appconfig';
 
 const componentPermissions = [
     permission('notification.read', 'for_individual', 'component'),
@@ -27,8 +28,60 @@ const componentPermissions = [
 export function DashboardNav() {
     const pathname = usePathname();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const { permissions, isManaging, profile, loading, refetch } = useSession();
     const [isSwitching, startSwitchTransition] = useTransition();
+    const [workingProfileNeupId, setWorkingProfileNeupId] = useState<string | null>(null);
+    const [workingProfileName, setWorkingProfileName] = useState<string | null>(null);
+    const workingProfile = searchParams.get('workingProfile')?.trim() || null;
+
+    useEffect(() => {
+        let isMounted = true;
+
+        if (!workingProfile) {
+            setWorkingProfileNeupId(null);
+            setWorkingProfileName(null);
+            return () => {
+                isMounted = false;
+            };
+        }
+
+        const fetchWorkingProfile = async () => {
+            try {
+                const sessionUrl = new URL(`${APP_BASE_PATH}/bridge/api.v1/auth/me`, window.location.origin);
+                sessionUrl.searchParams.set('workingProfile', workingProfile);
+                const response = await fetch(sessionUrl.toString(), {
+                    cache: 'no-store',
+                    credentials: 'include',
+                });
+
+                if (!response.ok) {
+                    if (isMounted) {
+                        setWorkingProfileNeupId(null);
+                        setWorkingProfileName(null);
+                    }
+                    return;
+                }
+
+                const data = await response.json().catch(() => null);
+                if (!isMounted) return;
+
+                const profileInfo = data && typeof data === 'object' ? (data as { profileInfo?: { neupIdPrimary?: string; nameDisplay?: string } }).profileInfo : null;
+                setWorkingProfileNeupId(profileInfo?.neupIdPrimary || null);
+                setWorkingProfileName(profileInfo?.nameDisplay || null);
+            } catch {
+                if (isMounted) {
+                    setWorkingProfileNeupId(null);
+                    setWorkingProfileName(null);
+                }
+            }
+        };
+
+        void fetchWorkingProfile();
+        return () => {
+            isMounted = false;
+        };
+    }, [workingProfile]);
 
     const handleSwitchBack = () => {
         startSwitchTransition(async () => {
@@ -58,8 +111,9 @@ export function DashboardNav() {
         const visibleRootNav = navItemsWithPerms(navItems.rootNav);
         const visibleAccountNav = navItemsWithPerms(accountNavItems);
 
-        const primaryNeupId = profile?.neupIdPrimary ? `@${profile.neupIdPrimary}` : 'NeupID';
-        const title = isManaging ? profile?.nameDisplay : primaryNeupId;
+        const activeNeupId = workingProfileNeupId || profile?.neupIdPrimary || null;
+        const primaryNeupId = activeNeupId ? `@${activeNeupId}` : 'NeupID';
+        const title = isManaging ? (workingProfileName || profile?.nameDisplay) : primaryNeupId;
 
         const config: NavSection[] = [];
 
@@ -92,7 +146,7 @@ export function DashboardNav() {
 
         return config;
 
-    }, [permissions, isManaging, profile, loading]);
+    }, [permissions, isManaging, profile, loading, workingProfileName, workingProfileNeupId]);
 
     // Find the single active item: the one with the longest href that matches the current path
     const activeHref = useMemo(() => {

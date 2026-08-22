@@ -24,12 +24,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 7.4.0
- * Query Engine version: ab56fe763f921d033a6c195e7ddeb3e255bdbb57
+ * Prisma Client JS version: 7.9.1
+ * Query Engine version: e922089b7d7502aff4249d5da3420f6fa55fc6ad
  */
 Prisma.prismaVersion = {
-  client: "7.4.0",
-  engine: "ab56fe763f921d033a6c195e7ddeb3e255bdbb57"
+  client: "7.9.1",
+  engine: "e922089b7d7502aff4249d5da3420f6fa55fc6ad"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -130,6 +130,16 @@ exports.Prisma.AccountScalarFieldEnum = {
   details: 'details',
   createdAt: 'createdAt',
   linkedAccountId: 'linkedAccountId'
+};
+
+exports.Prisma.LinkedAccountScalarFieldEnum = {
+  id: 'id',
+  platform: 'platform',
+  createdOn: 'createdOn',
+  connectedBy: 'connectedBy',
+  ownerId: 'ownerId',
+  moreDetails: 'moreDetails',
+  tokenData: 'tokenData'
 };
 
 exports.Prisma.ResourceScalarFieldEnum = {
@@ -533,6 +543,7 @@ exports.AccessType = exports.$Enums.AccessType = {
 
 exports.Prisma.ModelName = {
   Account: 'Account',
+  LinkedAccount: 'LinkedAccount',
   Resource: 'Resource',
   AccountTypeIndividual: 'AccountTypeIndividual',
   AccountTypeBrand: 'AccountTypeBrand',

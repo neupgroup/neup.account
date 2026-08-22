@@ -43,6 +43,8 @@ model Account {
   childOwnerships         AccountOwnership[]       @relation("ParentAccount")
   linkedAccount           Account?                 @relation("LinkedAccount", fields: [linkedAccountId], references: [id])
   linkedFrom              Account[]                @relation("LinkedAccount")
+  connectedLinkedAccounts LinkedAccount[]          @relation("LinkedAccountConnectedBy")
+  ownedLinkedAccounts     LinkedAccount[]          @relation("LinkedAccountOwner")
   resources               Resource[]               @relation("ResourceAccount")
   uploadedResources       Resource[]               @relation("ResourceUploader")
 
@@ -52,6 +54,24 @@ model Account {
   verifications    Verification[]
 
   @@map("account")
+}
+
+model LinkedAccount {
+  id          String   @id @default(uuid())
+  platform    String
+  createdOn   DateTime @default(now()) @map("created_on")
+  connectedBy String   @map("connected_by")
+  ownerId     String   @map("owner_id")
+  moreDetails Json?    @map("more_details")
+  tokenData   Json     @map("token_data")
+
+  connectedByAccount Account @relation("LinkedAccountConnectedBy", fields: [connectedBy], references: [id], onDelete: Cascade, map: "linked_accounts_connected_by_fkey")
+  ownerAccount       Account @relation("LinkedAccountOwner", fields: [ownerId], references: [id], onDelete: Cascade, map: "linked_accounts_owner_id_fkey")
+
+  @@index([platform], map: "linked_accounts_platform_idx")
+  @@index([connectedBy], map: "linked_accounts_connected_by_idx")
+  @@index([ownerId], map: "linked_accounts_owner_id_idx")
+  @@map("linked_accounts")
 }
 
 model Resource {

@@ -19,6 +19,11 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type Account = $Result.DefaultSelection<Prisma.$AccountPayload>
 /**
+ * Model LinkedAccount
+ * 
+ */
+export type LinkedAccount = $Result.DefaultSelection<Prisma.$LinkedAccountPayload>
+/**
  * Model Resource
  * 
  */
@@ -275,7 +280,9 @@ export const MemberStatus: typeof $Enums.MemberStatus
  * Type-safe database client for TypeScript & Node.js
  * @example
  * ```
- * const prisma = new PrismaClient()
+ * const prisma = new PrismaClient({
+ *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
+ * })
  * // Fetch zero or more Accounts
  * const accounts = await prisma.account.findMany()
  * ```
@@ -296,7 +303,9 @@ export class PrismaClient<
    * Type-safe database client for TypeScript & Node.js
    * @example
    * ```
-   * const prisma = new PrismaClient()
+   * const prisma = new PrismaClient({
+   *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
+   * })
    * // Fetch zero or more Accounts
    * const accounts = await prisma.account.findMany()
    * ```
@@ -305,7 +314,7 @@ export class PrismaClient<
    * Read more in our [docs](https://pris.ly/d/client).
    */
 
-  constructor(optionsArg ?: Prisma.Subset<ClientOptions, Prisma.PrismaClientOptions>);
+  constructor(optionsArg ?: Prisma.PrismaClientConstructorArgs<ClientOptions>);
   $on<V extends U>(eventType: V, callback: (event: V extends 'query' ? Prisma.QueryEvent : Prisma.LogEvent) => void): PrismaClient;
 
   /**
@@ -376,9 +385,9 @@ export class PrismaClient<
    * ])
    * ```
    * 
-   * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client/transactions).
+   * Read more in our [docs](https://www.prisma.io/docs/orm/prisma-client/queries/transactions).
    */
-  $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): $Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>
+  $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): $Utils.JsPromise<runtime.Types.Utils.UnwrapTuple<P>>
 
   $transaction<R>(fn: (prisma: Omit<PrismaClient, runtime.ITXClientDenyList>) => $Utils.JsPromise<R>, options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): $Utils.JsPromise<R>
 
@@ -395,6 +404,16 @@ export class PrismaClient<
     * ```
     */
   get account(): Prisma.AccountDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.linkedAccount`: Exposes CRUD operations for the **LinkedAccount** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more LinkedAccounts
+    * const linkedAccounts = await prisma.linkedAccount.findMany()
+    * ```
+    */
+  get linkedAccount(): Prisma.LinkedAccountDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.resource`: Exposes CRUD operations for the **Resource** model.
@@ -775,8 +794,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 7.4.0
-   * Query Engine version: ab56fe763f921d033a6c195e7ddeb3e255bdbb57
+   * Prisma Client JS version: 7.9.1
+   * Query Engine version: e922089b7d7502aff4249d5da3420f6fa55fc6ad
    */
   export type PrismaVersion = {
     client: string
@@ -911,6 +930,19 @@ export namespace Prisma {
   };
 
   /**
+   * Resolved type of the argument passed to the `PrismaClient` constructor.
+   *
+   * When called without a narrower options type (the common case), this resolves
+   * to `PrismaClientOptions` directly, which produces a clear TypeScript error
+   * message (`not assignable to parameter of type 'PrismaClientOptions'`) when
+   * the argument is missing or incomplete. When the user supplies a narrower
+   * options type (e.g. via a literal), it falls back to `Subset` to keep
+   * filtering out unknown properties.
+   */
+  export type PrismaClientConstructorArgs<Options extends PrismaClientOptions> =
+    [PrismaClientOptions] extends [Options] ? PrismaClientOptions : Subset<Options, PrismaClientOptions>;
+
+  /**
    * SelectSubset
    * @desc From `T` pick properties that exist in `U`. Simple version of Intersection.
    * Additionally, it validates, if both select and include are present. If the case, it errors.
@@ -942,7 +974,7 @@ export namespace Prisma {
   type XOR<T, U> =
     T extends object ?
     U extends object ?
-      (Without<T, U> & U) | (Without<U, T> & T)
+      ((Without<T, U> & U) | (Without<U, T> & T)) & object
     : U : T
 
 
@@ -1160,6 +1192,7 @@ export namespace Prisma {
 
   export const ModelName: {
     Account: 'Account',
+    LinkedAccount: 'LinkedAccount',
     Resource: 'Resource',
     AccountTypeIndividual: 'AccountTypeIndividual',
     AccountTypeBrand: 'AccountTypeBrand',
@@ -1208,7 +1241,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "resource" | "accountTypeIndividual" | "accountTypeBrand" | "systemConfig" | "authnRequest" | "activity" | "notification" | "request" | "family" | "familyMember" | "verification" | "contact" | "neupId" | "authnMethod" | "authnSession" | "systemError" | "applicationProvider" | "application" | "applicationDevLog" | "asset" | "member" | "access" | "accountOwnership" | "connection" | "applicationBridge" | "applicationPolicy" | "role" | "authzPermission" | "authzRole" | "authzRolePermissionMap" | "authzAssetsAccessGrant" | "permit" | "identity"
+      modelProps: "account" | "linkedAccount" | "resource" | "accountTypeIndividual" | "accountTypeBrand" | "systemConfig" | "authnRequest" | "activity" | "notification" | "request" | "family" | "familyMember" | "verification" | "contact" | "neupId" | "authnMethod" | "authnSession" | "systemError" | "applicationProvider" | "application" | "applicationDevLog" | "asset" | "member" | "access" | "accountOwnership" | "connection" | "applicationBridge" | "applicationPolicy" | "role" | "authzPermission" | "authzRole" | "authzRolePermissionMap" | "authzAssetsAccessGrant" | "permit" | "identity"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1283,6 +1316,80 @@ export namespace Prisma {
           count: {
             args: Prisma.AccountCountArgs<ExtArgs>
             result: $Utils.Optional<AccountCountAggregateOutputType> | number
+          }
+        }
+      }
+      LinkedAccount: {
+        payload: Prisma.$LinkedAccountPayload<ExtArgs>
+        fields: Prisma.LinkedAccountFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.LinkedAccountFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LinkedAccountPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.LinkedAccountFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LinkedAccountPayload>
+          }
+          findFirst: {
+            args: Prisma.LinkedAccountFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LinkedAccountPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.LinkedAccountFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LinkedAccountPayload>
+          }
+          findMany: {
+            args: Prisma.LinkedAccountFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LinkedAccountPayload>[]
+          }
+          create: {
+            args: Prisma.LinkedAccountCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LinkedAccountPayload>
+          }
+          createMany: {
+            args: Prisma.LinkedAccountCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.LinkedAccountCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LinkedAccountPayload>[]
+          }
+          delete: {
+            args: Prisma.LinkedAccountDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LinkedAccountPayload>
+          }
+          update: {
+            args: Prisma.LinkedAccountUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LinkedAccountPayload>
+          }
+          deleteMany: {
+            args: Prisma.LinkedAccountDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.LinkedAccountUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.LinkedAccountUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LinkedAccountPayload>[]
+          }
+          upsert: {
+            args: Prisma.LinkedAccountUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LinkedAccountPayload>
+          }
+          aggregate: {
+            args: Prisma.LinkedAccountAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateLinkedAccount>
+          }
+          groupBy: {
+            args: Prisma.LinkedAccountGroupByArgs<ExtArgs>
+            result: $Utils.Optional<LinkedAccountGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.LinkedAccountCountArgs<ExtArgs>
+            result: $Utils.Optional<LinkedAccountCountAggregateOutputType> | number
           }
         }
       }
@@ -3796,11 +3903,26 @@ export namespace Prisma {
       isolationLevel?: Prisma.TransactionIsolationLevel
     }
     /**
-     * Instance of a Driver Adapter, e.g., like one provided by `@prisma/adapter-planetscale`
+     * A driver adapter that PrismaClient uses to connect to your database, such as the ones provided by `@prisma/adapter-pg`, `@prisma/adapter-libsql`, `@prisma/adapter-planetscale`, etc.
+     * 
+     * A driver adapter is **required** unless you connect to your database through Prisma Accelerate (in which case use `accelerateUrl` instead).
+     * 
+     * Learn more: https://pris.ly/d/driver-adapters
+     * 
+     * @example
+     * ```ts
+     * import { PrismaPg } from '@prisma/adapter-pg'
+     * import { PrismaClient } from './generated/prisma/client'
+     * 
+     * const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+     * const prisma = new PrismaClient({ adapter })
+     * ```
      */
     adapter?: runtime.SqlDriverAdapterFactory
     /**
-     * Prisma Accelerate URL allowing the client to connect through Accelerate instead of a direct database.
+     * The Prisma Accelerate connection URL. Use this option to connect to your database through Prisma Accelerate instead of using a driver adapter to connect directly.
+     * 
+     * Learn more: https://pris.ly/d/accelerate
      */
     accelerateUrl?: string
     /**
@@ -3837,6 +3959,7 @@ export namespace Prisma {
   }
   export type GlobalOmitConfig = {
     account?: AccountOmit
+    linkedAccount?: LinkedAccountOmit
     resource?: ResourceOmit
     accountTypeIndividual?: AccountTypeIndividualOmit
     accountTypeBrand?: AccountTypeBrandOmit
@@ -3972,6 +4095,8 @@ export namespace Prisma {
     parentOwnerships: number
     childOwnerships: number
     linkedFrom: number
+    connectedLinkedAccounts: number
+    ownedLinkedAccounts: number
     resources: number
     uploadedResources: number
     receivedRequests: number
@@ -4003,6 +4128,8 @@ export namespace Prisma {
     parentOwnerships?: boolean | AccountCountOutputTypeCountParentOwnershipsArgs
     childOwnerships?: boolean | AccountCountOutputTypeCountChildOwnershipsArgs
     linkedFrom?: boolean | AccountCountOutputTypeCountLinkedFromArgs
+    connectedLinkedAccounts?: boolean | AccountCountOutputTypeCountConnectedLinkedAccountsArgs
+    ownedLinkedAccounts?: boolean | AccountCountOutputTypeCountOwnedLinkedAccountsArgs
     resources?: boolean | AccountCountOutputTypeCountResourcesArgs
     uploadedResources?: boolean | AccountCountOutputTypeCountUploadedResourcesArgs
     receivedRequests?: boolean | AccountCountOutputTypeCountReceivedRequestsArgs
@@ -4174,6 +4301,20 @@ export namespace Prisma {
    */
   export type AccountCountOutputTypeCountLinkedFromArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AccountWhereInput
+  }
+
+  /**
+   * AccountCountOutputType without action
+   */
+  export type AccountCountOutputTypeCountConnectedLinkedAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LinkedAccountWhereInput
+  }
+
+  /**
+   * AccountCountOutputType without action
+   */
+  export type AccountCountOutputTypeCountOwnedLinkedAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LinkedAccountWhereInput
   }
 
   /**
@@ -4868,6 +5009,8 @@ export namespace Prisma {
     childOwnerships?: boolean | Account$childOwnershipsArgs<ExtArgs>
     linkedAccount?: boolean | Account$linkedAccountArgs<ExtArgs>
     linkedFrom?: boolean | Account$linkedFromArgs<ExtArgs>
+    connectedLinkedAccounts?: boolean | Account$connectedLinkedAccountsArgs<ExtArgs>
+    ownedLinkedAccounts?: boolean | Account$ownedLinkedAccountsArgs<ExtArgs>
     resources?: boolean | Account$resourcesArgs<ExtArgs>
     uploadedResources?: boolean | Account$uploadedResourcesArgs<ExtArgs>
     receivedRequests?: boolean | Account$receivedRequestsArgs<ExtArgs>
@@ -4942,6 +5085,8 @@ export namespace Prisma {
     childOwnerships?: boolean | Account$childOwnershipsArgs<ExtArgs>
     linkedAccount?: boolean | Account$linkedAccountArgs<ExtArgs>
     linkedFrom?: boolean | Account$linkedFromArgs<ExtArgs>
+    connectedLinkedAccounts?: boolean | Account$connectedLinkedAccountsArgs<ExtArgs>
+    ownedLinkedAccounts?: boolean | Account$ownedLinkedAccountsArgs<ExtArgs>
     resources?: boolean | Account$resourcesArgs<ExtArgs>
     uploadedResources?: boolean | Account$uploadedResourcesArgs<ExtArgs>
     receivedRequests?: boolean | Account$receivedRequestsArgs<ExtArgs>
@@ -4985,6 +5130,8 @@ export namespace Prisma {
       childOwnerships: Prisma.$AccountOwnershipPayload<ExtArgs>[]
       linkedAccount: Prisma.$AccountPayload<ExtArgs> | null
       linkedFrom: Prisma.$AccountPayload<ExtArgs>[]
+      connectedLinkedAccounts: Prisma.$LinkedAccountPayload<ExtArgs>[]
+      ownedLinkedAccounts: Prisma.$LinkedAccountPayload<ExtArgs>[]
       resources: Prisma.$ResourcePayload<ExtArgs>[]
       uploadedResources: Prisma.$ResourcePayload<ExtArgs>[]
       receivedRequests: Prisma.$RequestPayload<ExtArgs>[]
@@ -5421,6 +5568,8 @@ export namespace Prisma {
     childOwnerships<T extends Account$childOwnershipsArgs<ExtArgs> = {}>(args?: Subset<T, Account$childOwnershipsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountOwnershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     linkedAccount<T extends Account$linkedAccountArgs<ExtArgs> = {}>(args?: Subset<T, Account$linkedAccountArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     linkedFrom<T extends Account$linkedFromArgs<ExtArgs> = {}>(args?: Subset<T, Account$linkedFromArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    connectedLinkedAccounts<T extends Account$connectedLinkedAccountsArgs<ExtArgs> = {}>(args?: Subset<T, Account$connectedLinkedAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LinkedAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    ownedLinkedAccounts<T extends Account$ownedLinkedAccountsArgs<ExtArgs> = {}>(args?: Subset<T, Account$ownedLinkedAccountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LinkedAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     resources<T extends Account$resourcesArgs<ExtArgs> = {}>(args?: Subset<T, Account$resourcesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ResourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     uploadedResources<T extends Account$uploadedResourcesArgs<ExtArgs> = {}>(args?: Subset<T, Account$uploadedResourcesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ResourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     receivedRequests<T extends Account$receivedRequestsArgs<ExtArgs> = {}>(args?: Subset<T, Account$receivedRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5661,6 +5810,11 @@ export namespace Prisma {
      * Skip the first `n` Accounts.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Accounts.
+     */
     distinct?: AccountScalarFieldEnum | AccountScalarFieldEnum[]
   }
 
@@ -6446,6 +6600,54 @@ export namespace Prisma {
   }
 
   /**
+   * Account.connectedLinkedAccounts
+   */
+  export type Account$connectedLinkedAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LinkedAccount
+     */
+    select?: LinkedAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LinkedAccount
+     */
+    omit?: LinkedAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LinkedAccountInclude<ExtArgs> | null
+    where?: LinkedAccountWhereInput
+    orderBy?: LinkedAccountOrderByWithRelationInput | LinkedAccountOrderByWithRelationInput[]
+    cursor?: LinkedAccountWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LinkedAccountScalarFieldEnum | LinkedAccountScalarFieldEnum[]
+  }
+
+  /**
+   * Account.ownedLinkedAccounts
+   */
+  export type Account$ownedLinkedAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LinkedAccount
+     */
+    select?: LinkedAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LinkedAccount
+     */
+    omit?: LinkedAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LinkedAccountInclude<ExtArgs> | null
+    where?: LinkedAccountWhereInput
+    orderBy?: LinkedAccountOrderByWithRelationInput | LinkedAccountOrderByWithRelationInput[]
+    cursor?: LinkedAccountWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LinkedAccountScalarFieldEnum | LinkedAccountScalarFieldEnum[]
+  }
+
+  /**
    * Account.resources
    */
   export type Account$resourcesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6605,6 +6807,1095 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: AccountInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model LinkedAccount
+   */
+
+  export type AggregateLinkedAccount = {
+    _count: LinkedAccountCountAggregateOutputType | null
+    _min: LinkedAccountMinAggregateOutputType | null
+    _max: LinkedAccountMaxAggregateOutputType | null
+  }
+
+  export type LinkedAccountMinAggregateOutputType = {
+    id: string | null
+    platform: string | null
+    createdOn: Date | null
+    connectedBy: string | null
+    ownerId: string | null
+  }
+
+  export type LinkedAccountMaxAggregateOutputType = {
+    id: string | null
+    platform: string | null
+    createdOn: Date | null
+    connectedBy: string | null
+    ownerId: string | null
+  }
+
+  export type LinkedAccountCountAggregateOutputType = {
+    id: number
+    platform: number
+    createdOn: number
+    connectedBy: number
+    ownerId: number
+    moreDetails: number
+    tokenData: number
+    _all: number
+  }
+
+
+  export type LinkedAccountMinAggregateInputType = {
+    id?: true
+    platform?: true
+    createdOn?: true
+    connectedBy?: true
+    ownerId?: true
+  }
+
+  export type LinkedAccountMaxAggregateInputType = {
+    id?: true
+    platform?: true
+    createdOn?: true
+    connectedBy?: true
+    ownerId?: true
+  }
+
+  export type LinkedAccountCountAggregateInputType = {
+    id?: true
+    platform?: true
+    createdOn?: true
+    connectedBy?: true
+    ownerId?: true
+    moreDetails?: true
+    tokenData?: true
+    _all?: true
+  }
+
+  export type LinkedAccountAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LinkedAccount to aggregate.
+     */
+    where?: LinkedAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LinkedAccounts to fetch.
+     */
+    orderBy?: LinkedAccountOrderByWithRelationInput | LinkedAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: LinkedAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LinkedAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LinkedAccounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned LinkedAccounts
+    **/
+    _count?: true | LinkedAccountCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: LinkedAccountMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: LinkedAccountMaxAggregateInputType
+  }
+
+  export type GetLinkedAccountAggregateType<T extends LinkedAccountAggregateArgs> = {
+        [P in keyof T & keyof AggregateLinkedAccount]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateLinkedAccount[P]>
+      : GetScalarType<T[P], AggregateLinkedAccount[P]>
+  }
+
+
+
+
+  export type LinkedAccountGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LinkedAccountWhereInput
+    orderBy?: LinkedAccountOrderByWithAggregationInput | LinkedAccountOrderByWithAggregationInput[]
+    by: LinkedAccountScalarFieldEnum[] | LinkedAccountScalarFieldEnum
+    having?: LinkedAccountScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: LinkedAccountCountAggregateInputType | true
+    _min?: LinkedAccountMinAggregateInputType
+    _max?: LinkedAccountMaxAggregateInputType
+  }
+
+  export type LinkedAccountGroupByOutputType = {
+    id: string
+    platform: string
+    createdOn: Date
+    connectedBy: string
+    ownerId: string
+    moreDetails: JsonValue | null
+    tokenData: JsonValue
+    _count: LinkedAccountCountAggregateOutputType | null
+    _min: LinkedAccountMinAggregateOutputType | null
+    _max: LinkedAccountMaxAggregateOutputType | null
+  }
+
+  type GetLinkedAccountGroupByPayload<T extends LinkedAccountGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<LinkedAccountGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof LinkedAccountGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], LinkedAccountGroupByOutputType[P]>
+            : GetScalarType<T[P], LinkedAccountGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type LinkedAccountSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    platform?: boolean
+    createdOn?: boolean
+    connectedBy?: boolean
+    ownerId?: boolean
+    moreDetails?: boolean
+    tokenData?: boolean
+    connectedByAccount?: boolean | AccountDefaultArgs<ExtArgs>
+    ownerAccount?: boolean | AccountDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["linkedAccount"]>
+
+  export type LinkedAccountSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    platform?: boolean
+    createdOn?: boolean
+    connectedBy?: boolean
+    ownerId?: boolean
+    moreDetails?: boolean
+    tokenData?: boolean
+    connectedByAccount?: boolean | AccountDefaultArgs<ExtArgs>
+    ownerAccount?: boolean | AccountDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["linkedAccount"]>
+
+  export type LinkedAccountSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    platform?: boolean
+    createdOn?: boolean
+    connectedBy?: boolean
+    ownerId?: boolean
+    moreDetails?: boolean
+    tokenData?: boolean
+    connectedByAccount?: boolean | AccountDefaultArgs<ExtArgs>
+    ownerAccount?: boolean | AccountDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["linkedAccount"]>
+
+  export type LinkedAccountSelectScalar = {
+    id?: boolean
+    platform?: boolean
+    createdOn?: boolean
+    connectedBy?: boolean
+    ownerId?: boolean
+    moreDetails?: boolean
+    tokenData?: boolean
+  }
+
+  export type LinkedAccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "platform" | "createdOn" | "connectedBy" | "ownerId" | "moreDetails" | "tokenData", ExtArgs["result"]["linkedAccount"]>
+  export type LinkedAccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    connectedByAccount?: boolean | AccountDefaultArgs<ExtArgs>
+    ownerAccount?: boolean | AccountDefaultArgs<ExtArgs>
+  }
+  export type LinkedAccountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    connectedByAccount?: boolean | AccountDefaultArgs<ExtArgs>
+    ownerAccount?: boolean | AccountDefaultArgs<ExtArgs>
+  }
+  export type LinkedAccountIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    connectedByAccount?: boolean | AccountDefaultArgs<ExtArgs>
+    ownerAccount?: boolean | AccountDefaultArgs<ExtArgs>
+  }
+
+  export type $LinkedAccountPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "LinkedAccount"
+    objects: {
+      connectedByAccount: Prisma.$AccountPayload<ExtArgs>
+      ownerAccount: Prisma.$AccountPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      platform: string
+      createdOn: Date
+      connectedBy: string
+      ownerId: string
+      moreDetails: Prisma.JsonValue | null
+      tokenData: Prisma.JsonValue
+    }, ExtArgs["result"]["linkedAccount"]>
+    composites: {}
+  }
+
+  type LinkedAccountGetPayload<S extends boolean | null | undefined | LinkedAccountDefaultArgs> = $Result.GetResult<Prisma.$LinkedAccountPayload, S>
+
+  type LinkedAccountCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<LinkedAccountFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: LinkedAccountCountAggregateInputType | true
+    }
+
+  export interface LinkedAccountDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['LinkedAccount'], meta: { name: 'LinkedAccount' } }
+    /**
+     * Find zero or one LinkedAccount that matches the filter.
+     * @param {LinkedAccountFindUniqueArgs} args - Arguments to find a LinkedAccount
+     * @example
+     * // Get one LinkedAccount
+     * const linkedAccount = await prisma.linkedAccount.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends LinkedAccountFindUniqueArgs>(args: SelectSubset<T, LinkedAccountFindUniqueArgs<ExtArgs>>): Prisma__LinkedAccountClient<$Result.GetResult<Prisma.$LinkedAccountPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one LinkedAccount that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {LinkedAccountFindUniqueOrThrowArgs} args - Arguments to find a LinkedAccount
+     * @example
+     * // Get one LinkedAccount
+     * const linkedAccount = await prisma.linkedAccount.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends LinkedAccountFindUniqueOrThrowArgs>(args: SelectSubset<T, LinkedAccountFindUniqueOrThrowArgs<ExtArgs>>): Prisma__LinkedAccountClient<$Result.GetResult<Prisma.$LinkedAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first LinkedAccount that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LinkedAccountFindFirstArgs} args - Arguments to find a LinkedAccount
+     * @example
+     * // Get one LinkedAccount
+     * const linkedAccount = await prisma.linkedAccount.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends LinkedAccountFindFirstArgs>(args?: SelectSubset<T, LinkedAccountFindFirstArgs<ExtArgs>>): Prisma__LinkedAccountClient<$Result.GetResult<Prisma.$LinkedAccountPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first LinkedAccount that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LinkedAccountFindFirstOrThrowArgs} args - Arguments to find a LinkedAccount
+     * @example
+     * // Get one LinkedAccount
+     * const linkedAccount = await prisma.linkedAccount.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends LinkedAccountFindFirstOrThrowArgs>(args?: SelectSubset<T, LinkedAccountFindFirstOrThrowArgs<ExtArgs>>): Prisma__LinkedAccountClient<$Result.GetResult<Prisma.$LinkedAccountPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more LinkedAccounts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LinkedAccountFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all LinkedAccounts
+     * const linkedAccounts = await prisma.linkedAccount.findMany()
+     * 
+     * // Get first 10 LinkedAccounts
+     * const linkedAccounts = await prisma.linkedAccount.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const linkedAccountWithIdOnly = await prisma.linkedAccount.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends LinkedAccountFindManyArgs>(args?: SelectSubset<T, LinkedAccountFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LinkedAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a LinkedAccount.
+     * @param {LinkedAccountCreateArgs} args - Arguments to create a LinkedAccount.
+     * @example
+     * // Create one LinkedAccount
+     * const LinkedAccount = await prisma.linkedAccount.create({
+     *   data: {
+     *     // ... data to create a LinkedAccount
+     *   }
+     * })
+     * 
+     */
+    create<T extends LinkedAccountCreateArgs>(args: SelectSubset<T, LinkedAccountCreateArgs<ExtArgs>>): Prisma__LinkedAccountClient<$Result.GetResult<Prisma.$LinkedAccountPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many LinkedAccounts.
+     * @param {LinkedAccountCreateManyArgs} args - Arguments to create many LinkedAccounts.
+     * @example
+     * // Create many LinkedAccounts
+     * const linkedAccount = await prisma.linkedAccount.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends LinkedAccountCreateManyArgs>(args?: SelectSubset<T, LinkedAccountCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many LinkedAccounts and returns the data saved in the database.
+     * @param {LinkedAccountCreateManyAndReturnArgs} args - Arguments to create many LinkedAccounts.
+     * @example
+     * // Create many LinkedAccounts
+     * const linkedAccount = await prisma.linkedAccount.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many LinkedAccounts and only return the `id`
+     * const linkedAccountWithIdOnly = await prisma.linkedAccount.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends LinkedAccountCreateManyAndReturnArgs>(args?: SelectSubset<T, LinkedAccountCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LinkedAccountPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a LinkedAccount.
+     * @param {LinkedAccountDeleteArgs} args - Arguments to delete one LinkedAccount.
+     * @example
+     * // Delete one LinkedAccount
+     * const LinkedAccount = await prisma.linkedAccount.delete({
+     *   where: {
+     *     // ... filter to delete one LinkedAccount
+     *   }
+     * })
+     * 
+     */
+    delete<T extends LinkedAccountDeleteArgs>(args: SelectSubset<T, LinkedAccountDeleteArgs<ExtArgs>>): Prisma__LinkedAccountClient<$Result.GetResult<Prisma.$LinkedAccountPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one LinkedAccount.
+     * @param {LinkedAccountUpdateArgs} args - Arguments to update one LinkedAccount.
+     * @example
+     * // Update one LinkedAccount
+     * const linkedAccount = await prisma.linkedAccount.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends LinkedAccountUpdateArgs>(args: SelectSubset<T, LinkedAccountUpdateArgs<ExtArgs>>): Prisma__LinkedAccountClient<$Result.GetResult<Prisma.$LinkedAccountPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more LinkedAccounts.
+     * @param {LinkedAccountDeleteManyArgs} args - Arguments to filter LinkedAccounts to delete.
+     * @example
+     * // Delete a few LinkedAccounts
+     * const { count } = await prisma.linkedAccount.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends LinkedAccountDeleteManyArgs>(args?: SelectSubset<T, LinkedAccountDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more LinkedAccounts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LinkedAccountUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many LinkedAccounts
+     * const linkedAccount = await prisma.linkedAccount.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends LinkedAccountUpdateManyArgs>(args: SelectSubset<T, LinkedAccountUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more LinkedAccounts and returns the data updated in the database.
+     * @param {LinkedAccountUpdateManyAndReturnArgs} args - Arguments to update many LinkedAccounts.
+     * @example
+     * // Update many LinkedAccounts
+     * const linkedAccount = await prisma.linkedAccount.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more LinkedAccounts and only return the `id`
+     * const linkedAccountWithIdOnly = await prisma.linkedAccount.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends LinkedAccountUpdateManyAndReturnArgs>(args: SelectSubset<T, LinkedAccountUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LinkedAccountPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one LinkedAccount.
+     * @param {LinkedAccountUpsertArgs} args - Arguments to update or create a LinkedAccount.
+     * @example
+     * // Update or create a LinkedAccount
+     * const linkedAccount = await prisma.linkedAccount.upsert({
+     *   create: {
+     *     // ... data to create a LinkedAccount
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the LinkedAccount we want to update
+     *   }
+     * })
+     */
+    upsert<T extends LinkedAccountUpsertArgs>(args: SelectSubset<T, LinkedAccountUpsertArgs<ExtArgs>>): Prisma__LinkedAccountClient<$Result.GetResult<Prisma.$LinkedAccountPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of LinkedAccounts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LinkedAccountCountArgs} args - Arguments to filter LinkedAccounts to count.
+     * @example
+     * // Count the number of LinkedAccounts
+     * const count = await prisma.linkedAccount.count({
+     *   where: {
+     *     // ... the filter for the LinkedAccounts we want to count
+     *   }
+     * })
+    **/
+    count<T extends LinkedAccountCountArgs>(
+      args?: Subset<T, LinkedAccountCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], LinkedAccountCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a LinkedAccount.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LinkedAccountAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends LinkedAccountAggregateArgs>(args: Subset<T, LinkedAccountAggregateArgs>): Prisma.PrismaPromise<GetLinkedAccountAggregateType<T>>
+
+    /**
+     * Group by LinkedAccount.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LinkedAccountGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends LinkedAccountGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: LinkedAccountGroupByArgs['orderBy'] }
+        : { orderBy?: LinkedAccountGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, LinkedAccountGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetLinkedAccountGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the LinkedAccount model
+   */
+  readonly fields: LinkedAccountFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for LinkedAccount.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__LinkedAccountClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    connectedByAccount<T extends AccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AccountDefaultArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    ownerAccount<T extends AccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AccountDefaultArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the LinkedAccount model
+   */
+  interface LinkedAccountFieldRefs {
+    readonly id: FieldRef<"LinkedAccount", 'String'>
+    readonly platform: FieldRef<"LinkedAccount", 'String'>
+    readonly createdOn: FieldRef<"LinkedAccount", 'DateTime'>
+    readonly connectedBy: FieldRef<"LinkedAccount", 'String'>
+    readonly ownerId: FieldRef<"LinkedAccount", 'String'>
+    readonly moreDetails: FieldRef<"LinkedAccount", 'Json'>
+    readonly tokenData: FieldRef<"LinkedAccount", 'Json'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * LinkedAccount findUnique
+   */
+  export type LinkedAccountFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LinkedAccount
+     */
+    select?: LinkedAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LinkedAccount
+     */
+    omit?: LinkedAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LinkedAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which LinkedAccount to fetch.
+     */
+    where: LinkedAccountWhereUniqueInput
+  }
+
+  /**
+   * LinkedAccount findUniqueOrThrow
+   */
+  export type LinkedAccountFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LinkedAccount
+     */
+    select?: LinkedAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LinkedAccount
+     */
+    omit?: LinkedAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LinkedAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which LinkedAccount to fetch.
+     */
+    where: LinkedAccountWhereUniqueInput
+  }
+
+  /**
+   * LinkedAccount findFirst
+   */
+  export type LinkedAccountFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LinkedAccount
+     */
+    select?: LinkedAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LinkedAccount
+     */
+    omit?: LinkedAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LinkedAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which LinkedAccount to fetch.
+     */
+    where?: LinkedAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LinkedAccounts to fetch.
+     */
+    orderBy?: LinkedAccountOrderByWithRelationInput | LinkedAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LinkedAccounts.
+     */
+    cursor?: LinkedAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LinkedAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LinkedAccounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LinkedAccounts.
+     */
+    distinct?: LinkedAccountScalarFieldEnum | LinkedAccountScalarFieldEnum[]
+  }
+
+  /**
+   * LinkedAccount findFirstOrThrow
+   */
+  export type LinkedAccountFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LinkedAccount
+     */
+    select?: LinkedAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LinkedAccount
+     */
+    omit?: LinkedAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LinkedAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which LinkedAccount to fetch.
+     */
+    where?: LinkedAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LinkedAccounts to fetch.
+     */
+    orderBy?: LinkedAccountOrderByWithRelationInput | LinkedAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LinkedAccounts.
+     */
+    cursor?: LinkedAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LinkedAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LinkedAccounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LinkedAccounts.
+     */
+    distinct?: LinkedAccountScalarFieldEnum | LinkedAccountScalarFieldEnum[]
+  }
+
+  /**
+   * LinkedAccount findMany
+   */
+  export type LinkedAccountFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LinkedAccount
+     */
+    select?: LinkedAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LinkedAccount
+     */
+    omit?: LinkedAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LinkedAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which LinkedAccounts to fetch.
+     */
+    where?: LinkedAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LinkedAccounts to fetch.
+     */
+    orderBy?: LinkedAccountOrderByWithRelationInput | LinkedAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing LinkedAccounts.
+     */
+    cursor?: LinkedAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LinkedAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LinkedAccounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LinkedAccounts.
+     */
+    distinct?: LinkedAccountScalarFieldEnum | LinkedAccountScalarFieldEnum[]
+  }
+
+  /**
+   * LinkedAccount create
+   */
+  export type LinkedAccountCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LinkedAccount
+     */
+    select?: LinkedAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LinkedAccount
+     */
+    omit?: LinkedAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LinkedAccountInclude<ExtArgs> | null
+    /**
+     * The data needed to create a LinkedAccount.
+     */
+    data: XOR<LinkedAccountCreateInput, LinkedAccountUncheckedCreateInput>
+  }
+
+  /**
+   * LinkedAccount createMany
+   */
+  export type LinkedAccountCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many LinkedAccounts.
+     */
+    data: LinkedAccountCreateManyInput | LinkedAccountCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * LinkedAccount createManyAndReturn
+   */
+  export type LinkedAccountCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LinkedAccount
+     */
+    select?: LinkedAccountSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the LinkedAccount
+     */
+    omit?: LinkedAccountOmit<ExtArgs> | null
+    /**
+     * The data used to create many LinkedAccounts.
+     */
+    data: LinkedAccountCreateManyInput | LinkedAccountCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LinkedAccountIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * LinkedAccount update
+   */
+  export type LinkedAccountUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LinkedAccount
+     */
+    select?: LinkedAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LinkedAccount
+     */
+    omit?: LinkedAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LinkedAccountInclude<ExtArgs> | null
+    /**
+     * The data needed to update a LinkedAccount.
+     */
+    data: XOR<LinkedAccountUpdateInput, LinkedAccountUncheckedUpdateInput>
+    /**
+     * Choose, which LinkedAccount to update.
+     */
+    where: LinkedAccountWhereUniqueInput
+  }
+
+  /**
+   * LinkedAccount updateMany
+   */
+  export type LinkedAccountUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update LinkedAccounts.
+     */
+    data: XOR<LinkedAccountUpdateManyMutationInput, LinkedAccountUncheckedUpdateManyInput>
+    /**
+     * Filter which LinkedAccounts to update
+     */
+    where?: LinkedAccountWhereInput
+    /**
+     * Limit how many LinkedAccounts to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * LinkedAccount updateManyAndReturn
+   */
+  export type LinkedAccountUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LinkedAccount
+     */
+    select?: LinkedAccountSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the LinkedAccount
+     */
+    omit?: LinkedAccountOmit<ExtArgs> | null
+    /**
+     * The data used to update LinkedAccounts.
+     */
+    data: XOR<LinkedAccountUpdateManyMutationInput, LinkedAccountUncheckedUpdateManyInput>
+    /**
+     * Filter which LinkedAccounts to update
+     */
+    where?: LinkedAccountWhereInput
+    /**
+     * Limit how many LinkedAccounts to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LinkedAccountIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * LinkedAccount upsert
+   */
+  export type LinkedAccountUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LinkedAccount
+     */
+    select?: LinkedAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LinkedAccount
+     */
+    omit?: LinkedAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LinkedAccountInclude<ExtArgs> | null
+    /**
+     * The filter to search for the LinkedAccount to update in case it exists.
+     */
+    where: LinkedAccountWhereUniqueInput
+    /**
+     * In case the LinkedAccount found by the `where` argument doesn't exist, create a new LinkedAccount with this data.
+     */
+    create: XOR<LinkedAccountCreateInput, LinkedAccountUncheckedCreateInput>
+    /**
+     * In case the LinkedAccount was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<LinkedAccountUpdateInput, LinkedAccountUncheckedUpdateInput>
+  }
+
+  /**
+   * LinkedAccount delete
+   */
+  export type LinkedAccountDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LinkedAccount
+     */
+    select?: LinkedAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LinkedAccount
+     */
+    omit?: LinkedAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LinkedAccountInclude<ExtArgs> | null
+    /**
+     * Filter which LinkedAccount to delete.
+     */
+    where: LinkedAccountWhereUniqueInput
+  }
+
+  /**
+   * LinkedAccount deleteMany
+   */
+  export type LinkedAccountDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LinkedAccounts to delete
+     */
+    where?: LinkedAccountWhereInput
+    /**
+     * Limit how many LinkedAccounts to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * LinkedAccount without action
+   */
+  export type LinkedAccountDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LinkedAccount
+     */
+    select?: LinkedAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LinkedAccount
+     */
+    omit?: LinkedAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LinkedAccountInclude<ExtArgs> | null
   }
 
 
@@ -7478,6 +8769,11 @@ export namespace Prisma {
      * Skip the first `n` Resources.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Resources.
+     */
     distinct?: ResourceScalarFieldEnum | ResourceScalarFieldEnum[]
   }
 
@@ -8590,6 +9886,11 @@ export namespace Prisma {
      * Skip the first `n` AccountTypeIndividuals.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AccountTypeIndividuals.
+     */
     distinct?: AccountTypeIndividualScalarFieldEnum | AccountTypeIndividualScalarFieldEnum[]
   }
 
@@ -9644,6 +10945,11 @@ export namespace Prisma {
      * Skip the first `n` AccountTypeBrands.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AccountTypeBrands.
+     */
     distinct?: AccountTypeBrandScalarFieldEnum | AccountTypeBrandScalarFieldEnum[]
   }
 
@@ -10637,6 +11943,11 @@ export namespace Prisma {
      * Skip the first `n` SystemConfigs.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SystemConfigs.
+     */
     distinct?: SystemConfigScalarFieldEnum | SystemConfigScalarFieldEnum[]
   }
 
@@ -11654,6 +12965,11 @@ export namespace Prisma {
      * Skip the first `n` AuthnRequests.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuthnRequests.
+     */
     distinct?: AuthnRequestScalarFieldEnum | AuthnRequestScalarFieldEnum[]
   }
 
@@ -12688,6 +14004,11 @@ export namespace Prisma {
      * Skip the first `n` Activities.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Activities.
+     */
     distinct?: ActivityScalarFieldEnum | ActivityScalarFieldEnum[]
   }
 
@@ -13813,6 +15134,11 @@ export namespace Prisma {
      * Skip the first `n` Notifications.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Notifications.
+     */
     distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
   }
 
@@ -14946,6 +16272,11 @@ export namespace Prisma {
      * Skip the first `n` Requests.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Requests.
+     */
     distinct?: RequestScalarFieldEnum | RequestScalarFieldEnum[]
   }
 
@@ -15974,6 +17305,11 @@ export namespace Prisma {
      * Skip the first `n` Families.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Families.
+     */
     distinct?: FamilyScalarFieldEnum | FamilyScalarFieldEnum[]
   }
 
@@ -17043,6 +18379,11 @@ export namespace Prisma {
      * Skip the first `n` FamilyMembers.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of FamilyMembers.
+     */
     distinct?: FamilyMemberScalarFieldEnum | FamilyMemberScalarFieldEnum[]
   }
 
@@ -18161,6 +19502,11 @@ export namespace Prisma {
      * Skip the first `n` Verifications.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Verifications.
+     */
     distinct?: VerificationScalarFieldEnum | VerificationScalarFieldEnum[]
   }
 
@@ -19225,6 +20571,11 @@ export namespace Prisma {
      * Skip the first `n` Contacts.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Contacts.
+     */
     distinct?: ContactScalarFieldEnum | ContactScalarFieldEnum[]
   }
 
@@ -20283,6 +21634,11 @@ export namespace Prisma {
      * Skip the first `n` NeupIds.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NeupIds.
+     */
     distinct?: NeupIdScalarFieldEnum | NeupIdScalarFieldEnum[]
   }
 
@@ -21363,6 +22719,11 @@ export namespace Prisma {
      * Skip the first `n` AuthnMethods.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuthnMethods.
+     */
     distinct?: AuthnMethodScalarFieldEnum | AuthnMethodScalarFieldEnum[]
   }
 
@@ -22486,6 +23847,11 @@ export namespace Prisma {
      * Skip the first `n` AuthnSessions.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuthnSessions.
+     */
     distinct?: AuthnSessionScalarFieldEnum | AuthnSessionScalarFieldEnum[]
   }
 
@@ -23570,6 +24936,11 @@ export namespace Prisma {
      * Skip the first `n` SystemErrors.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SystemErrors.
+     */
     distinct?: SystemErrorScalarFieldEnum | SystemErrorScalarFieldEnum[]
   }
 
@@ -24630,6 +26001,11 @@ export namespace Prisma {
      * Skip the first `n` ApplicationProviders.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ApplicationProviders.
+     */
     distinct?: ApplicationProviderScalarFieldEnum | ApplicationProviderScalarFieldEnum[]
   }
 
@@ -25919,6 +27295,11 @@ export namespace Prisma {
      * Skip the first `n` Applications.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Applications.
+     */
     distinct?: ApplicationScalarFieldEnum | ApplicationScalarFieldEnum[]
   }
 
@@ -27427,6 +28808,11 @@ export namespace Prisma {
      * Skip the first `n` ApplicationDevLogs.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ApplicationDevLogs.
+     */
     distinct?: ApplicationDevLogScalarFieldEnum | ApplicationDevLogScalarFieldEnum[]
   }
 
@@ -28571,6 +29957,11 @@ export namespace Prisma {
      * Skip the first `n` Assets.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Assets.
+     */
     distinct?: AssetScalarFieldEnum | AssetScalarFieldEnum[]
   }
 
@@ -29817,6 +31208,11 @@ export namespace Prisma {
      * Skip the first `n` Members.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Members.
+     */
     distinct?: MemberScalarFieldEnum | MemberScalarFieldEnum[]
   }
 
@@ -31138,6 +32534,11 @@ export namespace Prisma {
      * Skip the first `n` Accesses.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Accesses.
+     */
     distinct?: AccessScalarFieldEnum | AccessScalarFieldEnum[]
   }
 
@@ -32318,6 +33719,11 @@ export namespace Prisma {
      * Skip the first `n` AccountOwnerships.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AccountOwnerships.
+     */
     distinct?: AccountOwnershipScalarFieldEnum | AccountOwnershipScalarFieldEnum[]
   }
 
@@ -33428,6 +34834,11 @@ export namespace Prisma {
      * Skip the first `n` Connections.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Connections.
+     */
     distinct?: ConnectionScalarFieldEnum | ConnectionScalarFieldEnum[]
   }
 
@@ -34586,6 +35997,11 @@ export namespace Prisma {
      * Skip the first `n` ApplicationBridges.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ApplicationBridges.
+     */
     distinct?: ApplicationBridgeScalarFieldEnum | ApplicationBridgeScalarFieldEnum[]
   }
 
@@ -35640,6 +37056,11 @@ export namespace Prisma {
      * Skip the first `n` ApplicationPolicies.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ApplicationPolicies.
+     */
     distinct?: ApplicationPolicyScalarFieldEnum | ApplicationPolicyScalarFieldEnum[]
   }
 
@@ -36813,6 +38234,11 @@ export namespace Prisma {
      * Skip the first `n` Roles.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Roles.
+     */
     distinct?: RoleScalarFieldEnum | RoleScalarFieldEnum[]
   }
 
@@ -37987,6 +39413,11 @@ export namespace Prisma {
      * Skip the first `n` AuthzPermissions.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuthzPermissions.
+     */
     distinct?: AuthzPermissionScalarFieldEnum | AuthzPermissionScalarFieldEnum[]
   }
 
@@ -39180,6 +40611,11 @@ export namespace Prisma {
      * Skip the first `n` AuthzRoles.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuthzRoles.
+     */
     distinct?: AuthzRoleScalarFieldEnum | AuthzRoleScalarFieldEnum[]
   }
 
@@ -40422,6 +41858,11 @@ export namespace Prisma {
      * Skip the first `n` AuthzRolePermissionMaps.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuthzRolePermissionMaps.
+     */
     distinct?: AuthzRolePermissionMapScalarFieldEnum | AuthzRolePermissionMapScalarFieldEnum[]
   }
 
@@ -41509,6 +42950,11 @@ export namespace Prisma {
      * Skip the first `n` AuthzAssetsAccessGrants.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuthzAssetsAccessGrants.
+     */
     distinct?: AuthzAssetsAccessGrantScalarFieldEnum | AuthzAssetsAccessGrantScalarFieldEnum[]
   }
 
@@ -42619,6 +44065,11 @@ export namespace Prisma {
      * Skip the first `n` Permits.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Permits.
+     */
     distinct?: PermitScalarFieldEnum | PermitScalarFieldEnum[]
   }
 
@@ -43699,6 +45150,11 @@ export namespace Prisma {
      * Skip the first `n` Identities.
      */
     skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Identities.
+     */
     distinct?: IdentityScalarFieldEnum | IdentityScalarFieldEnum[]
   }
 
@@ -43944,6 +45400,19 @@ export namespace Prisma {
   };
 
   export type AccountScalarFieldEnum = (typeof AccountScalarFieldEnum)[keyof typeof AccountScalarFieldEnum]
+
+
+  export const LinkedAccountScalarFieldEnum: {
+    id: 'id',
+    platform: 'platform',
+    createdOn: 'createdOn',
+    connectedBy: 'connectedBy',
+    ownerId: 'ownerId',
+    moreDetails: 'moreDetails',
+    tokenData: 'tokenData'
+  };
+
+  export type LinkedAccountScalarFieldEnum = (typeof LinkedAccountScalarFieldEnum)[keyof typeof LinkedAccountScalarFieldEnum]
 
 
   export const ResourceScalarFieldEnum: {
@@ -44600,6 +46069,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipListRelationFilter
     linkedAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
     linkedFrom?: AccountListRelationFilter
+    connectedLinkedAccounts?: LinkedAccountListRelationFilter
+    ownedLinkedAccounts?: LinkedAccountListRelationFilter
     resources?: ResourceListRelationFilter
     uploadedResources?: ResourceListRelationFilter
     receivedRequests?: RequestListRelationFilter
@@ -44643,6 +46114,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipOrderByRelationAggregateInput
     linkedAccount?: AccountOrderByWithRelationInput
     linkedFrom?: AccountOrderByRelationAggregateInput
+    connectedLinkedAccounts?: LinkedAccountOrderByRelationAggregateInput
+    ownedLinkedAccounts?: LinkedAccountOrderByRelationAggregateInput
     resources?: ResourceOrderByRelationAggregateInput
     uploadedResources?: ResourceOrderByRelationAggregateInput
     receivedRequests?: RequestOrderByRelationAggregateInput
@@ -44689,6 +46162,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipListRelationFilter
     linkedAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
     linkedFrom?: AccountListRelationFilter
+    connectedLinkedAccounts?: LinkedAccountListRelationFilter
+    ownedLinkedAccounts?: LinkedAccountListRelationFilter
     resources?: ResourceListRelationFilter
     uploadedResources?: ResourceListRelationFilter
     receivedRequests?: RequestListRelationFilter
@@ -44725,6 +46200,74 @@ export namespace Prisma {
     details?: JsonNullableWithAggregatesFilter<"Account">
     createdAt?: DateTimeWithAggregatesFilter<"Account"> | Date | string
     linkedAccountId?: StringNullableWithAggregatesFilter<"Account"> | string | null
+  }
+
+  export type LinkedAccountWhereInput = {
+    AND?: LinkedAccountWhereInput | LinkedAccountWhereInput[]
+    OR?: LinkedAccountWhereInput[]
+    NOT?: LinkedAccountWhereInput | LinkedAccountWhereInput[]
+    id?: StringFilter<"LinkedAccount"> | string
+    platform?: StringFilter<"LinkedAccount"> | string
+    createdOn?: DateTimeFilter<"LinkedAccount"> | Date | string
+    connectedBy?: StringFilter<"LinkedAccount"> | string
+    ownerId?: StringFilter<"LinkedAccount"> | string
+    moreDetails?: JsonNullableFilter<"LinkedAccount">
+    tokenData?: JsonFilter<"LinkedAccount">
+    connectedByAccount?: XOR<AccountScalarRelationFilter, AccountWhereInput>
+    ownerAccount?: XOR<AccountScalarRelationFilter, AccountWhereInput>
+  }
+
+  export type LinkedAccountOrderByWithRelationInput = {
+    id?: SortOrder
+    platform?: SortOrder
+    createdOn?: SortOrder
+    connectedBy?: SortOrder
+    ownerId?: SortOrder
+    moreDetails?: SortOrderInput | SortOrder
+    tokenData?: SortOrder
+    connectedByAccount?: AccountOrderByWithRelationInput
+    ownerAccount?: AccountOrderByWithRelationInput
+  }
+
+  export type LinkedAccountWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: LinkedAccountWhereInput | LinkedAccountWhereInput[]
+    OR?: LinkedAccountWhereInput[]
+    NOT?: LinkedAccountWhereInput | LinkedAccountWhereInput[]
+    platform?: StringFilter<"LinkedAccount"> | string
+    createdOn?: DateTimeFilter<"LinkedAccount"> | Date | string
+    connectedBy?: StringFilter<"LinkedAccount"> | string
+    ownerId?: StringFilter<"LinkedAccount"> | string
+    moreDetails?: JsonNullableFilter<"LinkedAccount">
+    tokenData?: JsonFilter<"LinkedAccount">
+    connectedByAccount?: XOR<AccountScalarRelationFilter, AccountWhereInput>
+    ownerAccount?: XOR<AccountScalarRelationFilter, AccountWhereInput>
+  }, "id">
+
+  export type LinkedAccountOrderByWithAggregationInput = {
+    id?: SortOrder
+    platform?: SortOrder
+    createdOn?: SortOrder
+    connectedBy?: SortOrder
+    ownerId?: SortOrder
+    moreDetails?: SortOrderInput | SortOrder
+    tokenData?: SortOrder
+    _count?: LinkedAccountCountOrderByAggregateInput
+    _max?: LinkedAccountMaxOrderByAggregateInput
+    _min?: LinkedAccountMinOrderByAggregateInput
+  }
+
+  export type LinkedAccountScalarWhereWithAggregatesInput = {
+    AND?: LinkedAccountScalarWhereWithAggregatesInput | LinkedAccountScalarWhereWithAggregatesInput[]
+    OR?: LinkedAccountScalarWhereWithAggregatesInput[]
+    NOT?: LinkedAccountScalarWhereWithAggregatesInput | LinkedAccountScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"LinkedAccount"> | string
+    platform?: StringWithAggregatesFilter<"LinkedAccount"> | string
+    createdOn?: DateTimeWithAggregatesFilter<"LinkedAccount"> | Date | string
+    connectedBy?: StringWithAggregatesFilter<"LinkedAccount"> | string
+    ownerId?: StringWithAggregatesFilter<"LinkedAccount"> | string
+    moreDetails?: JsonNullableWithAggregatesFilter<"LinkedAccount">
+    tokenData?: JsonWithAggregatesFilter<"LinkedAccount">
   }
 
   export type ResourceWhereInput = {
@@ -47203,6 +48746,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -47245,6 +48790,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -47287,6 +48834,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -47329,6 +48878,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -47370,6 +48921,74 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type LinkedAccountCreateInput = {
+    id?: string
+    platform: string
+    createdOn?: Date | string
+    moreDetails?: NullableJsonNullValueInput | InputJsonValue
+    tokenData: JsonNullValueInput | InputJsonValue
+    connectedByAccount: AccountCreateNestedOneWithoutConnectedLinkedAccountsInput
+    ownerAccount: AccountCreateNestedOneWithoutOwnedLinkedAccountsInput
+  }
+
+  export type LinkedAccountUncheckedCreateInput = {
+    id?: string
+    platform: string
+    createdOn?: Date | string
+    connectedBy: string
+    ownerId: string
+    moreDetails?: NullableJsonNullValueInput | InputJsonValue
+    tokenData: JsonNullValueInput | InputJsonValue
+  }
+
+  export type LinkedAccountUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    platform?: StringFieldUpdateOperationsInput | string
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    moreDetails?: NullableJsonNullValueInput | InputJsonValue
+    tokenData?: JsonNullValueInput | InputJsonValue
+    connectedByAccount?: AccountUpdateOneRequiredWithoutConnectedLinkedAccountsNestedInput
+    ownerAccount?: AccountUpdateOneRequiredWithoutOwnedLinkedAccountsNestedInput
+  }
+
+  export type LinkedAccountUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    platform?: StringFieldUpdateOperationsInput | string
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    connectedBy?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    moreDetails?: NullableJsonNullValueInput | InputJsonValue
+    tokenData?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type LinkedAccountCreateManyInput = {
+    id?: string
+    platform: string
+    createdOn?: Date | string
+    connectedBy: string
+    ownerId: string
+    moreDetails?: NullableJsonNullValueInput | InputJsonValue
+    tokenData: JsonNullValueInput | InputJsonValue
+  }
+
+  export type LinkedAccountUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    platform?: StringFieldUpdateOperationsInput | string
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    moreDetails?: NullableJsonNullValueInput | InputJsonValue
+    tokenData?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type LinkedAccountUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    platform?: StringFieldUpdateOperationsInput | string
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    connectedBy?: StringFieldUpdateOperationsInput | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    moreDetails?: NullableJsonNullValueInput | InputJsonValue
+    tokenData?: JsonNullValueInput | InputJsonValue
   }
 
   export type ResourceCreateInput = {
@@ -50099,6 +51718,12 @@ export namespace Prisma {
     none?: AccountWhereInput
   }
 
+  export type LinkedAccountListRelationFilter = {
+    every?: LinkedAccountWhereInput
+    some?: LinkedAccountWhereInput
+    none?: LinkedAccountWhereInput
+  }
+
   export type ResourceListRelationFilter = {
     every?: ResourceWhereInput
     some?: ResourceWhereInput
@@ -50183,6 +51808,10 @@ export namespace Prisma {
   }
 
   export type AccountOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type LinkedAccountOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -50315,10 +51944,85 @@ export namespace Prisma {
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
+  export type JsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type AccountScalarRelationFilter = {
     is?: AccountWhereInput
     isNot?: AccountWhereInput
+  }
+
+  export type LinkedAccountCountOrderByAggregateInput = {
+    id?: SortOrder
+    platform?: SortOrder
+    createdOn?: SortOrder
+    connectedBy?: SortOrder
+    ownerId?: SortOrder
+    moreDetails?: SortOrder
+    tokenData?: SortOrder
+  }
+
+  export type LinkedAccountMaxOrderByAggregateInput = {
+    id?: SortOrder
+    platform?: SortOrder
+    createdOn?: SortOrder
+    connectedBy?: SortOrder
+    ownerId?: SortOrder
+  }
+
+  export type LinkedAccountMinOrderByAggregateInput = {
+    id?: SortOrder
+    platform?: SortOrder
+    createdOn?: SortOrder
+    connectedBy?: SortOrder
+    ownerId?: SortOrder
+  }
+  export type JsonWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedJsonFilter<$PrismaModel>
+    _max?: NestedJsonFilter<$PrismaModel>
   }
 
   export type ResourceCountOrderByAggregateInput = {
@@ -50426,29 +52130,6 @@ export namespace Prisma {
     isLegalEntity?: SortOrder
     originCountry?: SortOrder
   }
-  export type JsonFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
 
   export type SystemConfigCountOrderByAggregateInput = {
     key?: SortOrder
@@ -50464,32 +52145,6 @@ export namespace Prisma {
   export type SystemConfigMinOrderByAggregateInput = {
     key?: SortOrder
     updatedAt?: SortOrder
-  }
-  export type JsonWithAggregatesFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
-        Required<JsonWithAggregatesFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<JsonWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
-
-  export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedJsonFilter<$PrismaModel>
-    _max?: NestedJsonFilter<$PrismaModel>
   }
 
   export type AuthnRequestCountOrderByAggregateInput = {
@@ -51827,6 +53482,20 @@ export namespace Prisma {
     connect?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
   }
 
+  export type LinkedAccountCreateNestedManyWithoutConnectedByAccountInput = {
+    create?: XOR<LinkedAccountCreateWithoutConnectedByAccountInput, LinkedAccountUncheckedCreateWithoutConnectedByAccountInput> | LinkedAccountCreateWithoutConnectedByAccountInput[] | LinkedAccountUncheckedCreateWithoutConnectedByAccountInput[]
+    connectOrCreate?: LinkedAccountCreateOrConnectWithoutConnectedByAccountInput | LinkedAccountCreateOrConnectWithoutConnectedByAccountInput[]
+    createMany?: LinkedAccountCreateManyConnectedByAccountInputEnvelope
+    connect?: LinkedAccountWhereUniqueInput | LinkedAccountWhereUniqueInput[]
+  }
+
+  export type LinkedAccountCreateNestedManyWithoutOwnerAccountInput = {
+    create?: XOR<LinkedAccountCreateWithoutOwnerAccountInput, LinkedAccountUncheckedCreateWithoutOwnerAccountInput> | LinkedAccountCreateWithoutOwnerAccountInput[] | LinkedAccountUncheckedCreateWithoutOwnerAccountInput[]
+    connectOrCreate?: LinkedAccountCreateOrConnectWithoutOwnerAccountInput | LinkedAccountCreateOrConnectWithoutOwnerAccountInput[]
+    createMany?: LinkedAccountCreateManyOwnerAccountInputEnvelope
+    connect?: LinkedAccountWhereUniqueInput | LinkedAccountWhereUniqueInput[]
+  }
+
   export type ResourceCreateNestedManyWithoutAccountInput = {
     create?: XOR<ResourceCreateWithoutAccountInput, ResourceUncheckedCreateWithoutAccountInput> | ResourceCreateWithoutAccountInput[] | ResourceUncheckedCreateWithoutAccountInput[]
     connectOrCreate?: ResourceCreateOrConnectWithoutAccountInput | ResourceCreateOrConnectWithoutAccountInput[]
@@ -52033,6 +53702,20 @@ export namespace Prisma {
     connectOrCreate?: AccountCreateOrConnectWithoutLinkedAccountInput | AccountCreateOrConnectWithoutLinkedAccountInput[]
     createMany?: AccountCreateManyLinkedAccountInputEnvelope
     connect?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
+  }
+
+  export type LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput = {
+    create?: XOR<LinkedAccountCreateWithoutConnectedByAccountInput, LinkedAccountUncheckedCreateWithoutConnectedByAccountInput> | LinkedAccountCreateWithoutConnectedByAccountInput[] | LinkedAccountUncheckedCreateWithoutConnectedByAccountInput[]
+    connectOrCreate?: LinkedAccountCreateOrConnectWithoutConnectedByAccountInput | LinkedAccountCreateOrConnectWithoutConnectedByAccountInput[]
+    createMany?: LinkedAccountCreateManyConnectedByAccountInputEnvelope
+    connect?: LinkedAccountWhereUniqueInput | LinkedAccountWhereUniqueInput[]
+  }
+
+  export type LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput = {
+    create?: XOR<LinkedAccountCreateWithoutOwnerAccountInput, LinkedAccountUncheckedCreateWithoutOwnerAccountInput> | LinkedAccountCreateWithoutOwnerAccountInput[] | LinkedAccountUncheckedCreateWithoutOwnerAccountInput[]
+    connectOrCreate?: LinkedAccountCreateOrConnectWithoutOwnerAccountInput | LinkedAccountCreateOrConnectWithoutOwnerAccountInput[]
+    createMany?: LinkedAccountCreateManyOwnerAccountInputEnvelope
+    connect?: LinkedAccountWhereUniqueInput | LinkedAccountWhereUniqueInput[]
   }
 
   export type ResourceUncheckedCreateNestedManyWithoutAccountInput = {
@@ -52429,6 +54112,34 @@ export namespace Prisma {
     update?: AccountUpdateWithWhereUniqueWithoutLinkedAccountInput | AccountUpdateWithWhereUniqueWithoutLinkedAccountInput[]
     updateMany?: AccountUpdateManyWithWhereWithoutLinkedAccountInput | AccountUpdateManyWithWhereWithoutLinkedAccountInput[]
     deleteMany?: AccountScalarWhereInput | AccountScalarWhereInput[]
+  }
+
+  export type LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput = {
+    create?: XOR<LinkedAccountCreateWithoutConnectedByAccountInput, LinkedAccountUncheckedCreateWithoutConnectedByAccountInput> | LinkedAccountCreateWithoutConnectedByAccountInput[] | LinkedAccountUncheckedCreateWithoutConnectedByAccountInput[]
+    connectOrCreate?: LinkedAccountCreateOrConnectWithoutConnectedByAccountInput | LinkedAccountCreateOrConnectWithoutConnectedByAccountInput[]
+    upsert?: LinkedAccountUpsertWithWhereUniqueWithoutConnectedByAccountInput | LinkedAccountUpsertWithWhereUniqueWithoutConnectedByAccountInput[]
+    createMany?: LinkedAccountCreateManyConnectedByAccountInputEnvelope
+    set?: LinkedAccountWhereUniqueInput | LinkedAccountWhereUniqueInput[]
+    disconnect?: LinkedAccountWhereUniqueInput | LinkedAccountWhereUniqueInput[]
+    delete?: LinkedAccountWhereUniqueInput | LinkedAccountWhereUniqueInput[]
+    connect?: LinkedAccountWhereUniqueInput | LinkedAccountWhereUniqueInput[]
+    update?: LinkedAccountUpdateWithWhereUniqueWithoutConnectedByAccountInput | LinkedAccountUpdateWithWhereUniqueWithoutConnectedByAccountInput[]
+    updateMany?: LinkedAccountUpdateManyWithWhereWithoutConnectedByAccountInput | LinkedAccountUpdateManyWithWhereWithoutConnectedByAccountInput[]
+    deleteMany?: LinkedAccountScalarWhereInput | LinkedAccountScalarWhereInput[]
+  }
+
+  export type LinkedAccountUpdateManyWithoutOwnerAccountNestedInput = {
+    create?: XOR<LinkedAccountCreateWithoutOwnerAccountInput, LinkedAccountUncheckedCreateWithoutOwnerAccountInput> | LinkedAccountCreateWithoutOwnerAccountInput[] | LinkedAccountUncheckedCreateWithoutOwnerAccountInput[]
+    connectOrCreate?: LinkedAccountCreateOrConnectWithoutOwnerAccountInput | LinkedAccountCreateOrConnectWithoutOwnerAccountInput[]
+    upsert?: LinkedAccountUpsertWithWhereUniqueWithoutOwnerAccountInput | LinkedAccountUpsertWithWhereUniqueWithoutOwnerAccountInput[]
+    createMany?: LinkedAccountCreateManyOwnerAccountInputEnvelope
+    set?: LinkedAccountWhereUniqueInput | LinkedAccountWhereUniqueInput[]
+    disconnect?: LinkedAccountWhereUniqueInput | LinkedAccountWhereUniqueInput[]
+    delete?: LinkedAccountWhereUniqueInput | LinkedAccountWhereUniqueInput[]
+    connect?: LinkedAccountWhereUniqueInput | LinkedAccountWhereUniqueInput[]
+    update?: LinkedAccountUpdateWithWhereUniqueWithoutOwnerAccountInput | LinkedAccountUpdateWithWhereUniqueWithoutOwnerAccountInput[]
+    updateMany?: LinkedAccountUpdateManyWithWhereWithoutOwnerAccountInput | LinkedAccountUpdateManyWithWhereWithoutOwnerAccountInput[]
+    deleteMany?: LinkedAccountScalarWhereInput | LinkedAccountScalarWhereInput[]
   }
 
   export type ResourceUpdateManyWithoutAccountNestedInput = {
@@ -52843,6 +54554,34 @@ export namespace Prisma {
     deleteMany?: AccountScalarWhereInput | AccountScalarWhereInput[]
   }
 
+  export type LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput = {
+    create?: XOR<LinkedAccountCreateWithoutConnectedByAccountInput, LinkedAccountUncheckedCreateWithoutConnectedByAccountInput> | LinkedAccountCreateWithoutConnectedByAccountInput[] | LinkedAccountUncheckedCreateWithoutConnectedByAccountInput[]
+    connectOrCreate?: LinkedAccountCreateOrConnectWithoutConnectedByAccountInput | LinkedAccountCreateOrConnectWithoutConnectedByAccountInput[]
+    upsert?: LinkedAccountUpsertWithWhereUniqueWithoutConnectedByAccountInput | LinkedAccountUpsertWithWhereUniqueWithoutConnectedByAccountInput[]
+    createMany?: LinkedAccountCreateManyConnectedByAccountInputEnvelope
+    set?: LinkedAccountWhereUniqueInput | LinkedAccountWhereUniqueInput[]
+    disconnect?: LinkedAccountWhereUniqueInput | LinkedAccountWhereUniqueInput[]
+    delete?: LinkedAccountWhereUniqueInput | LinkedAccountWhereUniqueInput[]
+    connect?: LinkedAccountWhereUniqueInput | LinkedAccountWhereUniqueInput[]
+    update?: LinkedAccountUpdateWithWhereUniqueWithoutConnectedByAccountInput | LinkedAccountUpdateWithWhereUniqueWithoutConnectedByAccountInput[]
+    updateMany?: LinkedAccountUpdateManyWithWhereWithoutConnectedByAccountInput | LinkedAccountUpdateManyWithWhereWithoutConnectedByAccountInput[]
+    deleteMany?: LinkedAccountScalarWhereInput | LinkedAccountScalarWhereInput[]
+  }
+
+  export type LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput = {
+    create?: XOR<LinkedAccountCreateWithoutOwnerAccountInput, LinkedAccountUncheckedCreateWithoutOwnerAccountInput> | LinkedAccountCreateWithoutOwnerAccountInput[] | LinkedAccountUncheckedCreateWithoutOwnerAccountInput[]
+    connectOrCreate?: LinkedAccountCreateOrConnectWithoutOwnerAccountInput | LinkedAccountCreateOrConnectWithoutOwnerAccountInput[]
+    upsert?: LinkedAccountUpsertWithWhereUniqueWithoutOwnerAccountInput | LinkedAccountUpsertWithWhereUniqueWithoutOwnerAccountInput[]
+    createMany?: LinkedAccountCreateManyOwnerAccountInputEnvelope
+    set?: LinkedAccountWhereUniqueInput | LinkedAccountWhereUniqueInput[]
+    disconnect?: LinkedAccountWhereUniqueInput | LinkedAccountWhereUniqueInput[]
+    delete?: LinkedAccountWhereUniqueInput | LinkedAccountWhereUniqueInput[]
+    connect?: LinkedAccountWhereUniqueInput | LinkedAccountWhereUniqueInput[]
+    update?: LinkedAccountUpdateWithWhereUniqueWithoutOwnerAccountInput | LinkedAccountUpdateWithWhereUniqueWithoutOwnerAccountInput[]
+    updateMany?: LinkedAccountUpdateManyWithWhereWithoutOwnerAccountInput | LinkedAccountUpdateManyWithWhereWithoutOwnerAccountInput[]
+    deleteMany?: LinkedAccountScalarWhereInput | LinkedAccountScalarWhereInput[]
+  }
+
   export type ResourceUncheckedUpdateManyWithoutAccountNestedInput = {
     create?: XOR<ResourceCreateWithoutAccountInput, ResourceUncheckedCreateWithoutAccountInput> | ResourceCreateWithoutAccountInput[] | ResourceUncheckedCreateWithoutAccountInput[]
     connectOrCreate?: ResourceCreateOrConnectWithoutAccountInput | ResourceCreateOrConnectWithoutAccountInput[]
@@ -52925,6 +54664,34 @@ export namespace Prisma {
     update?: VerificationUpdateWithWhereUniqueWithoutAccountInput | VerificationUpdateWithWhereUniqueWithoutAccountInput[]
     updateMany?: VerificationUpdateManyWithWhereWithoutAccountInput | VerificationUpdateManyWithWhereWithoutAccountInput[]
     deleteMany?: VerificationScalarWhereInput | VerificationScalarWhereInput[]
+  }
+
+  export type AccountCreateNestedOneWithoutConnectedLinkedAccountsInput = {
+    create?: XOR<AccountCreateWithoutConnectedLinkedAccountsInput, AccountUncheckedCreateWithoutConnectedLinkedAccountsInput>
+    connectOrCreate?: AccountCreateOrConnectWithoutConnectedLinkedAccountsInput
+    connect?: AccountWhereUniqueInput
+  }
+
+  export type AccountCreateNestedOneWithoutOwnedLinkedAccountsInput = {
+    create?: XOR<AccountCreateWithoutOwnedLinkedAccountsInput, AccountUncheckedCreateWithoutOwnedLinkedAccountsInput>
+    connectOrCreate?: AccountCreateOrConnectWithoutOwnedLinkedAccountsInput
+    connect?: AccountWhereUniqueInput
+  }
+
+  export type AccountUpdateOneRequiredWithoutConnectedLinkedAccountsNestedInput = {
+    create?: XOR<AccountCreateWithoutConnectedLinkedAccountsInput, AccountUncheckedCreateWithoutConnectedLinkedAccountsInput>
+    connectOrCreate?: AccountCreateOrConnectWithoutConnectedLinkedAccountsInput
+    upsert?: AccountUpsertWithoutConnectedLinkedAccountsInput
+    connect?: AccountWhereUniqueInput
+    update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutConnectedLinkedAccountsInput, AccountUpdateWithoutConnectedLinkedAccountsInput>, AccountUncheckedUpdateWithoutConnectedLinkedAccountsInput>
+  }
+
+  export type AccountUpdateOneRequiredWithoutOwnedLinkedAccountsNestedInput = {
+    create?: XOR<AccountCreateWithoutOwnedLinkedAccountsInput, AccountUncheckedCreateWithoutOwnedLinkedAccountsInput>
+    connectOrCreate?: AccountCreateOrConnectWithoutOwnedLinkedAccountsInput
+    upsert?: AccountUpsertWithoutOwnedLinkedAccountsInput
+    connect?: AccountWhereUniqueInput
+    update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutOwnedLinkedAccountsInput, AccountUpdateWithoutOwnedLinkedAccountsInput>, AccountUncheckedUpdateWithoutOwnedLinkedAccountsInput>
   }
 
   export type AccountCreateNestedOneWithoutResourcesInput = {
@@ -55149,6 +56916,29 @@ export namespace Prisma {
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
+  export type NestedJsonFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
 
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
@@ -55173,29 +56963,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
-  }
-  export type NestedJsonFilter<$PrismaModel = never> =
-    | PatchUndefined<
-        Either<Required<NestedJsonFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>,
-        Required<NestedJsonFilterBase<$PrismaModel>>
-      >
-    | OptionalFlat<Omit<Required<NestedJsonFilterBase<$PrismaModel>>, 'path'>>
-
-  export type NestedJsonFilterBase<$PrismaModel = never> = {
-    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-    path?: string[]
-    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
-    string_contains?: string | StringFieldRefInput<$PrismaModel>
-    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
-    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
-    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
-    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
-    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -56012,6 +57779,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -56053,6 +57822,8 @@ export namespace Prisma {
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -56099,6 +57870,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -56140,6 +57913,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -56155,6 +57930,62 @@ export namespace Prisma {
 
   export type AccountCreateManyLinkedAccountInputEnvelope = {
     data: AccountCreateManyLinkedAccountInput | AccountCreateManyLinkedAccountInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type LinkedAccountCreateWithoutConnectedByAccountInput = {
+    id?: string
+    platform: string
+    createdOn?: Date | string
+    moreDetails?: NullableJsonNullValueInput | InputJsonValue
+    tokenData: JsonNullValueInput | InputJsonValue
+    ownerAccount: AccountCreateNestedOneWithoutOwnedLinkedAccountsInput
+  }
+
+  export type LinkedAccountUncheckedCreateWithoutConnectedByAccountInput = {
+    id?: string
+    platform: string
+    createdOn?: Date | string
+    ownerId: string
+    moreDetails?: NullableJsonNullValueInput | InputJsonValue
+    tokenData: JsonNullValueInput | InputJsonValue
+  }
+
+  export type LinkedAccountCreateOrConnectWithoutConnectedByAccountInput = {
+    where: LinkedAccountWhereUniqueInput
+    create: XOR<LinkedAccountCreateWithoutConnectedByAccountInput, LinkedAccountUncheckedCreateWithoutConnectedByAccountInput>
+  }
+
+  export type LinkedAccountCreateManyConnectedByAccountInputEnvelope = {
+    data: LinkedAccountCreateManyConnectedByAccountInput | LinkedAccountCreateManyConnectedByAccountInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type LinkedAccountCreateWithoutOwnerAccountInput = {
+    id?: string
+    platform: string
+    createdOn?: Date | string
+    moreDetails?: NullableJsonNullValueInput | InputJsonValue
+    tokenData: JsonNullValueInput | InputJsonValue
+    connectedByAccount: AccountCreateNestedOneWithoutConnectedLinkedAccountsInput
+  }
+
+  export type LinkedAccountUncheckedCreateWithoutOwnerAccountInput = {
+    id?: string
+    platform: string
+    createdOn?: Date | string
+    connectedBy: string
+    moreDetails?: NullableJsonNullValueInput | InputJsonValue
+    tokenData: JsonNullValueInput | InputJsonValue
+  }
+
+  export type LinkedAccountCreateOrConnectWithoutOwnerAccountInput = {
+    where: LinkedAccountWhereUniqueInput
+    create: XOR<LinkedAccountCreateWithoutOwnerAccountInput, LinkedAccountUncheckedCreateWithoutOwnerAccountInput>
+  }
+
+  export type LinkedAccountCreateManyOwnerAccountInputEnvelope = {
+    data: LinkedAccountCreateManyOwnerAccountInput | LinkedAccountCreateManyOwnerAccountInput[]
     skipDuplicates?: boolean
   }
 
@@ -56984,6 +58815,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -57025,6 +58858,8 @@ export namespace Prisma {
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -57062,6 +58897,51 @@ export namespace Prisma {
     details?: JsonNullableFilter<"Account">
     createdAt?: DateTimeFilter<"Account"> | Date | string
     linkedAccountId?: StringNullableFilter<"Account"> | string | null
+  }
+
+  export type LinkedAccountUpsertWithWhereUniqueWithoutConnectedByAccountInput = {
+    where: LinkedAccountWhereUniqueInput
+    update: XOR<LinkedAccountUpdateWithoutConnectedByAccountInput, LinkedAccountUncheckedUpdateWithoutConnectedByAccountInput>
+    create: XOR<LinkedAccountCreateWithoutConnectedByAccountInput, LinkedAccountUncheckedCreateWithoutConnectedByAccountInput>
+  }
+
+  export type LinkedAccountUpdateWithWhereUniqueWithoutConnectedByAccountInput = {
+    where: LinkedAccountWhereUniqueInput
+    data: XOR<LinkedAccountUpdateWithoutConnectedByAccountInput, LinkedAccountUncheckedUpdateWithoutConnectedByAccountInput>
+  }
+
+  export type LinkedAccountUpdateManyWithWhereWithoutConnectedByAccountInput = {
+    where: LinkedAccountScalarWhereInput
+    data: XOR<LinkedAccountUpdateManyMutationInput, LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountInput>
+  }
+
+  export type LinkedAccountScalarWhereInput = {
+    AND?: LinkedAccountScalarWhereInput | LinkedAccountScalarWhereInput[]
+    OR?: LinkedAccountScalarWhereInput[]
+    NOT?: LinkedAccountScalarWhereInput | LinkedAccountScalarWhereInput[]
+    id?: StringFilter<"LinkedAccount"> | string
+    platform?: StringFilter<"LinkedAccount"> | string
+    createdOn?: DateTimeFilter<"LinkedAccount"> | Date | string
+    connectedBy?: StringFilter<"LinkedAccount"> | string
+    ownerId?: StringFilter<"LinkedAccount"> | string
+    moreDetails?: JsonNullableFilter<"LinkedAccount">
+    tokenData?: JsonFilter<"LinkedAccount">
+  }
+
+  export type LinkedAccountUpsertWithWhereUniqueWithoutOwnerAccountInput = {
+    where: LinkedAccountWhereUniqueInput
+    update: XOR<LinkedAccountUpdateWithoutOwnerAccountInput, LinkedAccountUncheckedUpdateWithoutOwnerAccountInput>
+    create: XOR<LinkedAccountCreateWithoutOwnerAccountInput, LinkedAccountUncheckedCreateWithoutOwnerAccountInput>
+  }
+
+  export type LinkedAccountUpdateWithWhereUniqueWithoutOwnerAccountInput = {
+    where: LinkedAccountWhereUniqueInput
+    data: XOR<LinkedAccountUpdateWithoutOwnerAccountInput, LinkedAccountUncheckedUpdateWithoutOwnerAccountInput>
+  }
+
+  export type LinkedAccountUpdateManyWithWhereWithoutOwnerAccountInput = {
+    where: LinkedAccountScalarWhereInput
+    data: XOR<LinkedAccountUpdateManyMutationInput, LinkedAccountUncheckedUpdateManyWithoutOwnerAccountInput>
   }
 
   export type ResourceUpsertWithWhereUniqueWithoutAccountInput = {
@@ -57201,6 +59081,382 @@ export namespace Prisma {
     data: XOR<VerificationUpdateManyMutationInput, VerificationUncheckedUpdateManyWithoutAccountInput>
   }
 
+  export type AccountCreateWithoutConnectedLinkedAccountsInput = {
+    id?: string
+    displayName?: string | null
+    accountType?: string
+    displayImage?: string | null
+    status?: string | null
+    isVerified?: boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
+    individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
+    connections?: ConnectionCreateNestedManyWithoutAccountInput
+    authMethods?: AuthnMethodCreateNestedManyWithoutAccountInput
+    sessions?: AuthnSessionCreateNestedManyWithoutAccountInput
+    contacts?: ContactCreateNestedManyWithoutAccountInput
+    neupIds?: NeupIdCreateNestedManyWithoutAccountInput
+    notifications?: NotificationCreateNestedManyWithoutAccountInput
+    familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
+    verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
+    accessMembers?: MemberCreateNestedManyWithoutMemberAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
+    accessMemberRows?: AccessCreateNestedManyWithoutMemberAccountInput
+    accessParentRows?: AccessCreateNestedManyWithoutParentAccountInput
+    accessAssetAccountRows?: AccessCreateNestedManyWithoutAssetAccountInput
+    denormRoles?: RoleCreateNestedManyWithoutAccountInput
+    permits?: PermitCreateNestedManyWithoutAccountInput
+    permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
+    parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
+    childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
+    linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
+    linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
+    receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
+    sentRequests?: RequestCreateNestedManyWithoutSenderInput
+    errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
+    verifications?: VerificationCreateNestedManyWithoutAccountInput
+  }
+
+  export type AccountUncheckedCreateWithoutConnectedLinkedAccountsInput = {
+    id?: string
+    displayName?: string | null
+    accountType?: string
+    displayImage?: string | null
+    status?: string | null
+    isVerified?: boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    linkedAccountId?: string | null
+    brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
+    individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
+    authMethods?: AuthnMethodUncheckedCreateNestedManyWithoutAccountInput
+    sessions?: AuthnSessionUncheckedCreateNestedManyWithoutAccountInput
+    contacts?: ContactUncheckedCreateNestedManyWithoutAccountInput
+    neupIds?: NeupIdUncheckedCreateNestedManyWithoutAccountInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutAccountInput
+    familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
+    verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
+    accessMembers?: MemberUncheckedCreateNestedManyWithoutMemberAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
+    accessMemberRows?: AccessUncheckedCreateNestedManyWithoutMemberAccountInput
+    accessParentRows?: AccessUncheckedCreateNestedManyWithoutParentAccountInput
+    accessAssetAccountRows?: AccessUncheckedCreateNestedManyWithoutAssetAccountInput
+    denormRoles?: RoleUncheckedCreateNestedManyWithoutAccountInput
+    permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
+    permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
+    childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
+    linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
+    receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
+    sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
+    errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
+    verifications?: VerificationUncheckedCreateNestedManyWithoutAccountInput
+  }
+
+  export type AccountCreateOrConnectWithoutConnectedLinkedAccountsInput = {
+    where: AccountWhereUniqueInput
+    create: XOR<AccountCreateWithoutConnectedLinkedAccountsInput, AccountUncheckedCreateWithoutConnectedLinkedAccountsInput>
+  }
+
+  export type AccountCreateWithoutOwnedLinkedAccountsInput = {
+    id?: string
+    displayName?: string | null
+    accountType?: string
+    displayImage?: string | null
+    status?: string | null
+    isVerified?: boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
+    individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
+    connections?: ConnectionCreateNestedManyWithoutAccountInput
+    authMethods?: AuthnMethodCreateNestedManyWithoutAccountInput
+    sessions?: AuthnSessionCreateNestedManyWithoutAccountInput
+    contacts?: ContactCreateNestedManyWithoutAccountInput
+    neupIds?: NeupIdCreateNestedManyWithoutAccountInput
+    notifications?: NotificationCreateNestedManyWithoutAccountInput
+    familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
+    verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
+    accessMembers?: MemberCreateNestedManyWithoutMemberAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
+    accessMemberRows?: AccessCreateNestedManyWithoutMemberAccountInput
+    accessParentRows?: AccessCreateNestedManyWithoutParentAccountInput
+    accessAssetAccountRows?: AccessCreateNestedManyWithoutAssetAccountInput
+    denormRoles?: RoleCreateNestedManyWithoutAccountInput
+    permits?: PermitCreateNestedManyWithoutAccountInput
+    permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
+    parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
+    childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
+    linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
+    linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
+    receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
+    sentRequests?: RequestCreateNestedManyWithoutSenderInput
+    errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
+    verifications?: VerificationCreateNestedManyWithoutAccountInput
+  }
+
+  export type AccountUncheckedCreateWithoutOwnedLinkedAccountsInput = {
+    id?: string
+    displayName?: string | null
+    accountType?: string
+    displayImage?: string | null
+    status?: string | null
+    isVerified?: boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    linkedAccountId?: string | null
+    brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
+    individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
+    authMethods?: AuthnMethodUncheckedCreateNestedManyWithoutAccountInput
+    sessions?: AuthnSessionUncheckedCreateNestedManyWithoutAccountInput
+    contacts?: ContactUncheckedCreateNestedManyWithoutAccountInput
+    neupIds?: NeupIdUncheckedCreateNestedManyWithoutAccountInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutAccountInput
+    familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
+    verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
+    accessMembers?: MemberUncheckedCreateNestedManyWithoutMemberAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
+    accessMemberRows?: AccessUncheckedCreateNestedManyWithoutMemberAccountInput
+    accessParentRows?: AccessUncheckedCreateNestedManyWithoutParentAccountInput
+    accessAssetAccountRows?: AccessUncheckedCreateNestedManyWithoutAssetAccountInput
+    denormRoles?: RoleUncheckedCreateNestedManyWithoutAccountInput
+    permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
+    permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
+    childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
+    linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
+    receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
+    sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
+    errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
+    verifications?: VerificationUncheckedCreateNestedManyWithoutAccountInput
+  }
+
+  export type AccountCreateOrConnectWithoutOwnedLinkedAccountsInput = {
+    where: AccountWhereUniqueInput
+    create: XOR<AccountCreateWithoutOwnedLinkedAccountsInput, AccountUncheckedCreateWithoutOwnedLinkedAccountsInput>
+  }
+
+  export type AccountUpsertWithoutConnectedLinkedAccountsInput = {
+    update: XOR<AccountUpdateWithoutConnectedLinkedAccountsInput, AccountUncheckedUpdateWithoutConnectedLinkedAccountsInput>
+    create: XOR<AccountCreateWithoutConnectedLinkedAccountsInput, AccountUncheckedCreateWithoutConnectedLinkedAccountsInput>
+    where?: AccountWhereInput
+  }
+
+  export type AccountUpdateToOneWithWhereWithoutConnectedLinkedAccountsInput = {
+    where?: AccountWhereInput
+    data: XOR<AccountUpdateWithoutConnectedLinkedAccountsInput, AccountUncheckedUpdateWithoutConnectedLinkedAccountsInput>
+  }
+
+  export type AccountUpdateWithoutConnectedLinkedAccountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountType?: StringFieldUpdateOperationsInput | string
+    displayImage?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
+    individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
+    connections?: ConnectionUpdateManyWithoutAccountNestedInput
+    authMethods?: AuthnMethodUpdateManyWithoutAccountNestedInput
+    sessions?: AuthnSessionUpdateManyWithoutAccountNestedInput
+    contacts?: ContactUpdateManyWithoutAccountNestedInput
+    neupIds?: NeupIdUpdateManyWithoutAccountNestedInput
+    notifications?: NotificationUpdateManyWithoutAccountNestedInput
+    familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
+    verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
+    accessMembers?: MemberUpdateManyWithoutMemberAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
+    accessMemberRows?: AccessUpdateManyWithoutMemberAccountNestedInput
+    accessParentRows?: AccessUpdateManyWithoutParentAccountNestedInput
+    accessAssetAccountRows?: AccessUpdateManyWithoutAssetAccountNestedInput
+    denormRoles?: RoleUpdateManyWithoutAccountNestedInput
+    permits?: PermitUpdateManyWithoutAccountNestedInput
+    permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
+    parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
+    childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
+    linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
+    linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
+    receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
+    sentRequests?: RequestUpdateManyWithoutSenderNestedInput
+    errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
+    verifications?: VerificationUpdateManyWithoutAccountNestedInput
+  }
+
+  export type AccountUncheckedUpdateWithoutConnectedLinkedAccountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountType?: StringFieldUpdateOperationsInput | string
+    displayImage?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
+    individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
+    authMethods?: AuthnMethodUncheckedUpdateManyWithoutAccountNestedInput
+    sessions?: AuthnSessionUncheckedUpdateManyWithoutAccountNestedInput
+    contacts?: ContactUncheckedUpdateManyWithoutAccountNestedInput
+    neupIds?: NeupIdUncheckedUpdateManyWithoutAccountNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutAccountNestedInput
+    familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
+    verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
+    accessMembers?: MemberUncheckedUpdateManyWithoutMemberAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
+    accessMemberRows?: AccessUncheckedUpdateManyWithoutMemberAccountNestedInput
+    accessParentRows?: AccessUncheckedUpdateManyWithoutParentAccountNestedInput
+    accessAssetAccountRows?: AccessUncheckedUpdateManyWithoutAssetAccountNestedInput
+    denormRoles?: RoleUncheckedUpdateManyWithoutAccountNestedInput
+    permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
+    permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
+    childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
+    linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
+    receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
+    sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
+    errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
+    verifications?: VerificationUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
+  export type AccountUpsertWithoutOwnedLinkedAccountsInput = {
+    update: XOR<AccountUpdateWithoutOwnedLinkedAccountsInput, AccountUncheckedUpdateWithoutOwnedLinkedAccountsInput>
+    create: XOR<AccountCreateWithoutOwnedLinkedAccountsInput, AccountUncheckedCreateWithoutOwnedLinkedAccountsInput>
+    where?: AccountWhereInput
+  }
+
+  export type AccountUpdateToOneWithWhereWithoutOwnedLinkedAccountsInput = {
+    where?: AccountWhereInput
+    data: XOR<AccountUpdateWithoutOwnedLinkedAccountsInput, AccountUncheckedUpdateWithoutOwnedLinkedAccountsInput>
+  }
+
+  export type AccountUpdateWithoutOwnedLinkedAccountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountType?: StringFieldUpdateOperationsInput | string
+    displayImage?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
+    individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
+    connections?: ConnectionUpdateManyWithoutAccountNestedInput
+    authMethods?: AuthnMethodUpdateManyWithoutAccountNestedInput
+    sessions?: AuthnSessionUpdateManyWithoutAccountNestedInput
+    contacts?: ContactUpdateManyWithoutAccountNestedInput
+    neupIds?: NeupIdUpdateManyWithoutAccountNestedInput
+    notifications?: NotificationUpdateManyWithoutAccountNestedInput
+    familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
+    verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
+    accessMembers?: MemberUpdateManyWithoutMemberAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
+    accessMemberRows?: AccessUpdateManyWithoutMemberAccountNestedInput
+    accessParentRows?: AccessUpdateManyWithoutParentAccountNestedInput
+    accessAssetAccountRows?: AccessUpdateManyWithoutAssetAccountNestedInput
+    denormRoles?: RoleUpdateManyWithoutAccountNestedInput
+    permits?: PermitUpdateManyWithoutAccountNestedInput
+    permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
+    parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
+    childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
+    linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
+    linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
+    receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
+    sentRequests?: RequestUpdateManyWithoutSenderNestedInput
+    errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
+    verifications?: VerificationUpdateManyWithoutAccountNestedInput
+  }
+
+  export type AccountUncheckedUpdateWithoutOwnedLinkedAccountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountType?: StringFieldUpdateOperationsInput | string
+    displayImage?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
+    individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
+    authMethods?: AuthnMethodUncheckedUpdateManyWithoutAccountNestedInput
+    sessions?: AuthnSessionUncheckedUpdateManyWithoutAccountNestedInput
+    contacts?: ContactUncheckedUpdateManyWithoutAccountNestedInput
+    neupIds?: NeupIdUncheckedUpdateManyWithoutAccountNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutAccountNestedInput
+    familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
+    verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
+    accessMembers?: MemberUncheckedUpdateManyWithoutMemberAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
+    accessMemberRows?: AccessUncheckedUpdateManyWithoutMemberAccountNestedInput
+    accessParentRows?: AccessUncheckedUpdateManyWithoutParentAccountNestedInput
+    accessAssetAccountRows?: AccessUncheckedUpdateManyWithoutAssetAccountNestedInput
+    denormRoles?: RoleUncheckedUpdateManyWithoutAccountNestedInput
+    permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
+    permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
+    childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
+    linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
+    receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
+    sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
+    errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
+    verifications?: VerificationUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
   export type AccountCreateWithoutResourcesInput = {
     id?: string
     displayName?: string | null
@@ -57235,6 +59491,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
@@ -57276,6 +59534,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
@@ -57322,6 +59582,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
@@ -57363,6 +59625,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
@@ -57420,6 +59684,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
@@ -57461,6 +59727,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
@@ -57513,6 +59781,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
@@ -57554,6 +59824,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
@@ -57594,6 +59866,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -57635,6 +59909,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -57692,6 +59968,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -57733,6 +60011,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -57774,6 +60054,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -57815,6 +60097,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -57872,6 +60156,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -57913,6 +60199,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -57954,6 +60242,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -57995,6 +60285,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -58115,6 +60407,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -58156,6 +60450,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -58267,6 +60563,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     sentRequests?: RequestCreateNestedManyWithoutSenderInput
@@ -58308,6 +60606,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
@@ -58354,6 +60654,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -58395,6 +60697,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -58452,6 +60756,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     sentRequests?: RequestUpdateManyWithoutSenderNestedInput
@@ -58493,6 +60799,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
@@ -58545,6 +60853,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -58586,6 +60896,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -58681,6 +60993,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -58722,6 +61036,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -58802,6 +61118,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -58843,6 +61161,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -58885,6 +61205,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -58926,6 +61248,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -58971,6 +61295,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -59012,6 +61338,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -59070,6 +61398,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -59111,6 +61441,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -59162,6 +61494,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -59203,6 +61537,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -59244,6 +61580,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -59285,6 +61623,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -59342,6 +61682,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -59383,6 +61725,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -59424,6 +61768,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -59465,6 +61811,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -59522,6 +61870,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -59563,6 +61913,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -59604,6 +61956,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -59645,6 +61999,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -59702,6 +62058,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -59743,6 +62101,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -59784,6 +62144,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -59825,6 +62187,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -59882,6 +62246,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -59923,6 +62289,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -59965,6 +62333,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -60006,6 +62376,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -60063,6 +62435,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -60104,6 +62478,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -61184,6 +63560,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -61225,6 +63603,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -61271,6 +63651,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -61312,6 +63694,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -61567,6 +63951,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -61608,6 +63994,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -61660,6 +64048,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -61701,6 +64091,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -61894,6 +64286,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -61935,6 +64329,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -61981,6 +64377,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -62022,6 +64420,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -62159,6 +64559,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -62200,6 +64602,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -62252,6 +64656,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -62293,6 +64699,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -62393,6 +64801,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -62434,6 +64844,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -62480,6 +64892,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -62521,6 +64935,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -62600,6 +65016,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -62641,6 +65059,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -62929,6 +65349,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -62970,6 +65392,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -63022,6 +65446,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -63063,6 +65489,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -63154,6 +65582,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -63195,6 +65625,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -63458,6 +65890,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -63499,6 +65933,8 @@ export namespace Prisma {
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -63545,6 +65981,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -63586,6 +66024,8 @@ export namespace Prisma {
     permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -63643,6 +66083,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -63684,6 +66126,8 @@ export namespace Prisma {
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -63736,6 +66180,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -63777,6 +66223,8 @@ export namespace Prisma {
     permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -63818,6 +66266,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -63859,6 +66309,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -64140,6 +66592,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -64181,6 +66635,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -64679,6 +67135,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -64720,6 +67178,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -64915,6 +67375,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -64956,6 +67418,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -65961,6 +68425,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -66002,6 +68468,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -66141,6 +68609,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -66182,6 +68652,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -66272,6 +68744,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -66313,6 +68787,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -66359,6 +68835,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
     linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
     linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
@@ -66400,6 +68878,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
     childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
     linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
     resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
     uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
     receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
@@ -66457,6 +68937,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -66498,6 +68980,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -66550,6 +69034,8 @@ export namespace Prisma {
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -66591,6 +69077,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -66960,6 +69448,24 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+  }
+
+  export type LinkedAccountCreateManyConnectedByAccountInput = {
+    id?: string
+    platform: string
+    createdOn?: Date | string
+    ownerId: string
+    moreDetails?: NullableJsonNullValueInput | InputJsonValue
+    tokenData: JsonNullValueInput | InputJsonValue
+  }
+
+  export type LinkedAccountCreateManyOwnerAccountInput = {
+    id?: string
+    platform: string
+    createdOn?: Date | string
+    connectedBy: string
+    moreDetails?: NullableJsonNullValueInput | InputJsonValue
+    tokenData: JsonNullValueInput | InputJsonValue
   }
 
   export type ResourceCreateManyAccountInput = {
@@ -67741,6 +70247,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
@@ -67782,6 +70290,8 @@ export namespace Prisma {
     parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
     childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
     linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
     resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
     uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
     receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
@@ -67799,6 +70309,60 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LinkedAccountUpdateWithoutConnectedByAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    platform?: StringFieldUpdateOperationsInput | string
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    moreDetails?: NullableJsonNullValueInput | InputJsonValue
+    tokenData?: JsonNullValueInput | InputJsonValue
+    ownerAccount?: AccountUpdateOneRequiredWithoutOwnedLinkedAccountsNestedInput
+  }
+
+  export type LinkedAccountUncheckedUpdateWithoutConnectedByAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    platform?: StringFieldUpdateOperationsInput | string
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    moreDetails?: NullableJsonNullValueInput | InputJsonValue
+    tokenData?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    platform?: StringFieldUpdateOperationsInput | string
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    ownerId?: StringFieldUpdateOperationsInput | string
+    moreDetails?: NullableJsonNullValueInput | InputJsonValue
+    tokenData?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type LinkedAccountUpdateWithoutOwnerAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    platform?: StringFieldUpdateOperationsInput | string
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    moreDetails?: NullableJsonNullValueInput | InputJsonValue
+    tokenData?: JsonNullValueInput | InputJsonValue
+    connectedByAccount?: AccountUpdateOneRequiredWithoutConnectedLinkedAccountsNestedInput
+  }
+
+  export type LinkedAccountUncheckedUpdateWithoutOwnerAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    platform?: StringFieldUpdateOperationsInput | string
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    connectedBy?: StringFieldUpdateOperationsInput | string
+    moreDetails?: NullableJsonNullValueInput | InputJsonValue
+    tokenData?: JsonNullValueInput | InputJsonValue
+  }
+
+  export type LinkedAccountUncheckedUpdateManyWithoutOwnerAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    platform?: StringFieldUpdateOperationsInput | string
+    createdOn?: DateTimeFieldUpdateOperationsInput | Date | string
+    connectedBy?: StringFieldUpdateOperationsInput | string
+    moreDetails?: NullableJsonNullValueInput | InputJsonValue
+    tokenData?: JsonNullValueInput | InputJsonValue
   }
 
   export type ResourceUpdateWithoutAccountInput = {

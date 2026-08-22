@@ -87,6 +87,7 @@ import {
     Camera,
     ExternalLink,
     Pencil,
+    Github,
 } from "lucide-react";
 
 export {
@@ -177,4 +178,5 @@ export {
     Camera,
     ExternalLink,
     Pencil,
+    Github,
 };

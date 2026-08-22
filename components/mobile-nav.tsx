@@ -1,8 +1,8 @@
 'use client';
 
 import { permission } from "@/logica/permission";
-import React, { useMemo, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useMemo, useState, useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
     Card,
     CardContent,
@@ -36,6 +36,7 @@ import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/inapp/permissions/p
 import { redirectInApp } from "@/core/helpers/link/navigation";
 import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/inapp/permissions/data-permissions";
 import { ACCESS_VIEW_PERMISSIONS } from "@/inapp/permissions/access-view-permissions";
+import { APP_BASE_PATH } from "@/core/appconfig";
 
 const componentPermissions = [
     permission("notification.read", "for_individual", "component"),
@@ -74,7 +75,59 @@ const iconMap: { [key: string]: LucideIcon | React.ElementType } = {
 export function MobileNav() {
     const { permissions, isManaging, profile, loading, refetch } = useSession();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [isSwitching, startSwitchTransition] = useTransition();
+    const [workingProfileNeupId, setWorkingProfileNeupId] = useState<string | null>(null);
+    const [workingProfileName, setWorkingProfileName] = useState<string | null>(null);
+    const workingProfile = searchParams.get('workingProfile')?.trim() || null;
+
+    useEffect(() => {
+        let isMounted = true;
+
+        if (!workingProfile) {
+            setWorkingProfileNeupId(null);
+            setWorkingProfileName(null);
+            return () => {
+                isMounted = false;
+            };
+        }
+
+        const fetchWorkingProfile = async () => {
+            try {
+                const sessionUrl = new URL(`${APP_BASE_PATH}/bridge/api.v1/auth/me`, window.location.origin);
+                sessionUrl.searchParams.set('workingProfile', workingProfile);
+                const response = await fetch(sessionUrl.toString(), {
+                    cache: 'no-store',
+                    credentials: 'include',
+                });
+
+                if (!response.ok) {
+                    if (isMounted) {
+                        setWorkingProfileNeupId(null);
+                        setWorkingProfileName(null);
+                    }
+                    return;
+                }
+
+                const data = await response.json().catch(() => null);
+                if (!isMounted) return;
+
+                const profileInfo = data && typeof data === 'object' ? (data as { profileInfo?: { neupIdPrimary?: string; nameDisplay?: string } }).profileInfo : null;
+                setWorkingProfileNeupId(profileInfo?.neupIdPrimary || null);
+                setWorkingProfileName(profileInfo?.nameDisplay || null);
+            } catch {
+                if (isMounted) {
+                    setWorkingProfileNeupId(null);
+                    setWorkingProfileName(null);
+                }
+            }
+        };
+
+        void fetchWorkingProfile();
+        return () => {
+            isMounted = false;
+        };
+    }, [workingProfile]);
 
     const handleSwitchBack = () => {
         startSwitchTransition(async () => {
@@ -105,7 +158,8 @@ export function MobileNav() {
         const visibleRootNav = navItemsWithPerms(navItems.rootNav);
         const visibleAccountNav = navItemsWithPerms(accountNavItems);
         
-        const primaryNeupId = profile?.neupIdPrimary ? `@${profile.neupIdPrimary}` : 'NeupID';
+        const activeNeupId = workingProfileNeupId || profile?.neupIdPrimary || null;
+        const primaryNeupId = activeNeupId ? `@${activeNeupId}` : 'NeupID';
 
         const config: NavSection[] = [];
         
@@ -121,7 +175,7 @@ export function MobileNav() {
             ].filter((item) => hasAnyPermission(permissions, item.requiredPermissions));
 
             if (managedPrimaryItems.length > 0) {
-                config.push({ title: profile?.nameDisplay || "Brand", items: managedPrimaryItems });
+                config.push({ title: workingProfileName || profile?.nameDisplay || "Brand", items: managedPrimaryItems });
             }
              config.push({ title: "Account", items: visibleAccountNav });
         } else {
@@ -137,7 +191,7 @@ export function MobileNav() {
         }
 
         return config;
-    }, [permissions, isManaging, profile, loading]);
+    }, [permissions, isManaging, profile, loading, workingProfileName, workingProfileNeupId]);
 
     if (loading || !navConfig) {
         return (

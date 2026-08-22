@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
     );
   } catch {
     return NextResponse.json(
-      { success: false, error: 'server_error', error_description: 'Failed to encrypt GitHub OAuth token.' },
+      { success: false, error: 'server_error', error_description: 'something went wrong' },
       { status: 500 },
     );
   }

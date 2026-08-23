@@ -17,7 +17,7 @@ Applications can create, list, mark-read, and delete notifications through the b
 
 ::private
 
-The service resolves the application from `appSecret`, optionally resolves a target account from `connectionId`, and scopes normal reads to `notification.applicationId`. Wildcard reads are restricted to applications with `isInternal = true` and return all application-scoped notifications.
+The service resolves the application from `appSecret`, optionally resolves a target account from `connectionId`, and scopes normal reads to `notification.applicationId`. Wildcard reads are restricted to applications with `party = 0` (internal) and return all application-scoped notifications.
 
 ::private end
 
@@ -100,7 +100,7 @@ function serializeNotification(row: {
 }
 
 async function resolveApplicationAndTarget(input: BridgeNotificationInput): Promise<
-  | { ok: true; appId: string; accountId: string | null; isInternal: boolean }
+  | { ok: true; appId: string; accountId: string | null; party: number }
   | { ok: false; status: number; body: Record<string, unknown> }
 > {
   const applicationId = normalizeValue(input.applicationId);
@@ -135,7 +135,7 @@ async function resolveApplicationAndTarget(input: BridgeNotificationInput): Prom
         accountId: true,
         appId: true,
         application: {
-          select: { appSecret: true, status: true, isInternal: true },
+          select: { appSecret: true, status: true, party: true },
         },
       },
     });
@@ -180,13 +180,13 @@ async function resolveApplicationAndTarget(input: BridgeNotificationInput): Prom
       ok: true,
       appId: connection.appId,
       accountId: connection.accountId,
-      isInternal: connection.application.isInternal,
+      party: connection.application.party,
     };
   }
 
   const application = await prisma.application.findUnique({
     where: { id: applicationId },
-    select: { id: true, appSecret: true, status: true, isInternal: true },
+    select: { id: true, appSecret: true, status: true, party: true },
   });
   if (!application || application.appSecret !== appSecret) {
     return { ok: false, status: 401, body: { success: false, error: 'invalid_app_credentials' } };
@@ -199,7 +199,7 @@ async function resolveApplicationAndTarget(input: BridgeNotificationInput): Prom
     };
   }
 
-  return { ok: true, appId: application.id, accountId: accountIdInput, isInternal: application.isInternal };
+  return { ok: true, appId: application.id, accountId: accountIdInput, party: application.party };
 }
 
 export async function bridgeGetNotifications(input: BridgeNotificationInput): Promise<BridgeNotificationResponse> {
@@ -208,13 +208,13 @@ export async function bridgeGetNotifications(input: BridgeNotificationInput): Pr
     if (!resolved.ok) return { status: resolved.status, body: resolved.body };
 
     const isWildcard = input.mode === 'wildcard';
-    if (isWildcard && !resolved.isInternal) {
+    if (isWildcard && resolved.party !== 0) {
       return {
         status: 403,
         body: {
           success: false,
           error: 'wildcard_requires_internal_application',
-          error_description: 'Wildcard notification access is limited to internal applications.',
+          error_description: 'Wildcard notification access is limited to applications with party 0 (internal).',
         },
       };
     }

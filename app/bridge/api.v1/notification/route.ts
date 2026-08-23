@@ -17,7 +17,16 @@ function corsHeaders(origin: string) {
   return {
     'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': [
+      'Content-Type',
+      'X-Application-Id',
+      'X-App-Id',
+      'X-App-Secret',
+      'Neup-App-Secret',
+      'ApplicationId',
+      'AppId',
+      'AppSecret',
+    ].join(', '),
     'Vary': 'Origin',
   };
 }
@@ -153,30 +162,44 @@ async function readJsonBody(request: NextRequest): Promise<BodyObject> {
 function readQueryInput(request: NextRequest): BodyObject {
   const query = Object.fromEntries(request.nextUrl.searchParams.entries());
   return {
-    ...parseEncodedPayload(query.payload),
     ...query,
-    appSecret: query.appSecret ?? request.headers.get('appSecret') ?? request.headers.get('x-app-secret') ?? undefined,
-    accountId: query.accountId ?? request.headers.get('accountId') ?? request.headers.get('x-account-id') ?? undefined,
-    connectionId: query.connectionId ?? request.headers.get('connectionId') ?? request.headers.get('x-connection-id') ?? undefined,
   };
 }
 
 function buildServiceInput(input: BodyObject) {
   return {
     appSecret: readValue(input, 'appSecret'),
+    applicationId: readValue(input, 'applicationId') ?? readValue(input, 'appId'),
     accountId: readValue(input, 'accountId'),
     connectionId: readValue(input, 'connectionId'),
     notificationId: readValue(input, 'notificationId') ?? readValue(input, 'id'),
     limit: readNumberValue(input, 'limit'),
-    offset: readNumberValue(input, 'offset'),
+    offset: readNumberValue(input, 'offset') ?? readNumberValue(input, 'offsset'),
     action: readValue(input, 'action'),
     title: readValue(input, 'title'),
     message: readValue(input, 'message'),
     type: readValue(input, 'type'),
-    persistence: readValue(input, 'persistence'),
+    persistence: readBooleanValue(input, 'persistence'),
     deletableOn: readValue(input, 'deletableOn'),
     read: readBooleanValue(input, 'read'),
+    patchAction: readValue(input, 'action') as 'read' | 'dismiss' | null,
     detail: Object.prototype.hasOwnProperty.call(input, 'detail') ? input.detail : undefined,
+  };
+}
+
+function readCredentialHeaders(request: NextRequest): BodyObject {
+  return {
+    applicationId:
+      request.headers.get('x-application-id') ??
+      request.headers.get('x-app-id') ??
+      request.headers.get('applicationId') ??
+      request.headers.get('appId') ??
+      request.headers.get('application'),
+    appSecret:
+      request.headers.get('x-app-secret') ??
+      request.headers.get('neup-app-secret') ??
+      request.headers.get('appSecret') ??
+      request.headers.get('appsecret'),
   };
 }
 
@@ -237,7 +260,7 @@ async function readMutationInput(request: NextRequest): Promise<BodyObject> {
  *
  * ::public
  *
- * `GET` lists notifications, `POST` creates one notification, `PATCH` marks a notification as read, and `DELETE` deletes a notification.
+ * `GET` lists notifications, `POST` creates one notification, and `PATCH` reads or dismisses a notification.
  *
  * ::public end
  *
@@ -250,25 +273,19 @@ async function readMutationInput(request: NextRequest): Promise<BodyObject> {
  * ::end
  */
 export async function GET(request: NextRequest) {
-  const input = readQueryInput(request);
+  const input = { ...readQueryInput(request), ...readCredentialHeaders(request) };
   const result = await bridgeGetNotifications(buildServiceInput(input));
   return respond(request, 'GET', input, result);
 }
 
 export async function POST(request: NextRequest) {
-  const input = await readMutationInput(request);
+  const input = { ...(await readMutationInput(request)), ...readCredentialHeaders(request) };
   const result = await bridgeCreateNotification(buildServiceInput(input));
   return respond(request, 'POST', input, result);
 }
 
 export async function PATCH(request: NextRequest) {
-  const input = await readMutationInput(request);
+  const input = { ...(await readMutationInput(request)), ...readCredentialHeaders(request) };
   const result = await bridgeMarkNotificationRead(buildServiceInput(input));
   return respond(request, 'PATCH', input, result);
-}
-
-export async function DELETE(request: NextRequest) {
-  const input = await readMutationInput(request);
-  const result = await bridgeDeleteNotification(buildServiceInput(input));
-  return respond(request, 'DELETE', input, result);
 }

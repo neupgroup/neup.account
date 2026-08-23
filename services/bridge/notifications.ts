@@ -26,6 +26,7 @@ The service resolves the application from `appSecret`, optionally resolves a tar
 
 type BridgeNotificationInput = {
   appSecret?: string | null;
+  applicationId?: string | null;
   accountId?: string | null;
   connectionId?: string | null;
   notificationId?: string | null;
@@ -35,10 +36,11 @@ type BridgeNotificationInput = {
   title?: string | null;
   message?: string | null;
   type?: string | null;
-  persistence?: string | null;
+  persistence?: boolean | null;
   detail?: unknown;
   deletableOn?: string | Date | null;
   read?: boolean | null;
+  patchAction?: 'read' | 'dismiss' | null;
 };
 
 type BridgeNotificationResponse = {
@@ -57,7 +59,7 @@ function normalizeValue(input?: string | null): string | null {
 function parseLimit(input: BridgeNotificationInput['limit']): number {
   const raw = typeof input === 'number' ? input : Number.parseInt(String(input ?? ''), 10);
   if (!Number.isFinite(raw) || raw <= 0) return DEFAULT_LIMIT;
-  return Math.min(Math.floor(raw), MAX_LIMIT);
+  return Math.min(Math.max(Math.floor(raw), 10), MAX_LIMIT);
 }
 
 function parseOffset(input: BridgeNotificationInput['offset']): number {
@@ -100,18 +102,27 @@ async function resolveApplicationAndTarget(input: BridgeNotificationInput): Prom
   | { ok: true; appId: string; accountId: string | null }
   | { ok: false; status: number; body: Record<string, unknown> }
 > {
+  const applicationId = normalizeValue(input.applicationId);
   const appSecret = normalizeValue(input.appSecret);
   const accountIdInput = normalizeValue(input.accountId);
   const connectionId = normalizeValue(input.connectionId);
 
-  if (!appSecret) {
+  if (Boolean(accountIdInput) === Boolean(connectionId)) {
+    return {
+      ok: false,
+      status: 400,
+      body: { success: false, error: 'exactly_one_target_required' },
+    };
+  }
+
+  if (!applicationId || !appSecret) {
     return {
       ok: false,
       status: 400,
       body: {
         success: false,
         error: 'invalid_request',
-        error_description: 'appSecret is required.',
+        error_description: 'applicationId and appSecret headers are required.',
       },
     };
   }
@@ -136,7 +147,7 @@ async function resolveApplicationAndTarget(input: BridgeNotificationInput): Prom
       };
     }
 
-    if (!connection.application.appSecret || connection.application.appSecret !== appSecret) {
+    if (connection.appId !== applicationId || !connection.application.appSecret || connection.application.appSecret !== appSecret) {
       return {
         ok: false,
         status: 401,
@@ -167,33 +178,13 @@ async function resolveApplicationAndTarget(input: BridgeNotificationInput): Prom
     return { ok: true, appId: connection.appId, accountId: connection.accountId };
   }
 
-  const applications = await prisma.application.findMany({
-    where: { appSecret },
-    select: { id: true, status: true },
-    take: 2,
+  const application = await prisma.application.findUnique({
+    where: { id: applicationId },
+    select: { id: true, appSecret: true, status: true },
   });
-
-  if (applications.length === 0) {
-    return {
-      ok: false,
-      status: 401,
-      body: { success: false, error: 'invalid_app_secret' },
-    };
+  if (!application || application.appSecret !== appSecret) {
+    return { ok: false, status: 401, body: { success: false, error: 'invalid_app_credentials' } };
   }
-
-  if (applications.length > 1) {
-    return {
-      ok: false,
-      status: 409,
-      body: {
-        success: false,
-        error: 'ambiguous_app_secret',
-        error_description: 'This appSecret matches multiple applications. Supply connectionId to disambiguate.',
-      },
-    };
-  }
-
-  const application = applications[0];
   if (application.status === 'blocked' || application.status === 'rejected') {
     return {
       ok: false,
@@ -264,11 +255,23 @@ export async function bridgeCreateNotification(input: BridgeNotificationInput): 
       };
     }
 
-    const action = normalizeValue(input.action) ?? 'info';
+    const action = normalizeValue(input.action);
+    if (!action || /\s/.test(action)) {
+      return { status: 400, body: { success: false, error: 'invalid_action', error_description: 'action must be a non-empty string without spaces.' } };
+    }
     const title = normalizeValue(input.title);
+    if (!title) {
+      return { status: 400, body: { success: false, error: 'invalid_title' } };
+    }
     const message = normalizeValue(input.message);
-    const type = normalizeValue(input.type) ?? 'info';
-    const persistence = normalizeValue(input.persistence);
+    const type = normalizeValue(input.type);
+    if (!type || !['warning', 'error', 'informative', 'success'].includes(type)) {
+      return { status: 400, body: { success: false, error: 'invalid_type' } };
+    }
+    if (typeof input.persistence !== 'boolean') {
+      return { status: 400, body: { success: false, error: 'invalid_persistence' } };
+    }
+    const persistence = input.persistence === true ? 'permanent' : null;
     const deletableOn = input.deletableOn ? new Date(input.deletableOn) : null;
 
     if (deletableOn && Number.isNaN(deletableOn.getTime())) {
@@ -327,6 +330,17 @@ export async function bridgeMarkNotificationRead(input: BridgeNotificationInput)
         status: 400,
         body: { success: false, error: 'notificationId is required.' },
       };
+    }
+
+    if (input.patchAction !== 'read' && input.patchAction !== 'dismiss') {
+      return { status: 400, body: { success: false, error: 'invalid_action', error_description: 'action must be read or dismiss.' } };
+    }
+
+    if (input.patchAction === 'dismiss') {
+      const deleted = await prisma.notification.deleteMany({ where: { id: notificationId, accountId: resolved.accountId, applicationId: resolved.appId } });
+      return deleted.count > 0
+        ? { status: 200, body: { success: true } }
+        : { status: 404, body: { success: false, error: 'notification_not_found' } };
     }
 
     const updated = await prisma.notification.updateMany({

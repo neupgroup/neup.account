@@ -20,12 +20,18 @@ function corsHeaders(origin: string) {
     'Access-Control-Allow-Headers': [
       'Content-Type',
       'X-Application-Id',
+      'X-Application',
       'X-App-Id',
       'X-App-Secret',
+      'X-Appsecret',
       'Neup-App-Secret',
+      'Neup-App-Id',
+      'Application',
       'ApplicationId',
+      'Application-Id',
       'AppId',
       'AppSecret',
+      'App-Secret',
     ].join(', '),
     'Vary': 'Origin',
   };
@@ -191,14 +197,19 @@ function readCredentialHeaders(request: NextRequest): BodyObject {
   return {
     applicationId:
       request.headers.get('x-application-id') ??
+      request.headers.get('x-application') ??
       request.headers.get('x-app-id') ??
+      request.headers.get('neup-app-id') ??
       request.headers.get('applicationId') ??
+      request.headers.get('application-id') ??
       request.headers.get('appId') ??
       request.headers.get('application'),
     appSecret:
       request.headers.get('x-app-secret') ??
+      request.headers.get('x-appsecret') ??
       request.headers.get('neup-app-secret') ??
       request.headers.get('appSecret') ??
+      request.headers.get('app-secret') ??
       request.headers.get('appsecret'),
   };
 }

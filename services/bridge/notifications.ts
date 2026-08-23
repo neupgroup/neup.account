@@ -17,7 +17,7 @@ Applications can create, list, mark-read, and delete notifications through the b
 
 ::private
 
-The service resolves the application from `appSecret`, optionally resolves a target account from `connectionId`, and always scopes bridge operations to `notification.applicationId`.
+The service resolves the application from `appSecret`, optionally resolves a target account from `connectionId`, and scopes normal reads to `notification.applicationId`. Wildcard reads are restricted to applications with `isInternal = true` and return all application-scoped notifications.
 
 ::private end
 
@@ -27,6 +27,7 @@ The service resolves the application from `appSecret`, optionally resolves a tar
 type BridgeNotificationInput = {
   appSecret?: string | null;
   applicationId?: string | null;
+  mode?: string | null;
   accountId?: string | null;
   connectionId?: string | null;
   notificationId?: string | null;
@@ -99,7 +100,7 @@ function serializeNotification(row: {
 }
 
 async function resolveApplicationAndTarget(input: BridgeNotificationInput): Promise<
-  | { ok: true; appId: string; accountId: string | null }
+  | { ok: true; appId: string; accountId: string | null; isInternal: boolean }
   | { ok: false; status: number; body: Record<string, unknown> }
 > {
   const applicationId = normalizeValue(input.applicationId);
@@ -134,7 +135,7 @@ async function resolveApplicationAndTarget(input: BridgeNotificationInput): Prom
         accountId: true,
         appId: true,
         application: {
-          select: { appSecret: true, status: true },
+          select: { appSecret: true, status: true, isInternal: true },
         },
       },
     });
@@ -175,12 +176,17 @@ async function resolveApplicationAndTarget(input: BridgeNotificationInput): Prom
       };
     }
 
-    return { ok: true, appId: connection.appId, accountId: connection.accountId };
+    return {
+      ok: true,
+      appId: connection.appId,
+      accountId: connection.accountId,
+      isInternal: connection.application.isInternal,
+    };
   }
 
   const application = await prisma.application.findUnique({
     where: { id: applicationId },
-    select: { id: true, appSecret: true, status: true },
+    select: { id: true, appSecret: true, status: true, isInternal: true },
   });
   if (!application || application.appSecret !== appSecret) {
     return { ok: false, status: 401, body: { success: false, error: 'invalid_app_credentials' } };
@@ -193,7 +199,7 @@ async function resolveApplicationAndTarget(input: BridgeNotificationInput): Prom
     };
   }
 
-  return { ok: true, appId: application.id, accountId: accountIdInput };
+  return { ok: true, appId: application.id, accountId: accountIdInput, isInternal: application.isInternal };
 }
 
 export async function bridgeGetNotifications(input: BridgeNotificationInput): Promise<BridgeNotificationResponse> {
@@ -201,11 +207,27 @@ export async function bridgeGetNotifications(input: BridgeNotificationInput): Pr
     const resolved = await resolveApplicationAndTarget(input);
     if (!resolved.ok) return { status: resolved.status, body: resolved.body };
 
+    const isWildcard = input.mode === 'wildcard';
+    if (isWildcard && !resolved.isInternal) {
+      return {
+        status: 403,
+        body: {
+          success: false,
+          error: 'wildcard_requires_internal_application',
+          error_description: 'Wildcard notification access is limited to internal applications.',
+        },
+      };
+    }
+
     const limit = parseLimit(input.limit);
     const offset = parseOffset(input.offset);
     const where: Prisma.NotificationWhereInput = {
-      applicationId: resolved.appId,
-      ...(resolved.accountId ? { accountId: resolved.accountId } : {}),
+      ...(isWildcard
+        ? { applicationId: { not: null } }
+        : {
+            applicationId: resolved.appId,
+            ...(resolved.accountId ? { accountId: resolved.accountId } : {}),
+          }),
     };
 
     const [total, rows] = await prisma.$transaction([
@@ -230,7 +252,8 @@ export async function bridgeGetNotifications(input: BridgeNotificationInput): Pr
           limit,
           maxLimit: MAX_LIMIT,
           applicationId: resolved.appId,
-          accountId: resolved.accountId,
+          accountId: isWildcard ? null : resolved.accountId,
+          mode: isWildcard ? 'wildcard' : 'scoped',
         },
       },
     };

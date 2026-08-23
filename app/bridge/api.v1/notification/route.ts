@@ -176,6 +176,7 @@ function buildServiceInput(input: BodyObject) {
   return {
     appSecret: readValue(input, 'appSecret'),
     applicationId: readValue(input, 'applicationId') ?? readValue(input, 'appId'),
+    mode: readValue(input, 'mode'),
     accountId: readValue(input, 'accountId'),
     connectionId: readValue(input, 'connectionId'),
     notificationId: readValue(input, 'notificationId') ?? readValue(input, 'id'),
@@ -272,6 +273,8 @@ async function readMutationInput(request: NextRequest): Promise<BodyObject> {
  * ::public
  *
  * `GET` lists notifications, `POST` creates one notification, and `PATCH` reads or dismisses a notification.
+ * `GET ?mode=wildcard` lists all application-scoped notifications and is only
+ * available when the supplied application is marked internal.
  *
  * ::public end
  *

@@ -17,7 +17,7 @@ Applications can create, list, mark-read, and delete notifications through the b
 
 ::private
 
-The service resolves the application from `appSecret`, optionally resolves a target account from `connectionId`, and scopes normal reads to `notification.applicationId`. Wildcard reads are restricted to applications with `party = 0` (internal) and return all application-scoped notifications.
+The service resolves the application from `appSecret`, optionally resolves a target account from `connectionId`, and scopes normal reads to `notification.applicationId`. Wildcard reads are restricted to applications with `party = 0` (internal), remove the application scope, and may still filter by account.
 
 ::private end
 
@@ -223,7 +223,9 @@ export async function bridgeGetNotifications(input: BridgeNotificationInput): Pr
     const offset = parseOffset(input.offset);
     const where: Prisma.NotificationWhereInput = {
       ...(isWildcard
-        ? { applicationId: { not: null } }
+        ? {
+            ...(resolved.accountId ? { accountId: resolved.accountId } : {}),
+          }
         : {
             applicationId: resolved.appId,
             ...(resolved.accountId ? { accountId: resolved.accountId } : {}),
@@ -252,7 +254,7 @@ export async function bridgeGetNotifications(input: BridgeNotificationInput): Pr
           limit,
           maxLimit: MAX_LIMIT,
           applicationId: resolved.appId,
-          accountId: isWildcard ? null : resolved.accountId,
+          accountId: resolved.accountId,
           mode: isWildcard ? 'wildcard' : 'scoped',
         },
       },

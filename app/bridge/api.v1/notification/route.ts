@@ -273,8 +273,9 @@ async function readMutationInput(request: NextRequest): Promise<BodyObject> {
  * ::public
  *
  * `GET` lists notifications, `POST` creates one notification, and `PATCH` reads or dismisses a notification.
- * `GET ?mode=wildcard` lists all application-scoped notifications and is only
- * available when the supplied application has party 0 (internal).
+ * `GET ?mode=wildcard` removes the application scope and may filter by
+ * `accountId`; it is only available when the supplied application has party 0
+ * (internal).
  *
  * ::public end
  *

@@ -107,7 +107,7 @@ async function resolveApplicationAndTarget(input: BridgeNotificationInput): Prom
   const accountIdInput = normalizeValue(input.accountId);
   const connectionId = normalizeValue(input.connectionId);
 
-  if (Boolean(accountIdInput) === Boolean(connectionId)) {
+  if (Boolean(accountIdInput) && Boolean(connectionId)) {
     return {
       ok: false,
       status: 400,

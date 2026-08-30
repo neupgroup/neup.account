@@ -371,7 +371,7 @@ function UsersListInner({ appId, roleId }: { appId: string; roleId?: string }) {
                 ) : (
                   <Button
                     key={item}
-                    variant={item === page ? 'default' : 'outline'}
+            type={item === page ? 'solid' : 'outlined'}
                     size="icon"
                     className="h-8 w-8 text-xs"
                     disabled={loading}

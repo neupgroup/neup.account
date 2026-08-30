@@ -324,7 +324,7 @@ export function RoleDetailEditor({
         <div>
           <Button
             htmlType="button"
-            variant={isDefaultRole ? 'outline' : 'secondary'}
+            type={isDefaultRole ? 'outlined' : 'tinted'}
             onClick={handleDefaultRole}
             disabled={defaultPending || !canManage}
           >

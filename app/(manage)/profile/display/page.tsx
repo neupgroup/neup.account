@@ -465,7 +465,7 @@ export default function DisplayInfoPage() {
                                                         <Button
                                                             key={`${option.label}:${option.value}`}
                                                             htmlType="button"
-                                                            variant={field.value === option.value ? "default" : "secondary"}
+            type={field.value === option.value ? "solid" : "tinted"}
                                                             onClick={() => {
                                                                 field.onChange(option.value);
                                                                 handleStandardDisplayNameSelect(option.value);
@@ -479,7 +479,7 @@ export default function DisplayInfoPage() {
                                                     ))}
                                                     <Button
                                                         htmlType="button"
-                                                        variant={field.value === 'custom' ? "default" : "secondary"}
+            type={field.value === 'custom' ? "solid" : "tinted"}
                                                         onClick={() => field.onChange('custom')}
                                                         className="relative"
                                                         disabled={isNamePending}

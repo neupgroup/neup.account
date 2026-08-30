@@ -4,7 +4,6 @@
 import { FlowLink } from '@/components/flow-link';
 import { usePathname } from 'next/navigation';
 import { cn } from '#/core/utils';
-import { buttonVariants } from '#/components/ui/button';
 import { Building, AppWindow, ShieldCheck, Users, UserCircle, ArrowLeft } from 'lucide-react';
 import { Separator } from '#/components/ui/separator';
 
@@ -25,7 +24,7 @@ export function BrandNav({ brandId }: { brandId: string }) {
           <FlowLink
             key={item.href}
             href={item.href}
-            className={cn(buttonVariants({ variant: isActive ? 'secondary' : 'ghost' }), 'justify-start gap-2')}
+            className={cn('inline-flex items-center rounded-md px-4 py-2 text-sm font-medium justify-start gap-2', isActive ? 'bg-secondary text-secondary-foreground' : 'bg-transparent text-foreground hover:bg-primary/10')}
           >
             <item.icon className="h-4 w-4" />
             {item.label}
@@ -35,7 +34,7 @@ export function BrandNav({ brandId }: { brandId: string }) {
        <Separator className="my-2" />
        <FlowLink
             href="/access"
-            className={cn(buttonVariants({ variant: 'ghost' }), 'justify-start gap-2')}
+            className="inline-flex items-center rounded-md px-4 py-2 text-sm font-medium justify-start gap-2 bg-transparent text-foreground hover:bg-primary/10"
           >
         <ArrowLeft className="h-4 w-4" />
         Back to Access

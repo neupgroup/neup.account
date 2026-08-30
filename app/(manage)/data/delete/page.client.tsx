@@ -90,7 +90,7 @@ export default function DeleteAccountPage() {
             />
             </CardHeader>
             <CardContent className="space-y-4">
-            <Alert variant="destructive">
+            <Alert type="solid" convey="danger">
                 <AlertTitle>This action is irreversible.</AlertTitle>
                 <AlertDescription>
                 <ul className="list-disc space-y-2 pl-5 mt-2">
@@ -105,7 +105,7 @@ export default function DeleteAccountPage() {
                 </AlertDescription>
             </Alert>
             {isRequested && (
-                <Alert variant="default" className="border-primary text-primary [&>svg]:text-primary">
+                <Alert type="solid" className="border-primary text-primary [&>svg]:text-primary">
                     <AlertTitle>Request Received</AlertTitle>
                     <AlertDescription>
                         Your account deletion request has been submitted. You can cancel by logging in within the next 30 days.
@@ -121,19 +121,19 @@ export default function DeleteAccountPage() {
             </CardContent>
             <CardFooter>
                  {!showPasswordPrompt && !isRequested && (
-                    <Button type="button" onClick={() => setShowPasswordPrompt(true)} variant="destructive" disabled={loadingStatus}>
+                    <Button htmlType="button" onClick={() => setShowPasswordPrompt(true)} type="solid" convey="danger" disabled={loadingStatus}>
                          <Trash2 className="mr-2 h-4 w-4" />
                         Request Account Deletion
                     </Button>
                  )}
                  {showPasswordPrompt && !isRequested && (
-                     <Button variant="destructive" disabled={isPending || loadingStatus}>
+                     <Button type="solid" convey="danger" disabled={isPending || loadingStatus}>
                         {isPending ? (<Loader2 className="mr-2 h-4 w-4 animate-spin" />) : (<Trash2 className="mr-2 h-4 w-4" />)}
                         Confirm Deletion
                     </Button>
                  )}
                  {isRequested && (
-                     <Button variant="destructive" disabled>
+                     <Button type="solid" convey="danger" disabled>
                         <Trash2 className="mr-2 h-4 w-4" />
                         Deletion Requested
                     </Button>

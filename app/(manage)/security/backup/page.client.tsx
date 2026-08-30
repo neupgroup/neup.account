@@ -77,7 +77,7 @@ export default function BackupCodesPage() {
                     />
                 </CardHeader>
                 <CardContent className="space-y-6">
-                     <Alert variant="destructive">
+                     <Alert type="solid" convey="danger">
                         <AlertTitle>Store these codes securely!</AlertTitle>
                         <AlertDescription>
                             Treat these codes like your password. Anyone with access to these codes can sign in to your account.
@@ -100,10 +100,10 @@ export default function BackupCodesPage() {
                                 ))}
                             </div>
                              <div className="flex flex-wrap gap-2 pt-4 border-t">
-                                <Button onClick={handleCopy} variant="outline" size="sm" disabled={isPending}>
+                                <Button onClick={handleCopy} type="outlined" size="sm" disabled={isPending}>
                                     <Copy className="mr-2 h-4 w-4" /> Copy Codes
                                 </Button>
-                                <Button onClick={handleDownload} variant="outline" size="sm" disabled={isPending}>
+                                <Button onClick={handleDownload} type="outlined" size="sm" disabled={isPending}>
                                     <Download className="mr-2 h-4 w-4" /> Download
                                 </Button>
                             </div>

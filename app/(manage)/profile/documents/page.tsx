@@ -111,12 +111,12 @@ function WebcamCapture({ onCapture }: { onCapture: (file: File) => void }) {
         <div className="space-y-2">
             <video ref={videoRef} className="w-full aspect-video rounded-md bg-muted" autoPlay muted playsInline />
             {hasCameraPermission === false && (
-                <Alert variant="destructive">
+                <Alert type="solid" convey="danger">
                     <AlertTitle>Camera Access Required</AlertTitle>
                     <AlertDescription>Please allow camera access to use this feature.</AlertDescription>
                 </Alert>
             )}
-            <Button type="button" onClick={handleCapture} disabled={!hasCameraPermission}>
+            <Button htmlType="button" onClick={handleCapture} disabled={!hasCameraPermission}>
                 <Camera className="mr-2 h-4 w-4" />
                 Capture Selfie
             </Button>
@@ -265,7 +265,7 @@ export default function KycPage() {
                     <div className="flex justify-end">
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
-                                <Button type="button" disabled={isPending || !form.formState.isValid}>
+                                <Button htmlType="button" disabled={isPending || !form.formState.isValid}>
                                     {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                     Submit for Verification
                                 </Button>

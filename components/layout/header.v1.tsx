@@ -125,8 +125,8 @@ export function HeaderV1({ showUserNavOnAuth = false, logoUrl }: HeaderV1Props) 
                   <UserNav />
                 </div>
                 <Button
-                  type="button"
-                  variant="outline"
+                  htmlType="button"
+                  type="outlined"
                   size="icon"
                   className={cn(
                     'h-10 w-10 border-transparent bg-background text-slate-900 shadow-none hover:bg-accent/50 lg:hidden',

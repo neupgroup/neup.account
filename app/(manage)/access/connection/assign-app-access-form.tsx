@@ -173,7 +173,7 @@ export function AssignAppAccessForm({
               disabled={isPending}
             />
             <Button
-              type="button"
+              htmlType="button"
               size="sm"
               onClick={handleLookup}
               disabled={isPending || !neupIdInput.trim()}
@@ -225,7 +225,7 @@ export function AssignAppAccessForm({
               {resolved.teamMembershipStatus === 'none' && (
                 <div className="flex justify-start">
                   <Button
-                    type="button"
+                    htmlType="button"
                     size="sm"
                     onClick={handleAddToTeam}
                     disabled={isPending}
@@ -281,7 +281,7 @@ export function AssignAppAccessForm({
           {resolved.teamMembershipStatus === 'active' && (
             <div className="flex justify-end">
               <Button
-                type="button"
+                htmlType="button"
                 size="sm"
                 onClick={handleAssign}
                 disabled={isPending || selectedRoles.size === 0}

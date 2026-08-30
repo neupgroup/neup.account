@@ -241,7 +241,7 @@ export default function CreateBrandPageClient({
                         )}
                     />
 
-                    <Button type="submit" disabled={isSubmitting || neupIdStatus !== 'available'}>
+                    <Button htmlType="submit" disabled={isSubmitting || neupIdStatus !== 'available'}>
                         {isSubmitting ? "Creating..." : "Create Brand"}
                     </Button>
                 </form>

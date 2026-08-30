@@ -137,7 +137,7 @@ export function AddAssetForm({
               </div>
 
               <div className="flex justify-end">
-                <Button type="submit" size="sm" className="gap-1.5">
+                <Button htmlType="submit" size="sm" className="gap-1.5">
                   <Plus className="h-3.5 w-3.5" />
                   Add Asset
                 </Button>

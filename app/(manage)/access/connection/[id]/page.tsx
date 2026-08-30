@@ -107,7 +107,7 @@ function AccessCard({
       {roles.length > 0 ? (
         <div className="mt-3 flex flex-wrap gap-1.5">
           {roles.map((role) => (
-            <Badge key={role.roleId} variant="outline" className="px-1.5 py-0 text-xs">
+            <Badge key={role.roleId} type="outlined" className="px-1.5 py-0 text-xs">
               {role.roleName}
             </Badge>
           ))}

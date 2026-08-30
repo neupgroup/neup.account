@@ -38,7 +38,7 @@ export async function AddRolePage({ applicationId, mode }: { applicationId: stri
           <BackButton href={applicationHref('/application/roles', applicationId, mode ? { mode } : undefined)} />
           <PrimaryHeader title="Add Role" description={`Create a role for ${details.name}.`} />
         </div>
-        <Alert variant="destructive">
+        <Alert type="solid" convey="danger">
           <ShieldAlert className="h-4 w-4" />
           <AlertTitle>Access Denied</AlertTitle>
           <AlertDescription>Only the application owner can manage roles.</AlertDescription>

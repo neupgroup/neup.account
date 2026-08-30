@@ -34,7 +34,7 @@ export async function ApplicationEditPage({ applicationId, mode }: { application
           <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
           <PrimaryHeader title="Basic Information" description="Application details." />
         </div>
-        <Alert variant="destructive">
+        <Alert type="solid" convey="danger">
           <ShieldAlert className="h-4 w-4" />
           <AlertTitle>Access Denied</AlertTitle>
           <AlertDescription>You do not have permission to edit this application.</AlertDescription>

@@ -55,7 +55,12 @@ export function RemoveMemberButton({
     <div className="flex flex-col gap-1">
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant={variant} size="sm" disabled={isPending}>
+          <Button
+            type={variant === 'outline' ? 'outlined' : 'solid'}
+            convey={variant === 'destructive' ? 'danger' : 'none'}
+            size="sm"
+            disabled={isPending}
+          >
             {isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
             {label}
           </Button>

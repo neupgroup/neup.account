@@ -3,7 +3,7 @@ import { Card, CardContent } from "#/components/ui/card";
 import React from "react";
 import { checkPermissions } from '@/services/user';
 import { Alert, AlertDescription, AlertTitle } from "#/components/ui/alert";
-import { ListItem } from "#/components/ui/list-item";
+import { ListItem } from "@/components/ui/ListItem";
 import { SecondaryHeader } from "#/components/ui/secondary-header";
 import { PrimaryHeader } from "#/components/ui/primary-header";
 import { CreditCard, History, Wallet, Gem, Ban } from "@/components/icons";

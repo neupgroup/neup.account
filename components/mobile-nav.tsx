@@ -28,7 +28,7 @@ import {
 } from "@/components/icons";
 import { type NavSection, navItems, allPermissionsMap } from "./nav-data";
 import { NotificationBell } from "./warning-display";
-import { ListItem } from "./ui/list-item";
+import { ListItem } from "@/components/ui/ListItem";
 import { useSession } from "@/inapp/auth/session-context";
 import { Skeleton } from "./ui/skeleton";
 import { switchToPersonal } from "@/services/auth/switch";

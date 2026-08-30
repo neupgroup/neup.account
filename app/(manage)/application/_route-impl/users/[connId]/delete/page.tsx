@@ -28,7 +28,7 @@ export async function ApplicationUserDeletePage({ applicationId, connId, mode }:
   return (
     <div className="grid gap-6">
       <div>
-        <Button variant="ghost" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
+        <Button type="plain" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
           <FlowLink href={applicationHref(`/application/users/${connId}`, applicationId, { mode: 'root' })}>
             <ArrowLeft className="h-4 w-4" />
             Back

@@ -245,7 +245,7 @@ export function ApplicationCreateForm() {
 
       <div className="flex justify-end">
         <Button
-          type="submit"
+          htmlType="submit"
           disabled={isSubmitting || availability.status !== 'available' || !trimmedName || !normalizedIdPrefix}
         >
           {isSubmitting ? 'Creating...' : 'Create Application'}

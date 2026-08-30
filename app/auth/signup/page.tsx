@@ -180,7 +180,7 @@ function NameStep() {
                         <FormMessage />
                     </FormItem>
                 )} />
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                <Button htmlType="submit" className="w-full" disabled={isSubmitting}>
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Next
                 </Button>
@@ -462,7 +462,7 @@ function DemographicsStep() {
                     </FormItem>
                     )}
                 />
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                <Button htmlType="submit" className="w-full" disabled={isSubmitting}>
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Next
                 </Button>
@@ -545,7 +545,7 @@ function NationalityStep() {
                         </FormItem>
                     )}
                 />
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                <Button htmlType="submit" className="w-full" disabled={isSubmitting}>
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Next
                 </Button>
@@ -614,7 +614,7 @@ function ContactStep() {
                         <FormMessage />
                     </FormItem>
                 )} />
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                <Button htmlType="submit" className="w-full" disabled={isSubmitting}>
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Continue
                 </Button>
@@ -675,7 +675,7 @@ function OtpStep() {
                         <FormMessage />
                     </FormItem>
                 )} />
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                <Button htmlType="submit" className="w-full" disabled={isSubmitting}>
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Verify and Continue
                 </Button>
@@ -744,7 +744,7 @@ function NeupIdStep() {
                         <FormMessage />
                     </FormItem>
                 )} />
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                <Button htmlType="submit" className="w-full" disabled={isSubmitting}>
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Next
                 </Button>
@@ -810,7 +810,7 @@ function PasswordStep() {
                         <FormMessage />
                     </FormItem>
                 )} />
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                <Button htmlType="submit" className="w-full" disabled={isSubmitting}>
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Next
                 </Button>
@@ -903,7 +903,7 @@ function TermsStep() {
                         </FormItem>
                     )}
                 />
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                <Button htmlType="submit" className="w-full" disabled={isSubmitting}>
                     {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Create Account
                 </Button>

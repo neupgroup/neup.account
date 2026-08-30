@@ -349,7 +349,7 @@ function UsersListInner({ appId, roleId }: { appId: string; roleId?: string }) {
           </span>
           <div className="flex items-center gap-1">
             <Button
-              variant="outline"
+              type="outlined"
               size="icon"
               className="h-8 w-8"
               disabled={page <= 1 || loading}
@@ -383,7 +383,7 @@ function UsersListInner({ appId, roleId }: { appId: string; roleId?: string }) {
               )}
 
             <Button
-              variant="outline"
+              type="outlined"
               size="icon"
               className="h-8 w-8"
               disabled={page >= totalPages || loading}

@@ -134,9 +134,9 @@ export function RoleSelector({ appId, connectionId, roles, currentRoleIds, pendi
                     {role.description ? <p className="mt-1 text-xs text-muted-foreground">{role.description}</p> : null}
                   </div>
                   <div className="flex shrink-0 flex-wrap justify-end gap-2">
-                    {isPendingSelection ? <Badge variant="outline">Pending</Badge> : null}
+                    {isPendingSelection ? <Badge type="outlined">Pending</Badge> : null}
                     {isSelected ? <Badge>Selected</Badge> : null}
-                    {!isAssignable ? <Badge variant="secondary">Locked</Badge> : null}
+                    {!isAssignable ? <Badge type="tinted">Locked</Badge> : null}
                   </div>
                 </div>
               </button>

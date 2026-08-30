@@ -74,7 +74,7 @@ export function AuthzDefinitionEditor({
                   placeholder="Description"
                   disabled={disabled}
                 />
-                <Button type="button" variant="ghost" size="sm" onClick={() => removeRow(index)} disabled={disabled}>
+                <Button htmlType="button" type="plain" size="sm" onClick={() => removeRow(index)} disabled={disabled}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
@@ -84,7 +84,7 @@ export function AuthzDefinitionEditor({
       )}
 
       <div>
-        <Button type="button" variant="outline" onClick={addRow} disabled={disabled}>
+        <Button htmlType="button" type="outlined" onClick={addRow} disabled={disabled}>
           <Plus className="mr-2 h-4 w-4" />
           Add Row
         </Button>

@@ -35,13 +35,13 @@ function LinkOrDisabledButton({
 }) {
   if (!href || !enabled) {
     return (
-      <Button variant="outline" size="sm" disabled>
+      <Button type="outlined" size="sm" disabled>
         {disabledLabel}
       </Button>
     );
   }
   return (
-    <Button variant="outline" size="sm" asChild>
+    <Button type="outlined" size="sm" asChild>
       <Link href={href} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2">
         {enabledLabel}
         <ExternalLink className="h-4 w-4" />
@@ -97,7 +97,7 @@ export default async function ApplicationDetailPage({ params }: ApplicationDetai
                 </Badge>
               )}
               {details.isRootViewer && details.isInternal && (
-                <Badge variant="outline">Internal</Badge>
+                <Badge type="outlined">Internal</Badge>
               )}
             </div>
             <p className="text-muted-foreground">{details.description || 'No description available.'}</p>
@@ -114,7 +114,7 @@ export default async function ApplicationDetailPage({ params }: ApplicationDetai
             )}
           </div>
         </div>
-        <Button variant="outline" asChild className="shrink-0">
+        <Button type="outlined" asChild className="shrink-0">
           <FlowLink href="/data/appconnection">Back</FlowLink>
         </Button>
       </div>
@@ -335,7 +335,7 @@ export default async function ApplicationDetailPage({ params }: ApplicationDetai
             </CardHeader>
             <CardContent>
               <form action={deleteAction}>
-                <Button type="submit" variant="destructive">
+                <Button htmlType="submit" type="solid" convey="danger">
                   Delete Application
                 </Button>
               </form>

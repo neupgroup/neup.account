@@ -224,7 +224,11 @@ export function RequestActionForm({ request }: Props) {
 
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant={request.type === 'accountDeletion' ? 'outline' : 'destructive'} disabled={isSubmitting}>
+          <Button
+            type={request.type === 'accountDeletion' ? 'outlined' : 'solid'}
+            convey={request.type === 'accountDeletion' ? 'none' : 'danger'}
+            disabled={isSubmitting}
+          >
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {denyLabel}
           </Button>

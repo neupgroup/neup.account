@@ -217,7 +217,7 @@ export function ApplicationManagementPanel({ application }: { application: Manag
                 <p>This is the only time the full key is shown.</p>
                 <div className="flex flex-wrap items-center gap-2">
                   <code className="rounded bg-muted px-2 py-1 text-xs break-all">{revealedSecret}</code>
-                  <Button type="button" variant="outline" size="sm" onClick={handleCopySecret}>
+                  <Button htmlType="button" type="outlined" size="sm" onClick={handleCopySecret}>
                     Copy
                   </Button>
                 </div>
@@ -225,7 +225,7 @@ export function ApplicationManagementPanel({ application }: { application: Manag
             </Alert>
           ) : null}
 
-          <Button type="button" onClick={handleGenerateSecret} disabled={pendingSection === 'secret'}>
+          <Button htmlType="button" onClick={handleGenerateSecret} disabled={pendingSection === 'secret'}>
             {pendingSection === 'secret' ? 'Saving...' : application.hasSecretKey ? 'Generate New Secret Key' : 'Generate Secret Key'}
           </Button>
         </CardContent>
@@ -250,7 +250,7 @@ export function ApplicationManagementPanel({ application }: { application: Manag
             ))}
           </div>
           <div className="flex justify-end">
-            <Button type="button" onClick={handleSaveAccess} disabled={pendingSection === 'access'}>
+            <Button htmlType="button" onClick={handleSaveAccess} disabled={pendingSection === 'access'}>
               {pendingSection === 'access' ? 'Saving...' : 'Save Access'}
             </Button>
           </div>
@@ -287,8 +287,8 @@ export function ApplicationManagementPanel({ application }: { application: Manag
                 />
                 <div className="flex justify-end">
                   <Button
-                    type="button"
-                    variant="ghost"
+                    htmlType="button"
+                    type="plain"
                     onClick={() => setPolicies((current) => current.filter((_, currentIndex) => currentIndex !== index))}
                   >
                     Remove
@@ -299,10 +299,10 @@ export function ApplicationManagementPanel({ application }: { application: Manag
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="outline" onClick={() => setPolicies((current) => [...current, { name: '', policy: '' }])}>
+            <Button htmlType="button" type="outlined" onClick={() => setPolicies((current) => [...current, { name: '', policy: '' }])}>
               Add Policy
             </Button>
-            <Button type="button" onClick={handleSavePolicies} disabled={pendingSection === 'policies'}>
+            <Button htmlType="button" onClick={handleSavePolicies} disabled={pendingSection === 'policies'}>
               {pendingSection === 'policies' ? 'Saving...' : 'Save Policies'}
             </Button>
           </div>
@@ -369,7 +369,7 @@ export function ApplicationManagementPanel({ application }: { application: Manag
           </div>
 
           <div className="flex justify-end">
-            <Button type="button" onClick={handleSaveEndpoints} disabled={pendingSection === 'endpoints'}>
+            <Button htmlType="button" onClick={handleSaveEndpoints} disabled={pendingSection === 'endpoints'}>
               {pendingSection === 'endpoints' ? 'Saving...' : 'Save Endpoints'}
             </Button>
           </div>
@@ -398,7 +398,7 @@ export function ApplicationManagementPanel({ application }: { application: Manag
             </p>
           </div>
           <div className="flex justify-end">
-            <Button type="button" onClick={handleSaveAuthzWebhook} disabled={pendingSection === 'authzWebhook'}>
+            <Button htmlType="button" onClick={handleSaveAuthzWebhook} disabled={pendingSection === 'authzWebhook'}>
               {pendingSection === 'authzWebhook' ? 'Saving...' : 'Save Webhook'}
             </Button>
           </div>

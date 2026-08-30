@@ -103,7 +103,7 @@ export default function RecoveryPhonePage() {
                         ) : phone ? (
                             <div className="flex items-center justify-between rounded-md border border-input bg-background p-3">
                                 <p className="font-mono text-sm">{phone}</p>
-                                <Button variant="ghost" size="icon" onClick={handleRemove} disabled={isSubmitting} className="h-8 w-8 text-muted-foreground hover:text-destructive">
+                                <Button type="plain" size="icon" onClick={handleRemove} disabled={isSubmitting} className="h-8 w-8 text-muted-foreground hover:text-destructive">
                                      {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                                 </Button>
                             </div>
@@ -123,7 +123,7 @@ export default function RecoveryPhonePage() {
                                             </FormItem>
                                         )}
                                     />
-                                    <Button type="submit" disabled={isSubmitting} size="icon" className="flex-shrink-0">
+                                    <Button htmlType="submit" disabled={isSubmitting} size="icon" className="flex-shrink-0">
                                         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
                                         <span className="sr-only">Add Phone Number</span>
                                     </Button>

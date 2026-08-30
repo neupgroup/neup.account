@@ -1,18 +1,10 @@
-import type {Metadata} from 'next';
+import type { Metadata } from 'next';
 import './globals.css';
 import 'nprogress/nprogress.css';
-import { Toaster } from "#/components/ui/toaster"
-import { GeolocationProvider } from '#/core/providers/geolocation';
-import { SessionProvider } from '@/inapp/auth/session-context';
-import { PageProgressBar } from '@/components/page-progress-bar';
-import { Suspense } from 'react';
-import { UrlErrorBanner } from '#/components/ui/url-error-banner';
-import { PersistentBacksTo } from '@/components/persistent-backs-to';
-import { HeaderV1 } from '@/components/layout/header.v1';
-import { getSiteLogoUrl } from '@/services/manage/site/logo';
-import { APP_NAME, DEFAULT_META_DESCRIPTION } from '#/core/metadata';
-import { AppTitleSync } from '@/components/app-title-sync';
+import { AppProviders } from '@/components/layout/AppProviders';
 import { checkSession } from '@/services/account/check';
+import RootLayout from '#/components/layout/RootLayout';
+import { APP_NAME, DEFAULT_META_DESCRIPTION } from '#/core/metadata';
 
 export const metadata: Metadata = {
   title: APP_NAME,
@@ -22,15 +14,8 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default async function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const [logoUrl, session] = await Promise.all([
-    getSiteLogoUrl(),
-    checkSession(),
-  ]);
+export default async function Layout({ children }: { children: React.ReactNode }) {
+  const session = await checkSession();
   const initialSession = session.valid
     ? {
         profileInfo: session.profileInfo,
@@ -48,21 +33,9 @@ export default async function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <GeolocationProvider>
-          <SessionProvider initialSession={initialSession}>
-            <AppTitleSync />
-            <PersistentBacksTo />
-            <PageProgressBar />
-            <div className="flex min-h-screen flex-col">
-              <HeaderV1 logoUrl={logoUrl} />
-              <main className="flex-1 pt-16">{children}</main>
-            </div>
-            <Toaster />
-            <Suspense>
-              <UrlErrorBanner />
-            </Suspense>
-          </SessionProvider>
-        </GeolocationProvider>
+        <AppProviders initialSession={initialSession}>
+          <RootLayout>{children}</RootLayout>
+        </AppProviders>
       </body>
     </html>
   );

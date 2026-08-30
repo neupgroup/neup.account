@@ -53,11 +53,11 @@ export function AccountActions({ account }: { account: StoredAccount }) {
         <div data-action-button="true">
             <span className="text-muted-foreground">&bull;</span>
             {!account.sid ? (
-                <Button variant="link" size="sm" onClick={handleRemove} disabled={isPending} className="p-0 h-auto ml-2 text-destructive">
+                <Button type="text" size="sm" onClick={handleRemove} disabled={isPending} className="p-0 h-auto ml-2 text-destructive">
                     {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Remove'}
                 </Button>
             ) : (
-                <Button variant="link" size="sm" onClick={handleSignOut} disabled={isPending} className="p-0 h-auto ml-2 text-muted-foreground hover:text-foreground">
+                <Button type="text" size="sm" onClick={handleSignOut} disabled={isPending} className="p-0 h-auto ml-2 text-muted-foreground hover:text-foreground">
                     {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Sign Out'}
                 </Button>
             )}
@@ -146,7 +146,7 @@ export function StartPageComponent({ accounts, hasActiveSession, appName, firstP
         <CardContent>
           <div className="space-y-4">
             {showError && (
-              <Alert variant="destructive">
+              <Alert type="solid" convey="danger">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertTitle>Authentication Error</AlertTitle>
                 <AlertDescription>

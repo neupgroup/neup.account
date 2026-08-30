@@ -355,7 +355,7 @@ export function IndividualProfileForm({ accountId }: { accountId: string }) {
                             <Label>Associated NeupIDs</Label>
                              <div className="flex flex-wrap gap-2">
                                 {neupIds.map((id) => (
-                                    <Badge key={id} variant="secondary">{id}</Badge>
+                                    <Badge key={id} type="tinted">{id}</Badge>
                                 ))}
                             </div>
                         </div>
@@ -394,7 +394,7 @@ export function IndividualProfileForm({ accountId }: { accountId: string }) {
                 </Card>
 
                  <div className="flex justify-end">
-                    <Button type="submit" disabled={form.formState.isSubmitting}>
+                    <Button htmlType="submit" disabled={form.formState.isSubmitting}>
                         {form.formState.isSubmitting ? "Saving..." : "Save Changes"}
                     </Button>
                 </div>

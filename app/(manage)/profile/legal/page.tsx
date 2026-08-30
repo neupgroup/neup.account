@@ -233,7 +233,7 @@ export default function LegalPage() {
                             </CardContent>
                         </Card>
                         <div className="flex justify-end">
-                            <Button type="submit" disabled={brandForm.formState.isSubmitting}>
+                            <Button htmlType="submit" disabled={brandForm.formState.isSubmitting}>
                                 {brandForm.formState.isSubmitting ? "Saving..." : "Save Changes"}
                             </Button>
                         </div>
@@ -254,7 +254,7 @@ export default function LegalPage() {
                             </CardContent>
                         </Card>
                         <div className="flex justify-end">
-                            <Button type="submit" disabled={individualForm.formState.isSubmitting}>
+                            <Button htmlType="submit" disabled={individualForm.formState.isSubmitting}>
                                 {individualForm.formState.isSubmitting ? "Saving..." : "Save Changes"}
                             </Button>
                         </div>

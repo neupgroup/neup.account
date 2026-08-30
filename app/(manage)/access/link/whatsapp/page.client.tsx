@@ -115,7 +115,7 @@ export default function LinkWhatsAppPageClient({
                                                             value={field.value ?? ""}
                                                         />
                                                     </FormControl>
-                                                    <Button type="submit" className="absolute right-1 top-1/2 h-8 -translate-y-1/2 w-24" disabled={isSubmitting}>
+                                                    <Button htmlType="submit" className="absolute right-1 top-1/2 h-8 -translate-y-1/2 w-24" disabled={isSubmitting}>
                                                         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Send Code</>}
                                                     </Button>
                                                 </div>
@@ -150,7 +150,7 @@ export default function LinkWhatsAppPageClient({
                                                             maxLength={6}
                                                         />
                                                     </FormControl>
-                                                     <Button type="submit" className="absolute right-1 top-1/2 h-8 -translate-y-1/2 w-28" disabled={isSubmitting}>
+                                                     <Button htmlType="submit" className="absolute right-1 top-1/2 h-8 -translate-y-1/2 w-28" disabled={isSubmitting}>
                                                         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Link WhatsApp</>}
                                                     </Button>
                                                 </div>
@@ -158,7 +158,7 @@ export default function LinkWhatsAppPageClient({
                                             </FormItem>
                                         )}
                                     />
-                                    <Button variant="link" size="sm" className="p-0 h-auto" type="button" onClick={() => setStep(1)}>
+                                    <Button type="text" size="sm" className="p-0 h-auto" htmlType="button" onClick={() => setStep(1)}>
                                         Use a different number
                                     </Button>
                                 </form>

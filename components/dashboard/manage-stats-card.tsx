@@ -3,7 +3,7 @@ import { checkPermissions } from '@/services/user';
 import { getUserStats } from '@/services/manage/accounts';
 import { Card, CardContent } from '#/components/ui/card';
 import { Users, UserCheck, UserPlus, ShieldCheck } from '@/components/icons';
-import { SecondaryHeader } from '#/components/ui/secondary-header';
+import { SecondaryHeader } from '@/components/ui/secondary-header';
 import Link from 'next/link';
 
 const componentPermissions = [

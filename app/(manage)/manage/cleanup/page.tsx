@@ -23,7 +23,7 @@ export default async function AccountCleanupPage() {
             </div>
 
             {error ? (
-                <Alert variant="destructive">
+                <Alert type="solid" convey="danger">
                     <Ban className="h-4 w-4" />
                     <AlertTitle>Permission Denied</AlertTitle>
                     <AlertDescription>

@@ -106,7 +106,7 @@ export default async function AuthSignPage({ searchParams }: SignPageProps) {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-3 mt-6">
-              <Button asChild variant="outline" className="w-full">
+              <Button asChild type="outlined" className="w-full">
                 <a href={cancelUrl}>Cancel</a>
               </Button>
               <Button asChild className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
@@ -144,7 +144,7 @@ export default async function AuthSignPage({ searchParams }: SignPageProps) {
               ))}
             </ul>
             <div className="grid grid-cols-2 gap-3 mt-2">
-              <Button asChild variant="outline" className="w-full">
+              <Button asChild type="outlined" className="w-full">
                 <FlowLink href={accessBackUrl}>Back</FlowLink>
               </Button>
               <Button asChild className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
@@ -194,7 +194,7 @@ export default async function AuthSignPage({ searchParams }: SignPageProps) {
               )}
             </div>
             <div className="grid grid-cols-2 gap-3 mt-2">
-              <Button asChild variant="outline" className="w-full">
+              <Button asChild type="outlined" className="w-full">
                 <FlowLink href={termsBackUrl}>Back</FlowLink>
               </Button>
               <Button asChild className="w-full bg-accent text-accent-foreground hover:bg-accent/90">

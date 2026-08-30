@@ -130,7 +130,7 @@ export default function NeupidPage() {
                                 <Label>Associated NeupIDs</Label>
                                 <div className="flex flex-wrap gap-2">
                                     {neupIds.map((id) => (
-                                        <Badge key={id} variant="secondary">{id}</Badge>
+                                        <Badge key={id} type="tinted">{id}</Badge>
                                     ))}
                                 </div>
                             </div>
@@ -153,7 +153,7 @@ export default function NeupidPage() {
                         </CardContent>
                     </Card>
                     <div className="flex justify-end">
-                        <Button type="submit" disabled={form.formState.isSubmitting || !canRequestNeupId}>
+                        <Button htmlType="submit" disabled={form.formState.isSubmitting || !canRequestNeupId}>
                             {form.formState.isSubmitting ? "Sending Request..." : "Request NeupID"}
                         </Button>
                     </div>

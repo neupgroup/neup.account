@@ -70,7 +70,7 @@ export function CleanupClient({ initialAccounts }: { initialAccounts: ExpiredGue
     return (
         <div className="grid gap-6">
             {/* Danger warning */}
-            <Alert variant="destructive">
+            <Alert type="solid" convey="danger">
                 <ShieldAlert className="h-4 w-4" />
                 <AlertTitle>Irreversible action</AlertTitle>
                 <AlertDescription>
@@ -88,13 +88,13 @@ export function CleanupClient({ initialAccounts }: { initialAccounts: ExpiredGue
                             : `${accounts.length} expired guest account${accounts.length !== 1 ? 's' : ''} found`}
                     </span>
                     {accounts.length > 0 && (
-                        <Badge variant="destructive">{accounts.length}</Badge>
+                        <Badge type="solid" convey="danger">{accounts.length}</Badge>
                     )}
                 </div>
 
                 <div className="flex items-center gap-2">
                     <Button
-                        variant="outline"
+                        type="outlined"
                         size="sm"
                         onClick={refresh}
                         disabled={isPending}
@@ -106,7 +106,7 @@ export function CleanupClient({ initialAccounts }: { initialAccounts: ExpiredGue
                     {accounts.length > 0 && (
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
-                                <Button variant="destructive" size="sm" disabled={isPending}>
+                                <Button type="solid" convey="danger" size="sm" disabled={isPending}>
                                     <Trash2 className="h-3.5 w-3.5 mr-1.5" />
                                     Delete All ({accounts.length})
                                 </Button>
@@ -184,14 +184,14 @@ export function CleanupClient({ initialAccounts }: { initialAccounts: ExpiredGue
 
                                 {/* Status + delete */}
                                 <div className="flex items-center gap-3 shrink-0">
-                                    <Badge variant="outline" className="text-xs text-destructive border-destructive/40">
+                                    <Badge type="outlined" className="text-xs text-destructive border-destructive/40">
                                         expired
                                     </Badge>
 
                                     <AlertDialog>
                                         <AlertDialogTrigger asChild>
                                             <Button
-                                                variant="ghost"
+                                                type="plain"
                                                 size="icon"
                                                 className="h-8 w-8 text-muted-foreground hover:text-destructive"
                                                 disabled={isPending}

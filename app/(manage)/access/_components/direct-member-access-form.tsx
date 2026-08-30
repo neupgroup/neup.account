@@ -99,7 +99,7 @@ export function DirectMemberAccessForm({
               Set the roles this member should hold on the selected account.
             </p>
           </div>
-          <Badge variant="outline">
+          <Badge type="outlined">
             {selectedRoleIds.size} role{selectedRoleIds.size !== 1 ? "s" : ""}
           </Badge>
         </div>
@@ -130,7 +130,7 @@ export function DirectMemberAccessForm({
                         <p className="text-xs text-muted-foreground">{role.description}</p>
                       )}
                     </div>
-                    {checked && <Badge variant="secondary">Selected</Badge>}
+                    {checked && <Badge type="tinted">Selected</Badge>}
                   </label>
                 );
               })
@@ -146,7 +146,7 @@ export function DirectMemberAccessForm({
           <p className="text-sm text-muted-foreground">
             Saving replaces direct role assignments on this selected account. Portfolio asset roles are unchanged.
           </p>
-          <Button type="button" onClick={handleSave} disabled={isPending}>
+          <Button htmlType="button" onClick={handleSave} disabled={isPending}>
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Save Access
           </Button>

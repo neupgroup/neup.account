@@ -102,7 +102,7 @@ function AccountRow({ acc, isFirst, isLast }: { acc: AccountBasics; isFirst: boo
                 </div>
 
                 <div className="flex flex-col items-end gap-1 shrink-0">
-                    <Badge variant="outline" className="text-xs capitalize">
+                    <Badge type="outlined" className="text-xs capitalize">
                         {acc.accountType}
                     </Badge>
                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -216,7 +216,7 @@ function AccountsPageInner() {
         return (
             <div className="grid gap-8">
                 <PrimaryHeader title="Accounts" description="View and manage all accounts in the system." />
-                <Alert variant="destructive">
+                <Alert type="solid" convey="danger">
                     <Ban className="h-4 w-4" />
                     <AlertTitle>Permission Denied</AlertTitle>
                     <AlertDescription>You do not have permission to view account management.</AlertDescription>
@@ -309,7 +309,7 @@ function AccountsPageInner() {
                     </span>
                     <div className="flex items-center gap-1">
                         <Button
-                            variant="outline"
+                            type="outlined"
                             size="icon"
                             className="h-8 w-8"
                             disabled={page <= 1 || loading}
@@ -348,7 +348,7 @@ function AccountsPageInner() {
                             )}
 
                         <Button
-                            variant="outline"
+                            type="outlined"
                             size="icon"
                             className="h-8 w-8"
                             disabled={page >= totalPages || loading}

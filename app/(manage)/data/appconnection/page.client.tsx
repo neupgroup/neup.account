@@ -27,7 +27,7 @@ export default async function ApplicationsPage() {
       </div>
 
       {error && (
-        <Alert variant="destructive">
+        <Alert type="solid" convey="danger">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Failed to load</AlertTitle>
           <AlertDescription>

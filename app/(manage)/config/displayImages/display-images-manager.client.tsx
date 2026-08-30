@@ -166,7 +166,7 @@ export function DisplayImagesManager({ initialResources, canAdd, canDelete, canU
           </div>
         </CardContent>
         <CardFooter>
-          <Button type="button" disabled={!canAdd || isPending} onClick={handleAdd}>
+          <Button htmlType="button" disabled={!canAdd || isPending} onClick={handleAdd}>
             {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
             Add Resource
           </Button>
@@ -205,8 +205,8 @@ export function DisplayImagesManager({ initialResources, canAdd, canDelete, canU
                   />
                   <div className="flex gap-2">
                     <Button
-                      type="button"
-                      variant="secondary"
+                      htmlType="button"
+                      type="tinted"
                       disabled={!canUpdate || isPending}
                       onClick={() => handleUpdateTitle(item.id)}
                     >
@@ -214,8 +214,8 @@ export function DisplayImagesManager({ initialResources, canAdd, canDelete, canU
                       Save Title
                     </Button>
                     <Button
-                      type="button"
-                      variant="destructive"
+                      htmlType="button"
+                      type="solid" convey="danger"
                       disabled={!canDelete || isPending}
                       onClick={() => handleDelete(item.id)}
                     >

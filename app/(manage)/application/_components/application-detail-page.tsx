@@ -126,7 +126,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
   return (
     <div className="grid gap-6">
       <div>
-        <Button variant="ghost" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
+        <Button type="plain" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
           <FlowLink href={mode === 'root' ? '/application?mode=root' : '/application'}>
             <ArrowLeft className="h-4 w-4" />
             Back
@@ -148,7 +148,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
                 </Badge>
               )}
               {details.isInternal && (
-                <Badge variant="outline">Internal</Badge>
+                <Badge type="outlined">Internal</Badge>
               )}
             </div>
             <p className="text-muted-foreground">{details.description || 'No description available.'}</p>
@@ -227,7 +227,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
           </CardHeader>
           <CardContent>
             <form action={deleteAction}>
-              <Button type="submit" variant="destructive">
+              <Button htmlType="submit" type="solid" convey="danger">
                 Delete Application
               </Button>
             </form>

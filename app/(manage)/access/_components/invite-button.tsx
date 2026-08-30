@@ -46,7 +46,7 @@ export function InviteButton({ displayName, confirmDescription, action, redirect
     <div className="flex flex-col gap-1">
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant="default" size="sm" disabled={isPending} className="gap-1.5">
+          <Button type="solid" size="sm" disabled={isPending} className="gap-1.5">
             {isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (

@@ -1,13 +1,12 @@
 'use client';
 
 import { permission } from '@/.neup/logica/permission';
-import { FlowLink } from '#/components/ui/flow-link'
+import { FlowLink } from '@/components/flow-link'
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { cn } from "#/core/utils"
-import { buttonVariants } from "#/components/ui/button"
+import { NavButton } from "#/components/ui/navbutton"
 import { type NavSection, navItems, allPermissionsMap } from "./nav-data"
-import { Skeleton } from "./ui/skeleton";
+import { Skeleton } from "#/components/ui/skeleton";
 import { useSession } from "@/inapp/auth/session-context";
 import { switchToPersonal } from "@/services/auth/switch";
 import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/inapp/permissions/profile-permissions";
@@ -191,26 +190,28 @@ export function DashboardNav() {
                         {section.items.map((item) => {
                             if (item.href === '__switch_back__') {
                                 return (
-                                    <button
+                                    <NavButton
                                         key="switch-back"
                                         onClick={handleSwitchBack}
                                         disabled={isSwitching}
-                                        className={cn(buttonVariants({ variant: "ghost", size: "default" }), "justify-start text-base md:text-sm w-full")}
+                                        className="w-full justify-start text-base md:text-sm"
+                                        alignment="left"
                                     >
                                         {isSwitching ? 'Switching…' : item.label}
-                                    </button>
+                                    </NavButton>
                                 );
                             }
                             const isActive = item.href === activeHref;
                             return (
-                                <FlowLink
+                                <NavButton
                                     key={item.href}
-                                    href={item.href}
-                                    data-active={isActive}
-                                    className={cn(buttonVariants({ variant: "ghost", size: "default" }), "justify-start text-base md:text-sm")}
+                                    active={isActive}
+                                    asChild
+                                    className="justify-start text-base md:text-sm"
+                                    alignment="left"
                                 >
-                                    {item.label}
-                                </FlowLink>
+                                    <FlowLink href={item.href}>{item.label}</FlowLink>
+                                </NavButton>
                             );
                         })}
                     </div>

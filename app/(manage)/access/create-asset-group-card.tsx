@@ -110,7 +110,7 @@ export function CreateAssetGroupCard({ variant = 'card' }: { variant?: 'card' | 
           />
 
           <DialogFooter>
-            <Button type="submit" disabled={isPending}>
+            <Button htmlType="submit" disabled={isPending}>
               {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Create Portfolio'}
             </Button>
           </DialogFooter>

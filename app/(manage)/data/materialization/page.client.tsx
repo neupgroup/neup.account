@@ -147,7 +147,7 @@ export default function MaterializationPage() {
                         )}
                     />
                     {isRequested ? (
-                        <Alert variant="default" className="border-primary text-primary [&>svg]:text-primary">
+                        <Alert type="solid" className="border-primary text-primary [&>svg]:text-primary">
                             <AlertTitle>Request Scheduled</AlertTitle>
                             <AlertDescription>
                                 Your request has been successfully submitted for admin review after the specified inactivity period.
@@ -170,7 +170,7 @@ export default function MaterializationPage() {
                     )}
                 </CardContent>
                 <CardFooter>
-                    <Button type="submit" disabled={isPending || isRequested}>
+                    <Button htmlType="submit" disabled={isPending || isRequested}>
                         {isPending ? (<Loader2 className="mr-2 h-4 w-4 animate-spin" />) : (<CalendarClock className="mr-2 h-4 w-4" />)}
                         {isRequested ? "Request Scheduled" : showPasswordPrompt ? "Confirm Schedule" : "Schedule Deletion"}
                     </Button>

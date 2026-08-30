@@ -116,7 +116,7 @@ export function RoleAssignForm({
         )}
 
         <Button
-          type="submit"
+          htmlType="submit"
           size="sm"
           className="shrink-0 gap-1.5"
           disabled={isPending}

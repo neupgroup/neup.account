@@ -1,6 +1,6 @@
 import { ShieldAlert } from 'lucide-react';
 import { Button } from '#/components/ui/button';
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 
 export default function Forbidden() {
   return (

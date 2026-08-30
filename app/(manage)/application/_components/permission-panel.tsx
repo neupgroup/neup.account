@@ -235,17 +235,17 @@ export function PermissionPanel({
                   ) : null}
                   <div className="mt-1 flex flex-wrap gap-1">
                     {permission.scopeFor.map((label) => (
-                      <Badge key={label} variant="outline" className="text-xs">
+                      <Badge key={label} type="outlined" className="text-xs">
                         {label}
                       </Badge>
                     ))}
                     {permission.scopeLevel.map((label) => (
-                      <Badge key={label} variant="outline" className="text-xs">
+                      <Badge key={label} type="outlined" className="text-xs">
                         {label}
                       </Badge>
                     ))}
                     {permission.status ? (
-                      <Badge variant="outline" className="text-xs">
+                      <Badge type="outlined" className="text-xs">
                         status:{permission.status}
                       </Badge>
                     ) : null}
@@ -293,9 +293,9 @@ export function PermissionPanel({
           </div>
           <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="outline">Cancel</Button>
+              <Button htmlType="button" type="outlined">Cancel</Button>
             </DialogClose>
-            <Button type="button" onClick={handleAdd} disabled={addPending || !addName.trim() || !isValidName(addName)}>
+            <Button htmlType="button" onClick={handleAdd} disabled={addPending || !addName.trim() || !isValidName(addName)}>
               {addPending ? 'Adding...' : 'Add'}
             </Button>
           </DialogFooter>

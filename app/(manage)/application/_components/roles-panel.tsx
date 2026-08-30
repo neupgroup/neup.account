@@ -98,9 +98,9 @@ export function RolesPanel({ appId, canManage, canResetPush, initialRoles, hasWe
                   <div className="flex items-center gap-2">
                     <p className="truncate text-base font-medium leading-6">{role.name}</p>
                     {role.scopeFor.map((label) => (
-                      <Badge key={label} variant="outline" className="text-xs">{label}</Badge>
+                      <Badge key={label} type="outlined" className="text-xs">{label}</Badge>
                     ))}
-                    <Badge variant="outline" className="text-xs">{role.scopeLevel}</Badge>
+                    <Badge type="outlined" className="text-xs">{role.scopeLevel}</Badge>
                     {defaultRoleId === role.id ? (
                       <Badge className="text-xs">Default</Badge>
                     ) : null}
@@ -129,7 +129,7 @@ export function RolesPanel({ appId, canManage, canResetPush, initialRoles, hasWe
           for this app to the webhook as individual <code className="rounded bg-muted px-1 py-0.5 text-xs">insert</code> operations.
         </p>
         {canManage ? (
-          <Button type="button" onClick={handlePush} disabled={pushPending || !hasWebhook}>
+          <Button htmlType="button" onClick={handlePush} disabled={pushPending || !hasWebhook}>
             {pushPending ? 'Pushing...' : 'Push All to App'}
           </Button>
         ) : null}
@@ -144,7 +144,7 @@ export function RolesPanel({ appId, canManage, canResetPush, initialRoles, hasWe
           <p className="text-sm text-muted-foreground">
             Use this if your client’s synced authz data is corrupted and you need to re-sync from scratch.
           </p>
-          <Button type="button" variant="outline" onClick={handleClearPushStatus} disabled={clearPending}>
+          <Button htmlType="button" type="outlined" onClick={handleClearPushStatus} disabled={clearPending}>
             {clearPending ? 'Clearing...' : 'Clear Push Status'}
           </Button>
         </div>

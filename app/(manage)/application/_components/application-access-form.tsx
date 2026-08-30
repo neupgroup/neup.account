@@ -97,7 +97,7 @@ export function ApplicationAccessForm({ mode, initialAppId = '', initialPermissi
         <p className="text-xs text-muted-foreground">Use comma or new line separated permissions.</p>
       </div>
 
-      <Button type="submit" disabled={isSubmitting} className="w-full">
+      <Button htmlType="submit" disabled={isSubmitting} className="w-full">
         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : title}
       </Button>
     </form>

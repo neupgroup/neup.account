@@ -430,7 +430,7 @@ export default function DisplayInfoPage() {
                             </CardContent>
                             {photoFormState.isDirty ? (
                                 <CardFooter className="border-t pt-4 mt-4 flex justify-start">
-                                    <Button type="submit" disabled={isPhotoPending}>
+                                    <Button htmlType="submit" disabled={isPhotoPending}>
                                         {isPhotoPending ? <Loader2 className="animate-spin" /> : "Save"}
                                     </Button>
                                 </CardFooter>
@@ -464,7 +464,7 @@ export default function DisplayInfoPage() {
                                                     {displayNameOptions.map((option) => (
                                                         <Button
                                                             key={`${option.label}:${option.value}`}
-                                                            type="button"
+                                                            htmlType="button"
                                                             variant={field.value === option.value ? "default" : "secondary"}
                                                             onClick={() => {
                                                                 field.onChange(option.value);
@@ -478,7 +478,7 @@ export default function DisplayInfoPage() {
                                                         </Button>
                                                     ))}
                                                     <Button
-                                                        type="button"
+                                                        htmlType="button"
                                                         variant={field.value === 'custom' ? "default" : "secondary"}
                                                         onClick={() => field.onChange('custom')}
                                                         className="relative"
@@ -510,7 +510,7 @@ export default function DisplayInfoPage() {
                                 )}
                             </CardContent>
                             <CardFooter className="border-t pt-4 mt-4 flex justify-start">
-                                 <Button type="submit" disabled={isNamePending || !nameForm.formState.isDirty || selectedDisplayName !== 'custom'}>
+                                 <Button htmlType="submit" disabled={isNamePending || !nameForm.formState.isDirty || selectedDisplayName !== 'custom'}>
                                     {isNamePending ? <Loader2 className="animate-spin" /> : "Save"}
                                 </Button>
                             </CardFooter>

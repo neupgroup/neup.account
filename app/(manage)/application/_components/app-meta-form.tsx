@@ -138,7 +138,7 @@ export function AppMetaForm({ appId, initialName, initialDescription, initialIco
           </CardContent>
 
           <CardFooter>
-            <Button type="submit" disabled={isPending}>
+            <Button htmlType="submit" disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Save Changes
             </Button>

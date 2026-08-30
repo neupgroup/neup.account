@@ -81,12 +81,12 @@ export default function DeactivateAccountPage() {
             </CardContent>
             <CardFooter>
                  {!showPasswordPrompt ? (
-                    <Button type="button" onClick={() => setShowPasswordPrompt(true)} variant="secondary">
+                    <Button htmlType="button" onClick={() => setShowPasswordPrompt(true)} type="tinted">
                         <PowerOff className="mr-2 h-4 w-4" />
                         Deactivate Account
                     </Button>
                 ) : (
-                    <Button type="submit" variant="secondary" disabled={isPending}>
+                    <Button htmlType="submit" type="tinted" disabled={isPending}>
                         {isPending ? (<Loader2 className="mr-2 h-4 w-4 animate-spin" />) : (<PowerOff className="mr-2 h-4 w-4" />)}
                         Confirm Deactivation
                     </Button>

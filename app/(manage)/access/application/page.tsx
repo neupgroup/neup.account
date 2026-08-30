@@ -118,7 +118,7 @@ async function SelectedApplicationPage({
                   {app.myRoles.map((role) => (
                     <Badge
                       key={role.roleId}
-                      variant="secondary"
+                      type="tinted"
                       className="px-1.5 py-0 text-xs font-mono"
                     >
                       {role.roleId}
@@ -140,7 +140,7 @@ async function SelectedApplicationPage({
                 </span>
               </div>
               {app.grantees.length > 0 ? (
-                <Badge variant="secondary" className="text-xs font-normal">
+                <Badge type="tinted" className="text-xs font-normal">
                   {app.grantees.length}
                 </Badge>
               ) : null}
@@ -163,7 +163,7 @@ async function SelectedApplicationPage({
                       {grantee.roles.map((role) => (
                         <Badge
                           key={role}
-                          variant="outline"
+                          type="outlined"
                           className="px-1.5 py-0 text-xs font-mono"
                         >
                           {role}
@@ -295,7 +295,7 @@ async function ApplicationsOverviewPage({
                         {app.myRoles.map((role) => (
                           <Badge
                             key={role.roleId}
-                            variant="secondary"
+                            type="tinted"
                             className="px-1.5 py-0 text-xs font-mono"
                           >
                             {role.roleId}

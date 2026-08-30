@@ -74,7 +74,7 @@ export function NeupProManager({ accountId }: { accountId: string }) {
                 <TertiaryHeader title="Current Status" />
                 <Card>
                     <CardHeader>
-                         <Alert variant="default" className="border-primary/50 text-primary [&>svg]:text-primary">
+                         <Alert type="solid" className="border-primary/50 text-primary [&>svg]:text-primary">
                             <Gem className="h-4 w-4 !text-primary" />
                             <AlertTitle>Neup.Pro is Active</AlertTitle>
                             <AlertDescription>
@@ -94,7 +94,7 @@ export function NeupProManager({ accountId }: { accountId: string }) {
                                         <FormMessage />
                                     </FormItem>
                                 )} />
-                                 <Button type="submit" variant="destructive" disabled={isPending}>
+                                 <Button htmlType="submit" type="solid" convey="danger" disabled={isPending}>
                                     {isPending ? <Loader2 className="animate-spin mr-2" /> : null}
                                     Deactivate Neup.Pro
                                 </Button>
@@ -122,7 +122,7 @@ export function NeupProManager({ accountId }: { accountId: string }) {
                             )}/>
                         </CardContent>
                         <CardFooter>
-                            <Button type="submit" disabled={isPending}>
+                            <Button htmlType="submit" disabled={isPending}>
                                 {isPending ? <Loader2 className="animate-spin mr-2"/> : <Gem className="mr-2"/>}
                                 Activate Neup.Pro
                             </Button>

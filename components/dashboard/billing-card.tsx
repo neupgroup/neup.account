@@ -3,10 +3,10 @@
 
 import { Card, CardContent } from '#/components/ui/card';
 import { Wallet, Gem } from '@/components/icons';
-import { ListItem } from '../ui/list-item';
-import { SecondaryHeader } from '../ui/secondary-header';
+import { ListItem } from '@/components/ui/ListItem';
+import { SecondaryHeader } from '@/components/ui/secondary-header';
 import { useEffect, useState } from 'react';
-import { Skeleton } from '../ui/skeleton';
+import { Skeleton } from '#/components/ui/skeleton';
 
 function BillingCardSkeleton() {
     return (

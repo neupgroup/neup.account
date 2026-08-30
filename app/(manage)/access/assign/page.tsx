@@ -165,7 +165,7 @@ function RoleCard({
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-base font-semibold capitalize">{platformLabel}</span>
             {contextName && (
-              <Badge variant="secondary" className="text-xs font-normal">{contextName}</Badge>
+              <Badge type="tinted" className="text-xs font-normal">{contextName}</Badge>
             )}
           </div>
         )}
@@ -388,7 +388,7 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
               }
               action={cancelPortfolioInvitation.bind(null, portfolio, accountId)}
               redirectTo={`/access/assign?account=${accountId}&portfolio=${portfolio}`}
-              variant="outline"
+              type="outlined"
             />
             {isExpired && (
               <InviteButton
@@ -615,7 +615,7 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
                 confirmDescription={`This will cancel the pending access invitation sent to ${detail.displayName}. They will no longer be able to accept it.`}
                 action={cancelDirectInvitation.bind(null, accountId, selectedOwnerContext)}
                 redirectTo={appendAccessContext('/access/team')}
-                variant="outline"
+                type="outlined"
               />
             ) : (
               <RemoveMemberButton

@@ -38,7 +38,7 @@ async function SearchResults({ query }: { query: string }) {
                                             <p className="font-semibold group-hover:underline">{item.title}</p>
                                             <p className="text-sm text-muted-foreground truncate">{item.description}</p>
                                         </div>
-                                        <Badge variant="outline">{item.type}</Badge>
+                                        <Badge type="outlined">{item.type}</Badge>
                                     </FlowLink>
                                 </CardContent>
                             </Card>

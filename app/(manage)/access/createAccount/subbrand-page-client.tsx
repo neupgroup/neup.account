@@ -167,7 +167,7 @@ export default function CreateSubbrandPageClient({
                             <FormField control={form.control} name="location" render={({ field }) => ( <FormItem><FormLabel>Location (Optional)</FormLabel><FormControl><Input placeholder="123 Main St, Anytown" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem> )} />
                         </CardContent>
                         <CardFooter>
-                            <Button type="submit" disabled={isSubmitting || neupIdStatus !== 'available'}>
+                            <Button htmlType="submit" disabled={isSubmitting || neupIdStatus !== 'available'}>
                                 {isSubmitting ? "Creating Subbrand..." : "Create Subbrand"}
                             </Button>
                         </CardFooter>

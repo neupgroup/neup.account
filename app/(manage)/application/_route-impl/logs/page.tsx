@@ -121,14 +121,14 @@ export async function ApplicationLogsPage({
           <div className="flex justify-start">
             {canClearDevLogs ? (
               <form action={clearLogsAction}>
-                <Button type="submit" variant="destructive">
+                <Button htmlType="submit" type="solid" convey="danger">
                   Clear All Logs
                 </Button>
               </form>
             ) : null}
           </div>
           <div className="flex items-center justify-end gap-2">
-            <Button variant="outline" size="sm" asChild disabled={logPage.page <= 1}>
+            <Button type="outlined" size="sm" asChild disabled={logPage.page <= 1}>
               <FlowLink href={applicationHref('/application/logs', applicationId, { ...(mode ? { mode } : {}), page: String(logPage.page - 1), pageSize: String(logPage.pageSize) })}>
                 Previous
               </FlowLink>
@@ -136,7 +136,7 @@ export async function ApplicationLogsPage({
             <span className="text-sm text-muted-foreground">
               Page {logPage.page} of {logPage.totalPages}
             </span>
-            <Button variant="outline" size="sm" asChild disabled={logPage.page >= logPage.totalPages}>
+            <Button type="outlined" size="sm" asChild disabled={logPage.page >= logPage.totalPages}>
               <FlowLink href={applicationHref('/application/logs', applicationId, { ...(mode ? { mode } : {}), page: String(logPage.page + 1), pageSize: String(logPage.pageSize) })}>
                 Next
               </FlowLink>

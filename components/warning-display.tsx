@@ -6,7 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { Button } from '#/components/ui/button';
 import { AlertTriangle, X, Bell } from '@/components/icons';
 import { cn } from '#/core/utils';
-import { Skeleton } from './ui/skeleton';
+import { Skeleton } from '#/components/ui/skeleton';
 import { usePathname } from 'next/navigation';
 import { cva, type VariantProps } from 'class-variance-authority';
 import type { Notification as NotificationType } from '@/services/notifications';
@@ -110,7 +110,7 @@ export function WarningDisplay() {
                         </div>
                         {warning.persistence === 'dismissable' && (
                              <Button
-                                variant="ghost"
+                                type="plain"
                                 size="icon"
                                 className="h-6 w-6 flex-shrink-0"
                                 onClick={() => handleDismiss(warning.id)}

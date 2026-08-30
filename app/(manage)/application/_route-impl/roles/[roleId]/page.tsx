@@ -73,7 +73,7 @@ export async function RoleDetailsPage({
           <BackButton href={applicationHref('/application/roles', applicationId, mode ? { mode } : undefined)} />
           <PrimaryHeader title="Role Details" description={`Manage role permissions for ${details.name}.`} />
         </div>
-        <Alert variant="destructive">
+        <Alert type="solid" convey="danger">
           <ShieldAlert className="h-4 w-4" />
           <AlertTitle>Access Denied</AlertTitle>
           <AlertDescription>You do not have permission to view application roles.</AlertDescription>

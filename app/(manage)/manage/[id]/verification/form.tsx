@@ -138,7 +138,7 @@ export function VerificationManager({ accountId }: { accountId: string }) {
 
     if (isSelf) {
         return (
-            <Alert variant="destructive">
+            <Alert type="solid" convey="danger">
                 <AlertTitle>Action Not Permitted</AlertTitle>
                 <AlertDescription>
                     Administrators cannot manage their own verification status.
@@ -153,7 +153,7 @@ export function VerificationManager({ accountId }: { accountId: string }) {
                 <TertiaryHeader title="Verification Status" />
                 <Card>
                     <CardHeader>
-                         <Alert variant="default" className="border-green-500/50 bg-green-500/10 text-green-700">
+                         <Alert type="solid" className="border-green-500/50 bg-green-500/10 text-green-700">
                             <CheckCircle2 className="h-4 w-4 !text-green-500" />
                             <AlertTitle>Account Verified</AlertTitle>
                             <AlertDescription>
@@ -173,7 +173,7 @@ export function VerificationManager({ accountId }: { accountId: string }) {
                                         <FormMessage />
                                     </FormItem>
                                 )} />
-                                 <Button type="submit" variant="destructive" disabled={isPending}>
+                                 <Button htmlType="submit" type="solid" convey="danger" disabled={isPending}>
                                     {isPending ? <Loader2 className="animate-spin mr-2" /> : <XCircle className="mr-2" />}
                                     Revoke Verification
                                  </Button>
@@ -194,7 +194,7 @@ export function VerificationManager({ accountId }: { accountId: string }) {
                     <form onSubmit={grantForm.handleSubmit(handleGrant)}>
                         <CardContent className="space-y-4 pt-6">
                             {details?.status === 'revoked' && (
-                                <Alert variant="destructive">
+                                <Alert type="solid" convey="danger">
                                     <AlertTitle>Verification Revoked</AlertTitle>
                                     <AlertDescription>This user's verification was previously revoked.</AlertDescription>
                                 </Alert>
@@ -237,7 +237,7 @@ export function VerificationManager({ accountId }: { accountId: string }) {
                             )}/>
                         </CardContent>
                         <CardFooter>
-                            <Button type="submit" disabled={isPending}>
+                            <Button htmlType="submit" disabled={isPending}>
                                 {isPending ? <Loader2 className="animate-spin mr-2"/> : <ShieldCheck className="mr-2"/>}
                                 Grant Verification
                             </Button>

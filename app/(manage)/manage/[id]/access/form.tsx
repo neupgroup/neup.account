@@ -130,9 +130,9 @@ export function ManagedAccountAccessForm({
               className={lookupError ? 'border-destructive focus-visible:ring-destructive' : ''}
             />
             <Button
-              type="button"
+              htmlType="button"
               size="icon"
-              variant="ghost"
+              type="plain"
               onClick={handleLookup}
               disabled={!canEdit || isLookingUp || isSaving || !lookupValue.trim()}
               className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 text-muted-foreground hover:bg-accent"
@@ -161,7 +161,7 @@ export function ManagedAccountAccessForm({
               <p className="font-medium">{resolvedMember.displayName}</p>
               <p className="text-sm text-muted-foreground font-mono">{resolvedMember.accountId}</p>
             </div>
-            <Badge variant="secondary">Selected</Badge>
+            <Badge type="tinted">Selected</Badge>
           </div>
         )}
 
@@ -173,7 +173,7 @@ export function ManagedAccountAccessForm({
                 Choose the direct roles this account should get immediately.
               </p>
             </div>
-            <Badge variant="outline">{selectedRoleIds.size} selected</Badge>
+            <Badge type="outlined">{selectedRoleIds.size} selected</Badge>
           </div>
 
           <div className="rounded-lg border">
@@ -198,7 +198,7 @@ export function ManagedAccountAccessForm({
                         <p className="text-xs text-muted-foreground">{role.description}</p>
                       )}
                     </div>
-                    {checked && <Badge variant="secondary">Selected</Badge>}
+                    {checked && <Badge type="tinted">Selected</Badge>}
                   </label>
                 );
               })
@@ -215,7 +215,7 @@ export function ManagedAccountAccessForm({
             Saving replaces direct role assignments for this account immediately, without sending an invitation.
           </p>
           <Button
-            type="button"
+            htmlType="button"
             onClick={handleGrant}
             disabled={!canEdit || !resolvedMember || selectedRoleIds.size === 0 || isSaving}
           >

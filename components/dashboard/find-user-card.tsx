@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '#/components/ui/button';
 import { Input } from '#/components/ui/input';
 import { Search } from '@/components/icons';
-import { TertiaryHeader } from '#/components/ui/tertiary-header';
+import { TertiaryHeader } from '@/components/ui/tertiary-header';
 import NProgress from 'nprogress';
 import { redirectInApp } from '@/.neup/core/helpers/link/navigation';
 
@@ -38,8 +38,8 @@ export function FindUserCard() {
                         className="pl-10 pr-12"
                     />
                     <Button
-                        type="submit"
-                        variant="ghost"
+                        htmlType="submit"
+                        type="plain"
                         size="icon"
                         className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
                     >

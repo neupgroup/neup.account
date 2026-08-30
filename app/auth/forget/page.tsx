@@ -83,7 +83,7 @@ export default function ForgetPage() {
               <Label htmlFor="email">Email Address</Label>
               <Input id="email" type="email" placeholder="you@example.com" required disabled={isPending} autoComplete="email" />
             </div>
-            <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isPending}>
+            <Button htmlType="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isPending}>
               {isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending...</> : 'Send Recovery Link'}
             </Button>
           </form>

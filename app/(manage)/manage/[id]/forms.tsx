@@ -154,7 +154,7 @@ export function SendWarningForm({ userId }: { userId: string }) {
                             </div>
                         </CardContent>
                         <CardFooter>
-                            <Button type="submit" disabled={isPending}>
+                            <Button htmlType="submit" disabled={isPending}>
                                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Send Warning
                             </Button>
@@ -265,7 +265,7 @@ export function BlockServiceAccessForm({ userId, currentBlock }: { userId: strin
                         <p><strong>Remarks:</strong> {currentBlock.remarks || 'N/A'}</p>
                     </CardContent>
                     <CardFooter>
-                        <Button onClick={handleUnblock} disabled={isPending} variant="outline">
+                        <Button onClick={handleUnblock} disabled={isPending} type="outlined">
                             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Unblock Now
                         </Button>
@@ -325,7 +325,7 @@ export function BlockServiceAccessForm({ userId, currentBlock }: { userId: strin
                         )}
                     </CardContent>
                     <CardFooter>
-                        <Button type="submit" variant="destructive" disabled={isPending}>
+                        <Button htmlType="submit" type="solid" convey="danger" disabled={isPending}>
                             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Block User
                         </Button>

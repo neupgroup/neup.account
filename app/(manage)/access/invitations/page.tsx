@@ -89,10 +89,10 @@ function InvitationCard({
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" size="icon" className="h-8 w-8 text-green-600 border-green-600 hover:bg-green-50" onClick={handleAccept} disabled={isPending || !canApprove}>
+                    <Button type="outlined" size="icon" className="h-8 w-8 text-green-600 border-green-600 hover:bg-green-50" onClick={handleAccept} disabled={isPending || !canApprove}>
                         {isAccepting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
                     </Button>
-                    <Button variant="destructive" size="icon" className="h-8 w-8" onClick={handleReject} disabled={isPending || !canApprove}>
+                    <Button type="solid" convey="danger" size="icon" className="h-8 w-8" onClick={handleReject} disabled={isPending || !canApprove}>
                         {isRejecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <X className="h-4 w-4" />}
                     </Button>
                 </div>

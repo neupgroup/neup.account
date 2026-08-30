@@ -240,11 +240,11 @@ function DataActivityPageComponent({ after, applicationId, history }: { after?: 
                 )}
             </div>
             <div className="flex justify-start space-x-2 pt-2">
-                 <Button variant="outline" onClick={handlePrevPage} disabled={history.length === 0 || loading}>
+                 <Button type="outlined" onClick={handlePrevPage} disabled={history.length === 0 || loading}>
                     <ChevronLeft className="mr-2 h-4 w-4" />
                     Previous
                 </Button>
-                <Button variant="outline" onClick={handleNextPage} disabled={!hasNextPage || loading}>
+                <Button type="outlined" onClick={handleNextPage} disabled={!hasNextPage || loading}>
                     Next
                     <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>

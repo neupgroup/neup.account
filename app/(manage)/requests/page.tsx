@@ -72,7 +72,7 @@ async function RequestsList({ type, application }: { type?: string; application?
 
   if (!canView) {
     return (
-      <Alert variant="destructive">
+      <Alert type="solid" convey="danger">
         <Ban className="h-4 w-4" />
         <AlertTitle>Permission Denied</AlertTitle>
         <AlertDescription>You do not have permission to view requests.</AlertDescription>
@@ -104,7 +104,7 @@ async function RequestsList({ type, application }: { type?: string; application?
             >
               <div className="min-w-0 space-y-0.5">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <Badge variant="outline" className="text-xs shrink-0">
+                  <Badge type="outlined" className="text-xs shrink-0">
                     {req.typeLabel}
                   </Badge>
                   <Badge

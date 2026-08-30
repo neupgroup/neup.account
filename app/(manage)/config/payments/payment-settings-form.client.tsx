@@ -124,7 +124,7 @@ export function PaymentSettingsForm({ initialSettings }: PaymentSettingsFormProp
           </div>
         </CardContent>
         <CardFooter>
-          <Button type="submit" disabled={isPending}>
+          <Button htmlType="submit" disabled={isPending}>
             {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
             Save Payment Settings
           </Button>

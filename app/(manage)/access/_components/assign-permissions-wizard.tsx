@@ -320,7 +320,7 @@ export function AssignPermissionsWizard({
               <UserCircle className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium">{selectedMember.displayName}</span>
             </div>
-            <Button type="button" variant="ghost" size="sm" onClick={() => setStep("member")}>
+            <Button htmlType="button" type="plain" size="sm" onClick={() => setStep("member")}>
               <ChevronLeft className="h-3.5 w-3.5 mr-1" />
               Back
             </Button>
@@ -348,12 +348,12 @@ export function AssignPermissionsWizard({
       {step === "assets" && selectedAssetType && (
         <div className="grid gap-3">
           <div className="flex items-center justify-between">
-            <Badge variant="outline">
+            <Badge type="outlined">
               {ASSET_TYPES.find((t) => t.type === selectedAssetType)?.label}
             </Badge>
             <Button
-              type="button"
-              variant="ghost"
+              htmlType="button"
+              type="plain"
               size="sm"
               onClick={() => {
                 setStep("asset-type");
@@ -403,7 +403,7 @@ export function AssignPermissionsWizard({
 
           <div className="flex justify-end">
             <Button
-              type="button"
+              htmlType="button"
               size="sm"
               onClick={handleProceedToRoles}
               disabled={!canProceedFromAssets}
@@ -419,10 +419,10 @@ export function AssignPermissionsWizard({
       {step === "roles" && (
         <div className="grid gap-3">
           <div className="flex items-center justify-between">
-            <Badge variant="outline">{selectedAssetIds.size} asset{selectedAssetIds.size !== 1 ? "s" : ""}</Badge>
+            <Badge type="outlined">{selectedAssetIds.size} asset{selectedAssetIds.size !== 1 ? "s" : ""}</Badge>
             <Button
-              type="button"
-              variant="ghost"
+              htmlType="button"
+              type="plain"
               size="sm"
               onClick={() => setStep("assets")}
             >
@@ -457,7 +457,7 @@ export function AssignPermissionsWizard({
 
           <div className="flex justify-end">
             <Button
-              type="button"
+              htmlType="button"
               size="sm"
               onClick={() => setStep("confirm")}
               disabled={!canProceedFromRoles}
@@ -479,7 +479,7 @@ export function AssignPermissionsWizard({
 
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium">Review and confirm</p>
-            <Button type="button" variant="ghost" size="sm" onClick={() => setStep("roles")}>
+            <Button htmlType="button" type="plain" size="sm" onClick={() => setStep("roles")}>
               <ChevronLeft className="h-3.5 w-3.5 mr-1" />
               Back
             </Button>
@@ -511,7 +511,7 @@ export function AssignPermissionsWizard({
                         <span className="truncate">{a.name}</span>
                       </div>
                       {isUpdate && (
-                        <Badge variant="outline" className="text-xs shrink-0">update</Badge>
+                        <Badge type="outlined" className="text-xs shrink-0">update</Badge>
                       )}
                     </div>
                   );
@@ -528,7 +528,7 @@ export function AssignPermissionsWizard({
                 {Array.from(selectedRoleIds).map((roleId) => {
                   const role = availableRoles.find((r) => r.id === roleId);
                   return (
-                    <Badge key={roleId} variant="secondary" className="text-xs">
+                    <Badge key={roleId} type="tinted" className="text-xs">
                       {role?.name ?? roleId}
                     </Badge>
                   );
@@ -545,10 +545,10 @@ export function AssignPermissionsWizard({
           )}
 
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={handleReset}>
+            <Button htmlType="button" type="outlined" size="sm" onClick={handleReset}>
               Cancel
             </Button>
-            <Button type="submit" size="sm" disabled={isPending}>
+            <Button htmlType="submit" size="sm" disabled={isPending}>
               {isPending ? (
                 <>
                   <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />

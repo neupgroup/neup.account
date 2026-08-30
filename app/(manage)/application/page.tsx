@@ -106,7 +106,7 @@ export default async function ApplicationsManagePage({ searchParams }: Props) {
       </div>
 
       {hasPartialError && (
-        <Alert variant="destructive">
+        <Alert type="solid" convey="danger">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Partial load</AlertTitle>
           <AlertDescription>

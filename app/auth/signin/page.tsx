@@ -174,7 +174,7 @@ function NeupIdStep() {
                 <p className="text-sm text-destructive">{validationError}</p>
               )}
             </div>
-            <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isCheckingNeupId}>
+            <Button htmlType="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isCheckingNeupId}>
               {isCheckingNeupId ? <Loader2 className="animate-spin" /> : 'Next'}
             </Button>
             <div className="mt-4 text-left text-sm">
@@ -446,14 +446,14 @@ function PasswordStep() {
                 autoComplete="current-password"
               />
             </div>
-            <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isSubmitting}>
+            <Button htmlType="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isSubmitting}>
               {isSubmitting ? <Loader2 className="animate-spin" /> : 'Sign In'}
             </Button>
             <div className="flex justify-between items-center text-sm">
               <FlowLink href={forgetUrl} className="underline text-primary">
                 Forget Password
               </FlowLink>
-              <Button variant="link" type="button" onClick={handleBack} className="text-primary p-0 h-auto" disabled={isSubmitting}>
+              <Button type="text" htmlType="button" onClick={handleBack} className="text-primary p-0 h-auto" disabled={isSubmitting}>
                 Back
               </Button>
             </div>
@@ -582,7 +582,7 @@ function MfaStep() {
                 autoComplete="one-time-code"
               />
             </div>
-            <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isSubmitting}>
+            <Button htmlType="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isSubmitting}>
               {isSubmitting ? <Loader2 className="animate-spin" /> : 'Verify'}
             </Button>
           </form>

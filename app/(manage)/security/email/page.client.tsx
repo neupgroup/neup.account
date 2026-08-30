@@ -106,7 +106,7 @@ export default function RecoveryEmailPage() {
                         ) : email ? (
                             <div className="flex items-center justify-between rounded-md border border-input bg-background p-3">
                                 <p className="font-mono text-sm">{email}</p>
-                                <Button variant="ghost" size="icon" onClick={handleRemove} disabled={isSubmitting} className="h-8 w-8 text-muted-foreground hover:text-destructive">
+                                <Button type="plain" size="icon" onClick={handleRemove} disabled={isSubmitting} className="h-8 w-8 text-muted-foreground hover:text-destructive">
                                      {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                                 </Button>
                             </div>
@@ -130,7 +130,7 @@ export default function RecoveryEmailPage() {
                                                             aria-invalid={!!form.formState.errors.email}
                                                         />
                                                     </FormControl>
-                                                    <Button type="submit" size="icon" variant="ghost" className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 text-muted-foreground hover:bg-accent" disabled={isSubmitting}>
+                                                    <Button htmlType="submit" size="icon" type="plain" className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 text-muted-foreground hover:bg-accent" disabled={isSubmitting}>
                                                         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
                                                         <span className="sr-only">Add Email</span>
                                                     </Button>

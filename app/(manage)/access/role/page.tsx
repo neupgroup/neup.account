@@ -170,7 +170,7 @@ function RoleCard({
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-base font-semibold capitalize">{platformLabel}</span>
             {contextName && (
-              <Badge variant="secondary" className="text-xs font-normal">{contextName}</Badge>
+              <Badge type="tinted" className="text-xs font-normal">{contextName}</Badge>
             )}
           </div>
         )}
@@ -409,7 +409,7 @@ async function MemberDirectRolesView({ memberAccountId }: { memberAccountId: str
               confirmDescription={`This will cancel the pending access invitation sent to ${detail.displayName}. They will no longer be able to accept it.`}
               action={cancelDirectInvitation.bind(null, memberAccountId)}
               redirectTo="/access/team"
-              variant="outline"
+              type="outlined"
             />
           ) : (
             <RemoveMemberButton
@@ -536,7 +536,7 @@ async function MemberPortfolioRolesView({
             }
             action={cancelPortfolioInvitation.bind(null, parentPortfolioId, memberAccountId)}
             redirectTo={`/access/assign?account=${memberAccountId}&portfolio=${parentPortfolioId}`}
-            variant="outline"
+            type="outlined"
           />
           {/* Re-invite if expired */}
           {isExpired && (

@@ -229,7 +229,7 @@ export default function CreateDependentPageClient({
                                     </div>
                                 </FormItem>
                             )} />
-                            <Button type="submit" disabled={isSubmitting}>
+                            <Button htmlType="submit" disabled={isSubmitting}>
                                 {isSubmitting ? "Creating..." : "Create Dependent"}
                             </Button>
                         </CardContent>

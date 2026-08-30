@@ -6,7 +6,7 @@ import { FolderGit2, ChevronRight, Building, UserPlus, Users, MailQuestion, User
 import { getDirectAccessGroup } from '@/services/manage/access';
 import { SecondaryHeader } from '#/components/ui/secondary-header';
 import { AccessGroupView } from './_components/access-group-view';
-import { ListItem } from '#/components/ui/list-item';
+import { ListItem } from '@/components/ui/ListItem';
 import { AccountListItem } from '@/components/elements/account-item';
 import { permission } from '@/.neup/logica/permission';
 import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/inapp/permissions/linked-account-permissions';

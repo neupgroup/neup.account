@@ -98,7 +98,7 @@ export function DeletionManager({ accountId }: { accountId: string }) {
                 <TertiaryHeader title="Manual Deletion" />
                 <Card>
                      <CardHeader>
-                         <Alert variant="destructive">
+                         <Alert type="solid" convey="danger">
                             <ShieldAlert className="h-4 w-4" />
                             <AlertTitle>Action Not Permitted</AlertTitle>
                             <AlertDescription>
@@ -117,7 +117,7 @@ export function DeletionManager({ accountId }: { accountId: string }) {
                 <TertiaryHeader title="Deletion Pending" />
                 <Card>
                     <CardHeader>
-                         <Alert variant="destructive">
+                         <Alert type="solid" convey="danger">
                             <Trash2 className="h-4 w-4" />
                             <AlertTitle>This account is scheduled for deletion.</AlertTitle>
                             <AlertDescription>
@@ -126,11 +126,11 @@ export function DeletionManager({ accountId }: { accountId: string }) {
                         </Alert>
                     </CardHeader>
                     <CardContent className="flex gap-4">
-                       <Button onClick={handleApprove} disabled={isPending} variant="destructive">
+                       <Button onClick={handleApprove} disabled={isPending} type="solid" convey="danger">
                             {isPending ? <Loader2 className="animate-spin mr-2" /> : null}
                             Approve Deletion Now
                         </Button>
-                         <Button onClick={handleCancel} disabled={isPending} variant="outline">
+                         <Button onClick={handleCancel} disabled={isPending} type="outlined">
                             {isPending ? <Loader2 className="animate-spin mr-2" /> : null}
                             Cancel Request
                         </Button>
@@ -157,7 +157,7 @@ export function DeletionManager({ accountId }: { accountId: string }) {
                  <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleAdminRequest)}>
                         <CardHeader>
-                            <Alert variant="destructive">
+                            <Alert type="solid" convey="danger">
                                 <Trash2 className="h-4 w-4" />
                                 <AlertTitle>Warning</AlertTitle>
                                 <AlertDescription>
@@ -181,7 +181,7 @@ export function DeletionManager({ accountId }: { accountId: string }) {
                             />
                         </CardContent>
                         <CardFooter>
-                            <Button variant="destructive" type="submit" disabled={isPending}>
+                            <Button type="solid" convey="danger" htmlType="submit" disabled={isPending}>
                                 {isPending ? <Loader2 className="animate-spin mr-2" /> : null}
                                 Request Deletion
                             </Button>

@@ -85,7 +85,7 @@ export async function ApplicationRolesPage({ applicationId, mode }: { applicatio
             description={`Manage permissions and roles for ${details.name}.`}
           />
         </div>
-        <Alert variant="destructive">
+        <Alert type="solid" convey="danger">
           <ShieldAlert className="h-4 w-4" />
           <AlertTitle>Access Denied</AlertTitle>
           <AlertDescription>You do not have permission to view application roles.</AlertDescription>

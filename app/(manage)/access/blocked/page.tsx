@@ -77,7 +77,7 @@ function AddUserForm({ onAdd, disabled, placeholder }: { onAdd: (neupId: string)
                         aria-invalid={!!error}
                         className={cn("pr-12", error && "border-destructive focus-visible:ring-destructive")}
                     />
-                    <Button type="submit" size="icon" variant="ghost" className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 text-muted-foreground hover:bg-accent" disabled={isAdding || disabled}>
+                    <Button htmlType="submit" size="icon" type="plain" className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 text-muted-foreground hover:bg-accent" disabled={isAdding || disabled}>
                         {isAdding ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
                         <span className="sr-only">Add User</span>
                     </Button>
@@ -165,7 +165,7 @@ function UserListManager({
                                     <p className="text-sm text-muted-foreground font-mono">@{user.neupId}</p>
                                 </div>
                                 </div>
-                                <Button variant="ghost" size="icon" onClick={() => handleRemove(user.accountId)} disabled={isPending} className="h-8 w-8 text-muted-foreground hover:text-destructive">
+                                <Button type="plain" size="icon" onClick={() => handleRemove(user.accountId)} disabled={isPending} className="h-8 w-8 text-muted-foreground hover:text-destructive">
                                     {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                                 </Button>
                             </div>

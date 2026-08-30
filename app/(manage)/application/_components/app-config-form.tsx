@@ -423,7 +423,7 @@ export function AppConfigForm({
               />
             </CardContent>
             <CardFooter>
-              <Button type="submit" disabled={isPending}>
+              <Button htmlType="submit" disabled={isPending}>
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Save Configuration
               </Button>
@@ -485,8 +485,8 @@ export function AppConfigForm({
               </div>
               <div className="rounded-lg border p-3">
                 <Button
-                  type="button"
-                  variant="outline"
+                  htmlType="button"
+                  type="outlined"
                   onClick={() => setShowExampleResponse((v) => !v)}
                 >
                   Get an example response
@@ -499,7 +499,7 @@ export function AppConfigForm({
               </div>
             </CardContent>
             <CardFooter>
-              <Button type="submit" disabled={isPending}>
+              <Button htmlType="submit" disabled={isPending}>
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Save Configuration
               </Button>
@@ -556,7 +556,7 @@ export function AppConfigForm({
               />
             </CardContent>
             <CardFooter>
-              <Button type="submit" disabled={isPending}>
+              <Button htmlType="submit" disabled={isPending}>
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Save Configuration
               </Button>
@@ -581,8 +581,8 @@ export function AppConfigForm({
                     <li key={entry.id} className="flex items-center justify-between gap-4 rounded-md border px-4 py-3">
                       <code className="text-sm break-all">{entry.value}</code>
                       <Button
-                        type="button"
-                        variant="ghost"
+                        htmlType="button"
+                        type="plain"
                         size="sm"
                         disabled={isOriginPending}
                         onClick={() => handleRemoveServerIp(entry.id)}
@@ -616,8 +616,8 @@ export function AppConfigForm({
                   />
                 </div>
                 <Button
-                  type="button"
-                  variant="outline"
+                  htmlType="button"
+                  type="outlined"
                   disabled={isOriginPending || !newServerIp.trim()}
                   onClick={handleAddServerIp}
                 >
@@ -649,7 +649,7 @@ export function AppConfigForm({
               />
             </CardContent>
             <CardFooter>
-              <Button type="submit" disabled={isPending}>
+              <Button htmlType="submit" disabled={isPending}>
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Save Configuration
               </Button>
@@ -686,7 +686,7 @@ export function AppConfigForm({
               </div>
             </CardContent>
             <CardFooter>
-              <Button type="button" onClick={handleSaveAccountUpdateWebhook} disabled={isPending}>
+              <Button htmlType="button" onClick={handleSaveAccountUpdateWebhook} disabled={isPending}>
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Save Webhook
               </Button>
@@ -723,7 +723,7 @@ export function AppConfigForm({
               </div>
             </CardContent>
             <CardFooter>
-              <Button type="button" onClick={handleSaveRoleUpdateWebhook} disabled={isPending}>
+              <Button htmlType="button" onClick={handleSaveRoleUpdateWebhook} disabled={isPending}>
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Save Webhook
               </Button>
@@ -752,8 +752,8 @@ export function AppConfigForm({
                     >
                       <code className="text-sm break-all">{entry.value}</code>
                       <Button
-                        type="button"
-                        variant="ghost"
+                        htmlType="button"
+                        type="plain"
                         size="sm"
                         disabled={isOriginPending}
                         onClick={() => handleRemoveOrigin(entry.id)}
@@ -788,8 +788,8 @@ export function AppConfigForm({
                   />
                 </div>
                 <Button
-                  type="button"
-                  variant="outline"
+                  htmlType="button"
+                  type="outlined"
                   disabled={isOriginPending || !newOrigin.trim()}
                   onClick={handleAddOrigin}
                 >
@@ -821,7 +821,7 @@ export function AppConfigForm({
               />
             </CardContent>
             <CardFooter>
-              <Button type="submit" disabled={isPending}>
+              <Button htmlType="submit" disabled={isPending}>
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Save Configuration
               </Button>

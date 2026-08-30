@@ -26,7 +26,7 @@ export function UserDetailsClient({ initialUserDetails }: UserDetailsClientProps
     return (
         <div className="container mx-auto p-4">
             <div className="flex items-center mb-4">
-                <Button variant="ghost" size="icon" onClick={handleBack}>
+                <Button type="plain" size="icon" onClick={handleBack}>
                     <ArrowLeft className="h-5 w-5" />
                 </Button>
                 <h1 className="text-2xl font-bold ml-2">{userDetails.profile.nameFirst || ''} {userDetails.profile.nameLast || ''}</h1>

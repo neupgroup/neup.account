@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
-import { Card, CardContent } from "@/components/ui/card";
-import { BackButton } from "@/components/ui/back-button";
-import { PrimaryHeader } from "@/components/ui/primary-header";
-import { ListItem } from "@/components/ui/list-item";
+import { Card, CardContent } from "#/components/ui/card";
+import { BackButton } from "#/components/ui/back-button";
+import { PrimaryHeader } from "#/components/ui/primary-header";
+import { ListItem } from "#/components/ui/list-item";
 import { Bot, Github } from "@/components/icons";
-import { formMetadata } from '@/core/metadata';
-import { Badge } from '@/components/ui/badge';
-import { FlowLink } from '@/components/ui/flow-link';
+import { formMetadata } from '#/core/metadata';
+import { Badge } from '#/components/ui/badge';
+import { FlowLink } from '#/components/ui/flow-link';
 import { ChevronRight } from '@/components/icons';
-import { formatReadableDateTime } from '@/core/helpers/date';
+import { formatReadableDateTime } from '#/core/helpers/date';
 import { getLatestLinkedAccount } from '@/services/bridge/linked-accounts';
 
 export const metadata: Metadata = formMetadata({ title: 'Link Other Accounts' });

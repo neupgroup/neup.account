@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
-import { BackButton } from '@/components/ui/back-button';
-import { PrimaryHeader } from '@/components/ui/primary-header';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { BackButton } from '#/components/ui/back-button';
+import { PrimaryHeader } from '#/components/ui/primary-header';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { Ban } from 'lucide-react';
 import { getExpiredGuestAccounts } from '@/services/manage/accounts/cleanup';
 import { CleanupClient } from './cleanup-client';
-import { formMetadata } from '@/core/metadata';
+import { formMetadata } from '#/core/metadata';
 
 export const metadata: Metadata = formMetadata({ title: 'Accounts Cleanup' });
 

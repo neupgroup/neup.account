@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ChevronRight } from '@/components/icons';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { FlowLink } from '@/components/ui/flow-link';
+import { Badge } from '#/components/ui/badge';
+import { Button } from '#/components/ui/button';
+import { Card, CardContent } from '#/components/ui/card';
+import { FlowLink } from '#/components/ui/flow-link';
 import { canCurrentAccountViewApplicationRoles, getApplicationDetailsForViewerV2, logRootApplicationActivity } from '@/services/applications/manage';
 import { getAllRequests } from '@/services/manage/requests/all';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';

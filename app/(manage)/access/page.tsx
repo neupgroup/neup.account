@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { FlowLink } from '@/components/ui/flow-link';
-import { Card, CardContent } from '@/components/ui/card';
+import { FlowLink } from '#/components/ui/flow-link';
+import { Card, CardContent } from '#/components/ui/card';
 import { FolderGit2, ChevronRight, Building, UserPlus, Users, MailQuestion, UserX } from '@/components/icons';
 import { getDirectAccessGroup } from '@/services/manage/access';
-import { SecondaryHeader } from '@/components/ui/secondary-header';
+import { SecondaryHeader } from '#/components/ui/secondary-header';
 import { AccessGroupView } from './_components/access-group-view';
-import { ListItem } from '@/components/ui/list-item';
+import { ListItem } from '#/components/ui/list-item';
 import { AccountListItem } from '@/components/elements/account-item';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/inapp/permissions/linked-account-permissions';
 import { getUserProfile } from '@/services/user';
 import { getAccessibleAccounts } from '@/services/manage/accounts';
@@ -27,7 +27,7 @@ import {
   ACCESS_TEAM_VIEW_PERMISSIONS,
   ACCESS_VIEW_PERMISSIONS,
 } from '@/inapp/permissions/access-view-permissions';
-import { formMetadata } from '@/core/metadata';
+import { formMetadata } from '#/core/metadata';
 
 const pagePermissions = [
   permission('access.view.self', 'for_individual', 'page'),

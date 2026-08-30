@@ -8,19 +8,19 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 
 import { getProfileContacts, updateUserProfile } from "@/services/profile"
-import { useToast } from "@/core/hooks/useToast"
+import { useToast } from "#/core/hooks/useToast"
 
-import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { PhoneInput } from "@/components/ui/phone-input"
+import { Skeleton } from '#/components/ui/skeleton'
+import { Button } from "#/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "#/components/ui/card"
+import { Input } from "#/components/ui/input"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "#/components/ui/form"
+import { PhoneInput } from "#/components/ui/phone-input"
 import { useSession } from '@/inapp/auth/session-context'
-import { BackButton } from '@/components/ui/back-button'
-import { Separator } from '@/components/ui/separator'
+import { BackButton } from '#/components/ui/back-button'
+import { Separator } from '#/components/ui/separator'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/inapp/permissions/profile-permissions'
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import { useSelectedProfilePage } from '../use-selected-profile-page';
 
 const pagePermissions = [

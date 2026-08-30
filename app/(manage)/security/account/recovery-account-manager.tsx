@@ -3,14 +3,14 @@
 "use client";
 
 import { useState, useTransition, useRef } from 'react';
-import { useToast } from '@/core/hooks/useToast';
+import { useToast } from '#/core/hooks/useToast';
 import { addRecoveryAccount, removeRecoveryAccount, type RecoveryAccount } from '@/services/security/account';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '#/components/ui/button';
+import { Input } from '#/components/ui/input';
 import { UserPlus, Loader2, Trash2 } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { cn } from '@/core/utils';
-import { CardFooter } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
+import { cn } from '#/core/utils';
+import { CardFooter } from '#/components/ui/card';
 
 function AccountItem({ account, onRemove }: { account: RecoveryAccount, onRemove: (id: string) => void }) {
     const [isRemoving, startRemoveTransition] = useTransition();

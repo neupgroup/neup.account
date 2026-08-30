@@ -14,7 +14,7 @@ route while preserving root-mode access checks.
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import {
   deleteManagedApplication,
   getManagedApplications,
@@ -24,8 +24,8 @@ import {
 } from '@/services/applications/manage';
 import { getSignedApplications } from '@/services/applications/connected';
 import { getPersonalAccountId } from '@/services/account/verify';
-import prisma from '@/core/database/prisma';
-import { logError } from '@/logica/logger/files';
+import prisma from '@/.neup/core/database/prisma';
+import { logError } from '@/.neup/logica/logger/files';
 import type { ApplicationSection, FlatAppItem } from '@/services/applications/types';
 import { revalidateApplicationDetailRoutes } from '@/services/applications/revalidate-routes';
 import {

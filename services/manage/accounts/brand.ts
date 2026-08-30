@@ -1,10 +1,10 @@
 // @ts-nocheck
 'use server';
 
-import { permission } from '@/logica/permission';
-import prisma from '@/core/database/prisma';
+import { permission } from '@/.neup/logica/permission';
+import prisma from '@/.neup/core/database/prisma';
 import { checkPermissions, getUserProfile } from '@/services/user';
-import { logError } from '@/logica/logger/files';
+import { logError } from '@/.neup/logica/logger/files';
 import { switchToBrand as switchToBrandAction, switchToPersonal as switchToPersonalAction } from '@/services/account/session';
 import { getPersonalAccountId } from '@/services/account/verify';
 import { z } from 'zod';

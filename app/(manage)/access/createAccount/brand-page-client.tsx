@@ -7,12 +7,12 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useDebounce } from "use-debounce"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "#/components/ui/button"
 import {
   Card,
   CardContent,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+} from "#/components/ui/card"
+import { Input } from "#/components/ui/input"
 import {
   Form,
   FormControl,
@@ -21,17 +21,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Checkbox } from "@/components/ui/checkbox"
-import { useToast } from "@/core/hooks/useToast"
+} from "#/components/ui/form"
+import { Checkbox } from "#/components/ui/checkbox"
+import { useToast } from "#/core/hooks/useToast"
 import { createBrandAccount } from "@/services/manage/accounts/brand"
-import { Textarea } from "@/components/ui/textarea"
+import { Textarea } from "#/components/ui/textarea"
 import { CheckCircle2, XCircle, Loader2 } from "@/components/icons"
-import { BackButton } from "@/components/ui/back-button"
+import { BackButton } from "#/components/ui/back-button"
 import { brandCreationSchema } from "@/services/manage/accounts/schema"
 import { checkNeupIdAvailability } from '@/services/user'
-import { SecondaryHeader } from "@/components/ui/secondary-header"
-import { redirectInApp } from "@/core/helpers/link/navigation";
+import { SecondaryHeader } from "#/components/ui/secondary-header"
+import { redirectInApp } from "@/.neup/core/helpers/link/navigation";
 
 type FormData = z.infer<typeof brandCreationSchema>;
 

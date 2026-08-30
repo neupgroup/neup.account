@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
-import { BackButton } from '@/components/ui/back-button';
-import { PrimaryHeader } from '@/components/ui/primary-header';
-import { SecondaryHeader } from '@/components/ui/secondary-header';
-import { Card, CardContent } from '@/components/ui/card';
+import { BackButton } from '#/components/ui/back-button';
+import { PrimaryHeader } from '#/components/ui/primary-header';
+import { SecondaryHeader } from '#/components/ui/secondary-header';
+import { Card, CardContent } from '#/components/ui/card';
 import { getActiveAccountId } from '@/services/account/verify';
 import { getAccessibleAccounts } from '@/services/manage/accounts';
 import { AccountListItem } from '@/components/elements/account-item';

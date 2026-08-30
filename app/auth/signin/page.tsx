@@ -1,25 +1,25 @@
 'use client';
 
-import { FlowLink } from '@/components/ui/flow-link';
+import { FlowLink } from '#/components/ui/flow-link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState, useEffect, useTransition, Suspense } from 'react';
 import NProgress from 'nprogress';
 
-import { useToast } from '@/core/hooks/useToast';
+import { useToast } from '#/core/hooks/useToast';
 import { submitNeupId, submitPassword, submitPasswordWithNeupId } from '@/services/auth/signin';
 import { getSignupStepData } from '@/services/auth/signup';
 import { cancelAccountDeletion } from '@/services/data/delete';
 import { handleAuthRequest } from '@/app/auth/handleAuthRequest';
 import { verifyTotpFromPost } from '@/services/auth/totp';
-import { redirectInApp } from '@/core/helpers/link/redirect';
+import { redirectInApp } from '#/core/helpers/link/redirect';
 import { appendAuthCallbackContext, appendRedirect, hasAuthCallbackContext, shouldReturnToAuthStartForExternalAuthentication, getFlowParams, appendFlowParams } from '@/inapp/auth/callbacks';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Button } from '#/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
+import { Input } from '#/components/ui/input';
+import { Label } from '#/components/ui/label';
 import { Loader2 } from '@/components/icons';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '#/components/ui/alert-dialog';
 
 // --- Components ---
 

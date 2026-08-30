@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import { Button } from '#/components/ui/button';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,9 +13,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+} from '#/components/ui/alert-dialog';
 import { Loader2, UserPlus } from '@/components/icons';
-import { redirectInApp } from '@/core/helpers/link/navigation';
+import { redirectInApp } from '@/.neup/core/helpers/link/navigation';
 
 type Props = {
   displayName: string;

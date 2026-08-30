@@ -2,11 +2,11 @@
 
 import { useState, useTransition } from 'react';
 import { Loader2, Save } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/core/hooks/useToast';
+import { Button } from '#/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/components/ui/card';
+import { Input } from '#/components/ui/input';
+import { Label } from '#/components/ui/label';
+import { useToast } from '#/core/hooks/useToast';
 import { updateSiteLogoUrl } from '@/services/manage/site/logo';
 
 type AppLogoFormProps = {

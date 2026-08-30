@@ -1,9 +1,9 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "#/components/ui/card";
 import React from "react";
-import { permission } from "@/logica/permission";
+import { permission } from "@/.neup/logica/permission";
 import { getConnectedApplications } from "@/services/applications/connected";
-import { ListItem } from "@/components/ui/list-item";
-import { SecondaryHeader } from "@/components/ui/secondary-header";
+import { ListItem } from "#/components/ui/list-item";
+import { SecondaryHeader } from "#/components/ui/secondary-header";
 import { History, Trash2, PowerOff, CalendarClock, AppWindow, Share2, type LucideIcon } from "@/components/icons";
 import { checkPermissions } from "@/services/user";
 import { DATA_PRIVACY_PERMISSION_GROUPS } from "@/inapp/permissions/data-permissions";

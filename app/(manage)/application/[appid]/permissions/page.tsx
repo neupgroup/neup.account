@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { ApplicationPermissionsPage } from '@/app/(manage)/application/_route-impl/permissions/page';
 import { getQueryParam } from '@/app/(manage)/application/_lib/query-param';
-import { formMetadata } from '@/core/metadata';
+import { formMetadata } from '#/core/metadata';
 import { getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
 
 type Props = {

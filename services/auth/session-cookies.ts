@@ -22,7 +22,7 @@
  */
 
 import { cookies } from 'next/headers';
-import { getCookie, setCookies } from '@/core/helpers/cookie';
+import { getCookie, setCookies } from '@/.neup/core/helpers/cookie';
 import { signAccountToken, verifyAccountToken } from '@/services/auth/account-token';
 
 export type StoredAccount = {

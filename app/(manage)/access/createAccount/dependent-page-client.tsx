@@ -7,14 +7,14 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { format } from "date-fns"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "#/components/ui/button"
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+} from "#/components/ui/card"
+import { Input } from "#/components/ui/input"
 import {
   Form,
   FormControl,
@@ -22,26 +22,26 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
+} from "#/components/ui/form"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Checkbox } from "@/components/ui/checkbox"
-import { cn } from "@/core/utils"
-import { useToast } from "@/core/hooks/useToast"
+} from "#/components/ui/select"
+import { RadioGroup, RadioGroupItem } from "#/components/ui/radio-group"
+import { Checkbox } from "#/components/ui/checkbox"
+import { cn } from "#/core/utils"
+import { useToast } from "#/core/hooks/useToast"
 import { createDependentAccount } from "@/services/manage/accounts/dependent"
 import { dependentFormSchema } from "@/services/manage/accounts/schema"
-import { Label } from "@/components/ui/label"
+import { Label } from "#/components/ui/label"
 import { parseDateString } from "@/services/profile"
-import { BackButton } from "@/components/ui/back-button"
+import { BackButton } from "#/components/ui/back-button"
 import { Loader2 } from "@/components/icons"
-import { redirectInApp } from "@/core/helpers/link/navigation";
-import { permission } from '@/logica/permission';
+import { redirectInApp } from "@/.neup/core/helpers/link/navigation";
+import { permission } from '@/.neup/logica/permission';
 
 type FormData = z.infer<typeof dependentFormSchema>;
 

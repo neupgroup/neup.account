@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { ApplicationRolesPage } from '@/app/(manage)/application/_route-impl/roles/page';
-import { formMetadata } from '@/core/metadata';
+import { formMetadata } from '#/core/metadata';
 import { getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
 
 type Props = {

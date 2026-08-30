@@ -1,13 +1,13 @@
 'use server';
 
-import prisma from '@/core/database/prisma';
-import type { Prisma } from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
+import type { Prisma } from '@/.neup/core/database/prisma';
 import { checkPermissions } from '@/services/user';
 import { getPersonalAccountId } from '@/services/account/verify';
-import { logError } from '@/logica/logger/files';
+import { logError } from '@/.neup/logica/logger/files';
 import { logActivity } from '@/services/log-actions';
 import { revalidatePath } from 'next/cache';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 
 export type ExpiredGuestAccount = {
     id: string;

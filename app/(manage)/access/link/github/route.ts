@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createHmac } from 'node:crypto';
 import { getActiveSession } from '@/services/account/verify';
-import { stringUuid } from '@/core/data/uuid';
+import { stringUuid } from '#/core/data/uuid';
 
 export const dynamic = 'force-dynamic';
 

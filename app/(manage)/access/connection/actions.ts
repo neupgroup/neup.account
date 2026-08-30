@@ -1,12 +1,12 @@
 'use server';
 
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import { getActiveAccountId, getPersonalAccountId } from '@/services/account/verify';
 import { getUserProfile } from '@/services/user';
-import { logError } from '@/logica/logger/files';
+import { logError } from '@/.neup/logica/logger/files';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
 import { checkPermissions } from '@/services/user';
 import {

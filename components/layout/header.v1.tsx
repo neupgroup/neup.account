@@ -4,12 +4,12 @@ import { NeupIdLogo } from '@/components/neupid-logo';
 import { UserNav } from '@/components/user-nav';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { DashboardNav } from '@/components/dashboard-nav';
-import { Button } from '@/components/ui/button';
+import { Button } from '#/components/ui/button';
 import { Menu, X } from '@/components/icons';
-import { cn } from '@/core/utils';
+import { cn } from '#/core/utils';
 import { useEffect, useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
+import { Skeleton } from '#/components/ui/skeleton';
 import { useSession } from '@/inapp/auth/session-context';
 import { getFallbackDisplayImage } from '@/inapp/display-image';
 

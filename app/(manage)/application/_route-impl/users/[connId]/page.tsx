@@ -1,10 +1,10 @@
 import { forbidden, notFound } from 'next/navigation';
 import { ArrowLeft, CheckCircle2, ChevronRight } from '@/components/icons';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FlowLink } from '@/components/ui/flow-link';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '#/components/ui/badge';
+import { Button } from '#/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card';
+import { FlowLink } from '#/components/ui/flow-link';
+import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
 import {
   canCurrentAccountRemoveApplicationUser,
   canCurrentAccountUpdateApplicationUserRole,

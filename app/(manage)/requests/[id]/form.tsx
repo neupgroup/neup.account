@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useToast } from '@/core/hooks/useToast';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '#/core/hooks/useToast';
+import { Button } from '#/components/ui/button';
+import { Textarea } from '#/components/ui/textarea';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,9 +15,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+} from '#/components/ui/alert-dialog';
 import { Loader2 } from 'lucide-react';
-import { redirectInApp } from '@/core/helpers/link/navigation';
+import { redirectInApp } from '@/.neup/core/helpers/link/navigation';
 import type { UnifiedRequest } from '@/services/manage/requests/types';
 
 // Per-type server actions

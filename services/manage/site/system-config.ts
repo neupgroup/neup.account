@@ -1,5 +1,5 @@
-import prisma from '@/core/database/prisma';
-import { logError } from '@/logica/logger/files';
+import prisma from '@/.neup/core/database/prisma';
+import { logError } from '@/.neup/logica/logger/files';
 
 export const SYSTEM_CONFIG_KEYS = {
   socials: 'socials',

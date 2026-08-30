@@ -2,9 +2,9 @@
 
 import { useRef, useState, useTransition } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '#/components/ui/button';
+import { Input } from '#/components/ui/input';
+import { Checkbox } from '#/components/ui/checkbox';
 import { Check, Loader2, UserCircle, X } from '@/components/icons';
 import { resolveNeupIdForApp, assignAppAccessToAccount, type ResolvedAccount } from './actions';
 import { inviteDirectMember } from '../_components/actions';

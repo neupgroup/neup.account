@@ -1,6 +1,6 @@
 'use server';
 
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import jwt from 'jsonwebtoken';
 import { verifyAccountToken } from '@/services/auth/account-token';
 import { validateAuthSession, expireSession } from '@/services/auth/session';

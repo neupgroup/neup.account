@@ -17,9 +17,9 @@ The panel shows each role's `scope_for`, `scope_level`, and default-role state, 
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useToast } from '@/core/hooks/useToast';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { useToast } from '#/core/hooks/useToast';
+import { Button } from '#/components/ui/button';
+import { Badge } from '#/components/ui/badge';
 import {
   pushAuthzToWebhook,
   clearAuthzPushStatus,

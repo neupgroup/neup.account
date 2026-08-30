@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { forbidden, notFound } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { FlowLink } from '@/components/ui/flow-link';
+import { Button } from '#/components/ui/button';
+import { FlowLink } from '#/components/ui/flow-link';
 import { ArrowLeft } from '@/components/icons';
 import {
   canCurrentAccountUseRootApplicationMode,
@@ -16,7 +16,7 @@ import {
 } from '@/services/applications/permission-definitions';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 import { UsersList } from './_components/users-list';
-import { formMetadata } from '@/core/metadata';
+import { formMetadata } from '#/core/metadata';
 
 type Props = {
   searchParams: Promise<{ application?: string | string[]; mode?: string; role?: string | string[] }>;

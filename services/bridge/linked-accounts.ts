@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import prisma, { Prisma } from '@/core/database/prisma';
-import { logError } from '@/logica/logger/files';
+import prisma, { Prisma } from '@/.neup/core/database/prisma';
+import { logError } from '@/.neup/logica/logger/files';
 
 /*
 ::neup.documentation::bridge-linked-accounts-service

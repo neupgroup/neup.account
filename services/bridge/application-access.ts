@@ -14,8 +14,8 @@
  * Auth: appId + appSecret as query params.
  */
 
-import prisma from '@/core/database/prisma';
-import { logError } from '@/logica/logger/files';
+import prisma from '@/.neup/core/database/prisma';
+import { logError } from '@/.neup/logica/logger/files';
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from '@/services/access-model';
 import { deriveLegacyRoleScopesFromPolicy, normalizeAuthzScopeFor, normalizeSingleAuthzScopeLevel } from '@/services/applications/authz-scope-policy';
 import { normalizeApplicationId } from '@/services/applications/identifiers';

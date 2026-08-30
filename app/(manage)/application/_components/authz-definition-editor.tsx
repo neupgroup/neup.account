@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '#/components/ui/button';
+import { Input } from '#/components/ui/input';
 import { Plus, Trash2 } from 'lucide-react';
 import type { ApplicationAuthzDefinitionTuple } from '@/services/applications/authz-config';
 

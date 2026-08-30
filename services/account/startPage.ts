@@ -1,4 +1,4 @@
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import { getActiveSession } from '@/services/account/verify';
 import { getValidatedStoredAccounts } from '@/services/account/session';
 import { extractGenderFromDetails, resolveDisplayImage } from '@/inapp/display-image';

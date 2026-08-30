@@ -2,9 +2,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '#/components/ui/tooltip';
 import { CheckCircle2 } from 'lucide-react';
-import { cn } from '@/core/utils';
+import { cn } from '#/core/utils';
 import { getAccountVerification } from '@/services/manage/verifications';
 
 type VerificationDetails = {

@@ -1,15 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "#/components/ui/tabs";
 import { UserDetails } from '@/services/manage/users';
 import { ProfileForm } from './profile-form';
 import { VerificationManager } from './verification-manager';
 import { ActivityList } from './activity/activity-list'; 
-import { Button } from '@/components/ui/button';
+import { Button } from '#/components/ui/button';
 import { ArrowLeft } from '@/components/icons';
 import { useRouter } from 'next/navigation';
-import { redirectInApp } from '@/core/helpers/link/navigation';
+import { redirectInApp } from '@/.neup/core/helpers/link/navigation';
 
 interface UserDetailsClientProps {
     initialUserDetails: UserDetails;

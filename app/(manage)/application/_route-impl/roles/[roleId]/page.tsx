@@ -10,7 +10,7 @@ editor, instead of the full role detail layout.
 */
 
 import { notFound } from 'next/navigation';
-import { FlowLink } from '@/components/ui/flow-link';
+import { FlowLink } from '#/components/ui/flow-link';
 import {
   canCurrentAccountManageApplicationRoles,
   canCurrentAccountViewApplicationRoles,
@@ -24,9 +24,9 @@ import {
   getAppPermissions,
   getAppRoles,
 } from '@/services/applications/authz-manage';
-import { BackButton } from '@/components/ui/back-button';
-import { PrimaryHeader } from '@/components/ui/primary-header';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { BackButton } from '#/components/ui/back-button';
+import { PrimaryHeader } from '#/components/ui/primary-header';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { RoleDetailEditor } from '@/app/(manage)/application/_components/role-detail-editor';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';

@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
-import { FlowLink } from '@/components/ui/flow-link';
+import { FlowLink } from '#/components/ui/flow-link';
 import { notFound } from 'next/navigation';
 import { CreditCard, Globe, ArrowRight, AppWindow, Camera } from '@/components/icons';
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BackButton } from '@/components/ui/back-button';
+import { Card, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
+import { BackButton } from '#/components/ui/back-button';
 import { checkPermissions } from '@/services/user';
-import { PrimaryHeader } from '@/components/ui/primary-header';
-import { formMetadata } from '@/core/metadata';
-import { permission } from '@/logica/permission';
+import { PrimaryHeader } from '#/components/ui/primary-header';
+import { formMetadata } from '#/core/metadata';
+import { permission } from '@/.neup/logica/permission';
 
 export const metadata: Metadata = formMetadata({ title: 'Site Configuration' });
 

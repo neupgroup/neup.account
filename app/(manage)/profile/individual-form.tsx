@@ -10,22 +10,22 @@ import { Calendar as CalendarIcon } from "lucide-react"
 import { getUserProfile, getUserNeupIds, getUserContacts, type UserProfile, type UserContacts } from '@/services/user'
 import { updateUserProfile, parseDateString } from "@/services/profile"
 import { profileFormSchema } from "@/services/profile/schema"
-import { useToast } from "@/core/hooks/useToast"
-import { cn } from "@/core/utils"
+import { useToast } from "#/core/hooks/useToast"
+import { cn } from "#/core/utils"
 
-import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { PhoneInput } from "@/components/ui/phone-input"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { Label } from '@/components/ui/label'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { Geolocation } from '@/core/providers/geolocation'
+import { Badge } from '#/components/ui/badge'
+import { Skeleton } from '#/components/ui/skeleton'
+import { Button } from "#/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "#/components/ui/card"
+import { Input } from "#/components/ui/input"
+import { PhoneInput } from "#/components/ui/phone-input"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "#/components/ui/form"
+import { RadioGroup, RadioGroupItem } from "#/components/ui/radio-group"
+import { Popover, PopoverContent, PopoverTrigger } from "#/components/ui/popover"
+import { Calendar } from "#/components/ui/calendar"
+import { Label } from '#/components/ui/label'
+import { Avatar, AvatarImage, AvatarFallback } from '#/components/ui/avatar'
+import { Geolocation } from '#/core/providers/geolocation'
 import { Loader2 } from '@/components/icons'
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;

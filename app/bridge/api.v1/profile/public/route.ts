@@ -1,6 +1,6 @@
 
 import { NextResponse, type NextRequest } from 'next/server';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import { getUserProfile, getAccountPermission } from '@/services/user';
 import { notFound } from 'next/navigation';
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/inapp/permissions/profile-permissions';

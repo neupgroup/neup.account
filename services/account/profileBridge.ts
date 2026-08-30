@@ -1,10 +1,10 @@
 'use server';
 
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import { hasAnyPermission, PROFILE_SECTION_PERMISSIONS } from '@/inapp/permissions/profile-permissions';
 import { validateAuthSession } from '@/services/auth/session';
 import { getAccountPermission, getGrantedAccountPermission, getUserProfile } from '@/services/user';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import { normalizeApplicationId } from '@/services/applications/identifiers';
 
 const servicePermissions = [

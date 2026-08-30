@@ -13,8 +13,8 @@
  * Auth: appId + appSecret as query params (same pattern as /accounts/lookup).
  */
 
-import prisma from '@/core/database/prisma';
-import { logError } from '@/logica/logger/files';
+import prisma from '@/.neup/core/database/prisma';
+import { logError } from '@/.neup/logica/logger/files';
 import { extractGenderFromDetails, resolveDisplayImage } from '@/inapp/display-image';
 import { normalizeApplicationId } from '@/services/applications/identifiers';
 

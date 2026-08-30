@@ -19,8 +19,8 @@ The result is cached per server process because the schema support only changes 
 ::end
 */
 
-import { Prisma } from '@/core/database/prisma';
-import prisma from '@/core/database/prisma';
+import { Prisma } from '@/.neup/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 
 export type AuthzScopePolicyColumnSupport = {
   permission: boolean;

@@ -7,7 +7,7 @@
 // Guest accounts have guest: 1 in the payload (and no nid).
 // Permanent accounts have a nid.
 
-import { cookieProvider } from '@/core/providers/cookies';
+import { cookieProvider } from '#/core/providers/cookies';
 import type { StoredAccount } from '@/services/account/session';
 import {
   signAccountToken,

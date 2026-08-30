@@ -2,10 +2,10 @@
 
 import { useEffect, useState, useTransition } from 'react';
 import { getNotifications, markNotificationAsRead } from '@/services/notifications';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { Button } from '#/components/ui/button';
 import { AlertTriangle, X, Bell } from '@/components/icons';
-import { cn } from '@/core/utils';
+import { cn } from '#/core/utils';
 import { Skeleton } from './ui/skeleton';
 import { usePathname } from 'next/navigation';
 import { cva, type VariantProps } from 'class-variance-authority';

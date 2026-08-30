@@ -1,10 +1,10 @@
 
 'use server';
 
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import bcrypt from 'bcryptjs';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/logica/logger/files';
+import { logError } from '@/.neup/logica/logger/files';
 import type { z } from 'zod';
 import { getAuthRequest, extendAuthRequest } from '../auth-request';
 import { getAuthTimeoutError } from '../timeout';

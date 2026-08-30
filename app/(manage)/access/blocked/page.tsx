@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useTransition, useRef, useCallback } from 'react';
-import { useToast } from '@/core/hooks/useToast';
+import { useToast } from '#/core/hooks/useToast';
 import {
   getBlockedUsers,
   getRestrictedUsers,
@@ -12,15 +12,15 @@ import {
   type BlockedUser,
 } from '@/services/manage/people/blocked';
 
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Card, CardContent, CardFooter } from '#/components/ui/card';
+import { Button } from '#/components/ui/button';
+import { Input } from '#/components/ui/input';
+import { Skeleton } from '#/components/ui/skeleton';
+import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
 import { Loader2, UserPlus, Trash2, Ban, EyeOff } from 'lucide-react';
-import { BackButton } from '@/components/ui/back-button';
-import { SecondaryHeader } from '@/components/ui/secondary-header';
-import { cn } from '@/core/utils';
+import { BackButton } from '#/components/ui/back-button';
+import { SecondaryHeader } from '#/components/ui/secondary-header';
+import { cn } from '#/core/utils';
 
 function UserListSkeleton() {
   return (

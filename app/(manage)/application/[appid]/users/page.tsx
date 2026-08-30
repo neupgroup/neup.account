@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { ApplicationUsersPage } from '@/app/(manage)/application/_route-impl/users/page';
-import { formMetadata } from '@/core/metadata';
+import { formMetadata } from '#/core/metadata';
 import { getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
 import {
   ROOT_APPLICATION_ACCOUNT_VIEW_PERMISSION,

@@ -1,6 +1,6 @@
 import { InactivityMonitor } from "@/components/auth/inactivity-monitor";
 import { SecurityGuard } from "@/components/auth/security-guard";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "#/components/ui/card";
 import { AlertTriangle } from "@/components/icons";
 
 export const dynamic = 'force-dynamic';

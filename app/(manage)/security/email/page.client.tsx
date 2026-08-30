@@ -5,18 +5,18 @@ import { useEffect, useState, useTransition, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useToast } from "@/core/hooks/useToast";
+import { useToast } from "#/core/hooks/useToast";
 import { getRecoveryEmail, addRecoveryEmail, removeRecoveryEmail } from "@/services/security/email";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "#/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+} from "#/components/ui/card";
+import { Input } from "#/components/ui/input";
 import {
   Form,
   FormControl,
@@ -24,13 +24,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "#/components/ui/form";
+import { Skeleton } from "#/components/ui/skeleton";
 import { Loader2, Plus, Trash2 } from "@/components/icons";
-import { cn } from "@/core/utils";
-import { BackButton } from "@/components/ui/back-button";
+import { cn } from "#/core/utils";
+import { BackButton } from "#/components/ui/back-button";
 import { emailFormSchema } from "@/services/security/schema";
-import { SecondaryHeader } from "@/components/ui/secondary-header";
+import { SecondaryHeader } from "#/components/ui/secondary-header";
 
 type EmailFormValues = z.infer<typeof emailFormSchema>;
 

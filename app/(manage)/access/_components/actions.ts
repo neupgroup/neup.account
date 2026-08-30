@@ -1,11 +1,11 @@
 'use server';
 
-import { permission } from '@/logica/permission';
-import prisma from '@/core/database/prisma';
-import { Prisma } from '@/core/database/prisma';
+import { permission } from '@/.neup/logica/permission';
+import prisma from '@/.neup/core/database/prisma';
+import { Prisma } from '@/.neup/core/database/prisma';
 import { checkPermissions, getUserProfile, isRootUser } from '@/services/user';
 import { getPersonalAccountId, getActiveAccountId } from '@/services/account/verify';
-import { logError } from '@/logica/logger/files';
+import { logError } from '@/.neup/logica/logger/files';
 import { assignAssetMemberRole, getRolesForAsset } from '@/services/manage/access/assets';
 import { BRAND_OWNER_ROLE_ID } from '@/inapp/permissions/brand-roles';
 import { resolveNeupAccountPermissionCandidates } from '@/inapp/permissions/permission-catalog';

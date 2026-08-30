@@ -1,16 +1,16 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import 'nprogress/nprogress.css';
-import { Toaster } from "@/components/ui/toaster"
-import { GeolocationProvider } from '@/core/providers/geolocation';
+import { Toaster } from "#/components/ui/toaster"
+import { GeolocationProvider } from '#/core/providers/geolocation';
 import { SessionProvider } from '@/inapp/auth/session-context';
 import { PageProgressBar } from '@/components/page-progress-bar';
 import { Suspense } from 'react';
-import { UrlErrorBanner } from '@/components/ui/url-error-banner';
+import { UrlErrorBanner } from '#/components/ui/url-error-banner';
 import { PersistentBacksTo } from '@/components/persistent-backs-to';
 import { HeaderV1 } from '@/components/layout/header.v1';
 import { getSiteLogoUrl } from '@/services/manage/site/logo';
-import { APP_NAME, DEFAULT_META_DESCRIPTION } from '@/core/metadata';
+import { APP_NAME, DEFAULT_META_DESCRIPTION } from '#/core/metadata';
 import { AppTitleSync } from '@/components/app-title-sync';
 import { checkSession } from '@/services/account/check';
 

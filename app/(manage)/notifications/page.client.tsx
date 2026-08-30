@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { getNotifications } from '@/services/notifications';
 import type { AllNotifications } from '@/services/notifications';
 import { NotificationManager } from '@/app/(manage)/notifications/notification-manager';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '#/components/ui/skeleton';
 
 export default function NotificationsPage() {
     const [notifications, setNotifications] = useState<AllNotifications | null>(null);

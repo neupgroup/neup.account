@@ -2,7 +2,7 @@
 'use server';
 
 import { getActiveAccountId, getPersonalAccountId } from '@/services/account/verify';
-import { logError } from '@/logica/logger/files';
+import { logError } from '@/.neup/logica/logger/files';
 
 const UPLOAD_URL = 'https://cdn.neupgroup.com/bridge/api/v1/upload.php';
 

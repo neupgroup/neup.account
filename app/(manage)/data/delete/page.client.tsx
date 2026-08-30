@@ -3,7 +3,7 @@
 "use client";
 
 import { useState, useTransition, useContext, useEffect } from "react";
-import { useToast } from "@/core/hooks/useToast";
+import { useToast } from "#/core/hooks/useToast";
 import { requestAccountDeletion } from "@/services/data/delete";
 import {
   Card,
@@ -12,19 +12,19 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+} from "#/components/ui/card";
+import { Button } from "#/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "#/components/ui/alert";
 import { Loader2, Trash2 } from "@/components/icons";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { BackButton } from "@/components/ui/back-button";
-import { Geolocation } from "@/core/providers/geolocation";
-import { SecondaryHeader } from "@/components/ui/secondary-header";
+import { Input } from "#/components/ui/input";
+import { Label } from "#/components/ui/label";
+import { BackButton } from "#/components/ui/back-button";
+import { Geolocation } from "#/core/providers/geolocation";
+import { SecondaryHeader } from "#/components/ui/secondary-header";
 import { getAccountType } from '@/services/user';
 import { getActiveAccountId } from '@/services/account/verify';
 import { useRouter } from "next/navigation";
-import { redirectInApp } from "@/core/helpers/link/navigation";
+import { redirectInApp } from "@/.neup/core/helpers/link/navigation";
 
 
 export default function DeleteAccountPage() {

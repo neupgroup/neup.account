@@ -1,8 +1,8 @@
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
 import { getConnectedApplications } from '@/services/applications/connected';
-import { Button } from '@/components/ui/button';
-import { FlowLink } from '@/components/ui/flow-link';
+import { Button } from '#/components/ui/button';
+import { FlowLink } from '#/components/ui/flow-link';
 import { AppWindow, ChevronRight } from '@/components/icons';
 
 

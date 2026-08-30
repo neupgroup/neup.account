@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import { BackButton } from "@/components/ui/back-button";
+import { BackButton } from "#/components/ui/back-button";
 import { ActivityList } from "./activity-list";
 import { getAccountBasics, type AccountBasics } from "@/services/manage/accounts";
 

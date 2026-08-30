@@ -1,14 +1,14 @@
 'use server';
 
-import { permission } from '@/logica/permission';
-import prisma from '@/core/database/prisma';
+import { permission } from '@/.neup/logica/permission';
+import prisma from '@/.neup/core/database/prisma';
 import { getActiveAccountId } from '@/services/account/verify';
 import { getUserNeupIds, checkPermissions } from '@/services/user';
 import { authenticator } from 'otplib';
 import qrcode from 'qrcode';
 import bcrypt from 'bcryptjs';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/logica/logger/files';
+import { logError } from '@/.neup/logica/logger/files';
 import { z } from 'zod';
 import crypto from 'crypto';
 import { totpEnableSchema, totpDisableSchema } from '@/services/security/schema';

@@ -1,7 +1,7 @@
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '#/components/ui/card';
 import { getNotifications } from '@/services/notifications';
-import { ListItem } from '@/components/ui/list-item';
-import { SecondaryHeader } from '@/components/ui/secondary-header';
+import { ListItem } from '#/components/ui/list-item';
+import { SecondaryHeader } from '#/components/ui/secondary-header';
 import type { Notification as NotificationType } from '@/services/notifications';
 
 function getNotificationDetails(notification: NotificationType): { iconName: string, message: string, href: string } {

@@ -1,9 +1,9 @@
 'use server';
 
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import {z} from 'zod';
 import {revalidatePath} from 'next/cache';
-import {logError} from '@/logica/logger/files';
+import {logError} from '@/.neup/logica/logger/files';
 import {checkPermissions} from '@/services/user';
 import crypto from 'crypto';
 import { SYSTEM_CONFIG_KEYS, readSystemConfigData, writeSystemConfigData } from '@/services/manage/site/system-config';

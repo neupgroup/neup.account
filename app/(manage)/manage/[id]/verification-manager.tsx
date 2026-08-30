@@ -4,18 +4,18 @@ import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useToast } from '@/core/hooks/useToast';
-import { TertiaryHeader } from '@/components/ui/tertiary-header';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useToast } from '#/core/hooks/useToast';
+import { TertiaryHeader } from '#/components/ui/tertiary-header';
+import { Card, CardContent, CardFooter, CardHeader } from '#/components/ui/card';
+import { Button } from '#/components/ui/button';
+import { Skeleton } from '#/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { Badge } from '#/components/ui/badge';
+import { Input } from '#/components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
 import { grantVerification, revokeVerification, getAccountVerification } from '@/services/manage/verifications';
 import { CheckCircle2, Loader2, ShieldCheck, XCircle } from 'lucide-react';
-import { Textarea } from '@/components/ui/textarea';
+import { Textarea } from '#/components/ui/textarea';
 
 const grantSchema = z.object({
   category: z.string().min(3, "Category is required."),

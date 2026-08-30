@@ -1,11 +1,11 @@
 'use client';
 
-import { permission } from '@/logica/permission';
-import { FlowLink } from '@/components/ui/flow-link'
+import { permission } from '@/.neup/logica/permission';
+import { FlowLink } from '#/components/ui/flow-link'
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { cn } from "@/core/utils"
-import { buttonVariants } from "@/components/ui/button"
+import { cn } from "#/core/utils"
+import { buttonVariants } from "#/components/ui/button"
 import { type NavSection, navItems, allPermissionsMap } from "./nav-data"
 import { Skeleton } from "./ui/skeleton";
 import { useSession } from "@/inapp/auth/session-context";
@@ -13,7 +13,7 @@ import { switchToPersonal } from "@/services/auth/switch";
 import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/inapp/permissions/profile-permissions";
 import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/inapp/permissions/data-permissions";
 import { ACCESS_VIEW_PERMISSIONS } from "@/inapp/permissions/access-view-permissions";
-import { APP_BASE_PATH } from '@/core/appconfig';
+import { APP_BASE_PATH } from '#/core/appconfig';
 
 const componentPermissions = [
     permission('notification.read', 'for_individual', 'component'),

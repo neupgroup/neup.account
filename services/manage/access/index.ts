@@ -1,16 +1,16 @@
 // @ts-nocheck
 'use server';
 
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import { getActiveAccountId, getPersonalAccountId } from '@/services/account/verify';
 import { getUserProfile, getUserNeupIds, getAccountType, getCurrentAccountPermission, checkPermissions } from '@/services/user';
-import { logError } from '@/logica/logger/files';
+import { logError } from '@/.neup/logica/logger/files';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { logActivity } from '@/services/log-actions';
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
 import { activeAccessWhere, getLogicalAssetId } from '@/services/access-model';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import {
   ACCESS_TEAM_ADD_PERMISSIONS,
   ACCESS_TEAM_VIEW_PERMISSIONS,

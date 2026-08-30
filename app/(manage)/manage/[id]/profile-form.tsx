@@ -5,13 +5,13 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Button } from "#/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "#/components/ui/form";
+import { Input } from "#/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "#/components/ui/card";
 import { useTransition } from "react";
 import { Loader2 } from "lucide-react";
-import { useToast } from "@/core/hooks/useToast";
+import { useToast } from "#/core/hooks/useToast";
 
 const profileFormSchema = z.object({
   nameFirst: z.string().min(1, "First name is required"),

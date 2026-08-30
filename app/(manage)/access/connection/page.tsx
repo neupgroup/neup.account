@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { BackButton } from '@/components/ui/back-button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BackButton } from '#/components/ui/back-button';
+import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card';
 import { AppWindow, ChevronRight, Users } from '@/components/icons';
-import { FlowLink } from '@/components/ui/flow-link';
+import { FlowLink } from '#/components/ui/flow-link';
 import { getConnectionPageData } from './actions';
-import { formMetadata } from '@/core/metadata';
+import { formMetadata } from '#/core/metadata';
 import { ACCESS_CONNECTION_VIEW_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import { resolveAccessProfileContext } from '@/services/account/access-profile-context';
 
 export const metadata: Metadata = formMetadata({ title: 'Connection Management' });

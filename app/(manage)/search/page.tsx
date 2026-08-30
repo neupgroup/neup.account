@@ -1,12 +1,12 @@
 
 import { Suspense } from 'react';
 import { searchAll } from '@/services/search';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '#/components/ui/card';
 import { UserCircle, ShieldCheck } from 'lucide-react';
-import { FlowLink } from '@/components/ui/flow-link';
-import { Badge } from '@/components/ui/badge';
-import { BackButton } from '@/components/ui/back-button';
-import { Skeleton } from '@/components/ui/skeleton';
+import { FlowLink } from '#/components/ui/flow-link';
+import { Badge } from '#/components/ui/badge';
+import { BackButton } from '#/components/ui/back-button';
+import { Skeleton } from '#/components/ui/skeleton';
 
 async function SearchResults({ query }: { query: string }) {
     const results = await searchAll(query);

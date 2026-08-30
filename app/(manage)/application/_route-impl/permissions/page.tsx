@@ -7,13 +7,13 @@ import {
   logRootApplicationActivity,
 } from '@/services/applications/manage';
 import { getAppPermissions } from '@/services/applications/authz-manage';
-import { BackButton } from '@/components/ui/back-button';
-import { PrimaryHeader } from '@/components/ui/primary-header';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { BackButton } from '#/components/ui/back-button';
+import { PrimaryHeader } from '#/components/ui/primary-header';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { PermissionPanel } from '@/app/(manage)/application/_components/permission-panel';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
-import { formMetadata } from '@/core/metadata';
+import { formMetadata } from '#/core/metadata';
 import { PermissionDetailEditor } from '@/app/(manage)/application/_components/permission-detail-editor';
 
 /*

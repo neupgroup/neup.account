@@ -11,19 +11,19 @@ import { format } from "date-fns"
 import { getUserProfile, type UserProfile } from '@/services/user'
 import { parseDateString, updateBrandProfile } from "@/services/profile"
 import { brandProfileFormSchema } from "@/services/profile/schema"
-import { useToast } from "@/core/hooks/useToast"
-import { cn } from "@/core/utils"
+import { useToast } from "#/core/hooks/useToast"
+import { cn } from "#/core/utils"
 
-import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Label } from '@/components/ui/label'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Geolocation } from '@/core/providers/geolocation'
+import { Skeleton } from '#/components/ui/skeleton'
+import { Button } from "#/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "#/components/ui/card"
+import { Input } from "#/components/ui/input"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "#/components/ui/form"
+import { Label } from '#/components/ui/label'
+import { Avatar, AvatarImage, AvatarFallback } from '#/components/ui/avatar'
+import { Checkbox } from '#/components/ui/checkbox'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select'
+import { Geolocation } from '#/core/providers/geolocation'
 import { Loader2 } from '@/components/icons'
 
 type BrandFormValues = z.infer<typeof brandProfileFormSchema>;

@@ -2,12 +2,12 @@
 
 import { useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "#/components/ui/badge";
+import { Button } from "#/components/ui/button";
+import { Card, CardContent } from "#/components/ui/card";
+import { Checkbox } from "#/components/ui/checkbox";
 import { Loader2, ShieldCheck } from "@/components/icons";
-import { useToast } from "@/core/hooks/useToast";
+import { useToast } from "#/core/hooks/useToast";
 import {
   updateDirectMemberAccess,
   type DirectAccessAssignableRole,

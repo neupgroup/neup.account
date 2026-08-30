@@ -17,11 +17,11 @@ This component powers the role detail page where managers adjust permission memb
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useToast } from '@/core/hooks/useToast';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
+import { useToast } from '#/core/hooks/useToast';
+import { Button } from '#/components/ui/button';
+import { Badge } from '#/components/ui/badge';
+import { Input } from '#/components/ui/input';
+import { Checkbox } from '#/components/ui/checkbox';
 import {
   deleteAppRole,
   setAppDefaultRole,
@@ -29,7 +29,7 @@ import {
   type AppPermission,
   type AppRole,
 } from '@/services/applications/authz-manage';
-import { redirectInApp } from '@/core/helpers/link/navigation';
+import { redirectInApp } from '@/.neup/core/helpers/link/navigation';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { isBuiltInApplicationManagementPermissionName } from '@/services/applications/permission-definitions';
 import { AuthzDefinitionSelector } from './authz-definition-selector';

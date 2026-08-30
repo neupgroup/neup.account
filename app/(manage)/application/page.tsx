@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { forbidden, notFound } from 'next/navigation';
 import { getApplicationsManagePageData } from '@/services/applications/form-actions';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { AlertTriangle } from '@/components/icons';
 import { Suspense } from 'react';
 import { ApplicationsPillView } from '@/app/(manage)/application/_components/applications-pill-view';
@@ -11,7 +11,7 @@ import {
   getQueryParam,
 } from '@/app/(manage)/application/_lib/query-param';
 import { canCurrentAccountUseRootApplicationMode } from '@/services/applications/manage';
-import { formMetadata } from '@/core/metadata';
+import { formMetadata } from '#/core/metadata';
 
 /*
 ::neup.documentation::application-manage-page

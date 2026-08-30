@@ -1,8 +1,8 @@
 'use server';
 
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import { getActiveAccountId } from '@/services/account/verify';
-import { logError } from '@/logica/logger/files';
+import { logError } from '@/.neup/logica/logger/files';
 import { revalidatePath } from 'next/cache';
 import { getUserProfile } from '@/services/user';
 import { notFound } from 'next/navigation';

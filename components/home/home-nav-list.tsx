@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import React from "react";
-import {Card, CardContent} from "@/components/ui/card";
+import {Card, CardContent} from "#/components/ui/card";
 import {UserCircle, Key, type LucideIcon, Home, FolderGit2, Database, Combine, HeartHandshake, Gem, Users, LogOut, ArrowLeft, AppWindow, AlertTriangle, Wallet, ShieldCheck, Clock, ChevronRight} from "@/components/icons";
 import { NotificationBell } from "../warning-display";
 import { ListItem } from '../ui/list-item'; // Re-using the refactored ListItem

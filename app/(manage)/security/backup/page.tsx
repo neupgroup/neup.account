@@ -1,4 +1,4 @@
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
 import { SECURITY_PERMISSION_GROUPS } from '@/inapp/permissions/security-permissions';
 import BackupCodesPageClient from './page.client';

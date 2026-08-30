@@ -1,10 +1,10 @@
 'use client';
 
 import { useSession } from '@/inapp/auth/session-context';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '#/components/ui/card';
 import { Users, List, Terminal, AppWindow } from '@/components/icons';
-import { SecondaryHeader } from '@/components/ui/secondary-header';
-import { ListItem } from '@/components/ui/list-item';
+import { SecondaryHeader } from '#/components/ui/secondary-header';
+import { ListItem } from '#/components/ui/list-item';
 
 const managementItems = [
     {

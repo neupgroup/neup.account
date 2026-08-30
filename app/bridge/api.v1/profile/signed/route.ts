@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import { getUserProfile } from '@/services/user';
 import { getActiveSession } from '@/services/account/verify';
-import { logError } from '@/logica/logger/files';
+import { logError } from '@/.neup/logica/logger/files';
 import { notFound } from 'next/navigation';
 import { getAccountPermission } from '@/services/user';
 import { getProfileContacts, getProfileNeupIds } from '@/services/profile';

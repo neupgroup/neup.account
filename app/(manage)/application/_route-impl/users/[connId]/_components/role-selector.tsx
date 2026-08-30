@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import { Search } from '@/components/icons';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Input } from '#/components/ui/input';
+import { Badge } from '#/components/ui/badge';
 import { assignApplicationConnectionRole, type AppRoleOption } from '@/services/applications/manage';
 import { normalizeRoleScopes } from '@/services/role-scopes';
 

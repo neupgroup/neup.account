@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
 import { Skeleton } from './ui/skeleton';
 import { useSession } from '@/inapp/auth/session-context';
 import { getFallbackDisplayImage } from '@/inapp/display-image';

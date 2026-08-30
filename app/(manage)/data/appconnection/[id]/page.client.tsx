@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import { FlowLink } from '@/components/ui/flow-link';
+import { FlowLink } from '#/components/ui/flow-link';
 import { notFound } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '#/components/ui/button';
+import { Badge } from '#/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
 import { getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
 import { deleteManagedApplicationFromDetailsPage } from '@/services/applications/form-actions';
 import { getSilentSsoOrigins } from '@/services/applications/manage';

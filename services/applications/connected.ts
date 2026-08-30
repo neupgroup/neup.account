@@ -2,9 +2,9 @@
 
 // Handles applications the user has connected to or signed into.
 
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import { getPersonalAccountId } from '@/services/account/verify';
-import { logError } from '@/logica/logger/files';
+import { logError } from '@/.neup/logica/logger/files';
 import type { Application } from '@/services/applications/types';
 
 type ConnectedApplications = {

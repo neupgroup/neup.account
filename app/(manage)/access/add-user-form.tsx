@@ -2,11 +2,11 @@
 
 import { useRef, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "#/components/ui/button";
+import { Input } from "#/components/ui/input";
 import { Loader2, UserPlus } from "@/components/icons";
 import { resolveNeupId } from "./_components/actions";
-import { redirectInApp } from "@/core/helpers/link/navigation";
+import { redirectInApp } from "@/.neup/core/helpers/link/navigation";
 
 /**
  * ::neup.documentation::add-user-form

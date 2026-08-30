@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock prisma before importing the module under test
-vi.mock('@/core/database/prisma', () => ({
+vi.mock('#/core/database/prisma', () => ({
     default: {
         authnRequest: {
             findUnique: vi.fn(),
@@ -10,7 +10,7 @@ vi.mock('@/core/database/prisma', () => ({
     },
 }));
 
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import { getAuthRequest } from '@/services/auth/auth-request';
 
 const mockFindUnique = prisma.authnRequest.findUnique as ReturnType<typeof vi.fn>;

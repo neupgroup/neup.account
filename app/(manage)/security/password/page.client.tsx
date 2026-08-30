@@ -4,18 +4,18 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useToast } from "@/core/hooks/useToast";
+import { useToast } from "#/core/hooks/useToast";
 import { changePassword } from "@/services/security/password";
 import { changePasswordSchema } from "@/services/security/schema";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Button } from "#/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "#/components/ui/card";
+import { Input } from "#/components/ui/input";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "#/components/ui/form";
 import { useState, useContext, useTransition } from "react";
-import { BackButton } from "@/components/ui/back-button";
-import { Geolocation } from "@/core/providers/geolocation";
-import { SecondaryHeader } from "@/components/ui/secondary-header";
+import { BackButton } from "#/components/ui/back-button";
+import { Geolocation } from "#/core/providers/geolocation";
+import { SecondaryHeader } from "#/components/ui/secondary-header";
 import { Loader2 } from "@/components/icons";
 
 type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;

@@ -1,19 +1,19 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { BackButton } from '@/components/ui/back-button';
-import { Card, CardContent } from '@/components/ui/card';
+import { BackButton } from '#/components/ui/back-button';
+import { Card, CardContent } from '#/components/ui/card';
 import { Shield, ChevronRight } from '@/components/icons';
 import { getDirectMembers } from '@/services/manage/access';
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import { getUserProfile, isRootUser } from '@/services/user';
 import { resolveAssetName } from '@/services/manage/access/asset-resolvers';
 import { AssetMemberLookupForm } from '../_components/asset-member-lookup-form';
 import { AddUserForm } from '../add-user-form';
-import { FlowLink } from '@/components/ui/flow-link';
-import { PrimaryHeader } from '@/components/ui/primary-header';
-import { formMetadata } from '@/core/metadata';
+import { FlowLink } from '#/components/ui/flow-link';
+import { PrimaryHeader } from '#/components/ui/primary-header';
+import { formMetadata } from '#/core/metadata';
 import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import { resolveAccessProfileContext } from '@/services/account/access-profile-context';
 
 const pagePermissions = [

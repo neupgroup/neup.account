@@ -20,7 +20,7 @@ The seed keeps legacy root/default role names alive while populating the canonic
 
 import 'dotenv/config';
 import bcrypt from 'bcryptjs';
-import prisma from '@/core/database/prisma';
+import prisma from '#/core/database/prisma';
 import { ensureAccessGrant } from '../services/access-model';
 import {
   NEUP_ACCOUNT_APP_ID,

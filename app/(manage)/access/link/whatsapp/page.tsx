@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { formMetadata } from '@/core/metadata';
+import { formMetadata } from '#/core/metadata';
 import LinkWhatsAppPageClient from './page.client';
 
 export const metadata: Metadata = formMetadata({ title: 'Link WhatsApp' });

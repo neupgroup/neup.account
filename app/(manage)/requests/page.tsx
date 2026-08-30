@@ -2,14 +2,14 @@ import { Suspense } from 'react';
 import { checkPermissions } from '@/services/user';
 import { getAllRequests } from '@/services/manage/requests/all';
 import { REQUEST_TYPE_LABELS } from '@/services/manage/requests/types';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { Card, CardContent } from '#/components/ui/card';
+import { Badge } from '#/components/ui/badge';
 import { Ban, ChevronRight } from '@/components/icons';
-import { FlowLink } from '@/components/ui/flow-link';
+import { FlowLink } from '#/components/ui/flow-link';
 import Link from 'next/link';
-import { cn } from '@/core/utils';
-import { permission } from '@/logica/permission';
+import { cn } from '#/core/utils';
+import { permission } from '@/.neup/logica/permission';
 
 type Props = {
   searchParams: Promise<{ type?: string; application?: string }>;

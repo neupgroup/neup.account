@@ -1,8 +1,8 @@
-import { FlowLink } from '@/components/ui/flow-link';
-import { BackButton } from '@/components/ui/back-button';
-import { Card, CardContent } from '@/components/ui/card';
-import { PrimaryHeader } from '@/components/ui/primary-header';
-import { SecondaryHeader } from '@/components/ui/secondary-header';
+import { FlowLink } from '#/components/ui/flow-link';
+import { BackButton } from '#/components/ui/back-button';
+import { Card, CardContent } from '#/components/ui/card';
+import { PrimaryHeader } from '#/components/ui/primary-header';
+import { SecondaryHeader } from '#/components/ui/secondary-header';
 import { AppWindow, ChevronRight, Users } from '@/components/icons';
 
 export type AccessGroupMember = {

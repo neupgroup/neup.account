@@ -4,11 +4,11 @@
 import { useEffect, useState, useTransition } from 'react';
 import { getUserProfile } from '@/services/user';
 import type { StoredAccount } from '@/services/account/session';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from '#/components/ui/skeleton';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronRight } from '@/components/icons';
 import { AccountActions } from '@/app/auth/start/start-page-component';
-import { cn } from '@/core/utils';
+import { cn } from '#/core/utils';
 import { deleteSessionData } from '@/inapp/auth/storage';
 import { getFallbackDisplayImage } from '@/inapp/display-image';
 

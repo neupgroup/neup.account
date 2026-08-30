@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 /*
 ::neup.documentation::seed-brand-owner-role-script
 

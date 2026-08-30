@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "#/components/ui/button";
+import { Input } from "#/components/ui/input";
 import { Loader2, UserPlus, UserCircle } from "@/components/icons";
 import { assignOrInviteAssetMember, getAssignableRolesForAsset, resolveNeupId } from "./actions";
 

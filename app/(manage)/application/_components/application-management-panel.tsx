@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { useToast } from '@/core/hooks/useToast';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useToast } from '#/core/hooks/useToast';
+import { Badge } from '#/components/ui/badge';
+import { Button } from '#/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
+import { Input } from '#/components/ui/input';
+import { Textarea } from '#/components/ui/textarea';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import {
   saveApplicationAccess,
   saveApplicationEndpoints,

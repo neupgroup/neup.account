@@ -1,15 +1,15 @@
 'use server';
 
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/logica/logger/files';
+import { logError } from '@/.neup/logica/logger/files';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { getPersonalAccountId } from '@/services/account/verify';
 import { checkPermissions } from '@/services/user';
 import { emailFormSchema } from '@/services/security/schema';
 import { createNotification } from '../notifications';
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
 
 const CONTACT_TYPE = 'recoveryEmail';

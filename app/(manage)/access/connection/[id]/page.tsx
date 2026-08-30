@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { BackButton } from '@/components/ui/back-button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { FlowLink } from '@/components/ui/flow-link';
+import { BackButton } from '#/components/ui/back-button';
+import { Badge } from '#/components/ui/badge';
+import { Card, CardContent } from '#/components/ui/card';
+import { FlowLink } from '#/components/ui/flow-link';
 import { AppWindow, ChevronRight, Plus, UserCircle, Users } from '@/components/icons';
 import { getConnectionDetail } from '../actions';
 import { ACCESS_CONNECTION_VIEW_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';

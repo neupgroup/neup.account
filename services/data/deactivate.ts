@@ -1,10 +1,10 @@
 'use server';
 
-import { permission } from "@/logica/permission";
+import { permission } from "@/.neup/logica/permission";
 import { z } from "zod";
 import { logActivity } from "@/services/log-actions";
-import { logError } from "@/logica/logger/files";
-import prisma from '@/core/database/prisma';
+import { logError } from "@/.neup/logica/logger/files";
+import prisma from '@/.neup/core/database/prisma';
 import bcrypt from "bcryptjs";
 import { getActiveAccountId } from "@/services/account/verify";
 import { logoutActiveSession } from "@/services/account/logout";

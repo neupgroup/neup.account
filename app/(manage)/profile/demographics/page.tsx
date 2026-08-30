@@ -8,23 +8,23 @@ import { z } from "zod"
 import { format } from "date-fns"
 
 import { updateUserProfile, parseDateString } from "@/services/profile"
-import { useToast } from "@/core/hooks/useToast"
-import { cn } from '@/core/utils'
+import { useToast } from "#/core/hooks/useToast"
+import { cn } from '#/core/utils'
 
-import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { Label } from '@/components/ui/label'
+import { Skeleton } from '#/components/ui/skeleton'
+import { Button } from "#/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "#/components/ui/card"
+import { Input } from "#/components/ui/input"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "#/components/ui/form"
+import { RadioGroup, RadioGroupItem } from "#/components/ui/radio-group"
+import { Popover, PopoverContent, PopoverTrigger } from "#/components/ui/popover"
+import { Calendar } from "#/components/ui/calendar"
+import { Label } from '#/components/ui/label'
 import { Loader2 } from "@/components/icons"
 import { useSession } from '@/inapp/auth/session-context'
-import { BackButton } from '@/components/ui/back-button'
+import { BackButton } from '#/components/ui/back-button'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/inapp/permissions/profile-permissions'
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import { useSelectedProfilePage } from '../use-selected-profile-page';
 
 const pagePermissions = [

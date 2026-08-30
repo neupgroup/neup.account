@@ -1,7 +1,7 @@
 'use client';
 
 import { useTransition } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '#/components/ui/button';
 import { Loader2, X } from '@/components/icons';
 import { revokeAppAccessFromAccount } from './actions';
 

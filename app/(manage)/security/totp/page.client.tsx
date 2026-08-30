@@ -3,16 +3,16 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import Image from 'next/image';
-import { useToast } from '@/core/hooks/useToast';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useToast } from '#/core/hooks/useToast';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "#/components/ui/card";
+import { Button } from '#/components/ui/button';
+import { Input } from '#/components/ui/input';
+import { Skeleton } from '#/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { getTotpStatus, generateTotpSecret, verifyAndEnableTotp, disableTotp, getServerTime } from '@/services/security/totp';
 import { Smartphone, Loader2, Clock } from '@/components/icons';
-import { BackButton } from '@/components/ui/back-button';
-import { SecondaryHeader } from '@/components/ui/secondary-header';
+import { BackButton } from '#/components/ui/back-button';
+import { SecondaryHeader } from '#/components/ui/secondary-header';
 
 type SetupState = {
     secret: string;

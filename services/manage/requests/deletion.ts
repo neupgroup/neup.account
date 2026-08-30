@@ -1,14 +1,14 @@
 'use server';
 
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import { getUserProfile, checkPermissions, isRootUser } from '@/services/user';
-import { logError } from '@/logica/logger/files';
+import { logError } from '@/.neup/logica/logger/files';
 import { revalidatePath } from 'next/cache';
 import { deleteUserAccount } from '@/services/manage/users';
 import { getPersonalAccountId } from '@/services/account/verify';
 import { logActivity } from '@/services/log-actions';
 import { z } from 'zod';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 
 /**
  * Type DeletionRequest.

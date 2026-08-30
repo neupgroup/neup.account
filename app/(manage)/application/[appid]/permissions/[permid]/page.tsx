@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { ApplicationPermissionsPage } from '@/app/(manage)/application/_route-impl/permissions/page';
-import { formMetadata } from '@/core/metadata';
+import { formMetadata } from '#/core/metadata';
 import { getAppPermissions } from '@/services/applications/authz-manage';
 import { getApplicationDetailsForViewerV2 } from '@/services/applications/manage';
 

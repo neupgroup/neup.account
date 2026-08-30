@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { getSessionCookies } from '@/services/auth/session-cookies';
-import { getCookie } from '@/core/helpers/cookie';
+import { getCookie } from '@/.neup/core/helpers/cookie';
 import { getActiveSession } from '@/services/account/verify';
 
 type RequireValidSessionOptions = {

@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { getAccountPermission, getCurrentAccountPermission } from '@/services/user';
 import { hasAnyPermission } from '@/inapp/permissions/profile-permissions';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 
 const helperPermissions = [
   permission('root.account.view', 'for_individual', 'helper'),

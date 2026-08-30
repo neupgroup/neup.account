@@ -2,11 +2,11 @@
 
 import { FormEvent, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { useToast } from '@/core/hooks/useToast';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '#/core/hooks/useToast';
+import { Card, CardContent } from '#/components/ui/card';
+import { Button } from '#/components/ui/button';
+import { Input } from '#/components/ui/input';
+import { Textarea } from '#/components/ui/textarea';
 import {
   Dialog,
   DialogContent,
@@ -15,10 +15,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '#/components/ui/dialog';
 import { Plus, Loader2 } from '@/components/icons';
 import { createAssetGroup } from '@/services/manage/access/assets';
-import { redirectInApp } from '@/core/helpers/link/navigation';
+import { redirectInApp } from '@/.neup/core/helpers/link/navigation';
 
 export function CreateAssetGroupCard({ variant = 'card' }: { variant?: 'card' | 'row' }) {
   const router = useRouter();

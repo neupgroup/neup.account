@@ -4,16 +4,16 @@ import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useToast } from "@/core/hooks/useToast";
+import { useToast } from "#/core/hooks/useToast";
 import { whatsAppFormSchema, verifyCodeSchema } from "./schema";
 import { sendVerificationCode, linkWhatsAppAccount } from '@/services/manage/accounts/whatsapp';
 
-import { Button } from "@/components/ui/button";
+import { Button } from "#/components/ui/button";
 import {
   Card,
   CardContent,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+} from "#/components/ui/card";
+import { Input } from "#/components/ui/input";
 import {
   Form,
   FormControl,
@@ -21,12 +21,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { PhoneInput } from "@/components/ui/phone-input";
+} from "#/components/ui/form";
+import { PhoneInput } from "#/components/ui/phone-input";
 import { Loader2 } from "@/components/icons";
-import { cn } from "@/core/utils";
-import { BackButton } from "@/components/ui/back-button";
-import { SecondaryHeader } from "@/components/ui/secondary-header";
+import { cn } from "#/core/utils";
+import { BackButton } from "#/components/ui/back-button";
+import { SecondaryHeader } from "#/components/ui/secondary-header";
 
 export default function LinkWhatsAppPageClient({
     managerAccountId,

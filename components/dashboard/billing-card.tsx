@@ -1,7 +1,7 @@
 
 "use client"
 
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '#/components/ui/card';
 import { Wallet, Gem } from '@/components/icons';
 import { ListItem } from '../ui/list-item';
 import { SecondaryHeader } from '../ui/secondary-header';

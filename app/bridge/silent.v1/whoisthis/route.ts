@@ -1,8 +1,8 @@
 import { NextRequest } from 'next/server';
 import { getSessionCookies } from '@/services/auth/session-cookies';
 import { getAccounts } from '@/services/account/accounts';
-import prisma from '@/core/database/prisma';
-import { logError } from '@/logica/logger/files';
+import prisma from '@/.neup/core/database/prisma';
+import { logError } from '@/.neup/logica/logger/files';
 import { resolveGuestAccount } from '@/services/account/guestAccount';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import {

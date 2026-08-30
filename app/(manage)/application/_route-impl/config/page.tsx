@@ -7,9 +7,9 @@ import {
   getAppConfigData,
   logRootApplicationActivity,
 } from '@/services/applications/manage';
-import { BackButton } from '@/components/ui/back-button';
-import { PrimaryHeader } from '@/components/ui/primary-header';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { BackButton } from '#/components/ui/back-button';
+import { PrimaryHeader } from '#/components/ui/primary-header';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { AppConfigForm } from '@/app/(manage)/application/_components/app-config-form';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';

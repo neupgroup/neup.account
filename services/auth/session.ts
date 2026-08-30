@@ -1,6 +1,6 @@
 "use server";
 
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import { createAndSetSession } from '@/services/account/session';
 import { getActiveSession } from '@/services/account/verify';
 import { makeNotification } from '@/services/notifications';

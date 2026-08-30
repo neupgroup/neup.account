@@ -4,7 +4,7 @@
 import { useEffect, useRef, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { logoutActiveSession } from "@/services/account/logout"
-import { redirectInApp } from "@/core/helpers/link/redirect"
+import { redirectInApp } from "#/core/helpers/link/redirect"
 
 function SignOut() {
     const searchParams = useSearchParams()

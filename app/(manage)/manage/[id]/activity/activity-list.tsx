@@ -4,12 +4,12 @@ import { getActivity } from "@/services/manage/users";
 import { getAccountBasics } from "@/services/manage/accounts";
 import { checkPermissions } from '@/services/user';
 import { Ban, MapPin } from "@/components/icons";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription, AlertTitle } from "#/components/ui/alert";
+import { Skeleton } from "#/components/ui/skeleton";
 import { useEffect, useState } from "react";
 import type { UserActivityLog } from '@/services/manage/users';
 import type { AccountBasics } from '@/services/manage/accounts';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 
 const componentPermissions = [
     permission('root.account.view', 'for_individual', 'component'),

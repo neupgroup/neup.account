@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '#/components/ui/button';
+import { Input } from '#/components/ui/input';
 import { Search } from '@/components/icons';
-import { TertiaryHeader } from '@/components/ui/tertiary-header';
+import { TertiaryHeader } from '#/components/ui/tertiary-header';
 import NProgress from 'nprogress';
-import { redirectInApp } from '@/core/helpers/link/navigation';
+import { redirectInApp } from '@/.neup/core/helpers/link/navigation';
 
 export function FindUserCard() {
     const [searchQuery, setSearchQuery] = useState('');

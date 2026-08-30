@@ -1,7 +1,7 @@
 import { forbidden, notFound } from 'next/navigation';
 import { ArrowLeft } from '@/components/icons';
-import { Button } from '@/components/ui/button';
-import { FlowLink } from '@/components/ui/flow-link';
+import { Button } from '#/components/ui/button';
+import { FlowLink } from '#/components/ui/flow-link';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 import {
   canCurrentAccountUpdateApplicationUserRole,

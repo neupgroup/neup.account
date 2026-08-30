@@ -1,6 +1,6 @@
 'use client';
 
-import { APP_NAME, formatAppTitle } from '@/core/metadata';
+import { APP_NAME, formatAppTitle } from '#/core/metadata';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 

@@ -1,17 +1,17 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useToast } from '@/core/hooks/useToast';
+import { useToast } from '#/core/hooks/useToast';
 import {
     deleteExpiredGuestAccount,
     deleteAllExpiredGuestAccounts,
     getExpiredGuestAccounts,
     type ExpiredGuestAccount,
 } from '@/services/manage/accounts/cleanup';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '#/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader } from '#/components/ui/card';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { Badge } from '#/components/ui/badge';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -22,7 +22,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+} from '#/components/ui/alert-dialog';
 import { Loader2, Trash2, ShieldAlert, CalendarClock, RefreshCw } from 'lucide-react';
 
 export function CleanupClient({ initialAccounts }: { initialAccounts: ExpiredGuestAccount[] }) {

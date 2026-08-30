@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { forbidden } from 'next/navigation';
 import { ApplicationDetailPage } from '@/app/(manage)/application/_components/application-detail-page';
 import { getApplicationMode } from '@/app/(manage)/application/_lib/query-param';
-import { formMetadata } from '@/core/metadata';
+import { formMetadata } from '#/core/metadata';
 import {
   canCurrentAccountUseRootApplicationMode,
   getApplicationDetailsForViewerV2,

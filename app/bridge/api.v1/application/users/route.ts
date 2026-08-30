@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import { getApplicationUsers } from '@/services/bridge/application-users';
 import { validateSilentSsoOrigin } from '@/services/auth/silent-sso';
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import { writeApplicationDevLog } from '@/services/bridge/dev-logs';
 import { normalizeApplicationId } from '@/services/applications/identifiers';
 

@@ -4,15 +4,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 import {
     Card,
     CardContent,
-} from "@/components/ui/card"
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge"
+} from "#/components/ui/card"
+import { Button } from "#/components/ui/button";
+import { Badge } from "#/components/ui/badge"
 import { getActivities } from "@/services/log-actions"
 import { ChevronLeft, ChevronRight } from "@/components/icons";
-import { BackButton } from "@/components/ui/back-button";
+import { BackButton } from "#/components/ui/back-button";
 import { useEffect, useState, useCallback } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { redirectInApp } from "@/core/helpers/link/navigation";
+import { Skeleton } from "#/components/ui/skeleton";
+import { redirectInApp } from "@/.neup/core/helpers/link/navigation";
 import type { ActivityLog } from "@/services/log-actions";
 import { applicationHref } from "@/app/(manage)/application/_lib/query-param";
 

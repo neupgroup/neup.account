@@ -6,23 +6,23 @@ import { notFound } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useToast } from '@/core/hooks/useToast';
+import { useToast } from '#/core/hooks/useToast';
 import { kycFormSchema, type KycFormValues } from '@/services/manage/profile/schema';
 import { submitKyc } from '@/services/manage/profile/documents';
 import { uploadFile } from '@/services/upload';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { BackButton } from '@/components/ui/back-button';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '#/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
+import { Input } from '#/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { BackButton } from '#/components/ui/back-button';
+import { Skeleton } from '#/components/ui/skeleton';
 import { Loader2, Camera, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { useSession } from '@/inapp/auth/session-context';
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/inapp/permissions/profile-permissions';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -33,8 +33,8 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { redirectInApp } from '@/core/helpers/link/navigation';
+} from "#/components/ui/alert-dialog"
+import { redirectInApp } from '@/.neup/core/helpers/link/navigation';
 import { useSelectedProfilePage } from '../use-selected-profile-page';
 
 const pagePermissions = [

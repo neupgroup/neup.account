@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useToast } from "@/core/hooks/useToast";
+import { useToast } from "#/core/hooks/useToast";
 import { updateAccountRoles } from "@/services/manage/users";
-import { Button } from "@/components/ui/button";
+import { Button } from "#/components/ui/button";
 import { Loader2, CheckCircle2 } from "@/components/icons";
 
 type Role = {

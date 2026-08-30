@@ -19,7 +19,7 @@ The script is idempotent and rebuilds the role-permission mappings after upserti
 */
 
 import 'dotenv/config';
-import prisma from '@/core/database/prisma';
+import prisma from '#/core/database/prisma';
 import { APPLICATION_SYSTEM_OWNER_PERMISSION_DEFINITIONS } from '../services/applications/permission-definitions';
 
 if (!process.env.DATABASE_URL) {

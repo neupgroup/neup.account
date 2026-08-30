@@ -1,6 +1,6 @@
-import prisma from '@/core/database/prisma';
-import { Prisma } from '@/core/database/prisma';
-import type { AccessType, AssetType } from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
+import { Prisma } from '@/.neup/core/database/prisma';
+import type { AccessType, AssetType } from '@/.neup/core/database/prisma';
 import { normalizeSingleAuthzScopeLevel } from '@/services/applications/authz-scope-policy';
 
 /**

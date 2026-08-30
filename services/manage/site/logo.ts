@@ -2,9 +2,9 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import { checkPermissions } from '@/services/user';
-import { logError } from '@/logica/logger/files';
+import { logError } from '@/.neup/logica/logger/files';
 import { SYSTEM_CONFIG_KEYS, readSystemConfigData, writeSystemConfigData } from '@/services/manage/site/system-config';
 
 const DEFAULT_SITE_LOGO_URL = 'https://neupcdn.com/neupaccount/assets/logo.svg';

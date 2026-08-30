@@ -1,7 +1,7 @@
 import { checkGrantedPermissions, checkPermissions, getAccountPermission, getCurrentAccountPermission } from '@/services/user';
 import { notFound } from 'next/navigation';
 import { getAccountSelectorContext } from '@/services/account/accountSelector';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import {
   hasAnyPermission,
   PROFILE_DISPLAY_PERMISSION_GROUPS,

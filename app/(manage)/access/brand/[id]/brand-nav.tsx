@@ -1,12 +1,12 @@
 
 'use client';
 
-import { FlowLink } from '@/components/ui/flow-link';
+import { FlowLink } from '#/components/ui/flow-link';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/core/utils';
-import { buttonVariants } from '@/components/ui/button';
+import { cn } from '#/core/utils';
+import { buttonVariants } from '#/components/ui/button';
 import { Building, AppWindow, ShieldCheck, Users, UserCircle, ArrowLeft } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
+import { Separator } from '#/components/ui/separator';
 
 export function BrandNav({ brandId }: { brandId: string }) {
   const pathname = usePathname();

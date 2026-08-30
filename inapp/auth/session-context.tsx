@@ -35,8 +35,8 @@ import {
   SessionProvider as CoreSessionProvider,
   useSession as useCoreSession,
   type SessionUser,
-} from '@/core/providers/session';
-import { APP_BASE_PATH } from '@/core/appconfig';
+} from '#/core/providers/session';
+import { APP_BASE_PATH } from '#/core/appconfig';
 import type { StoredProfileInfo } from '@/inapp/auth/storage';
 
 type AppSessionResponse = {

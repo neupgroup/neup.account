@@ -1,4 +1,4 @@
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
 import { DATA_PRIVACY_PERMISSION_GROUPS } from '@/inapp/permissions/data-permissions';
 import MaterializationPage from './page.client';

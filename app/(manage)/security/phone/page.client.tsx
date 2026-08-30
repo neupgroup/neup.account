@@ -5,18 +5,18 @@ import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useToast } from "@/core/hooks/useToast";
+import { useToast } from "#/core/hooks/useToast";
 import { phoneFormSchema } from "@/services/security/schema";
 import { getRecoveryPhone, addRecoveryPhone, removeRecoveryPhone } from "@/services/security/phone";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "#/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "#/components/ui/card";
 import {
   Form,
   FormControl,
@@ -24,12 +24,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { PhoneInput } from "@/components/ui/phone-input";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "#/components/ui/form";
+import { PhoneInput } from "#/components/ui/phone-input";
+import { Skeleton } from "#/components/ui/skeleton";
 import { Loader2, Plus, Trash2 } from "@/components/icons";
-import { BackButton } from "@/components/ui/back-button";
-import { SecondaryHeader } from "@/components/ui/secondary-header";
+import { BackButton } from "#/components/ui/back-button";
+import { SecondaryHeader } from "#/components/ui/secondary-header";
 
 type PhoneFormValues = z.infer<typeof phoneFormSchema>;
 

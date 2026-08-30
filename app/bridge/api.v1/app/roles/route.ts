@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import { getSyncedAppRoles, postSyncedAppRoles } from '@/services/bridge/app-authz-sync';
 
 const routePermissions = [

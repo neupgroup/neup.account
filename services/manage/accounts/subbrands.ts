@@ -1,11 +1,11 @@
 // @ts-nocheck
 'use server';
  
- import { permission } from '@/logica/permission';
+ import { permission } from '@/.neup/logica/permission';
  import { z } from 'zod';
- import prisma from '@/core/database/prisma';
+ import prisma from '@/.neup/core/database/prisma';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/logica/logger/files';
+import { logError } from '@/.neup/logica/logger/files';
 import { revalidatePath } from 'next/cache';
 import { getUserNeupIds, getUserProfile, checkPermissions } from '@/services/user';
 import { getActiveAccountId, getPersonalAccountId } from '@/services/account/verify';

@@ -1,12 +1,12 @@
 'use server';
 
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import { checkPermissions } from '@/services/user';
 import { getPersonalAccountId } from '@/services/account/verify';
-import { logError } from '@/logica/logger/files';
+import { logError } from '@/.neup/logica/logger/files';
 
 const servicePermissions = [
   permission('root.display_images.view', 'for_individual', 'service'),

@@ -1,19 +1,19 @@
 "use client";
 
 import { useState, useTransition, useContext } from "react";
-import { useToast } from "@/core/hooks/useToast";
+import { useToast } from "#/core/hooks/useToast";
 import { deactivateAccount } from "@/services/data/deactivate";
-import {  Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {  Card, CardContent, CardFooter, CardHeader} from "#/components/ui/card";
+import { Button } from "#/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "#/components/ui/alert";
 import { Loader2, PowerOff } from "@/components/icons";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { BackButton } from "@/components/ui/back-button";
-import { Geolocation } from "@/core/providers/geolocation";
-import { SecondaryHeader } from "@/components/ui/secondary-header";
+import { Input } from "#/components/ui/input";
+import { Label } from "#/components/ui/label";
+import { BackButton } from "#/components/ui/back-button";
+import { Geolocation } from "#/core/providers/geolocation";
+import { SecondaryHeader } from "#/components/ui/secondary-header";
 import { useRouter } from "next/navigation";
-import { redirectInApp } from "@/core/helpers/link/navigation";
+import { redirectInApp } from "@/.neup/core/helpers/link/navigation";
 
 
 export default function DeactivateAccountPage() {

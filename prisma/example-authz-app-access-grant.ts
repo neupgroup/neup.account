@@ -7,7 +7,7 @@
  * 3. The Access row links member + asset + role.
  */
 
-import prisma from '@/core/database/prisma';
+import prisma from '#/core/database/prisma';
 
 async function grantAppAccess() {
   const appId = 'real-estate-app-id';

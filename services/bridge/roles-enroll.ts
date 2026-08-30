@@ -1,7 +1,7 @@
 'use server';
 
-import prisma from '@/core/database/prisma';
-import { logError } from '@/logica/logger/files';
+import prisma from '@/.neup/core/database/prisma';
+import { logError } from '@/.neup/logica/logger/files';
 import { assignOwnApplicationRole } from '@/services/applications/access';
 
 /*

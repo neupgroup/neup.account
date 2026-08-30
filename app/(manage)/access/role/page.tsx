@@ -1,13 +1,13 @@
 import { notFound, redirect } from 'next/navigation';
 import Image from 'next/image';
-import { BackButton } from '@/components/ui/back-button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { BackButton } from '#/components/ui/back-button';
+import { Card, CardContent } from '#/components/ui/card';
+import { Badge } from '#/components/ui/badge';
+import { Button } from '#/components/ui/button';
 import { UserCircle, Clock } from '@/components/icons';
 import { getActiveAccountId } from '@/services/account/verify';
 import { getUserProfile } from '@/services/user';
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import {
   getDirectMemberDetail,
   getPortfolioMemberDetail,
@@ -25,11 +25,11 @@ import {
   inviteDirectMember,
   getDirectAccessAssignmentOptions,
 } from '../_components/actions';
-import { FlowLink } from '@/components/ui/flow-link';
+import { FlowLink } from '#/components/ui/flow-link';
 import { DirectMemberAccessForm } from '../_components/direct-member-access-form';
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
 import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 
 const pagePermissions = [
   permission('access.team.view.self', 'for_individual', 'page'),

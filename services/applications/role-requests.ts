@@ -1,10 +1,10 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import { getActiveAccountId } from '@/services/account/verify';
 import { checkPermissions } from '@/services/user';
-import { logError } from '@/logica/logger/files';
+import { logError } from '@/.neup/logica/logger/files';
 import { cleanupExpiredAccessModel, ensureAccessGrant } from '@/services/access-model';
 import { roleApprovalRequiresRequest } from '@/services/role-scopes';
 import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';
@@ -12,7 +12,7 @@ import { canCurrentAccountManageApplicationRoles, hasRootApplicationPermission }
 import { revalidateApplicationRequestsRoutes, revalidateApplicationUsersRoutes } from '@/services/applications/revalidate-routes';
 import { ROOT_APPLICATION_ROLES_MANAGE_PERMISSION } from '@/services/applications/permission-definitions';
 import { roleMatchesAssignmentModesPolicy } from '@/services/applications/authz-scope-policy';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 
 const servicePermissions = [
   permission('root.requests.manage', 'for_individual', 'service'),

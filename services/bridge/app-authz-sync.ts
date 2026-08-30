@@ -1,6 +1,6 @@
-import prisma from '@/core/database/prisma';
-import { logError } from '@/logica/logger/files';
-import { Prisma } from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
+import { logError } from '@/.neup/logica/logger/files';
+import { Prisma } from '@/.neup/core/database/prisma';
 import { normalizeApplicationId } from '@/services/applications/identifiers';
 
 /*

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "#/components/ui/button";
 import { AppWindow, Building, Database, Loader2, Plus, X } from "@/components/icons";
 import { getSelectableAssets, type AssetType, type SelectableAsset } from "./actions";
 

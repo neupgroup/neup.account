@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import CreateBrandPageClient from './brand-page-client';
 import CreateDependentPageClient from './dependent-page-client';
 import CreateSubbrandPageClient from './subbrand-page-client';
-import { formMetadata } from '@/core/metadata';
+import { formMetadata } from '#/core/metadata';
 import { resolveAccessProfileContext } from '@/services/account/access-profile-context';
 import { getUserProfile } from '@/services/user';
 import {

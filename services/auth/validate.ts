@@ -1,6 +1,6 @@
 'use server';
 
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import { z } from 'zod';
 import { getUserProfile, getUserNeupIds } from '@/services/user';
 import { normalizeApplicationId } from '@/services/applications/identifiers';

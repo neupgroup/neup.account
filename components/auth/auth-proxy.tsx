@@ -3,7 +3,7 @@
 import { useSession } from "@/inapp/auth/session-context";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { redirectInApp } from "@/core/helpers/link/navigation";
+import { redirectInApp } from "@/.neup/core/helpers/link/navigation";
 
 /**
  * ::neup.documentation::auth-proxy-component

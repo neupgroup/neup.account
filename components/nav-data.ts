@@ -1,4 +1,4 @@
-import { permission } from "@/logica/permission";
+import { permission } from "@/.neup/logica/permission";
 import { PROFILE_NAV_PERMISSIONS } from "@/inapp/permissions/profile-permissions";
 import { SECURITY_HUB_PERMISSIONS } from "@/inapp/permissions/security-permissions";
 import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/inapp/permissions/data-permissions";

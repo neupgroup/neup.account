@@ -1,6 +1,6 @@
 import 'dotenv/config';
-import { Prisma } from '@/core/database/prisma';
-import prisma from '@/core/database/prisma';
+import { Prisma } from '@/.neup/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 
 const APP_ID = 'neup.account';
 

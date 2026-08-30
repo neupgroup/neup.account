@@ -7,15 +7,15 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useDebounce } from "use-debounce"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "#/components/ui/button"
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardFooter
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+} from "#/components/ui/card"
+import { Input } from "#/components/ui/input"
 import {
   Form,
   FormControl,
@@ -24,12 +24,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { useToast } from "@/core/hooks/useToast"
+} from "#/components/ui/form"
+import { useToast } from "#/core/hooks/useToast"
 import { createSubbrandAccount, checkSubbrandNeupIdAvailability } from "@/services/manage/accounts/subbrands";
 import { CheckCircle2, XCircle, Loader2 } from "@/components/icons"
-import { BackButton } from "@/components/ui/back-button"
-import { redirectInApp } from "@/core/helpers/link/navigation";
+import { BackButton } from "#/components/ui/back-button"
+import { redirectInApp } from "@/.neup/core/helpers/link/navigation";
 
 const formSchema = z.object({
     name: z.string().min(1, "Subbrand name is required"),

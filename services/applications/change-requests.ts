@@ -6,15 +6,15 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import prisma from '@/core/database/prisma';
-import { Prisma } from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
+import { Prisma } from '@/.neup/core/database/prisma';
 import { getActiveAccountId } from '@/services/account/verify';
 import { checkPermissions } from '@/services/user';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/logica/logger/files';
+import { logError } from '@/.neup/logica/logger/files';
 import { canCurrentAccountEditApplicationBasics } from '@/services/applications/manage';
 import { revalidateApplicationDetailRoutes, revalidateApplicationEditRoutes } from '@/services/applications/revalidate-routes';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 
 const servicePermissions = [
   permission('requests.root_approval.view', 'for_individual', 'service'),

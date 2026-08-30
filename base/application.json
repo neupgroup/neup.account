@@ -1,0 +1,39 @@
+{
+    "appName": "Neup.Cloud",
+    "appId": "neup.cloud",
+    "appDescription": "Neup.Cloud is a cloud, server, and intelligence management service that allows users to manage cloud resources for their services.",
+    "appLogo" : {
+        "mainlogo": "/cloud/logo.svg",
+        "favicon": "/cloud/favicon.ico",
+        "apple-touch-icon": "/cloud/apple-touch-icon.png",
+        "android-chrome-192x192": "/cloud/android-chrome-192x192.png",
+        "android-chrome-512x512": "/cloud/android-chrome-512x512.png",
+        "mstile-150x150": "/cloud/mstile-150x150.png",
+        "safari-pinned-tab": "/cloud/safari-pinned-tab.svg"
+    },
+    "appVersion": "1.0.0",
+    "socialChannels" : {
+        "github": "https://github.com/neupgroup",
+        "twitter": "https://twitter.com/neupgroup",
+        "linkedin": "https://www.linkedin.com/company/neupgroup",
+        "facebook": "https://www.facebook.com/neupgroup",
+        "instagram": "https://www.instagram.com/neupgroup"
+    },
+    "appTheme": {
+        "primaryColor": "#4CAF50",
+        "secondaryColor": "#FFC107",
+        "backgroundColor": "#F5F5F5",
+        "textColor": "#212121"
+    },
+    "appInterface": {
+        "borderRadius": "medium",
+        "boxShadow": "0 2px 4px rgba(0, 0, 0, 0.1)",
+        "fontFamily": "'Outfit', sans-serif",
+        "fontSize": "14px",
+        "lineHeight": "1.5"
+    },
+    "updateInfo": {
+        "lastUpdate": "2024-06-01:00:00:00Z",
+        "updateNotes": "Initial release of Neup.Cloud with core features for cloud resource management."
+    }
+}

@@ -1,6 +1,6 @@
 import { getActiveSession } from '@/services/account/verify';
-import { logError } from '@/logica/logger/files';
-import prisma from '@/core/database/prisma';
+import { logError } from '@/.neup/logica/logger/files';
+import prisma from '@/.neup/core/database/prisma';
 import crypto from 'crypto';
 
 /**

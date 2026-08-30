@@ -1,6 +1,6 @@
 'use server';
 
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import { getAuthTimeoutDescription, getAuthTimeoutError, type AuthFlowType } from './timeout';
 
 const AUTH_REQUEST_EXPIRATION_MINUTES = 20;

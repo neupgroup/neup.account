@@ -27,8 +27,8 @@ import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import { Pool } from 'pg';
 import bcrypt from 'bcryptjs';
-import { Prisma } from '@/core/database/prisma';
-import prisma from '@/core/database/prisma';
+import { Prisma } from '@/.neup/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import { ensureAccessGrant } from '@/services/access-model';
 import { BRAND_OWNER_PERMISSION_NAMES, BRAND_OWNER_ROLE_ID, BRAND_OWNER_ROLE_NAME, BRAND_ROOT_PERMISSION_NAMES } from '@/inapp/permissions/brand-roles';
 

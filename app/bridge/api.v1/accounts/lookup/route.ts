@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import prisma from '@/core/database/prisma';
-import { logError } from '@/logica/logger/files';
+import prisma from '@/.neup/core/database/prisma';
+import { logError } from '@/.neup/logica/logger/files';
 import { writeApplicationDevLog } from '@/services/bridge/dev-logs';
 import { resolveDisplayImage } from '@/inapp/display-image';
 import { normalizeApplicationId } from '@/services/applications/identifiers';

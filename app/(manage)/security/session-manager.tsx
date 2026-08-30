@@ -2,13 +2,13 @@
 
 import React, { useState, useTransition, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '#/components/ui/button';
+import { Badge } from '#/components/ui/badge';
 import { Laptop, MapPin } from 'lucide-react';
 import { logoutSessionById, logoutAllOtherSessions } from '@/services/security/sessions';
 import type { ManagedSession } from '@/services/security/sessions';
-import { useToast } from '@/core/hooks/useToast';
-import { CardFooter } from '@/components/ui/card';
+import { useToast } from '#/core/hooks/useToast';
+import { CardFooter } from '#/components/ui/card';
 
 export function SessionManager({ initialSessions, currentSessionId }: { initialSessions: ManagedSession[], currentSessionId: string | null }) {
     const [sessions, setSessions] = useState(initialSessions);

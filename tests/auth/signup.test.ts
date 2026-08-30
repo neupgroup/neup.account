@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('@/core/database/prisma', () => ({
+vi.mock('#/core/database/prisma', () => ({
     default: {
         authnRequest: { findUnique: vi.fn(), update: vi.fn() },
         neupId: { findUnique: vi.fn() },
@@ -14,7 +14,7 @@ vi.mock('@/logica/logger/files', () => ({ logError: vi.fn() }));
 vi.mock('next/headers', () => ({ headers: vi.fn(() => ({ get: vi.fn(() => null) })) }));
 vi.mock('@/services/auth/session', () => ({ makeSession: vi.fn().mockResolvedValue({ success: true }) }));
 
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import {
     submitNameStep,
     submitNeupIdStep,

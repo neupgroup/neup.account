@@ -1,7 +1,7 @@
-import { FlowLink } from '@/components/ui/flow-link';
+import { FlowLink } from '#/components/ui/flow-link';
 import { forbidden } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
+import { Button } from '#/components/ui/button';
 import { ApplicationCreateForm } from '@/app/(manage)/application/_components/application-create-form';
 import { canCurrentAccountCreateApplication } from '@/services/applications/manage';
 

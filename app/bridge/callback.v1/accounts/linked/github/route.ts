@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createHmac, timingSafeEqual } from 'node:crypto';
-import { makeAppPath } from '@/core/appconfig';
-import { getEnvVariable } from '@/core/helpers/env';
+import { makeAppPath } from '#/core/appconfig';
+import { getEnvVariable } from '@/.neup/core/helpers/env';
 import { getActiveSession } from '@/services/account/verify';
 import { storeLinkedAccount } from '@/services/bridge/linked-accounts';
 

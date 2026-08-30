@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { BackButton } from '@/components/ui/back-button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BackButton } from '#/components/ui/back-button';
+import { Badge } from '#/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card';
 import {
   AppWindow,
   ExternalLink,
@@ -10,13 +10,13 @@ import {
   UserPlus,
   Users,
 } from '@/components/icons';
-import { FlowLink } from '@/components/ui/flow-link';
+import { FlowLink } from '#/components/ui/flow-link';
 import { getApplicationAccessPageData } from '../connection/actions';
 import { AssignAppAccessForm } from '../connection/assign-app-access-form';
 import { RevokeAppAccessButton } from '../connection/revoke-app-access-form';
-import { formMetadata } from '@/core/metadata';
+import { formMetadata } from '#/core/metadata';
 import { ACCESS_APPLICATION_VIEW_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';
-import { permission } from '@/logica/permission';
+import { permission } from '@/.neup/logica/permission';
 import { resolveAccessProfileContext } from '@/services/account/access-profile-context';
 
 export const metadata: Metadata = formMetadata({ title: 'Application Management' });

@@ -1,12 +1,12 @@
 'use client';
 
 import { useTransition } from 'react';
-import { useToast } from '@/core/hooks/useToast';
+import { useToast } from '#/core/hooks/useToast';
 import { requestAppPublication } from '@/services/applications/manage';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '#/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
+import { Badge } from '#/components/ui/badge';
+import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { Loader2, Send, CheckCircle2, XCircle, Clock } from 'lucide-react';
 
 type Props = {

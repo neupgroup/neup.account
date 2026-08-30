@@ -3,7 +3,7 @@
 import { headers } from 'next/headers';
 import { clearSessionCookies, getSessionCookies, setStoredAccountsCookie } from '@/services/auth/session-cookies';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/logica/logger/files';
+import { logError } from '@/.neup/logica/logger/files';
 import { expireSession } from '@/services/auth/session';
 import { rotateGuestAccountOnLogout } from '@/services/account/guestAccount';
 import { activityAction } from '@/services/activity-action';

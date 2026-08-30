@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { getActiveSession } from '@/services/account/verify';
 import { resolveAppTokenAuth } from '@/services/auth/appTokenAuth';
-import prisma from '@/core/database/prisma';
+import prisma from '@/.neup/core/database/prisma';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
 import { canCreateConnectionForAccount, getCreatableConnectionAccounts } from '@/services/bridge/creatable-connections';
 import { getAccessableAccountsWithPermissions } from '@/services/manage/accounts';

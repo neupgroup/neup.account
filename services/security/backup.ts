@@ -1,10 +1,10 @@
 'use server';
 
-import { permission } from '@/logica/permission';
-import prisma from '@/core/database/prisma';
+import { permission } from '@/.neup/logica/permission';
+import prisma from '@/.neup/core/database/prisma';
 import { getPersonalAccountId } from '@/services/account/verify';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/logica/logger/files';
+import { logError } from '@/.neup/logica/logger/files';
 import { revalidatePath } from 'next/cache';
 import crypto from 'crypto';
 import { checkPermissions } from '@/services/user';

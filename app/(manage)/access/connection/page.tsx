@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { BackButton } from '#/components/ui/back-button';
+import { BackButton } from '@/components/ui/back-button';
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card';
 import { AppWindow, ChevronRight, Users } from '@/components/icons';
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import { getConnectionPageData } from './actions';
 import { formMetadata } from '#/core/metadata';
 import { ACCESS_CONNECTION_VIEW_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';

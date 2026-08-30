@@ -15,7 +15,7 @@ import { setProStatus } from '@/services/manage/users';
 import { getUserProfile } from '@/services/user';
 import { Gem, Loader2 } from 'lucide-react';
 import { Textarea } from '#/components/ui/textarea';
-import { TertiaryHeader } from '#/components/ui/tertiary-header';
+import { TertiaryHeader } from '@/components/ui/tertiary-header';
 
 const proActionSchema = z.object({
   reason: z.string().min(10, "A reason of at least 10 characters is required."),
@@ -74,7 +74,7 @@ export function NeupProManager({ accountId }: { accountId: string }) {
                 <TertiaryHeader title="Current Status" />
                 <Card>
                     <CardHeader>
-                         <Alert type="solid" className="border-primary/50 text-primary [&>svg]:text-primary">
+                         <Alert className="border-primary/50 text-primary [&>svg]:text-primary">
                             <Gem className="h-4 w-4 !text-primary" />
                             <AlertTitle>Neup.Pro is Active</AlertTitle>
                             <AlertDescription>

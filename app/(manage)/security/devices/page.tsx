@@ -5,9 +5,9 @@ import {
 import { getUserSessions } from "@/services/security/sessions";
 import { SessionManager } from "@/app/(manage)/security/session-manager";
 import { getActiveSession } from '@/services/account/verify';
-import { BackButton } from "#/components/ui/back-button";
-import { PrimaryHeader } from "#/components/ui/primary-header";
-import { SecondaryHeader } from "#/components/ui/secondary-header";
+import { BackButton } from "@/components/ui/back-button";
+import { PrimaryHeader } from "@/components/ui/primary-header";
+import { SecondaryHeader } from "@/components/ui/secondary-header";
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
 import { SECURITY_PERMISSION_GROUPS } from '@/inapp/permissions/security-permissions';
 

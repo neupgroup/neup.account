@@ -190,7 +190,7 @@ export function ActivityList({
 
     if (!canView) {
         return (
-            <Alert type="solid" convey="danger">
+            <Alert variant="destructive">
                 <Ban className="h-4 w-4" />
                 <AlertTitle>Permission Denied</AlertTitle>
                 <AlertDescription>

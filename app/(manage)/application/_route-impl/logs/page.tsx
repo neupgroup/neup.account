@@ -1,10 +1,10 @@
 import { notFound } from 'next/navigation';
 import { redirect } from 'next/navigation';
-import { BackButton } from '#/components/ui/back-button';
-import { PrimaryHeader } from '#/components/ui/primary-header';
+import { BackButton } from '@/components/ui/back-button';
+import { PrimaryHeader } from '@/components/ui/primary-header';
 import { Card, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
 import { Button } from '#/components/ui/button';
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import {
   canCurrentAccountClearApplicationDevLogs,
   clearApplicationDevLogs,

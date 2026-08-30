@@ -20,10 +20,10 @@ import { Input } from "#/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "#/components/ui/form"
 import { Avatar, AvatarImage, AvatarFallback } from '#/components/ui/avatar'
 import { useSession } from '@/inapp/auth/session-context'
-import { BackButton } from '#/components/ui/back-button'
+import { BackButton } from '@/components/ui/back-button'
 import { cn } from '#/core/utils'
 import { Check, Loader2, UploadCloud } from '@/components/icons'
-import { SecondaryHeader } from '#/components/ui/secondary-header'
+import { SecondaryHeader } from '@/components/ui/secondary-header'
 import { Separator } from '#/components/ui/separator'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/inapp/permissions/profile-permissions'
 import { permission } from '@/.neup/logica/permission';

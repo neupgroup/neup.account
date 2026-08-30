@@ -1,11 +1,11 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { BackButton } from '#/components/ui/back-button';
+import { BackButton } from '@/components/ui/back-button';
 import { Card, CardContent } from '#/components/ui/card';
-import { PrimaryHeader } from '#/components/ui/primary-header';
+import { PrimaryHeader } from '@/components/ui/primary-header';
 import { Badge } from '#/components/ui/badge';
 import { Button } from '#/components/ui/button';
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import { Clock, UserCircle } from '@/components/icons';
 import { getActiveAccountId } from '@/services/account/verify';
 import { getUserProfile } from '@/services/user';
@@ -165,7 +165,7 @@ function RoleCard({
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-base font-semibold capitalize">{platformLabel}</span>
             {contextName && (
-              <Badge type="tinted" className="text-xs font-normal">{contextName}</Badge>
+              <Badge variant="secondary" className="text-xs font-normal">{contextName}</Badge>
             )}
           </div>
         )}

@@ -10,7 +10,7 @@ editor, instead of the full role detail layout.
 */
 
 import { notFound } from 'next/navigation';
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import {
   canCurrentAccountManageApplicationRoles,
   canCurrentAccountViewApplicationRoles,
@@ -24,8 +24,8 @@ import {
   getAppPermissions,
   getAppRoles,
 } from '@/services/applications/authz-manage';
-import { BackButton } from '#/components/ui/back-button';
-import { PrimaryHeader } from '#/components/ui/primary-header';
+import { BackButton } from '@/components/ui/back-button';
+import { PrimaryHeader } from '@/components/ui/primary-header';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { RoleDetailEditor } from '@/app/(manage)/application/_components/role-detail-editor';
@@ -73,7 +73,7 @@ export async function RoleDetailsPage({
           <BackButton href={applicationHref('/application/roles', applicationId, mode ? { mode } : undefined)} />
           <PrimaryHeader title="Role Details" description={`Manage role permissions for ${details.name}.`} />
         </div>
-        <Alert type="solid" convey="danger">
+        <Alert variant="destructive">
           <ShieldAlert className="h-4 w-4" />
           <AlertTitle>Access Denied</AlertTitle>
           <AlertDescription>You do not have permission to view application roles.</AlertDescription>

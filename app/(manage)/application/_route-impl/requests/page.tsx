@@ -3,7 +3,7 @@ import { ArrowLeft, ChevronRight } from '@/components/icons';
 import { Badge } from '#/components/ui/badge';
 import { Button } from '#/components/ui/button';
 import { Card, CardContent } from '#/components/ui/card';
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import { canCurrentAccountViewApplicationRoles, getApplicationDetailsForViewerV2, logRootApplicationActivity } from '@/services/applications/manage';
 import { getAllRequests } from '@/services/manage/requests/all';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
@@ -87,7 +87,7 @@ export async function ApplicationRequestsPage({ applicationId, mode }: { applica
                 >
                   <div className="min-w-0 space-y-0.5">
                     <div className="flex flex-wrap items-center gap-2">
-                      <Badge type="outlined" className="text-xs">
+                      <Badge variant="outline" className="text-xs">
                         {request.typeLabel}
                       </Badge>
                       <Badge variant={statusVariant[request.status] ?? 'outline'} className="text-xs capitalize">

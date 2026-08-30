@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
-import { Toaster } from '#/components/ui/toaster';
+import { Toaster } from '#/components/ui/toast';
 import { AppProviders } from '@/components/layout/AppProviders';
 import { PageProgressBar } from '@/components/page-progress-bar';
-import { UrlErrorBanner } from '#/components/ui/url-error-banner';
+import { UrlErrorBanner } from '@/components/ui/url-error-banner';
 import { PersistentBacksTo } from '@/components/persistent-backs-to';
 import { HeaderV1 } from '@/components/layout/header.v1';
 import { getSiteLogoUrl } from '@/services/manage/site/logo';

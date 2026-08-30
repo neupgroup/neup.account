@@ -30,7 +30,7 @@ import { type NavSection, navItems, allPermissionsMap } from "./nav-data";
 import { NotificationBell } from "./warning-display";
 import { ListItem } from "@/components/ui/ListItem";
 import { useSession } from "@/inapp/auth/session-context";
-import { Skeleton } from "./ui/skeleton";
+import { Skeleton } from "#/components/ui/skeleton";
 import { switchToPersonal } from "@/services/auth/switch";
 import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/inapp/permissions/profile-permissions";
 import { redirectInApp } from "@/.neup/core/helpers/link/navigation";

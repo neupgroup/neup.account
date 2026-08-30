@@ -1,4 +1,4 @@
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import {
     Card,
     CardContent,
@@ -10,7 +10,7 @@ import { Button } from "#/components/ui/button";
 import { getDependentAccounts } from "@/services/manage/accounts/dependent";
 import { User, Plus } from "lucide-react";
 import { AccountListItem } from "@/components/elements/account-item";
-import { BackButton } from "#/components/ui/back-button";
+import { BackButton } from "@/components/ui/back-button";
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
 import { ACCESS_LINKED_ACCOUNT_VIEW_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';
 import { permission } from '@/.neup/logica/permission';

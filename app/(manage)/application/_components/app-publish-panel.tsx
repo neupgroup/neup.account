@@ -76,7 +76,7 @@ export function AppPublishPanel({ appId, currentStatus, publicationRequestStatus
         )}
 
         {currentStatus === 'blocked' && (
-          <Alert type="solid" convey="danger">
+          <Alert variant="destructive">
             <XCircle className="h-4 w-4" />
             <AlertTitle>Blocked</AlertTitle>
             <AlertDescription>

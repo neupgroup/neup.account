@@ -16,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "#/components/ui/form";
 import { Switch } from "#/components/ui/switch";
-import { TertiaryHeader } from "#/components/ui/tertiary-header";
+import { TertiaryHeader } from "@/components/ui/tertiary-header";
 
 export const warningReasons = {
     spam: "Spamming or Commercial Solicitation",

@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { BackButton } from '#/components/ui/back-button';
+import { BackButton } from '@/components/ui/back-button';
 import { checkPermissions } from '@/services/user';
 import { getPaymentSettings } from '@/services/manage/site/payments';
 import { PaymentSettingsForm } from '../../../config/payments/payment-settings-form.client';

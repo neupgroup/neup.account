@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import { Card, CardContent } from '#/components/ui/card';
 import { FolderGit2, ChevronRight, Building, UserPlus, Users, MailQuestion, UserX } from '@/components/icons';
+import { SecondaryHeader } from '@/components/ui/secondary-header';
 import { getDirectAccessGroup } from '@/services/manage/access';
-import { SecondaryHeader } from '#/components/ui/secondary-header';
 import { AccessGroupView } from './_components/access-group-view';
 import { ListItem } from '@/components/ui/ListItem';
 import { AccountListItem } from '@/components/elements/account-item';

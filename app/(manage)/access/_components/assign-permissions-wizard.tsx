@@ -348,7 +348,7 @@ export function AssignPermissionsWizard({
       {step === "assets" && selectedAssetType && (
         <div className="grid gap-3">
           <div className="flex items-center justify-between">
-            <Badge type="outlined">
+            <Badge variant="outline">
               {ASSET_TYPES.find((t) => t.type === selectedAssetType)?.label}
             </Badge>
             <Button
@@ -419,7 +419,7 @@ export function AssignPermissionsWizard({
       {step === "roles" && (
         <div className="grid gap-3">
           <div className="flex items-center justify-between">
-            <Badge type="outlined">{selectedAssetIds.size} asset{selectedAssetIds.size !== 1 ? "s" : ""}</Badge>
+            <Badge variant="outline">{selectedAssetIds.size} asset{selectedAssetIds.size !== 1 ? "s" : ""}</Badge>
             <Button
               htmlType="button"
               type="plain"
@@ -511,7 +511,7 @@ export function AssignPermissionsWizard({
                         <span className="truncate">{a.name}</span>
                       </div>
                       {isUpdate && (
-                        <Badge type="outlined" className="text-xs shrink-0">update</Badge>
+                        <Badge variant="outline" className="text-xs shrink-0">update</Badge>
                       )}
                     </div>
                   );
@@ -528,7 +528,7 @@ export function AssignPermissionsWizard({
                 {Array.from(selectedRoleIds).map((roleId) => {
                   const role = availableRoles.find((r) => r.id === roleId);
                   return (
-                    <Badge key={roleId} type="tinted" className="text-xs">
+                    <Badge key={roleId} variant="secondary" className="text-xs">
                       {role?.name ?? roleId}
                     </Badge>
                   );

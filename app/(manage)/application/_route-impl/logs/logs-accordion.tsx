@@ -71,7 +71,7 @@ function LogCard({
         <CardHeader className={`transition-all duration-300 ease-in-out ${isOpen ? 'pb-4' : 'pb-6'}`}>
           <div className="min-w-0 space-y-2">
             <div className="flex items-center gap-1.5 sm:hidden">
-              {presentation.isWebhook ? <Badge type="outlined">webhook</Badge> : null}
+              {presentation.isWebhook ? <Badge variant="outline">webhook</Badge> : null}
               <Badge variant={log.statusCode >= 400 ? 'destructive' : 'secondary'}>{log.statusCode}</Badge>
             </div>
             <div className={`flex min-w-0 items-start transition-all duration-300 ease-in-out ${isOpen ? 'gap-2' : 'gap-1.5'}`}>
@@ -79,7 +79,7 @@ function LogCard({
                 {log.method} {presentation.displayUrl}
               </CardTitle>
               <div className="hidden shrink-0 items-center gap-1.5 sm:flex">
-                {presentation.isWebhook ? <Badge type="outlined">webhook</Badge> : null}
+                {presentation.isWebhook ? <Badge variant="outline">webhook</Badge> : null}
                 <Badge variant={log.statusCode >= 400 ? 'destructive' : 'secondary'}>{log.statusCode}</Badge>
               </div>
             </div>

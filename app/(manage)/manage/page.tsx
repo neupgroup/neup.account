@@ -24,10 +24,10 @@ import {
     type AccountSortKey,
 } from '@/services/manage/accounts';
 import { Skeleton } from '#/components/ui/skeleton';
-import { BackButton } from '#/components/ui/back-button';
+import { BackButton } from '@/components/ui/back-button';
 import { Alert, AlertDescription, AlertTitle } from "#/components/ui/alert";
-import { PrimaryHeader } from "#/components/ui/primary-header";
-import { FlowLink } from '#/components/ui/flow-link';
+import { PrimaryHeader } from "@/components/ui/primary-header";
+import { FlowLink } from '@/components/flow-link';
 import { useSearchParams } from 'next/navigation';
 
 const PAGE_SIZE = 10;
@@ -102,7 +102,7 @@ function AccountRow({ acc, isFirst, isLast }: { acc: AccountBasics; isFirst: boo
                 </div>
 
                 <div className="flex flex-col items-end gap-1 shrink-0">
-                    <Badge type="outlined" className="text-xs capitalize">
+                    <Badge variant="outline" className="text-xs capitalize">
                         {acc.accountType}
                     </Badge>
                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -216,7 +216,7 @@ function AccountsPageInner() {
         return (
             <div className="grid gap-8">
                 <PrimaryHeader title="Accounts" description="View and manage all accounts in the system." />
-                <Alert type="solid" convey="danger">
+                <Alert variant="destructive">
                     <Ban className="h-4 w-4" />
                     <AlertTitle>Permission Denied</AlertTitle>
                     <AlertDescription>You do not have permission to view account management.</AlertDescription>

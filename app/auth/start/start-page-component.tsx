@@ -1,6 +1,6 @@
 'use client';
 
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
 import { ChevronRight, AlertTriangle, Loader2 } from '@/components/icons';
@@ -146,7 +146,7 @@ export function StartPageComponent({ accounts, hasActiveSession, appName, firstP
         <CardContent>
           <div className="space-y-4">
             {showError && (
-              <Alert type="solid" convey="danger">
+              <Alert variant="destructive">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertTitle>Authentication Error</AlertTitle>
                 <AlertDescription>

@@ -28,9 +28,9 @@ import {
 import { Skeleton } from "#/components/ui/skeleton";
 import { Loader2, Plus, Trash2 } from "@/components/icons";
 import { cn } from "#/core/utils";
-import { BackButton } from "#/components/ui/back-button";
+import { BackButton } from "@/components/ui/back-button";
 import { emailFormSchema } from "@/services/security/schema";
-import { SecondaryHeader } from "#/components/ui/secondary-header";
+import { SecondaryHeader } from "@/components/ui/secondary-header";
 
 type EmailFormValues = z.infer<typeof emailFormSchema>;
 

@@ -70,7 +70,7 @@ export function CleanupClient({ initialAccounts }: { initialAccounts: ExpiredGue
     return (
         <div className="grid gap-6">
             {/* Danger warning */}
-            <Alert type="solid" convey="danger">
+            <Alert variant="destructive">
                 <ShieldAlert className="h-4 w-4" />
                 <AlertTitle>Irreversible action</AlertTitle>
                 <AlertDescription>
@@ -88,7 +88,7 @@ export function CleanupClient({ initialAccounts }: { initialAccounts: ExpiredGue
                             : `${accounts.length} expired guest account${accounts.length !== 1 ? 's' : ''} found`}
                     </span>
                     {accounts.length > 0 && (
-                        <Badge type="solid" convey="danger">{accounts.length}</Badge>
+                        <Badge variant="default" convey="danger">{accounts.length}</Badge>
                     )}
                 </div>
 
@@ -184,7 +184,7 @@ export function CleanupClient({ initialAccounts }: { initialAccounts: ExpiredGue
 
                                 {/* Status + delete */}
                                 <div className="flex items-center gap-3 shrink-0">
-                                    <Badge type="outlined" className="text-xs text-destructive border-destructive/40">
+                                    <Badge variant="outline" className="text-xs text-destructive border-destructive/40">
                                         expired
                                     </Badge>
 

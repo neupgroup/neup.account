@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { BackButton } from '#/components/ui/back-button';
+import { BackButton } from '@/components/ui/back-button';
 import { Badge } from '#/components/ui/badge';
 import { Card, CardContent } from '#/components/ui/card';
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import { AppWindow, ChevronRight, Plus, UserCircle, Users } from '@/components/icons';
 import { getConnectionDetail } from '../actions';
 import { ACCESS_CONNECTION_VIEW_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';
@@ -107,7 +107,7 @@ function AccessCard({
       {roles.length > 0 ? (
         <div className="mt-3 flex flex-wrap gap-1.5">
           {roles.map((role) => (
-            <Badge key={role.roleId} type="outlined" className="px-1.5 py-0 text-xs">
+            <Badge key={role.roleId} variant="outline" className="px-1.5 py-0 text-xs">
               {role.roleName}
             </Badge>
           ))}

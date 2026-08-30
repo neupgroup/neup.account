@@ -99,7 +99,7 @@ export function DirectMemberAccessForm({
               Set the roles this member should hold on the selected account.
             </p>
           </div>
-          <Badge type="outlined">
+          <Badge variant="outline">
             {selectedRoleIds.size} role{selectedRoleIds.size !== 1 ? "s" : ""}
           </Badge>
         </div>
@@ -130,7 +130,7 @@ export function DirectMemberAccessForm({
                         <p className="text-xs text-muted-foreground">{role.description}</p>
                       )}
                     </div>
-                    {checked && <Badge type="tinted">Selected</Badge>}
+                    {checked && <Badge variant="secondary">Selected</Badge>}
                   </label>
                 );
               })

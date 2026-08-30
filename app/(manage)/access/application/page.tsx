@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { BackButton } from '#/components/ui/back-button';
+import { BackButton } from '@/components/ui/back-button';
 import { Badge } from '#/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card';
 import {
@@ -10,7 +10,7 @@ import {
   UserPlus,
   Users,
 } from '@/components/icons';
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import { getApplicationAccessPageData } from '../connection/actions';
 import { AssignAppAccessForm } from '../connection/assign-app-access-form';
 import { RevokeAppAccessButton } from '../connection/revoke-app-access-form';
@@ -118,7 +118,7 @@ async function SelectedApplicationPage({
                   {app.myRoles.map((role) => (
                     <Badge
                       key={role.roleId}
-                      type="tinted"
+                      variant="secondary"
                       className="px-1.5 py-0 text-xs font-mono"
                     >
                       {role.roleId}
@@ -140,7 +140,7 @@ async function SelectedApplicationPage({
                 </span>
               </div>
               {app.grantees.length > 0 ? (
-                <Badge type="tinted" className="text-xs font-normal">
+                <Badge variant="secondary" className="text-xs font-normal">
                   {app.grantees.length}
                 </Badge>
               ) : null}
@@ -163,7 +163,7 @@ async function SelectedApplicationPage({
                       {grantee.roles.map((role) => (
                         <Badge
                           key={role}
-                          type="outlined"
+                          variant="outline"
                           className="px-1.5 py-0 text-xs font-mono"
                         >
                           {role}
@@ -295,7 +295,7 @@ async function ApplicationsOverviewPage({
                         {app.myRoles.map((role) => (
                           <Badge
                             key={role.roleId}
-                            type="tinted"
+                            variant="secondary"
                             className="px-1.5 py-0 text-xs font-mono"
                           >
                             {role.roleId}

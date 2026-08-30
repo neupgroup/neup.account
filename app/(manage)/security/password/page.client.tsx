@@ -13,9 +13,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Input } from "#/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "#/components/ui/form";
 import { useState, useContext, useTransition } from "react";
-import { BackButton } from "#/components/ui/back-button";
+import { BackButton } from "@/components/ui/back-button";
 import { Geolocation } from "#/core/providers/geolocation";
-import { SecondaryHeader } from "#/components/ui/secondary-header";
+import { SecondaryHeader } from "@/components/ui/secondary-header";
 import { Loader2 } from "@/components/icons";
 
 type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;

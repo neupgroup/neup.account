@@ -17,7 +17,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '#/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/components/ui/select';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { BackButton } from '#/components/ui/back-button';
+import { BackButton } from '@/components/ui/back-button';
 import { Skeleton } from '#/components/ui/skeleton';
 import { Loader2, Camera, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { useSession } from '@/inapp/auth/session-context';
@@ -111,7 +111,7 @@ function WebcamCapture({ onCapture }: { onCapture: (file: File) => void }) {
         <div className="space-y-2">
             <video ref={videoRef} className="w-full aspect-video rounded-md bg-muted" autoPlay muted playsInline />
             {hasCameraPermission === false && (
-                <Alert type="solid" convey="danger">
+                <Alert variant="destructive">
                     <AlertTitle>Camera Access Required</AlertTitle>
                     <AlertDescription>Please allow camera access to use this feature.</AlertDescription>
                 </Alert>

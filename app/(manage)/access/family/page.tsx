@@ -3,11 +3,11 @@ import { Card, CardContent } from "#/components/ui/card";
 import { getFamilyGroups } from "@/services/manage/people/family";
 import { FamilyManager } from "./family-manager";
 import { PartnerManager } from "./partner-manager";
-import { BackButton } from "#/components/ui/back-button";
+import { BackButton } from "@/components/ui/back-button";
 import { getActiveAccountId } from '@/services/account/verify';
 import { getUserProfile, checkPermissions } from '@/services/user';
 import { notFound } from "next/navigation";
-import { SecondaryHeader } from "#/components/ui/secondary-header";
+import { SecondaryHeader } from "@/components/ui/secondary-header";
 import { formMetadata } from '#/core/metadata';
 import { permission } from '@/.neup/logica/permission';
 import {

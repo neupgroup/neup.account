@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { BackButton } from '#/components/ui/back-button';
-import { PrimaryHeader } from '#/components/ui/primary-header';
+import { BackButton } from '@/components/ui/back-button';
+import { PrimaryHeader } from '@/components/ui/primary-header';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { Ban } from 'lucide-react';
 import { getExpiredGuestAccounts } from '@/services/manage/accounts/cleanup';
@@ -23,7 +23,7 @@ export default async function AccountCleanupPage() {
             </div>
 
             {error ? (
-                <Alert type="solid" convey="danger">
+                <Alert variant="destructive">
                     <Ban className="h-4 w-4" />
                     <AlertTitle>Permission Denied</AlertTitle>
                     <AlertDescription>

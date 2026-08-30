@@ -1,7 +1,7 @@
 import { getConnectedApplicationsPageData } from '@/services/applications/form-actions';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { AlertTriangle } from '@/components/icons';
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import { AppWindow, Building, BarChart, Share2, ChevronRight, type LucideIcon } from '@/components/icons';
 
 function iconFor(appIcon?: string): LucideIcon {
@@ -27,7 +27,7 @@ export default async function ApplicationsPage() {
       </div>
 
       {error && (
-        <Alert type="solid" convey="danger">
+        <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Failed to load</AlertTitle>
           <AlertDescription>

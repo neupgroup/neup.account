@@ -7,8 +7,8 @@ import {
   logRootApplicationActivity,
 } from '@/services/applications/manage';
 import { getAppPermissions } from '@/services/applications/authz-manage';
-import { BackButton } from '#/components/ui/back-button';
-import { PrimaryHeader } from '#/components/ui/primary-header';
+import { BackButton } from '@/components/ui/back-button';
+import { PrimaryHeader } from '@/components/ui/primary-header';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { PermissionPanel } from '@/app/(manage)/application/_components/permission-panel';
@@ -99,7 +99,7 @@ export async function ApplicationPermissionsPage({
             description={`Manage permissions for ${details.name}.`}
           />
         </div>
-        <Alert type="solid" convey="danger">
+        <Alert variant="destructive">
           <ShieldAlert className="h-4 w-4" />
           <AlertTitle>Access Denied</AlertTitle>
           <AlertDescription>You do not have permission to view application permissions.</AlertDescription>

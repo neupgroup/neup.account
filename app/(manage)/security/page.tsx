@@ -1,8 +1,8 @@
 import React from 'react';
 import { Card, CardContent } from '#/components/ui/card';
 import { ListItem } from '@/components/ui/ListItem';
-import { PrimaryHeader } from '#/components/ui/primary-header';
-import { SecondaryHeader } from '#/components/ui/secondary-header';
+import { PrimaryHeader } from '@/components/ui/primary-header';
+import { SecondaryHeader } from '@/components/ui/secondary-header';
 import { permission } from '@/.neup/logica/permission';
 import { notFound } from 'next/navigation';
 import { requireAnyPermission404 } from '@/services/account/permission-guards';

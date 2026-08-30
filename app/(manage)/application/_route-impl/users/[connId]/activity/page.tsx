@@ -2,7 +2,7 @@ import { forbidden, notFound } from 'next/navigation';
 import { ArrowLeft } from '@/components/icons';
 import { Button } from '#/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card';
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 import { canCurrentAccountViewApplicationUsers, logRootApplicationActivity } from '@/services/applications/manage';
 

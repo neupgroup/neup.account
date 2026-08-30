@@ -34,9 +34,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "#/components/ui/select";
-import { BackButton } from "#/components/ui/back-button";
+import { BackButton } from "@/components/ui/back-button";
 import { Geolocation } from "#/core/providers/geolocation";
-import { SecondaryHeader } from "#/components/ui/secondary-header";
+import { SecondaryHeader } from "@/components/ui/secondary-header";
 
 const formSchema = z.object({
     inactivityDays: z.string().min(1, "Please select a time period."),
@@ -147,7 +147,7 @@ export default function MaterializationPage() {
                         )}
                     />
                     {isRequested ? (
-                        <Alert type="solid" className="border-primary text-primary [&>svg]:text-primary">
+                        <Alert className="border-primary text-primary [&>svg]:text-primary">
                             <AlertTitle>Request Scheduled</AlertTitle>
                             <AlertDescription>
                                 Your request has been successfully submitted for admin review after the specified inactivity period.

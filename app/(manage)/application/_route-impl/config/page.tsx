@@ -7,8 +7,8 @@ import {
   getAppConfigData,
   logRootApplicationActivity,
 } from '@/services/applications/manage';
-import { BackButton } from '#/components/ui/back-button';
-import { PrimaryHeader } from '#/components/ui/primary-header';
+import { BackButton } from '@/components/ui/back-button';
+import { PrimaryHeader } from '@/components/ui/primary-header';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { AppConfigForm } from '@/app/(manage)/application/_components/app-config-form';
@@ -50,7 +50,7 @@ export async function ApplicationConfigPage({ applicationId, mode }: { applicati
           <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
           <PrimaryHeader title="Configuration" description="API and access configuration." />
         </div>
-        <Alert type="solid" convey="danger">
+        <Alert variant="destructive">
           <ShieldAlert className="h-4 w-4" />
           <AlertTitle>Access Denied</AlertTitle>
           <AlertDescription>You do not have permission to view this application configuration.</AlertDescription>

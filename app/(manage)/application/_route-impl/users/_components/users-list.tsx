@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Input } from '#/components/ui/input';
 import { Button } from '#/components/ui/button';
 import { Badge } from '#/components/ui/badge';
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { APP_BASE_PATH } from '#/core/appconfig';
 import { redirectInApp } from '@/.neup/core/helpers/link/navigation';

@@ -28,8 +28,8 @@ import {
 import { PhoneInput } from "#/components/ui/phone-input";
 import { Skeleton } from "#/components/ui/skeleton";
 import { Loader2, Plus, Trash2 } from "@/components/icons";
-import { BackButton } from "#/components/ui/back-button";
-import { SecondaryHeader } from "#/components/ui/secondary-header";
+import { BackButton } from "@/components/ui/back-button";
+import { SecondaryHeader } from "@/components/ui/secondary-header";
 
 type PhoneFormValues = z.infer<typeof phoneFormSchema>;
 

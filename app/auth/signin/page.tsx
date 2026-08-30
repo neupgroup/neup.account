@@ -1,6 +1,6 @@
 'use client';
 
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState, useEffect, useTransition, Suspense } from 'react';
 import NProgress from 'nprogress';

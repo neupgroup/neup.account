@@ -355,7 +355,7 @@ export function IndividualProfileForm({ accountId }: { accountId: string }) {
                             <Label>Associated NeupIDs</Label>
                              <div className="flex flex-wrap gap-2">
                                 {neupIds.map((id) => (
-                                    <Badge key={id} type="tinted">{id}</Badge>
+                                    <Badge key={id} variant="secondary">{id}</Badge>
                                 ))}
                             </div>
                         </div>

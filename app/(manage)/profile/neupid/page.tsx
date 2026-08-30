@@ -18,7 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { Label } from '#/components/ui/label'
 import { Badge } from '#/components/ui/badge'
 import { useSession } from '@/inapp/auth/session-context'
-import { BackButton } from '#/components/ui/back-button'
+import { BackButton } from '@/components/ui/back-button'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/inapp/permissions/profile-permissions'
 import { permission } from '@/.neup/logica/permission';
 import { useSelectedProfilePage } from '../use-selected-profile-page';
@@ -130,7 +130,7 @@ export default function NeupidPage() {
                                 <Label>Associated NeupIDs</Label>
                                 <div className="flex flex-wrap gap-2">
                                     {neupIds.map((id) => (
-                                        <Badge key={id} type="tinted">{id}</Badge>
+                                        <Badge key={id} variant="secondary">{id}</Badge>
                                     ))}
                                 </div>
                             </div>

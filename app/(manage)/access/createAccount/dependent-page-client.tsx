@@ -38,7 +38,7 @@ import { createDependentAccount } from "@/services/manage/accounts/dependent"
 import { dependentFormSchema } from "@/services/manage/accounts/schema"
 import { Label } from "#/components/ui/label"
 import { parseDateString } from "@/services/profile"
-import { BackButton } from "#/components/ui/back-button"
+import { BackButton } from "@/components/ui/back-button"
 import { Loader2 } from "@/components/icons"
 import { redirectInApp } from "@/.neup/core/helpers/link/navigation";
 import { permission } from '@/.neup/logica/permission';

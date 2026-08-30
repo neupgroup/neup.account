@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import { Card, CardContent } from "#/components/ui/card";
-import { BackButton } from "#/components/ui/back-button";
-import { PrimaryHeader } from "#/components/ui/primary-header";
+import { BackButton } from "@/components/ui/back-button";
+import { PrimaryHeader } from "@/components/ui/primary-header";
 import { ListItem } from "@/components/ui/ListItem";
 import { Bot, Github } from "@/components/icons";
 import { formMetadata } from '#/core/metadata';
 import { Badge } from '#/components/ui/badge';
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import { ChevronRight } from '@/components/icons';
 import { formatReadableDateTime } from '#/core/helpers/date';
 import { getLatestLinkedAccount } from '@/services/bridge/linked-accounts';
@@ -37,7 +37,7 @@ function ConnectedGitHubListItem({
                 <div className="min-w-0 flex-grow">
                     <div className="flex items-center gap-2">
                         <p className="font-medium text-foreground">{title}</p>
-                        <Badge type="outlined" className="text-[10px] uppercase tracking-wide">Connected</Badge>
+                        <Badge variant="outline" className="text-[10px] uppercase tracking-wide">Connected</Badge>
                     </div>
                     <p className="text-sm text-muted-foreground">
                         Linked on {formatReadableDateTime(connectedOn)}. Select to reconnect or refresh this link.

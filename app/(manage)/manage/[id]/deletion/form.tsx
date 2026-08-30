@@ -12,7 +12,7 @@ import { Skeleton } from '#/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { Loader2, ShieldAlert, Trash2 } from 'lucide-react';
 import { Textarea } from '#/components/ui/textarea';
-import { TertiaryHeader } from '#/components/ui/tertiary-header';
+import { TertiaryHeader } from '@/components/ui/tertiary-header';
 import { approveAccountDeletion, cancelAccountDeletion, getDeletionStatus, requestAccountDeletionByAdmin } from '@/services/manage/requests/deletion';
 import { useRouter } from 'next/navigation';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
@@ -98,7 +98,7 @@ export function DeletionManager({ accountId }: { accountId: string }) {
                 <TertiaryHeader title="Manual Deletion" />
                 <Card>
                      <CardHeader>
-                         <Alert type="solid" convey="danger">
+                         <Alert variant="destructive">
                             <ShieldAlert className="h-4 w-4" />
                             <AlertTitle>Action Not Permitted</AlertTitle>
                             <AlertDescription>
@@ -117,7 +117,7 @@ export function DeletionManager({ accountId }: { accountId: string }) {
                 <TertiaryHeader title="Deletion Pending" />
                 <Card>
                     <CardHeader>
-                         <Alert type="solid" convey="danger">
+                         <Alert variant="destructive">
                             <Trash2 className="h-4 w-4" />
                             <AlertTitle>This account is scheduled for deletion.</AlertTitle>
                             <AlertDescription>
@@ -157,7 +157,7 @@ export function DeletionManager({ accountId }: { accountId: string }) {
                  <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleAdminRequest)}>
                         <CardHeader>
-                            <Alert type="solid" convey="danger">
+                            <Alert variant="destructive">
                                 <Trash2 className="h-4 w-4" />
                                 <AlertTitle>Warning</AlertTitle>
                                 <AlertDescription>

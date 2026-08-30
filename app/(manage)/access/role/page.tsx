@@ -1,6 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import Image from 'next/image';
-import { BackButton } from '#/components/ui/back-button';
+import { BackButton } from '@/components/ui/back-button';
 import { Card, CardContent } from '#/components/ui/card';
 import { Badge } from '#/components/ui/badge';
 import { Button } from '#/components/ui/button';
@@ -25,7 +25,7 @@ import {
   inviteDirectMember,
   getDirectAccessAssignmentOptions,
 } from '../_components/actions';
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import { DirectMemberAccessForm } from '../_components/direct-member-access-form';
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
 import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';
@@ -170,7 +170,7 @@ function RoleCard({
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-base font-semibold capitalize">{platformLabel}</span>
             {contextName && (
-              <Badge type="tinted" className="text-xs font-normal">{contextName}</Badge>
+              <Badge variant="secondary" className="text-xs font-normal">{contextName}</Badge>
             )}
           </div>
         )}

@@ -6,7 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { Card, CardContent } from '#/components/ui/card';
 import { Badge } from '#/components/ui/badge';
 import { Ban, ChevronRight } from '@/components/icons';
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import Link from 'next/link';
 import { cn } from '#/core/utils';
 import { permission } from '@/.neup/logica/permission';
@@ -72,7 +72,7 @@ async function RequestsList({ type, application }: { type?: string; application?
 
   if (!canView) {
     return (
-      <Alert type="solid" convey="danger">
+      <Alert variant="destructive">
         <Ban className="h-4 w-4" />
         <AlertTitle>Permission Denied</AlertTitle>
         <AlertDescription>You do not have permission to view requests.</AlertDescription>
@@ -104,7 +104,7 @@ async function RequestsList({ type, application }: { type?: string; application?
             >
               <div className="min-w-0 space-y-0.5">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <Badge type="outlined" className="text-xs shrink-0">
+                  <Badge variant="outline" className="text-xs shrink-0">
                     {req.typeLabel}
                   </Badge>
                   <Badge

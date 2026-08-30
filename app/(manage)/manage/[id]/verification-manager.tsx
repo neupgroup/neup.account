@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '#/core/hooks/useToast';
-import { TertiaryHeader } from '#/components/ui/tertiary-header';
+import { TertiaryHeader } from '@/components/ui/tertiary-header';
 import { Card, CardContent, CardFooter, CardHeader } from '#/components/ui/card';
 import { Button } from '#/components/ui/button';
 import { Skeleton } from '#/components/ui/skeleton';
@@ -116,7 +116,7 @@ export function VerificationManager({ accountId }: { accountId: string }) {
                 <TertiaryHeader title="Verification Status" />
                 <Card>
                     <CardHeader>
-                         <Alert type="solid" className="border-green-500/50 bg-green-500/10 text-green-700">
+                         <Alert className="border-green-500/50 bg-green-500/10 text-green-700">
                             <CheckCircle2 className="h-4 w-4 !text-green-500" />
                             <AlertTitle>Account Verified</AlertTitle>
                             <AlertDescription>
@@ -157,7 +157,7 @@ export function VerificationManager({ accountId }: { accountId: string }) {
                     <form onSubmit={grantForm.handleSubmit(handleGrant)}>
                         <CardContent className="space-y-4 pt-6">
                             {details?.status === 'revoked' && (
-                                <Alert type="solid" convey="danger">
+                                <Alert variant="destructive">
                                     <AlertTitle>Verification Revoked</AlertTitle>
                                     <AlertDescription>This user's verification was previously revoked.</AlertDescription>
                                 </Alert>

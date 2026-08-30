@@ -38,7 +38,7 @@ import {
 } from '@/services/applications/authz-manage';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 import { redirectInApp } from '@/.neup/core/helpers/link/navigation';
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import { ScopeForSelector, ScopeLevelSelector } from './authz-scope-policy-selector';
 
 type Props = {
@@ -235,17 +235,17 @@ export function PermissionPanel({
                   ) : null}
                   <div className="mt-1 flex flex-wrap gap-1">
                     {permission.scopeFor.map((label) => (
-                      <Badge key={label} type="outlined" className="text-xs">
+                      <Badge key={label} variant="outline" className="text-xs">
                         {label}
                       </Badge>
                     ))}
                     {permission.scopeLevel.map((label) => (
-                      <Badge key={label} type="outlined" className="text-xs">
+                      <Badge key={label} variant="outline" className="text-xs">
                         {label}
                       </Badge>
                     ))}
                     {permission.status ? (
-                      <Badge type="outlined" className="text-xs">
+                      <Badge variant="outline" className="text-xs">
                         status:{permission.status}
                       </Badge>
                     ) : null}

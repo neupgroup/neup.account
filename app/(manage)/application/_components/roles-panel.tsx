@@ -98,9 +98,9 @@ export function RolesPanel({ appId, canManage, canResetPush, initialRoles, hasWe
                   <div className="flex items-center gap-2">
                     <p className="truncate text-base font-medium leading-6">{role.name}</p>
                     {role.scopeFor.map((label) => (
-                      <Badge key={label} type="outlined" className="text-xs">{label}</Badge>
+                      <Badge key={label} variant="outline" className="text-xs">{label}</Badge>
                     ))}
-                    <Badge type="outlined" className="text-xs">{role.scopeLevel}</Badge>
+                    <Badge variant="outline" className="text-xs">{role.scopeLevel}</Badge>
                     {defaultRoleId === role.id ? (
                       <Badge className="text-xs">Default</Badge>
                     ) : null}

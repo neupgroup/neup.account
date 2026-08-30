@@ -18,8 +18,8 @@ import { Input } from '#/components/ui/input';
 import { Skeleton } from '#/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
 import { Loader2, UserPlus, Trash2, Ban, EyeOff } from 'lucide-react';
-import { BackButton } from '#/components/ui/back-button';
-import { SecondaryHeader } from '#/components/ui/secondary-header';
+import { BackButton } from '@/components/ui/back-button';
+import { SecondaryHeader } from '@/components/ui/secondary-header';
 import { cn } from '#/core/utils';
 
 function UserListSkeleton() {

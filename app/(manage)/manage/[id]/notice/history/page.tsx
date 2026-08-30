@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getUserDetails } from "@/services/manage/users";
-import { BackButton } from "#/components/ui/back-button";
+import { BackButton } from "@/components/ui/back-button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "#/components/ui/card";
 
 export default async function NoticeHistoryPage({ params }: { params: Promise<{ id: string }> }) {

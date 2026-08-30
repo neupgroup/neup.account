@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { getUserDetails, getAccountDetails } from "@/services/manage/users";
 import { VerificationManager } from "./form";
-import { BackButton } from "#/components/ui/back-button";
-import { PrimaryHeader } from "#/components/ui/primary-header";
+import { BackButton } from "@/components/ui/back-button";
+import { PrimaryHeader } from "@/components/ui/primary-header";
 
 export default async function UserVerificationPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;

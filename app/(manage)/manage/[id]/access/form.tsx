@@ -161,7 +161,7 @@ export function ManagedAccountAccessForm({
               <p className="font-medium">{resolvedMember.displayName}</p>
               <p className="text-sm text-muted-foreground font-mono">{resolvedMember.accountId}</p>
             </div>
-            <Badge type="tinted">Selected</Badge>
+            <Badge variant="secondary">Selected</Badge>
           </div>
         )}
 
@@ -173,7 +173,7 @@ export function ManagedAccountAccessForm({
                 Choose the direct roles this account should get immediately.
               </p>
             </div>
-            <Badge type="outlined">{selectedRoleIds.size} selected</Badge>
+            <Badge variant="outline">{selectedRoleIds.size} selected</Badge>
           </div>
 
           <div className="rounded-lg border">
@@ -198,7 +198,7 @@ export function ManagedAccountAccessForm({
                         <p className="text-xs text-muted-foreground">{role.description}</p>
                       )}
                     </div>
-                    {checked && <Badge type="tinted">Selected</Badge>}
+                    {checked && <Badge variant="secondary">Selected</Badge>}
                   </label>
                 );
               })

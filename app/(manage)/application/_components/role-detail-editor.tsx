@@ -289,12 +289,12 @@ export function RoleDetailEditor({
                     ) : null}
                     <div className="mt-1 flex flex-wrap gap-1">
                       {permission.scopeFor.map((value) => (
-                        <Badge key={value} type="outlined" className={`text-xs ${isDisabled ? 'opacity-70' : ''}`}>
+                        <Badge key={value} variant="outline" className={`text-xs ${isDisabled ? 'opacity-70' : ''}`}>
                           {AUTHZ_SCOPE_FOR_META[value]?.label ?? value}
                         </Badge>
                       ))}
                       {permission.scopeLevel.map((value) => (
-                        <Badge key={value} type="outlined" className={`text-xs ${isDisabled ? 'opacity-70' : ''}`}>
+                        <Badge key={value} variant="outline" className={`text-xs ${isDisabled ? 'opacity-70' : ''}`}>
                           {AUTHZ_SCOPE_LEVEL_META[value]?.label ?? value}
                         </Badge>
                       ))}

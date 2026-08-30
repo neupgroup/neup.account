@@ -2,7 +2,7 @@ import React from "react";
 import { notFound } from "next/navigation";
 import { Card, CardContent } from "#/components/ui/card";
 import { ListItem } from "@/components/ui/ListItem";
-import { PrimaryHeader } from "#/components/ui/primary-header";
+import { PrimaryHeader } from "@/components/ui/primary-header";
 import { UserCircle, FileText, HeartHandshake, AtSign, Contact, ShieldCheck } from "@/components/icons";
 import { checkGrantedPermissions, checkPermissions, getUserProfile } from "@/services/user";
 import { logSystemError } from "@/.neup/logica/logger/files";

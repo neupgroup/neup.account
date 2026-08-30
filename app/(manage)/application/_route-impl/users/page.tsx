@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { forbidden, notFound } from 'next/navigation';
 import { Button } from '#/components/ui/button';
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import { ArrowLeft } from '@/components/icons';
 import {
   canCurrentAccountUseRootApplicationMode,

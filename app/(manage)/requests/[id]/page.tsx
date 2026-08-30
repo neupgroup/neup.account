@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { getRequestDetail } from '@/services/manage/requests/all';
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card';
 import { Badge } from '#/components/ui/badge';
-import { BackButton } from '#/components/ui/back-button';
+import { BackButton } from '@/components/ui/back-button';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { Terminal } from 'lucide-react';
 import { RequestActionForm } from './form';
@@ -75,7 +75,7 @@ function RequestDetailBody({ request }: { request: Awaited<ReturnType<typeof get
             <div className="flex flex-wrap gap-1 mt-1">
               {Array.isArray(d.currentNeupIds) && d.currentNeupIds.length > 0
                 ? (d.currentNeupIds as string[]).map((id) => (
-                    <Badge key={id} type="outlined" className="text-xs">{id}</Badge>
+                    <Badge key={id} variant="outline" className="text-xs">{id}</Badge>
                   ))
                 : <span className="text-sm text-muted-foreground">None</span>
               }
@@ -198,7 +198,7 @@ function RequestDetailBody({ request }: { request: Awaited<ReturnType<typeof get
                             normalizeSingleAuthzScopeLevel(role.scopeLevel),
                           )
                         : role.scope;
-                      return derivedScope ? <Badge type="outlined">{formatRoleScopeForDisplay(derivedScope)}</Badge> : null;
+                      return derivedScope ? <Badge variant="outline">{formatRoleScopeForDisplay(derivedScope)}</Badge> : null;
                     })()}
                   </CardContent>
                 </Card>
@@ -256,7 +256,7 @@ export default async function RequestDetailPage({ params }: Props) {
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <Badge type="outlined" className="text-xs">{request.typeLabel}</Badge>
+              <Badge variant="outline" className="text-xs">{request.typeLabel}</Badge>
             </div>
             <h1 className="text-3xl font-bold tracking-tight">
               {isApplicationChange && appId ? (

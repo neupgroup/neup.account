@@ -9,7 +9,7 @@ entry stays in the same server-rendered context.
 ::end
 */
 
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import { notFound } from 'next/navigation';
 import { Button } from '#/components/ui/button';
 import { Badge } from '#/components/ui/badge';
@@ -148,7 +148,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
                 </Badge>
               )}
               {details.isInternal && (
-                <Badge type="outlined">Internal</Badge>
+                <Badge variant="outline">Internal</Badge>
               )}
             </div>
             <p className="text-muted-foreground">{details.description || 'No description available.'}</p>

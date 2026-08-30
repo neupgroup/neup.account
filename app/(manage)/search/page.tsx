@@ -3,9 +3,9 @@ import { Suspense } from 'react';
 import { searchAll } from '@/services/search';
 import { Card, CardContent } from '#/components/ui/card';
 import { UserCircle, ShieldCheck } from 'lucide-react';
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import { Badge } from '#/components/ui/badge';
-import { BackButton } from '#/components/ui/back-button';
+import { BackButton } from '@/components/ui/back-button';
 import { Skeleton } from '#/components/ui/skeleton';
 
 async function SearchResults({ query }: { query: string }) {
@@ -38,7 +38,7 @@ async function SearchResults({ query }: { query: string }) {
                                             <p className="font-semibold group-hover:underline">{item.title}</p>
                                             <p className="text-sm text-muted-foreground truncate">{item.description}</p>
                                         </div>
-                                        <Badge type="outlined">{item.type}</Badge>
+                                        <Badge variant="outline">{item.type}</Badge>
                                     </FlowLink>
                                 </CardContent>
                             </Card>

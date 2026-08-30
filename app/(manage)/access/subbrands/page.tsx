@@ -1,4 +1,4 @@
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import {
     Card,
     CardContent,

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import { useEffect, useTransition, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
 import { Button } from '#/components/ui/button';

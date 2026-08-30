@@ -9,7 +9,7 @@ import { Card, CardContent } from '#/components/ui/card';
 import { Button } from '#/components/ui/button';
 import { Check, X, Loader2, Users, Handshake } from 'lucide-react';
 import { Skeleton } from '#/components/ui/skeleton';
-import { BackButton } from '#/components/ui/back-button';
+import { BackButton } from '@/components/ui/back-button';
 import { useSession } from '@/inapp/auth/session-context';
 import { hasAnyPermission } from '@/inapp/permissions/profile-permissions';
 import { permission } from '@/.neup/logica/permission';

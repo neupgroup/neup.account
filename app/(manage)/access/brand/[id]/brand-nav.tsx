@@ -1,7 +1,7 @@
 
 'use client';
 
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import { usePathname } from 'next/navigation';
 import { cn } from '#/core/utils';
 import { buttonVariants } from '#/components/ui/button';

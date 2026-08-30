@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import { notFound } from 'next/navigation';
 import { Button } from '#/components/ui/button';
 import { Badge } from '#/components/ui/badge';
@@ -97,7 +97,7 @@ export default async function ApplicationDetailPage({ params }: ApplicationDetai
                 </Badge>
               )}
               {details.isRootViewer && details.isInternal && (
-                <Badge type="outlined">Internal</Badge>
+                <Badge variant="outline">Internal</Badge>
               )}
             </div>
             <p className="text-muted-foreground">{details.description || 'No description available.'}</p>

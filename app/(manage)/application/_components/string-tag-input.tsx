@@ -51,7 +51,7 @@ export function StringTagInput({
       {value.length > 0 ? (
         <div className="flex flex-wrap gap-2">
           {value.map((tag) => (
-            <Badge key={tag} type="tinted" className="gap-1 pr-1 text-xs">
+            <Badge key={tag} variant="secondary" className="gap-1 pr-1 text-xs">
               <span>{tag}</span>
               <button
                 type="button"

@@ -11,8 +11,8 @@ import { Skeleton } from '#/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { getTotpStatus, generateTotpSecret, verifyAndEnableTotp, disableTotp, getServerTime } from '@/services/security/totp';
 import { Smartphone, Loader2, Clock } from '@/components/icons';
-import { BackButton } from '#/components/ui/back-button';
-import { SecondaryHeader } from '#/components/ui/secondary-header';
+import { BackButton } from '@/components/ui/back-button';
+import { SecondaryHeader } from '@/components/ui/secondary-header';
 
 type SetupState = {
     secret: string;
@@ -156,7 +156,7 @@ export default function AuthenticatorAppPage() {
             return (
                 <>
                     <CardContent className="pt-6">
-                        <Alert type="solid" className="border-primary/50 text-primary [&>svg]:text-primary">
+                        <Alert className="border-primary/50 text-primary [&>svg]:text-primary">
                             <AlertTitle>Status: Enabled</AlertTitle>
                             <AlertDescription>
                                You will be asked for a code from your authenticator app when you sign in.

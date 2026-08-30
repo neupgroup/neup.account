@@ -18,9 +18,9 @@ import { Alert, AlertDescription, AlertTitle } from "#/components/ui/alert";
 import { Loader2, Trash2 } from "@/components/icons";
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
-import { BackButton } from "#/components/ui/back-button";
+import { BackButton } from "@/components/ui/back-button";
 import { Geolocation } from "#/core/providers/geolocation";
-import { SecondaryHeader } from "#/components/ui/secondary-header";
+import { SecondaryHeader } from "@/components/ui/secondary-header";
 import { getAccountType } from '@/services/user';
 import { getActiveAccountId } from '@/services/account/verify';
 import { useRouter } from "next/navigation";
@@ -90,7 +90,7 @@ export default function DeleteAccountPage() {
             />
             </CardHeader>
             <CardContent className="space-y-4">
-            <Alert type="solid" convey="danger">
+            <Alert variant="destructive">
                 <AlertTitle>This action is irreversible.</AlertTitle>
                 <AlertDescription>
                 <ul className="list-disc space-y-2 pl-5 mt-2">
@@ -105,7 +105,7 @@ export default function DeleteAccountPage() {
                 </AlertDescription>
             </Alert>
             {isRequested && (
-                <Alert type="solid" className="border-primary text-primary [&>svg]:text-primary">
+                <Alert className="border-primary text-primary [&>svg]:text-primary">
                     <AlertTitle>Request Received</AlertTitle>
                     <AlertDescription>
                         Your account deletion request has been submitted. You can cancel by logging in within the next 30 days.

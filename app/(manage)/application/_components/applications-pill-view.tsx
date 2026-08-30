@@ -12,7 +12,7 @@ root-mode navigation stays in the root management context.
 */
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { FlowLink } from '#/components/ui/flow-link';
+import { FlowLink } from '@/components/flow-link';
 import { Badge } from '#/components/ui/badge';
 import { AppWindow, Building, BarChart, Share2, ChevronRight, Plus, type LucideIcon } from '@/components/icons';
 import type { FlatAppItem, ApplicationSection } from '@/services/applications/types';

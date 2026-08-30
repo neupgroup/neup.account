@@ -9,8 +9,8 @@ import {
 } from '@/services/applications/manage';
 import { getAppDefaultRoleId, getAppRoles } from '@/services/applications/authz-manage';
 import { getAuthzWebhookUrl } from '@/services/applications/authz-webhook';
-import { BackButton } from '#/components/ui/back-button';
-import { PrimaryHeader } from '#/components/ui/primary-header';
+import { BackButton } from '@/components/ui/back-button';
+import { PrimaryHeader } from '@/components/ui/primary-header';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { RolesPanel } from '@/app/(manage)/application/_components/roles-panel';
@@ -85,7 +85,7 @@ export async function ApplicationRolesPage({ applicationId, mode }: { applicatio
             description={`Manage permissions and roles for ${details.name}.`}
           />
         </div>
-        <Alert type="solid" convey="danger">
+        <Alert variant="destructive">
           <ShieldAlert className="h-4 w-4" />
           <AlertTitle>Access Denied</AlertTitle>
           <AlertDescription>You do not have permission to view application roles.</AlertDescription>

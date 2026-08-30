@@ -21,7 +21,7 @@ import { Button } from "#/components/ui/button";
 import { Badge } from "#/components/ui/badge"
 import { getActivities, ActivityLog } from "@/services/log-actions"
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { BackButton } from "#/components/ui/back-button";
+import { BackButton } from "@/components/ui/back-button";
 import { useEffect, useState, useCallback } from "react";
 import { Skeleton } from "#/components/ui/skeleton";
 import { redirectInApp } from "@/.neup/core/helpers/link/navigation";

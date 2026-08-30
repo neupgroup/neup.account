@@ -6,7 +6,7 @@ import { ListItem } from '@/components/ui/ListItem';
 import { getUserDetails } from '@/services/manage/users';
 import { checkPermissions } from '@/services/user';
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
-import { BackButton } from '#/components/ui/back-button';
+import { BackButton } from '@/components/ui/back-button';
 import { VerifiedBadge } from '@/components/verified-badge';
 import { UserCircle, ShieldCheck, History, Ban, Trash2, Gem } from '@/components/icons';
 import { ACCOUNT_ACCESS_PERMISSION_GROUPS } from '@/inapp/permissions/account-access-permissions';

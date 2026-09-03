@@ -2,6 +2,7 @@ import prisma from '@/.neup/core/database/prisma';
 import { createSigninAuthnRequest } from './AuthenticationFlow';
 import { getAuthRequest } from './auth-request';
 import { validateNeupId } from '@/services/user';
+import { submitNeupId, submitPasswordWithNeupId } from './signin';
 import jwt from 'jsonwebtoken';
 
 const AUTH_REQUEST_TTL_SECONDS = 20 * 60;
@@ -27,7 +28,7 @@ export async function issueBridgeSigninRequest() {
   };
 }
 
-export async function resolveBridgeSignin(neupIdInput: string, token: string) {
+export async function resolveBridgeSignin(neupIdInput: string, token: string, password?: string) {
   let payload: jwt.JwtPayload;
   try {
     payload = jwt.verify(token, getSecret(), { algorithms: ['HS256'] }) as jwt.JwtPayload;
@@ -42,6 +43,14 @@ export async function resolveBridgeSignin(neupIdInput: string, token: string) {
   const request = await getAuthRequest(payload.id, { expectedType: 'signin' });
   if (!request) return { status: 401, body: { success: false, error: 'Invalid or expired auth request.' } };
 
+  if (password !== undefined) {
+    const requestData = request.data.data as { neupId?: unknown } | null;
+    const neupId = typeof requestData?.neupId === 'string' ? requestData.neupId : neupIdInput.trim().toLowerCase();
+    if (!neupId) return { status: 400, body: { success: false, error: 'NeupID must be submitted first.' } };
+    const result = await submitPasswordWithNeupId({ neupId, password, authRequestId: payload.id });
+    return { status: result.success ? 200 : 401, body: result };
+  }
+
   const neupId = neupIdInput.trim().toLowerCase();
   if (!neupId) return { status: 400, body: { success: false, error: 'NeupID is required.' } };
   const validation = await validateNeupId(neupId);
@@ -54,6 +63,8 @@ export async function resolveBridgeSignin(neupIdInput: string, token: string) {
     select: { neupId: true, accountId: true, account: { select: { displayImage: true, displayName: true, brandProfile: { select: { brandName: true } }, individualProfile: { select: { firstName: true, lastName: true } } } } },
   });
   if (!record?.accountId || !record.account) return { status: 404, body: { success: false, error: 'NeupID not found.' } };
+
+  await submitNeupId({ neupId, authRequestId: payload.id });
 
   const displayName = record.account.displayName || record.account.brandProfile?.brandName || [record.account.individualProfile?.firstName, record.account.individualProfile?.lastName].filter(Boolean).join(' ') || null;
   return { status: 200, body: { neupid: record.neupId, displayImage: record.account.displayImage, displayName, continue: 'password' } };

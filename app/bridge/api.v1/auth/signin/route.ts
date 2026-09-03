@@ -19,11 +19,19 @@ export async function POST(request: NextRequest) {
 
   const body = await request.text();
   let neupId = body.trim();
+  let parsedPassword: string | undefined;
   try {
     const parsed = JSON.parse(body);
-    neupId = typeof parsed === 'string' ? parsed : parsed.neupid ?? parsed.neupId ?? '';
+    if (typeof parsed !== 'string') {
+      neupId = parsed.neupid ?? parsed.neupId ?? '';
+      parsedPassword = typeof parsed.password === 'string' ? parsed.password : undefined;
+    } else {
+      neupId = parsed;
+    }
   } catch { /* Plain-text NeupID is also supported. */ }
 
-  const result = await resolveBridgeSignin(neupId, token);
+  if (parsedPassword !== undefined && !neupId) neupId = '';
+
+  const result = await resolveBridgeSignin(neupId, token, parsedPassword);
   return NextResponse.json(result.body, { status: result.status });
 }

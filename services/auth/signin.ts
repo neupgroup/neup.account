@@ -107,7 +107,7 @@ export async function submitNeupId(data: z.infer<typeof neupIdSchema>) {
  * Used when neupId is passed directly (e.g. via URL param).
  * Resolves the account internally and always returns the same error to prevent account enumeration.
  */
-export async function submitPasswordWithNeupId(data: { neupId: string; password: string; authRequestId: string }): Promise<{ success: boolean; mfaRequired: boolean; error?: string; isPendingDeletion?: boolean }> {
+export async function submitPasswordWithNeupId(data: { neupId: string; password: string; authRequestId: string; deferCompletion?: boolean }): Promise<{ success: boolean; mfaRequired: boolean; error?: string; isPendingDeletion?: boolean }> {
     const neupId = data.neupId?.trim().toLowerCase();
     const { password, authRequestId } = data;
 
@@ -152,12 +152,17 @@ export async function submitPasswordWithNeupId(data: { neupId: string; password:
         data: {
             data: { neupId, isPendingDeletion },
             accountId,
-            status: isPendingDeletion ? 'pending_deletion_confirmation' : 'pending_completion',
+            status: isPendingDeletion ? 'pending_deletion_confirmation' : (data.deferCompletion ? 'pending_terms' : 'pending_completion'),
         },
     });
 
     if (isPendingDeletion) {
         return { success: true, mfaRequired: false, isPendingDeletion: true };
+    }
+
+    if (data.deferCompletion) {
+        await extendAuthRequest(request.id);
+        return { success: true, mfaRequired: false };
     }
 
     const mfaEnabled = false;

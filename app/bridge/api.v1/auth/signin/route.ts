@@ -20,11 +20,13 @@ export async function POST(request: NextRequest) {
   const body = await request.text();
   let neupId = body.trim();
   let parsedPassword: string | undefined;
+  let parsedTerms: Record<string, unknown> | undefined;
   try {
     const parsed = JSON.parse(body);
     if (typeof parsed !== 'string') {
       neupId = parsed.neupid ?? parsed.neupId ?? '';
       parsedPassword = typeof parsed.password === 'string' ? parsed.password : undefined;
+      parsedTerms = parsed.terms && typeof parsed.terms === 'object' ? parsed.terms : undefined;
     } else {
       neupId = parsed;
     }
@@ -32,6 +34,6 @@ export async function POST(request: NextRequest) {
 
   if (parsedPassword !== undefined && !neupId) neupId = '';
 
-  const result = await resolveBridgeSignin(neupId, token, parsedPassword);
+  const result = await resolveBridgeSignin(neupId, token, parsedPassword, parsedTerms);
   return NextResponse.json(result.body, { status: result.status });
 }

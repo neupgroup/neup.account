@@ -3,6 +3,8 @@ import { createSigninAuthnRequest } from './AuthenticationFlow';
 import { getAuthRequest } from './auth-request';
 import { validateNeupId } from '@/services/user';
 import { submitNeupId, submitPasswordWithNeupId } from './signin';
+import { makeSessionFromRequest } from '@/services/account/makeSession';
+import { cookieProvider } from '#/core/providers/cookies';
 import jwt from 'jsonwebtoken';
 
 const AUTH_REQUEST_TTL_SECONDS = 20 * 60;
@@ -28,7 +30,7 @@ export async function issueBridgeSigninRequest() {
   };
 }
 
-export async function resolveBridgeSignin(neupIdInput: string, token: string, password?: string) {
+export async function resolveBridgeSignin(neupIdInput: string, token: string, password?: string, terms?: Record<string, unknown>) {
   let payload: jwt.JwtPayload;
   try {
     payload = jwt.verify(token, getSecret(), { algorithms: ['HS256'] }) as jwt.JwtPayload;
@@ -47,8 +49,23 @@ export async function resolveBridgeSignin(neupIdInput: string, token: string, pa
     const requestData = request.data.data as { neupId?: unknown } | null;
     const neupId = typeof requestData?.neupId === 'string' ? requestData.neupId : neupIdInput.trim().toLowerCase();
     if (!neupId) return { status: 400, body: { success: false, error: 'NeupID must be submitted first.' } };
-    const result = await submitPasswordWithNeupId({ neupId, password, authRequestId: payload.id });
-    return { status: result.success ? 200 : 401, body: result };
+    const result = await submitPasswordWithNeupId({ neupId, password, authRequestId: payload.id, deferCompletion: true });
+    return { status: result.success ? 200 : 401, body: result.success ? { success: true, continue: 'termsApproval' } : result };
+  }
+
+  if (terms) {
+    if (request.data.status !== 'pending_terms' || Object.keys(terms).length === 0) {
+      return { status: 400, body: { success: false, error: 'Terms approval is required.' } };
+    }
+    const approved = (terms as Record<string, unknown>).approved === true || (terms as Record<string, unknown>).agreement === true;
+    if (!approved) return { status: 400, body: { success: false, error: 'Terms must be approved.' } };
+    if (!request.data.accountId) return { status: 401, body: { success: false, error: 'Invalid authentication request.' } };
+
+    const sessionResult = await makeSessionFromRequest({ accountId: request.data.accountId, loginType: 'Password' });
+    if (!sessionResult.success) return { status: 500, body: { success: false, error: sessionResult.error || 'Failed to create session.' } };
+    await prisma.authnRequest.update({ where: { id: request.id }, data: { data: { ...(request.data.data as object), terms } as any, status: 'completed' } });
+    const authAccount = await cookieProvider.getCookie('auth_account');
+    return { status: 200, body: { success: true, continue: 'saveTotp', auth_account: authAccount } };
   }
 
   const neupId = neupIdInput.trim().toLowerCase();

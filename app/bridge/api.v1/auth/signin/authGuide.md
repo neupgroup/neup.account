@@ -130,15 +130,11 @@ The request is moved to the terms-approval step after successful password verifi
 ## 4. Approve terms
 
 After the password is accepted, the endpoint returns `continue: "termsApproval"`.
-Submit the terms and approval using the same JWT:
+Approve the terms using the same JWT. Send only:
 
 ```json
 {
-  "terms": {
-    "Privacy Policy": "https://example.com/privacy",
-    "Terms of Usage": "https://example.com/terms",
-    "approved": true
-  }
+  "approve": true
 }
 ```
 
@@ -148,7 +144,7 @@ The final response is:
 {
   "success": true,
   "continue": "saveTotp",
-  "auth_account": "..."
+  "token": "..."
 }
 ```
 

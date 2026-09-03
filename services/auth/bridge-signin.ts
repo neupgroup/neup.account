@@ -30,7 +30,7 @@ export async function issueBridgeSigninRequest() {
   };
 }
 
-export async function resolveBridgeSignin(neupIdInput: string, token: string, password?: string, terms?: Record<string, unknown>) {
+export async function resolveBridgeSignin(neupIdInput: string, token: string, password?: string, approve?: boolean) {
   let payload: jwt.JwtPayload;
   try {
     payload = jwt.verify(token, getSecret(), { algorithms: ['HS256'] }) as jwt.JwtPayload;
@@ -54,19 +54,18 @@ export async function resolveBridgeSignin(neupIdInput: string, token: string, pa
     return { status: result.success ? 200 : 401, body: result.success ? { success: true, continue: 'termsApproval' } : { success: false, error: 'auth.signin.password.invalid' } };
   }
 
-  if (terms) {
-    if (request.data.status !== 'pending_terms' || Object.keys(terms).length === 0) {
+  if (approve !== undefined) {
+    if (request.data.status !== 'pending_terms') {
       return { status: 400, body: { success: false, error: 'auth.signin.terms.empty' } };
     }
-    const approved = (terms as Record<string, unknown>).approved === true || (terms as Record<string, unknown>).agreement === true;
-    if (!approved) return { status: 400, body: { success: false, error: 'auth.signin.terms.not_approved' } };
+    if (approve !== true) return { status: 400, body: { success: false, error: 'auth.signin.terms.not_approved' } };
     if (!request.data.accountId) return { status: 401, body: { success: false, error: 'auth.signin.request.invalid' } };
 
     const sessionResult = await makeSessionFromRequest({ accountId: request.data.accountId, loginType: 'Password' });
     if (!sessionResult.success) return { status: 500, body: { success: false, error: 'auth.signin.session.failed' } };
-    await prisma.authnRequest.update({ where: { id: request.id }, data: { data: { ...(request.data.data as object), terms } as any, status: 'completed' } });
+    await prisma.authnRequest.update({ where: { id: request.id }, data: { data: { ...(request.data.data as object), termsApproved: true } as any, status: 'completed' } });
     const authAccount = await cookieProvider.getCookie('auth_account');
-    return { status: 200, body: { success: true, continue: 'saveTotp', auth_account: authAccount } };
+    return { status: 200, body: { success: true, continue: 'saveTotp', token: authAccount } };
   }
 
   const neupId = neupIdInput.trim().toLowerCase();

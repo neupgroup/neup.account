@@ -4,7 +4,7 @@
 import { Card, CardContent } from '#/components/ui/card';
 import { Wallet, Gem } from '@/components/icons';
 import { ListItem } from '@/components/ui/ListItem';
-import { SecondaryHeader } from '@/components/ui/secondary-header';
+import { TitleSet } from '#/components/element/titleset';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '#/components/ui/skeleton';
 
@@ -62,9 +62,9 @@ export function BillingCard() {
 
     return (
          <div className="space-y-2">
-            <SecondaryHeader 
+            <TitleSet level={1}
                 title="Billing & Subscription"
-                description={`Your current plan is ${plan}.`}
+                subtitle={`Your current plan is ${plan}.`}
             />
             <Card>
                 <CardContent className="divide-y p-2">

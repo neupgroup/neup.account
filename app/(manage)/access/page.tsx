@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { FlowLink } from '@/components/flow-link';
 import { Card, CardContent } from '#/components/ui/card';
 import { FolderGit2, ChevronRight, Building, UserPlus, Users, MailQuestion, UserX } from '@/components/icons';
-import { SecondaryHeader } from '@/components/ui/secondary-header';
+import { TitleSet } from '#/components/element/titleset';
 import { getDirectAccessGroup } from '@/services/manage/access';
 import { AccessGroupView } from './_components/access-group-view';
 import { ListItem } from '@/components/ui/ListItem';
@@ -246,9 +246,9 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
     >
       {showLinkedAccounts && (
         <div className="space-y-2">
-          <SecondaryHeader
+          <TitleSet level={1}
             title="Link & Create Accounts"
-            description="Add new brand or dependent accounts to your profile."
+            subtitle="Add new brand or dependent accounts to your profile."
           />
           <Card>
             <CardContent className="divide-y p-0">
@@ -266,9 +266,9 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
 
       {showLinkedAccounts && canSwitchAccounts && accessContext.isSelf && accessContext.isWorkingAsSignedIn && (
         <div className="space-y-2">
-          <SecondaryHeader
+          <TitleSet level={1}
             title="Manage Accounts"
-            description="Switch to another account you have access to."
+            subtitle="Switch to another account you have access to."
           />
           <Card>
             <CardContent className="p-0 divide-y">
@@ -300,9 +300,9 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
 
       {(canViewFamily || canViewInvitations || canBlockUsers) && (
         <div className="space-y-2">
-          <SecondaryHeader
+          <TitleSet level={1}
             title="People & Sharing"
-            description="Manage your requests, family, and blocked users."
+            subtitle="Manage your requests, family, and blocked users."
           />
           <Card>
             <CardContent className="divide-y p-0">

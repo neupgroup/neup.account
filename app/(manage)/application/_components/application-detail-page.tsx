@@ -126,7 +126,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
   return (
     <div className="grid gap-6">
       <div>
-        <Button type="plain" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
+        <Button variant="plain" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
           <FlowLink href={mode === 'root' ? '/application?mode=root' : '/application'}>
             <ArrowLeft className="h-4 w-4" />
             Back
@@ -227,7 +227,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
           </CardHeader>
           <CardContent>
             <form action={deleteAction}>
-              <Button htmlType="submit" type="solid" convey="danger">
+              <Button htmlType="submit" variant="solid" convey="danger">
                 Delete Application
               </Button>
             </form>

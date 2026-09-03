@@ -99,12 +99,12 @@ export function SocialLinksManager({ initialLinks }: { initialLinks: SocialLink[
                                         <Icon className="h-6 w-6 text-muted-foreground" />
                                         <a href={link.url} target="_blank" rel="noopener noreferrer" className="flex-grow text-sm truncate hover:underline">{link.url}</a>
                                         <div className="flex items-center gap-4">
-                                             <Button onClick={() => handleToggle(link.id, link.isVisible)} type="plain" size="icon" className="h-8 w-8 text-muted-foreground" disabled={isPending}>
+                                             <Button onClick={() => handleToggle(link.id, link.isVisible)} variant="plain" size="icon" className="h-8 w-8 text-muted-foreground" disabled={isPending}>
                                                 {link.isVisible ? <Eye /> : <EyeOff />}
                                             </Button>
                                              <AlertDialog>
                                                 <AlertDialogTrigger asChild>
-                                                    <Button type="plain" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" disabled={isPending}>
+                                                    <Button variant="plain" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" disabled={isPending}>
                                                         <Trash2 />
                                                     </Button>
                                                 </AlertDialogTrigger>

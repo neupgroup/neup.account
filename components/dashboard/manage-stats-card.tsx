@@ -3,7 +3,7 @@ import { checkPermissions } from '@/services/user';
 import { getUserStats } from '@/services/manage/accounts';
 import { Card, CardContent } from '#/components/ui/card';
 import { Users, UserCheck, UserPlus, ShieldCheck } from '@/components/icons';
-import { SecondaryHeader } from '@/components/ui/secondary-header';
+import { TitleSet } from '#/components/element/titleset';
 import Link from 'next/link';
 
 const componentPermissions = [
@@ -69,9 +69,9 @@ export async function ManageStatsCard() {
 
     return (
         <div className="space-y-2">
-            <SecondaryHeader
+            <TitleSet level={1}
                 title="System Overview"
-                description="A snapshot of accounts and permissions across the platform."
+                subtitle="A snapshot of accounts and permissions across the platform."
             />
             <Card>
                 <CardContent className="grid p-0 md:grid-cols-2 lg:grid-cols-4 divide-y md:divide-y-0 md:divide-x">

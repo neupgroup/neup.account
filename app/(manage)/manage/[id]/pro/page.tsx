@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getUserDetails } from "@/services/manage/users";
-import { BackButton } from "@/components/ui/back-button";
-import { PrimaryHeader } from "@/components/ui/primary-header";
+import { BackButton } from "#/components/element/backButton";
+import { TitleSet } from '#/components/element/titleset';
 import { NeupProManager } from "./form";
 
 export default async function UserProPage({ params }: { params: Promise<{ id: string }> }) {
@@ -15,9 +15,9 @@ export default async function UserProPage({ params }: { params: Promise<{ id: st
         <div className="grid gap-8">
             <div className="space-y-4">
                 <BackButton href={`/manage/${id}`} />
-                <PrimaryHeader
+                <TitleSet level={1}
                     title="Neup.Pro Management"
-                    description={`Activate or deactivate the Neup.Pro subscription for @${userDetails.neupId}.`}
+                    subtitle={`Activate or deactivate the Neup.Pro subscription for @${userDetails.neupId}.`}
                 />
             </div>
             

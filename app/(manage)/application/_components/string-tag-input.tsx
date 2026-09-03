@@ -82,7 +82,7 @@ export function StringTagInput({
             }
           }}
         />
-        <Button htmlType="button" type="outlined" disabled={disabled || !draft.trim()} onClick={() => addTag(draft)}>
+        <Button htmlType="button" variant="outlined" disabled={disabled || !draft.trim()} onClick={() => addTag(draft)}>
           Add
         </Button>
       </div>

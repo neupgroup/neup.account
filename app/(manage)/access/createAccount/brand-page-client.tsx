@@ -27,10 +27,10 @@ import { useToast } from "#/core/hooks/useToast"
 import { createBrandAccount } from "@/services/manage/accounts/brand"
 import { Textarea } from "#/components/ui/textarea"
 import { CheckCircle2, XCircle, Loader2 } from "@/components/icons"
-import { BackButton } from "@/components/ui/back-button"
+import { BackButton } from "#/components/element/backButton"
 import { brandCreationSchema } from "@/services/manage/accounts/schema"
 import { checkNeupIdAvailability } from '@/services/user'
-import { SecondaryHeader } from "@/components/ui/secondary-header"
+import { TitleSet } from '#/components/element/titleset';
 import { redirectInApp } from "@/.neup/core/helpers/link/navigation";
 
 type FormData = z.infer<typeof brandCreationSchema>;
@@ -141,9 +141,9 @@ export default function CreateBrandPageClient({
              <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <div className="space-y-2">
-                        <SecondaryHeader
+                        <TitleSet level={1}
                             title="Brand Information"
-                            description="Provide the basic details for your brand."
+                            subtitle="Provide the basic details for your brand."
                         />
                          <Card>
                             <CardContent className="space-y-6 pt-6">
@@ -170,9 +170,9 @@ export default function CreateBrandPageClient({
                     </div>
 
                     <div className="space-y-2">
-                        <SecondaryHeader
+                        <TitleSet level={1}
                             title="Location Information"
-                            description="Tell us where your brand operates."
+                            subtitle="Tell us where your brand operates."
                         />
                         <Card>
                             <CardContent className="space-y-6 pt-6">
@@ -196,9 +196,9 @@ export default function CreateBrandPageClient({
                     </div>
 
                     <div className="space-y-2">
-                        <SecondaryHeader
+                        <TitleSet level={1}
                             title="Choose NeupID"
-                            description="This will be the unique public identifier for your brand."
+                            subtitle="This will be the unique public identifier for your brand."
                         />
                         <Card>
                             <CardContent className="space-y-4 pt-6">

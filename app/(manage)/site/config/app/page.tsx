@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { BackButton } from '@/components/ui/back-button';
+import { BackButton } from '#/components/element/backButton';
 import { checkPermissions } from '@/services/user';
 import { getSiteLogoUrl } from '@/services/manage/site/logo';
 import { AppLogoForm } from '../../../config/app/app-logo-form.client';

@@ -46,7 +46,7 @@ export async function ApprovalsCard() {
                                     <p className="text-xs text-muted-foreground">{getActionText(req.action, req.senderName || '')}</p>
                                 </div>
                             </div>
-                            <Button asChild type="tinted" size="sm">
+                            <Button asChild variant="tinted" size="sm">
                                 <FlowLink href={'/manage/notifications'}>Review</FlowLink>
                             </Button>
                         </li>

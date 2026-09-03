@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { redirect } from 'next/navigation';
-import { BackButton } from '@/components/ui/back-button';
-import { PrimaryHeader } from '@/components/ui/primary-header';
+import { BackButton } from '#/components/element/backButton';
+import { TitleSet } from '#/components/element/titleset';
 import { Card, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
 import { Button } from '#/components/ui/button';
 import { FlowLink } from '@/components/flow-link';
@@ -92,9 +92,9 @@ export async function ApplicationLogsPage({
     <div className="grid gap-6">
       <div className="space-y-4">
         <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
-        <PrimaryHeader
+        <TitleSet level={1}
           title="Development Logs"
-          description={`Request/response debug logs for ${details.name}. Logs are captured only while app status is development.`}
+          subtitle={`Request/response debug logs for ${details.name}. Logs are captured only while app status is development.`}
         />
       </div>
 
@@ -121,14 +121,14 @@ export async function ApplicationLogsPage({
           <div className="flex justify-start">
             {canClearDevLogs ? (
               <form action={clearLogsAction}>
-                <Button htmlType="submit" type="solid" convey="danger">
+                <Button htmlType="submit" variant="solid" convey="danger">
                   Clear All Logs
                 </Button>
               </form>
             ) : null}
           </div>
           <div className="flex items-center justify-end gap-2">
-            <Button type="outlined" size="sm" asChild disabled={logPage.page <= 1}>
+            <Button variant="outlined" size="sm" asChild disabled={logPage.page <= 1}>
               <FlowLink href={applicationHref('/application/logs', applicationId, { ...(mode ? { mode } : {}), page: String(logPage.page - 1), pageSize: String(logPage.pageSize) })}>
                 Previous
               </FlowLink>
@@ -136,7 +136,7 @@ export async function ApplicationLogsPage({
             <span className="text-sm text-muted-foreground">
               Page {logPage.page} of {logPage.totalPages}
             </span>
-            <Button type="outlined" size="sm" asChild disabled={logPage.page >= logPage.totalPages}>
+            <Button variant="outlined" size="sm" asChild disabled={logPage.page >= logPage.totalPages}>
               <FlowLink href={applicationHref('/application/logs', applicationId, { ...(mode ? { mode } : {}), page: String(logPage.page + 1), pageSize: String(logPage.pageSize) })}>
                 Next
               </FlowLink>

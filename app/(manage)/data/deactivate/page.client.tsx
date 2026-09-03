@@ -9,9 +9,9 @@ import { Alert, AlertDescription, AlertTitle } from "#/components/ui/alert";
 import { Loader2, PowerOff } from "@/components/icons";
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
-import { BackButton } from "@/components/ui/back-button";
+import { BackButton } from "#/components/element/backButton";
 import { Geolocation } from "#/core/providers/geolocation";
-import { SecondaryHeader } from "@/components/ui/secondary-header";
+import { TitleSet } from '#/components/element/titleset';
 import { useRouter } from "next/navigation";
 import { redirectInApp } from "@/.neup/core/helpers/link/navigation";
 
@@ -56,9 +56,9 @@ export default function DeactivateAccountPage() {
        <form action={handleSubmit}>
         <Card>
             <CardHeader>
-            <SecondaryHeader
+            <TitleSet level={1}
                 title="Deactivate Your Account"
-                description="This action will temporarily close your account."
+                subtitle="This action will temporarily close your account."
             />
             </CardHeader>
             <CardContent className="space-y-4">
@@ -81,12 +81,12 @@ export default function DeactivateAccountPage() {
             </CardContent>
             <CardFooter>
                  {!showPasswordPrompt ? (
-                    <Button htmlType="button" onClick={() => setShowPasswordPrompt(true)} type="tinted">
+                    <Button htmlType="button" onClick={() => setShowPasswordPrompt(true)} variant="tinted">
                         <PowerOff className="mr-2 h-4 w-4" />
                         Deactivate Account
                     </Button>
                 ) : (
-                    <Button htmlType="submit" type="tinted" disabled={isPending}>
+                    <Button htmlType="submit" variant="tinted" disabled={isPending}>
                         {isPending ? (<Loader2 className="mr-2 h-4 w-4 animate-spin" />) : (<PowerOff className="mr-2 h-4 w-4" />)}
                         Confirm Deactivation
                     </Button>

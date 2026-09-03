@@ -9,7 +9,7 @@ import { Card, CardContent } from '#/components/ui/card';
 import { Button } from '#/components/ui/button';
 import { Check, X, Loader2, Users, Handshake } from 'lucide-react';
 import { Skeleton } from '#/components/ui/skeleton';
-import { BackButton } from '@/components/ui/back-button';
+import { BackButton } from '#/components/element/backButton';
 import { useSession } from '@/inapp/auth/session-context';
 import { hasAnyPermission } from '@/inapp/permissions/profile-permissions';
 import { permission } from '@/.neup/logica/permission';
@@ -89,10 +89,10 @@ function InvitationCard({
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    <Button type="outlined" size="icon" className="h-8 w-8 text-green-600 border-green-600 hover:bg-green-50" onClick={handleAccept} disabled={isPending || !canApprove}>
+                    <Button variant="outlined" size="icon" className="h-8 w-8 text-green-600 border-green-600 hover:bg-green-50" onClick={handleAccept} disabled={isPending || !canApprove}>
                         {isAccepting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
                     </Button>
-                    <Button type="solid" convey="danger" size="icon" className="h-8 w-8" onClick={handleReject} disabled={isPending || !canApprove}>
+                    <Button variant="solid" convey="danger" size="icon" className="h-8 w-8" onClick={handleReject} disabled={isPending || !canApprove}>
                         {isRejecting ? <Loader2 className="h-4 w-4 animate-spin" /> : <X className="h-4 w-4" />}
                     </Button>
                 </div>

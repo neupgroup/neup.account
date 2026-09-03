@@ -28,8 +28,8 @@ import {
 import { PhoneInput } from "#/components/ui/phone-input";
 import { Skeleton } from "#/components/ui/skeleton";
 import { Loader2, Plus, Trash2 } from "@/components/icons";
-import { BackButton } from "@/components/ui/back-button";
-import { SecondaryHeader } from "@/components/ui/secondary-header";
+import { BackButton } from "#/components/element/backButton";
+import { TitleSet } from '#/components/element/titleset';
 
 type PhoneFormValues = z.infer<typeof phoneFormSchema>;
 
@@ -92,9 +92,9 @@ export default function RecoveryPhonePage() {
                 </p>
             </div>
             <div className="space-y-2">
-                <SecondaryHeader
+                <TitleSet level={1}
                     title="Manage Phone Number"
-                    description="We will only use this number for account recovery purposes."
+                    subtitle="We will only use this number for account recovery purposes."
                 />
                 <Card>
                     <CardContent className="pt-6">
@@ -103,7 +103,7 @@ export default function RecoveryPhonePage() {
                         ) : phone ? (
                             <div className="flex items-center justify-between rounded-md border border-input bg-background p-3">
                                 <p className="font-mono text-sm">{phone}</p>
-                                <Button type="plain" size="icon" onClick={handleRemove} disabled={isSubmitting} className="h-8 w-8 text-muted-foreground hover:text-destructive">
+                                <Button variant="plain" size="icon" onClick={handleRemove} disabled={isSubmitting} className="h-8 w-8 text-muted-foreground hover:text-destructive">
                                      {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                                 </Button>
                             </div>

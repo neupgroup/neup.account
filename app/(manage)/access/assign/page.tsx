@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { BackButton } from '@/components/ui/back-button';
+import { BackButton } from '#/components/element/backButton';
 import { Card, CardContent } from '#/components/ui/card';
-import { PrimaryHeader } from '@/components/ui/primary-header';
+import { TitleSet } from '#/components/element/titleset';
 import { Badge } from '#/components/ui/badge';
 import { Button } from '#/components/ui/button';
 import { FlowLink } from '@/components/flow-link';
@@ -264,9 +264,9 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
     return (
       <div className="grid gap-8">
         <BackButton href={appendAccessContext(`/access/connection/${connection.id}`)} />
-        <PrimaryHeader
+        <TitleSet level={1}
           title={selectedMember ? 'Edit Connection Access' : 'Add People to This Connection'}
-          description={
+          subtitle={
             selectedMember
               ? `Update direct ${connection.appName} access for ${selectedMember.displayName}.`
               : `Grant direct access to ${connection.appName} for accounts that already have an active connection.`
@@ -388,7 +388,7 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
               }
               action={cancelPortfolioInvitation.bind(null, portfolio, accountId)}
               redirectTo={`/access/assign?account=${accountId}&portfolio=${portfolio}`}
-              type="outlined"
+              variant="outline"
             />
             {isExpired && (
               <InviteButton
@@ -507,9 +507,9 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
     return (
       <div className="grid gap-6">
         <BackButton href={appendAccessContext('/access/team')} />
-        <PrimaryHeader
+        <TitleSet level={1}
           title="Assign Account Access"
-          description={`Enter a NeupID to assign access for ${ownerName}.`}
+          subtitle={`Enter a NeupID to assign access for ${ownerName}.`}
         />
         <Card>
           <CardContent className="p-4">
@@ -615,7 +615,7 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
                 confirmDescription={`This will cancel the pending access invitation sent to ${detail.displayName}. They will no longer be able to accept it.`}
                 action={cancelDirectInvitation.bind(null, accountId, selectedOwnerContext)}
                 redirectTo={appendAccessContext('/access/team')}
-                type="outlined"
+                variant="outline"
               />
             ) : (
               <RemoveMemberButton

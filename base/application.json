@@ -1,4 +1,5 @@
 {
+    "basepath": "/account",
     "appName": "Neup.Cloud",
     "appId": "neup.cloud",
     "appDescription": "Neup.Cloud is a cloud, server, and intelligence management service that allows users to manage cloud resources for their services.",

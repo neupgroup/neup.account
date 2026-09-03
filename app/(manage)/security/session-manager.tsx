@@ -75,7 +75,7 @@ export function SessionManager({ initialSessions, currentSessionId }: { initialS
                                 {isCurrent && <Badge variant="default" className="mt-2 bg-primary">Current</Badge>}
                             </div>
                             {!isCurrent && (
-                                <Button type="outlined" size="sm" onClick={() => handleSignOut(session.id)} disabled={isPending} className="flex-shrink-0">
+                                <Button variant="outlined" size="sm" onClick={() => handleSignOut(session.id)} disabled={isPending} className="flex-shrink-0">
                                     {isPending ? 'Signing out...' : 'Sign out'}
                                 </Button>
                             )}
@@ -85,7 +85,7 @@ export function SessionManager({ initialSessions, currentSessionId }: { initialS
                 {sessions.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">No active sessions found.</p>}
             </div>
              <CardFooter className="flex justify-end pt-4">
-                <Button type="outlined" onClick={handleSignOutAllOthers} disabled={isPending || sessions.length <= 1}>
+                <Button variant="outlined" onClick={handleSignOutAllOthers} disabled={isPending || sessions.length <= 1}>
                      {isPending ? 'Signing out...' : 'Sign out all other devices'}
                 </Button>
             </CardFooter>

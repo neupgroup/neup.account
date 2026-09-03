@@ -320,7 +320,7 @@ export function AssignPermissionsWizard({
               <UserCircle className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium">{selectedMember.displayName}</span>
             </div>
-            <Button htmlType="button" type="plain" size="sm" onClick={() => setStep("member")}>
+            <Button htmlType="button" variant="plain" size="sm" onClick={() => setStep("member")}>
               <ChevronLeft className="h-3.5 w-3.5 mr-1" />
               Back
             </Button>
@@ -353,7 +353,7 @@ export function AssignPermissionsWizard({
             </Badge>
             <Button
               htmlType="button"
-              type="plain"
+              variant="plain"
               size="sm"
               onClick={() => {
                 setStep("asset-type");
@@ -422,7 +422,7 @@ export function AssignPermissionsWizard({
             <Badge variant="outline">{selectedAssetIds.size} asset{selectedAssetIds.size !== 1 ? "s" : ""}</Badge>
             <Button
               htmlType="button"
-              type="plain"
+              variant="plain"
               size="sm"
               onClick={() => setStep("assets")}
             >
@@ -479,7 +479,7 @@ export function AssignPermissionsWizard({
 
           <div className="flex items-center justify-between">
             <p className="text-sm font-medium">Review and confirm</p>
-            <Button htmlType="button" type="plain" size="sm" onClick={() => setStep("roles")}>
+            <Button htmlType="button" variant="plain" size="sm" onClick={() => setStep("roles")}>
               <ChevronLeft className="h-3.5 w-3.5 mr-1" />
               Back
             </Button>
@@ -545,7 +545,7 @@ export function AssignPermissionsWizard({
           )}
 
           <div className="flex justify-end gap-2">
-            <Button htmlType="button" type="outlined" size="sm" onClick={handleReset}>
+            <Button htmlType="button" variant="outlined" size="sm" onClick={handleReset}>
               Cancel
             </Button>
             <Button htmlType="submit" size="sm" disabled={isPending}>

@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { getRequestDetail } from '@/services/manage/requests/all';
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card';
 import { Badge } from '#/components/ui/badge';
-import { BackButton } from '@/components/ui/back-button';
+import { BackButton } from '#/components/element/backButton';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { Terminal } from 'lucide-react';
 import { RequestActionForm } from './form';

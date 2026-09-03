@@ -35,13 +35,13 @@ function LinkOrDisabledButton({
 }) {
   if (!href || !enabled) {
     return (
-      <Button type="outlined" size="sm" disabled>
+      <Button variant="outlined" size="sm" disabled>
         {disabledLabel}
       </Button>
     );
   }
   return (
-    <Button type="outlined" size="sm" asChild>
+    <Button variant="outlined" size="sm" asChild>
       <Link href={href} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2">
         {enabledLabel}
         <ExternalLink className="h-4 w-4" />
@@ -114,7 +114,7 @@ export default async function ApplicationDetailPage({ params }: ApplicationDetai
             )}
           </div>
         </div>
-        <Button type="outlined" asChild className="shrink-0">
+        <Button variant="outlined" asChild className="shrink-0">
           <FlowLink href="/data/appconnection">Back</FlowLink>
         </Button>
       </div>
@@ -335,7 +335,7 @@ export default async function ApplicationDetailPage({ params }: ApplicationDetai
             </CardHeader>
             <CardContent>
               <form action={deleteAction}>
-                <Button htmlType="submit" type="solid" convey="danger">
+                <Button htmlType="submit" variant="solid" convey="danger">
                   Delete Application
                 </Button>
               </form>

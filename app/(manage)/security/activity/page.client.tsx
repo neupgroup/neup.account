@@ -21,7 +21,7 @@ import { Button } from "#/components/ui/button";
 import { Badge } from "#/components/ui/badge"
 import { getActivities, ActivityLog } from "@/services/log-actions"
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { BackButton } from "@/components/ui/back-button";
+import { BackButton } from "#/components/element/backButton";
 import { useEffect, useState, useCallback } from "react";
 import { Skeleton } from "#/components/ui/skeleton";
 import { redirectInApp } from "@/.neup/core/helpers/link/navigation";
@@ -139,11 +139,11 @@ function SecurityActivityPageComponent({ after }: { after?: string }) {
                     </Table>
                 </CardContent>
                 <CardFooter className="flex justify-end space-x-2 border-t pt-4">
-                     <Button type="outlined" onClick={handlePrevPage} disabled={page === 1 || contentLoading}>
+                     <Button variant="outlined" onClick={handlePrevPage} disabled={page === 1 || contentLoading}>
                         <ChevronLeft className="mr-2 h-4 w-4" />
                         Previous
                     </Button>
-                    <Button type="outlined" onClick={handleNextPage} disabled={!hasNextPage || contentLoading}>
+                    <Button variant="outlined" onClick={handleNextPage} disabled={!hasNextPage || contentLoading}>
                         Next
                         <ChevronRight className="ml-2 h-4 w-4" />
                     </Button>

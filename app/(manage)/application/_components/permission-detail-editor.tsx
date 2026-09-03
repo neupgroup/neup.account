@@ -128,7 +128,7 @@ export function PermissionDetailEditor({
             <div className="flex justify-end gap-2">
               <Button
                 htmlType="button"
-                type="outlined"
+                variant="outlined"
                 onClick={() => setShowDeleteSection(false)}
                 disabled={deletePending}
               >
@@ -136,7 +136,7 @@ export function PermissionDetailEditor({
               </Button>
               <Button
                 htmlType="button"
-                type="solid" convey="danger"
+                variant="solid" convey="danger"
                 onClick={handleDelete}
                 disabled={deletePending}
               >
@@ -147,12 +147,12 @@ export function PermissionDetailEditor({
         ) : null}
 
         <div className="flex justify-end gap-2">
-          <Button htmlType="button" type="outlined" onClick={goBack}>
+          <Button htmlType="button" variant="outlined" onClick={goBack}>
             Back
           </Button>
           <Button
             htmlType="button"
-            type="outlined"
+            variant="outlined"
             onClick={() => setShowDeleteSection(true)}
             disabled={!canManage || deletePending}
           >

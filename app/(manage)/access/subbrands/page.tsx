@@ -100,7 +100,7 @@ export default async function BrandSubbrandPage({ searchParams }: PageProps) {
                                         <TableCell className="font-mono text-xs">{subbrand.neupId}</TableCell>
                                         <TableCell>{subbrand.location || 'N/A'}</TableCell>
                                         <TableCell className="text-right">
-                                            <Button type="outlined" size="sm">Manage</Button>
+                                            <Button variant="outlined" size="sm">Manage</Button>
                                         </TableCell>
                                     </TableRow>
                                 ))

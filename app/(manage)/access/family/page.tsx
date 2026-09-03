@@ -3,11 +3,11 @@ import { Card, CardContent } from "#/components/ui/card";
 import { getFamilyGroups } from "@/services/manage/people/family";
 import { FamilyManager } from "./family-manager";
 import { PartnerManager } from "./partner-manager";
-import { BackButton } from "@/components/ui/back-button";
+import { BackButton } from "#/components/element/backButton";
 import { getActiveAccountId } from '@/services/account/verify';
 import { getUserProfile, checkPermissions } from '@/services/user';
 import { notFound } from "next/navigation";
-import { SecondaryHeader } from "@/components/ui/secondary-header";
+import { TitleSet } from '#/components/element/titleset';
 import { formMetadata } from '#/core/metadata';
 import { permission } from '@/.neup/logica/permission';
 import {
@@ -58,9 +58,9 @@ export default async function FamilySharingPage() {
 
                     return (
                         <div key={group.id} className="space-y-2">
-                             <SecondaryHeader
+                             <TitleSet level={1}
                                 title={isOwner ? "Your Family Group" : `Family of ${ownerName}`}
-                                description={isOwner ? "You can add up to 5 members." : "You are a member of this family."}
+                                subtitle={isOwner ? "You can add up to 5 members." : "You are a member of this family."}
                              />
                             <Card>
                                 <CardContent className="p-6">
@@ -72,9 +72,9 @@ export default async function FamilySharingPage() {
                 })
             ) : canAddFamily ? (
                  <div className="space-y-2">
-                    <SecondaryHeader
+                    <TitleSet level={1}
                         title="Your Family"
-                        description="You haven't created or joined a family yet. Invite someone to start one!"
+                        subtitle="You haven't created or joined a family yet. Invite someone to start one!"
                     />
                      <Card>
                         <CardContent className="p-6">
@@ -86,9 +86,9 @@ export default async function FamilySharingPage() {
             
              {canAddPartner && (
                 <div className="space-y-2">
-                    <SecondaryHeader
+                    <TitleSet level={1}
                         title="Add Your Partner (Private)"
-                        description="Add one partner to your family group. This relationship can be kept private from other family members or made public."
+                        subtitle="Add one partner to your family group. This relationship can be kept private from other family members or made public."
                     />
                     <Card>
                         <CardContent className="p-6">

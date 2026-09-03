@@ -8,8 +8,8 @@ import { Button } from '#/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
 import { Loader2, Download, Copy, RefreshCw } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { BackButton } from '@/components/ui/back-button';
-import { SecondaryHeader } from '@/components/ui/secondary-header';
+import { BackButton } from '#/components/element/backButton';
+import { TitleSet } from '#/components/element/titleset';
 
 export default function BackupCodesPage() {
     const [codes, setCodes] = useState<BackupCode[]>([]);
@@ -71,9 +71,9 @@ export default function BackupCodesPage() {
             </div>
             <Card>
                 <CardHeader>
-                    <SecondaryHeader
+                    <TitleSet level={1}
                         title="Your Backup Codes"
-                        description="Each code can only be used once. Generate new codes to invalidate this set."
+                        subtitle="Each code can only be used once. Generate new codes to invalidate this set."
                     />
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -100,10 +100,10 @@ export default function BackupCodesPage() {
                                 ))}
                             </div>
                              <div className="flex flex-wrap gap-2 pt-4 border-t">
-                                <Button onClick={handleCopy} type="outlined" size="sm" disabled={isPending}>
+                                <Button onClick={handleCopy} variant="outlined" size="sm" disabled={isPending}>
                                     <Copy className="mr-2 h-4 w-4" /> Copy Codes
                                 </Button>
-                                <Button onClick={handleDownload} type="outlined" size="sm" disabled={isPending}>
+                                <Button onClick={handleDownload} variant="outlined" size="sm" disabled={isPending}>
                                     <Download className="mr-2 h-4 w-4" /> Download
                                 </Button>
                             </div>

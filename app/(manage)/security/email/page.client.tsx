@@ -28,9 +28,9 @@ import {
 import { Skeleton } from "#/components/ui/skeleton";
 import { Loader2, Plus, Trash2 } from "@/components/icons";
 import { cn } from "#/core/utils";
-import { BackButton } from "@/components/ui/back-button";
+import { BackButton } from "#/components/element/backButton";
 import { emailFormSchema } from "@/services/security/schema";
-import { SecondaryHeader } from "@/components/ui/secondary-header";
+import { TitleSet } from '#/components/element/titleset';
 
 type EmailFormValues = z.infer<typeof emailFormSchema>;
 
@@ -95,9 +95,9 @@ export default function RecoveryEmailPage() {
                 </p>
             </div>
             <div className="space-y-2">
-                <SecondaryHeader
+                <TitleSet level={1}
                     title="Manage Email Address"
-                    description="We will only use this email address for account recovery purposes."
+                    subtitle="We will only use this email address for account recovery purposes."
                 />
                 <Card>
                     <CardContent className="pt-6">
@@ -106,7 +106,7 @@ export default function RecoveryEmailPage() {
                         ) : email ? (
                             <div className="flex items-center justify-between rounded-md border border-input bg-background p-3">
                                 <p className="font-mono text-sm">{email}</p>
-                                <Button type="plain" size="icon" onClick={handleRemove} disabled={isSubmitting} className="h-8 w-8 text-muted-foreground hover:text-destructive">
+                                <Button variant="plain" size="icon" onClick={handleRemove} disabled={isSubmitting} className="h-8 w-8 text-muted-foreground hover:text-destructive">
                                      {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                                 </Button>
                             </div>
@@ -130,7 +130,7 @@ export default function RecoveryEmailPage() {
                                                             aria-invalid={!!form.formState.errors.email}
                                                         />
                                                     </FormControl>
-                                                    <Button htmlType="submit" size="icon" type="plain" className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 text-muted-foreground hover:bg-accent" disabled={isSubmitting}>
+                                                    <Button htmlType="submit" size="icon" variant="plain" className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 text-muted-foreground hover:bg-accent" disabled={isSubmitting}>
                                                         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
                                                         <span className="sr-only">Add Email</span>
                                                     </Button>

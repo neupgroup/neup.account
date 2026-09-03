@@ -3,7 +3,7 @@ import React from "react";
 import { permission } from "@/.neup/logica/permission";
 import { getConnectedApplications } from "@/services/applications/connected";
 import { ListItem } from "@/components/ui/ListItem";
-import { SecondaryHeader } from "@/components/ui/secondary-header";
+import { TitleSet } from '#/components/element/titleset';
 import { History, Trash2, PowerOff, CalendarClock, AppWindow, Share2, type LucideIcon } from "@/components/icons";
 import { checkPermissions } from "@/services/user";
 import { DATA_PRIVACY_PERMISSION_GROUPS } from "@/inapp/permissions/data-permissions";
@@ -116,9 +116,9 @@ export default async function DataAndPrivacyPage() {
 
             {firstParty.length > 0 && (
                 <div className="space-y-2">
-                    <SecondaryHeader 
+                    <TitleSet level={1}
                         title="Data within Neup Group"
-                        description="Your data is shared across Neup Group services to provide a seamless experience. Review each service to understand how your data is used."
+                        subtitle="Your data is shared across Neup Group services to provide a seamless experience. Review each service to understand how your data is used."
                     />
                     <Card>
                         <CardContent className="divide-y p-2">
@@ -138,9 +138,9 @@ export default async function DataAndPrivacyPage() {
 
             {thirdParty.length > 0 && (
                 <div className="space-y-2">
-                    <SecondaryHeader
+                    <TitleSet level={1}
                         title="Third-party Access"
-                        description="Control how your data is accessed by other applications and services."
+                        subtitle="Control how your data is accessed by other applications and services."
                     />
                     <Card>
                         <CardContent className="divide-y p-2">

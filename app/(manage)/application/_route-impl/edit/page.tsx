@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { canCurrentAccountEditApplicationBasics, getApplicationDetailsForViewerV2, logRootApplicationActivity } from '@/services/applications/manage';
-import { BackButton } from '@/components/ui/back-button';
-import { PrimaryHeader } from '@/components/ui/primary-header';
+import { BackButton } from '#/components/element/backButton';
+import { TitleSet } from '#/components/element/titleset';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { AppEditForm } from '@/app/(manage)/application/_components/app-edit-form';
@@ -32,7 +32,7 @@ export async function ApplicationEditPage({ applicationId, mode }: { application
       <div className="grid gap-8">
         <div className="space-y-4">
           <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
-          <PrimaryHeader title="Basic Information" description="Application details." />
+          <TitleSet level={1} title="Basic Information" subtitle="Application details." />
         </div>
         <Alert variant="destructive">
           <ShieldAlert className="h-4 w-4" />
@@ -47,9 +47,9 @@ export async function ApplicationEditPage({ applicationId, mode }: { application
     <div className="grid gap-8">
       <div className="space-y-4">
         <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
-        <PrimaryHeader
+        <TitleSet level={1}
           title="Basic Information"
-          description={`Update the details for ${details.name}.`}
+          subtitle={`Update the details for ${details.name}.`}
         />
       </div>
 

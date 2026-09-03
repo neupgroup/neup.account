@@ -5,7 +5,7 @@ import { useMemo, type ElementType } from 'react';
 import { Card, CardContent } from '#/components/ui/card';
 import { ShieldCheck, Laptop, Link, AppWindow } from '@/components/icons';
 import { ListItem } from '@/components/ui/ListItem';
-import { SecondaryHeader } from '../ui/secondary-header';
+import { TitleSet } from '#/components/element/titleset';
 import { useSession } from '@/inapp/auth/session-context';
 import { hasAnyPermission } from '@/inapp/permissions/profile-permissions';
 import {
@@ -98,9 +98,9 @@ export function SettingsCard() {
 
     return (
          <div className="space-y-2">
-            <SecondaryHeader
+            <TitleSet level={1}
                 title="Account Settings"
-                description="Manage your account security and preferences."
+                subtitle="Manage your account security and preferences."
             />
             <Card>
                 <CardContent className="divide-y p-2">

@@ -7,8 +7,8 @@ import {
   getAppConfigData,
   logRootApplicationActivity,
 } from '@/services/applications/manage';
-import { BackButton } from '@/components/ui/back-button';
-import { PrimaryHeader } from '@/components/ui/primary-header';
+import { BackButton } from '#/components/element/backButton';
+import { TitleSet } from '#/components/element/titleset';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { AppConfigForm } from '@/app/(manage)/application/_components/app-config-form';
@@ -48,7 +48,7 @@ export async function ApplicationConfigPage({ applicationId, mode }: { applicati
       <div className="grid gap-8">
         <div className="space-y-4">
           <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
-          <PrimaryHeader title="Configuration" description="API and access configuration." />
+          <TitleSet level={1} title="Configuration" subtitle="API and access configuration." />
         </div>
         <Alert variant="destructive">
           <ShieldAlert className="h-4 w-4" />
@@ -66,9 +66,9 @@ export async function ApplicationConfigPage({ applicationId, mode }: { applicati
     <div className="grid gap-8">
       <div className="space-y-4">
         <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
-        <PrimaryHeader
+        <TitleSet level={1}
           title="Configuration"
-          description={`API secret, response fields, token fields, SSO origins, and server IPs for ${details.name}.`}
+          subtitle={`API secret, response fields, token fields, SSO origins, and server IPs for ${details.name}.`}
         />
       </div>
 

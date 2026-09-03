@@ -16,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "#/components/ui/form";
 import { Switch } from "#/components/ui/switch";
-import { TertiaryHeader } from "@/components/ui/tertiary-header";
+import { TitleSet } from '#/components/element/titleset';
 
 export const warningReasons = {
     spam: "Spamming or Commercial Solicitation",
@@ -84,9 +84,9 @@ export function SendWarningForm({ userId }: { userId: string }) {
 
     return (
         <div className="grid gap-4">
-            <TertiaryHeader
+            <TitleSet level={1}
                 title="Send Warning"
-                description="Send a notification to the user that will appear on their dashboard."
+                subtitle="Send a notification to the user that will appear on their dashboard."
             />
              <Card>
                 <Form {...form}>
@@ -250,9 +250,9 @@ export function BlockServiceAccessForm({ userId, currentBlock }: { userId: strin
     if (currentBlock?.status) {
          return (
              <div className="grid gap-4">
-                 <TertiaryHeader
+                 <TitleSet level={1}
                     title="Service Access Blocked"
-                    description="This user's access to services is currently blocked."
+                    subtitle="This user's access to services is currently blocked."
                 />
                 <Card>
                     <CardContent className="pt-6 space-y-2 text-sm">
@@ -265,7 +265,7 @@ export function BlockServiceAccessForm({ userId, currentBlock }: { userId: strin
                         <p><strong>Remarks:</strong> {currentBlock.remarks || 'N/A'}</p>
                     </CardContent>
                     <CardFooter>
-                        <Button onClick={handleUnblock} disabled={isPending} type="outlined">
+                        <Button onClick={handleUnblock} disabled={isPending} variant="outlined">
                             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Unblock Now
                         </Button>
@@ -277,9 +277,9 @@ export function BlockServiceAccessForm({ userId, currentBlock }: { userId: strin
 
     return (
          <div className="grid gap-4">
-            <TertiaryHeader
+            <TitleSet level={1}
                 title="Block Service Access"
-                description="Temporarily or permanently block the user from accessing any service after logging in."
+                subtitle="Temporarily or permanently block the user from accessing any service after logging in."
             />
             <Card>
                 <Form {...form}>
@@ -325,7 +325,7 @@ export function BlockServiceAccessForm({ userId, currentBlock }: { userId: strin
                         )}
                     </CardContent>
                     <CardFooter>
-                        <Button htmlType="submit" type="solid" convey="danger" disabled={isPending}>
+                        <Button htmlType="submit" variant="solid" convey="danger" disabled={isPending}>
                             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Block User
                         </Button>

@@ -225,7 +225,7 @@ export function RequestActionForm({ request }: Props) {
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button
-            type={request.type === 'accountDeletion' ? 'outlined' : 'solid'}
+            variant={request.type === 'accountDeletion' ? 'outlined' : 'solid'}
             convey={request.type === 'accountDeletion' ? 'none' : 'danger'}
             disabled={isSubmitting}
           >

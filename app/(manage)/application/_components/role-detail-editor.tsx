@@ -219,7 +219,7 @@ export function RoleDetailEditor({
         ) : null}
         <div className="flex justify-end gap-2">
           <Button
-            type="outlined"
+            variant="outlined"
             onClick={() => redirectInApp(router, applicationHref(`/application/roles/${role.id}`, appId, mode ? { mode } : undefined))}
           >
             Cancel
@@ -324,7 +324,7 @@ export function RoleDetailEditor({
         <div>
           <Button
             htmlType="button"
-            type={isDefaultRole ? 'outlined' : 'tinted'}
+            variant={isDefaultRole ? 'outlined' : 'tinted'}
             onClick={handleDefaultRole}
             disabled={defaultPending || !canManage}
           >
@@ -341,19 +341,19 @@ export function RoleDetailEditor({
           </p>
         </div>
         <div>
-          <Button htmlType="button" type="solid" convey="danger" onClick={handleDelete} disabled={deletePending || !canManage || isSystemRole}>
+          <Button htmlType="button" variant="solid" convey="danger" onClick={handleDelete} disabled={deletePending || !canManage || isSystemRole}>
             {deletePending ? 'Deleting...' : 'Delete Role'}
           </Button>
         </div>
       </div>
 
       <div className="flex justify-end gap-2">
-        <Button type="outlined" onClick={() => redirectInApp(router, applicationHref('/application/roles', appId, mode ? { mode } : { mode: 'root' }))}>
+        <Button variant="outlined" onClick={() => redirectInApp(router, applicationHref('/application/roles', appId, mode ? { mode } : { mode: 'root' }))}>
           Back
         </Button>
         <Button
           htmlType="button"
-          type="outlined"
+          variant="outlined"
           onClick={() => redirectInApp(router, applicationHref(`/application/roles/${role.id}/edit`, appId, mode ? { mode } : undefined))}
         >
           Edit info

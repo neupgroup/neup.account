@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '#/core/hooks/useToast';
-import { TertiaryHeader } from '@/components/ui/tertiary-header';
+import { TitleSet } from '#/components/element/titleset';
 import { Card, CardContent, CardFooter, CardHeader } from '#/components/ui/card';
 import { Button } from '#/components/ui/button';
 import { Skeleton } from '#/components/ui/skeleton';
@@ -113,7 +113,7 @@ export function VerificationManager({ accountId }: { accountId: string }) {
     if (details?.status === 'approved') {
         return (
             <div className="grid gap-4">
-                <TertiaryHeader title="Verification Status" />
+                <TitleSet level={1} title="Verification Status" />
                 <Card>
                     <CardHeader>
                          <Alert className="border-green-500/50 bg-green-500/10 text-green-700">
@@ -136,7 +136,7 @@ export function VerificationManager({ accountId }: { accountId: string }) {
                                         <FormMessage />
                                     </FormItem>
                                 )} />
-                                 <Button htmlType="submit" type="solid" convey="danger" disabled={isPending}>
+                                 <Button htmlType="submit" variant="solid" convey="danger" disabled={isPending}>
                                     {isPending ? <Loader2 className="animate-spin mr-2" /> : <XCircle className="mr-2" />}
                                     Revoke Verification
                                 </Button>
@@ -151,7 +151,7 @@ export function VerificationManager({ accountId }: { accountId: string }) {
 
     return (
         <div className="grid gap-4">
-            <TertiaryHeader title="Grant Verification" description="Manually grant a verification badge to this user."/>
+            <TitleSet level={1} title="Grant Verification" subtitle="Manually grant a verification badge to this user."/>
             <Card>
                 <Form {...grantForm}>
                     <form onSubmit={grantForm.handleSubmit(handleGrant)}>

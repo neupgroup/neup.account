@@ -293,7 +293,7 @@ export function PermissionPanel({
           </div>
           <DialogFooter>
             <DialogClose asChild>
-              <Button htmlType="button" type="outlined">Cancel</Button>
+              <Button htmlType="button" variant="outlined">Cancel</Button>
             </DialogClose>
             <Button htmlType="button" onClick={handleAdd} disabled={addPending || !addName.trim() || !isValidName(addName)}>
               {addPending ? 'Adding...' : 'Add'}

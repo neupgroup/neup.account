@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { BackButton } from '@/components/ui/back-button';
+import { BackButton } from '#/components/element/backButton';
 import { Card, CardContent } from '#/components/ui/card';
 import { Shield, ChevronRight } from '@/components/icons';
 import { getDirectMembers } from '@/services/manage/access';
@@ -10,7 +10,7 @@ import { resolveAssetName } from '@/services/manage/access/asset-resolvers';
 import { AssetMemberLookupForm } from '../_components/asset-member-lookup-form';
 import { AddUserForm } from '../add-user-form';
 import { FlowLink } from '@/components/flow-link';
-import { PrimaryHeader } from '@/components/ui/primary-header';
+import { TitleSet } from '#/components/element/titleset';
 import { formMetadata } from '#/core/metadata';
 import { ACCESS_TEAM_VIEW_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';
 import { permission } from '@/.neup/logica/permission';
@@ -107,9 +107,9 @@ function MembersLayout({
     <div className="grid gap-8">
       <BackButton href={backHref} />
 
-      <PrimaryHeader
+      <TitleSet level={1}
         title="Members with Access"
-        description={description}
+        subtitle={description}
       />
 
       <div className="grid gap-3">

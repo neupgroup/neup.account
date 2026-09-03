@@ -26,7 +26,7 @@ export async function SecurityCard() {
                         </div>
                     ))}
                  </div>
-                 <Button type="outlined" className="w-full" asChild>
+                 <Button variant="outlined" className="w-full" asChild>
                     <FlowLink href="/security/devices">Manage All Devices <ChevronRight className="ml-2 h-4 w-4" /></FlowLink>
                 </Button>
             </CardContent>

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { BackButton } from '@/components/ui/back-button';
+import { BackButton } from '#/components/element/backButton';
 import { Badge } from '#/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card';
 import {
@@ -118,7 +118,7 @@ async function SelectedApplicationPage({
                   {app.myRoles.map((role) => (
                     <Badge
                       key={role.roleId}
-                      type="tinted"
+                      variant="secondary"
                       className="px-1.5 py-0 text-xs font-mono"
                     >
                       {role.roleId}
@@ -163,7 +163,7 @@ async function SelectedApplicationPage({
                       {grantee.roles.map((role) => (
                         <Badge
                           key={role}
-                          type="outlined"
+                          variant="outline"
                           className="px-1.5 py-0 text-xs font-mono"
                         >
                           {role}
@@ -295,7 +295,7 @@ async function ApplicationsOverviewPage({
                         {app.myRoles.map((role) => (
                           <Badge
                             key={role.roleId}
-                            type="tinted"
+                            variant="secondary"
                             className="px-1.5 py-0 text-xs font-mono"
                           >
                             {role.roleId}

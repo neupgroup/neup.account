@@ -18,9 +18,9 @@ import { Alert, AlertDescription, AlertTitle } from "#/components/ui/alert";
 import { Loader2, Trash2 } from "@/components/icons";
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
-import { BackButton } from "@/components/ui/back-button";
+import { BackButton } from "#/components/element/backButton";
 import { Geolocation } from "#/core/providers/geolocation";
-import { SecondaryHeader } from "@/components/ui/secondary-header";
+import { TitleSet } from '#/components/element/titleset';
 import { getAccountType } from '@/services/user';
 import { getActiveAccountId } from '@/services/account/verify';
 import { useRouter } from "next/navigation";
@@ -84,9 +84,9 @@ export default function DeleteAccountPage() {
       <form action={handleSubmit}>
         <Card>
             <CardHeader>
-            <SecondaryHeader
+            <TitleSet level={1}
                 title="Request Account Deletion"
-                description="Please read the following information carefully before proceeding."
+                subtitle="Please read the following information carefully before proceeding."
             />
             </CardHeader>
             <CardContent className="space-y-4">
@@ -121,19 +121,19 @@ export default function DeleteAccountPage() {
             </CardContent>
             <CardFooter>
                  {!showPasswordPrompt && !isRequested && (
-                    <Button htmlType="button" onClick={() => setShowPasswordPrompt(true)} type="solid" convey="danger" disabled={loadingStatus}>
+                    <Button htmlType="button" onClick={() => setShowPasswordPrompt(true)} variant="solid" convey="danger" disabled={loadingStatus}>
                          <Trash2 className="mr-2 h-4 w-4" />
                         Request Account Deletion
                     </Button>
                  )}
                  {showPasswordPrompt && !isRequested && (
-                     <Button type="solid" convey="danger" disabled={isPending || loadingStatus}>
+                     <Button variant="solid" convey="danger" disabled={isPending || loadingStatus}>
                         {isPending ? (<Loader2 className="mr-2 h-4 w-4 animate-spin" />) : (<Trash2 className="mr-2 h-4 w-4" />)}
                         Confirm Deletion
                     </Button>
                  )}
                  {isRequested && (
-                     <Button type="solid" convey="danger" disabled>
+                     <Button variant="solid" convey="danger" disabled>
                         <Trash2 className="mr-2 h-4 w-4" />
                         Deletion Requested
                     </Button>

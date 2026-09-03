@@ -4,8 +4,7 @@ import React from "react";
 import { checkPermissions } from '@/services/user';
 import { Alert, AlertDescription, AlertTitle } from "#/components/ui/alert";
 import { ListItem } from "@/components/ui/ListItem";
-import { SecondaryHeader } from "@/components/ui/secondary-header";
-import { PrimaryHeader } from "@/components/ui/primary-header";
+import { TitleSet } from '#/components/element/titleset';
 import { CreditCard, History, Wallet, Gem, Ban } from "@/components/icons";
 import { permission } from '@/.neup/logica/permission';
 
@@ -62,14 +61,14 @@ export default async function PaymentSubscriptionPage() {
 
     return (
         <div className="grid gap-8">
-            <PrimaryHeader
+            <TitleSet level={1}
                 title="Payment & Subscription"
-                description="Manage your billing information, subscriptions, and view purchase history."
+                subtitle="Manage your billing information, subscriptions, and view purchase history."
             />
              <div className="grid gap-4">
-                <SecondaryHeader
+                <TitleSet level={1}
                     title="Your Wallet"
-                    description="Review your payment settings and upgrade your plan."
+                    subtitle="Review your payment settings and upgrade your plan."
                 />
                 <Card>
                     <CardContent className="divide-y p-0">

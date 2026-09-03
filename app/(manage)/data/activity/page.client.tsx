@@ -9,7 +9,7 @@ import { Button } from "#/components/ui/button";
 import { Badge } from "#/components/ui/badge"
 import { getActivities } from "@/services/log-actions"
 import { ChevronLeft, ChevronRight } from "@/components/icons";
-import { BackButton } from "@/components/ui/back-button";
+import { BackButton } from "#/components/element/backButton";
 import { useEffect, useState, useCallback } from "react";
 import { Skeleton } from "#/components/ui/skeleton";
 import { redirectInApp } from "@/.neup/core/helpers/link/navigation";
@@ -240,11 +240,11 @@ function DataActivityPageComponent({ after, applicationId, history }: { after?: 
                 )}
             </div>
             <div className="flex justify-start space-x-2 pt-2">
-                 <Button type="outlined" onClick={handlePrevPage} disabled={history.length === 0 || loading}>
+                 <Button variant="outlined" onClick={handlePrevPage} disabled={history.length === 0 || loading}>
                     <ChevronLeft className="mr-2 h-4 w-4" />
                     Previous
                 </Button>
-                <Button type="outlined" onClick={handleNextPage} disabled={!hasNextPage || loading}>
+                <Button variant="outlined" onClick={handleNextPage} disabled={!hasNextPage || loading}>
                     Next
                     <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>

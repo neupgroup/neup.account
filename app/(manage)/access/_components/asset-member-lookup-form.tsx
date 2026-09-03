@@ -149,7 +149,7 @@ export function AssetMemberLookupForm({
         <Button
           htmlType="button"
           size="icon"
-          type="plain"
+          variant="plain"
           onClick={handleLookup}
           disabled={isLookupPending || isActionPending || !neupIdInput.trim()}
           className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 text-muted-foreground hover:bg-accent"

@@ -144,7 +144,7 @@ export function RolesPanel({ appId, canManage, canResetPush, initialRoles, hasWe
           <p className="text-sm text-muted-foreground">
             Use this if your client’s synced authz data is corrupted and you need to re-sync from scratch.
           </p>
-          <Button htmlType="button" type="outlined" onClick={handleClearPushStatus} disabled={clearPending}>
+          <Button htmlType="button" variant="outlined" onClick={handleClearPushStatus} disabled={clearPending}>
             {clearPending ? 'Clearing...' : 'Clear Push Status'}
           </Button>
         </div>

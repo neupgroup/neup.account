@@ -1,8 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from '#/components/ui/card';
 import { ListItem } from '@/components/ui/ListItem';
-import { PrimaryHeader } from '@/components/ui/primary-header';
-import { SecondaryHeader } from '@/components/ui/secondary-header';
+import { TitleSet } from '#/components/element/titleset';
 import { permission } from '@/.neup/logica/permission';
 import { notFound } from 'next/navigation';
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
@@ -69,14 +68,14 @@ export default async function SecurityPage() {
 
   return (
     <div className="grid gap-8">
-      <PrimaryHeader
+      <TitleSet level={1}
         title="Password & Security"
-        description="Manage your account's security settings, review activity, and keep your account safe."
+        subtitle="Manage your account's security settings, review activity, and keep your account safe."
       />
 
       {sections.map((section) => (
         <div key={section.title} className="grid gap-4">
-          <SecondaryHeader title={section.title} description={section.description} />
+          <TitleSet level={1} title={section.title} subtitle={section.description} />
           <Card>
             <CardContent className="divide-y p-2">
               {section.items.map((item) => (

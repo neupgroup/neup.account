@@ -7,8 +7,8 @@ import {
   logRootApplicationActivity,
 } from '@/services/applications/manage';
 import { getAppPermissions } from '@/services/applications/authz-manage';
-import { BackButton } from '@/components/ui/back-button';
-import { PrimaryHeader } from '@/components/ui/primary-header';
+import { BackButton } from '#/components/element/backButton';
+import { TitleSet } from '#/components/element/titleset';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { PermissionPanel } from '@/app/(manage)/application/_components/permission-panel';
@@ -94,9 +94,9 @@ export async function ApplicationPermissionsPage({
       <div className="grid gap-8">
         <div className="space-y-4">
           <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
-          <PrimaryHeader
+          <TitleSet level={1}
             title="Permissions"
-            description={`Manage permissions for ${details.name}.`}
+            subtitle={`Manage permissions for ${details.name}.`}
           />
         </div>
         <Alert variant="destructive">
@@ -118,9 +118,9 @@ export async function ApplicationPermissionsPage({
       <div className="grid gap-8">
         <div className="space-y-4">
           <BackButton href={applicationHref('/application/permissions', applicationId, mode ? { mode } : undefined)} />
-          <PrimaryHeader
+          <TitleSet level={1}
             title={permission.name}
-            description={permission.description || `Manage permission metadata for ${details.name}.`}
+            subtitle={permission.description || `Manage permission metadata for ${details.name}.`}
           />
         </div>
 
@@ -138,9 +138,9 @@ export async function ApplicationPermissionsPage({
     <div className="grid gap-8">
       <div className="space-y-4">
         <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
-        <PrimaryHeader
+        <TitleSet level={1}
           title="Permissions"
-          description={`Define and manage permissions for ${details.name}.`}
+          subtitle={`Define and manage permissions for ${details.name}.`}
         />
       </div>
 

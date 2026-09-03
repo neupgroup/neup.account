@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '#/components/ui/button';
 import { Input } from '#/components/ui/input';
 import { Search } from '@/components/icons';
-import { TertiaryHeader } from '@/components/ui/tertiary-header';
+import { TitleSet } from '#/components/element/titleset';
 import NProgress from 'nprogress';
 import { redirectInApp } from '@/.neup/core/helpers/link/navigation';
 
@@ -24,9 +24,9 @@ export function FindUserCard() {
 
     return (
         <div className="grid gap-4">
-            <TertiaryHeader
+            <TitleSet level={1}
                 title="Find User"
-                description="Search for a user by name, ID, or type to view their details and manage their account."
+                subtitle="Search for a user by name, ID, or type to view their details and manage their account."
             />
             <form onSubmit={handleSearch}>
                 <div className="relative">
@@ -39,7 +39,7 @@ export function FindUserCard() {
                     />
                     <Button
                         htmlType="submit"
-                        type="plain"
+                        variant="plain"
                         size="icon"
                         className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
                     >

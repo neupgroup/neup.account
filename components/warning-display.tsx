@@ -110,7 +110,7 @@ export function WarningDisplay() {
                         </div>
                         {warning.persistence === 'dismissable' && (
                              <Button
-                                type="plain"
+                                variant="plain"
                                 size="icon"
                                 className="h-6 w-6 flex-shrink-0"
                                 onClick={() => handleDismiss(warning.id)}

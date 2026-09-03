@@ -13,9 +13,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Input } from "#/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "#/components/ui/form";
 import { useState, useContext, useTransition } from "react";
-import { BackButton } from "@/components/ui/back-button";
+import { BackButton } from "#/components/element/backButton";
 import { Geolocation } from "#/core/providers/geolocation";
-import { SecondaryHeader } from "@/components/ui/secondary-header";
+import { TitleSet } from '#/components/element/titleset';
 import { Loader2 } from "@/components/icons";
 
 type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;
@@ -61,9 +61,9 @@ export default function ChangePasswordPage() {
                 </p>
             </div>
             <div className="space-y-2">
-                <SecondaryHeader
+                <TitleSet level={1}
                     title="Update Password"
-                    description="Enter your current password and a new password to update your account."
+                    subtitle="Enter your current password and a new password to update your account."
                 />
                 <Card>
                     <Form {...form}>

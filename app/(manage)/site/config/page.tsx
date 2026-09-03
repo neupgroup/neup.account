@@ -3,9 +3,9 @@ import { FlowLink } from '@/components/flow-link';
 import { notFound } from 'next/navigation';
 import { CreditCard, Globe, ArrowRight, AppWindow, Camera } from '@/components/icons';
 import { Card, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
-import { BackButton } from '@/components/ui/back-button';
+import { BackButton } from '#/components/element/backButton';
 import { checkPermissions } from '@/services/user';
-import { PrimaryHeader } from '@/components/ui/primary-header';
+import { TitleSet } from '#/components/element/titleset';
 import { formMetadata } from '#/core/metadata';
 import { permission } from '@/.neup/logica/permission';
 
@@ -62,9 +62,9 @@ export default async function SiteConfigPage() {
     <div className="grid gap-8">
       <BackButton href="/home" />
 
-      <PrimaryHeader
+      <TitleSet level={1}
         title="Configurations"
-        description="Set website payment settings, footer social media accounts, and app branding."
+        subtitle="Set website payment settings, footer social media accounts, and app branding."
       />
 
       <div className="grid gap-6 md:grid-cols-3">

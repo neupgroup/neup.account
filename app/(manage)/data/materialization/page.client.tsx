@@ -34,9 +34,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "#/components/ui/select";
-import { BackButton } from "@/components/ui/back-button";
+import { BackButton } from "#/components/element/backButton";
 import { Geolocation } from "#/core/providers/geolocation";
-import { SecondaryHeader } from "@/components/ui/secondary-header";
+import { TitleSet } from '#/components/element/titleset';
 
 const formSchema = z.object({
     inactivityDays: z.string().min(1, "Please select a time period."),
@@ -100,9 +100,9 @@ export default function MaterializationPage() {
             <form onSubmit={form.handleSubmit(onSubmit)}>
             <Card>
                 <CardHeader>
-                <SecondaryHeader
+                <TitleSet level={1}
                     title="Schedule Account Materialization"
-                    description="This action will send a request to an administrator for account deletion."
+                    subtitle="This action will send a request to an administrator for account deletion."
                 />
                 </CardHeader>
                 <CardContent className="space-y-4">

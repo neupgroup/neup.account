@@ -453,7 +453,7 @@ function PasswordStep() {
               <FlowLink href={forgetUrl} className="underline text-primary">
                 Forget Password
               </FlowLink>
-              <Button type="text" htmlType="button" onClick={handleBack} className="text-primary p-0 h-auto" disabled={isSubmitting}>
+              <Button variant="text" htmlType="button" onClick={handleBack} className="text-primary p-0 h-auto" disabled={isSubmitting}>
                 Back
               </Button>
             </div>

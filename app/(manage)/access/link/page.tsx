@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Card, CardContent } from "#/components/ui/card";
-import { BackButton } from "@/components/ui/back-button";
-import { PrimaryHeader } from "@/components/ui/primary-header";
+import { BackButton } from "#/components/element/backButton";
+import { TitleSet } from '#/components/element/titleset';
 import { ListItem } from "@/components/ui/ListItem";
 import { Bot, Github } from "@/components/icons";
 import { formMetadata } from '#/core/metadata';
@@ -72,9 +72,9 @@ export default async function LinkAccountsPage({ searchParams }: PageProps) {
     return (
         <div className="grid gap-8">
             <BackButton href={buildAccessHref('/access', hrefContext)} />
-            <PrimaryHeader
+            <TitleSet level={1}
                 title="Link Other Accounts"
-                description="Connect your accounts from other platforms to NeupID for a seamless experience."
+                subtitle="Connect your accounts from other platforms to NeupID for a seamless experience."
             />
             <Card>
                 <CardContent className="p-0 divide-y">

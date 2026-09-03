@@ -56,7 +56,7 @@ export function RemoveMemberButton({
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button
-            type={variant === 'outline' ? 'outlined' : 'solid'}
+            variant={variant === 'outline' ? 'outlined' : 'solid'}
             convey={variant === 'destructive' ? 'danger' : 'none'}
             size="sm"
             disabled={isPending}

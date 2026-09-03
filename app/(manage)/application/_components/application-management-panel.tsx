@@ -217,7 +217,7 @@ export function ApplicationManagementPanel({ application }: { application: Manag
                 <p>This is the only time the full key is shown.</p>
                 <div className="flex flex-wrap items-center gap-2">
                   <code className="rounded bg-muted px-2 py-1 text-xs break-all">{revealedSecret}</code>
-                  <Button htmlType="button" type="outlined" size="sm" onClick={handleCopySecret}>
+                  <Button htmlType="button" variant="outlined" size="sm" onClick={handleCopySecret}>
                     Copy
                   </Button>
                 </div>
@@ -288,7 +288,7 @@ export function ApplicationManagementPanel({ application }: { application: Manag
                 <div className="flex justify-end">
                   <Button
                     htmlType="button"
-                    type="plain"
+                    variant="plain"
                     onClick={() => setPolicies((current) => current.filter((_, currentIndex) => currentIndex !== index))}
                   >
                     Remove
@@ -299,7 +299,7 @@ export function ApplicationManagementPanel({ application }: { application: Manag
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Button htmlType="button" type="outlined" onClick={() => setPolicies((current) => [...current, { name: '', policy: '' }])}>
+            <Button htmlType="button" variant="outlined" onClick={() => setPolicies((current) => [...current, { name: '', policy: '' }])}>
               Add Policy
             </Button>
             <Button htmlType="button" onClick={handleSavePolicies} disabled={pendingSection === 'policies'}>

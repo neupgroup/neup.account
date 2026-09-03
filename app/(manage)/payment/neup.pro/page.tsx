@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "#/com
 import { getPaymentDetails, getAppInfo } from "@/services/manage/payments/neup.pro";
 import Image from "next/image";
 import { Bot, Instagram, Linkedin, Ban } from "lucide-react";
-import { BackButton } from "@/components/ui/back-button";
+import { BackButton } from "#/components/element/backButton";
 import { checkPermissions } from '@/services/user';
 import { Alert, AlertDescription, AlertTitle } from "#/components/ui/alert";
 import { notFound } from "next/navigation";

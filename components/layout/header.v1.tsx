@@ -1,17 +1,14 @@
 'use client';
 
 import { NeupIdLogo } from '@/components/neupid-logo';
-import { UserNav } from '@/components/user-nav';
+import { Userbar } from '#/components/element/userbar';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { DashboardNav } from '@/components/dashboard-nav';
 import { Button } from '#/components/ui/button';
 import { Menu, X } from '@/components/icons';
 import { cn } from '#/core/utils';
 import { useEffect, useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
-import { Skeleton } from '#/components/ui/skeleton';
 import { useSession } from '@/inapp/auth/session-context';
-import { getFallbackDisplayImage } from '@/inapp/display-image';
 
 const STATIC_LOGO_URL = 'https://neupcdn.com/neupaccount/assets/logo.svg';
 const HEADER_HEIGHT = '4rem';
@@ -23,56 +20,11 @@ type HeaderV1Props = {
   logoUrl?: string;
 };
 
-function MobileHeaderProfileCard() {
-  const { profile, loading, isManaging } = useSession();
-
-  if (loading) {
-    return (
-      <div className="rounded-2xl border border-border/60 bg-background p-4">
-        <div className="flex items-center gap-3">
-          <Skeleton className="h-12 w-12 rounded-full" />
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-3 w-24" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!profile) {
-    return null;
-  }
-
-  return (
-    <div className="rounded-2xl border border-border/60 bg-background p-4">
-      <div className="flex items-center gap-3">
-        <Avatar className="h-12 w-12">
-          <AvatarImage
-            src={profile.accountPhoto || getFallbackDisplayImage({ accountType: profile.accountType, gender: profile.gender })}
-            alt={profile.nameDisplay || ''}
-            data-ai-hint="person logo"
-          />
-          <AvatarFallback />
-        </Avatar>
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-slate-950">{profile.nameDisplay}</p>
-          {profile.neupIdPrimary && (
-            <p className="truncate font-mono text-xs text-slate-500">@{profile.neupIdPrimary}</p>
-          )}
-          <p className="text-xs text-slate-500">
-            {isManaging ? 'Managing account' : 'Personal account'}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function HeaderV1({ showUserNavOnAuth = false, logoUrl }: HeaderV1Props) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { profile } = useSession();
   const isAuthPath = pathname?.startsWith('/auth');
   const shouldShowUserNav = showUserNavOnAuth || !isAuthPath;
   const resolvedLogoUrl = logoUrl || STATIC_LOGO_URL;
@@ -122,11 +74,11 @@ export function HeaderV1({ showUserNavOnAuth = false, logoUrl }: HeaderV1Props) 
             {shouldShowUserNav ? (
               <>
                 <div className="hidden lg:block">
-                  <UserNav />
+                  <Userbar displayName={profile?.nameDisplay || ''} displayImage={profile?.accountPhoto} neupid={profile?.neupIdPrimary || ''} />
                 </div>
                 <Button
                   htmlType="button"
-                  type="outlined"
+                  variant="outlined"
                   size="icon"
                   className={cn(
                     'h-10 w-10 border-transparent bg-background text-slate-900 shadow-none hover:bg-accent/50 lg:hidden',
@@ -167,7 +119,7 @@ export function HeaderV1({ showUserNavOnAuth = false, logoUrl }: HeaderV1Props) 
                 }}
                 aria-hidden={!mobileMenuOpen}
               >
-                <MobileHeaderProfileCard />
+                <Userbar displayName={profile?.nameDisplay || ''} displayImage={profile?.accountPhoto} neupid={profile?.neupIdPrimary || ''} />
                 <div className="mt-4 min-h-0 flex-1 overflow-y-auto rounded-2xl border border-border/60 bg-background p-3">
                   <DashboardNav />
                 </div>

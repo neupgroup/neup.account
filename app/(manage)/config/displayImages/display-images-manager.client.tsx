@@ -206,7 +206,7 @@ export function DisplayImagesManager({ initialResources, canAdd, canDelete, canU
                   <div className="flex gap-2">
                     <Button
                       htmlType="button"
-                      type="tinted"
+                      variant="tinted"
                       disabled={!canUpdate || isPending}
                       onClick={() => handleUpdateTitle(item.id)}
                     >
@@ -215,7 +215,7 @@ export function DisplayImagesManager({ initialResources, canAdd, canDelete, canU
                     </Button>
                     <Button
                       htmlType="button"
-                      type="solid" convey="danger"
+                      variant="solid" convey="danger"
                       disabled={!canDelete || isPending}
                       onClick={() => handleDelete(item.id)}
                     >

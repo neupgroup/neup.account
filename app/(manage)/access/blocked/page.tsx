@@ -18,8 +18,8 @@ import { Input } from '#/components/ui/input';
 import { Skeleton } from '#/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
 import { Loader2, UserPlus, Trash2, Ban, EyeOff } from 'lucide-react';
-import { BackButton } from '@/components/ui/back-button';
-import { SecondaryHeader } from '@/components/ui/secondary-header';
+import { BackButton } from '#/components/element/backButton';
+import { TitleSet } from '#/components/element/titleset';
 import { cn } from '#/core/utils';
 
 function UserListSkeleton() {
@@ -77,7 +77,7 @@ function AddUserForm({ onAdd, disabled, placeholder }: { onAdd: (neupId: string)
                         aria-invalid={!!error}
                         className={cn("pr-12", error && "border-destructive focus-visible:ring-destructive")}
                     />
-                    <Button htmlType="submit" size="icon" type="plain" className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 text-muted-foreground hover:bg-accent" disabled={isAdding || disabled}>
+                    <Button htmlType="submit" size="icon" variant="plain" className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 text-muted-foreground hover:bg-accent" disabled={isAdding || disabled}>
                         {isAdding ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
                         <span className="sr-only">Add User</span>
                     </Button>
@@ -146,7 +146,7 @@ function UserListManager({
 
   return (
     <div className="space-y-2">
-        <SecondaryHeader title={title} description={description} />
+        <TitleSet level={1} title={title} subtitle={description} />
         <Card>
             <CardContent className="p-0">
                 {loading ? (
@@ -165,7 +165,7 @@ function UserListManager({
                                     <p className="text-sm text-muted-foreground font-mono">@{user.neupId}</p>
                                 </div>
                                 </div>
-                                <Button type="plain" size="icon" onClick={() => handleRemove(user.accountId)} disabled={isPending} className="h-8 w-8 text-muted-foreground hover:text-destructive">
+                                <Button variant="plain" size="icon" onClick={() => handleRemove(user.accountId)} disabled={isPending} className="h-8 w-8 text-muted-foreground hover:text-destructive">
                                     {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                                 </Button>
                             </div>

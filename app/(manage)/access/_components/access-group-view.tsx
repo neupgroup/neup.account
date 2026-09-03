@@ -1,8 +1,7 @@
 import { FlowLink } from '@/components/flow-link';
-import { BackButton } from '@/components/ui/back-button';
+import { BackButton } from '#/components/element/backButton';
 import { Card, CardContent } from '#/components/ui/card';
-import { PrimaryHeader } from '@/components/ui/primary-header';
-import { SecondaryHeader } from '@/components/ui/secondary-header';
+import { TitleSet } from '#/components/element/titleset';
 import { AppWindow, ChevronRight, Users } from '@/components/icons';
 
 export type AccessGroupMember = {
@@ -60,13 +59,13 @@ export function AccessGroupView({
       {backHref && <BackButton href={backHref} />}
 
       {/* Main title */}
-      <PrimaryHeader title={pageTitle} description={pageDescription} />
+      <TitleSet level={1} title={pageTitle} subtitle={pageDescription} />
 
       {/* Section 1 */}
       <div className="space-y-2">
-        <SecondaryHeader
+        <TitleSet level={1}
           title={name}
-          description={description ?? ''}
+          subtitle={description ?? ''}
         />
         <Card>
           <CardContent className="divide-y p-2">

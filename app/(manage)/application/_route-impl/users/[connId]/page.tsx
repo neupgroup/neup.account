@@ -102,7 +102,7 @@ export async function ApplicationUserDetailsPage({
   return (
     <div className="grid gap-6">
       <div>
-        <Button type="plain" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
+        <Button variant="plain" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
           <FlowLink
             href={applicationHref('/application/users', appId, {
               mode,

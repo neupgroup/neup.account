@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { getUserProfile, checkPermissions } from '@/services/user';
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
 import { BrandNav } from './brand-nav';
-import { BackButton } from '@/components/ui/back-button';
+import { BackButton } from '#/components/element/backButton';
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
 import { permission } from '@/.neup/logica/permission';
 

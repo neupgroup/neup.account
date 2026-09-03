@@ -9,8 +9,8 @@ import {
 } from '@/services/applications/manage';
 import { getAppDefaultRoleId, getAppRoles } from '@/services/applications/authz-manage';
 import { getAuthzWebhookUrl } from '@/services/applications/authz-webhook';
-import { BackButton } from '@/components/ui/back-button';
-import { PrimaryHeader } from '@/components/ui/primary-header';
+import { BackButton } from '#/components/element/backButton';
+import { TitleSet } from '#/components/element/titleset';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { RolesPanel } from '@/app/(manage)/application/_components/roles-panel';
@@ -80,9 +80,9 @@ export async function ApplicationRolesPage({ applicationId, mode }: { applicatio
       <div className="grid gap-8">
         <div className="space-y-4">
           <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
-          <PrimaryHeader
+          <TitleSet level={1}
             title="Roles & Permissions"
-            description={`Manage permissions and roles for ${details.name}.`}
+            subtitle={`Manage permissions and roles for ${details.name}.`}
           />
         </div>
         <Alert variant="destructive">
@@ -104,9 +104,9 @@ export async function ApplicationRolesPage({ applicationId, mode }: { applicatio
     <div className="grid gap-8">
       <div className="space-y-4">
         <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
-        <PrimaryHeader
+        <TitleSet level={1}
           title="Roles & Permissions"
-          description={`Manage roles for ${details.name}. Open a role to assign permissions.`}
+          subtitle={`Manage roles for ${details.name}. Open a role to assign permissions.`}
         />
       </div>
 

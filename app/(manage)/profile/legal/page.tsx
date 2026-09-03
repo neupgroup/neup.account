@@ -15,7 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "#/com
 import { Input } from "#/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "#/components/ui/form"
 import { useSession } from '@/inapp/auth/session-context'
-import { BackButton } from '@/components/ui/back-button'
+import { BackButton } from '#/components/element/backButton'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/inapp/permissions/profile-permissions'
 import { Checkbox } from '#/components/ui/checkbox'
 import { Geolocation } from '#/core/providers/geolocation'

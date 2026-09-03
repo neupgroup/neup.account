@@ -1,7 +1,7 @@
 import { Card, CardContent } from '#/components/ui/card';
 import { getNotifications } from '@/services/notifications';
 import { ListItem } from '@/components/ui/ListItem';
-import { SecondaryHeader } from '@/components/ui/secondary-header';
+import { TitleSet } from '#/components/element/titleset';
 import type { Notification as NotificationType } from '@/services/notifications';
 
 function getNotificationDetails(notification: NotificationType): { iconName: string, message: string, href: string } {
@@ -89,9 +89,9 @@ export async function NotificationsCard() {
 
     return (
         <div className="space-y-2">
-            <SecondaryHeader 
+            <TitleSet level={1}
                 title="Account Updates"
-                description="Your most recent and important alerts."
+                subtitle="Your most recent and important alerts."
             />
             <Card>
                 <CardContent className="divide-y p-0">

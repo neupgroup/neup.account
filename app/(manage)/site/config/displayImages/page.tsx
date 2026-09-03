@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { BackButton } from '@/components/ui/back-button';
+import { BackButton } from '#/components/element/backButton';
 import { checkPermissions } from '@/services/user';
 import { getResources } from '@/services/manage/site/resources';
 import { DisplayImagesManager } from '../../../config/displayImages/display-images-manager.client';

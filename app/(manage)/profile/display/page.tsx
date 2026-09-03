@@ -20,10 +20,10 @@ import { Input } from "#/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "#/components/ui/form"
 import { Avatar, AvatarImage, AvatarFallback } from '#/components/ui/avatar'
 import { useSession } from '@/inapp/auth/session-context'
-import { BackButton } from '@/components/ui/back-button'
+import { BackButton } from '#/components/element/backButton'
 import { cn } from '#/core/utils'
 import { Check, Loader2, UploadCloud } from '@/components/icons'
-import { SecondaryHeader } from '@/components/ui/secondary-header'
+import { TitleSet } from '#/components/element/titleset';
 import { Separator } from '#/components/ui/separator'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/inapp/permissions/profile-permissions'
 import { permission } from '@/.neup/logica/permission';
@@ -304,9 +304,9 @@ export default function DisplayInfoPage() {
             <BackButton href={profileBackHref} />
 
             <div className="space-y-2">
-                <SecondaryHeader
+                <TitleSet level={1}
                     title="Display Image"
-                    description="Update your public profile photo."
+                    subtitle="Update your public profile photo."
                 />
                 <Form {...photoForm}>
                     <form onSubmit={photoForm.handleSubmit(onPhotoSubmit)}>
@@ -441,9 +441,9 @@ export default function DisplayInfoPage() {
             </div>
 
             <div className="space-y-2">
-                 <SecondaryHeader
+                 <TitleSet level={1}
                     title="Display Name"
-                    description="Choose how your name appears on your profile."
+                    subtitle="Choose how your name appears on your profile."
                 />
                 <Form {...nameForm}>
                     <form onSubmit={nameForm.handleSubmit(onNameSubmit)}>
@@ -465,7 +465,7 @@ export default function DisplayInfoPage() {
                                                         <Button
                                                             key={`${option.label}:${option.value}`}
                                                             htmlType="button"
-            type={field.value === option.value ? "solid" : "tinted"}
+            variant={field.value === option.value ? "solid" : "tinted"}
                                                             onClick={() => {
                                                                 field.onChange(option.value);
                                                                 handleStandardDisplayNameSelect(option.value);
@@ -479,7 +479,7 @@ export default function DisplayInfoPage() {
                                                     ))}
                                                     <Button
                                                         htmlType="button"
-            type={field.value === 'custom' ? "solid" : "tinted"}
+            variant={field.value === 'custom' ? "solid" : "tinted"}
                                                         onClick={() => field.onChange('custom')}
                                                         className="relative"
                                                         disabled={isNamePending}

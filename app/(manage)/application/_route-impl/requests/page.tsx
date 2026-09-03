@@ -56,7 +56,7 @@ export async function ApplicationRequestsPage({ applicationId, mode }: { applica
   return (
     <div className="grid gap-6">
       <div>
-        <Button type="plain" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
+        <Button variant="plain" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
           <FlowLink href={applicationHref('/application', applicationId, mode ? { mode } : undefined)}>
             <ArrowLeft className="h-4 w-4" />
             Back

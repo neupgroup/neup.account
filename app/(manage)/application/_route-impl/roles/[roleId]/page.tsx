@@ -24,8 +24,8 @@ import {
   getAppPermissions,
   getAppRoles,
 } from '@/services/applications/authz-manage';
-import { BackButton } from '@/components/ui/back-button';
-import { PrimaryHeader } from '@/components/ui/primary-header';
+import { BackButton } from '#/components/element/backButton';
+import { TitleSet } from '#/components/element/titleset';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { RoleDetailEditor } from '@/app/(manage)/application/_components/role-detail-editor';
@@ -71,7 +71,7 @@ export async function RoleDetailsPage({
       <div className="grid gap-8">
         <div className="space-y-4">
           <BackButton href={applicationHref('/application/roles', applicationId, mode ? { mode } : undefined)} />
-          <PrimaryHeader title="Role Details" description={`Manage role permissions for ${details.name}.`} />
+          <TitleSet level={1} title="Role Details" subtitle={`Manage role permissions for ${details.name}.`} />
         </div>
         <Alert variant="destructive">
           <ShieldAlert className="h-4 w-4" />

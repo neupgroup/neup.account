@@ -24,7 +24,7 @@ export async function AccessCard() {
                         <div key={app.id} className="flex items-center">
                             <AppWindow className="h-5 w-5 mr-3 text-muted-foreground" />
                             <span className="text-sm font-medium flex-grow">{app.name}</span>
-                            <Button type="plain" size="sm" asChild>
+                            <Button variant="plain" size="sm" asChild>
                                 <FlowLink href={`/data/1/${app.id}`}>Manage</FlowLink>
                             </Button>
                         </div>
@@ -33,13 +33,13 @@ export async function AccessCard() {
                          <div key={app.id} className="flex items-center">
                             <AppWindow className="h-5 w-5 mr-3 text-muted-foreground" />
                             <span className="text-sm font-medium flex-grow">{app.name}</span>
-                            <Button type="plain" size="sm" asChild>
+                            <Button variant="plain" size="sm" asChild>
                                 <FlowLink href={`/data/3/${app.id}`}>Manage</FlowLink>
                             </Button>
                         </div>
                     ))}
                  </div>
-                 <Button type="outlined" className="w-full" asChild>
+                 <Button variant="outlined" className="w-full" asChild>
                     <FlowLink href="/data">View All Apps <ChevronRight className="ml-2 h-4 w-4" /></FlowLink>
                 </Button>
             </CardContent>

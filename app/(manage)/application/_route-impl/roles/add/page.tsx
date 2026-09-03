@@ -5,8 +5,8 @@ import {
   getApplicationDetailsForViewerV2,
   logRootApplicationActivity,
 } from '@/services/applications/manage';
-import { BackButton } from '@/components/ui/back-button';
-import { PrimaryHeader } from '@/components/ui/primary-header';
+import { BackButton } from '#/components/element/backButton';
+import { TitleSet } from '#/components/element/titleset';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { RoleCreateForm } from '@/app/(manage)/application/_components/role-create-form';
@@ -36,7 +36,7 @@ export async function AddRolePage({ applicationId, mode }: { applicationId: stri
       <div className="grid gap-8">
         <div className="space-y-4">
           <BackButton href={applicationHref('/application/roles', applicationId, mode ? { mode } : undefined)} />
-          <PrimaryHeader title="Add Role" description={`Create a role for ${details.name}.`} />
+          <TitleSet level={1} title="Add Role" subtitle={`Create a role for ${details.name}.`} />
         </div>
         <Alert variant="destructive">
           <ShieldAlert className="h-4 w-4" />
@@ -53,7 +53,7 @@ export async function AddRolePage({ applicationId, mode }: { applicationId: stri
     <div className="grid gap-8">
       <div className="space-y-4">
         <BackButton href={applicationHref('/application/roles', applicationId, mode ? { mode } : undefined)} />
-        <PrimaryHeader title="Add Role" description={`Create a role for ${details.name}. Permissions are mapped after the role is created.`} />
+        <TitleSet level={1} title="Add Role" subtitle={`Create a role for ${details.name}. Permissions are mapped after the role is created.`} />
       </div>
       <RoleCreateForm
         appId={applicationId}

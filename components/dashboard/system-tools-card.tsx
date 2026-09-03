@@ -3,7 +3,7 @@
 import { useSession } from '@/inapp/auth/session-context';
 import { Card, CardContent } from '#/components/ui/card';
 import { Users, List, Terminal, AppWindow } from '@/components/icons';
-import { SecondaryHeader } from '@/components/ui/secondary-header';
+import { TitleSet } from '#/components/element/titleset';
 import { ListItem } from '@/components/ui/ListItem';
 
 const managementItems = [
@@ -48,9 +48,9 @@ export function SystemToolsCard() {
 
     return (
         <div className="space-y-2">
-            <SecondaryHeader
+            <TitleSet level={1}
                 title="System Tools"
-                description="Access administrative tools and system configurations."
+                subtitle="Access administrative tools and system configurations."
             />
             <Card>
                 <CardContent className="divide-y p-2">

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { BackButton } from '@/components/ui/back-button';
+import { BackButton } from '#/components/element/backButton';
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card';
 import { AppWindow, ChevronRight, Users } from '@/components/icons';
 import { FlowLink } from '@/components/flow-link';

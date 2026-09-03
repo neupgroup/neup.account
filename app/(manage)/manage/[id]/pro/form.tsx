@@ -15,7 +15,7 @@ import { setProStatus } from '@/services/manage/users';
 import { getUserProfile } from '@/services/user';
 import { Gem, Loader2 } from 'lucide-react';
 import { Textarea } from '#/components/ui/textarea';
-import { TertiaryHeader } from '@/components/ui/tertiary-header';
+import { TitleSet } from '#/components/element/titleset';
 
 const proActionSchema = z.object({
   reason: z.string().min(10, "A reason of at least 10 characters is required."),
@@ -71,7 +71,7 @@ export function NeupProManager({ accountId }: { accountId: string }) {
     if (isPro) {
         return (
             <div className="grid gap-4">
-                <TertiaryHeader title="Current Status" />
+                <TitleSet level={1} title="Current Status" />
                 <Card>
                     <CardHeader>
                          <Alert className="border-primary/50 text-primary [&>svg]:text-primary">
@@ -94,7 +94,7 @@ export function NeupProManager({ accountId }: { accountId: string }) {
                                         <FormMessage />
                                     </FormItem>
                                 )} />
-                                 <Button htmlType="submit" type="solid" convey="danger" disabled={isPending}>
+                                 <Button htmlType="submit" variant="solid" convey="danger" disabled={isPending}>
                                     {isPending ? <Loader2 className="animate-spin mr-2" /> : null}
                                     Deactivate Neup.Pro
                                 </Button>
@@ -108,7 +108,7 @@ export function NeupProManager({ accountId }: { accountId: string }) {
 
     return (
         <div className="grid gap-4">
-            <TertiaryHeader title="Activate Neup.Pro" description="Manually grant Neup.Pro status to this user."/>
+            <TitleSet level={1} title="Activate Neup.Pro" subtitle="Manually grant Neup.Pro status to this user."/>
             <Card>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleAction(true))}>

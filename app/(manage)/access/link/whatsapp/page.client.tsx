@@ -25,8 +25,8 @@ import {
 import { PhoneInput } from "#/components/ui/phone-input";
 import { Loader2 } from "@/components/icons";
 import { cn } from "#/core/utils";
-import { BackButton } from "@/components/ui/back-button";
-import { SecondaryHeader } from "@/components/ui/secondary-header";
+import { BackButton } from "#/components/element/backButton";
+import { TitleSet } from '#/components/element/titleset';
 
 export default function LinkWhatsAppPageClient({
     managerAccountId,
@@ -90,9 +90,9 @@ export default function LinkWhatsAppPageClient({
                 </p>
             </div>
             <div className="space-y-2">
-                 <SecondaryHeader
+                 <TitleSet level={1}
                     title="Connect Your Number"
-                    description="Enter your WhatsApp number to receive a verification code."
+                    subtitle="Enter your WhatsApp number to receive a verification code."
                  />
                 <Card>
                      <CardContent className="pt-6">
@@ -158,7 +158,7 @@ export default function LinkWhatsAppPageClient({
                                             </FormItem>
                                         )}
                                     />
-                                    <Button type="text" size="sm" className="p-0 h-auto" htmlType="button" onClick={() => setStep(1)}>
+                                    <Button variant="text" size="sm" className="p-0 h-auto" htmlType="button" onClick={() => setStep(1)}>
                                         Use a different number
                                     </Button>
                                 </form>

@@ -12,7 +12,7 @@ import { Skeleton } from '#/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { Loader2, ShieldAlert, Trash2 } from 'lucide-react';
 import { Textarea } from '#/components/ui/textarea';
-import { TertiaryHeader } from '@/components/ui/tertiary-header';
+import { TitleSet } from '#/components/element/titleset';
 import { approveAccountDeletion, cancelAccountDeletion, getDeletionStatus, requestAccountDeletionByAdmin } from '@/services/manage/requests/deletion';
 import { useRouter } from 'next/navigation';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
@@ -95,7 +95,7 @@ export function DeletionManager({ accountId }: { accountId: string }) {
     if (status?.status === 'is_root') {
         return (
              <div className="grid gap-4">
-                <TertiaryHeader title="Manual Deletion" />
+                <TitleSet level={1} title="Manual Deletion" />
                 <Card>
                      <CardHeader>
                          <Alert variant="destructive">
@@ -114,7 +114,7 @@ export function DeletionManager({ accountId }: { accountId: string }) {
     if (status?.status === 'pending') {
         return (
             <div className="grid gap-4">
-                <TertiaryHeader title="Deletion Pending" />
+                <TitleSet level={1} title="Deletion Pending" />
                 <Card>
                     <CardHeader>
                          <Alert variant="destructive">
@@ -126,11 +126,11 @@ export function DeletionManager({ accountId }: { accountId: string }) {
                         </Alert>
                     </CardHeader>
                     <CardContent className="flex gap-4">
-                       <Button onClick={handleApprove} disabled={isPending} type="solid" convey="danger">
+                       <Button onClick={handleApprove} disabled={isPending} variant="solid" convey="danger">
                             {isPending ? <Loader2 className="animate-spin mr-2" /> : null}
                             Approve Deletion Now
                         </Button>
-                         <Button onClick={handleCancel} disabled={isPending} type="outlined">
+                         <Button onClick={handleCancel} disabled={isPending} variant="outlined">
                             {isPending ? <Loader2 className="animate-spin mr-2" /> : null}
                             Cancel Request
                         </Button>
@@ -152,7 +152,7 @@ export function DeletionManager({ accountId }: { accountId: string }) {
     // Status is 'none'
     return (
         <div className="grid gap-4">
-            <TertiaryHeader title="Manual Deletion" description="This action is irreversible and should only be taken in extreme circumstances."/>
+            <TitleSet level={1} title="Manual Deletion" subtitle="This action is irreversible and should only be taken in extreme circumstances."/>
             <Card>
                  <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleAdminRequest)}>
@@ -181,7 +181,7 @@ export function DeletionManager({ accountId }: { accountId: string }) {
                             />
                         </CardContent>
                         <CardFooter>
-                            <Button type="solid" convey="danger" htmlType="submit" disabled={isPending}>
+                            <Button variant="solid" convey="danger" htmlType="submit" disabled={isPending}>
                                 {isPending ? <Loader2 className="animate-spin mr-2" /> : null}
                                 Request Deletion
                             </Button>

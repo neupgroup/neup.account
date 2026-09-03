@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "setup": "chmod +x ./setup.sh && ./setup.sh",
+    "predev": "npm run setup",
+    "prebuild": "npm run setup",
+
     "dev": "npx next dev --turbopack --experimental-https --port 2226",
     "build": "npx prisma generate && npx next build",
     "start": "next start --port 2226",

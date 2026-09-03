@@ -5,7 +5,7 @@ import { Card, CardContent } from '#/components/ui/card';
 import { UserCircle, ShieldCheck } from 'lucide-react';
 import { FlowLink } from '@/components/flow-link';
 import { Badge } from '#/components/ui/badge';
-import { BackButton } from '@/components/ui/back-button';
+import { BackButton } from '#/components/element/backButton';
 import { Skeleton } from '#/components/ui/skeleton';
 
 async function SearchResults({ query }: { query: string }) {

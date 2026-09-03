@@ -486,7 +486,7 @@ export function AppConfigForm({
               <div className="rounded-lg border p-3">
                 <Button
                   htmlType="button"
-                  type="outlined"
+                  variant="outlined"
                   onClick={() => setShowExampleResponse((v) => !v)}
                 >
                   Get an example response
@@ -582,7 +582,7 @@ export function AppConfigForm({
                       <code className="text-sm break-all">{entry.value}</code>
                       <Button
                         htmlType="button"
-                        type="plain"
+                        variant="plain"
                         size="sm"
                         disabled={isOriginPending}
                         onClick={() => handleRemoveServerIp(entry.id)}
@@ -617,7 +617,7 @@ export function AppConfigForm({
                 </div>
                 <Button
                   htmlType="button"
-                  type="outlined"
+                  variant="outlined"
                   disabled={isOriginPending || !newServerIp.trim()}
                   onClick={handleAddServerIp}
                 >
@@ -753,7 +753,7 @@ export function AppConfigForm({
                       <code className="text-sm break-all">{entry.value}</code>
                       <Button
                         htmlType="button"
-                        type="plain"
+                        variant="plain"
                         size="sm"
                         disabled={isOriginPending}
                         onClick={() => handleRemoveOrigin(entry.id)}
@@ -789,7 +789,7 @@ export function AppConfigForm({
                 </div>
                 <Button
                   htmlType="button"
-                  type="outlined"
+                  variant="outlined"
                   disabled={isOriginPending || !newOrigin.trim()}
                   onClick={handleAddOrigin}
                 >

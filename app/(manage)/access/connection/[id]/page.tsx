@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { BackButton } from '@/components/ui/back-button';
+import { BackButton } from '#/components/element/backButton';
 import { Badge } from '#/components/ui/badge';
 import { Card, CardContent } from '#/components/ui/card';
 import { FlowLink } from '@/components/flow-link';

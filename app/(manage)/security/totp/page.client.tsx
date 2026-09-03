@@ -11,8 +11,8 @@ import { Skeleton } from '#/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { getTotpStatus, generateTotpSecret, verifyAndEnableTotp, disableTotp, getServerTime } from '@/services/security/totp';
 import { Smartphone, Loader2, Clock } from '@/components/icons';
-import { BackButton } from '@/components/ui/back-button';
-import { SecondaryHeader } from '@/components/ui/secondary-header';
+import { BackButton } from '#/components/element/backButton';
+import { TitleSet } from '#/components/element/titleset';
 
 type SetupState = {
     secret: string;
@@ -140,7 +140,7 @@ export default function AuthenticatorAppPage() {
                             <form action={handleVerify} className="space-y-4">
                                 <Input name="token" placeholder="Enter 6-digit code" maxLength={6} required className="text-center tracking-[0.3em]" />
                                 <div className="grid grid-cols-2 gap-2">
-                                    <Button type="solid" convey="danger" htmlType="button" onClick={() => setSetupState(null)}>Cancel</Button>
+                                    <Button variant="solid" convey="danger" htmlType="button" onClick={() => setSetupState(null)}>Cancel</Button>
                                     <Button htmlType="submit" className="w-full" disabled={isPending}>
                                         {isPending ? <Loader2 className="animate-spin" /> : 'Verify & Enable'}
                                     </Button>
@@ -165,7 +165,7 @@ export default function AuthenticatorAppPage() {
                          <form action={handleDisable} className="mt-6 space-y-4">
                             <p className="text-sm font-medium">To disable 2FA, please enter your password.</p>
                             <Input name="password" type="password" placeholder="Enter your password" required />
-                            <Button htmlType="submit" type="solid" convey="danger" disabled={isPending}>
+                            <Button htmlType="submit" variant="solid" convey="danger" disabled={isPending}>
                                 {isPending ? <Loader2 className="animate-spin" /> : 'Disable Authenticator App'}
                             </Button>
                         </form>
@@ -198,9 +198,9 @@ export default function AuthenticatorAppPage() {
                 </p>
             </div>
              <div className="space-y-2">
-                <SecondaryHeader
+                <TitleSet level={1}
                     title="Manage 2FA"
-                    description="Enable or disable two-factor authentication for your account."
+                    subtitle="Enable or disable two-factor authentication for your account."
                 />
                 <Card>
                     {renderCardContent()}

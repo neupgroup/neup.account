@@ -1,0 +1,452 @@
+Table: account, Model: Account
+Fields:
+> id: String, primary key, default: uuid();
+> displayName: String, nullable;
+> accountType: String, default: individual;
+> displayImage: String, nullable;
+> status: String, nullable;
+> isVerified: Boolean, default: false;
+> details: Json, nullable;
+> createdAt: DateTime, default: now();
+> linkedAccountId: String, nullable;
+.. linkedAccountId references account.id;
+
+Table: linked_accounts, Model: LinkedAccount
+Fields:
+> id: String, primary key, default: uuid();
+> platform: String;
+> created_on: DateTime, default: now();
+> connected_by: String;
+> owner_id: String;
+> more_details: Json, nullable;
+> token_data: Json;
+.. connected_by references account.id;
+.. owner_id references account.id;
+
+Table: resources, Model: Resource
+Fields:
+> id: String, primary key, default: uuid();
+> type: String;
+> accountId: String, nullable;
+> uploadedBy: String;
+> value: String;
+> details: Json, nullable;
+> uploadedOn: DateTime, default: now();
+.. accountId references account.id;
+.. uploadedBy references account.id;
+
+Table: account_individual, Model: AccountTypeIndividual
+Fields:
+> accountId: String, primary key;
+> firstName: String, nullable;
+> middleName: String, nullable;
+> lastName: String, nullable;
+> dateOfBirth: DateTime, nullable;
+> countryOfResidence: String, nullable;
+> details: Json, nullable;
+> roleId: String, nullable;
+.. accountId references account.id;
+
+Table: account_brand, Model: AccountTypeBrand
+Fields:
+> accountId: String, primary key;
+> brandName: String, nullable;
+> isLegalEntity: Boolean, default: false;
+> originCountry: String, nullable;
+> details: Json, nullable;
+.. accountId references account.id;
+
+Table: system_config, Model: SystemConfig
+Fields:
+> key: String, primary key;
+> data: Json;
+> updatedAt: DateTime, default: now(), auto-updated;
+
+Table: authn_request, Model: AuthnRequest
+Fields:
+> id: String, primary key, default: uuid();
+> type: String;
+> status: String, default: pending;
+> data: Json, default: {};
+> accountId: String, nullable;
+> createdAt: DateTime, default: now();
+> expiresAt: DateTime;
+
+Table: activity, Model: Activity
+Fields:
+> id: String, primary key, default: uuid();
+> targetAccountId: String;
+> actorAccountId: String;
+> action: String;
+> status: String;
+> ip: String;
+> timestamp: DateTime, default: now();
+> geolocation: String, nullable;
+
+Table: notification, Model: Notification
+Fields:
+> id: String, primary key, default: uuid();
+> accountId: String;
+> applicationId: String, nullable;
+> action: String, nullable;
+> title: String, nullable;
+> message: String, nullable;
+> type: String, default: info;
+> read: Boolean, default: false;
+> createdAt: DateTime, default: now();
+> deletableOn: DateTime, nullable;
+> persistence: String, nullable;
+> detail: Json, nullable;
+.. accountId references account.id;
+.. applicationId references applications.id;
+
+Table: request, Model: Request
+Fields:
+> id: String, primary key, default: uuid();
+> senderId: String;
+> recipient_id: String;
+> status: String, default: pending;
+> action: String;
+> type: String, nullable;
+> data: Json, nullable, default: {};
+> created_at: DateTime, default: now();
+> updated_at: DateTime, auto-updated;
+.. senderId references account.id;
+.. recipient_id references account.id;
+
+Table: family, Model: Family
+Fields:
+> id: String, primary key, default: uuid();
+> created_by: String;
+> created_at: DateTime, default: now();
+
+Table: family_member, Model: FamilyMember
+Fields:
+> id: String, primary key, default: uuid();
+> family_id: String;
+> member_id: String;
+> role: String, default: member;
+.. family_id references family.id;
+.. member_id references account.id;
+
+Table: verification, Model: Verification
+Fields:
+> id: String, primary key, default: uuid();
+> account_id: String;
+> status: String, default: pending;
+> reason: String, nullable;
+> category: String, nullable;
+> done_by: String, nullable;
+> done_at: DateTime, default: now();
+> previously: String, nullable;
+> created_at: DateTime, default: now();
+.. account_id references account.id;
+.. done_by references account.id;
+
+Table: contact, Model: Contact
+Fields:
+> id: String, primary key, default: uuid();
+> accountId: String;
+> contactType: String;
+> value: String;
+.. accountId references account.id;
+
+Table: neupid, Model: NeupId
+Fields:
+> id: String, primary key;
+> accountId: String;
+> neupId: String, unique;
+> isPrimary: Boolean, default: false;
+> dateAdded: DateTime, default: now();
+.. accountId references account.id;
+
+Table: authn_method, Model: AuthnMethod
+Fields:
+> accountId: String;
+> value: String;
+> id: String, primary key, default: uuid();
+> type: String;
+> order: String;
+> status: String;
+> detail: Json, nullable;
+.. accountId references account.id;
+
+Table: authn_session, Model: AuthnSession
+Fields:
+> id: String, primary key, default: uuid();
+> accountId: String;
+> key: String, nullable;
+> ipAddress: String;
+> userAgent: String;
+> validTill: DateTime, nullable;
+> lastLoggedIn: DateTime;
+> loginType: String;
+> geolocation: String, nullable;
+> deviceType: String, nullable;
+.. accountId references account.id;
+
+Table: error_logs, Model: SystemError
+Fields:
+> id: String, primary key, default: uuid();
+> message: String;
+> context: String;
+> timestamp: DateTime, default: now();
+> accountId: String, nullable;
+> geolocation: String, nullable;
+> ipAddress: String, nullable;
+.. accountId references account.id;
+
+Table: application_provider, Model: ApplicationProvider
+Fields:
+> id: String, primary key, default: uuid();
+> provider_name: String;
+> provider_site: String;
+> secret_hash: String;
+
+Table: applications, Model: Application
+Fields:
+> id: String, primary key;
+> name: String;
+> description: String, nullable;
+> icon: String, nullable;
+> website: String, nullable;
+> app_secret: String, nullable;
+> created_at: DateTime, default: now();
+> endpoints: Json, nullable;
+> status: String, default: development;
+> is_internal: Boolean, default: false;
+> response_fields: String[], default: [];
+> token_fields: String[], default: [];
+> details: Json, nullable;
+> party: Int, default: 1;
+> provider_id: String, nullable;
+> def_role_id: String, nullable;
+.. provider_id references application_provider.id;
+.. def_role_id references authz_role.id;
+
+Table: application_dev_log, Model: ApplicationDevLog
+Fields:
+> id: String, primary key, default: uuid();
+> app_id: String;
+> endpoint: String;
+> method: String;
+> status_code: Int;
+> requester_ip: String, nullable;
+> origin: String, nullable;
+> referer: String, nullable;
+> user_agent: String, nullable;
+> request_body: Json, nullable;
+> query: Json, nullable;
+> request_meta: Json, nullable;
+> response_body: Json, nullable;
+> error: String, nullable;
+> created_at: DateTime, default: now();
+.. app_id references applications.id;
+
+Table: assets, Model: Asset
+Fields:
+> id: String, primary key, default: uuid();
+> type: AssetType;
+> child_account_id: String, nullable;
+> child_connection_id: String, nullable;
+> child_application_id: String, nullable;
+> parent_account_id: String, nullable;
+> is_temporary: DateTime, nullable;
+> status: String, default: active;
+> details: Json, nullable;
+.. child_account_id references account.id;
+.. child_connection_id references connection.id;
+.. child_application_id references applications.id;
+.. parent_account_id references account.id;
+
+Table: member, Model: Member
+Fields:
+> id: String, primary key, default: uuid();
+> member_type: String;
+> child_account_id: String, nullable;
+> parent_account_id: String, nullable;
+> status: String, default: active;
+> is_temporary: DateTime, nullable;
+> details: Json, nullable;
+.. child_account_id references account.id;
+.. parent_account_id references account.id;
+
+Table: access, Model: Access
+Fields:
+> id: String, primary key, default: uuid();
+> access_type: AccessType;
+> member_id: String;
+> member_account_id: String, nullable;
+> parent_account_id: String, nullable;
+> asset_id: String;
+> asset_account_id: String, nullable;
+> asset_connection_id: String, nullable;
+> asset_application_id: String, nullable;
+> access_application_id: String, nullable;
+> is_temporary: DateTime, nullable;
+> role_id: String;
+> status: String, default: active;
+> details: Json, nullable;
+.. member_id references member.id;
+.. member_account_id references account.id;
+.. parent_account_id references account.id;
+.. asset_id references assets.id;
+.. asset_account_id references account.id;
+.. asset_connection_id references connection.id;
+.. asset_application_id references applications.id;
+.. access_application_id references applications.id;
+.. role_id references authz_role.id;
+
+Table: account_ownership, Model: AccountOwnership
+Fields:
+> id: String, primary key, default: uuid();
+> parent_id: String;
+> children_id: String;
+> type: String;
+> created_at: DateTime, default: now();
+.. parent_id references account.id;
+.. children_id references account.id;
+
+Table: connection, Model: Connection
+Fields:
+> id: String, primary key, default: uuid();
+> account_id: String;
+> app_id: String;
+> role_id: String, nullable;
+> status: String, default: active;
+> connected_at: DateTime, default: now();
+> details: Json, nullable;
+.. account_id references account.id;
+.. app_id references applications.id;
+.. role_id references authz_role.id;
+
+Table: application_bridge, Model: ApplicationBridge
+Fields:
+> id: String, primary key, default: uuid();
+> app_id: String;
+> type: String;
+> value: String;
+> details: Json, nullable;
+> created_at: DateTime, default: now();
+.. app_id references applications.id;
+
+Table: application_policies, Model: ApplicationPolicy
+Fields:
+> id: String, primary key, default: uuid();
+> app_id: String;
+> policy_type: String;
+> policy_value: Json;
+> created_at: DateTime, default: now();
+.. app_id references applications.id;
+
+Table: role, Model: Role
+Fields:
+> id: String, primary key, default: uuid();
+> member_id: String;
+> account_id: String, nullable;
+> connection_id: String, nullable;
+> asset_id: String, nullable;
+> asset_type: String, nullable;
+> asset_id_denorm: String, nullable;
+> role_id: String;
+> role_name: String, nullable;
+> permissions: Json, nullable;
+> status: String, default: active;
+> details: Json, nullable;
+.. member_id references member.id;
+.. account_id references account.id;
+.. connection_id references connection.id;
+.. asset_id references assets.id;
+.. role_id references authz_role.id;
+
+Table: authz_permission, Model: AuthzPermission
+Fields:
+> id: String, primary key, default: uuid();
+> name: String;
+> description: String, nullable;
+> app_id: String, nullable;
+> scope_for: Json, nullable, default: [];
+> scope_level: Json, nullable, default: [];
+> approval_policy: String, nullable, default: none;
+> rules: String, nullable;
+> status: String, nullable;
+> tag: Json, nullable;
+.. app_id references applications.id;
+
+Table: authz_role, Model: AuthzRole
+Fields:
+> id: String, primary key, default: uuid();
+> name: String;
+> description: String, nullable;
+> app_id: String, nullable;
+> scope_for: Json, default: [];
+> scope_level: String, default: assignable.byTeam;
+> acquisition_type: String, default: assignment;
+> approval_policy: String, default: none;
+> pushed: Boolean, default: false;
+> applicable_for: Json, default: [];
+> permissions: Json, nullable;
+.. app_id references applications.id;
+
+Table: authz_role_permission_map, Model: AuthzRolePermissionMap
+Fields:
+> id: String, primary key, default: uuid();
+> role_id: String;
+> permission_id: String;
+> scope_for: String;
+> scope_level: String;
+> created_at: DateTime, default: now();
+.. role_id references authz_role.id;
+.. permission_id references authz_permission.id;
+
+Table: authz_assets_access_grant, Model: AuthzAssetsAccessGrant
+Fields:
+> id: String, primary key, default: uuid();
+> asset_id: String;
+> account_id: String;
+> role_id: String;
+> app_id: String;
+> asset_type: String, nullable;
+.. asset_id references assets.id;
+.. account_id references account.id;
+.. role_id references authz_role.id;
+
+Table: permit, Model: Permit
+Fields:
+> id: String, primary key, default: uuid();
+> account_id: String;
+> target_account_id: String;
+> for_self: Boolean, default: false;
+> is_root: Boolean, default: false;
+> permissions: String[], default: [];
+> restrictions: String[], default: [];
+> created_at: DateTime, default: now();
+> updated_at: DateTime, auto-updated;
+.. account_id references account.id;
+.. target_account_id references account.id;
+
+Table: identity, Model: Identity
+Fields:
+> id: String, primary key, default: cuid();
+> track_id: String;
+> app_id: String;
+> originated_on: DateTime, default: now();
+> refreshes_on: DateTime;
+> valid_till: DateTime;
+> details: Json, default: [];
+.. app_id references applications.id;
+
+Enum: AuthzGrantStatus
+> active; invited; on_hold; expired;
+
+Enum: AssetType
+> acc_in_acc; app_in_acc; conn_in_acc;
+
+Enum: AccessType
+> acc_self; acc_self.root; acc_in_acc; app_in_acc; conn_in_acc;
+
+Enum: MemberAccessFor
+> account; application; connection;
+
+Enum: MemberStatus
+> active; paused; removed;

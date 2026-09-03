@@ -1,6 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import Image from 'next/image';
-import { BackButton } from '@/components/ui/back-button';
+import { BackButton } from '#/components/element/backButton';
 import { Card, CardContent } from '#/components/ui/card';
 import { Badge } from '#/components/ui/badge';
 import { Button } from '#/components/ui/button';
@@ -409,7 +409,7 @@ async function MemberDirectRolesView({ memberAccountId }: { memberAccountId: str
               confirmDescription={`This will cancel the pending access invitation sent to ${detail.displayName}. They will no longer be able to accept it.`}
               action={cancelDirectInvitation.bind(null, memberAccountId)}
               redirectTo="/access/team"
-              type="outlined"
+              variant="outline"
             />
           ) : (
             <RemoveMemberButton
@@ -536,7 +536,7 @@ async function MemberPortfolioRolesView({
             }
             action={cancelPortfolioInvitation.bind(null, parentPortfolioId, memberAccountId)}
             redirectTo={`/access/assign?account=${memberAccountId}&portfolio=${parentPortfolioId}`}
-            type="outlined"
+            variant="outline"
           />
           {/* Re-invite if expired */}
           {isExpired && (

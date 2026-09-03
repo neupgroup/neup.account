@@ -2,7 +2,7 @@ import React from "react";
 import { notFound } from "next/navigation";
 import { Card, CardContent } from "#/components/ui/card";
 import { ListItem } from "@/components/ui/ListItem";
-import { PrimaryHeader } from "@/components/ui/primary-header";
+import { TitleSet } from '#/components/element/titleset';
 import { UserCircle, FileText, HeartHandshake, AtSign, Contact, ShieldCheck } from "@/components/icons";
 import { checkGrantedPermissions, checkPermissions, getUserProfile } from "@/services/user";
 import { logSystemError } from "@/.neup/logica/logger/files";
@@ -195,9 +195,9 @@ export default async function ProfilePage({ searchParams }: PageProps) {
 
     return (
         <div className="grid gap-8">
-            <PrimaryHeader
+            <TitleSet level={1}
                 title="Profile"
-                description={
+                subtitle={
                     accountProfile.accountType === 'brand'
                         ? "Manage the selected account's profile details, contact info, and verification."
                         : "Manage your personal details, contact info, and identity verification."

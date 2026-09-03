@@ -3,8 +3,8 @@ import { permission } from '@/.neup/logica/permission';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "#/components/ui/card";
 import { getRecoveryAccounts } from "@/services/security/account";
 import { RecoveryAccountManager } from "./recovery-account-manager";
-import { BackButton } from "@/components/ui/back-button";
-import { SecondaryHeader } from "@/components/ui/secondary-header";
+import { BackButton } from "#/components/element/backButton";
+import { TitleSet } from '#/components/element/titleset';
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
 import { SECURITY_PERMISSION_GROUPS } from '@/inapp/permissions/security-permissions';
 
@@ -29,9 +29,9 @@ export default async function RecoveryAccountPage() {
             </div>
             
             <div className="space-y-2">
-                <SecondaryHeader
+                <TitleSet level={1}
                     title="Manage Recovery Accounts"
-                    description="You can add up to 5 trusted accounts. These people can help you get back into your account if you forget your password or it's compromised."
+                    subtitle="You can add up to 5 trusted accounts. These people can help you get back into your account if you forget your password or it's compromised."
                 />
                 <Card>
                     <CardContent className="p-6">

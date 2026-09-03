@@ -24,9 +24,9 @@ import {
     type AccountSortKey,
 } from '@/services/manage/accounts';
 import { Skeleton } from '#/components/ui/skeleton';
-import { BackButton } from '@/components/ui/back-button';
+import { BackButton } from '#/components/element/backButton';
 import { Alert, AlertDescription, AlertTitle } from "#/components/ui/alert";
-import { PrimaryHeader } from "@/components/ui/primary-header";
+import { TitleSet } from '#/components/element/titleset';
 import { FlowLink } from '@/components/flow-link';
 import { useSearchParams } from 'next/navigation';
 
@@ -215,7 +215,7 @@ function AccountsPageInner() {
     if (permissionDenied) {
         return (
             <div className="grid gap-8">
-                <PrimaryHeader title="Accounts" description="View and manage all accounts in the system." />
+                <TitleSet level={1} title="Accounts" subtitle="View and manage all accounts in the system." />
                 <Alert variant="destructive">
                     <Ban className="h-4 w-4" />
                     <AlertTitle>Permission Denied</AlertTitle>
@@ -309,7 +309,7 @@ function AccountsPageInner() {
                     </span>
                     <div className="flex items-center gap-1">
                         <Button
-                            type="outlined"
+                            variant="outlined"
                             size="icon"
                             className="h-8 w-8"
                             disabled={page <= 1 || loading}
@@ -336,7 +336,7 @@ function AccountsPageInner() {
                                 ) : (
                                     <Button
                                         key={item}
-            type={item === page ? 'solid' : 'outlined'}
+            variant={item === page ? 'solid' : 'outlined'}
                                         size="icon"
                                         className="h-8 w-8 text-xs"
                                         disabled={loading}
@@ -348,7 +348,7 @@ function AccountsPageInner() {
                             )}
 
                         <Button
-                            type="outlined"
+                            variant="outlined"
                             size="icon"
                             className="h-8 w-8"
                             disabled={page >= totalPages || loading}

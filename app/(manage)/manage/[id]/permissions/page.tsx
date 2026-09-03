@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { getUserDetails, getAccountRoles, getAvailableRoles } from "@/services/manage/users";
-import { BackButton } from "@/components/ui/back-button";
+import { BackButton } from "#/components/element/backButton";
 import { RoleEditor } from "./form";
-import { PrimaryHeader } from "@/components/ui/primary-header";
+import { TitleSet } from '#/components/element/titleset';
 
 export default async function UserPermissionsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -19,9 +19,9 @@ export default async function UserPermissionsPage({ params }: { params: Promise<
     return (
         <div className="grid gap-8">
             <BackButton href={`/manage/${id}`} />
-            <PrimaryHeader
+            <TitleSet level={1}
                 title="Manage Roles"
-                description={`Assign roles to @${userDetails.neupId}. Roles determine what the account can access.`}
+                subtitle={`Assign roles to @${userDetails.neupId}. Roles determine what the account can access.`}
             />
             <RoleEditor
                 accountId={id}

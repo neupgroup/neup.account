@@ -85,7 +85,7 @@ export function RoleCreateForm({ appId, applicableForOptions }: Props) {
       />
 
       <div className="flex justify-end gap-2">
-        <Button type="outlined" onClick={() => redirectInApp(router, applicationHref('/application/roles', appId, { mode: 'root' }))}>
+        <Button variant="outlined" onClick={() => redirectInApp(router, applicationHref('/application/roles', appId, { mode: 'root' }))}>
           Cancel
         </Button>
         <Button onClick={handleSubmit} disabled={pending || !name.trim()}>

@@ -94,7 +94,7 @@ export function CleanupClient({ initialAccounts }: { initialAccounts: ExpiredGue
 
                 <div className="flex items-center gap-2">
                     <Button
-                        type="outlined"
+                        variant="outlined"
                         size="sm"
                         onClick={refresh}
                         disabled={isPending}
@@ -106,7 +106,7 @@ export function CleanupClient({ initialAccounts }: { initialAccounts: ExpiredGue
                     {accounts.length > 0 && (
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
-                                <Button type="solid" convey="danger" size="sm" disabled={isPending}>
+                                <Button variant="solid" convey="danger" size="sm" disabled={isPending}>
                                     <Trash2 className="h-3.5 w-3.5 mr-1.5" />
                                     Delete All ({accounts.length})
                                 </Button>
@@ -191,7 +191,7 @@ export function CleanupClient({ initialAccounts }: { initialAccounts: ExpiredGue
                                     <AlertDialog>
                                         <AlertDialogTrigger asChild>
                                             <Button
-                                                type="plain"
+                                                variant="plain"
                                                 size="icon"
                                                 className="h-8 w-8 text-muted-foreground hover:text-destructive"
                                                 disabled={isPending}

@@ -25,7 +25,7 @@ export function RevokeAppAccessButton({
   return (
     <Button
       htmlType="button"
-      type="plain"
+      variant="plain"
       size="icon"
       className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
       aria-label={`Revoke access for ${displayName}`}

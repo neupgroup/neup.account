@@ -132,7 +132,7 @@ export function ManagedAccountAccessForm({
             <Button
               htmlType="button"
               size="icon"
-              type="plain"
+              variant="plain"
               onClick={handleLookup}
               disabled={!canEdit || isLookingUp || isSaving || !lookupValue.trim()}
               className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 text-muted-foreground hover:bg-accent"

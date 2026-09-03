@@ -23,7 +23,6 @@ export async function issueBridgeSigninRequest() {
     expiresOn: new Date(expiresOn * 1000).toISOString(),
     jwt: jwt.sign({ id, actBefore: expiresOn, expiresOn }, getSecret(), {
       algorithm: 'HS256',
-      expiresIn: AUTH_REQUEST_TTL_SECONDS,
     }),
   };
 }

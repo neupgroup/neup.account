@@ -8,14 +8,14 @@ export async function GET() {
     return NextResponse.json(await issueBridgeSigninRequest());
   } catch (error) {
     console.error('bridge signin request', error);
-    return NextResponse.json({ success: false, error: 'Unable to create auth request.' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'auth.signin.request.failed' }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
   const authorization = request.headers.get('authorization');
   const token = request.headers.get('x-auth-request') || (authorization?.match(/^Bearer\s+(.+)$/i)?.[1]);
-  if (!token) return NextResponse.json({ success: false, error: 'Auth request JWT is required.' }, { status: 401 });
+  if (!token) return NextResponse.json({ success: false, error: 'auth.signin.jwt.required' }, { status: 401 });
 
   const body = await request.text();
   let neupId = body.trim();

@@ -35,51 +35,52 @@ export async function resolveBridgeSignin(neupIdInput: string, token: string, pa
   try {
     payload = jwt.verify(token, getSecret(), { algorithms: ['HS256'] }) as jwt.JwtPayload;
   } catch {
-    return { status: 401, body: { success: false, error: 'Invalid or expired auth request.' } };
+    return { status: 401, body: { success: false, error: 'auth.signin.jwt.invalid' } };
   }
 
   if (typeof payload.id !== 'string' || typeof payload.expiresOn !== 'number' || payload.expiresOn <= Math.floor(Date.now() / 1000)) {
-    return { status: 401, body: { success: false, error: 'Invalid or expired auth request.' } };
+    return { status: 401, body: { success: false, error: 'auth.signin.jwt.expired' } };
   }
 
   const request = await getAuthRequest(payload.id, { expectedType: 'signin' });
-  if (!request) return { status: 401, body: { success: false, error: 'Invalid or expired auth request.' } };
+  if (!request) return { status: 401, body: { success: false, error: 'auth.signin.request.invalid' } };
 
   if (password !== undefined) {
     const requestData = request.data.data as { neupId?: unknown } | null;
     const neupId = typeof requestData?.neupId === 'string' ? requestData.neupId : neupIdInput.trim().toLowerCase();
-    if (!neupId) return { status: 400, body: { success: false, error: 'NeupID must be submitted first.' } };
+    if (!neupId) return { status: 400, body: { success: false, error: 'auth.signin.neupid.missing' } };
+    if (!password.trim()) return { status: 400, body: { success: false, error: 'auth.signin.password.empty' } };
     const result = await submitPasswordWithNeupId({ neupId, password, authRequestId: payload.id, deferCompletion: true });
-    return { status: result.success ? 200 : 401, body: result.success ? { success: true, continue: 'termsApproval' } : result };
+    return { status: result.success ? 200 : 401, body: result.success ? { success: true, continue: 'termsApproval' } : { success: false, error: 'auth.signin.password.invalid' } };
   }
 
   if (terms) {
     if (request.data.status !== 'pending_terms' || Object.keys(terms).length === 0) {
-      return { status: 400, body: { success: false, error: 'Terms approval is required.' } };
+      return { status: 400, body: { success: false, error: 'auth.signin.terms.empty' } };
     }
     const approved = (terms as Record<string, unknown>).approved === true || (terms as Record<string, unknown>).agreement === true;
-    if (!approved) return { status: 400, body: { success: false, error: 'Terms must be approved.' } };
-    if (!request.data.accountId) return { status: 401, body: { success: false, error: 'Invalid authentication request.' } };
+    if (!approved) return { status: 400, body: { success: false, error: 'auth.signin.terms.not_approved' } };
+    if (!request.data.accountId) return { status: 401, body: { success: false, error: 'auth.signin.request.invalid' } };
 
     const sessionResult = await makeSessionFromRequest({ accountId: request.data.accountId, loginType: 'Password' });
-    if (!sessionResult.success) return { status: 500, body: { success: false, error: sessionResult.error || 'Failed to create session.' } };
+    if (!sessionResult.success) return { status: 500, body: { success: false, error: 'auth.signin.session.failed' } };
     await prisma.authnRequest.update({ where: { id: request.id }, data: { data: { ...(request.data.data as object), terms } as any, status: 'completed' } });
     const authAccount = await cookieProvider.getCookie('auth_account');
     return { status: 200, body: { success: true, continue: 'saveTotp', auth_account: authAccount } };
   }
 
   const neupId = neupIdInput.trim().toLowerCase();
-  if (!neupId) return { status: 400, body: { success: false, error: 'NeupID is required.' } };
+  if (!neupId) return { status: 400, body: { success: false, error: 'auth.signin.neupid.empty' } };
   const validation = await validateNeupId(neupId);
   if (!validation.success && validation.error !== 'pending_deletion') {
-    return { status: 404, body: { success: false, error: 'NeupID not found.' } };
+    return { status: 404, body: { success: false, error: 'auth.signin.neupid.invalid' } };
   }
 
   const record = await prisma.neupId.findUnique({
     where: { id: neupId },
     select: { neupId: true, accountId: true, account: { select: { displayImage: true, displayName: true, brandProfile: { select: { brandName: true } }, individualProfile: { select: { firstName: true, lastName: true } } } } },
   });
-  if (!record?.accountId || !record.account) return { status: 404, body: { success: false, error: 'NeupID not found.' } };
+  if (!record?.accountId || !record.account) return { status: 404, body: { success: false, error: 'auth.signin.neupid.invalid' } };
 
   await submitNeupId({ neupId, authRequestId: payload.id });
 

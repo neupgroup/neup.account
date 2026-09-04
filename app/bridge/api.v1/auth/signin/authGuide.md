@@ -172,6 +172,34 @@ The response contains the newly signed token:
 }
 ```
 
+### When to refresh
+
+Refresh the account token when an authenticated request returns `401`, after a long idle period, or before the server-side session expires. Use the newly returned `token` for all subsequent requests and discard the old token.
+
+The signin JWT returned by `GET /signin` is a temporary flow token and is not refreshed. If it expires before sign-in is complete, start over with a new `GET` request.
+
+### Refresh failure
+
+If refresh returns `auth.signin.token.invalid` or `auth.signin.token.expired`, discard the token and start a new signin flow.
+
+### Token security
+
+Treat both tokens as secrets. Store them securely, never log them, and send them only over HTTPS.
+
+### Authenticated requests
+
+For `/auth/me` and `/notification/me`, send the final account token using:
+
+```http
+x-auth-account: YOUR_TOKEN
+```
+
+The notification endpoint also accepts:
+
+```http
+Authorization: Bearer YOUR_TOKEN
+```
+
 ## Alternative JWT header
 
 Instead of `Authorization`, clients may send:

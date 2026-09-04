@@ -6,8 +6,28 @@ import { submitNeupId, submitPasswordWithNeupId } from './signin';
 import { makeSessionFromRequest } from '@/services/account/makeSession';
 import { cookieProvider } from '#/core/providers/cookies';
 import jwt from 'jsonwebtoken';
+import { getActiveSession } from '@/services/account/verify';
+import { signAccountToken, verifyAccountToken } from './account-token';
 
 const AUTH_REQUEST_TTL_SECONDS = 20 * 60;
+
+export async function refreshBridgeAccountToken(token: string) {
+  const payload = await verifyAccountToken(token);
+  if (!payload) return { status: 401, body: { success: false, error: 'auth.signin.token.invalid' } };
+
+  const session = await getActiveSession({ authAccountToken: token });
+  if (!session) return { status: 401, body: { success: false, error: 'auth.signin.token.expired' } };
+
+  const refreshedToken = await signAccountToken({
+    aid: session.accountId,
+    sid: session.sessionId,
+    skey: session.sessionKey,
+    ...(payload.nid ? { nid: payload.nid } : {}),
+    ...(payload.guest ? { guest: 1 as const } : {}),
+  });
+
+  return { status: 200, body: { success: true, token: refreshedToken } };
+}
 
 function getSecret() {
   const secret = process.env.AUTH_REQUEST_JWT_SECRET || process.env.AUTH_SECRET || process.env.JWT_SECRET;

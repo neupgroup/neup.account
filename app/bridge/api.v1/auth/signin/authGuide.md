@@ -154,6 +154,24 @@ The JWT contains `id`, `actBefore`, `expiresOn`, and `iat`. The `expiresOn` valu
 
 Authentication requests are single-use and expire after the configured timeout. A completed or expired request cannot be reused.
 
+## Refresh the account token
+
+After receiving the final account token, send an empty POST request with the token in `x-auth-account`:
+
+```http
+POST /bridge/api.v1/auth/signin
+x-auth-account: YOUR_TOKEN
+```
+
+The response contains the newly signed token:
+
+```json
+{
+  "success": true,
+  "token": "..."
+}
+```
+
 ## Alternative JWT header
 
 Instead of `Authorization`, clients may send:

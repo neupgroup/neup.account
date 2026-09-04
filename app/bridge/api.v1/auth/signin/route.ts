@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { issueBridgeSigninRequest, resolveBridgeSignin } from '@/services/auth/bridge-signin';
+import { issueBridgeSigninRequest, refreshBridgeAccountToken, resolveBridgeSignin } from '@/services/auth/bridge-signin';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,10 +14,15 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   const authorization = request.headers.get('authorization');
-  const token = request.headers.get('x-auth-request') || (authorization?.match(/^Bearer\s+(.+)$/i)?.[1]);
+  const accountToken = request.headers.get('x-auth-account');
+  const token = request.headers.get('x-auth-request') || accountToken || (authorization?.match(/^Bearer\s+(.+)$/i)?.[1]);
   if (!token) return NextResponse.json({ success: false, error: 'auth.signin.jwt.required' }, { status: 401 });
 
   const body = await request.text();
+  if (!body.trim() && accountToken) {
+    const result = await refreshBridgeAccountToken(accountToken);
+    return NextResponse.json(result.body, { status: result.status });
+  }
   let neupId = body.trim();
   let parsedPassword: string | undefined;
   let parsedApprove: boolean | undefined;

@@ -1,3 +1,4 @@
+import { SharedPermissionNotice } from '@/app/(manage)/application/_components/shared-permission-notice';
 import { notFound } from 'next/navigation';
 import {
   canCurrentAccountManageApplicationRoles,
@@ -45,6 +46,10 @@ export async function AddRolePage({ applicationId, mode }: { applicationId: stri
         </Alert>
       </div>
     );
+  }
+
+  if (details.usePermissionFrom) {
+    return <SharedPermissionNotice appId={applicationId} sourceId={details.usePermissionFrom} mode={mode} />;
   }
 
   const authzConfig = await getApplicationAuthzConfig(applicationId);

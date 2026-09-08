@@ -1,5 +1,6 @@
 'use server';
 
+import { getLocalAuthzManagementError } from '@/services/applications/permission-source';
 import { revalidatePath } from 'next/cache';
 import prisma from '@/.neup/core/database/prisma';
 import { getActiveAccountId } from '@/services/account/verify';
@@ -45,6 +46,8 @@ export async function saveAuthzWebhookUrl(input: {
 
   const canManageRoles = await canCurrentAccountManageApplicationRoles(input.appId);
   if (!canManageRoles) return { success: false, error: 'Permission denied.' };
+  const managementError = await getLocalAuthzManagementError(input.appId);
+  if (managementError) return { success: false, error: managementError };
 
   const url = input.url.trim();
 

@@ -19,3 +19,15 @@ export async function resolvePermissionSourceId(
     current = app.usePermissionFrom;
   }
 }
+
+/** Definition management is unavailable on applications using shared permissions. */
+export async function getLocalAuthzManagementError(
+  appId: string,
+  db: Pick<typeof prisma, 'application'> = prisma,
+): Promise<string | null> {
+  const app = await db.application.findUnique({ where: { id: appId }, select: { usePermissionFrom: true } });
+  if (!app) return 'Application not found.';
+  return app.usePermissionFrom
+    ? `This application's permissions are managed from application ${app.usePermissionFrom}. Manage roles and permissions there.`
+    : null;
+}

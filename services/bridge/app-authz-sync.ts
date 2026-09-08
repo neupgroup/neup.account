@@ -1,4 +1,4 @@
-import { resolvePermissionSourceId } from '@/services/applications/permission-source';
+import { resolvePermissionSourceId, getLocalAuthzManagementError } from '@/services/applications/permission-source';
 import prisma from '@/.neup/core/database/prisma';
 import { logError } from '@/.neup/logica/logger/files';
 import { Prisma } from '@/.neup/core/database/prisma';
@@ -311,8 +311,9 @@ export async function postSyncedAppPermissions(credentials: AppCredentials, inpu
   const auth = await validateApplicationCredentials(credentials);
   if (auth.status !== 200) return auth;
 
-  if (await resolvePermissionSourceId(auth.app.id) !== auth.app.id) {
-    return { status: 403, body: { success: false, error: 'shared_permissions_read_only', error_description: 'Edit permissions in the source application.' } };
+  const managementError = await getLocalAuthzManagementError(auth.app.id);
+  if (managementError) {
+    return { status: 403, body: { success: false, error: 'shared_permissions_read_only', error_description: managementError } };
   }
 
   const permissionsInput = Array.isArray(input)
@@ -447,6 +448,10 @@ export async function postSyncedAppRoles(credentials: AppCredentials, input: unk
 > {
   const auth = await validateApplicationCredentials(credentials);
   if (auth.status !== 200) return auth;
+  const managementError = await getLocalAuthzManagementError(auth.app.id);
+  if (managementError) {
+    return { status: 403, body: { success: false, error: 'shared_permissions_read_only', error_description: managementError } };
+  }
 
   const rolesInput = Array.isArray(input)
     ? input

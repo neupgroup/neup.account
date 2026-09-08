@@ -1,3 +1,4 @@
+import { SharedPermissionNotice } from '@/app/(manage)/application/_components/shared-permission-notice';
 /*
 ::neup.documentation::application-role-details-page
 
@@ -80,6 +81,10 @@ export async function RoleDetailsPage({
         </Alert>
       </div>
     );
+  }
+
+  if (details.usePermissionFrom) {
+    return <SharedPermissionNotice appId={applicationId} sourceId={details.usePermissionFrom} mode={mode} />;
   }
 
   const [roles, permissions, defaultRoleId, authzConfig] = await Promise.all([

@@ -1,3 +1,4 @@
+import { SharedPermissionNotice } from '@/app/(manage)/application/_components/shared-permission-notice';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import {
@@ -109,6 +110,10 @@ export async function ApplicationPermissionsPage({
         </Alert>
       </div>
     );
+  }
+
+  if (details.usePermissionFrom) {
+    return <SharedPermissionNotice appId={applicationId} sourceId={details.usePermissionFrom} mode={mode} />;
   }
 
   const permissions = await getAppPermissions(applicationId);

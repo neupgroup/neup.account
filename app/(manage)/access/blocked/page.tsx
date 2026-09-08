@@ -146,7 +146,7 @@ function UserListManager({
 
   return (
     <div className="space-y-2">
-        <TitleSet level={1} title={title} subtitle={description} />
+        <TitleSet level={2} title={title} subtitle={description} titleClassName="text-lg leading-7" subtitleClassName="text-sm leading-6" />
         <Card>
             <CardContent className="p-0">
                 {loading ? (
@@ -191,8 +191,8 @@ export default function BlockedUsersPage() {
     <div className="grid gap-8">
       <BackButton href="/access" />
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Blocked & Restricted Users</h1>
-        <p className="text-muted-foreground">Manage users you have blocked or muted.</p>
+        <h1 className="font-bold tracking-tight text-2xl leading-8">Blocked & Restricted Users</h1>
+        <p className="text-muted-foreground text-sm leading-6">Manage users you have blocked or muted.</p>
       </div>
 
        <div className="space-y-8">

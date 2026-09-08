@@ -1,6 +1,7 @@
 import { forbidden, notFound } from 'next/navigation';
 import {
   canCurrentAccountUseRootApplicationMode,
+  canCurrentAccountManageApplicationRoles,
   canCurrentAccountUpdateApplicationConfig,
   canCurrentAccountViewApplicationConfig,
   getApplicationDetailsForViewerV2,
@@ -12,6 +13,8 @@ import { TitleSet } from '#/components/element/titleset';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { AppConfigForm } from '@/app/(manage)/application/_components/app-config-form';
+import { PermissionSourceForm } from '@/app/(manage)/application/_components/permission-source-form';
+import { getAppPermissionSourceSettings } from '@/services/applications/authz-manage';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 
 type Props = {
@@ -48,7 +51,7 @@ export async function ApplicationConfigPage({ applicationId, mode }: { applicati
       <div className="grid gap-8">
         <div className="space-y-4">
           <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
-          <TitleSet level={1} title="Configuration" subtitle="API and access configuration." />
+          <TitleSet level={1} title="Configuration" subtitle="API and access configuration." titleClassName="text-2xl leading-8" subtitleClassName="text-sm leading-6" />
         </div>
         <Alert variant="destructive">
           <ShieldAlert className="h-4 w-4" />
@@ -59,7 +62,11 @@ export async function ApplicationConfigPage({ applicationId, mode }: { applicati
     );
   }
 
-  const config = await getAppConfigData(applicationId, { rootMode });
+  const [config, permissionSource, canManagePermissions] = await Promise.all([
+    getAppConfigData(applicationId, { rootMode }),
+    getAppPermissionSourceSettings(applicationId),
+    canCurrentAccountManageApplicationRoles(applicationId, { rootMode }),
+  ]);
   if (!config) notFound();
 
   return (
@@ -68,9 +75,22 @@ export async function ApplicationConfigPage({ applicationId, mode }: { applicati
         <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
         <TitleSet level={1}
           title="Configuration"
-          subtitle={`API secret, response fields, token fields, SSO origins, and server IPs for ${details.name}.`}
+          subtitle={`Permission source, API secret, response fields, token fields, SSO origins, and server IPs for ${details.name}.`}
+          titleClassName="text-2xl leading-8"
+          subtitleClassName="text-sm leading-6"
         />
       </div>
+
+      {permissionSource && (
+        <PermissionSourceForm
+          key={permissionSource.usePermissionFrom ?? 'own'}
+          appId={applicationId}
+          sourceId={permissionSource.usePermissionFrom}
+          sourceName={permissionSource.permissionSource?.name}
+          applications={permissionSource.applications}
+          canManage={canManagePermissions}
+        />
+      )}
 
       <AppConfigForm
         appId={applicationId}

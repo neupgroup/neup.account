@@ -99,8 +99,8 @@ export default async function ApplicationsManagePage({ searchParams }: Props) {
   return (
     <div className="grid gap-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Applications</h1>
-        <p className="text-muted-foreground">
+        <h1 className="font-bold tracking-tight text-2xl leading-8">Applications</h1>
+        <p className="text-muted-foreground text-sm leading-6">
           Manage and administer applications.
         </p>
       </div>

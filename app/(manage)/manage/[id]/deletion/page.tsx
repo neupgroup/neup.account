@@ -18,6 +18,8 @@ export default async function UserDeletionPage({ params }: { params: Promise<{ i
                 <TitleSet level={1}
                     title="Account Deletion"
                     subtitle={`Manage the deletion process for @${userDetails.neupId}.`}
+                    titleClassName="text-2xl leading-8"
+                    subtitleClassName="text-sm leading-6"
                 />
             </div>
             

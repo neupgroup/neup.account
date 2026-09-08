@@ -71,7 +71,7 @@ export async function ManageStatsCard() {
         <div className="space-y-2">
             <TitleSet level={1}
                 title="System Overview"
-                subtitle="A snapshot of accounts and permissions across the platform."
+                subtitle="A snapshot of accounts and permissions across the platform." titleClassName="text-2xl leading-8" subtitleClassName="text-sm leading-6"
             />
             <Card>
                 <CardContent className="grid p-0 md:grid-cols-2 lg:grid-cols-4 divide-y md:divide-y-0 md:divide-x">

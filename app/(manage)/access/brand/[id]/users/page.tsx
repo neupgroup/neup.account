@@ -6,8 +6,8 @@ export default function BrandUsersPage() {
         <div className="grid gap-8">
             <Card>
                 <CardHeader>
-                    <CardTitle>Users & Permissions</CardTitle>
-                    <CardDescription>
+                    <CardTitle className="text-lg leading-7">Users & Permissions</CardTitle>
+                    <CardDescription className="text-sm leading-6">
                         Manage users who have access to this brand and their permissions.
                     </CardDescription>
                 </CardHeader>

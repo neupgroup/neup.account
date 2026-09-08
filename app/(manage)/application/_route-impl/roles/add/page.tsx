@@ -36,7 +36,7 @@ export async function AddRolePage({ applicationId, mode }: { applicationId: stri
       <div className="grid gap-8">
         <div className="space-y-4">
           <BackButton href={applicationHref('/application/roles', applicationId, mode ? { mode } : undefined)} />
-          <TitleSet level={1} title="Add Role" subtitle={`Create a role for ${details.name}.`} />
+          <TitleSet level={1} title="Add Role" subtitle={`Create a role for ${details.name}.`} titleClassName="text-2xl leading-8" subtitleClassName="text-sm leading-6" />
         </div>
         <Alert variant="destructive">
           <ShieldAlert className="h-4 w-4" />
@@ -53,7 +53,7 @@ export async function AddRolePage({ applicationId, mode }: { applicationId: stri
     <div className="grid gap-8">
       <div className="space-y-4">
         <BackButton href={applicationHref('/application/roles', applicationId, mode ? { mode } : undefined)} />
-        <TitleSet level={1} title="Add Role" subtitle={`Create a role for ${details.name}. Permissions are mapped after the role is created.`} />
+        <TitleSet level={1} title="Add Role" subtitle={`Create a role for ${details.name}. Permissions are mapped after the role is created.`} titleClassName="text-2xl leading-8" subtitleClassName="text-sm leading-6" />
       </div>
       <RoleCreateForm
         appId={applicationId}

@@ -11,8 +11,8 @@ export async function SecurityCard() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Security & Sessions</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-lg leading-7">Security & Sessions</CardTitle>
+                <CardDescription className="text-sm leading-6">
                     {sessions.length} active device{sessions.length === 1 ? '' : 's'}. Trust only the devices you recognize.
                 </CardDescription>
             </CardHeader>

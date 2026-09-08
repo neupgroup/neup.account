@@ -71,7 +71,7 @@ export async function RoleDetailsPage({
       <div className="grid gap-8">
         <div className="space-y-4">
           <BackButton href={applicationHref('/application/roles', applicationId, mode ? { mode } : undefined)} />
-          <TitleSet level={1} title="Role Details" subtitle={`Manage role permissions for ${details.name}.`} />
+          <TitleSet level={1} title="Role Details" subtitle={`Manage role permissions for ${details.name}.`} titleClassName="text-2xl leading-8" subtitleClassName="text-sm leading-6" />
         </div>
         <Alert variant="destructive">
           <ShieldAlert className="h-4 w-4" />
@@ -102,7 +102,7 @@ export async function RoleDetailsPage({
       <div className="space-y-4">
         <BackButton href={applicationHref('/application/roles', applicationId, mode ? { mode } : undefined)} />
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="font-bold tracking-tight text-2xl leading-8">
             {isEditingInfo ? `Edit Role Info: ${role.name}` : `Role: ${role.name}`}{' '}
             <FlowLink
               href={roleUsersHref}
@@ -111,7 +111,7 @@ export async function RoleDetailsPage({
               {roleAccountLabel}
             </FlowLink>
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-muted-foreground mt-1 text-sm leading-6">
             {isEditingInfo ? 'Update this role metadata only.' : (role.description || 'No description')}
           </p>
         </div>

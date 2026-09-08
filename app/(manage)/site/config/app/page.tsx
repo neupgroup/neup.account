@@ -21,8 +21,8 @@ export default async function SiteConfigAppPage() {
     <div className="grid gap-8">
       <BackButton href="/site/config" />
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">App Settings</h1>
-        <p className="text-muted-foreground">
+        <h1 className="font-bold tracking-tight text-2xl leading-8">App Settings</h1>
+        <p className="text-muted-foreground text-sm leading-6">
           Update the site logo used in the header and other application surfaces.
         </p>
       </div>

@@ -73,8 +73,8 @@ export function AppMetaForm({ appId, initialName, initialDescription, initialIco
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardHeader>
-            <CardTitle>General Information</CardTitle>
-            <CardDescription>Update the public-facing details of your application.</CardDescription>
+            <CardTitle className="text-lg leading-7">General Information</CardTitle>
+            <CardDescription className="text-sm leading-6">Update the public-facing details of your application.</CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-4">

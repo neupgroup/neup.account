@@ -46,8 +46,8 @@ export function PaymentSettingsForm({ initialSettings }: PaymentSettingsFormProp
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Website Payment Configuration</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-lg leading-7">Website Payment Configuration</CardTitle>
+        <CardDescription className="text-sm leading-6">
           Configure payment destination details and instructions for users.
         </CardDescription>
       </CardHeader>

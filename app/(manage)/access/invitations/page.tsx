@@ -134,8 +134,8 @@ export default function InvitationsPage() {
         <div className="grid gap-8">
             <BackButton href="/access" />
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Invitations</h1>
-                <p className="text-muted-foreground">
+                <h1 className="font-bold tracking-tight text-2xl leading-8">Invitations</h1>
+                <p className="text-muted-foreground text-sm leading-6">
                     Accept or reject requests from other users.
                 </p>
             </div>
@@ -157,8 +157,8 @@ export default function InvitationsPage() {
                 ) : (
                     <Card>
                         <CardContent className="p-8 text-center text-muted-foreground">
-                            <h3 className="text-lg font-semibold">No pending invitations</h3>
-                            <p>You're all caught up!</p>
+                            <h3 className="font-semibold text-lg leading-7">No pending invitations</h3>
+                            <p className="text-sm leading-6">You're all caught up!</p>
                         </CardContent>
                     </Card>
                 )}

@@ -189,8 +189,8 @@ export function RoleDetailEditor({
     return (
       <div className="grid gap-3 rounded-2xl border bg-card p-5">
         <div>
-          <p className="text-sm font-medium">Role details</p>
-          <p className="text-xs text-muted-foreground">
+          <h2 className="text-lg font-semibold leading-7">Role details</h2>
+          <p className="text-sm leading-6 text-muted-foreground">
             Role title is fixed after creation. Description, scope policy, and applicable targets can be updated here.
           </p>
         </div>
@@ -314,8 +314,8 @@ export function RoleDetailEditor({
 
       <div className="grid gap-3 rounded-2xl border bg-card p-5">
         <div>
-          <p className="text-sm font-medium">Default role</p>
-          <p className="text-xs text-muted-foreground">
+          <h2 className="text-lg font-semibold leading-7">Default role</h2>
+          <p className="text-sm leading-6 text-muted-foreground">
             {isDefaultRole
               ? 'New application connections are created with this role.'
               : 'Make this the role used when new application connections are created.'}
@@ -335,8 +335,8 @@ export function RoleDetailEditor({
 
       <div className="grid gap-3 rounded-2xl border border-destructive/30 bg-card p-5">
         <div>
-          <p className="text-sm font-medium text-destructive">Delete role</p>
-          <p className="text-xs text-muted-foreground">
+          <h2 className="text-lg font-semibold leading-7 text-destructive">Delete role</h2>
+          <p className="text-sm leading-6 text-muted-foreground">
             Remove this role from the application. This action cannot be undone.
           </p>
         </div>

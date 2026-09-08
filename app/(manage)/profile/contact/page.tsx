@@ -130,8 +130,8 @@ export default function ContactPage() {
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Contact Information</CardTitle>
-                            <CardDescription>Manage your phone numbers and locations.</CardDescription>
+                            <CardTitle className="text-lg leading-7">Contact Information</CardTitle>
+                            <CardDescription className="text-sm leading-6">Manage your phone numbers and locations.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="space-y-2">

@@ -32,7 +32,7 @@ export async function ApplicationEditPage({ applicationId, mode }: { application
       <div className="grid gap-8">
         <div className="space-y-4">
           <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
-          <TitleSet level={1} title="Basic Information" subtitle="Application details." />
+          <TitleSet level={1} title="Basic Information" subtitle="Application details." titleClassName="text-2xl leading-8" subtitleClassName="text-sm leading-6" />
         </div>
         <Alert variant="destructive">
           <ShieldAlert className="h-4 w-4" />
@@ -50,6 +50,8 @@ export async function ApplicationEditPage({ applicationId, mode }: { application
         <TitleSet level={1}
           title="Basic Information"
           subtitle={`Update the details for ${details.name}.`}
+          titleClassName="text-2xl leading-8"
+          subtitleClassName="text-sm leading-6"
         />
       </div>
 

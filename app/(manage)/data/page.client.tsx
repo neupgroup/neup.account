@@ -98,8 +98,8 @@ export default async function DataAndPrivacyPage() {
     return (
         <div className="grid gap-8">
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Your Data</h1>
-                <p className="text-muted-foreground">
+                <h1 className="font-bold tracking-tight text-2xl leading-8">Your Data</h1>
+                <p className="text-muted-foreground text-sm leading-6">
                     Manage and understand how your data is used across Neup services.
                 </p>
             </div>
@@ -116,9 +116,11 @@ export default async function DataAndPrivacyPage() {
 
             {firstParty.length > 0 && (
                 <div className="space-y-2">
-                    <TitleSet level={1}
+                    <TitleSet level={2}
                         title="Data within Neup Group"
                         subtitle="Your data is shared across Neup Group services to provide a seamless experience. Review each service to understand how your data is used."
+                        titleClassName="text-lg leading-7"
+                        subtitleClassName="text-sm leading-6"
                     />
                     <Card>
                         <CardContent className="divide-y p-2">
@@ -138,9 +140,11 @@ export default async function DataAndPrivacyPage() {
 
             {thirdParty.length > 0 && (
                 <div className="space-y-2">
-                    <TitleSet level={1}
+                    <TitleSet level={2}
                         title="Third-party Access"
                         subtitle="Control how your data is accessed by other applications and services."
+                        titleClassName="text-lg leading-7"
+                        subtitleClassName="text-sm leading-6"
                     />
                     <Card>
                         <CardContent className="divide-y p-2">

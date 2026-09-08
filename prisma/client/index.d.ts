@@ -4073,6 +4073,7 @@ export namespace Prisma {
    */
 
   export type AccountCountOutputType = {
+    developedApplications: number
     connections: number
     authMethods: number
     sessions: number
@@ -4106,6 +4107,7 @@ export namespace Prisma {
   }
 
   export type AccountCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    developedApplications?: boolean | AccountCountOutputTypeCountDevelopedApplicationsArgs
     connections?: boolean | AccountCountOutputTypeCountConnectionsArgs
     authMethods?: boolean | AccountCountOutputTypeCountAuthMethodsArgs
     sessions?: boolean | AccountCountOutputTypeCountSessionsArgs
@@ -4147,6 +4149,13 @@ export namespace Prisma {
      * Select specific fields to fetch from the AccountCountOutputType
      */
     select?: AccountCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * AccountCountOutputType without action
+   */
+  export type AccountCountOutputTypeCountDevelopedApplicationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ApplicationWhereInput
   }
 
   /**
@@ -4427,6 +4436,7 @@ export namespace Prisma {
    */
 
   export type ApplicationCountOutputType = {
+    permissionConsumers: number
     connections: number
     bridge: number
     policies: number
@@ -4441,6 +4451,7 @@ export namespace Prisma {
   }
 
   export type ApplicationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    permissionConsumers?: boolean | ApplicationCountOutputTypeCountPermissionConsumersArgs
     connections?: boolean | ApplicationCountOutputTypeCountConnectionsArgs
     bridge?: boolean | ApplicationCountOutputTypeCountBridgeArgs
     policies?: boolean | ApplicationCountOutputTypeCountPoliciesArgs
@@ -4463,6 +4474,13 @@ export namespace Prisma {
      * Select specific fields to fetch from the ApplicationCountOutputType
      */
     select?: ApplicationCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ApplicationCountOutputType without action
+   */
+  export type ApplicationCountOutputTypeCountPermissionConsumersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ApplicationWhereInput
   }
 
   /**
@@ -4984,6 +5002,7 @@ export namespace Prisma {
     details?: boolean
     createdAt?: boolean
     linkedAccountId?: boolean
+    developedApplications?: boolean | Account$developedApplicationsArgs<ExtArgs>
     brandProfile?: boolean | Account$brandProfileArgs<ExtArgs>
     individualProfile?: boolean | Account$individualProfileArgs<ExtArgs>
     connections?: boolean | Account$connectionsArgs<ExtArgs>
@@ -5060,6 +5079,7 @@ export namespace Prisma {
 
   export type AccountOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "displayName" | "accountType" | "displayImage" | "status" | "isVerified" | "details" | "createdAt" | "linkedAccountId", ExtArgs["result"]["account"]>
   export type AccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    developedApplications?: boolean | Account$developedApplicationsArgs<ExtArgs>
     brandProfile?: boolean | Account$brandProfileArgs<ExtArgs>
     individualProfile?: boolean | Account$individualProfileArgs<ExtArgs>
     connections?: boolean | Account$connectionsArgs<ExtArgs>
@@ -5105,6 +5125,7 @@ export namespace Prisma {
   export type $AccountPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Account"
     objects: {
+      developedApplications: Prisma.$ApplicationPayload<ExtArgs>[]
       brandProfile: Prisma.$AccountTypeBrandPayload<ExtArgs> | null
       individualProfile: Prisma.$AccountTypeIndividualPayload<ExtArgs> | null
       connections: Prisma.$ConnectionPayload<ExtArgs>[]
@@ -5543,6 +5564,7 @@ export namespace Prisma {
    */
   export interface Prisma__AccountClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    developedApplications<T extends Account$developedApplicationsArgs<ExtArgs> = {}>(args?: Subset<T, Account$developedApplicationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     brandProfile<T extends Account$brandProfileArgs<ExtArgs> = {}>(args?: Subset<T, Account$brandProfileArgs<ExtArgs>>): Prisma__AccountTypeBrandClient<$Result.GetResult<Prisma.$AccountTypeBrandPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     individualProfile<T extends Account$individualProfileArgs<ExtArgs> = {}>(args?: Subset<T, Account$individualProfileArgs<ExtArgs>>): Prisma__AccountTypeIndividualClient<$Result.GetResult<Prisma.$AccountTypeIndividualPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     connections<T extends Account$connectionsArgs<ExtArgs> = {}>(args?: Subset<T, Account$connectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -6012,6 +6034,30 @@ export namespace Prisma {
      * Limit how many Accounts to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Account.developedApplications
+   */
+  export type Account$developedApplicationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Application
+     */
+    select?: ApplicationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Application
+     */
+    omit?: ApplicationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApplicationInclude<ExtArgs> | null
+    where?: ApplicationWhereInput
+    orderBy?: ApplicationOrderByWithRelationInput | ApplicationOrderByWithRelationInput[]
+    cursor?: ApplicationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ApplicationScalarFieldEnum | ApplicationScalarFieldEnum[]
   }
 
   /**
@@ -26271,6 +26317,8 @@ export namespace Prisma {
     status: string | null
     isInternal: boolean | null
     party: number | null
+    developer: string | null
+    usePermissionFrom: string | null
     providerId: string | null
     defaultRoleId: string | null
   }
@@ -26286,6 +26334,8 @@ export namespace Prisma {
     status: string | null
     isInternal: boolean | null
     party: number | null
+    developer: string | null
+    usePermissionFrom: string | null
     providerId: string | null
     defaultRoleId: string | null
   }
@@ -26305,6 +26355,8 @@ export namespace Prisma {
     tokenFields: number
     details: number
     party: number
+    developer: number
+    usePermissionFrom: number
     providerId: number
     defaultRoleId: number
     _all: number
@@ -26330,6 +26382,8 @@ export namespace Prisma {
     status?: true
     isInternal?: true
     party?: true
+    developer?: true
+    usePermissionFrom?: true
     providerId?: true
     defaultRoleId?: true
   }
@@ -26345,6 +26399,8 @@ export namespace Prisma {
     status?: true
     isInternal?: true
     party?: true
+    developer?: true
+    usePermissionFrom?: true
     providerId?: true
     defaultRoleId?: true
   }
@@ -26364,6 +26420,8 @@ export namespace Prisma {
     tokenFields?: true
     details?: true
     party?: true
+    developer?: true
+    usePermissionFrom?: true
     providerId?: true
     defaultRoleId?: true
     _all?: true
@@ -26470,6 +26528,8 @@ export namespace Prisma {
     tokenFields: string[]
     details: JsonValue | null
     party: number
+    developer: string | null
+    usePermissionFrom: string | null
     providerId: string | null
     defaultRoleId: string | null
     _count: ApplicationCountAggregateOutputType | null
@@ -26508,8 +26568,13 @@ export namespace Prisma {
     tokenFields?: boolean
     details?: boolean
     party?: boolean
+    developer?: boolean
+    usePermissionFrom?: boolean
     providerId?: boolean
     defaultRoleId?: boolean
+    developerAccount?: boolean | Application$developerAccountArgs<ExtArgs>
+    permissionSource?: boolean | Application$permissionSourceArgs<ExtArgs>
+    permissionConsumers?: boolean | Application$permissionConsumersArgs<ExtArgs>
     provider?: boolean | Application$providerArgs<ExtArgs>
     defaultRole?: boolean | Application$defaultRoleArgs<ExtArgs>
     connections?: boolean | Application$connectionsArgs<ExtArgs>
@@ -26541,8 +26606,12 @@ export namespace Prisma {
     tokenFields?: boolean
     details?: boolean
     party?: boolean
+    developer?: boolean
+    usePermissionFrom?: boolean
     providerId?: boolean
     defaultRoleId?: boolean
+    developerAccount?: boolean | Application$developerAccountArgs<ExtArgs>
+    permissionSource?: boolean | Application$permissionSourceArgs<ExtArgs>
     provider?: boolean | Application$providerArgs<ExtArgs>
     defaultRole?: boolean | Application$defaultRoleArgs<ExtArgs>
   }, ExtArgs["result"]["application"]>
@@ -26562,8 +26631,12 @@ export namespace Prisma {
     tokenFields?: boolean
     details?: boolean
     party?: boolean
+    developer?: boolean
+    usePermissionFrom?: boolean
     providerId?: boolean
     defaultRoleId?: boolean
+    developerAccount?: boolean | Application$developerAccountArgs<ExtArgs>
+    permissionSource?: boolean | Application$permissionSourceArgs<ExtArgs>
     provider?: boolean | Application$providerArgs<ExtArgs>
     defaultRole?: boolean | Application$defaultRoleArgs<ExtArgs>
   }, ExtArgs["result"]["application"]>
@@ -26583,12 +26656,17 @@ export namespace Prisma {
     tokenFields?: boolean
     details?: boolean
     party?: boolean
+    developer?: boolean
+    usePermissionFrom?: boolean
     providerId?: boolean
     defaultRoleId?: boolean
   }
 
-  export type ApplicationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "icon" | "website" | "appSecret" | "createdAt" | "endpoints" | "status" | "isInternal" | "responseFields" | "tokenFields" | "details" | "party" | "providerId" | "defaultRoleId", ExtArgs["result"]["application"]>
+  export type ApplicationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "icon" | "website" | "appSecret" | "createdAt" | "endpoints" | "status" | "isInternal" | "responseFields" | "tokenFields" | "details" | "party" | "developer" | "usePermissionFrom" | "providerId" | "defaultRoleId", ExtArgs["result"]["application"]>
   export type ApplicationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    developerAccount?: boolean | Application$developerAccountArgs<ExtArgs>
+    permissionSource?: boolean | Application$permissionSourceArgs<ExtArgs>
+    permissionConsumers?: boolean | Application$permissionConsumersArgs<ExtArgs>
     provider?: boolean | Application$providerArgs<ExtArgs>
     defaultRole?: boolean | Application$defaultRoleArgs<ExtArgs>
     connections?: boolean | Application$connectionsArgs<ExtArgs>
@@ -26605,10 +26683,14 @@ export namespace Prisma {
     _count?: boolean | ApplicationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ApplicationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    developerAccount?: boolean | Application$developerAccountArgs<ExtArgs>
+    permissionSource?: boolean | Application$permissionSourceArgs<ExtArgs>
     provider?: boolean | Application$providerArgs<ExtArgs>
     defaultRole?: boolean | Application$defaultRoleArgs<ExtArgs>
   }
   export type ApplicationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    developerAccount?: boolean | Application$developerAccountArgs<ExtArgs>
+    permissionSource?: boolean | Application$permissionSourceArgs<ExtArgs>
     provider?: boolean | Application$providerArgs<ExtArgs>
     defaultRole?: boolean | Application$defaultRoleArgs<ExtArgs>
   }
@@ -26616,6 +26698,9 @@ export namespace Prisma {
   export type $ApplicationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Application"
     objects: {
+      developerAccount: Prisma.$AccountPayload<ExtArgs> | null
+      permissionSource: Prisma.$ApplicationPayload<ExtArgs> | null
+      permissionConsumers: Prisma.$ApplicationPayload<ExtArgs>[]
       provider: Prisma.$ApplicationProviderPayload<ExtArgs> | null
       defaultRole: Prisma.$AuthzRolePayload<ExtArgs> | null
       connections: Prisma.$ConnectionPayload<ExtArgs>[]
@@ -26645,6 +26730,8 @@ export namespace Prisma {
       tokenFields: string[]
       details: Prisma.JsonValue | null
       party: number
+      developer: string | null
+      usePermissionFrom: string | null
       providerId: string | null
       defaultRoleId: string | null
     }, ExtArgs["result"]["application"]>
@@ -27041,6 +27128,9 @@ export namespace Prisma {
    */
   export interface Prisma__ApplicationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    developerAccount<T extends Application$developerAccountArgs<ExtArgs> = {}>(args?: Subset<T, Application$developerAccountArgs<ExtArgs>>): Prisma__AccountClient<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    permissionSource<T extends Application$permissionSourceArgs<ExtArgs> = {}>(args?: Subset<T, Application$permissionSourceArgs<ExtArgs>>): Prisma__ApplicationClient<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    permissionConsumers<T extends Application$permissionConsumersArgs<ExtArgs> = {}>(args?: Subset<T, Application$permissionConsumersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     provider<T extends Application$providerArgs<ExtArgs> = {}>(args?: Subset<T, Application$providerArgs<ExtArgs>>): Prisma__ApplicationProviderClient<$Result.GetResult<Prisma.$ApplicationProviderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     defaultRole<T extends Application$defaultRoleArgs<ExtArgs> = {}>(args?: Subset<T, Application$defaultRoleArgs<ExtArgs>>): Prisma__AuthzRoleClient<$Result.GetResult<Prisma.$AuthzRolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     connections<T extends Application$connectionsArgs<ExtArgs> = {}>(args?: Subset<T, Application$connectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -27097,6 +27187,8 @@ export namespace Prisma {
     readonly tokenFields: FieldRef<"Application", 'String[]'>
     readonly details: FieldRef<"Application", 'Json'>
     readonly party: FieldRef<"Application", 'Int'>
+    readonly developer: FieldRef<"Application", 'String'>
+    readonly usePermissionFrom: FieldRef<"Application", 'String'>
     readonly providerId: FieldRef<"Application", 'String'>
     readonly defaultRoleId: FieldRef<"Application", 'String'>
   }
@@ -27497,6 +27589,68 @@ export namespace Prisma {
      * Limit how many Applications to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Application.developerAccount
+   */
+  export type Application$developerAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Account
+     */
+    select?: AccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Account
+     */
+    omit?: AccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AccountInclude<ExtArgs> | null
+    where?: AccountWhereInput
+  }
+
+  /**
+   * Application.permissionSource
+   */
+  export type Application$permissionSourceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Application
+     */
+    select?: ApplicationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Application
+     */
+    omit?: ApplicationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApplicationInclude<ExtArgs> | null
+    where?: ApplicationWhereInput
+  }
+
+  /**
+   * Application.permissionConsumers
+   */
+  export type Application$permissionConsumersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Application
+     */
+    select?: ApplicationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Application
+     */
+    omit?: ApplicationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ApplicationInclude<ExtArgs> | null
+    where?: ApplicationWhereInput
+    orderBy?: ApplicationOrderByWithRelationInput | ApplicationOrderByWithRelationInput[]
+    cursor?: ApplicationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ApplicationScalarFieldEnum | ApplicationScalarFieldEnum[]
   }
 
   /**
@@ -45644,6 +45798,8 @@ export namespace Prisma {
     tokenFields: 'tokenFields',
     details: 'details',
     party: 'party',
+    developer: 'developer',
+    usePermissionFrom: 'usePermissionFrom',
     providerId: 'providerId',
     defaultRoleId: 'defaultRoleId'
   };
@@ -46044,6 +46200,7 @@ export namespace Prisma {
     details?: JsonNullableFilter<"Account">
     createdAt?: DateTimeFilter<"Account"> | Date | string
     linkedAccountId?: StringNullableFilter<"Account"> | string | null
+    developedApplications?: ApplicationListRelationFilter
     brandProfile?: XOR<AccountTypeBrandNullableScalarRelationFilter, AccountTypeBrandWhereInput> | null
     individualProfile?: XOR<AccountTypeIndividualNullableScalarRelationFilter, AccountTypeIndividualWhereInput> | null
     connections?: ConnectionListRelationFilter
@@ -46089,6 +46246,7 @@ export namespace Prisma {
     details?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     linkedAccountId?: SortOrderInput | SortOrder
+    developedApplications?: ApplicationOrderByRelationAggregateInput
     brandProfile?: AccountTypeBrandOrderByWithRelationInput
     individualProfile?: AccountTypeIndividualOrderByWithRelationInput
     connections?: ConnectionOrderByRelationAggregateInput
@@ -46137,6 +46295,7 @@ export namespace Prisma {
     details?: JsonNullableFilter<"Account">
     createdAt?: DateTimeFilter<"Account"> | Date | string
     linkedAccountId?: StringNullableFilter<"Account"> | string | null
+    developedApplications?: ApplicationListRelationFilter
     brandProfile?: XOR<AccountTypeBrandNullableScalarRelationFilter, AccountTypeBrandWhereInput> | null
     individualProfile?: XOR<AccountTypeIndividualNullableScalarRelationFilter, AccountTypeIndividualWhereInput> | null
     connections?: ConnectionListRelationFilter
@@ -47366,8 +47525,13 @@ export namespace Prisma {
     tokenFields?: StringNullableListFilter<"Application">
     details?: JsonNullableFilter<"Application">
     party?: IntFilter<"Application"> | number
+    developer?: StringNullableFilter<"Application"> | string | null
+    usePermissionFrom?: StringNullableFilter<"Application"> | string | null
     providerId?: StringNullableFilter<"Application"> | string | null
     defaultRoleId?: StringNullableFilter<"Application"> | string | null
+    developerAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
+    permissionSource?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
+    permissionConsumers?: ApplicationListRelationFilter
     provider?: XOR<ApplicationProviderNullableScalarRelationFilter, ApplicationProviderWhereInput> | null
     defaultRole?: XOR<AuthzRoleNullableScalarRelationFilter, AuthzRoleWhereInput> | null
     connections?: ConnectionListRelationFilter
@@ -47398,8 +47562,13 @@ export namespace Prisma {
     tokenFields?: SortOrder
     details?: SortOrderInput | SortOrder
     party?: SortOrder
+    developer?: SortOrderInput | SortOrder
+    usePermissionFrom?: SortOrderInput | SortOrder
     providerId?: SortOrderInput | SortOrder
     defaultRoleId?: SortOrderInput | SortOrder
+    developerAccount?: AccountOrderByWithRelationInput
+    permissionSource?: ApplicationOrderByWithRelationInput
+    permissionConsumers?: ApplicationOrderByRelationAggregateInput
     provider?: ApplicationProviderOrderByWithRelationInput
     defaultRole?: AuthzRoleOrderByWithRelationInput
     connections?: ConnectionOrderByRelationAggregateInput
@@ -47433,8 +47602,13 @@ export namespace Prisma {
     tokenFields?: StringNullableListFilter<"Application">
     details?: JsonNullableFilter<"Application">
     party?: IntFilter<"Application"> | number
+    developer?: StringNullableFilter<"Application"> | string | null
+    usePermissionFrom?: StringNullableFilter<"Application"> | string | null
     providerId?: StringNullableFilter<"Application"> | string | null
     defaultRoleId?: StringNullableFilter<"Application"> | string | null
+    developerAccount?: XOR<AccountNullableScalarRelationFilter, AccountWhereInput> | null
+    permissionSource?: XOR<ApplicationNullableScalarRelationFilter, ApplicationWhereInput> | null
+    permissionConsumers?: ApplicationListRelationFilter
     provider?: XOR<ApplicationProviderNullableScalarRelationFilter, ApplicationProviderWhereInput> | null
     defaultRole?: XOR<AuthzRoleNullableScalarRelationFilter, AuthzRoleWhereInput> | null
     connections?: ConnectionListRelationFilter
@@ -47465,6 +47639,8 @@ export namespace Prisma {
     tokenFields?: SortOrder
     details?: SortOrderInput | SortOrder
     party?: SortOrder
+    developer?: SortOrderInput | SortOrder
+    usePermissionFrom?: SortOrderInput | SortOrder
     providerId?: SortOrderInput | SortOrder
     defaultRoleId?: SortOrderInput | SortOrder
     _count?: ApplicationCountOrderByAggregateInput
@@ -47492,6 +47668,8 @@ export namespace Prisma {
     tokenFields?: StringNullableListFilter<"Application">
     details?: JsonNullableWithAggregatesFilter<"Application">
     party?: IntWithAggregatesFilter<"Application"> | number
+    developer?: StringNullableWithAggregatesFilter<"Application"> | string | null
+    usePermissionFrom?: StringNullableWithAggregatesFilter<"Application"> | string | null
     providerId?: StringNullableWithAggregatesFilter<"Application"> | string | null
     defaultRoleId?: StringNullableWithAggregatesFilter<"Application"> | string | null
   }
@@ -48721,6 +48899,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -48766,6 +48945,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -48809,6 +48989,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -48854,6 +49035,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -50138,6 +50320,9 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developerAccount?: AccountCreateNestedOneWithoutDevelopedApplicationsInput
+    permissionSource?: ApplicationCreateNestedOneWithoutPermissionConsumersInput
+    permissionConsumers?: ApplicationCreateNestedManyWithoutPermissionSourceInput
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
     defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
@@ -50168,8 +50353,11 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developer?: string | null
+    usePermissionFrom?: string | null
     providerId?: string | null
     defaultRoleId?: string | null
+    permissionConsumers?: ApplicationUncheckedCreateNestedManyWithoutPermissionSourceInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
@@ -50198,6 +50386,9 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developerAccount?: AccountUpdateOneWithoutDevelopedApplicationsNestedInput
+    permissionSource?: ApplicationUpdateOneWithoutPermissionConsumersNestedInput
+    permissionConsumers?: ApplicationUpdateManyWithoutPermissionSourceNestedInput
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
     defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
@@ -50228,8 +50419,11 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    usePermissionFrom?: NullableStringFieldUpdateOperationsInput | string | null
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
     defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
+    permissionConsumers?: ApplicationUncheckedUpdateManyWithoutPermissionSourceNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
@@ -50258,6 +50452,8 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developer?: string | null
+    usePermissionFrom?: string | null
     providerId?: string | null
     defaultRoleId?: string | null
   }
@@ -50294,6 +50490,8 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    usePermissionFrom?: NullableStringFieldUpdateOperationsInput | string | null
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
     defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -51607,6 +51805,12 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type ApplicationListRelationFilter = {
+    every?: ApplicationWhereInput
+    some?: ApplicationWhereInput
+    none?: ApplicationWhereInput
+  }
+
   export type AccountTypeBrandNullableScalarRelationFilter = {
     is?: AccountTypeBrandWhereInput | null
     isNot?: AccountTypeBrandWhereInput | null
@@ -51745,6 +51949,10 @@ export namespace Prisma {
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
+  }
+
+  export type ApplicationOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type ConnectionOrderByRelationAggregateInput = {
@@ -52523,16 +52731,6 @@ export namespace Prisma {
     ipAddress?: SortOrder
   }
 
-  export type ApplicationListRelationFilter = {
-    every?: ApplicationWhereInput
-    some?: ApplicationWhereInput
-    none?: ApplicationWhereInput
-  }
-
-  export type ApplicationOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
   export type ApplicationProviderCountOrderByAggregateInput = {
     id?: SortOrder
     providerName?: SortOrder
@@ -52658,6 +52856,8 @@ export namespace Prisma {
     tokenFields?: SortOrder
     details?: SortOrder
     party?: SortOrder
+    developer?: SortOrder
+    usePermissionFrom?: SortOrder
     providerId?: SortOrder
     defaultRoleId?: SortOrder
   }
@@ -52677,6 +52877,8 @@ export namespace Prisma {
     status?: SortOrder
     isInternal?: SortOrder
     party?: SortOrder
+    developer?: SortOrder
+    usePermissionFrom?: SortOrder
     providerId?: SortOrder
     defaultRoleId?: SortOrder
   }
@@ -52692,6 +52894,8 @@ export namespace Prisma {
     status?: SortOrder
     isInternal?: SortOrder
     party?: SortOrder
+    developer?: SortOrder
+    usePermissionFrom?: SortOrder
     providerId?: SortOrder
     defaultRoleId?: SortOrder
   }
@@ -53310,6 +53514,13 @@ export namespace Prisma {
     validTill?: SortOrder
   }
 
+  export type ApplicationCreateNestedManyWithoutDeveloperAccountInput = {
+    create?: XOR<ApplicationCreateWithoutDeveloperAccountInput, ApplicationUncheckedCreateWithoutDeveloperAccountInput> | ApplicationCreateWithoutDeveloperAccountInput[] | ApplicationUncheckedCreateWithoutDeveloperAccountInput[]
+    connectOrCreate?: ApplicationCreateOrConnectWithoutDeveloperAccountInput | ApplicationCreateOrConnectWithoutDeveloperAccountInput[]
+    createMany?: ApplicationCreateManyDeveloperAccountInputEnvelope
+    connect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+  }
+
   export type AccountTypeBrandCreateNestedOneWithoutAccountInput = {
     create?: XOR<AccountTypeBrandCreateWithoutAccountInput, AccountTypeBrandUncheckedCreateWithoutAccountInput>
     connectOrCreate?: AccountTypeBrandCreateOrConnectWithoutAccountInput
@@ -53536,6 +53747,13 @@ export namespace Prisma {
     connectOrCreate?: VerificationCreateOrConnectWithoutAccountInput | VerificationCreateOrConnectWithoutAccountInput[]
     createMany?: VerificationCreateManyAccountInputEnvelope
     connect?: VerificationWhereUniqueInput | VerificationWhereUniqueInput[]
+  }
+
+  export type ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput = {
+    create?: XOR<ApplicationCreateWithoutDeveloperAccountInput, ApplicationUncheckedCreateWithoutDeveloperAccountInput> | ApplicationCreateWithoutDeveloperAccountInput[] | ApplicationUncheckedCreateWithoutDeveloperAccountInput[]
+    connectOrCreate?: ApplicationCreateOrConnectWithoutDeveloperAccountInput | ApplicationCreateOrConnectWithoutDeveloperAccountInput[]
+    createMany?: ApplicationCreateManyDeveloperAccountInputEnvelope
+    connect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
   }
 
   export type AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput = {
@@ -53774,6 +53992,20 @@ export namespace Prisma {
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
+  }
+
+  export type ApplicationUpdateManyWithoutDeveloperAccountNestedInput = {
+    create?: XOR<ApplicationCreateWithoutDeveloperAccountInput, ApplicationUncheckedCreateWithoutDeveloperAccountInput> | ApplicationCreateWithoutDeveloperAccountInput[] | ApplicationUncheckedCreateWithoutDeveloperAccountInput[]
+    connectOrCreate?: ApplicationCreateOrConnectWithoutDeveloperAccountInput | ApplicationCreateOrConnectWithoutDeveloperAccountInput[]
+    upsert?: ApplicationUpsertWithWhereUniqueWithoutDeveloperAccountInput | ApplicationUpsertWithWhereUniqueWithoutDeveloperAccountInput[]
+    createMany?: ApplicationCreateManyDeveloperAccountInputEnvelope
+    set?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    disconnect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    delete?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    connect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    update?: ApplicationUpdateWithWhereUniqueWithoutDeveloperAccountInput | ApplicationUpdateWithWhereUniqueWithoutDeveloperAccountInput[]
+    updateMany?: ApplicationUpdateManyWithWhereWithoutDeveloperAccountInput | ApplicationUpdateManyWithWhereWithoutDeveloperAccountInput[]
+    deleteMany?: ApplicationScalarWhereInput | ApplicationScalarWhereInput[]
   }
 
   export type AccountTypeBrandUpdateOneWithoutAccountNestedInput = {
@@ -54224,6 +54456,20 @@ export namespace Prisma {
     update?: VerificationUpdateWithWhereUniqueWithoutAccountInput | VerificationUpdateWithWhereUniqueWithoutAccountInput[]
     updateMany?: VerificationUpdateManyWithWhereWithoutAccountInput | VerificationUpdateManyWithWhereWithoutAccountInput[]
     deleteMany?: VerificationScalarWhereInput | VerificationScalarWhereInput[]
+  }
+
+  export type ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput = {
+    create?: XOR<ApplicationCreateWithoutDeveloperAccountInput, ApplicationUncheckedCreateWithoutDeveloperAccountInput> | ApplicationCreateWithoutDeveloperAccountInput[] | ApplicationUncheckedCreateWithoutDeveloperAccountInput[]
+    connectOrCreate?: ApplicationCreateOrConnectWithoutDeveloperAccountInput | ApplicationCreateOrConnectWithoutDeveloperAccountInput[]
+    upsert?: ApplicationUpsertWithWhereUniqueWithoutDeveloperAccountInput | ApplicationUpsertWithWhereUniqueWithoutDeveloperAccountInput[]
+    createMany?: ApplicationCreateManyDeveloperAccountInputEnvelope
+    set?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    disconnect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    delete?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    connect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    update?: ApplicationUpdateWithWhereUniqueWithoutDeveloperAccountInput | ApplicationUpdateWithWhereUniqueWithoutDeveloperAccountInput[]
+    updateMany?: ApplicationUpdateManyWithWhereWithoutDeveloperAccountInput | ApplicationUpdateManyWithWhereWithoutDeveloperAccountInput[]
+    deleteMany?: ApplicationScalarWhereInput | ApplicationScalarWhereInput[]
   }
 
   export type AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput = {
@@ -55036,6 +55282,25 @@ export namespace Prisma {
     set: string[]
   }
 
+  export type AccountCreateNestedOneWithoutDevelopedApplicationsInput = {
+    create?: XOR<AccountCreateWithoutDevelopedApplicationsInput, AccountUncheckedCreateWithoutDevelopedApplicationsInput>
+    connectOrCreate?: AccountCreateOrConnectWithoutDevelopedApplicationsInput
+    connect?: AccountWhereUniqueInput
+  }
+
+  export type ApplicationCreateNestedOneWithoutPermissionConsumersInput = {
+    create?: XOR<ApplicationCreateWithoutPermissionConsumersInput, ApplicationUncheckedCreateWithoutPermissionConsumersInput>
+    connectOrCreate?: ApplicationCreateOrConnectWithoutPermissionConsumersInput
+    connect?: ApplicationWhereUniqueInput
+  }
+
+  export type ApplicationCreateNestedManyWithoutPermissionSourceInput = {
+    create?: XOR<ApplicationCreateWithoutPermissionSourceInput, ApplicationUncheckedCreateWithoutPermissionSourceInput> | ApplicationCreateWithoutPermissionSourceInput[] | ApplicationUncheckedCreateWithoutPermissionSourceInput[]
+    connectOrCreate?: ApplicationCreateOrConnectWithoutPermissionSourceInput | ApplicationCreateOrConnectWithoutPermissionSourceInput[]
+    createMany?: ApplicationCreateManyPermissionSourceInputEnvelope
+    connect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+  }
+
   export type ApplicationProviderCreateNestedOneWithoutApplicationsInput = {
     create?: XOR<ApplicationProviderCreateWithoutApplicationsInput, ApplicationProviderUncheckedCreateWithoutApplicationsInput>
     connectOrCreate?: ApplicationProviderCreateOrConnectWithoutApplicationsInput
@@ -55123,6 +55388,13 @@ export namespace Prisma {
     connectOrCreate?: ApplicationDevLogCreateOrConnectWithoutApplicationInput | ApplicationDevLogCreateOrConnectWithoutApplicationInput[]
     createMany?: ApplicationDevLogCreateManyApplicationInputEnvelope
     connect?: ApplicationDevLogWhereUniqueInput | ApplicationDevLogWhereUniqueInput[]
+  }
+
+  export type ApplicationUncheckedCreateNestedManyWithoutPermissionSourceInput = {
+    create?: XOR<ApplicationCreateWithoutPermissionSourceInput, ApplicationUncheckedCreateWithoutPermissionSourceInput> | ApplicationCreateWithoutPermissionSourceInput[] | ApplicationUncheckedCreateWithoutPermissionSourceInput[]
+    connectOrCreate?: ApplicationCreateOrConnectWithoutPermissionSourceInput | ApplicationCreateOrConnectWithoutPermissionSourceInput[]
+    createMany?: ApplicationCreateManyPermissionSourceInputEnvelope
+    connect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
   }
 
   export type ConnectionUncheckedCreateNestedManyWithoutApplicationInput = {
@@ -55218,6 +55490,40 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type AccountUpdateOneWithoutDevelopedApplicationsNestedInput = {
+    create?: XOR<AccountCreateWithoutDevelopedApplicationsInput, AccountUncheckedCreateWithoutDevelopedApplicationsInput>
+    connectOrCreate?: AccountCreateOrConnectWithoutDevelopedApplicationsInput
+    upsert?: AccountUpsertWithoutDevelopedApplicationsInput
+    disconnect?: AccountWhereInput | boolean
+    delete?: AccountWhereInput | boolean
+    connect?: AccountWhereUniqueInput
+    update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutDevelopedApplicationsInput, AccountUpdateWithoutDevelopedApplicationsInput>, AccountUncheckedUpdateWithoutDevelopedApplicationsInput>
+  }
+
+  export type ApplicationUpdateOneWithoutPermissionConsumersNestedInput = {
+    create?: XOR<ApplicationCreateWithoutPermissionConsumersInput, ApplicationUncheckedCreateWithoutPermissionConsumersInput>
+    connectOrCreate?: ApplicationCreateOrConnectWithoutPermissionConsumersInput
+    upsert?: ApplicationUpsertWithoutPermissionConsumersInput
+    disconnect?: ApplicationWhereInput | boolean
+    delete?: ApplicationWhereInput | boolean
+    connect?: ApplicationWhereUniqueInput
+    update?: XOR<XOR<ApplicationUpdateToOneWithWhereWithoutPermissionConsumersInput, ApplicationUpdateWithoutPermissionConsumersInput>, ApplicationUncheckedUpdateWithoutPermissionConsumersInput>
+  }
+
+  export type ApplicationUpdateManyWithoutPermissionSourceNestedInput = {
+    create?: XOR<ApplicationCreateWithoutPermissionSourceInput, ApplicationUncheckedCreateWithoutPermissionSourceInput> | ApplicationCreateWithoutPermissionSourceInput[] | ApplicationUncheckedCreateWithoutPermissionSourceInput[]
+    connectOrCreate?: ApplicationCreateOrConnectWithoutPermissionSourceInput | ApplicationCreateOrConnectWithoutPermissionSourceInput[]
+    upsert?: ApplicationUpsertWithWhereUniqueWithoutPermissionSourceInput | ApplicationUpsertWithWhereUniqueWithoutPermissionSourceInput[]
+    createMany?: ApplicationCreateManyPermissionSourceInputEnvelope
+    set?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    disconnect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    delete?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    connect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    update?: ApplicationUpdateWithWhereUniqueWithoutPermissionSourceInput | ApplicationUpdateWithWhereUniqueWithoutPermissionSourceInput[]
+    updateMany?: ApplicationUpdateManyWithWhereWithoutPermissionSourceInput | ApplicationUpdateManyWithWhereWithoutPermissionSourceInput[]
+    deleteMany?: ApplicationScalarWhereInput | ApplicationScalarWhereInput[]
   }
 
   export type ApplicationProviderUpdateOneWithoutApplicationsNestedInput = {
@@ -55392,6 +55698,20 @@ export namespace Prisma {
     update?: ApplicationDevLogUpdateWithWhereUniqueWithoutApplicationInput | ApplicationDevLogUpdateWithWhereUniqueWithoutApplicationInput[]
     updateMany?: ApplicationDevLogUpdateManyWithWhereWithoutApplicationInput | ApplicationDevLogUpdateManyWithWhereWithoutApplicationInput[]
     deleteMany?: ApplicationDevLogScalarWhereInput | ApplicationDevLogScalarWhereInput[]
+  }
+
+  export type ApplicationUncheckedUpdateManyWithoutPermissionSourceNestedInput = {
+    create?: XOR<ApplicationCreateWithoutPermissionSourceInput, ApplicationUncheckedCreateWithoutPermissionSourceInput> | ApplicationCreateWithoutPermissionSourceInput[] | ApplicationUncheckedCreateWithoutPermissionSourceInput[]
+    connectOrCreate?: ApplicationCreateOrConnectWithoutPermissionSourceInput | ApplicationCreateOrConnectWithoutPermissionSourceInput[]
+    upsert?: ApplicationUpsertWithWhereUniqueWithoutPermissionSourceInput | ApplicationUpsertWithWhereUniqueWithoutPermissionSourceInput[]
+    createMany?: ApplicationCreateManyPermissionSourceInputEnvelope
+    set?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    disconnect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    delete?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    connect?: ApplicationWhereUniqueInput | ApplicationWhereUniqueInput[]
+    update?: ApplicationUpdateWithWhereUniqueWithoutPermissionSourceInput | ApplicationUpdateWithWhereUniqueWithoutPermissionSourceInput[]
+    updateMany?: ApplicationUpdateManyWithWhereWithoutPermissionSourceInput | ApplicationUpdateManyWithWhereWithoutPermissionSourceInput[]
+    deleteMany?: ApplicationScalarWhereInput | ApplicationScalarWhereInput[]
   }
 
   export type ConnectionUncheckedUpdateManyWithoutApplicationNestedInput = {
@@ -57026,6 +57346,80 @@ export namespace Prisma {
     _max?: NestedEnumAccessTypeFilter<$PrismaModel>
   }
 
+  export type ApplicationCreateWithoutDeveloperAccountInput = {
+    id: string
+    name: string
+    description?: string | null
+    icon?: string | null
+    website?: string | null
+    appSecret?: string | null
+    createdAt?: Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    isInternal?: boolean
+    responseFields?: ApplicationCreateresponseFieldsInput | string[]
+    tokenFields?: ApplicationCreatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: number
+    permissionSource?: ApplicationCreateNestedOneWithoutPermissionConsumersInput
+    permissionConsumers?: ApplicationCreateNestedManyWithoutPermissionSourceInput
+    provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
+    defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
+    connections?: ConnectionCreateNestedManyWithoutApplicationInput
+    bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
+    policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
+    authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
+    authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
+    identities?: IdentityCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationCreateNestedManyWithoutApplicationInput
+    childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
+    assetAccessRows?: AccessCreateNestedManyWithoutAssetApplicationInput
+    accessRows?: AccessCreateNestedManyWithoutAccessApplicationInput
+    devLogs?: ApplicationDevLogCreateNestedManyWithoutApplicationInput
+  }
+
+  export type ApplicationUncheckedCreateWithoutDeveloperAccountInput = {
+    id: string
+    name: string
+    description?: string | null
+    icon?: string | null
+    website?: string | null
+    appSecret?: string | null
+    createdAt?: Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    isInternal?: boolean
+    responseFields?: ApplicationCreateresponseFieldsInput | string[]
+    tokenFields?: ApplicationCreatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: number
+    usePermissionFrom?: string | null
+    providerId?: string | null
+    defaultRoleId?: string | null
+    permissionConsumers?: ApplicationUncheckedCreateNestedManyWithoutPermissionSourceInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
+    bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
+    policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
+    authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
+    authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
+    identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApplicationInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
+    assetAccessRows?: AccessUncheckedCreateNestedManyWithoutAssetApplicationInput
+    accessRows?: AccessUncheckedCreateNestedManyWithoutAccessApplicationInput
+    devLogs?: ApplicationDevLogUncheckedCreateNestedManyWithoutApplicationInput
+  }
+
+  export type ApplicationCreateOrConnectWithoutDeveloperAccountInput = {
+    where: ApplicationWhereUniqueInput
+    create: XOR<ApplicationCreateWithoutDeveloperAccountInput, ApplicationUncheckedCreateWithoutDeveloperAccountInput>
+  }
+
+  export type ApplicationCreateManyDeveloperAccountInputEnvelope = {
+    data: ApplicationCreateManyDeveloperAccountInput | ApplicationCreateManyDeveloperAccountInput[]
+    skipDuplicates?: boolean
+  }
+
   export type AccountTypeBrandCreateWithoutAccountInput = {
     brandName?: string | null
     isLegalEntity?: boolean
@@ -57755,6 +58149,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -57799,6 +58194,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -57846,6 +58242,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -57889,6 +58286,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -58167,6 +58565,46 @@ export namespace Prisma {
   export type VerificationCreateManyAccountInputEnvelope = {
     data: VerificationCreateManyAccountInput | VerificationCreateManyAccountInput[]
     skipDuplicates?: boolean
+  }
+
+  export type ApplicationUpsertWithWhereUniqueWithoutDeveloperAccountInput = {
+    where: ApplicationWhereUniqueInput
+    update: XOR<ApplicationUpdateWithoutDeveloperAccountInput, ApplicationUncheckedUpdateWithoutDeveloperAccountInput>
+    create: XOR<ApplicationCreateWithoutDeveloperAccountInput, ApplicationUncheckedCreateWithoutDeveloperAccountInput>
+  }
+
+  export type ApplicationUpdateWithWhereUniqueWithoutDeveloperAccountInput = {
+    where: ApplicationWhereUniqueInput
+    data: XOR<ApplicationUpdateWithoutDeveloperAccountInput, ApplicationUncheckedUpdateWithoutDeveloperAccountInput>
+  }
+
+  export type ApplicationUpdateManyWithWhereWithoutDeveloperAccountInput = {
+    where: ApplicationScalarWhereInput
+    data: XOR<ApplicationUpdateManyMutationInput, ApplicationUncheckedUpdateManyWithoutDeveloperAccountInput>
+  }
+
+  export type ApplicationScalarWhereInput = {
+    AND?: ApplicationScalarWhereInput | ApplicationScalarWhereInput[]
+    OR?: ApplicationScalarWhereInput[]
+    NOT?: ApplicationScalarWhereInput | ApplicationScalarWhereInput[]
+    id?: StringFilter<"Application"> | string
+    name?: StringFilter<"Application"> | string
+    description?: StringNullableFilter<"Application"> | string | null
+    icon?: StringNullableFilter<"Application"> | string | null
+    website?: StringNullableFilter<"Application"> | string | null
+    appSecret?: StringNullableFilter<"Application"> | string | null
+    createdAt?: DateTimeFilter<"Application"> | Date | string
+    endpoints?: JsonNullableFilter<"Application">
+    status?: StringFilter<"Application"> | string
+    isInternal?: BoolFilter<"Application"> | boolean
+    responseFields?: StringNullableListFilter<"Application">
+    tokenFields?: StringNullableListFilter<"Application">
+    details?: JsonNullableFilter<"Application">
+    party?: IntFilter<"Application"> | number
+    developer?: StringNullableFilter<"Application"> | string | null
+    usePermissionFrom?: StringNullableFilter<"Application"> | string | null
+    providerId?: StringNullableFilter<"Application"> | string | null
+    defaultRoleId?: StringNullableFilter<"Application"> | string | null
   }
 
   export type AccountTypeBrandUpsertWithoutAccountInput = {
@@ -58791,6 +59229,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -58835,6 +59274,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -59090,6 +59530,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -59134,6 +59575,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -59181,6 +59623,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -59225,6 +59668,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -59283,6 +59727,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -59327,6 +59772,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -59380,6 +59826,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -59424,6 +59871,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -59466,6 +59914,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -59510,6 +59959,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -59557,6 +60007,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -59601,6 +60052,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -59659,6 +60111,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -59703,6 +60156,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -59756,6 +60210,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -59800,6 +60255,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -59842,6 +60298,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
     authMethods?: AuthnMethodCreateNestedManyWithoutAccountInput
@@ -59886,6 +60343,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
     authMethods?: AuthnMethodUncheckedCreateNestedManyWithoutAccountInput
@@ -59944,6 +60402,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
     authMethods?: AuthnMethodUpdateManyWithoutAccountNestedInput
@@ -59988,6 +60447,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
     authMethods?: AuthnMethodUncheckedUpdateManyWithoutAccountNestedInput
@@ -60030,6 +60490,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
     authMethods?: AuthnMethodCreateNestedManyWithoutAccountInput
@@ -60074,6 +60535,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
     authMethods?: AuthnMethodUncheckedCreateNestedManyWithoutAccountInput
@@ -60132,6 +60594,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
     authMethods?: AuthnMethodUpdateManyWithoutAccountNestedInput
@@ -60176,6 +60639,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
     authMethods?: AuthnMethodUncheckedUpdateManyWithoutAccountNestedInput
@@ -60218,6 +60682,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -60262,6 +60727,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -60315,6 +60781,9 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developerAccount?: AccountCreateNestedOneWithoutDevelopedApplicationsInput
+    permissionSource?: ApplicationCreateNestedOneWithoutPermissionConsumersInput
+    permissionConsumers?: ApplicationCreateNestedManyWithoutPermissionSourceInput
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
     defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
@@ -60344,8 +60813,11 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developer?: string | null
+    usePermissionFrom?: string | null
     providerId?: string | null
     defaultRoleId?: string | null
+    permissionConsumers?: ApplicationUncheckedCreateNestedManyWithoutPermissionSourceInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
@@ -60383,6 +60855,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -60427,6 +60900,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -60486,6 +60960,9 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developerAccount?: AccountUpdateOneWithoutDevelopedApplicationsNestedInput
+    permissionSource?: ApplicationUpdateOneWithoutPermissionConsumersNestedInput
+    permissionConsumers?: ApplicationUpdateManyWithoutPermissionSourceNestedInput
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
     defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
@@ -60515,8 +60992,11 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    usePermissionFrom?: NullableStringFieldUpdateOperationsInput | string | null
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
     defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
+    permissionConsumers?: ApplicationUncheckedUpdateManyWithoutPermissionSourceNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
@@ -60538,6 +61018,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -60582,6 +61063,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -60629,6 +61111,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -60673,6 +61156,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -60731,6 +61215,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -60775,6 +61260,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -60828,6 +61314,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -60872,6 +61359,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -60969,6 +61457,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -61013,6 +61502,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -61094,6 +61584,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -61138,6 +61629,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -61180,6 +61672,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -61224,6 +61717,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -61271,6 +61765,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -61315,6 +61810,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -61373,6 +61869,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -61417,6 +61914,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -61470,6 +61968,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -61514,6 +62013,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -61556,6 +62056,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -61600,6 +62101,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -61658,6 +62160,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -61702,6 +62205,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -61744,6 +62248,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -61788,6 +62293,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -61846,6 +62352,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -61890,6 +62397,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -61932,6 +62440,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -61976,6 +62485,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -62034,6 +62544,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -62078,6 +62589,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -62120,6 +62632,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -62164,6 +62677,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -62222,6 +62736,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -62266,6 +62781,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -62308,6 +62824,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -62352,6 +62869,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -62410,6 +62928,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -62454,6 +62973,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -62502,6 +63022,9 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developerAccount?: AccountCreateNestedOneWithoutDevelopedApplicationsInput
+    permissionSource?: ApplicationCreateNestedOneWithoutPermissionConsumersInput
+    permissionConsumers?: ApplicationCreateNestedManyWithoutPermissionSourceInput
     defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
@@ -62531,7 +63054,10 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developer?: string | null
+    usePermissionFrom?: string | null
     defaultRoleId?: string | null
+    permissionConsumers?: ApplicationUncheckedCreateNestedManyWithoutPermissionSourceInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
@@ -62571,26 +63097,240 @@ export namespace Prisma {
     data: XOR<ApplicationUpdateManyMutationInput, ApplicationUncheckedUpdateManyWithoutProviderInput>
   }
 
-  export type ApplicationScalarWhereInput = {
-    AND?: ApplicationScalarWhereInput | ApplicationScalarWhereInput[]
-    OR?: ApplicationScalarWhereInput[]
-    NOT?: ApplicationScalarWhereInput | ApplicationScalarWhereInput[]
-    id?: StringFilter<"Application"> | string
-    name?: StringFilter<"Application"> | string
-    description?: StringNullableFilter<"Application"> | string | null
-    icon?: StringNullableFilter<"Application"> | string | null
-    website?: StringNullableFilter<"Application"> | string | null
-    appSecret?: StringNullableFilter<"Application"> | string | null
-    createdAt?: DateTimeFilter<"Application"> | Date | string
-    endpoints?: JsonNullableFilter<"Application">
-    status?: StringFilter<"Application"> | string
-    isInternal?: BoolFilter<"Application"> | boolean
-    responseFields?: StringNullableListFilter<"Application">
-    tokenFields?: StringNullableListFilter<"Application">
-    details?: JsonNullableFilter<"Application">
-    party?: IntFilter<"Application"> | number
-    providerId?: StringNullableFilter<"Application"> | string | null
-    defaultRoleId?: StringNullableFilter<"Application"> | string | null
+  export type AccountCreateWithoutDevelopedApplicationsInput = {
+    id?: string
+    displayName?: string | null
+    accountType?: string
+    displayImage?: string | null
+    status?: string | null
+    isVerified?: boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
+    individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
+    connections?: ConnectionCreateNestedManyWithoutAccountInput
+    authMethods?: AuthnMethodCreateNestedManyWithoutAccountInput
+    sessions?: AuthnSessionCreateNestedManyWithoutAccountInput
+    contacts?: ContactCreateNestedManyWithoutAccountInput
+    neupIds?: NeupIdCreateNestedManyWithoutAccountInput
+    notifications?: NotificationCreateNestedManyWithoutAccountInput
+    familyMembers?: FamilyMemberCreateNestedManyWithoutMemberInput
+    verificationActions?: VerificationCreateNestedManyWithoutDoneByAccountInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantCreateNestedManyWithoutAccountInput
+    parentAssets?: AssetCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetCreateNestedManyWithoutChildAccountInput
+    accessMembers?: MemberCreateNestedManyWithoutMemberAccountInput
+    parentAccountMembers?: MemberCreateNestedManyWithoutParentAccountInput
+    accessMemberRows?: AccessCreateNestedManyWithoutMemberAccountInput
+    accessParentRows?: AccessCreateNestedManyWithoutParentAccountInput
+    accessAssetAccountRows?: AccessCreateNestedManyWithoutAssetAccountInput
+    denormRoles?: RoleCreateNestedManyWithoutAccountInput
+    permits?: PermitCreateNestedManyWithoutAccountInput
+    permitTargets?: PermitCreateNestedManyWithoutTargetAccountInput
+    parentOwnerships?: AccountOwnershipCreateNestedManyWithoutChildrenInput
+    childOwnerships?: AccountOwnershipCreateNestedManyWithoutParentInput
+    linkedAccount?: AccountCreateNestedOneWithoutLinkedFromInput
+    linkedFrom?: AccountCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountCreateNestedManyWithoutOwnerAccountInput
+    resources?: ResourceCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceCreateNestedManyWithoutUploaderInput
+    receivedRequests?: RequestCreateNestedManyWithoutRecipientInput
+    sentRequests?: RequestCreateNestedManyWithoutSenderInput
+    errorLogs?: SystemErrorCreateNestedManyWithoutAccountInput
+    verifications?: VerificationCreateNestedManyWithoutAccountInput
+  }
+
+  export type AccountUncheckedCreateWithoutDevelopedApplicationsInput = {
+    id?: string
+    displayName?: string | null
+    accountType?: string
+    displayImage?: string | null
+    status?: string | null
+    isVerified?: boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    linkedAccountId?: string | null
+    brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
+    individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
+    authMethods?: AuthnMethodUncheckedCreateNestedManyWithoutAccountInput
+    sessions?: AuthnSessionUncheckedCreateNestedManyWithoutAccountInput
+    contacts?: ContactUncheckedCreateNestedManyWithoutAccountInput
+    neupIds?: NeupIdUncheckedCreateNestedManyWithoutAccountInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutAccountInput
+    familyMembers?: FamilyMemberUncheckedCreateNestedManyWithoutMemberInput
+    verificationActions?: VerificationUncheckedCreateNestedManyWithoutDoneByAccountInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedCreateNestedManyWithoutAccountInput
+    parentAssets?: AssetUncheckedCreateNestedManyWithoutParentAccountInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildAccountInput
+    accessMembers?: MemberUncheckedCreateNestedManyWithoutMemberAccountInput
+    parentAccountMembers?: MemberUncheckedCreateNestedManyWithoutParentAccountInput
+    accessMemberRows?: AccessUncheckedCreateNestedManyWithoutMemberAccountInput
+    accessParentRows?: AccessUncheckedCreateNestedManyWithoutParentAccountInput
+    accessAssetAccountRows?: AccessUncheckedCreateNestedManyWithoutAssetAccountInput
+    denormRoles?: RoleUncheckedCreateNestedManyWithoutAccountInput
+    permits?: PermitUncheckedCreateNestedManyWithoutAccountInput
+    permitTargets?: PermitUncheckedCreateNestedManyWithoutTargetAccountInput
+    parentOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutChildrenInput
+    childOwnerships?: AccountOwnershipUncheckedCreateNestedManyWithoutParentInput
+    linkedFrom?: AccountUncheckedCreateNestedManyWithoutLinkedAccountInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutConnectedByAccountInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedCreateNestedManyWithoutOwnerAccountInput
+    resources?: ResourceUncheckedCreateNestedManyWithoutAccountInput
+    uploadedResources?: ResourceUncheckedCreateNestedManyWithoutUploaderInput
+    receivedRequests?: RequestUncheckedCreateNestedManyWithoutRecipientInput
+    sentRequests?: RequestUncheckedCreateNestedManyWithoutSenderInput
+    errorLogs?: SystemErrorUncheckedCreateNestedManyWithoutAccountInput
+    verifications?: VerificationUncheckedCreateNestedManyWithoutAccountInput
+  }
+
+  export type AccountCreateOrConnectWithoutDevelopedApplicationsInput = {
+    where: AccountWhereUniqueInput
+    create: XOR<AccountCreateWithoutDevelopedApplicationsInput, AccountUncheckedCreateWithoutDevelopedApplicationsInput>
+  }
+
+  export type ApplicationCreateWithoutPermissionConsumersInput = {
+    id: string
+    name: string
+    description?: string | null
+    icon?: string | null
+    website?: string | null
+    appSecret?: string | null
+    createdAt?: Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    isInternal?: boolean
+    responseFields?: ApplicationCreateresponseFieldsInput | string[]
+    tokenFields?: ApplicationCreatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: number
+    developerAccount?: AccountCreateNestedOneWithoutDevelopedApplicationsInput
+    permissionSource?: ApplicationCreateNestedOneWithoutPermissionConsumersInput
+    provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
+    defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
+    connections?: ConnectionCreateNestedManyWithoutApplicationInput
+    bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
+    policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
+    authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
+    authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
+    identities?: IdentityCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationCreateNestedManyWithoutApplicationInput
+    childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
+    assetAccessRows?: AccessCreateNestedManyWithoutAssetApplicationInput
+    accessRows?: AccessCreateNestedManyWithoutAccessApplicationInput
+    devLogs?: ApplicationDevLogCreateNestedManyWithoutApplicationInput
+  }
+
+  export type ApplicationUncheckedCreateWithoutPermissionConsumersInput = {
+    id: string
+    name: string
+    description?: string | null
+    icon?: string | null
+    website?: string | null
+    appSecret?: string | null
+    createdAt?: Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    isInternal?: boolean
+    responseFields?: ApplicationCreateresponseFieldsInput | string[]
+    tokenFields?: ApplicationCreatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: number
+    developer?: string | null
+    usePermissionFrom?: string | null
+    providerId?: string | null
+    defaultRoleId?: string | null
+    connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
+    bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
+    policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
+    authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
+    authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
+    identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApplicationInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
+    assetAccessRows?: AccessUncheckedCreateNestedManyWithoutAssetApplicationInput
+    accessRows?: AccessUncheckedCreateNestedManyWithoutAccessApplicationInput
+    devLogs?: ApplicationDevLogUncheckedCreateNestedManyWithoutApplicationInput
+  }
+
+  export type ApplicationCreateOrConnectWithoutPermissionConsumersInput = {
+    where: ApplicationWhereUniqueInput
+    create: XOR<ApplicationCreateWithoutPermissionConsumersInput, ApplicationUncheckedCreateWithoutPermissionConsumersInput>
+  }
+
+  export type ApplicationCreateWithoutPermissionSourceInput = {
+    id: string
+    name: string
+    description?: string | null
+    icon?: string | null
+    website?: string | null
+    appSecret?: string | null
+    createdAt?: Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    isInternal?: boolean
+    responseFields?: ApplicationCreateresponseFieldsInput | string[]
+    tokenFields?: ApplicationCreatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: number
+    developerAccount?: AccountCreateNestedOneWithoutDevelopedApplicationsInput
+    permissionConsumers?: ApplicationCreateNestedManyWithoutPermissionSourceInput
+    provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
+    defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
+    connections?: ConnectionCreateNestedManyWithoutApplicationInput
+    bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
+    policies?: ApplicationPolicyCreateNestedManyWithoutApplicationInput
+    authzPermissions?: AuthzPermissionCreateNestedManyWithoutApplicationInput
+    authzRoles?: AuthzRoleCreateNestedManyWithoutApplicationInput
+    identities?: IdentityCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationCreateNestedManyWithoutApplicationInput
+    childAssets?: AssetCreateNestedManyWithoutChildApplicationInput
+    assetAccessRows?: AccessCreateNestedManyWithoutAssetApplicationInput
+    accessRows?: AccessCreateNestedManyWithoutAccessApplicationInput
+    devLogs?: ApplicationDevLogCreateNestedManyWithoutApplicationInput
+  }
+
+  export type ApplicationUncheckedCreateWithoutPermissionSourceInput = {
+    id: string
+    name: string
+    description?: string | null
+    icon?: string | null
+    website?: string | null
+    appSecret?: string | null
+    createdAt?: Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    isInternal?: boolean
+    responseFields?: ApplicationCreateresponseFieldsInput | string[]
+    tokenFields?: ApplicationCreatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: number
+    developer?: string | null
+    providerId?: string | null
+    defaultRoleId?: string | null
+    permissionConsumers?: ApplicationUncheckedCreateNestedManyWithoutPermissionSourceInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
+    bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
+    policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
+    authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
+    authzRoles?: AuthzRoleUncheckedCreateNestedManyWithoutApplicationInput
+    identities?: IdentityUncheckedCreateNestedManyWithoutApplicationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutApplicationInput
+    childAssets?: AssetUncheckedCreateNestedManyWithoutChildApplicationInput
+    assetAccessRows?: AccessUncheckedCreateNestedManyWithoutAssetApplicationInput
+    accessRows?: AccessUncheckedCreateNestedManyWithoutAccessApplicationInput
+    devLogs?: ApplicationDevLogUncheckedCreateNestedManyWithoutApplicationInput
+  }
+
+  export type ApplicationCreateOrConnectWithoutPermissionSourceInput = {
+    where: ApplicationWhereUniqueInput
+    create: XOR<ApplicationCreateWithoutPermissionSourceInput, ApplicationUncheckedCreateWithoutPermissionSourceInput>
+  }
+
+  export type ApplicationCreateManyPermissionSourceInputEnvelope = {
+    data: ApplicationCreateManyPermissionSourceInput | ApplicationCreateManyPermissionSourceInput[]
+    skipDuplicates?: boolean
   }
 
   export type ApplicationProviderCreateWithoutApplicationsInput = {
@@ -63055,6 +63795,196 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type AccountUpsertWithoutDevelopedApplicationsInput = {
+    update: XOR<AccountUpdateWithoutDevelopedApplicationsInput, AccountUncheckedUpdateWithoutDevelopedApplicationsInput>
+    create: XOR<AccountCreateWithoutDevelopedApplicationsInput, AccountUncheckedCreateWithoutDevelopedApplicationsInput>
+    where?: AccountWhereInput
+  }
+
+  export type AccountUpdateToOneWithWhereWithoutDevelopedApplicationsInput = {
+    where?: AccountWhereInput
+    data: XOR<AccountUpdateWithoutDevelopedApplicationsInput, AccountUncheckedUpdateWithoutDevelopedApplicationsInput>
+  }
+
+  export type AccountUpdateWithoutDevelopedApplicationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountType?: StringFieldUpdateOperationsInput | string
+    displayImage?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
+    individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
+    connections?: ConnectionUpdateManyWithoutAccountNestedInput
+    authMethods?: AuthnMethodUpdateManyWithoutAccountNestedInput
+    sessions?: AuthnSessionUpdateManyWithoutAccountNestedInput
+    contacts?: ContactUpdateManyWithoutAccountNestedInput
+    neupIds?: NeupIdUpdateManyWithoutAccountNestedInput
+    notifications?: NotificationUpdateManyWithoutAccountNestedInput
+    familyMembers?: FamilyMemberUpdateManyWithoutMemberNestedInput
+    verificationActions?: VerificationUpdateManyWithoutDoneByAccountNestedInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUpdateManyWithoutAccountNestedInput
+    parentAssets?: AssetUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUpdateManyWithoutChildAccountNestedInput
+    accessMembers?: MemberUpdateManyWithoutMemberAccountNestedInput
+    parentAccountMembers?: MemberUpdateManyWithoutParentAccountNestedInput
+    accessMemberRows?: AccessUpdateManyWithoutMemberAccountNestedInput
+    accessParentRows?: AccessUpdateManyWithoutParentAccountNestedInput
+    accessAssetAccountRows?: AccessUpdateManyWithoutAssetAccountNestedInput
+    denormRoles?: RoleUpdateManyWithoutAccountNestedInput
+    permits?: PermitUpdateManyWithoutAccountNestedInput
+    permitTargets?: PermitUpdateManyWithoutTargetAccountNestedInput
+    parentOwnerships?: AccountOwnershipUpdateManyWithoutChildrenNestedInput
+    childOwnerships?: AccountOwnershipUpdateManyWithoutParentNestedInput
+    linkedAccount?: AccountUpdateOneWithoutLinkedFromNestedInput
+    linkedFrom?: AccountUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUpdateManyWithoutOwnerAccountNestedInput
+    resources?: ResourceUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUpdateManyWithoutUploaderNestedInput
+    receivedRequests?: RequestUpdateManyWithoutRecipientNestedInput
+    sentRequests?: RequestUpdateManyWithoutSenderNestedInput
+    errorLogs?: SystemErrorUpdateManyWithoutAccountNestedInput
+    verifications?: VerificationUpdateManyWithoutAccountNestedInput
+  }
+
+  export type AccountUncheckedUpdateWithoutDevelopedApplicationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountType?: StringFieldUpdateOperationsInput | string
+    displayImage?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: NullableStringFieldUpdateOperationsInput | string | null
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    details?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
+    individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
+    authMethods?: AuthnMethodUncheckedUpdateManyWithoutAccountNestedInput
+    sessions?: AuthnSessionUncheckedUpdateManyWithoutAccountNestedInput
+    contacts?: ContactUncheckedUpdateManyWithoutAccountNestedInput
+    neupIds?: NeupIdUncheckedUpdateManyWithoutAccountNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutAccountNestedInput
+    familyMembers?: FamilyMemberUncheckedUpdateManyWithoutMemberNestedInput
+    verificationActions?: VerificationUncheckedUpdateManyWithoutDoneByAccountNestedInput
+    authzAssetsAccessGrants?: AuthzAssetsAccessGrantUncheckedUpdateManyWithoutAccountNestedInput
+    parentAssets?: AssetUncheckedUpdateManyWithoutParentAccountNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildAccountNestedInput
+    accessMembers?: MemberUncheckedUpdateManyWithoutMemberAccountNestedInput
+    parentAccountMembers?: MemberUncheckedUpdateManyWithoutParentAccountNestedInput
+    accessMemberRows?: AccessUncheckedUpdateManyWithoutMemberAccountNestedInput
+    accessParentRows?: AccessUncheckedUpdateManyWithoutParentAccountNestedInput
+    accessAssetAccountRows?: AccessUncheckedUpdateManyWithoutAssetAccountNestedInput
+    denormRoles?: RoleUncheckedUpdateManyWithoutAccountNestedInput
+    permits?: PermitUncheckedUpdateManyWithoutAccountNestedInput
+    permitTargets?: PermitUncheckedUpdateManyWithoutTargetAccountNestedInput
+    parentOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutChildrenNestedInput
+    childOwnerships?: AccountOwnershipUncheckedUpdateManyWithoutParentNestedInput
+    linkedFrom?: AccountUncheckedUpdateManyWithoutLinkedAccountNestedInput
+    connectedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutConnectedByAccountNestedInput
+    ownedLinkedAccounts?: LinkedAccountUncheckedUpdateManyWithoutOwnerAccountNestedInput
+    resources?: ResourceUncheckedUpdateManyWithoutAccountNestedInput
+    uploadedResources?: ResourceUncheckedUpdateManyWithoutUploaderNestedInput
+    receivedRequests?: RequestUncheckedUpdateManyWithoutRecipientNestedInput
+    sentRequests?: RequestUncheckedUpdateManyWithoutSenderNestedInput
+    errorLogs?: SystemErrorUncheckedUpdateManyWithoutAccountNestedInput
+    verifications?: VerificationUncheckedUpdateManyWithoutAccountNestedInput
+  }
+
+  export type ApplicationUpsertWithoutPermissionConsumersInput = {
+    update: XOR<ApplicationUpdateWithoutPermissionConsumersInput, ApplicationUncheckedUpdateWithoutPermissionConsumersInput>
+    create: XOR<ApplicationCreateWithoutPermissionConsumersInput, ApplicationUncheckedCreateWithoutPermissionConsumersInput>
+    where?: ApplicationWhereInput
+  }
+
+  export type ApplicationUpdateToOneWithWhereWithoutPermissionConsumersInput = {
+    where?: ApplicationWhereInput
+    data: XOR<ApplicationUpdateWithoutPermissionConsumersInput, ApplicationUncheckedUpdateWithoutPermissionConsumersInput>
+  }
+
+  export type ApplicationUpdateWithoutPermissionConsumersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    appSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    responseFields?: ApplicationUpdateresponseFieldsInput | string[]
+    tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: IntFieldUpdateOperationsInput | number
+    developerAccount?: AccountUpdateOneWithoutDevelopedApplicationsNestedInput
+    permissionSource?: ApplicationUpdateOneWithoutPermissionConsumersNestedInput
+    provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
+    defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
+    connections?: ConnectionUpdateManyWithoutApplicationNestedInput
+    bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
+    policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
+    authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
+    authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
+    identities?: IdentityUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUpdateManyWithoutApplicationNestedInput
+    childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
+    assetAccessRows?: AccessUpdateManyWithoutAssetApplicationNestedInput
+    accessRows?: AccessUpdateManyWithoutAccessApplicationNestedInput
+    devLogs?: ApplicationDevLogUpdateManyWithoutApplicationNestedInput
+  }
+
+  export type ApplicationUncheckedUpdateWithoutPermissionConsumersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    appSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    responseFields?: ApplicationUpdateresponseFieldsInput | string[]
+    tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: IntFieldUpdateOperationsInput | number
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    usePermissionFrom?: NullableStringFieldUpdateOperationsInput | string | null
+    providerId?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
+    connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
+    bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
+    policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
+    authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
+    authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
+    identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApplicationNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
+    assetAccessRows?: AccessUncheckedUpdateManyWithoutAssetApplicationNestedInput
+    accessRows?: AccessUncheckedUpdateManyWithoutAccessApplicationNestedInput
+    devLogs?: ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput
+  }
+
+  export type ApplicationUpsertWithWhereUniqueWithoutPermissionSourceInput = {
+    where: ApplicationWhereUniqueInput
+    update: XOR<ApplicationUpdateWithoutPermissionSourceInput, ApplicationUncheckedUpdateWithoutPermissionSourceInput>
+    create: XOR<ApplicationCreateWithoutPermissionSourceInput, ApplicationUncheckedCreateWithoutPermissionSourceInput>
+  }
+
+  export type ApplicationUpdateWithWhereUniqueWithoutPermissionSourceInput = {
+    where: ApplicationWhereUniqueInput
+    data: XOR<ApplicationUpdateWithoutPermissionSourceInput, ApplicationUncheckedUpdateWithoutPermissionSourceInput>
+  }
+
+  export type ApplicationUpdateManyWithWhereWithoutPermissionSourceInput = {
+    where: ApplicationScalarWhereInput
+    data: XOR<ApplicationUpdateManyMutationInput, ApplicationUncheckedUpdateManyWithoutPermissionSourceInput>
+  }
+
   export type ApplicationProviderUpsertWithoutApplicationsInput = {
     update: XOR<ApplicationProviderUpdateWithoutApplicationsInput, ApplicationProviderUncheckedUpdateWithoutApplicationsInput>
     create: XOR<ApplicationProviderCreateWithoutApplicationsInput, ApplicationProviderUncheckedCreateWithoutApplicationsInput>
@@ -63410,6 +64340,9 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developerAccount?: AccountCreateNestedOneWithoutDevelopedApplicationsInput
+    permissionSource?: ApplicationCreateNestedOneWithoutPermissionConsumersInput
+    permissionConsumers?: ApplicationCreateNestedManyWithoutPermissionSourceInput
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
     defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
@@ -63439,8 +64372,11 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developer?: string | null
+    usePermissionFrom?: string | null
     providerId?: string | null
     defaultRoleId?: string | null
+    permissionConsumers?: ApplicationUncheckedCreateNestedManyWithoutPermissionSourceInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
@@ -63484,6 +64420,9 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developerAccount?: AccountUpdateOneWithoutDevelopedApplicationsNestedInput
+    permissionSource?: ApplicationUpdateOneWithoutPermissionConsumersNestedInput
+    permissionConsumers?: ApplicationUpdateManyWithoutPermissionSourceNestedInput
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
     defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
@@ -63513,8 +64452,11 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    usePermissionFrom?: NullableStringFieldUpdateOperationsInput | string | null
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
     defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
+    permissionConsumers?: ApplicationUncheckedUpdateManyWithoutPermissionSourceNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
@@ -63536,6 +64478,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -63580,6 +64523,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -63627,6 +64571,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -63671,6 +64616,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -63753,6 +64699,9 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developerAccount?: AccountCreateNestedOneWithoutDevelopedApplicationsInput
+    permissionSource?: ApplicationCreateNestedOneWithoutPermissionConsumersInput
+    permissionConsumers?: ApplicationCreateNestedManyWithoutPermissionSourceInput
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
     defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
@@ -63782,8 +64731,11 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developer?: string | null
+    usePermissionFrom?: string | null
     providerId?: string | null
     defaultRoleId?: string | null
+    permissionConsumers?: ApplicationUncheckedCreateNestedManyWithoutPermissionSourceInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
@@ -63927,6 +64879,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -63971,6 +64924,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -64024,6 +64978,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -64068,6 +65023,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -64162,6 +65118,9 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developerAccount?: AccountUpdateOneWithoutDevelopedApplicationsNestedInput
+    permissionSource?: ApplicationUpdateOneWithoutPermissionConsumersNestedInput
+    permissionConsumers?: ApplicationUpdateManyWithoutPermissionSourceNestedInput
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
     defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
@@ -64191,8 +65150,11 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    usePermissionFrom?: NullableStringFieldUpdateOperationsInput | string | null
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
     defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
+    permissionConsumers?: ApplicationUncheckedUpdateManyWithoutPermissionSourceNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
@@ -64262,6 +65224,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -64306,6 +65269,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -64353,6 +65317,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -64397,6 +65362,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -64535,6 +65501,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -64579,6 +65546,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -64632,6 +65600,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -64676,6 +65645,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -64777,6 +65747,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -64821,6 +65792,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -64868,6 +65840,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -64912,6 +65885,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -64992,6 +65966,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -65036,6 +66011,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -65118,6 +66094,9 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developerAccount?: AccountCreateNestedOneWithoutDevelopedApplicationsInput
+    permissionSource?: ApplicationCreateNestedOneWithoutPermissionConsumersInput
+    permissionConsumers?: ApplicationCreateNestedManyWithoutPermissionSourceInput
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
     defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
@@ -65147,8 +66126,11 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developer?: string | null
+    usePermissionFrom?: string | null
     providerId?: string | null
     defaultRoleId?: string | null
+    permissionConsumers?: ApplicationUncheckedCreateNestedManyWithoutPermissionSourceInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
@@ -65181,6 +66163,9 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developerAccount?: AccountCreateNestedOneWithoutDevelopedApplicationsInput
+    permissionSource?: ApplicationCreateNestedOneWithoutPermissionConsumersInput
+    permissionConsumers?: ApplicationCreateNestedManyWithoutPermissionSourceInput
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
     defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
@@ -65210,8 +66195,11 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developer?: string | null
+    usePermissionFrom?: string | null
     providerId?: string | null
     defaultRoleId?: string | null
+    permissionConsumers?: ApplicationUncheckedCreateNestedManyWithoutPermissionSourceInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
@@ -65325,6 +66313,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -65369,6 +66358,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -65422,6 +66412,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -65466,6 +66457,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -65558,6 +66550,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -65602,6 +66595,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -65696,6 +66690,9 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developerAccount?: AccountUpdateOneWithoutDevelopedApplicationsNestedInput
+    permissionSource?: ApplicationUpdateOneWithoutPermissionConsumersNestedInput
+    permissionConsumers?: ApplicationUpdateManyWithoutPermissionSourceNestedInput
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
     defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
@@ -65725,8 +66722,11 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    usePermissionFrom?: NullableStringFieldUpdateOperationsInput | string | null
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
     defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
+    permissionConsumers?: ApplicationUncheckedUpdateManyWithoutPermissionSourceNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
@@ -65765,6 +66765,9 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developerAccount?: AccountUpdateOneWithoutDevelopedApplicationsNestedInput
+    permissionSource?: ApplicationUpdateOneWithoutPermissionConsumersNestedInput
+    permissionConsumers?: ApplicationUpdateManyWithoutPermissionSourceNestedInput
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
     defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
@@ -65794,8 +66797,11 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    usePermissionFrom?: NullableStringFieldUpdateOperationsInput | string | null
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
     defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
+    permissionConsumers?: ApplicationUncheckedUpdateManyWithoutPermissionSourceNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
@@ -65866,6 +66872,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -65910,6 +66917,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -65957,6 +66965,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -66001,6 +67010,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -66059,6 +67069,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -66103,6 +67114,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -66156,6 +67168,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -66200,6 +67213,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -66242,6 +67256,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     authMethods?: AuthnMethodCreateNestedManyWithoutAccountInput
@@ -66286,6 +67301,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     authMethods?: AuthnMethodUncheckedCreateNestedManyWithoutAccountInput
@@ -66339,6 +67355,9 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developerAccount?: AccountCreateNestedOneWithoutDevelopedApplicationsInput
+    permissionSource?: ApplicationCreateNestedOneWithoutPermissionConsumersInput
+    permissionConsumers?: ApplicationCreateNestedManyWithoutPermissionSourceInput
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
     defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
@@ -66368,8 +67387,11 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developer?: string | null
+    usePermissionFrom?: string | null
     providerId?: string | null
     defaultRoleId?: string | null
+    permissionConsumers?: ApplicationUncheckedCreateNestedManyWithoutPermissionSourceInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
@@ -66568,6 +67590,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     authMethods?: AuthnMethodUpdateManyWithoutAccountNestedInput
@@ -66612,6 +67635,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     authMethods?: AuthnMethodUncheckedUpdateManyWithoutAccountNestedInput
@@ -66671,6 +67695,9 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developerAccount?: AccountUpdateOneWithoutDevelopedApplicationsNestedInput
+    permissionSource?: ApplicationUpdateOneWithoutPermissionConsumersNestedInput
+    permissionConsumers?: ApplicationUpdateManyWithoutPermissionSourceNestedInput
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
     defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
@@ -66700,8 +67727,11 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    usePermissionFrom?: NullableStringFieldUpdateOperationsInput | string | null
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
     defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
+    permissionConsumers?: ApplicationUncheckedUpdateManyWithoutPermissionSourceNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
@@ -66826,6 +67856,9 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developerAccount?: AccountCreateNestedOneWithoutDevelopedApplicationsInput
+    permissionSource?: ApplicationCreateNestedOneWithoutPermissionConsumersInput
+    permissionConsumers?: ApplicationCreateNestedManyWithoutPermissionSourceInput
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
     defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
@@ -66855,8 +67888,11 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developer?: string | null
+    usePermissionFrom?: string | null
     providerId?: string | null
     defaultRoleId?: string | null
+    permissionConsumers?: ApplicationUncheckedCreateNestedManyWithoutPermissionSourceInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
@@ -66900,6 +67936,9 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developerAccount?: AccountUpdateOneWithoutDevelopedApplicationsNestedInput
+    permissionSource?: ApplicationUpdateOneWithoutPermissionConsumersNestedInput
+    permissionConsumers?: ApplicationUpdateManyWithoutPermissionSourceNestedInput
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
     defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
@@ -66929,8 +67968,11 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    usePermissionFrom?: NullableStringFieldUpdateOperationsInput | string | null
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
     defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
+    permissionConsumers?: ApplicationUncheckedUpdateManyWithoutPermissionSourceNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
@@ -66958,6 +68000,9 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developerAccount?: AccountCreateNestedOneWithoutDevelopedApplicationsInput
+    permissionSource?: ApplicationCreateNestedOneWithoutPermissionConsumersInput
+    permissionConsumers?: ApplicationCreateNestedManyWithoutPermissionSourceInput
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
     defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
@@ -66987,8 +68032,11 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developer?: string | null
+    usePermissionFrom?: string | null
     providerId?: string | null
     defaultRoleId?: string | null
+    permissionConsumers?: ApplicationUncheckedCreateNestedManyWithoutPermissionSourceInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     authzPermissions?: AuthzPermissionUncheckedCreateNestedManyWithoutApplicationInput
@@ -67032,6 +68080,9 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developerAccount?: AccountUpdateOneWithoutDevelopedApplicationsNestedInput
+    permissionSource?: ApplicationUpdateOneWithoutPermissionConsumersNestedInput
+    permissionConsumers?: ApplicationUpdateManyWithoutPermissionSourceNestedInput
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
     defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
@@ -67061,8 +68112,11 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    usePermissionFrom?: NullableStringFieldUpdateOperationsInput | string | null
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
     defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
+    permissionConsumers?: ApplicationUncheckedUpdateManyWithoutPermissionSourceNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
@@ -67111,6 +68165,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -67155,6 +68210,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -67351,6 +68407,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -67395,6 +68452,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -67566,6 +68624,9 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developerAccount?: AccountCreateNestedOneWithoutDevelopedApplicationsInput
+    permissionSource?: ApplicationCreateNestedOneWithoutPermissionConsumersInput
+    permissionConsumers?: ApplicationCreateNestedManyWithoutPermissionSourceInput
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
     defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
@@ -67595,8 +68656,11 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developer?: string | null
+    usePermissionFrom?: string | null
     providerId?: string | null
     defaultRoleId?: string | null
+    permissionConsumers?: ApplicationUncheckedCreateNestedManyWithoutPermissionSourceInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
@@ -67666,6 +68730,9 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developerAccount?: AccountUpdateOneWithoutDevelopedApplicationsNestedInput
+    permissionSource?: ApplicationUpdateOneWithoutPermissionConsumersNestedInput
+    permissionConsumers?: ApplicationUpdateManyWithoutPermissionSourceNestedInput
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
     defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
@@ -67695,8 +68762,11 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    usePermissionFrom?: NullableStringFieldUpdateOperationsInput | string | null
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
     defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
+    permissionConsumers?: ApplicationUncheckedUpdateManyWithoutPermissionSourceNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
@@ -67752,6 +68822,9 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developerAccount?: AccountCreateNestedOneWithoutDevelopedApplicationsInput
+    permissionSource?: ApplicationCreateNestedOneWithoutPermissionConsumersInput
+    permissionConsumers?: ApplicationCreateNestedManyWithoutPermissionSourceInput
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
     defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
@@ -67781,8 +68854,11 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developer?: string | null
+    usePermissionFrom?: string | null
     providerId?: string | null
     defaultRoleId?: string | null
+    permissionConsumers?: ApplicationUncheckedCreateNestedManyWithoutPermissionSourceInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
@@ -67981,6 +69057,9 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developerAccount?: AccountCreateNestedOneWithoutDevelopedApplicationsInput
+    permissionSource?: ApplicationCreateNestedOneWithoutPermissionConsumersInput
+    permissionConsumers?: ApplicationCreateNestedManyWithoutPermissionSourceInput
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeCreateNestedManyWithoutApplicationInput
@@ -68010,7 +69089,10 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developer?: string | null
+    usePermissionFrom?: string | null
     providerId?: string | null
+    permissionConsumers?: ApplicationUncheckedCreateNestedManyWithoutPermissionSourceInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
@@ -68060,6 +69142,9 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developerAccount?: AccountUpdateOneWithoutDevelopedApplicationsNestedInput
+    permissionSource?: ApplicationUpdateOneWithoutPermissionConsumersNestedInput
+    permissionConsumers?: ApplicationUpdateManyWithoutPermissionSourceNestedInput
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
     defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
@@ -68089,8 +69174,11 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    usePermissionFrom?: NullableStringFieldUpdateOperationsInput | string | null
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
     defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
+    permissionConsumers?: ApplicationUncheckedUpdateManyWithoutPermissionSourceNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
@@ -68401,6 +69489,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -68445,6 +69534,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -68585,6 +69675,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -68629,6 +69720,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -68720,6 +69812,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -68764,6 +69857,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -68811,6 +69905,7 @@ export namespace Prisma {
     isVerified?: boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    developedApplications?: ApplicationCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualCreateNestedOneWithoutAccountInput
     connections?: ConnectionCreateNestedManyWithoutAccountInput
@@ -68855,6 +69950,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     linkedAccountId?: string | null
+    developedApplications?: ApplicationUncheckedCreateNestedManyWithoutDeveloperAccountInput
     brandProfile?: AccountTypeBrandUncheckedCreateNestedOneWithoutAccountInput
     individualProfile?: AccountTypeIndividualUncheckedCreateNestedOneWithoutAccountInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutAccountInput
@@ -68913,6 +70009,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -68957,6 +70054,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -69010,6 +70108,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -69054,6 +70153,7 @@ export namespace Prisma {
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     linkedAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -69102,6 +70202,9 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developerAccount?: AccountCreateNestedOneWithoutDevelopedApplicationsInput
+    permissionSource?: ApplicationCreateNestedOneWithoutPermissionConsumersInput
+    permissionConsumers?: ApplicationCreateNestedManyWithoutPermissionSourceInput
     provider?: ApplicationProviderCreateNestedOneWithoutApplicationsInput
     defaultRole?: AuthzRoleCreateNestedOneWithoutDefaultForApplicationsInput
     connections?: ConnectionCreateNestedManyWithoutApplicationInput
@@ -69131,8 +70234,11 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developer?: string | null
+    usePermissionFrom?: string | null
     providerId?: string | null
     defaultRoleId?: string | null
+    permissionConsumers?: ApplicationUncheckedCreateNestedManyWithoutPermissionSourceInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutApplicationInput
     bridge?: ApplicationBridgeUncheckedCreateNestedManyWithoutApplicationInput
     policies?: ApplicationPolicyUncheckedCreateNestedManyWithoutApplicationInput
@@ -69176,6 +70282,9 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developerAccount?: AccountUpdateOneWithoutDevelopedApplicationsNestedInput
+    permissionSource?: ApplicationUpdateOneWithoutPermissionConsumersNestedInput
+    permissionConsumers?: ApplicationUpdateManyWithoutPermissionSourceNestedInput
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
     defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
@@ -69205,8 +70314,11 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    usePermissionFrom?: NullableStringFieldUpdateOperationsInput | string | null
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
     defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
+    permissionConsumers?: ApplicationUncheckedUpdateManyWithoutPermissionSourceNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
@@ -69217,6 +70329,26 @@ export namespace Prisma {
     assetAccessRows?: AccessUncheckedUpdateManyWithoutAssetApplicationNestedInput
     accessRows?: AccessUncheckedUpdateManyWithoutAccessApplicationNestedInput
     devLogs?: ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput
+  }
+
+  export type ApplicationCreateManyDeveloperAccountInput = {
+    id: string
+    name: string
+    description?: string | null
+    icon?: string | null
+    website?: string | null
+    appSecret?: string | null
+    createdAt?: Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    isInternal?: boolean
+    responseFields?: ApplicationCreateresponseFieldsInput | string[]
+    tokenFields?: ApplicationCreatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: number
+    usePermissionFrom?: string | null
+    providerId?: string | null
+    defaultRoleId?: string | null
   }
 
   export type ConnectionCreateManyAccountInput = {
@@ -69526,6 +70658,90 @@ export namespace Prisma {
     doneAt?: Date | string
     previously?: string | null
     createdAt?: Date | string
+  }
+
+  export type ApplicationUpdateWithoutDeveloperAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    appSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    responseFields?: ApplicationUpdateresponseFieldsInput | string[]
+    tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: IntFieldUpdateOperationsInput | number
+    permissionSource?: ApplicationUpdateOneWithoutPermissionConsumersNestedInput
+    permissionConsumers?: ApplicationUpdateManyWithoutPermissionSourceNestedInput
+    provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
+    defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
+    connections?: ConnectionUpdateManyWithoutApplicationNestedInput
+    bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
+    policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
+    authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
+    authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
+    identities?: IdentityUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUpdateManyWithoutApplicationNestedInput
+    childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
+    assetAccessRows?: AccessUpdateManyWithoutAssetApplicationNestedInput
+    accessRows?: AccessUpdateManyWithoutAccessApplicationNestedInput
+    devLogs?: ApplicationDevLogUpdateManyWithoutApplicationNestedInput
+  }
+
+  export type ApplicationUncheckedUpdateWithoutDeveloperAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    appSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    responseFields?: ApplicationUpdateresponseFieldsInput | string[]
+    tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: IntFieldUpdateOperationsInput | number
+    usePermissionFrom?: NullableStringFieldUpdateOperationsInput | string | null
+    providerId?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
+    permissionConsumers?: ApplicationUncheckedUpdateManyWithoutPermissionSourceNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
+    bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
+    policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
+    authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
+    authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
+    identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApplicationNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
+    assetAccessRows?: AccessUncheckedUpdateManyWithoutAssetApplicationNestedInput
+    accessRows?: AccessUncheckedUpdateManyWithoutAccessApplicationNestedInput
+    devLogs?: ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput
+  }
+
+  export type ApplicationUncheckedUpdateManyWithoutDeveloperAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    appSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    responseFields?: ApplicationUpdateresponseFieldsInput | string[]
+    tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: IntFieldUpdateOperationsInput | number
+    usePermissionFrom?: NullableStringFieldUpdateOperationsInput | string | null
+    providerId?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ConnectionUpdateWithoutAccountInput = {
@@ -70223,6 +71439,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUpdateManyWithoutAccountNestedInput
@@ -70266,6 +71483,7 @@ export namespace Prisma {
     isVerified?: BoolFieldUpdateOperationsInput | boolean
     details?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    developedApplications?: ApplicationUncheckedUpdateManyWithoutDeveloperAccountNestedInput
     brandProfile?: AccountTypeBrandUncheckedUpdateOneWithoutAccountNestedInput
     individualProfile?: AccountTypeIndividualUncheckedUpdateOneWithoutAccountNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutAccountNestedInput
@@ -70584,6 +71802,8 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developer?: string | null
+    usePermissionFrom?: string | null
     defaultRoleId?: string | null
   }
 
@@ -70602,6 +71822,9 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developerAccount?: AccountUpdateOneWithoutDevelopedApplicationsNestedInput
+    permissionSource?: ApplicationUpdateOneWithoutPermissionConsumersNestedInput
+    permissionConsumers?: ApplicationUpdateManyWithoutPermissionSourceNestedInput
     defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
@@ -70631,7 +71854,10 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    usePermissionFrom?: NullableStringFieldUpdateOperationsInput | string | null
     defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
+    permissionConsumers?: ApplicationUncheckedUpdateManyWithoutPermissionSourceNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
@@ -70660,7 +71886,29 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    usePermissionFrom?: NullableStringFieldUpdateOperationsInput | string | null
     defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ApplicationCreateManyPermissionSourceInput = {
+    id: string
+    name: string
+    description?: string | null
+    icon?: string | null
+    website?: string | null
+    appSecret?: string | null
+    createdAt?: Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: string
+    isInternal?: boolean
+    responseFields?: ApplicationCreateresponseFieldsInput | string[]
+    tokenFields?: ApplicationCreatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: number
+    developer?: string | null
+    providerId?: string | null
+    defaultRoleId?: string | null
   }
 
   export type ConnectionCreateManyApplicationInput = {
@@ -70793,6 +72041,90 @@ export namespace Prisma {
     responseBody?: NullableJsonNullValueInput | InputJsonValue
     error?: string | null
     createdAt?: Date | string
+  }
+
+  export type ApplicationUpdateWithoutPermissionSourceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    appSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    responseFields?: ApplicationUpdateresponseFieldsInput | string[]
+    tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: IntFieldUpdateOperationsInput | number
+    developerAccount?: AccountUpdateOneWithoutDevelopedApplicationsNestedInput
+    permissionConsumers?: ApplicationUpdateManyWithoutPermissionSourceNestedInput
+    provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
+    defaultRole?: AuthzRoleUpdateOneWithoutDefaultForApplicationsNestedInput
+    connections?: ConnectionUpdateManyWithoutApplicationNestedInput
+    bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
+    policies?: ApplicationPolicyUpdateManyWithoutApplicationNestedInput
+    authzPermissions?: AuthzPermissionUpdateManyWithoutApplicationNestedInput
+    authzRoles?: AuthzRoleUpdateManyWithoutApplicationNestedInput
+    identities?: IdentityUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUpdateManyWithoutApplicationNestedInput
+    childAssets?: AssetUpdateManyWithoutChildApplicationNestedInput
+    assetAccessRows?: AccessUpdateManyWithoutAssetApplicationNestedInput
+    accessRows?: AccessUpdateManyWithoutAccessApplicationNestedInput
+    devLogs?: ApplicationDevLogUpdateManyWithoutApplicationNestedInput
+  }
+
+  export type ApplicationUncheckedUpdateWithoutPermissionSourceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    appSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    responseFields?: ApplicationUpdateresponseFieldsInput | string[]
+    tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: IntFieldUpdateOperationsInput | number
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    providerId?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
+    permissionConsumers?: ApplicationUncheckedUpdateManyWithoutPermissionSourceNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
+    bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
+    policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
+    authzPermissions?: AuthzPermissionUncheckedUpdateManyWithoutApplicationNestedInput
+    authzRoles?: AuthzRoleUncheckedUpdateManyWithoutApplicationNestedInput
+    identities?: IdentityUncheckedUpdateManyWithoutApplicationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutApplicationNestedInput
+    childAssets?: AssetUncheckedUpdateManyWithoutChildApplicationNestedInput
+    assetAccessRows?: AccessUncheckedUpdateManyWithoutAssetApplicationNestedInput
+    accessRows?: AccessUncheckedUpdateManyWithoutAccessApplicationNestedInput
+    devLogs?: ApplicationDevLogUncheckedUpdateManyWithoutApplicationNestedInput
+  }
+
+  export type ApplicationUncheckedUpdateManyWithoutPermissionSourceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    appSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endpoints?: NullableJsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    isInternal?: BoolFieldUpdateOperationsInput | boolean
+    responseFields?: ApplicationUpdateresponseFieldsInput | string[]
+    tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
+    details?: NullableJsonNullValueInput | InputJsonValue
+    party?: IntFieldUpdateOperationsInput | number
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    providerId?: NullableStringFieldUpdateOperationsInput | string | null
+    defaultRoleId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ConnectionUpdateWithoutApplicationInput = {
@@ -71761,6 +73093,8 @@ export namespace Prisma {
     tokenFields?: ApplicationCreatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: number
+    developer?: string | null
+    usePermissionFrom?: string | null
     providerId?: string | null
   }
 
@@ -71950,6 +73284,9 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developerAccount?: AccountUpdateOneWithoutDevelopedApplicationsNestedInput
+    permissionSource?: ApplicationUpdateOneWithoutPermissionConsumersNestedInput
+    permissionConsumers?: ApplicationUpdateManyWithoutPermissionSourceNestedInput
     provider?: ApplicationProviderUpdateOneWithoutApplicationsNestedInput
     connections?: ConnectionUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUpdateManyWithoutApplicationNestedInput
@@ -71979,7 +73316,10 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    usePermissionFrom?: NullableStringFieldUpdateOperationsInput | string | null
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
+    permissionConsumers?: ApplicationUncheckedUpdateManyWithoutPermissionSourceNestedInput
     connections?: ConnectionUncheckedUpdateManyWithoutApplicationNestedInput
     bridge?: ApplicationBridgeUncheckedUpdateManyWithoutApplicationNestedInput
     policies?: ApplicationPolicyUncheckedUpdateManyWithoutApplicationNestedInput
@@ -72008,6 +73348,8 @@ export namespace Prisma {
     tokenFields?: ApplicationUpdatetokenFieldsInput | string[]
     details?: NullableJsonNullValueInput | InputJsonValue
     party?: IntFieldUpdateOperationsInput | number
+    developer?: NullableStringFieldUpdateOperationsInput | string | null
+    usePermissionFrom?: NullableStringFieldUpdateOperationsInput | string | null
     providerId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 

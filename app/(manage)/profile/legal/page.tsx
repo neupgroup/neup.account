@@ -173,8 +173,8 @@ export default function LegalPage() {
                     <form onSubmit={brandForm.handleSubmit(onBrandSubmit)} className="space-y-8">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Brand Legal Information</CardTitle>
-                                <CardDescription>Manage the legal identity details used for this brand account.</CardDescription>
+                                <CardTitle className="text-lg leading-7">Brand Legal Information</CardTitle>
+                                <CardDescription className="text-sm leading-6">Manage the legal identity details used for this brand account.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <FormField
@@ -244,8 +244,8 @@ export default function LegalPage() {
                     <form onSubmit={individualForm.handleSubmit(onIndividualSubmit)} className="space-y-8">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Legal Name</CardTitle>
-                                <CardDescription>Manage your legal first, middle, and last name.</CardDescription>
+                                <CardTitle className="text-lg leading-7">Legal Name</CardTitle>
+                                <CardDescription className="text-sm leading-6">Manage your legal first, middle, and last name.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <FormField control={individualForm.control} name="nameFirst" render={({ field }) => ( <FormItem><FormLabel>First Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )} />

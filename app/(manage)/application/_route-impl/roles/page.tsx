@@ -83,6 +83,8 @@ export async function ApplicationRolesPage({ applicationId, mode }: { applicatio
           <TitleSet level={1}
             title="Roles & Permissions"
             subtitle={`Manage permissions and roles for ${details.name}.`}
+            titleClassName="text-2xl leading-8"
+            subtitleClassName="text-sm leading-6"
           />
         </div>
         <Alert variant="destructive">
@@ -107,6 +109,8 @@ export async function ApplicationRolesPage({ applicationId, mode }: { applicatio
         <TitleSet level={1}
           title="Roles & Permissions"
           subtitle={`Manage roles for ${details.name}. Open a role to assign permissions.`}
+          titleClassName="text-2xl leading-8"
+          subtitleClassName="text-sm leading-6"
         />
       </div>
 

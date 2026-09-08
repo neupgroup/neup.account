@@ -166,7 +166,7 @@ export default async function ConnectionDetailPage({ params, searchParams }: Pag
           </span>
           <div className="min-w-0">
             <div className="flex items-center gap-2 min-w-0">
-              <h1 className="truncate text-2xl font-bold tracking-tight">
+              <h1 className="truncate font-bold tracking-tight text-2xl leading-8">
                 Connection to {connection.appName}
               </h1>
               <StatusDot status={headerStatus} />

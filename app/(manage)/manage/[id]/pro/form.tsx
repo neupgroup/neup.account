@@ -71,7 +71,7 @@ export function NeupProManager({ accountId }: { accountId: string }) {
     if (isPro) {
         return (
             <div className="grid gap-4">
-                <TitleSet level={1} title="Current Status" />
+                <TitleSet level={2} title="Current Status" titleClassName="text-lg leading-7" subtitleClassName="text-sm leading-6" />
                 <Card>
                     <CardHeader>
                          <Alert className="border-primary/50 text-primary [&>svg]:text-primary">
@@ -108,7 +108,7 @@ export function NeupProManager({ accountId }: { accountId: string }) {
 
     return (
         <div className="grid gap-4">
-            <TitleSet level={1} title="Activate Neup.Pro" subtitle="Manually grant Neup.Pro status to this user."/>
+            <TitleSet level={2} title="Activate Neup.Pro" subtitle="Manually grant Neup.Pro status to this user." titleClassName="text-lg leading-7" subtitleClassName="text-sm leading-6"/>
             <Card>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleAction(true))}>

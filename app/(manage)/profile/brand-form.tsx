@@ -130,7 +130,7 @@ export function BrandProfileForm({ accountId, children }: { accountId: string, c
     if (loading) {
         return (
             <Card>
-                <CardHeader><CardTitle>Brand Information</CardTitle><CardDescription>Manage your brand's public profile.</CardDescription></CardHeader>
+                <CardHeader><CardTitle className="text-lg leading-7">Brand Information</CardTitle><CardDescription className="text-sm leading-6">Manage your brand's public profile.</CardDescription></CardHeader>
                 <CardContent className="space-y-6">
                     <Skeleton className="h-10 w-1/2" />
                     <Skeleton className="h-10 w-1/3" />
@@ -141,7 +141,7 @@ export function BrandProfileForm({ accountId, children }: { accountId: string, c
     }
 
     if (error) {
-        return <Card><CardHeader><CardTitle>Error</CardTitle></CardHeader><CardContent><p className="text-destructive">{error}</p></CardContent></Card>
+        return <Card><CardHeader><CardTitle className="text-lg leading-7">Error</CardTitle></CardHeader><CardContent><p className="text-destructive">{error}</p></CardContent></Card>
     }
 
     return (
@@ -149,8 +149,8 @@ export function BrandProfileForm({ accountId, children }: { accountId: string, c
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <Card className="bg-card/50 shadow-none">
                     <CardHeader>
-                        <CardTitle>Brand Information</CardTitle>
-                        <CardDescription>Manage your brand's public display name and logo.</CardDescription>
+                        <CardTitle className="text-lg leading-7">Brand Information</CardTitle>
+                        <CardDescription className="text-sm leading-6">Manage your brand's public display name and logo.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="flex items-center gap-6">
@@ -191,8 +191,8 @@ export function BrandProfileForm({ accountId, children }: { accountId: string, c
 
                 <Card className="bg-card/50 shadow-none">
                     <CardHeader>
-                        <CardTitle>Legal Information</CardTitle>
-                        <CardDescription>Provide legal details if your brand is a registered entity.</CardDescription>
+                        <CardTitle className="text-lg leading-7">Legal Information</CardTitle>
+                        <CardDescription className="text-sm leading-6">Provide legal details if your brand is a registered entity.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <FormField

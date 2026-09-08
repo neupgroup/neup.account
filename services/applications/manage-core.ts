@@ -337,6 +337,7 @@ export async function createManagedApplication(input: { name: string; idPrefix: 
       const createdApp = await tx.application.create({
         data: {
           id: applicationId,
+          developer: accountId,
           name: parsed.data.name,
           status: 'development',
         },

@@ -59,13 +59,15 @@ export function AccessGroupView({
       {backHref && <BackButton href={backHref} />}
 
       {/* Main title */}
-      <TitleSet level={1} title={pageTitle} subtitle={pageDescription} />
+      <TitleSet level={1} title={pageTitle} subtitle={pageDescription} titleClassName="text-2xl leading-8" subtitleClassName="text-sm leading-6" />
 
       {/* Section 1 */}
       <div className="space-y-2">
-        <TitleSet level={1}
+        <TitleSet level={2}
           title={name}
           subtitle={description ?? ''}
+          titleClassName="text-lg leading-7"
+          subtitleClassName="text-sm leading-6"
         />
         <Card>
           <CardContent className="divide-y p-2">

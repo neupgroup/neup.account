@@ -178,7 +178,7 @@ export function IndividualProfileForm({ accountId }: { accountId: string }) {
     if (loading) {
         return (
             <Card>
-                <CardHeader><CardTitle>Personal Information</CardTitle><CardDescription>Your personal and account details.</CardDescription></CardHeader>
+                <CardHeader><CardTitle className="text-lg leading-7">Personal Information</CardTitle><CardDescription className="text-sm leading-6">Your personal and account details.</CardDescription></CardHeader>
                 <CardContent className="space-y-6">
                     <Skeleton className="h-10 w-1/2" />
                     <Skeleton className="h-10 w-1/3" />
@@ -189,7 +189,7 @@ export function IndividualProfileForm({ accountId }: { accountId: string }) {
     }
     
     if(error){
-        return <Card><CardHeader><CardTitle>Error</CardTitle></CardHeader><CardContent><p className="text-destructive">{error}</p></CardContent></Card>
+        return <Card><CardHeader><CardTitle className="text-lg leading-7">Error</CardTitle></CardHeader><CardContent><p className="text-destructive">{error}</p></CardContent></Card>
     }
 
     return (
@@ -197,8 +197,8 @@ export function IndividualProfileForm({ accountId }: { accountId: string }) {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <Card className="bg-card/50 shadow-none">
                     <CardHeader>
-                        <CardTitle>Personal Information</CardTitle>
-                        <CardDescription>Manage your personal details like name and date of birth.</CardDescription>
+                        <CardTitle className="text-lg leading-7">Personal Information</CardTitle>
+                        <CardDescription className="text-sm leading-6">Manage your personal details like name and date of birth.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
@@ -303,8 +303,8 @@ export function IndividualProfileForm({ accountId }: { accountId: string }) {
 
                 <Card className="bg-card/50 shadow-none">
                     <CardHeader>
-                        <CardTitle>Display Information</CardTitle>
-                        <CardDescription>This information will be displayed publicly on your profile.</CardDescription>
+                        <CardTitle className="text-lg leading-7">Display Information</CardTitle>
+                        <CardDescription className="text-sm leading-6">This information will be displayed publicly on your profile.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="flex items-center gap-6">
@@ -347,8 +347,8 @@ export function IndividualProfileForm({ accountId }: { accountId: string }) {
                 
                 <Card className="bg-card/50 shadow-none">
                     <CardHeader>
-                        <CardTitle>NeupID and Identities</CardTitle>
-                        <CardDescription>Manage your unique identifiers and request new ones.</CardDescription>
+                        <CardTitle className="text-lg leading-7">NeupID and Identities</CardTitle>
+                        <CardDescription className="text-sm leading-6">Manage your unique identifiers and request new ones.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                        <div className="space-y-2">
@@ -380,7 +380,7 @@ export function IndividualProfileForm({ accountId }: { accountId: string }) {
 
 
                 <Card className="bg-card/50 shadow-none">
-                    <CardHeader><CardTitle>Contact Information</CardTitle></CardHeader>
+                    <CardHeader><CardTitle className="text-lg leading-7">Contact Information</CardTitle></CardHeader>
                     <CardContent className="space-y-6">
                         <div className="grid md:grid-cols-2 gap-6">
                              <FormField control={form.control} name="primaryPhone" render={({ field }) => ( <FormItem><FormLabel>Primary Phone</FormLabel><FormControl><PhoneInput value={field.value ?? ''} onChange={field.onChange} /></FormControl><FormMessage /></FormItem> )} />

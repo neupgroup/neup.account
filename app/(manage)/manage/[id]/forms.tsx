@@ -84,9 +84,11 @@ export function SendWarningForm({ userId }: { userId: string }) {
 
     return (
         <div className="grid gap-4">
-            <TitleSet level={1}
+            <TitleSet level={2}
                 title="Send Warning"
                 subtitle="Send a notification to the user that will appear on their dashboard."
+                titleClassName="text-lg leading-7"
+                subtitleClassName="text-sm leading-6"
             />
              <Card>
                 <Form {...form}>
@@ -250,9 +252,11 @@ export function BlockServiceAccessForm({ userId, currentBlock }: { userId: strin
     if (currentBlock?.status) {
          return (
              <div className="grid gap-4">
-                 <TitleSet level={1}
+                 <TitleSet level={2}
                     title="Service Access Blocked"
                     subtitle="This user's access to services is currently blocked."
+                    titleClassName="text-lg leading-7"
+                    subtitleClassName="text-sm leading-6"
                 />
                 <Card>
                     <CardContent className="pt-6 space-y-2 text-sm">
@@ -277,9 +281,11 @@ export function BlockServiceAccessForm({ userId, currentBlock }: { userId: strin
 
     return (
          <div className="grid gap-4">
-            <TitleSet level={1}
+            <TitleSet level={2}
                 title="Block Service Access"
                 subtitle="Temporarily or permanently block the user from accessing any service after logging in."
+                titleClassName="text-lg leading-7"
+                subtitleClassName="text-sm leading-6"
             />
             <Card>
                 <Form {...form}>

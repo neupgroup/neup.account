@@ -65,6 +65,8 @@ export default async function SiteConfigPage() {
       <TitleSet level={1}
         title="Configurations"
         subtitle="Set website payment settings, footer social media accounts, and app branding."
+        titleClassName="text-2xl leading-8"
+        subtitleClassName="text-sm leading-6"
       />
 
       <div className="grid gap-6 md:grid-cols-3">
@@ -78,8 +80,8 @@ export default async function SiteConfigPage() {
                   </div>
                   <ArrowRight className="h-4 w-4 text-muted-foreground" />
                 </div>
-                <CardTitle>{item.title}</CardTitle>
-                <CardDescription>{item.description}</CardDescription>
+                <CardTitle className="text-lg leading-7">{item.title}</CardTitle>
+                <CardDescription className="text-sm leading-6">{item.description}</CardDescription>
               </CardHeader>
             </Card>
           </FlowLink>

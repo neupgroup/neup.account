@@ -18,6 +18,8 @@ export default async function UserProPage({ params }: { params: Promise<{ id: st
                 <TitleSet level={1}
                     title="Neup.Pro Management"
                     subtitle={`Activate or deactivate the Neup.Pro subscription for @${userDetails.neupId}.`}
+                    titleClassName="text-2xl leading-8"
+                    subtitleClassName="text-sm leading-6"
                 />
             </div>
             

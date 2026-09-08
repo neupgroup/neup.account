@@ -120,8 +120,8 @@ export function PermissionDetailEditor({
         {showDeleteSection ? (
           <div className="grid gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
             <div>
-              <p className="text-sm font-medium text-destructive">Delete permission</p>
-              <p className="text-xs text-muted-foreground">
+              <h2 className="text-lg font-semibold leading-7 text-destructive">Delete permission</h2>
+              <p className="text-sm leading-6 text-muted-foreground">
                 Remove this permission from the application. Any roles using it will lose it.
               </p>
             </div>

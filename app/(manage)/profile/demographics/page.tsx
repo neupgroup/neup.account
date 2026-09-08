@@ -171,8 +171,8 @@ export default function DemographicsPage() {
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Demographics</CardTitle>
-                            <CardDescription>Manage your gender and date of birth.</CardDescription>
+                            <CardTitle className="text-lg leading-7">Demographics</CardTitle>
+                            <CardDescription className="text-sm leading-6">Manage your gender and date of birth.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <FormField

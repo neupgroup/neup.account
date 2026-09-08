@@ -64,16 +64,18 @@ export default function BackupCodesPage() {
         <div className="grid gap-8">
             <BackButton href="/manage/security" />
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Backup Codes</h1>
-                <p className="text-muted-foreground">
+                <h1 className="font-bold tracking-tight text-2xl leading-8">Backup Codes</h1>
+                <p className="text-muted-foreground text-sm leading-6">
                     Store these codes in a safe place. They can be used to sign in if you lose access to your other recovery methods.
                 </p>
             </div>
             <Card>
                 <CardHeader>
-                    <TitleSet level={1}
+                    <TitleSet level={2}
                         title="Your Backup Codes"
                         subtitle="Each code can only be used once. Generate new codes to invalidate this set."
+                        titleClassName="text-lg leading-7"
+                        subtitleClassName="text-sm leading-6"
                     />
                 </CardHeader>
                 <CardContent className="space-y-6">

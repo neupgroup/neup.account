@@ -95,14 +95,16 @@ export async function ApplicationLogsPage({
         <TitleSet level={1}
           title="Development Logs"
           subtitle={`Request/response debug logs for ${details.name}. Logs are captured only while app status is development.`}
+          titleClassName="text-2xl leading-8"
+          subtitleClassName="text-sm leading-6"
         />
       </div>
 
       {logs.length === 0 ? (
         <Card>
           <CardHeader>
-            <CardTitle>No logs yet</CardTitle>
-            <CardDescription>Make requests to bridge APIs while status is development to capture logs.</CardDescription>
+            <CardTitle className="text-lg leading-7">No logs yet</CardTitle>
+            <CardDescription className="text-sm leading-6">Make requests to bridge APIs while status is development to capture logs.</CardDescription>
           </CardHeader>
         </Card>
       ) : (

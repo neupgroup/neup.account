@@ -51,7 +51,7 @@ export function ProfileForm({ profile, accountId }: ProfileFormProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Personal Information</CardTitle>
+        <CardTitle className="text-lg leading-7">Personal Information</CardTitle>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>

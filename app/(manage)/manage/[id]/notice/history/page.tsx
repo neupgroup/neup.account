@@ -14,14 +14,14 @@ export default async function NoticeHistoryPage({ params }: { params: Promise<{ 
         <div className="grid gap-8">
             <BackButton href={`/manage/${id}`} />
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Notice History</h1>
-                <p className="text-muted-foreground">
+                <h1 className="font-bold tracking-tight text-2xl leading-8">Notice History</h1>
+                <p className="text-muted-foreground text-sm leading-6">
                     A log of all warnings and notices sent to @{userDetails.neupId}.
                 </p>
             </div>
             <Card>
                 <CardHeader>
-                    <CardTitle>Coming Soon</CardTitle>
+                    <CardTitle className="text-lg leading-7">Coming Soon</CardTitle>
                 </CardHeader>
                  <CardContent>
                     <p className="text-sm text-muted-foreground">

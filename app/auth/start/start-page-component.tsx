@@ -138,8 +138,8 @@ export function StartPageComponent({ accounts, hasActiveSession, appName, firstP
           <div className="flex justify-start items-center mb-4">
 
           </div>
-          <CardTitle className="text-2xl font-headline">Get Started</CardTitle>
-          <CardDescription>
+          <CardTitle className="font-headline text-2xl leading-8">Get Started</CardTitle>
+          <CardDescription className="text-sm leading-6">
             {appName ? `Continue to ${displayAppName} with your NeupID.` : 'Choose an option below to continue with NeupID.'}
           </CardDescription>
         </CardHeader>
@@ -171,8 +171,8 @@ export function StartPageComponent({ accounts, hasActiveSession, appName, firstP
                     className="flex w-full items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
                   >
                     <div>
-                      <h3 className="font-semibold">Continue</h3>
-                      <p className="text-sm text-muted-foreground">
+                      <h3 className="font-semibold text-lg leading-7">Continue</h3>
+                      <p className="text-muted-foreground text-sm leading-6">
                         {appName ? `Continue to ${displayAppName} with this account.` : 'Continue with this account.'}
                       </p>
                     </div>
@@ -184,8 +184,8 @@ export function StartPageComponent({ accounts, hasActiveSession, appName, firstP
                     className="flex w-full items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
                   >
                     <div>
-                      <h3 className="font-semibold">Continue</h3>
-                      <p className="text-sm text-muted-foreground">
+                      <h3 className="font-semibold text-lg leading-7">Continue</h3>
+                      <p className="text-muted-foreground text-sm leading-6">
                         {appName ? `Continue to ${displayAppName} with this account.` : 'Continue with this account.'}
                       </p>
                     </div>
@@ -198,8 +198,8 @@ export function StartPageComponent({ accounts, hasActiveSession, appName, firstP
                   className="flex w-full items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
                 >
                   <div>
-                    <h3 className="font-semibold">Continue with other account</h3>
-                    <p className="text-sm text-muted-foreground">
+                    <h3 className="font-semibold text-lg leading-7">Continue with other account</h3>
+                    <p className="text-muted-foreground text-sm leading-6">
                       Sign in with a different NeupID.
                     </p>
                   </div>
@@ -225,8 +225,8 @@ export function StartPageComponent({ accounts, hasActiveSession, appName, firstP
                   className="flex w-full items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
                 >
                   <div>
-                    <h3 className="font-semibold">Sign In</h3>
-                    <p className="text-sm text-muted-foreground">Sign in with NeupID and continue using NeupID Group Products and Services.</p>
+                    <h3 className="font-semibold text-lg leading-7">Sign In</h3>
+                    <p className="text-muted-foreground text-sm leading-6">Sign in with NeupID and continue using NeupID Group Products and Services.</p>
                   </div>
                   <ChevronRight className="h-5 w-5 text-muted-foreground" />
                 </FlowLink>
@@ -235,8 +235,8 @@ export function StartPageComponent({ accounts, hasActiveSession, appName, firstP
                   className="flex w-full items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
                 >
                   <div>
-                    <h3 className="font-semibold">Sign Up</h3>
-                    <p className="text-sm text-muted-foreground">
+                    <h3 className="font-semibold text-lg leading-7">Sign Up</h3>
+                    <p className="text-muted-foreground text-sm leading-6">
                       Sign up for a NeupID to use NeupID Group Products and Services.
                     </p>
                   </div>
@@ -247,8 +247,8 @@ export function StartPageComponent({ accounts, hasActiveSession, appName, firstP
                   className="flex w-full items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
                 >
                   <div>
-                    <h3 className="font-semibold">Forget NeupID</h3>
-                    <p className="text-sm text-muted-foreground">
+                    <h3 className="font-semibold text-lg leading-7">Forget NeupID</h3>
+                    <p className="text-muted-foreground text-sm leading-6">
                       Can't remember your NeupID? We can help you recover your ID.
                     </p>
                   </div>

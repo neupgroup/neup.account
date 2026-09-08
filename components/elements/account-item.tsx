@@ -168,7 +168,7 @@ export function AccountListItem({
         >
             <div className="flex items-center gap-4">
                 <div>
-                    <h3 className={cn("font-semibold", isSelected && "text-accent")}>
+                    <h3 className={cn("font-semibold text-lg leading-7", isSelected && "text-accent")}>
                         {finalAccount.displayName}
                         {isOwnerAccount && (
                             <span className="ml-1 text-xs font-medium text-muted-foreground">

@@ -192,15 +192,17 @@ export default function AuthenticatorAppPage() {
         <div className="grid gap-8">
             <BackButton href="/manage/security" />
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Authenticator App</h1>
-                <p className="text-muted-foreground">
+                <h1 className="font-bold tracking-tight text-2xl leading-8">Authenticator App</h1>
+                <p className="text-muted-foreground text-sm leading-6">
                     Use an authenticator app for an extra layer of security (2FA).
                 </p>
             </div>
              <div className="space-y-2">
-                <TitleSet level={1}
+                <TitleSet level={2}
                     title="Manage 2FA"
                     subtitle="Enable or disable two-factor authentication for your account."
+                    titleClassName="text-lg leading-7"
+                    subtitleClassName="text-sm leading-6"
                 />
                 <Card>
                     {renderCardContent()}

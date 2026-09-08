@@ -37,7 +37,7 @@ export function DashboardHeader() {
     return <div className="space-y-4">
         <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16 rounded-lg"><AvatarImage src={profile.accountPhoto || getFallbackDisplayImage({ accountType: profile.accountType, gender: profile.gender })} alt={profile.nameDisplay} /><AvatarFallback className="rounded-lg text-xl">{`${profile.nameDisplay?.[0] || ''}`.toUpperCase()}</AvatarFallback></Avatar>
-            <div><p className="text-muted-foreground">{greeting}</p><div className="flex items-center gap-2"><h1 className="text-3xl font-bold tracking-tight">{greetingName || 'User'}!</h1>{accountId && <VerifiedBadge accountId={accountId} className="h-6 w-6" />}</div></div>
+            <div><p className="text-muted-foreground">{greeting}</p><div className="flex items-center gap-2"><h1 className="font-bold tracking-tight text-2xl leading-8">{greetingName || 'User'}!</h1>{accountId && <VerifiedBadge accountId={accountId} className="h-6 w-6" />}</div></div>
         </div>
         <form onSubmit={handleSearch}><div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="Search settings, people, apps, invoices..." className="pl-10" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} /></div></form>
     </div>;

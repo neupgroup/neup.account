@@ -9,8 +9,8 @@ export default function UnsecurePage() {
                     <div className="mx-auto bg-destructive rounded-full p-3 w-fit mb-4">
                         <Shield className="h-8 w-8 text-destructive-foreground" />
                     </div>
-                    <CardTitle className="text-2xl font-headline text-destructive">Insecure Connection</CardTitle>
-                    <CardDescription>
+                    <CardTitle className="font-headline text-destructive text-2xl leading-8">Insecure Connection</CardTitle>
+                    <CardDescription className="text-sm leading-6">
                         Your connection is not secure.
                     </CardDescription>
                 </CardHeader>

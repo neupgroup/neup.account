@@ -133,15 +133,15 @@ export default function CreateDependentPageClient({
         <div className="grid gap-8">
             <BackButton href={backHref} />
              <div>
-                <h1 className="text-3xl font-bold tracking-tight">Create Dependent Account</h1>
-                <p className="text-muted-foreground">
+                <h1 className="font-bold tracking-tight text-2xl leading-8">Create Dependent Account</h1>
+                <p className="text-muted-foreground text-sm leading-6">
                     Set up and manage an account for someone under your care.
                 </p>
             </div>
             <Form {...form}>
                 <form id="register-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <Card>
-                        <CardHeader><CardTitle>Basic Details</CardTitle></CardHeader>
+                        <CardHeader><CardTitle className="text-lg leading-7">Basic Details</CardTitle></CardHeader>
                         <CardContent className="space-y-4">
                             <FormField control={form.control} name="firstName" render={({ field }) => ( <FormItem><FormLabel>First Name</FormLabel><FormControl><Input placeholder="John" {...field} /></FormControl><FormMessage /></FormItem> )}/>
                             <FormField control={form.control} name="middleName" render={({ field }) => ( <FormItem><FormLabel>Middle Name (Optional)</FormLabel><FormControl><Input placeholder="" {...field} /></FormControl><FormMessage /></FormItem> )}/>
@@ -150,7 +150,7 @@ export default function CreateDependentPageClient({
                     </Card>
 
                     <Card>
-                        <CardHeader><CardTitle>Personal Information</CardTitle></CardHeader>
+                        <CardHeader><CardTitle className="text-lg leading-7">Personal Information</CardTitle></CardHeader>
                         <CardContent className="space-y-6">
                             <FormField
                                 control={form.control}

@@ -23,6 +23,8 @@ export default async function UserNoticePage({ params }: { params: Promise<{ id:
                  <TitleSet level={1}
                     title="Manage Notices & Actions"
                     subtitle={`Send warnings or apply administrative actions to @${userDetails.neupId}.`}
+                    titleClassName="text-2xl leading-8"
+                    subtitleClassName="text-sm leading-6"
                 />
             </div>
             

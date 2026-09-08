@@ -135,6 +135,7 @@ export type ApplicationSection = {
 // appSecret is intentionally excluded.
 export type ApplicationDetailsV2 = {
   id: string;
+  usePermissionFrom: string | null;
   name: string;
   description?: string;
   icon?: string;

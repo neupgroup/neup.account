@@ -90,8 +90,8 @@ export default function MaterializationPage() {
     <div className="grid gap-8">
         <BackButton href="/manage/data" />
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Schedule Deletion (Materialization)</h1>
-        <p className="text-muted-foreground">
+        <h1 className="font-bold tracking-tight text-2xl leading-8">Schedule Deletion (Materialization)</h1>
+        <p className="text-muted-foreground text-sm leading-6">
           Request your account to be deleted after a chosen period of inactivity.
         </p>
       </div>
@@ -100,9 +100,11 @@ export default function MaterializationPage() {
             <form onSubmit={form.handleSubmit(onSubmit)}>
             <Card>
                 <CardHeader>
-                <TitleSet level={1}
+                <TitleSet level={2}
                     title="Schedule Account Materialization"
                     subtitle="This action will send a request to an administrator for account deletion."
+                    titleClassName="text-lg leading-7"
+                    subtitleClassName="text-sm leading-6"
                 />
                 </CardHeader>
                 <CardContent className="space-y-4">

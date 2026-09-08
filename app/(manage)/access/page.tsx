@@ -246,9 +246,11 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
     >
       {showLinkedAccounts && (
         <div className="space-y-2">
-          <TitleSet level={1}
+          <TitleSet level={2}
             title="Link & Create Accounts"
             subtitle="Add new brand or dependent accounts to your profile."
+            titleClassName="text-lg leading-7"
+            subtitleClassName="text-sm leading-6"
           />
           <Card>
             <CardContent className="divide-y p-0">
@@ -266,9 +268,11 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
 
       {showLinkedAccounts && canSwitchAccounts && accessContext.isSelf && accessContext.isWorkingAsSignedIn && (
         <div className="space-y-2">
-          <TitleSet level={1}
+          <TitleSet level={2}
             title="Manage Accounts"
             subtitle="Switch to another account you have access to."
+            titleClassName="text-lg leading-7"
+            subtitleClassName="text-sm leading-6"
           />
           <Card>
             <CardContent className="p-0 divide-y">
@@ -300,9 +304,11 @@ export default async function AccessControlPage({ searchParams }: PageProps) {
 
       {(canViewFamily || canViewInvitations || canBlockUsers) && (
         <div className="space-y-2">
-          <TitleSet level={1}
+          <TitleSet level={2}
             title="People & Sharing"
             subtitle="Manage your requests, family, and blocked users."
+            titleClassName="text-lg leading-7"
+            subtitleClassName="text-sm leading-6"
           />
           <Card>
             <CardContent className="divide-y p-0">

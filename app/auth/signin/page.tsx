@@ -141,8 +141,8 @@ function NeupIdStep() {
       <Card className="mx-auto max-w-lg w-full border-0 shadow-none md:border md:shadow-sm">
         <CardHeader>
           <div className="flex justify-start items-center mb-4"></div>
-          <CardTitle className="text-2xl font-headline">Sign in with NeupID</CardTitle>
-          <CardDescription>
+          <CardTitle className="font-headline text-2xl leading-8">Sign in with NeupID</CardTitle>
+          <CardDescription className="text-sm leading-6">
             Sign in with your NeupID to access NeupID Group Products and Services
           </CardDescription>
         </CardHeader>
@@ -425,8 +425,8 @@ function PasswordStep() {
     <div className="flex min-h-screen items-start justify-center bg-card md:bg-background md:items-center">
       <Card className="mx-auto max-w-lg w-full border-0 shadow-none md:border md:shadow-sm">
         <CardHeader>
-          <CardTitle className="text-2xl font-headline">Welcome back,</CardTitle>
-          <CardDescription>
+          <CardTitle className="font-headline text-2xl leading-8">Welcome back,</CardTitle>
+          <CardDescription className="text-sm leading-6">
             @{neupId}, enter your password and you're a step closer to getting into your NeupID.
           </CardDescription>
         </CardHeader>
@@ -562,8 +562,8 @@ function MfaStep() {
     <div className="flex min-h-screen items-start justify-center bg-card md:bg-background md:items-center">
       <Card className="mx-auto max-w-lg w-full border-0 shadow-none md:border md:shadow-sm">
         <CardHeader>
-          <CardTitle className="text-2xl font-headline">Enter Authentication Code</CardTitle>
-          <CardDescription>Open your authenticator app and enter the code to complete your login.</CardDescription>
+          <CardTitle className="font-headline text-2xl leading-8">Enter Authentication Code</CardTitle>
+          <CardDescription className="text-sm leading-6">Open your authenticator app and enter the code to complete your login.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="grid gap-4">

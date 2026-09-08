@@ -57,16 +57,16 @@ export default async function DependentAccountsPage({ searchParams }: PageProps)
         <div className="grid gap-8">
             <BackButton href="/access" />
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Manage Dependent Accounts</h1>
-                <p className="text-muted-foreground">
+                <h1 className="font-bold tracking-tight text-2xl leading-8">Manage Dependent Accounts</h1>
+                <p className="text-muted-foreground text-sm leading-6">
                     Oversee and manage accounts under your care.
                 </p>
             </div>
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
-                        <CardTitle>Your Dependents</CardTitle>
-                        <CardDescription>
+                        <CardTitle className="text-lg leading-7">Your Dependents</CardTitle>
+                        <CardDescription className="text-sm leading-6">
                             A list of all accounts you manage.
                         </CardDescription>
                     </div>
@@ -79,8 +79,8 @@ export default async function DependentAccountsPage({ searchParams }: PageProps)
                     ) : (
                         <div className="flex flex-col items-center justify-center text-center p-8 gap-4">
                             <User className="h-12 w-12 text-muted-foreground/50" />
-                            <h3 className="text-lg font-semibold">No Dependent Accounts Found</h3>
-                            <p className="text-sm text-muted-foreground">
+                            <h3 className="font-semibold text-lg leading-7">No Dependent Accounts Found</h3>
+                            <p className="text-muted-foreground text-sm leading-6">
                                 Get started by creating an account for a family member.
                             </p>
                         </div>

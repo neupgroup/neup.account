@@ -64,11 +64,15 @@ export default async function PaymentSubscriptionPage() {
             <TitleSet level={1}
                 title="Payment & Subscription"
                 subtitle="Manage your billing information, subscriptions, and view purchase history."
+                titleClassName="text-2xl leading-8"
+                subtitleClassName="text-sm leading-6"
             />
              <div className="grid gap-4">
-                <TitleSet level={1}
+                <TitleSet level={2}
                     title="Your Wallet"
                     subtitle="Review your payment settings and upgrade your plan."
+                    titleClassName="text-lg leading-7"
+                    subtitleClassName="text-sm leading-6"
                 />
                 <Card>
                     <CardContent className="divide-y p-0">

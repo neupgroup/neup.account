@@ -90,7 +90,7 @@ export default async function ApplicationDetailPage({ params }: ApplicationDetai
           </span>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-3xl font-bold tracking-tight">{details.name}</h1>
+              <h1 className="font-bold tracking-tight text-2xl leading-8">{details.name}</h1>
               {details.isRootViewer && details.status && (
                 <Badge variant={statusVariant[details.status] ?? 'outline'} className="capitalize">
                   {details.status}
@@ -100,7 +100,7 @@ export default async function ApplicationDetailPage({ params }: ApplicationDetai
                 <Badge variant="outline">Internal</Badge>
               )}
             </div>
-            <p className="text-muted-foreground">{details.description || 'No description available.'}</p>
+            <p className="text-sm leading-6 text-muted-foreground">{details.description || 'No description available.'}</p>
             {details.website && (
               <a
                 href={details.website}
@@ -123,8 +123,8 @@ export default async function ApplicationDetailPage({ params }: ApplicationDetai
       {connectedAtFormatted && (
         <Card>
           <CardHeader>
-            <CardTitle>Connection</CardTitle>
-            <CardDescription>Your connection details for this application.</CardDescription>
+            <CardTitle className="text-lg leading-7">Connection</CardTitle>
+            <CardDescription className="text-sm leading-6">Your connection details for this application.</CardDescription>
           </CardHeader>
           <CardContent className="text-sm space-y-1">
             <p>
@@ -138,8 +138,8 @@ export default async function ApplicationDetailPage({ params }: ApplicationDetai
       {/* Data access */}
       <Card>
         <CardHeader>
-          <CardTitle>Data Access</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-lg leading-7">Data Access</CardTitle>
+          <CardDescription className="text-sm leading-6">
             {details.hasUsedApp
               ? 'Data this app has accessed for your account.'
               : 'Data this app will access if you use it.'}
@@ -161,7 +161,7 @@ export default async function ApplicationDetailPage({ params }: ApplicationDetai
       {/* Terms / policies */}
       <Card>
         <CardHeader>
-          <CardTitle>{termsTitle}</CardTitle>
+          <CardTitle className="text-lg leading-7">{termsTitle}</CardTitle>
         </CardHeader>
         <CardContent>
           {details.policies.length > 0 ? (
@@ -182,8 +182,8 @@ export default async function ApplicationDetailPage({ params }: ApplicationDetai
       {/* Account actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Account Actions</CardTitle>
-          <CardDescription>Actions are enabled when you have used this app.</CardDescription>
+          <CardTitle className="text-lg leading-7">Account Actions</CardTitle>
+          <CardDescription className="text-sm leading-6">Actions are enabled when you have used this app.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
@@ -243,7 +243,7 @@ export default async function ApplicationDetailPage({ params }: ApplicationDetai
       {details.canDelete && (
         <>
           <div className="grid gap-3">
-            <h2 className="text-xl font-semibold tracking-tight">Manage Application</h2>
+            <h2 className="font-semibold tracking-tight text-lg leading-7">Manage Application</h2>
             <div className="overflow-hidden rounded-2xl border bg-card">
               <FlowLink
                 href={`/data/appconnection/${id}/meta`}
@@ -330,8 +330,8 @@ export default async function ApplicationDetailPage({ params }: ApplicationDetai
 
           <Card className="border-destructive">
             <CardHeader>
-              <CardTitle>Owner Actions</CardTitle>
-              <CardDescription>Only the owner of this app can delete it.</CardDescription>
+              <CardTitle className="text-lg leading-7">Owner Actions</CardTitle>
+              <CardDescription className="text-sm leading-6">Only the owner of this app can delete it.</CardDescription>
             </CardHeader>
             <CardContent>
               <form action={deleteAction}>

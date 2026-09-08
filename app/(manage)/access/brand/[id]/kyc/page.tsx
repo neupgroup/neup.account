@@ -6,8 +6,8 @@ export default function BrandKycPage() {
         <div className="grid gap-8">
             <Card>
                 <CardHeader>
-                    <CardTitle>KYC Verification</CardTitle>
-                    <CardDescription>
+                    <CardTitle className="text-lg leading-7">KYC Verification</CardTitle>
+                    <CardDescription className="text-sm leading-6">
                         Manage Know Your Customer (KYC) settings and documents for this brand.
                     </CardDescription>
                 </CardHeader>

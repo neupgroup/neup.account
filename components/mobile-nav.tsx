@@ -197,8 +197,8 @@ export function MobileNav() {
         return (
             <div className="grid gap-8">
                  <div>
-                    <h1 className="text-3xl font-bold tracking-tight">NeupID</h1>
-                    <p className="text-muted-foreground">
+                    <h1 className="font-bold tracking-tight text-2xl leading-8">NeupID</h1>
+                    <p className="text-muted-foreground text-sm leading-6">
                         Navigate to different sections of your account.
                     </p>
                 </div>
@@ -213,14 +213,14 @@ export function MobileNav() {
     return (
         <div className="grid gap-8">
              <div>
-                <h1 className="text-3xl font-bold tracking-tight">NeupID</h1>
-                <p className="text-muted-foreground">
+                <h1 className="font-bold tracking-tight text-2xl leading-8">NeupID</h1>
+                <p className="text-muted-foreground text-sm leading-6">
                     Navigate to different sections of your account.
                 </p>
             </div>
             {navConfig.map((section: NavSection) => (
                  <div key={section.title || 'main'} className="space-y-2">
-                    {section.title && <h2 className="text-xl font-semibold tracking-tight">{section.title}</h2>}
+                    {section.title && <h2 className="font-semibold tracking-tight text-lg leading-7">{section.title}</h2>}
                     <Card>
                         <CardContent className="divide-y p-0">
                            {section.items.map((item, index) => {

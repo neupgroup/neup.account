@@ -27,8 +27,8 @@ export default async function SiteConfigDisplayImagesPage() {
     <div className="grid gap-8">
       <BackButton href="/site/config" />
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Display Images</h1>
-        <p className="text-muted-foreground">
+        <h1 className="font-bold tracking-tight text-2xl leading-8">Display Images</h1>
+        <p className="text-muted-foreground text-sm leading-6">
           Manage image resources used for profile photos, public illustrations, and future image categories.
         </p>
       </div>

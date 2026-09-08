@@ -88,7 +88,7 @@ async function SelectedApplicationPage({
                 <AppWindow className="h-5 w-5 text-muted-foreground" />
               </span>
               <div className="min-w-0">
-                <CardTitle className="truncate text-lg font-semibold">{app.name}</CardTitle>
+                <CardTitle className="truncate font-semibold text-lg leading-7">{app.name}</CardTitle>
                 {app.description ? (
                   <p className="mt-0.5 line-clamp-2 text-sm text-muted-foreground">
                     {app.description}
@@ -238,8 +238,8 @@ async function ApplicationsOverviewPage({
 
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="text-2xl font-bold tracking-tight">Applications</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <h1 className="font-bold tracking-tight text-2xl leading-8">Applications</h1>
+          <p className="mt-1 text-muted-foreground text-sm leading-6">
             Applications you manage, your permissions, and who you've granted access to.
           </p>
         </div>
@@ -262,7 +262,7 @@ async function ApplicationsOverviewPage({
                       <AppWindow className="h-5 w-5 text-muted-foreground" />
                     </span>
                     <div className="min-w-0">
-                      <CardTitle className="truncate text-base font-semibold">{app.name}</CardTitle>
+                      <CardTitle className="truncate font-semibold text-lg leading-7">{app.name}</CardTitle>
                       {app.description ? (
                         <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
                           {app.description}

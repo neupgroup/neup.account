@@ -10,8 +10,8 @@ export default function BlockedPage() {
                     <div className="mx-auto bg-destructive rounded-full p-3 w-fit mb-4">
                         <Ban className="h-8 w-8 text-destructive-foreground" />
                     </div>
-                    <CardTitle className="text-2xl font-headline text-destructive">Access Denied</CardTitle>
-                    <CardDescription>
+                    <CardTitle className="font-headline text-destructive text-2xl leading-8">Access Denied</CardTitle>
+                    <CardDescription className="text-sm leading-6">
                         You're not allowed to access this site.
                     </CardDescription>
                 </CardHeader>

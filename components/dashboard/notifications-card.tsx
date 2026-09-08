@@ -91,7 +91,7 @@ export async function NotificationsCard() {
         <div className="space-y-2">
             <TitleSet level={1}
                 title="Account Updates"
-                subtitle="Your most recent and important alerts."
+                subtitle="Your most recent and important alerts." titleClassName="text-2xl leading-8" subtitleClassName="text-sm leading-6"
             />
             <Card>
                 <CardContent className="divide-y p-0">

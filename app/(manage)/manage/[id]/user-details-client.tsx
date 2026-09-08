@@ -29,7 +29,7 @@ export function UserDetailsClient({ initialUserDetails }: UserDetailsClientProps
                 <Button variant="plain" size="icon" onClick={handleBack}>
                     <ArrowLeft className="h-5 w-5" />
                 </Button>
-                <h1 className="text-2xl font-bold ml-2">{userDetails.profile.nameFirst || ''} {userDetails.profile.nameLast || ''}</h1>
+                <h1 className="font-bold ml-2 text-2xl leading-8">{userDetails.profile.nameFirst || ''} {userDetails.profile.nameLast || ''}</h1>
             </div>
 
             <Tabs defaultValue="profile">

@@ -134,8 +134,8 @@ export default async function RequestsPage({ searchParams }: Props) {
   return (
     <div className="grid gap-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Requests</h1>
-        <p className="text-muted-foreground">
+        <h1 className="font-bold tracking-tight text-2xl leading-8">Requests</h1>
+        <p className="text-muted-foreground text-sm leading-6">
           All requests across every type — pending and processed.
         </p>
       </div>

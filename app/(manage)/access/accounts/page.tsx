@@ -19,12 +19,16 @@ export default async function AccessAccountsPage() {
       <TitleSet level={1}
         title="Accessible Accounts"
         subtitle="All accounts your profile can access."
+        titleClassName="text-2xl leading-8"
+        subtitleClassName="text-sm leading-6"
       />
 
       <div className="space-y-2">
-        <TitleSet level={1}
+        <TitleSet level={2}
           title="Accounts"
           subtitle="Switch to any account listed below."
+          titleClassName="text-lg leading-7"
+          subtitleClassName="text-sm leading-6"
         />
         <Card>
           <CardContent className="p-0 divide-y">

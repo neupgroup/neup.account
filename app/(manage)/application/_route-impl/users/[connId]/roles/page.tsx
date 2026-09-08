@@ -83,8 +83,8 @@ export async function ApplicationUserRolesPage({
       </div>
 
       <div className="grid gap-0.5">
-        <h1 className="text-3xl font-bold tracking-tight">Role Management</h1>
-        <p className="text-muted-foreground">{applicationDetails.name}</p>
+        <h1 className="font-bold tracking-tight text-2xl leading-8">Role Management</h1>
+        <p className="text-muted-foreground text-sm leading-6">{applicationDetails.name}</p>
       </div>
 
       <RoleSelector

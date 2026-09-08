@@ -43,8 +43,8 @@ export function AppLogoForm({ initialSiteLogoUrl }: AppLogoFormProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Site Logo</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-lg leading-7">Site Logo</CardTitle>
+        <CardDescription className="text-sm leading-6">
           Set the logo image URL used in the application header.
         </CardDescription>
       </CardHeader>

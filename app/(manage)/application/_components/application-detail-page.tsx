@@ -73,7 +73,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
           description: 'API secret, response fields, and silent SSO origins.',
         }
       : null,
-    permissions.canViewRoles
+    permissions.canViewRoles && !details.usePermissionFrom
       ? {
           key: 'roles',
           href: applicationHref('/application/roles', applicationId, mode ? { mode } : undefined),
@@ -81,7 +81,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
           description: 'Define permissions and group them into roles for access grants.',
         }
       : null,
-    permissions.canViewRoles
+    permissions.canViewRoles && !details.usePermissionFrom
       ? {
           key: 'permissions',
           href: applicationHref('/application/permissions', applicationId, mode ? { mode } : undefined),
@@ -141,7 +141,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
           </span>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-3xl font-bold tracking-tight">{details.name}</h1>
+              <h1 className="font-bold tracking-tight text-2xl leading-8">{details.name}</h1>
               {details.status && (
                 <Badge variant={statusVariant[details.status] ?? 'outline'} className="capitalize">
                   {details.status}
@@ -151,7 +151,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
                 <Badge variant="outline">Internal</Badge>
               )}
             </div>
-            <p className="text-muted-foreground">{details.description || 'No description available.'}</p>
+            <p className="text-sm leading-6 text-muted-foreground">{details.description || 'No description available.'}</p>
             {details.website && (
               <a
                 href={details.website}
@@ -198,7 +198,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
 
       {managementCards.length > 0 ? (
         <div className="grid gap-3">
-          <h2 className="text-xl font-semibold tracking-tight">Manage Application</h2>
+          <h2 className="font-semibold tracking-tight text-lg leading-7">Manage Application</h2>
           <div className="overflow-hidden rounded-2xl border bg-card">
             {managementCards.map((card, index) => (
               <FlowLink
@@ -222,8 +222,8 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
       {permissions.canDeleteApplication && (
         <Card className="border-destructive">
           <CardHeader>
-            <CardTitle>Danger Zone</CardTitle>
-            <CardDescription>Delete this application.</CardDescription>
+            <CardTitle className="text-lg leading-7">Danger Zone</CardTitle>
+            <CardDescription className="text-sm leading-6">Delete this application.</CardDescription>
           </CardHeader>
           <CardContent>
             <form action={deleteAction}>

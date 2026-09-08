@@ -122,8 +122,8 @@ export default function NeupidPage() {
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <Card>
                         <CardHeader>
-                            <CardTitle>NeupID and Identities</CardTitle>
-                            <CardDescription>Manage your unique identifiers and request new ones.</CardDescription>
+                            <CardTitle className="text-lg leading-7">NeupID and Identities</CardTitle>
+                            <CardDescription className="text-sm leading-6">Manage your unique identifiers and request new ones.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">

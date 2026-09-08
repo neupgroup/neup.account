@@ -43,8 +43,8 @@ export default async function FamilySharingPage() {
         <div className="grid gap-8">
             <BackButton href="/access" />
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Family Sharing</h1>
-                <p className="text-muted-foreground">
+                <h1 className="font-bold tracking-tight text-2xl leading-8">Family Sharing</h1>
+                <p className="text-muted-foreground text-sm leading-6">
                     Share your subscriptions and manage accounts with your family members.
                 </p>
             </div>
@@ -58,9 +58,11 @@ export default async function FamilySharingPage() {
 
                     return (
                         <div key={group.id} className="space-y-2">
-                             <TitleSet level={1}
+                             <TitleSet level={2}
                                 title={isOwner ? "Your Family Group" : `Family of ${ownerName}`}
                                 subtitle={isOwner ? "You can add up to 5 members." : "You are a member of this family."}
+                                titleClassName="text-lg leading-7"
+                                subtitleClassName="text-sm leading-6"
                              />
                             <Card>
                                 <CardContent className="p-6">
@@ -72,9 +74,11 @@ export default async function FamilySharingPage() {
                 })
             ) : canAddFamily ? (
                  <div className="space-y-2">
-                    <TitleSet level={1}
+                    <TitleSet level={2}
                         title="Your Family"
                         subtitle="You haven't created or joined a family yet. Invite someone to start one!"
+                        titleClassName="text-lg leading-7"
+                        subtitleClassName="text-sm leading-6"
                     />
                      <Card>
                         <CardContent className="p-6">
@@ -86,9 +90,11 @@ export default async function FamilySharingPage() {
             
              {canAddPartner && (
                 <div className="space-y-2">
-                    <TitleSet level={1}
+                    <TitleSet level={2}
                         title="Add Your Partner (Private)"
                         subtitle="Add one partner to your family group. This relationship can be kept private from other family members or made public."
+                        titleClassName="text-lg leading-7"
+                        subtitleClassName="text-sm leading-6"
                     />
                     <Card>
                         <CardContent className="p-6">

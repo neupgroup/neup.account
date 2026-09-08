@@ -6,10 +6,10 @@ export default function NotFound() {
   return (
     <div className="mx-auto flex min-h-[60vh] w-full max-w-md flex-col items-center justify-center p-6 text-center">
       <AlertTriangle className="h-16 w-16 text-primary" />
-      <h1 className="mt-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+      <h1 className="mt-4 font-bold tracking-tight text-foreground text-2xl leading-8">
         Page Not Found
       </h1>
-      <p className="mt-4 text-muted-foreground">
+      <p className="mt-4 text-muted-foreground text-sm leading-6">
         Sorry, we couldn't find the page you're looking for. It might have been moved or
         deleted.
       </p>

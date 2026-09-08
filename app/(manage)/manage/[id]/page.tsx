@@ -106,7 +106,7 @@ export default async function AccountDetailsPage({ params }: { params: Promise<{
         </Avatar>
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight">
+            <h1 className="font-bold tracking-tight text-2xl leading-8">
               {userDetails.profile.nameDisplay ||
                 `${userDetails.profile.nameFirst} ${userDetails.profile.nameLast}`}
             </h1>
@@ -133,7 +133,7 @@ export default async function AccountDetailsPage({ params }: { params: Promise<{
       </Card>
       
        <div className="space-y-2">
-            <h2 className="text-xl font-semibold tracking-tight">Administration Actions</h2>
+            <h2 className="font-semibold tracking-tight text-lg leading-7">Administration Actions</h2>
              <Card>
                 <CardContent className="divide-y p-0">
                 {adminFeatures.map((feature, index) => (

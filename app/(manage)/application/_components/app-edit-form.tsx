@@ -112,8 +112,8 @@ export function AppEditForm({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardHeader>
-            <CardTitle>Application Details</CardTitle>
-            <CardDescription>Update the name, description, icon, website, and publication status.</CardDescription>
+            <CardTitle className="text-lg leading-7">Application Details</CardTitle>
+            <CardDescription className="text-sm leading-6">Update the name, description, icon, website, and publication status.</CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-4">

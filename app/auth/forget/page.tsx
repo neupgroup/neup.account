@@ -72,8 +72,8 @@ export default function ForgetPage() {
           <div className="flex justify-start items-center mb-4">
 
           </div>
-          <CardTitle className="text-2xl font-headline">Forgot NeupID?</CardTitle>
-          <CardDescription>
+          <CardTitle className="font-headline text-2xl leading-8">Forgot NeupID?</CardTitle>
+          <CardDescription className="text-sm leading-6">
             Enter the email address associated with your account and we'll send you a link to recover your NeupID.
           </CardDescription>
         </CardHeader>

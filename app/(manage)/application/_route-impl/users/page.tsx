@@ -89,7 +89,7 @@ export async function ApplicationUsersPage({
       </div>
 
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">
+        <h1 className="font-bold tracking-tight text-2xl leading-8">
           Users{' '}
           <span className="text-muted-foreground">
             of{' '}
@@ -101,7 +101,7 @@ export async function ApplicationUsersPage({
             </FlowLink>
           </span>
         </h1>
-        <p className="text-muted-foreground">
+        <p className="text-muted-foreground text-sm leading-6">
           {role
             ? 'Showing users assigned to the selected role.'
             : `${userCount.toLocaleString()} user${userCount === 1 ? '' : 's'} found for the application.`}

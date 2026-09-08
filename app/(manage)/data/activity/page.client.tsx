@@ -152,10 +152,10 @@ function DataActivityPageComponent({ after, applicationId, history }: { after?: 
         <div className="grid gap-8">
             <div>
                 <BackButton href={backHref} />
-                <h1 className="text-3xl font-bold tracking-tight mt-4">
+                <h1 className="font-bold tracking-tight mt-4 text-2xl leading-8">
                     {applicationId ? 'Application Activity' : 'Your Account Activity'}
                 </h1>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground text-sm leading-6">
                     {applicationId
                         ? 'Activity log for this application — changes, requests, and status events.'
                         : 'View a log of recent actions performed on your account.'}

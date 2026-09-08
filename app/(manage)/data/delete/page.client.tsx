@@ -75,8 +75,8 @@ export default function DeleteAccountPage() {
     <div className="grid gap-8">
         <BackButton href="/manage/data" />
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Delete Account</h1>
-        <p className="text-muted-foreground">
+        <h1 className="font-bold tracking-tight text-2xl leading-8">Delete Account</h1>
+        <p className="text-muted-foreground text-sm leading-6">
           Permanently delete your account and all associated data.
         </p>
       </div>
@@ -84,9 +84,11 @@ export default function DeleteAccountPage() {
       <form action={handleSubmit}>
         <Card>
             <CardHeader>
-            <TitleSet level={1}
+            <TitleSet level={2}
                 title="Request Account Deletion"
                 subtitle="Please read the following information carefully before proceeding."
+                titleClassName="text-lg leading-7"
+                subtitleClassName="text-sm leading-6"
             />
             </CardHeader>
             <CardContent className="space-y-4">

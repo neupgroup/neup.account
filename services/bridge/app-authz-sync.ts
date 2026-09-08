@@ -1,3 +1,4 @@
+import { resolvePermissionSourceId } from '@/services/applications/permission-source';
 import prisma from '@/.neup/core/database/prisma';
 import { logError } from '@/.neup/logica/logger/files';
 import { Prisma } from '@/.neup/core/database/prisma';
@@ -26,7 +27,7 @@ IDs for synced roles and permissions may contain only ASCII letters, digits, `.`
 
 const AUTHZ_ID_PATTERN = /^[0-9A-Za-z._-]+$/;
 
-type SyncFailureStatus = 400 | 401 | 404 | 409 | 500;
+type SyncFailureStatus = 400 | 401 | 403 | 404 | 409 | 500;
 type SyncFailure = {
   status: SyncFailureStatus;
   body: { success: false; error: string; error_description?: string };
@@ -260,7 +261,7 @@ export async function getSyncedAppPermissions(credentials: AppCredentials): Prom
 
   try {
     const permissions = await prisma.authzPermission.findMany({
-      where: { appId: auth.app.id },
+      where: { appId: await resolvePermissionSourceId(auth.app.id) },
       orderBy: { name: 'asc' },
     });
 
@@ -309,6 +310,10 @@ export async function postSyncedAppPermissions(credentials: AppCredentials, inpu
 > {
   const auth = await validateApplicationCredentials(credentials);
   if (auth.status !== 200) return auth;
+
+  if (await resolvePermissionSourceId(auth.app.id) !== auth.app.id) {
+    return { status: 403, body: { success: false, error: 'shared_permissions_read_only', error_description: 'Edit permissions in the source application.' } };
+  }
 
   const permissionsInput = Array.isArray(input)
     ? input
@@ -393,6 +398,19 @@ export async function postSyncedAppPermissions(credentials: AppCredentials, inpu
             appId: auth.app.id,
           },
         });
+      }
+      // Shared definitions may be used by roles belonging to other applications.
+      const affected = await tx.authzRolePermissionMap.findMany({
+        where: { permissionId: { in: permissions.map((permission) => permission.id.trim()) } },
+        select: { roleId: true }, distinct: ['roleId'],
+      });
+      for (const { roleId } of affected) {
+        const mappings = await tx.authzRolePermissionMap.findMany({
+          where: { roleId }, select: { permission: { select: { name: true } } },
+        });
+        const names = Array.from(new Set(mappings.map((mapping) => mapping.permission.name)));
+        await tx.authzRole.update({ where: { id: roleId }, data: { permissions: names, pushed: false } });
+        await tx.role.updateMany({ where: { roleId }, data: { permissions: names } });
       }
     });
 
@@ -490,7 +508,7 @@ export async function postSyncedAppRoles(credentials: AppCredentials, input: unk
         const permissionNames = normalizeStringArray(role.permissions);
         const matchedPermissions = permissionNames.length > 0
           ? await tx.authzPermission.findMany({
-              where: { appId: auth.app.id, name: { in: permissionNames } },
+              where: { appId: await resolvePermissionSourceId(auth.app.id, tx), name: { in: permissionNames } },
               select: { id: true, name: true },
             })
           : [];

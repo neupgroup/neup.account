@@ -30,8 +30,8 @@ export default function UserActivityPage() {
          <div className="grid gap-8">
             <BackButton href={`/manage/${params.id}`} />
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Account Activity</h1>
-                <p className="text-muted-foreground">
+                <h1 className="font-bold tracking-tight text-2xl leading-8">Account Activity</h1>
+                <p className="text-muted-foreground text-sm leading-6">
                     {description ?? `Recent activity log for account ID: ${params.id}.`}
                 </p>
             </div>

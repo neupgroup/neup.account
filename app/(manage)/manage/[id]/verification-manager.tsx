@@ -113,7 +113,7 @@ export function VerificationManager({ accountId }: { accountId: string }) {
     if (details?.status === 'approved') {
         return (
             <div className="grid gap-4">
-                <TitleSet level={1} title="Verification Status" />
+                <TitleSet level={2} title="Verification Status" titleClassName="text-lg leading-7" subtitleClassName="text-sm leading-6" />
                 <Card>
                     <CardHeader>
                          <Alert className="border-green-500/50 bg-green-500/10 text-green-700">
@@ -151,7 +151,7 @@ export function VerificationManager({ accountId }: { accountId: string }) {
 
     return (
         <div className="grid gap-4">
-            <TitleSet level={1} title="Grant Verification" subtitle="Manually grant a verification badge to this user."/>
+            <TitleSet level={2} title="Grant Verification" subtitle="Manually grant a verification badge to this user." titleClassName="text-lg leading-7" subtitleClassName="text-sm leading-6"/>
             <Card>
                 <Form {...grantForm}>
                     <form onSubmit={grantForm.handleSubmit(handleGrant)}>

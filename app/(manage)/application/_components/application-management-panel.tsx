@@ -181,8 +181,8 @@ export function ApplicationManagementPanel({ application }: { application: Manag
     <div className="grid gap-6">
       <Card>
         <CardHeader>
-          <CardTitle>Application</CardTitle>
-          <CardDescription>Created application record and management console.</CardDescription>
+          <CardTitle className="text-lg leading-7">Application</CardTitle>
+          <CardDescription className="text-sm leading-6">Created application record and management console.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           <div className="flex flex-wrap items-center gap-2">
@@ -204,8 +204,8 @@ export function ApplicationManagementPanel({ application }: { application: Manag
 
       <Card>
         <CardHeader>
-          <CardTitle>Secret Key</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-lg leading-7">Secret Key</CardTitle>
+          <CardDescription className="text-sm leading-6">
             Generate a device-side random secret. It is saved once and only shown after generation.
           </CardDescription>
         </CardHeader>
@@ -233,8 +233,8 @@ export function ApplicationManagementPanel({ application }: { application: Manag
 
       <Card>
         <CardHeader>
-          <CardTitle>Data Access</CardTitle>
-          <CardDescription>Select the account data this application can subscribe to.</CardDescription>
+          <CardTitle className="text-lg leading-7">Data Access</CardTitle>
+          <CardDescription className="text-sm leading-6">Select the account data this application can subscribe to.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -259,8 +259,8 @@ export function ApplicationManagementPanel({ application }: { application: Manag
 
       <Card>
         <CardHeader>
-          <CardTitle>Policies</CardTitle>
-          <CardDescription>Add privacy, cookies, terms, or any other policy you need.</CardDescription>
+          <CardTitle className="text-lg leading-7">Policies</CardTitle>
+          <CardDescription className="text-sm leading-6">Add privacy, cookies, terms, or any other policy you need.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-4">
@@ -311,8 +311,8 @@ export function ApplicationManagementPanel({ application }: { application: Manag
 
       <Card>
         <CardHeader>
-          <CardTitle>Endpoints and Actions</CardTitle>
-          <CardDescription>Add the URLs and actions users should see for deletion, blocking, and logout.
+          <CardTitle className="text-lg leading-7">Endpoints and Actions</CardTitle>
+          <CardDescription className="text-sm leading-6">Add the URLs and actions users should see for deletion, blocking, and logout.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -378,8 +378,8 @@ export function ApplicationManagementPanel({ application }: { application: Manag
 
       <Card>
         <CardHeader>
-          <CardTitle>Webhook — Roles &amp; Permissions</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-lg leading-7">Webhook — Roles &amp; Permissions</CardTitle>
+          <CardDescription className="text-sm leading-6">
             When roles, permissions, or access grants change for this application, the change is
             pushed to this URL via POST. Leave blank to disable.
           </CardDescription>

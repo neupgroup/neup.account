@@ -120,13 +120,13 @@ export async function ApplicationUserDetailsPage({
       </div>
 
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">User Details</h1>
-        <p className="text-muted-foreground">{applicationDetails.name}</p>
+        <h1 className="font-bold tracking-tight text-2xl leading-8">User Details</h1>
+        <p className="text-muted-foreground text-sm leading-6">{applicationDetails.name}</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Basic Information</CardTitle>
+          <CardTitle className="text-lg leading-7">Basic Information</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="flex items-center gap-3">

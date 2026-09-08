@@ -13,8 +13,8 @@ export async function AccessCard() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Access & Sharing</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-lg leading-7">Access & Sharing</CardTitle>
+                <CardDescription className="text-sm leading-6">
                     You've granted {totalApps} app{totalApps === 1 ? '' : 's'} access to your data.
                 </CardDescription>
             </CardHeader>

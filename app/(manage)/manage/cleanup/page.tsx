@@ -19,6 +19,8 @@ export default async function AccountCleanupPage() {
                 <TitleSet level={1}
                     title="Account Cleanup"
                     subtitle="Permanently delete expired guest accounts and all their associated data."
+                    titleClassName="text-2xl leading-8"
+                    subtitleClassName="text-sm leading-6"
                 />
             </div>
 

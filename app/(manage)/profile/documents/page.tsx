@@ -215,8 +215,8 @@ export default function KycPage() {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
                 <CheckCircle2 className="h-16 w-16 text-green-500 mb-4" />
-                <h1 className="text-2xl font-bold">KYC Submitted Successfully!</h1>
-                <p className="text-muted-foreground mt-2">Your information is now under review. We will notify you once the process is complete.</p>
+                <h1 className="font-bold text-2xl leading-8">KYC Submitted Successfully!</h1>
+                <p className="text-muted-foreground mt-2 text-sm leading-6">Your information is now under review. We will notify you once the process is complete.</p>
                 <Button onClick={() => redirectInApp(router, profileBackHref)} className="mt-6">Back to Profile</Button>
             </div>
         )
@@ -226,16 +226,16 @@ export default function KycPage() {
         <div className="grid gap-8">
             <BackButton href={profileBackHref} />
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">KYC & Verification</h1>
-                <p className="text-muted-foreground">Verify your identity to unlock all features of your account.</p>
+                <h1 className="font-bold tracking-tight text-2xl leading-8">KYC & Verification</h1>
+                <p className="text-muted-foreground text-sm leading-6">Verify your identity to unlock all features of your account.</p>
             </div>
 
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                      <Card>
                         <CardHeader>
-                            <CardTitle>Document Upload</CardTitle>
-                            <CardDescription>Upload a government-issued ID and a selfie.</CardDescription>
+                            <CardTitle className="text-lg leading-7">Document Upload</CardTitle>
+                            <CardDescription className="text-sm leading-6">Upload a government-issued ID and a selfie.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <FormField name="documentType" control={form.control} render={({ field }) => (

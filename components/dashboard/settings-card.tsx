@@ -100,7 +100,7 @@ export function SettingsCard() {
          <div className="space-y-2">
             <TitleSet level={1}
                 title="Account Settings"
-                subtitle="Manage your account security and preferences."
+                subtitle="Manage your account security and preferences." titleClassName="text-2xl leading-8" subtitleClassName="text-sm leading-6"
             />
             <Card>
                 <CardContent className="divide-y p-2">

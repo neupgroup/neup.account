@@ -38,8 +38,8 @@ export default async function BrandManagementLayout({
                 <AvatarFallback />
             </Avatar>
             <div>
-                <h2 className="text-xl font-bold tracking-tight">{brandProfile.nameDisplay}</h2>
-                <p className="text-sm text-muted-foreground">Brand Management</p>
+                <h2 className="font-bold tracking-tight text-lg leading-7">{brandProfile.nameDisplay}</h2>
+                <p className="text-muted-foreground text-sm leading-6">Brand Management</p>
             </div>
         </div>
         <BrandNav brandId={resolvedParams.id} />

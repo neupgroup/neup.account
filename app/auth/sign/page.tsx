@@ -70,8 +70,8 @@ export default async function AuthSignPage({ searchParams }: SignPageProps) {
           <CardHeader>
             <AppIdentity icon={appIcon} name={displayAppName} />
             <div className="pt-4 space-y-1">
-              <CardTitle className="text-2xl font-headline">Sign in to continue</CardTitle>
-              <CardDescription>
+              <CardTitle className="font-headline text-2xl leading-8">Sign in to continue</CardTitle>
+              <CardDescription className="text-sm leading-6">
                 Sign in with your NeupID to continue to{' '}
                 <span className="font-medium text-foreground">{displayAppName}</span>.
               </CardDescription>
@@ -95,10 +95,10 @@ export default async function AuthSignPage({ searchParams }: SignPageProps) {
           <CardHeader>
             <AppIdentity icon={appIcon} name={displayAppName} />
             <div className="pt-4 space-y-1">
-              <CardTitle className="text-2xl font-headline">
+              <CardTitle className="font-headline text-2xl leading-8">
                 Welcome, {userDisplayName}
               </CardTitle>
-              <CardDescription className="text-sm">
+              <CardDescription className="text-sm leading-6">
                 <span className="font-medium text-foreground">{displayAppName}</span>
                 {' '}is requesting access to your basic information.
               </CardDescription>
@@ -127,8 +127,8 @@ export default async function AuthSignPage({ searchParams }: SignPageProps) {
           <CardHeader>
             <AppIdentity icon={appIcon} name={displayAppName} />
             <div className="pt-4 space-y-1">
-              <CardTitle className="text-2xl font-headline">Data Access</CardTitle>
-              <CardDescription>
+              <CardTitle className="font-headline text-2xl leading-8">Data Access</CardTitle>
+              <CardDescription className="text-sm leading-6">
                 <span className="font-medium text-foreground">{displayAppName}</span>
                 {' '}will have access to the following information from your account.
               </CardDescription>
@@ -167,8 +167,8 @@ export default async function AuthSignPage({ searchParams }: SignPageProps) {
           <CardHeader>
             <AppIdentity icon={appIcon} name={displayAppName} />
             <div className="pt-4 space-y-1">
-              <CardTitle className="text-2xl font-headline">Terms &amp; Conditions</CardTitle>
-              <CardDescription>
+              <CardTitle className="font-headline text-2xl leading-8">Terms &amp; Conditions</CardTitle>
+              <CardDescription className="text-sm leading-6">
                 By continuing, you agree to the following terms and conditions set by{' '}
                 <span className="font-medium text-foreground">{displayAppName}</span>.
               </CardDescription>

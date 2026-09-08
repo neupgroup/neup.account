@@ -53,8 +53,8 @@ export function AppPublishPanel({ appId, currentStatus, publicationRequestStatus
       <CardHeader>
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div>
-            <CardTitle>Publication Status</CardTitle>
-            <CardDescription className="mt-1">
+            <CardTitle className="text-lg leading-7">Publication Status</CardTitle>
+            <CardDescription className="mt-1 text-sm leading-6">
               {statusDescription[currentStatus] ?? 'Unknown status.'}
             </CardDescription>
           </div>

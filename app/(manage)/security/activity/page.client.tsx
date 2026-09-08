@@ -92,7 +92,7 @@ function SecurityActivityPageComponent({ after }: { after?: string }) {
             <BackButton href="/manage/security" />
             <Card>
                 <CardHeader>
-                    <CardTitle>Recent Account Activity</CardTitle>
+                    <CardTitle className="text-lg leading-7">Recent Account Activity</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <Table>

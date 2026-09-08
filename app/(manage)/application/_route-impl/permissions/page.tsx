@@ -6,7 +6,8 @@ import {
   getApplicationDetailsForViewerV2,
   logRootApplicationActivity,
 } from '@/services/applications/manage';
-import { getAppPermissions } from '@/services/applications/authz-manage';
+import { PermissionSourceForm } from '@/app/(manage)/application/_components/permission-source-form';
+import { getAppPermissions, getAppPermissionSourceSettings } from '@/services/applications/authz-manage';
 import { BackButton } from '#/components/element/backButton';
 import { TitleSet } from '#/components/element/titleset';
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
@@ -97,6 +98,8 @@ export async function ApplicationPermissionsPage({
           <TitleSet level={1}
             title="Permissions"
             subtitle={`Manage permissions for ${details.name}.`}
+            titleClassName="text-2xl leading-8"
+            subtitleClassName="text-sm leading-6"
           />
         </div>
         <Alert variant="destructive">
@@ -109,6 +112,7 @@ export async function ApplicationPermissionsPage({
   }
 
   const permissions = await getAppPermissions(applicationId);
+  const source = await getAppPermissionSourceSettings(applicationId);
 
   if (permissionId) {
     const permission = permissions.find((item) => item.id === permissionId);
@@ -121,13 +125,15 @@ export async function ApplicationPermissionsPage({
           <TitleSet level={1}
             title={permission.name}
             subtitle={permission.description || `Manage permission metadata for ${details.name}.`}
+            titleClassName="text-2xl leading-8"
+            subtitleClassName="text-sm leading-6"
           />
         </div>
 
         <PermissionDetailEditor
           appId={applicationId}
           permission={permission}
-          canManage={canManagePermissions}
+          canManage={canManagePermissions && !source?.usePermissionFrom}
           mode={mode}
         />
       </div>
@@ -141,13 +147,17 @@ export async function ApplicationPermissionsPage({
         <TitleSet level={1}
           title="Permissions"
           subtitle={`Define and manage permissions for ${details.name}.`}
+          titleClassName="text-2xl leading-8"
+          subtitleClassName="text-sm leading-6"
         />
       </div>
+
+      {source && <PermissionSourceForm key={source.usePermissionFrom ?? 'own'} appId={applicationId} sourceId={source.usePermissionFrom} sourceName={source.permissionSource?.name} applications={source.applications} canManage={canManagePermissions} />}
 
       <PermissionPanel
         appId={applicationId}
         initialPermissions={permissions}
-        canManage={canManagePermissions}
+        canManage={canManagePermissions && !source?.usePermissionFrom}
         mode={mode}
       />
     </div>

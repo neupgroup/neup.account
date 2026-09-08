@@ -89,15 +89,17 @@ export default function RecoveryEmailPage() {
         <div className="grid gap-8">
             <BackButton href="/manage/security" />
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Recovery Email</h1>
-                <p className="text-muted-foreground">
+                <h1 className="font-bold tracking-tight text-2xl leading-8">Recovery Email</h1>
+                <p className="text-muted-foreground text-sm leading-6">
                     This email can be used to help you get back into your account if you're locked out.
                 </p>
             </div>
             <div className="space-y-2">
-                <TitleSet level={1}
+                <TitleSet level={2}
                     title="Manage Email Address"
                     subtitle="We will only use this email address for account recovery purposes."
+                    titleClassName="text-lg leading-7"
+                    subtitleClassName="text-sm leading-6"
                 />
                 <Card>
                     <CardContent className="pt-6">

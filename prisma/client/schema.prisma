@@ -18,6 +18,7 @@ model Account {
   createdAt       DateTime @default(now())
   linkedAccountId String?
 
+  developedApplications   Application[]            @relation("ApplicationDeveloper")
   brandProfile            AccountTypeBrand?
   individualProfile       AccountTypeIndividual?
   connections             Connection[]
@@ -301,36 +302,43 @@ model ApplicationProvider {
 }
 
 model Application {
-  id               String               @id(map: "applications_pkey")
-  name             String
-  description      String?
-  icon             String?
-  website          String?
-  appSecret        String?              @map("app_secret")
-  createdAt        DateTime             @default(now()) @map("created_at")
-  endpoints        Json?
-  status           String               @default("development")
-  isInternal       Boolean              @default(false) @map("is_internal")
-  responseFields   String[]             @default([]) @map("response_fields")
-  tokenFields      String[]             @default([]) @map("token_fields")
-  details          Json?
-  party            Int                  @default(1)
-  providerId       String?              @map("provider_id")
-  defaultRoleId    String?              @map("def_role_id")
-  provider         ApplicationProvider? @relation(fields: [providerId], references: [id], map: "application_provider_id_fkey")
-  defaultRole      AuthzRole?           @relation("ApplicationDefaultRole", fields: [defaultRoleId], references: [id], map: "application_def_role_id_fkey")
-  connections      Connection[]
-  bridge           ApplicationBridge[]
-  policies         ApplicationPolicy[]
-  authzPermissions AuthzPermission[]
-  authzRoles       AuthzRole[]
-  identities       Identity[]
-  notifications    Notification[]
-  childAssets      Asset[]              @relation("AssetChildApplication")
-  assetAccessRows  Access[]             @relation("AccessAssetApplication")
-  accessRows       Access[]             @relation("AccessApplication")
-  devLogs          ApplicationDevLog[]
+  id                  String               @id(map: "applications_pkey")
+  name                String
+  description         String?
+  icon                String?
+  website             String?
+  appSecret           String?              @map("app_secret")
+  createdAt           DateTime             @default(now()) @map("created_at")
+  endpoints           Json?
+  status              String               @default("development")
+  isInternal          Boolean              @default(false) @map("is_internal")
+  responseFields      String[]             @default([]) @map("response_fields")
+  tokenFields         String[]             @default([]) @map("token_fields")
+  details             Json?
+  party               Int                  @default(1)
+  developer           String?
+  developerAccount    Account?             @relation("ApplicationDeveloper", fields: [developer], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  usePermissionFrom   String?
+  permissionSource    Application?         @relation("ApplicationPermissionSource", fields: [usePermissionFrom], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  permissionConsumers Application[]        @relation("ApplicationPermissionSource")
+  providerId          String?              @map("provider_id")
+  defaultRoleId       String?              @map("def_role_id")
+  provider            ApplicationProvider? @relation(fields: [providerId], references: [id], map: "application_provider_id_fkey")
+  defaultRole         AuthzRole?           @relation("ApplicationDefaultRole", fields: [defaultRoleId], references: [id], map: "application_def_role_id_fkey")
+  connections         Connection[]
+  bridge              ApplicationBridge[]
+  policies            ApplicationPolicy[]
+  authzPermissions    AuthzPermission[]
+  authzRoles          AuthzRole[]
+  identities          Identity[]
+  notifications       Notification[]
+  childAssets         Asset[]              @relation("AssetChildApplication")
+  assetAccessRows     Access[]             @relation("AccessAssetApplication")
+  accessRows          Access[]             @relation("AccessApplication")
+  devLogs             ApplicationDevLog[]
 
+  @@index([developer])
+  @@index([usePermissionFrom])
   @@map("application")
 }
 

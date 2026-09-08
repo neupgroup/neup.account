@@ -125,8 +125,8 @@ export default function CreateSubbrandPageClient({
         <div className="grid gap-6">
             <BackButton href={backHref} />
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Create a New Subbrand</h1>
-                <p className="text-muted-foreground">
+                <h1 className="font-bold tracking-tight text-2xl leading-8">Create a New Subbrand</h1>
+                <p className="text-muted-foreground text-sm leading-6">
                     Set up a new sub-brand or location for your main brand.
                 </p>
             </div>
@@ -134,7 +134,7 @@ export default function CreateSubbrandPageClient({
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Subbrand Details</CardTitle>
+                            <CardTitle className="text-lg leading-7">Subbrand Details</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-6 pt-6">
                             <FormField control={form.control} name="name" render={({ field }) => ( <FormItem><FormLabel>Subbrand Name</FormLabel><FormControl><Input placeholder="Uptown Subbrand" {...field} /></FormControl><FormMessage /></FormItem> )} />

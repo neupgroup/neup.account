@@ -21,8 +21,8 @@ export default async function SiteConfigPaymentsPage() {
     <div className="grid gap-8">
       <BackButton href="/site/config" />
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Payment Settings</h1>
-        <p className="text-muted-foreground">
+        <h1 className="font-bold tracking-tight text-2xl leading-8">Payment Settings</h1>
+        <p className="text-muted-foreground text-sm leading-6">
           Define payment details used by the website checkout and billing flows.
         </p>
       </div>

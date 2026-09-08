@@ -68,14 +68,14 @@ function LogCard({
   return (
     <Card className={className}>
       <button type="button" className="w-full text-left" onClick={onToggle} aria-expanded={isOpen}>
-        <CardHeader className={`transition-all duration-300 ease-in-out ${isOpen ? 'pb-4' : 'pb-6'}`}>
+        <CardHeader className={`text-sm leading-6 transition-all duration-300 ease-in-out ${isOpen ? 'pb-4' : 'pb-6'}`}>
           <div className="min-w-0 space-y-2">
             <div className="flex items-center gap-1.5 sm:hidden">
               {presentation.isWebhook ? <Badge variant="outline">webhook</Badge> : null}
               <Badge variant={log.statusCode >= 400 ? 'destructive' : 'secondary'}>{log.statusCode}</Badge>
             </div>
             <div className={`flex min-w-0 items-start transition-all duration-300 ease-in-out ${isOpen ? 'gap-2' : 'gap-1.5'}`}>
-              <CardTitle className="min-w-0 flex-1 break-all text-base leading-snug sm:truncate sm:break-normal">
+              <CardTitle className="min-w-0 flex-1 break-all sm:truncate sm:break-normal text-lg leading-7">
                 {log.method} {presentation.displayUrl}
               </CardTitle>
               <div className="hidden shrink-0 items-center gap-1.5 sm:flex">
@@ -84,7 +84,7 @@ function LogCard({
               </div>
             </div>
           </div>
-          <CardDescription className={`transition-all duration-300 ease-in-out ${isOpen ? 'mt-1 opacity-100' : 'mt-0.5 opacity-90'}`}>
+          <CardDescription className={`text-sm leading-6 transition-all duration-300 ease-in-out ${isOpen ? 'mt-1 opacity-100' : 'mt-0.5 opacity-90'}`}>
             {new Date(log.createdAt).toLocaleString()} | IP: {log.requesterIp ?? 'N/A'} | Origin: {log.origin ?? 'N/A'}
           </CardDescription>
         </CardHeader>

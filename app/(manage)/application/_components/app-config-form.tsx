@@ -331,9 +331,9 @@ export function AppConfigForm({
             <CardHeader>
               <div className="flex items-center gap-2">
                 <KeyRound className="h-4 w-4 text-muted-foreground" />
-                <CardTitle>API Secret</CardTitle>
+                <CardTitle className="text-lg leading-7">API Secret</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className="text-sm leading-6">
                 This secret must be passed in every API request. The server only responds when the secret matches.
                 {hasSecretKey && (
                   <span className="ml-1 text-green-600 dark:text-green-400 font-medium">A secret is currently set.</span>
@@ -377,9 +377,9 @@ export function AppConfigForm({
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Database className="h-4 w-4 text-muted-foreground" />
-                <CardTitle>Application Party</CardTitle>
+                <CardTitle className="text-lg leading-7">Application Party</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className="text-sm leading-6">
                 Set the party level for this application.
               </CardDescription>
             </CardHeader>
@@ -435,9 +435,9 @@ export function AppConfigForm({
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Database className="h-4 w-4 text-muted-foreground" />
-                <CardTitle>Field Settings</CardTitle>
+                <CardTitle className="text-lg leading-7">Field Settings</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className="text-sm leading-6">
                 Tick the fields you need. Unchecked or unavailable fields are removed automatically from the response.
               </CardDescription>
             </CardHeader>
@@ -510,9 +510,9 @@ export function AppConfigForm({
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Database className="h-4 w-4 text-muted-foreground" />
-                <CardTitle>Authorization Definitions</CardTitle>
+                <CardTitle className="text-lg leading-7">Authorization Definitions</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className="text-sm leading-6">
                 Define reusable scope and applicable-for options for permission and role setup.
               </CardDescription>
             </CardHeader>
@@ -568,9 +568,9 @@ export function AppConfigForm({
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Globe className="h-4 w-4 text-muted-foreground" />
-                <CardTitle>Server IPs</CardTitle>
+                <CardTitle className="text-lg leading-7">Server IPs</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className="text-sm leading-6">
                 Allowed server IP addresses for requests that do not include an Origin header.
               </CardDescription>
             </CardHeader>
@@ -661,9 +661,9 @@ export function AppConfigForm({
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Globe className="h-4 w-4 text-muted-foreground" />
-                <CardTitle>Account Update Webhook</CardTitle>
+                <CardTitle className="text-lg leading-7">Account Update Webhook</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className="text-sm leading-6">
                 Optional endpoint to receive encrypted <code className="text-xs">account.updated</code> events.
                 Leave empty to disable.
               </CardDescription>
@@ -698,9 +698,9 @@ export function AppConfigForm({
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Globe className="h-4 w-4 text-muted-foreground" />
-                <CardTitle>Role Update Webhook</CardTitle>
+                <CardTitle className="text-lg leading-7">Role Update Webhook</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className="text-sm leading-6">
                 Optional endpoint to receive encrypted <code className="text-xs">role.created</code>, <code className="text-xs">role.updated</code>, and <code className="text-xs">role.deleted</code> events.
                 Leave empty to disable.
               </CardDescription>
@@ -735,9 +735,9 @@ export function AppConfigForm({
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Globe className="h-4 w-4 text-muted-foreground" />
-                <CardTitle>Silent SSO Origins</CardTitle>
+                <CardTitle className="text-lg leading-7">Silent SSO Origins</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className="text-sm leading-6">
                 Trusted HTTPS origins allowed to silently authenticate users via the NeupID iframe bridge.
                 Only the scheme and host are stored — e.g. <code className="text-xs">https://example.com</code>.
               </CardDescription>

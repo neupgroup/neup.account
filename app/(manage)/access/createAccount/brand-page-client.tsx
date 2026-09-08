@@ -133,17 +133,19 @@ export default function CreateBrandPageClient({
         <div className="grid gap-8">
             <BackButton href={backHref} />
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Create a Brand Account</h1>
-                <p className="text-muted-foreground">
+                <h1 className="font-bold tracking-tight text-2xl leading-8">Create a Brand Account</h1>
+                <p className="text-muted-foreground text-sm leading-6">
                     Fill in the details below to set up a new brand account.
                 </p>
             </div>
              <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <div className="space-y-2">
-                        <TitleSet level={1}
+                        <TitleSet level={2}
                             title="Brand Information"
                             subtitle="Provide the basic details for your brand."
+                            titleClassName="text-lg leading-7"
+                            subtitleClassName="text-sm leading-6"
                         />
                          <Card>
                             <CardContent className="space-y-6 pt-6">
@@ -170,9 +172,11 @@ export default function CreateBrandPageClient({
                     </div>
 
                     <div className="space-y-2">
-                        <TitleSet level={1}
+                        <TitleSet level={2}
                             title="Location Information"
                             subtitle="Tell us where your brand operates."
+                            titleClassName="text-lg leading-7"
+                            subtitleClassName="text-sm leading-6"
                         />
                         <Card>
                             <CardContent className="space-y-6 pt-6">
@@ -196,9 +200,11 @@ export default function CreateBrandPageClient({
                     </div>
 
                     <div className="space-y-2">
-                        <TitleSet level={1}
+                        <TitleSet level={2}
                             title="Choose NeupID"
                             subtitle="This will be the unique public identifier for your brand."
+                            titleClassName="text-lg leading-7"
+                            subtitleClassName="text-sm leading-6"
                         />
                         <Card>
                             <CardContent className="space-y-4 pt-6">

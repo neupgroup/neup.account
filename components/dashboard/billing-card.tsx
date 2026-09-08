@@ -64,7 +64,7 @@ export function BillingCard() {
          <div className="space-y-2">
             <TitleSet level={1}
                 title="Billing & Subscription"
-                subtitle={`Your current plan is ${plan}.`}
+                subtitle={`Your current plan is ${plan}.`} titleClassName="text-2xl leading-8" subtitleClassName="text-sm leading-6"
             />
             <Card>
                 <CardContent className="divide-y p-2">

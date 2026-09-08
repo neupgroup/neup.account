@@ -110,6 +110,8 @@ function MembersLayout({
       <TitleSet level={1}
         title="Members with Access"
         subtitle={description}
+        titleClassName="text-2xl leading-8"
+        subtitleClassName="text-sm leading-6"
       />
 
       <div className="grid gap-3">

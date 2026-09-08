@@ -65,8 +65,8 @@ export async function ApplicationRequestsPage({ applicationId, mode }: { applica
       </div>
 
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Requests</h1>
-        <p className="text-muted-foreground">{details.name}</p>
+        <h1 className="font-bold tracking-tight text-2xl leading-8">Requests</h1>
+        <p className="text-muted-foreground text-sm leading-6">{details.name}</p>
       </div>
 
       {requests.length === 0 ? (

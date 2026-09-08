@@ -38,7 +38,7 @@ export async function ApplicationUserDeletePage({ applicationId, connId, mode }:
 
       <Card>
         <CardHeader>
-          <CardTitle>Delete Account</CardTitle>
+          <CardTitle className="text-lg leading-7">Delete Account</CardTitle>
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground">
           Account removal flow for this application user will be added here.

@@ -202,6 +202,8 @@ export default async function ProfilePage({ searchParams }: PageProps) {
                         ? "Manage the selected account's profile details, contact info, and verification."
                         : "Manage your personal details, contact info, and identity verification."
                 }
+                titleClassName="text-2xl leading-8"
+                subtitleClassName="text-sm leading-6"
             />
 
             <Card>

@@ -304,9 +304,11 @@ export default function DisplayInfoPage() {
             <BackButton href={profileBackHref} />
 
             <div className="space-y-2">
-                <TitleSet level={1}
+                <TitleSet level={2}
                     title="Display Image"
                     subtitle="Update your public profile photo."
+                    titleClassName="text-lg leading-7"
+                    subtitleClassName="text-sm leading-6"
                 />
                 <Form {...photoForm}>
                     <form onSubmit={photoForm.handleSubmit(onPhotoSubmit)}>
@@ -441,16 +443,18 @@ export default function DisplayInfoPage() {
             </div>
 
             <div className="space-y-2">
-                 <TitleSet level={1}
+                 <TitleSet level={2}
                     title="Display Name"
                     subtitle="Choose how your name appears on your profile."
+                    titleClassName="text-lg leading-7"
+                    subtitleClassName="text-sm leading-6"
                 />
                 <Form {...nameForm}>
                     <form onSubmit={nameForm.handleSubmit(onNameSubmit)}>
                         <Card>
                             <CardContent className="pt-6 space-y-4">
                                 <div>
-                                    <h3 className="text-2xl font-semibold tracking-tight">{currentDisplayName}</h3>
+                                    <h3 className="font-semibold tracking-tight text-lg leading-7">{currentDisplayName}</h3>
                                 </div>
                                 <Separator />
                                 <FormField

@@ -6,8 +6,8 @@ export default function BrandPlatformsPage() {
         <div className="grid gap-8">
             <Card>
                 <CardHeader>
-                    <CardTitle>Platform Accounts</CardTitle>
-                    <CardDescription>
+                    <CardTitle className="text-lg leading-7">Platform Accounts</CardTitle>
+                    <CardDescription className="text-sm leading-6">
                         Manage platform-specific accounts and settings for this brand.
                     </CardDescription>
                 </CardHeader>

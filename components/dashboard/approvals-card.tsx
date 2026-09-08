@@ -30,8 +30,8 @@ export async function ApprovalsCard() {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Requests & Approvals</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-lg leading-7">Requests & Approvals</CardTitle>
+                <CardDescription className="text-sm leading-6">
                     {requests.length} request{requests.length === 1 ? '' : 's'} awaiting your review.
                 </CardDescription>
             </CardHeader>

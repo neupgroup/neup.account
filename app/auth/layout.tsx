@@ -22,8 +22,8 @@ export default function AuthLayout({
                         <div className="mx-auto bg-destructive rounded-full p-3 w-fit mb-4">
                             <AlertTriangle className="h-8 w-8 text-destructive-foreground" />
                         </div>
-                        <CardTitle className="text-2xl font-headline text-destructive">Auth Misconfigured</CardTitle>
-                        <CardDescription>
+                        <CardTitle className="font-headline text-destructive text-2xl leading-8">Auth Misconfigured</CardTitle>
+                        <CardDescription className="text-sm leading-6">
                             Authentication is disabled because required server keys are missing.
                         </CardDescription>
                     </CardHeader>

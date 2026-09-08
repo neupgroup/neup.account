@@ -271,6 +271,8 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
               ? `Update direct ${connection.appName} access for ${selectedMember.displayName}.`
               : `Grant direct access to ${connection.appName} for accounts that already have an active connection.`
           }
+          titleClassName="text-2xl leading-8"
+          subtitleClassName="text-sm leading-6"
         />
         <Card>
           <CardContent className="p-0">
@@ -510,6 +512,8 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
         <TitleSet level={1}
           title="Assign Account Access"
           subtitle={`Enter a NeupID to assign access for ${ownerName}.`}
+          titleClassName="text-2xl leading-8"
+          subtitleClassName="text-sm leading-6"
         />
         <Card>
           <CardContent className="p-4">

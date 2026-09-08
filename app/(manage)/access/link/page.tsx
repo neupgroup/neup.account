@@ -75,6 +75,8 @@ export default async function LinkAccountsPage({ searchParams }: PageProps) {
             <TitleSet level={1}
                 title="Link Other Accounts"
                 subtitle="Connect your accounts from other platforms to NeupID for a seamless experience."
+                titleClassName="text-2xl leading-8"
+                subtitleClassName="text-sm leading-6"
             />
             <Card>
                 <CardContent className="p-0 divide-y">

@@ -71,11 +71,13 @@ export default async function SecurityPage() {
       <TitleSet level={1}
         title="Password & Security"
         subtitle="Manage your account's security settings, review activity, and keep your account safe."
+        titleClassName="text-2xl leading-8"
+        subtitleClassName="text-sm leading-6"
       />
 
       {sections.map((section) => (
         <div key={section.title} className="grid gap-4">
-          <TitleSet level={1} title={section.title} subtitle={section.description} />
+          <TitleSet level={2} title={section.title} subtitle={section.description} titleClassName="text-lg leading-7" subtitleClassName="text-sm leading-6" />
           <Card>
             <CardContent className="divide-y p-2">
               {section.items.map((item) => (

@@ -26,7 +26,7 @@ export function FindUserCard() {
         <div className="grid gap-4">
             <TitleSet level={1}
                 title="Find User"
-                subtitle="Search for a user by name, ID, or type to view their details and manage their account."
+                subtitle="Search for a user by name, ID, or type to view their details and manage their account." titleClassName="text-2xl leading-8" subtitleClassName="text-sm leading-6"
             />
             <form onSubmit={handleSearch}>
                 <div className="relative">

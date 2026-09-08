@@ -55,15 +55,17 @@ export default function ChangePasswordPage() {
         <div className="grid gap-8">
             <BackButton href="/manage/security" />
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Change Password</h1>
-                <p className="text-muted-foreground">
+                <h1 className="font-bold tracking-tight text-2xl leading-8">Change Password</h1>
+                <p className="text-muted-foreground text-sm leading-6">
                     Choose a strong, new password that you don't use for other accounts.
                 </p>
             </div>
             <div className="space-y-2">
-                <TitleSet level={1}
+                <TitleSet level={2}
                     title="Update Password"
                     subtitle="Enter your current password and a new password to update your account."
+                    titleClassName="text-lg leading-7"
+                    subtitleClassName="text-sm leading-6"
                 />
                 <Card>
                     <Form {...form}>

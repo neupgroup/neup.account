@@ -20,8 +20,8 @@ export default async function ApplicationsPage() {
   return (
     <div className="grid gap-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Application Connections</h1>
-        <p className="text-muted-foreground">
+        <h1 className="font-bold tracking-tight text-2xl leading-8">Application Connections</h1>
+        <p className="text-muted-foreground text-sm leading-6">
           Applications you have connected to your account.
         </p>
       </div>

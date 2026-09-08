@@ -93,7 +93,7 @@ export function DirectMemberAccessForm({
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-              <h2 className="text-base font-semibold">Assign direct access</h2>
+              <h2 className="font-semibold text-lg leading-7">Assign direct access</h2>
             </div>
             <p className="text-sm text-muted-foreground">
               Set the roles this member should hold on the selected account.
@@ -107,7 +107,7 @@ export function DirectMemberAccessForm({
         <div className="grid gap-2">
           <div>
             <h3 className="text-sm font-semibold">Roles</h3>
-            <p className="text-xs text-muted-foreground">Reusable role grants for this account.</p>
+            <p className="text-muted-foreground text-sm leading-6">Reusable role grants for this account.</p>
           </div>
           <div className="max-h-96 overflow-y-auto rounded-lg border">
             {roles.length > 0 ? (

@@ -320,6 +320,8 @@ exports.Prisma.ApplicationScalarFieldEnum = {
   tokenFields: 'tokenFields',
   details: 'details',
   party: 'party',
+  developer: 'developer',
+  usePermissionFrom: 'usePermissionFrom',
   providerId: 'providerId',
   defaultRoleId: 'defaultRoleId'
 };

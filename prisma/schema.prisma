@@ -18,6 +18,7 @@ model Account {
   createdAt       DateTime @default(now())
   linkedAccountId String?
 
+  developedApplications Application[] @relation("ApplicationDeveloper")
   brandProfile            AccountTypeBrand?
   individualProfile       AccountTypeIndividual?
   connections             Connection[]
@@ -315,6 +316,11 @@ model Application {
   tokenFields      String[]             @default([]) @map("token_fields")
   details          Json?
   party            Int                  @default(1)
+  developer String?
+  developerAccount Account? @relation("ApplicationDeveloper", fields: [developer], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  usePermissionFrom String?
+  permissionSource Application? @relation("ApplicationPermissionSource", fields: [usePermissionFrom], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  permissionConsumers Application[] @relation("ApplicationPermissionSource")
   providerId       String?              @map("provider_id")
   defaultRoleId    String?              @map("def_role_id")
   provider         ApplicationProvider? @relation(fields: [providerId], references: [id], map: "application_provider_id_fkey")
@@ -331,6 +337,8 @@ model Application {
   accessRows       Access[]             @relation("AccessApplication")
   devLogs          ApplicationDevLog[]
 
+  @@index([developer])
+  @@index([usePermissionFrom])
   @@map("application")
 }
 

@@ -22,6 +22,8 @@ export default async function UserPermissionsPage({ params }: { params: Promise<
             <TitleSet level={1}
                 title="Manage Roles"
                 subtitle={`Assign roles to @${userDetails.neupId}. Roles determine what the account can access.`}
+                titleClassName="text-2xl leading-8"
+                subtitleClassName="text-sm leading-6"
             />
             <RoleEditor
                 accountId={id}

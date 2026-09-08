@@ -44,8 +44,8 @@ export default async function SiteConfigSocialsPage() {
     <div className="grid gap-8">
       <BackButton href="/site/config" />
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Footer Social Accounts</h1>
-        <p className="text-muted-foreground">
+        <h1 className="font-bold tracking-tight text-2xl leading-8">Footer Social Accounts</h1>
+        <p className="text-muted-foreground text-sm leading-6">
           Add and manage social media links shown in the website footer.
         </p>
       </div>

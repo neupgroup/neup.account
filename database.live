@@ -98,7 +98,7 @@ Fields:
 > persistence: String, nullable;
 > detail: Json, nullable;
 .. accountId references account.id;
-.. applicationId references applications.id;
+.. applicationId references application.id;
 
 Table: request, Model: Request
 Fields:
@@ -203,7 +203,7 @@ Fields:
 > provider_site: String;
 > secret_hash: String;
 
-Table: applications, Model: Application
+Table: application, Model: Application
 Fields:
 > id: String, primary key;
 > name: String;
@@ -221,6 +221,8 @@ Fields:
 > party: Int, default: 1;
 > provider_id: String, nullable;
 > def_role_id: String, nullable;
+> usePermissionFrom: String, nullable, references application.id;
+> developer: String, nullable, references account.id;
 .. provider_id references application_provider.id;
 .. def_role_id references authz_role.id;
 
@@ -241,7 +243,7 @@ Fields:
 > response_body: Json, nullable;
 > error: String, nullable;
 > created_at: DateTime, default: now();
-.. app_id references applications.id;
+.. app_id references application.id;
 
 Table: assets, Model: Asset
 Fields:
@@ -256,7 +258,7 @@ Fields:
 > details: Json, nullable;
 .. child_account_id references account.id;
 .. child_connection_id references connection.id;
-.. child_application_id references applications.id;
+.. child_application_id references application.id;
 .. parent_account_id references account.id;
 
 Table: member, Model: Member
@@ -293,8 +295,8 @@ Fields:
 .. asset_id references assets.id;
 .. asset_account_id references account.id;
 .. asset_connection_id references connection.id;
-.. asset_application_id references applications.id;
-.. access_application_id references applications.id;
+.. asset_application_id references application.id;
+.. access_application_id references application.id;
 .. role_id references authz_role.id;
 
 Table: account_ownership, Model: AccountOwnership
@@ -317,7 +319,7 @@ Fields:
 > connected_at: DateTime, default: now();
 > details: Json, nullable;
 .. account_id references account.id;
-.. app_id references applications.id;
+.. app_id references application.id;
 .. role_id references authz_role.id;
 
 Table: application_bridge, Model: ApplicationBridge
@@ -328,7 +330,7 @@ Fields:
 > value: String;
 > details: Json, nullable;
 > created_at: DateTime, default: now();
-.. app_id references applications.id;
+.. app_id references application.id;
 
 Table: application_policies, Model: ApplicationPolicy
 Fields:
@@ -337,7 +339,7 @@ Fields:
 > policy_type: String;
 > policy_value: Json;
 > created_at: DateTime, default: now();
-.. app_id references applications.id;
+.. app_id references application.id;
 
 Table: role, Model: Role
 Fields:
@@ -371,7 +373,7 @@ Fields:
 > rules: String, nullable;
 > status: String, nullable;
 > tag: Json, nullable;
-.. app_id references applications.id;
+.. app_id references application.id;
 
 Table: authz_role, Model: AuthzRole
 Fields:
@@ -386,7 +388,7 @@ Fields:
 > pushed: Boolean, default: false;
 > applicable_for: Json, default: [];
 > permissions: Json, nullable;
-.. app_id references applications.id;
+.. app_id references application.id;
 
 Table: authz_role_permission_map, Model: AuthzRolePermissionMap
 Fields:
@@ -434,7 +436,7 @@ Fields:
 > refreshes_on: DateTime;
 > valid_till: DateTime;
 > details: Json, default: [];
-.. app_id references applications.id;
+.. app_id references application.id;
 
 Enum: AuthzGrantStatus
 > active; invited; on_hold; expired;

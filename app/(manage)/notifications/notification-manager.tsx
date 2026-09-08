@@ -113,8 +113,8 @@ export function NotificationManager({ initialNotifications }: { initialNotificat
              <Card>
                 <CardContent className="p-8 text-center text-muted-foreground">
                     <Bell className="mx-auto h-12 w-12 mb-4" />
-                    <h3 className="text-lg font-semibold">All caught up!</h3>
-                    <p>You have no new notifications.</p>
+                    <h3 className="font-semibold text-lg leading-7">All caught up!</h3>
+                    <p className="text-sm leading-6">You have no new notifications.</p>
                 </CardContent>
             </Card>
         )

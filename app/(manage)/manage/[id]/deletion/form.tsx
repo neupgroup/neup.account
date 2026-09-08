@@ -95,7 +95,7 @@ export function DeletionManager({ accountId }: { accountId: string }) {
     if (status?.status === 'is_root') {
         return (
              <div className="grid gap-4">
-                <TitleSet level={1} title="Manual Deletion" />
+                <TitleSet level={2} title="Manual Deletion" titleClassName="text-lg leading-7" subtitleClassName="text-sm leading-6" />
                 <Card>
                      <CardHeader>
                          <Alert variant="destructive">
@@ -114,7 +114,7 @@ export function DeletionManager({ accountId }: { accountId: string }) {
     if (status?.status === 'pending') {
         return (
             <div className="grid gap-4">
-                <TitleSet level={1} title="Deletion Pending" />
+                <TitleSet level={2} title="Deletion Pending" titleClassName="text-lg leading-7" subtitleClassName="text-sm leading-6" />
                 <Card>
                     <CardHeader>
                          <Alert variant="destructive">
@@ -152,7 +152,7 @@ export function DeletionManager({ accountId }: { accountId: string }) {
     // Status is 'none'
     return (
         <div className="grid gap-4">
-            <TitleSet level={1} title="Manual Deletion" subtitle="This action is irreversible and should only be taken in extreme circumstances."/>
+            <TitleSet level={2} title="Manual Deletion" subtitle="This action is irreversible and should only be taken in extreme circumstances." titleClassName="text-lg leading-7" subtitleClassName="text-sm leading-6"/>
             <Card>
                  <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleAdminRequest)}>

@@ -106,8 +106,8 @@ export function ApplicationInfoEditForm({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardHeader>
-            <CardTitle>Application Info</CardTitle>
-            <CardDescription>Edit the application's public metadata.</CardDescription>
+            <CardTitle className="text-lg leading-7">Application Info</CardTitle>
+            <CardDescription className="text-sm leading-6">Edit the application's public metadata.</CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-4">

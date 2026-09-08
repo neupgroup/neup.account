@@ -215,7 +215,7 @@ function AccountsPageInner() {
     if (permissionDenied) {
         return (
             <div className="grid gap-8">
-                <TitleSet level={1} title="Accounts" subtitle="View and manage all accounts in the system." />
+                <TitleSet level={1} title="Accounts" subtitle="View and manage all accounts in the system." titleClassName="text-2xl leading-8" subtitleClassName="text-sm leading-6" />
                 <Alert variant="destructive">
                     <Ban className="h-4 w-4" />
                     <AlertTitle>Permission Denied</AlertTitle>
@@ -229,8 +229,8 @@ function AccountsPageInner() {
         <div className="grid gap-6">
             <BackButton href="/manage" />
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Accounts</h1>
-                <p className="text-muted-foreground">
+                <h1 className="font-bold tracking-tight text-2xl leading-8">Accounts</h1>
+                <p className="text-muted-foreground text-sm leading-6">
                     {loading
                         ? 'Loading…'
                         : total === 0

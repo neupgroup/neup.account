@@ -86,8 +86,8 @@ export function SocialLinksManager({ initialLinks }: { initialLinks: SocialLink[
         <div className="grid gap-8">
             <Card>
                 <CardHeader>
-                    <CardTitle>Manage Social Links</CardTitle>
-                    <CardDescription>Add, remove, or toggle the visibility of your social media profiles.</CardDescription>
+                    <CardTitle className="text-lg leading-7">Manage Social Links</CardTitle>
+                    <CardDescription className="text-sm leading-6">Add, remove, or toggle the visibility of your social media profiles.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                      {links.length > 0 ? (
@@ -134,7 +134,7 @@ export function SocialLinksManager({ initialLinks }: { initialLinks: SocialLink[
             
             <Card>
                 <CardHeader>
-                    <CardTitle>Add New Link</CardTitle>
+                    <CardTitle className="text-lg leading-7">Add New Link</CardTitle>
                 </CardHeader>
                  <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)}>

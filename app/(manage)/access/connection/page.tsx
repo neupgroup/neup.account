@@ -79,8 +79,8 @@ export default async function ConnectionPage({ searchParams }: PageProps) {
 
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="text-2xl font-bold tracking-tight">Connections</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <h1 className="font-bold tracking-tight text-2xl leading-8">Connections</h1>
+          <p className="mt-1 text-muted-foreground text-sm leading-6">
             All application connections on this account.
           </p>
         </div>
@@ -107,7 +107,7 @@ export default async function ConnectionPage({ searchParams }: PageProps) {
                       </span>
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 min-w-0">
-                          <CardTitle className="text-base font-semibold truncate">
+                          <CardTitle className="font-semibold truncate text-lg leading-7">
                             {connection.appName}
                           </CardTitle>
                           <StatusDot status={connection.connectionStatus} />

@@ -150,7 +150,7 @@ function RequestDetailBody({ request }: { request: Awaited<ReturnType<typeof get
               {changes.map((c) => (
                 <Card key={c.field}>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium">
+                    <CardTitle className="font-medium text-lg leading-7">
                       Requested change of {fieldLabel(c.field)}
                     </CardTitle>
                   </CardHeader>
@@ -258,7 +258,7 @@ export default async function RequestDetailPage({ params }: Props) {
             <div className="flex items-center gap-2 mb-1">
               <Badge variant="outline" className="text-xs">{request.typeLabel}</Badge>
             </div>
-            <h1 className="text-3xl font-bold tracking-tight">
+            <h1 className="font-bold tracking-tight text-2xl leading-8">
               {isApplicationChange && appId ? (
                 <>
                   <Link
@@ -273,7 +273,7 @@ export default async function RequestDetailPage({ params }: Props) {
                 request.summary
               )}
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground text-sm leading-6">
               Submitted by {request.submittedBy}{humanSubmittedAt ? ` ${humanSubmittedAt}` : ''}.
             </p>
           </div>
@@ -287,13 +287,13 @@ export default async function RequestDetailPage({ params }: Props) {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-xl font-semibold">Requested Changes</h2>
+        <h2 className="font-semibold text-lg leading-7">Requested Changes</h2>
         <RequestDetailBody request={request} />
       </section>
 
       {showTakeAction ? (
         <section className="space-y-3">
-          <h3 className="text-lg font-semibold">Take Action</h3>
+          <h3 className="font-semibold text-lg leading-7">Take Action</h3>
           {isPending ? (
             <RequestActionForm request={request} />
           ) : ['denied', 'cancelled', 'rejected'].includes(request.status) ? (

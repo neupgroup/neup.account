@@ -50,7 +50,7 @@ export function SystemToolsCard() {
         <div className="space-y-2">
             <TitleSet level={1}
                 title="System Tools"
-                subtitle="Access administrative tools and system configurations."
+                subtitle="Access administrative tools and system configurations." titleClassName="text-2xl leading-8" subtitleClassName="text-sm leading-6"
             />
             <Card>
                 <CardContent className="divide-y p-2">

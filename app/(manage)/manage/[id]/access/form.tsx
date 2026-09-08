@@ -169,7 +169,7 @@ export function ManagedAccountAccessForm({
           <div className="flex items-center justify-between gap-4">
             <div>
               <h3 className="text-sm font-semibold">Role assignment</h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm leading-6">
                 Choose the direct roles this account should get immediately.
               </p>
             </div>

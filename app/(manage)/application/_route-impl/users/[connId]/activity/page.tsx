@@ -38,7 +38,7 @@ export async function ApplicationUserActivityPage({ applicationId, connId, mode 
 
       <Card>
         <CardHeader>
-          <CardTitle>Activity</CardTitle>
+          <CardTitle className="text-lg leading-7">Activity</CardTitle>
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground">
           User activity timeline for this application connection will be added here.

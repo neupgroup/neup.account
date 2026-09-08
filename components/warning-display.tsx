@@ -104,7 +104,7 @@ export function WarningDisplay() {
                         <div className="flex items-start gap-3">
                              <AlertTriangle className="h-4 w-4" />
                             <div className="flex-1">
-                                <h5 className="mb-1 font-medium leading-none tracking-tight">Important Notice</h5>
+                                <h5 className="mb-1 font-medium tracking-tight text-lg leading-7">Important Notice</h5>
                                 <div className="text-sm [&_p]:leading-relaxed" dangerouslySetInnerHTML={{ __html: warning.message || "" }} />
                             </div>
                         </div>

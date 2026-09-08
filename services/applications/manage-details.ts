@@ -176,6 +176,7 @@ export async function getApplicationDetailsForViewerV2(
         status: true,
         isInternal: true,
         responseFields: true,
+        usePermissionFrom: true,
         policies: true,
         endpoints: true,
       },
@@ -227,6 +228,7 @@ export async function getApplicationDetailsForViewerV2(
 
     return {
       id: application.id,
+      usePermissionFrom: application.usePermissionFrom,
       name: application.name,
       description: application.description || undefined,
       icon: application.icon || undefined,

@@ -84,15 +84,17 @@ export default function LinkWhatsAppPageClient({
         <div className="grid gap-8">
             <BackButton href={backHref} />
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Link WhatsApp Account</h1>
-                <p className="text-muted-foreground">
+                <h1 className="font-bold tracking-tight text-2xl leading-8">Link WhatsApp Account</h1>
+                <p className="text-muted-foreground text-sm leading-6">
                     Connect your WhatsApp account for notifications and services.
                 </p>
             </div>
             <div className="space-y-2">
-                 <TitleSet level={1}
+                 <TitleSet level={2}
                     title="Connect Your Number"
                     subtitle="Enter your WhatsApp number to receive a verification code."
+                    titleClassName="text-lg leading-7"
+                    subtitleClassName="text-sm leading-6"
                  />
                 <Card>
                      <CardContent className="pt-6">

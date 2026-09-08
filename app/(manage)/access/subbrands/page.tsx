@@ -65,16 +65,16 @@ export default async function BrandSubbrandPage({ searchParams }: PageProps) {
     return (
         <div className="grid gap-8">
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">Manage Subbrands</h1>
-                <p className="text-muted-foreground">
+                <h1 className="font-bold tracking-tight text-2xl leading-8">Manage Subbrands</h1>
+                <p className="text-muted-foreground text-sm leading-6">
                     Oversee and configure your brand&apos;s subbrands or locations.
                 </p>
             </div>
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
-                        <CardTitle>Your Subbrands</CardTitle>
-                        <CardDescription>
+                        <CardTitle className="text-lg leading-7">Your Subbrands</CardTitle>
+                        <CardDescription className="text-sm leading-6">
                             A list of all sub-brands or locations under this brand account.
                         </CardDescription>
                     </div>
@@ -109,8 +109,8 @@ export default async function BrandSubbrandPage({ searchParams }: PageProps) {
                                     <TableCell colSpan={4}>
                                         <div className="flex flex-col items-center justify-center text-center p-8 gap-4">
                                             <Building className="h-12 w-12 text-muted-foreground/50" />
-                                            <h3 className="text-lg font-semibold">No Subbrands Found</h3>
-                                            <p className="text-sm text-muted-foreground">
+                                            <h3 className="font-semibold text-lg leading-7">No Subbrands Found</h3>
+                                            <p className="text-muted-foreground text-sm leading-6">
                                                 Get started by creating your first subbrand account.
                                             </p>
                                              <Button asChild>

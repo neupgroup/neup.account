@@ -32,11 +32,15 @@ export default async function DevicesPage() {
             <TitleSet level={1}
                 title="Your Devices"
                 subtitle="A list of devices that have been used to sign in to your account."
+                titleClassName="text-2xl leading-8"
+                subtitleClassName="text-sm leading-6"
             />
             <div className="space-y-2">
-                <TitleSet level={1}
+                <TitleSet level={2}
                     title="Session Management"
                     subtitle="You can sign out any session you don't recognize."
+                    titleClassName="text-lg leading-7"
+                    subtitleClassName="text-sm leading-6"
                 />
                 <Card>
                     <SessionManager

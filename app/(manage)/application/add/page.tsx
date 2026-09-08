@@ -15,8 +15,8 @@ export default async function AddApplicationPage() {
     <div className="grid gap-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Add Application</h1>
-          <p className="text-muted-foreground">Create a new application.</p>
+          <h1 className="font-bold tracking-tight text-2xl leading-8">Add Application</h1>
+          <p className="text-muted-foreground text-sm leading-6">Create a new application.</p>
         </div>
         <Button variant="outlined" asChild>
           <FlowLink href="/application">Back to Applications</FlowLink>
@@ -25,8 +25,8 @@ export default async function AddApplicationPage() {
 
       <Card className="max-w-2xl">
         <CardHeader>
-          <CardTitle>Name your application</CardTitle>
-          <CardDescription>Choose the fixed app ID prefix, then confirm the generated or custom second part before creating.</CardDescription>
+          <CardTitle className="text-lg leading-7">Name your application</CardTitle>
+          <CardDescription className="text-sm leading-6">Choose the fixed app ID prefix, then confirm the generated or custom second part before creating.</CardDescription>
         </CardHeader>
         <CardContent>
           <ApplicationCreateForm />

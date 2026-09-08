@@ -112,8 +112,8 @@ export function DisplayImagesManager({ initialResources, canAdd, canDelete, canU
     <div className="grid gap-6">
       <Card>
         <CardHeader>
-          <CardTitle>Add Resource</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-lg leading-7">Add Resource</CardTitle>
+          <CardDescription className="text-sm leading-6">
             Create a new resource entry for account display images or public image assets.
           </CardDescription>
         </CardHeader>
@@ -175,8 +175,8 @@ export function DisplayImagesManager({ initialResources, canAdd, canDelete, canU
 
       <Card>
         <CardHeader>
-          <CardTitle>Resource List</CardTitle>
-          <CardDescription>View all saved resources and update titles as needed.</CardDescription>
+          <CardTitle className="text-lg leading-7">Resource List</CardTitle>
+          <CardDescription className="text-sm leading-6">View all saved resources and update titles as needed.</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
           {resources.length === 0 ? (

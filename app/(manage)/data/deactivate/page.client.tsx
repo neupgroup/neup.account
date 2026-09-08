@@ -47,8 +47,8 @@ export default function DeactivateAccountPage() {
     <div className="grid gap-8">
         <BackButton href="/manage/data" />
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Deactivate Account</h1>
-        <p className="text-muted-foreground">
+        <h1 className="font-bold tracking-tight text-2xl leading-8">Deactivate Account</h1>
+        <p className="text-muted-foreground text-sm leading-6">
           Temporarily deactivate your account.
         </p>
       </div>
@@ -56,9 +56,11 @@ export default function DeactivateAccountPage() {
        <form action={handleSubmit}>
         <Card>
             <CardHeader>
-            <TitleSet level={1}
+            <TitleSet level={2}
                 title="Deactivate Your Account"
                 subtitle="This action will temporarily close your account."
+                titleClassName="text-lg leading-7"
+                subtitleClassName="text-sm leading-6"
             />
             </CardHeader>
             <CardContent className="space-y-4">

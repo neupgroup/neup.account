@@ -18,6 +18,8 @@ export default async function UserVerificationPage({ params }: { params: Promise
                  <TitleSet level={1}
                     title="Manage Verification"
                     subtitle={`Grant or revoke verification for @${userDetails.neupId}.`}
+                    titleClassName="text-2xl leading-8"
+                    subtitleClassName="text-sm leading-6"
                 />
             </div>
             

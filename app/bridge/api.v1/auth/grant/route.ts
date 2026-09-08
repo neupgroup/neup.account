@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
  *
  * ::public
  *
- * Use this endpoint after the redirect handshake callback returns a `tempToken`.
+ * Exchange a proof-bound `tempcode` from `/auth/grant`, or a legacy handshake `tempToken`.
  *
  * ::public end
  *
@@ -25,9 +25,12 @@ export const dynamic = 'force-dynamic';
  * ::end
  */
 export async function POST(request: NextRequest) {
-  const body = await request.json();
+  let body;
+  try { body = await request.json(); } catch {
+    return NextResponse.json({ success: false, error: 'invalid_request' }, { status: 400 });
+  }
   const result = await bridgeIssueGrant(body);
-  return NextResponse.json(result.body, { status: result.status });
+  return NextResponse.json(result.body, { status: result.status, headers: { 'Cache-Control': 'no-store', Pragma: 'no-cache' } });
 }
 
 /**

@@ -1,5 +1,6 @@
 import prisma from '@/.neup/core/database/prisma';
 import crypto from 'crypto';
+import { consumeProofGrant, type ProofGrantInput } from '@/services/auth/proof-grant';
 import jwt from 'jsonwebtoken';
 import { logError } from '@/.neup/logica/logger/files';
 import { makeNotification } from '@/services/notifications';
@@ -34,7 +35,7 @@ function externalLoginType(appId: string) {
 }
 
 function resolveAppId(input: { app?: string }): string | null {
-  return normalizeApplicationId(input.app);
+  return typeof input.app === 'string' ? normalizeApplicationId(input.app) : null;
 }
 
 // Resolves the role name and permission set for an account in the context of an external app.
@@ -75,7 +76,11 @@ async function resolveAccountGrant(accountId: string, appId: string): Promise<{ 
 export async function bridgeIssueGrant(input: {
   tempToken?: string;
   app?: string;
-}): Promise<{ status: number; body: Record<string, any> }> {
+} & ProofGrantInput): Promise<{ status: number; body: Record<string, any> }> {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    return { status: 400, body: { success: false, error: 'invalid_request' } };
+  }
+  const proofFlow = ['tempcode', 'proof', 'challenge', 'state', 'platform', 'authorizesTo'].some(key => key in input);
   const { tempToken } = input;
   if ((input as any).appId) {
     return {
@@ -85,7 +90,7 @@ export async function bridgeIssueGrant(input: {
   }
   const appId = resolveAppId(input);
 
-  if (!tempToken || !appId) {
+  if ((!proofFlow && !tempToken) || !appId || (proofFlow && tempToken)) {
     return {
       status: 400,
       body: { success: false, error: 'invalid_request', error_description: 'Missing tempToken or app' },
@@ -95,20 +100,25 @@ export async function bridgeIssueGrant(input: {
   try {
     const now = new Date();
 
-    // Atomically consume the token in a single query — no TOCTOU window.
-    // update() throws if no row matches, which means the token was already used,
-    // expired, or never existed. We catch that and return 401.
+    // Proof grants validate stored bindings before atomic consumption.
+    // Legacy grants retain their existing one-time consumption behavior.
     let request: { id: string; type: string; data: unknown; accountId: string | null; expiresAt: Date };
     try {
-      request = await prisma.authnRequest.update({
-        where: {
-          id: tempToken,
-          type: 'bridge_grant',
-          status: 'pending',
-        },
-        data: { status: 'used' },
-        select: { id: true, type: true, data: true, accountId: true, expiresAt: true },
-      });
+      if (proofFlow) {
+        const consumed = await consumeProofGrant(input);
+        if (!consumed) return { status: 401, body: { success: false, error: 'invalid_grant' } };
+        request = consumed;
+      } else {
+        request = await prisma.authnRequest.update({
+          where: {
+            id: tempToken,
+            type: 'bridge_grant',
+            status: 'pending',
+          },
+          data: { status: 'used' },
+          select: { id: true, type: true, data: true, accountId: true, expiresAt: true },
+        });
+      }
     } catch {
       return {
         status: 401,
@@ -117,7 +127,7 @@ export async function bridgeIssueGrant(input: {
     }
 
     const requestData = (request.data as Record<string, any> | null) || {};
-    const requestAppId = normalizeApplicationId(typeof requestData.appId === 'string' ? requestData.appId : null);
+    const requestAppId = proofFlow ? requestData.app : normalizeApplicationId(typeof requestData.appId === 'string' ? requestData.appId : null);
 
     // Validate expiry and appId after consumption — if invalid, the token is still
     // marked used so it cannot be replayed.

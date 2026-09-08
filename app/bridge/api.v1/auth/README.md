@@ -9,6 +9,13 @@ Bridge authentication endpoints for redirect grants, session verification, token
 - External app flows use app-scoped sessions and HS256 tokens tied to `Application.appSecret`.
 - First-party account-token flows continue to use the base account token validators where the route permits both modes.
 
+## Proof-bound authorization
+
+New apps should use `GET /auth/grant` with `app`, `platform`, `authorizesTo`, `state`,
+and `challenge`, then exchange `tempcode` and `proof` via `POST /auth/grant` or
+`POST /bridge/api.v1/auth/grant`. See the [full contract](../../../auth/grant/README.md).
+All public paths are served under `/account`.
+
 ## Quick Chooser
 
 | Need | Route | Owner |

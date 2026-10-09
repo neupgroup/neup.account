@@ -3,9 +3,9 @@
 
 import { FlowLink } from '@/components/flow-link';
 import { usePathname } from 'next/navigation';
-import { cn } from '#/core/utils';
+import { cn } from '@neup/core/utils';
 import { Building, AppWindow, ShieldCheck, Users, UserCircle, ArrowLeft } from 'lucide-react';
-import { Separator } from '#/components/ui/separator';
+import { Separator } from '@neup/components/ui/separator';
 
 export function BrandNav({ brandId }: { brandId: string }) {
   const pathname = usePathname();

@@ -1,12 +1,12 @@
-import { permission } from '@/.neup/logica/permission';
+import { permission } from '@neup/logica/permission';
 import {
     Card,
-} from "#/components/ui/card";
+} from "@neup/components/ui/card";
 import { getUserSessions } from "@/services/security/sessions";
 import { SessionManager } from "@/app/(manage)/security/session-manager";
 import { getActiveSession } from '@/services/account/verify';
-import { BackButton } from "#/components/element/backButton";
-import { TitleSet } from '#/components/element/titleset';
+import { BackButton } from "@neup/components/element/backButton";
+import { TitleSet } from '@neup/components/element/titleset';
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
 import { SECURITY_PERMISSION_GROUPS } from '@/inapp/permissions/security-permissions';
 

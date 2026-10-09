@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
-import { BackButton } from '#/components/element/backButton';
-import { TitleSet } from '#/components/element/titleset';
-import { Card, CardContent } from '#/components/ui/card';
+import { BackButton } from '@neup/components/element/backButton';
+import { TitleSet } from '@neup/components/element/titleset';
+import { Card, CardContent } from '@neup/components/ui/card';
 import { getActiveAccountId } from '@/services/account/verify';
 import { getAccessibleAccounts } from '@/services/manage/accounts';
 import { AccountListItem } from '@/components/elements/account-item';

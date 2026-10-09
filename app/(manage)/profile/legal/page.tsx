@@ -7,19 +7,19 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 
 import { updateBrandLegalProfile, updateUserProfile } from "@/services/profile"
-import { useToast } from "#/core/hooks/useToast"
+import { useToast } from "@neup/core/hooks/useToast"
 
-import { Skeleton } from '#/components/ui/skeleton'
-import { Button } from "#/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "#/components/ui/card"
-import { Input } from "#/components/ui/input"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "#/components/ui/form"
+import { Skeleton } from '@neup/components/ui/skeleton'
+import { Button } from "@neup/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@neup/components/ui/card"
+import { Input } from "@neup/components/ui/input"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@neup/components/ui/form"
 import { useSession } from '@/inapp/auth/session-context'
-import { BackButton } from '#/components/element/backButton'
+import { BackButton } from '@neup/components/element/backButton'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/inapp/permissions/profile-permissions'
-import { Checkbox } from '#/components/ui/checkbox'
-import { Geolocation } from '#/core/providers/geolocation'
-import { permission } from '@/.neup/logica/permission';
+import { Checkbox } from '@neup/components/ui/checkbox'
+import { Geolocation } from '@neup/core/providers/geolocation'
+import { permission } from '@neup/logica/permission';
 import { useSelectedProfilePage } from '../use-selected-profile-page';
 
 const pagePermissions = [

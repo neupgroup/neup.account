@@ -20,7 +20,7 @@ The seed keeps legacy root/default role names alive while populating the canonic
 
 import 'dotenv/config';
 import bcrypt from 'bcryptjs';
-import prisma from '#/core/database/prisma';
+import prisma from '@neup/core/database/prisma';
 import { ensureAccessGrant } from '../services/access-model';
 import {
   NEUP_ACCOUNT_APP_ID,
@@ -37,7 +37,7 @@ const ROLE_DEFAULT_ID = 'individual-default-neup-account';
 const ROLE_ROOT_ID = 'root-full-neup-account';
 
 function slugifyPermission(name: string): string {
-  return name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase();
+  return name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+@base/g, '').toLowerCase();
 }
 
 if (!process.env.DATABASE_URL) {

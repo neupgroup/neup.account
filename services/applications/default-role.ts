@@ -1,7 +1,7 @@
 'use server';
 
-import prisma from '@/.neup/core/database/prisma';
-import { logError } from '@/.neup/logica/logger/files';
+import prisma from '@neup/core/database/prisma';
+import { logError } from '@neup/logica/logger/files';
 import { roleMatchesAssignmentModesPolicy } from '@/services/applications/authz-scope-policy';
 
 type GetApplicationDefaultRoleIdOptions = {

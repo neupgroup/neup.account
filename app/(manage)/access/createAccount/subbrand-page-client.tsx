@@ -7,15 +7,15 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useDebounce } from "use-debounce"
 
-import { Button } from "#/components/ui/button"
+import { Button } from "@neup/components/ui/button"
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardFooter
-} from "#/components/ui/card"
-import { Input } from "#/components/ui/input"
+} from "@neup/components/ui/card"
+import { Input } from "@neup/components/ui/input"
 import {
   Form,
   FormControl,
@@ -24,18 +24,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "#/components/ui/form"
-import { useToast } from "#/core/hooks/useToast"
+} from "@neup/components/ui/form"
+import { useToast } from "@neup/core/hooks/useToast"
 import { createSubbrandAccount, checkSubbrandNeupIdAvailability } from "@/services/manage/accounts/subbrands";
 import { CheckCircle2, XCircle, Loader2 } from "@/components/icons"
-import { BackButton } from "#/components/element/backButton"
-import { redirectInApp } from "@/.neup/core/helpers/link/navigation";
+import { BackButton } from "@neup/components/element/backButton"
+import { redirectInApp } from "@neup/core/helpers/link/navigation";
 
 const formSchema = z.object({
     name: z.string().min(1, "Subbrand name is required"),
     neupIdSubdomain: z.string()
         .min(3, "Subdomain must be at least 3 characters.")
-        .regex(/^[a-z0-9-]+$/, "Subdomain can only contain lowercase letters, numbers, and hyphens."),
+        .regex(/^[a-z0-9-]+@base/, "Subdomain can only contain lowercase letters, numbers, and hyphens."),
     location: z.string().optional(),
 });
 
@@ -67,7 +67,7 @@ export default function CreateSubbrandPageClient({
     const [debouncedValue] = useDebounce(neupIdValue, 500);
 
     const checkAvailability = useCallback(async (subdomain: string) => {
-        if (subdomain.length < 3 || !/^[a-z0-9-]+$/.test(subdomain)) {
+        if (subdomain.length < 3 || !/^[a-z0-9-]+@base/.test(subdomain)) {
             setNeupIdStatus('idle');
             setFullNeupIdPreview(null);
             return;

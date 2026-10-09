@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getUserDetails } from "@/services/manage/users";
-import { BackButton } from "#/components/element/backButton";
-import { TitleSet } from '#/components/element/titleset';
+import { BackButton } from "@neup/components/element/backButton";
+import { TitleSet } from '@neup/components/element/titleset';
 import { DeletionManager } from "./form";
 
 export default async function UserDeletionPage({ params }: { params: Promise<{ id: string }> }) {

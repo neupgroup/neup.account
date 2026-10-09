@@ -10,13 +10,13 @@ import {
 } from '@/services/applications/manage';
 import { getAppDefaultRoleId, getAppRoles } from '@/services/applications/authz-manage';
 import { getAuthzWebhookUrl } from '@/services/applications/authz-webhook';
-import { BackButton } from '#/components/element/backButton';
-import { TitleSet } from '#/components/element/titleset';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { BackButton } from '@neup/components/element/backButton';
+import { TitleSet } from '@neup/components/element/titleset';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { RolesPanel } from '@/app/(manage)/application/_components/roles-panel';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
-import { formMetadata } from '#/core/metadata';
+import { formMetadata } from '@neup/core/metadata';
 
 type Props = {
   searchParams: Promise<{ application?: string | string[]; mode?: string }>;

@@ -1,9 +1,9 @@
 'use client';
 
 import { useSession } from '@/inapp/auth/session-context';
-import { Card, CardContent } from '#/components/ui/card';
+import { Card, CardContent } from '@neup/components/ui/card';
 import { Users, List, Terminal, AppWindow } from '@/components/icons';
-import { TitleSet } from '#/components/element/titleset';
+import { TitleSet } from '@neup/components/element/titleset';
 import { ListItem } from '@/components/ui/ListItem';
 
 const managementItems = [

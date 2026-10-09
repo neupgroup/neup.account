@@ -1,4 +1,4 @@
-import prisma from '@/.neup/core/database/prisma';
+import prisma from '@neup/core/database/prisma';
 
 /** Resolve definitions only; roles and grants continue to belong to the consuming app. */
 export async function resolvePermissionSourceId(

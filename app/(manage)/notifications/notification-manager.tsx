@@ -4,13 +4,13 @@
 
 import { useState, useTransition, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useToast } from '#/core/hooks/useToast';
-import { Button } from '#/components/ui/button';
+import { useToast } from '@neup/core/hooks/useToast';
+import { Button } from '@neup/components/ui/button';
 import { AlertTriangle, X, Bell, type LucideIcon, Handshake, UserPlus, MessageSquareWarning } from '@/components/icons';
 import type { AllNotifications, Notification } from '@/services/notifications';
-import { Card, CardContent } from '#/components/ui/card';
+import { Card, CardContent } from '@neup/components/ui/card';
 import { markNotificationAsRead, deleteNotification } from '@/services/notifications';
-import { cn } from '#/core/utils';
+import { cn } from '@neup/core/utils';
 import { cva } from 'class-variance-authority';
 import { ListItem } from '@/components/ui/ListItem';
 

@@ -1,15 +1,15 @@
 import type { Metadata } from 'next';
-import { Card, CardContent } from "#/components/ui/card";
+import { Card, CardContent } from "@neup/components/ui/card";
 import { getFamilyGroups } from "@/services/manage/people/family";
 import { FamilyManager } from "./family-manager";
 import { PartnerManager } from "./partner-manager";
-import { BackButton } from "#/components/element/backButton";
+import { BackButton } from "@neup/components/element/backButton";
 import { getActiveAccountId } from '@/services/account/verify';
 import { getUserProfile, checkPermissions } from '@/services/user';
 import { notFound } from "next/navigation";
-import { TitleSet } from '#/components/element/titleset';
-import { formMetadata } from '#/core/metadata';
-import { permission } from '@/.neup/logica/permission';
+import { TitleSet } from '@neup/components/element/titleset';
+import { formMetadata } from '@neup/core/metadata';
+import { permission } from '@neup/logica/permission';
 import {
     ACCESS_FAMILY_MEMBER_UPDATE_PERMISSIONS,
     ACCESS_FAMILY_PARTNER_UPDATE_PERMISSIONS,

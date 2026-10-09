@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import crypto from 'crypto';
-vi.mock('@/.neup/core/database/prisma', () => ({ default: {
+vi.mock('@neup/core/database/prisma', () => ({ default: {
   application: { findUnique: vi.fn() },
   applicationBridge: { findMany: vi.fn() },
   authnRequest: { create: vi.fn(), findUnique: vi.fn(), updateMany: vi.fn() },
 } }));
 vi.mock('@/services/account/verify', () => ({ getActiveSession: vi.fn() }));
-import prisma from '@/.neup/core/database/prisma';
+import prisma from '@neup/core/database/prisma';
 import { getActiveSession } from '@/services/account/verify';
 import { beginProofGrant, consumeProofGrant, parseGrantContext } from '@/services/auth/proof-grant';
 

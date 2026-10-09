@@ -11,9 +11,9 @@ entry stays in the same server-rendered context.
 
 import { FlowLink } from '@/components/flow-link';
 import { notFound } from 'next/navigation';
-import { Button } from '#/components/ui/button';
-import { Badge } from '#/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { Badge } from '@neup/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@neup/components/ui/card';
 import {
   getApplicationDetailPageData,
 } from '@/services/applications/manage';

@@ -5,7 +5,7 @@ import { useState, useTransition, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useToast } from "#/core/hooks/useToast";
+import { useToast } from "@neup/core/hooks/useToast";
 import { scheduleMaterialization } from "@/services/data/materialization";
 import {
   Card,
@@ -14,11 +14,11 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "#/components/ui/card";
-import { Button } from "#/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "#/components/ui/alert";
+} from "@neup/components/ui/card";
+import { Button } from "@neup/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@neup/components/ui/alert";
 import { Loader2, CalendarClock } from "@/components/icons";
-import { Input } from "#/components/ui/input";
+import { Input } from "@neup/components/ui/input";
 import {
   Form,
   FormControl,
@@ -26,17 +26,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "#/components/ui/form";
+} from "@neup/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "#/components/ui/select";
-import { BackButton } from "#/components/element/backButton";
-import { Geolocation } from "#/core/providers/geolocation";
-import { TitleSet } from '#/components/element/titleset';
+} from "@neup/components/ui/select";
+import { BackButton } from "@neup/components/element/backButton";
+import { Geolocation } from "@neup/core/providers/geolocation";
+import { TitleSet } from '@neup/components/element/titleset';
 
 const formSchema = z.object({
     inactivityDays: z.string().min(1, "Please select a time period."),

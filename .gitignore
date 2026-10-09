@@ -59,11 +59,8 @@ app.private.key
 app.public.key
 
 # Neup Standard files.
-logica
-neup.logica
-core
-neup.core
-.neup/*
+@neup
+@neup/*
 local/accounts/permissions.json
 local/accounts/roles.json
 local/basics/permissions.json

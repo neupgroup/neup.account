@@ -27,8 +27,8 @@ import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import { Pool } from 'pg';
 import bcrypt from 'bcryptjs';
-import { Prisma } from '@/.neup/core/database/prisma';
-import prisma from '@/.neup/core/database/prisma';
+import { Prisma } from '@neup/core/database/prisma';
+import prisma from '@neup/core/database/prisma';
 import { ensureAccessGrant } from '@/services/access-model';
 import { BRAND_OWNER_PERMISSION_NAMES, BRAND_OWNER_ROLE_ID, BRAND_OWNER_ROLE_NAME, BRAND_ROOT_PERMISSION_NAMES } from '@/inapp/permissions/brand-roles';
 
@@ -517,7 +517,7 @@ type MasterAccountInput = {
 };
 
 function isValidIsoDate(value: string): boolean {
-  return /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(new Date(`${value}T00:00:00.000Z`).getTime());
+  return /^\d{4}-\d{2}-\d{2}@base/.test(value) && !Number.isNaN(new Date(`${value}T00:00:00.000Z`).getTime());
 }
 
 async function promptHidden(question: string): Promise<string> {

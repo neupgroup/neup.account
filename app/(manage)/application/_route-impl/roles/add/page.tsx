@@ -6,9 +6,9 @@ import {
   getApplicationDetailsForViewerV2,
   logRootApplicationActivity,
 } from '@/services/applications/manage';
-import { BackButton } from '#/components/element/backButton';
-import { TitleSet } from '#/components/element/titleset';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { BackButton } from '@neup/components/element/backButton';
+import { TitleSet } from '@neup/components/element/titleset';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { RoleCreateForm } from '@/app/(manage)/application/_components/role-create-form';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';

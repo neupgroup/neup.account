@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 
 /** Shows errors returned through a redirect URL using the app-wide toast UI. */
 export function UrlErrorToast() {

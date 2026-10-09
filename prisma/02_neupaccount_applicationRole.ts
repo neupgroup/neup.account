@@ -19,7 +19,7 @@ The script is idempotent and rebuilds the role-permission mappings after upserti
 */
 
 import 'dotenv/config';
-import prisma from '#/core/database/prisma';
+import prisma from '@neup/core/database/prisma';
 import { APPLICATION_SYSTEM_OWNER_PERMISSION_DEFINITIONS } from '../services/applications/permission-definitions';
 
 if (!process.env.DATABASE_URL) {
@@ -32,7 +32,7 @@ const APP_ID = 'neup.account';
 // Permission definitions
 // ---------------------------------------------------------------------------
 const CAPABILITIES = APPLICATION_SYSTEM_OWNER_PERMISSION_DEFINITIONS.map((permission, index) => ({
-  id: `cap-appowner-${index + 1}-${permission.name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}`,
+  id: `cap-appowner-${index + 1}-${permission.name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+@base/g, '').toLowerCase()}`,
   name: permission.name,
   description: permission.description,
   scopeFor: permission.scopeFor,

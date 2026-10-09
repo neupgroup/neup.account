@@ -1,7 +1,7 @@
 import { FlowLink } from '@/components/flow-link';
 import { redirect } from 'next/navigation';
-import { Button } from '#/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@neup/components/ui/card';
 import { AppWindow } from '@/components/icons';
 import { getAuthSignPageData } from '@/services/account/signPage';
 import Image from 'next/image';

@@ -3,8 +3,8 @@ import './globals.css';
 import 'nprogress/nprogress.css';
 import { AppProviders } from '@/components/layout/AppProviders';
 import { checkSession } from '@/services/account/check';
-import RootLayout from '#/components/layout/RootLayout';
-import { APP_NAME, DEFAULT_META_DESCRIPTION } from '#/core/metadata';
+import RootLayout from '@neup/components/layout/RootLayout';
+import { APP_NAME, DEFAULT_META_DESCRIPTION } from '@neup/core/metadata';
 
 export const metadata: Metadata = {
   title: APP_NAME,

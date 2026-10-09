@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Input } from '#/components/ui/input';
+import { Input } from '@neup/components/ui/input';
 import { Search } from 'lucide-react';
-import { Skeleton } from '#/components/ui/skeleton';
-import { Avatar, AvatarImage, AvatarFallback } from '#/components/ui/avatar';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Avatar, AvatarImage, AvatarFallback } from '@neup/components/ui/avatar';
 import { useRouter } from 'next/navigation';
 import { VerifiedBadge } from '../verified-badge';
 import { useSession } from '@/inapp/auth/session-context';
-import { redirectInApp } from '@/.neup/core/helpers/link/navigation';
+import { redirectInApp } from '@neup/core/helpers/link/navigation';
 import { getFallbackDisplayImage } from '@/inapp/display-image';
 
 function getGreeting() {

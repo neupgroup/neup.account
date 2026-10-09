@@ -5,18 +5,18 @@ import { useEffect, useState, useTransition, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useToast } from "#/core/hooks/useToast";
+import { useToast } from "@neup/core/hooks/useToast";
 import { getRecoveryEmail, addRecoveryEmail, removeRecoveryEmail } from "@/services/security/email";
 
-import { Button } from "#/components/ui/button";
+import { Button } from "@neup/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "#/components/ui/card";
-import { Input } from "#/components/ui/input";
+} from "@neup/components/ui/card";
+import { Input } from "@neup/components/ui/input";
 import {
   Form,
   FormControl,
@@ -24,13 +24,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "#/components/ui/form";
-import { Skeleton } from "#/components/ui/skeleton";
+} from "@neup/components/ui/form";
+import { Skeleton } from "@neup/components/ui/skeleton";
 import { Loader2, Plus, Trash2 } from "@/components/icons";
-import { cn } from "#/core/utils";
-import { BackButton } from "#/components/element/backButton";
+import { cn } from "@neup/core/utils";
+import { BackButton } from "@neup/components/element/backButton";
 import { emailFormSchema } from "@/services/security/schema";
-import { TitleSet } from '#/components/element/titleset';
+import { TitleSet } from '@neup/components/element/titleset';
 
 type EmailFormValues = z.infer<typeof emailFormSchema>;
 

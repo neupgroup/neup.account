@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createHmac, timingSafeEqual } from 'node:crypto';
-import { makeAppPath } from '#/core/appconfig';
-import { getEnvVariable } from '@/.neup/core/helpers/env';
+import { makeAppPath } from '@neup/core/appconfig';
+import { getEnvVariable } from '@neup/core/helpers/env';
 import { getActiveSession } from '@/services/account/verify';
 import { storeLinkedAccount } from '@/services/bridge/linked-accounts';
 
@@ -44,7 +44,7 @@ const STATE_COOKIE_NAME = 'github_link_state';
 function normalizeBasePath(value: string | null | undefined): string {
   const trimmed = value?.trim();
   if (!trimmed || trimmed === '/') return '';
-  return trimmed.startsWith('/') ? trimmed.replace(/\/$/, '') : `/${trimmed.replace(/\/$/, '')}`;
+  return trimmed.startsWith('/') ? trimmed.replace(/\/@base/, '') : `/${trimmed.replace(/\/@base/, '')}`;
 }
 
 function getConfiguredAppBasePath(): string {

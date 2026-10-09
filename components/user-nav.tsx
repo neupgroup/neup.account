@@ -2,8 +2,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
-import { Skeleton } from '#/components/ui/skeleton';
+import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
+import { Skeleton } from '@neup/components/ui/skeleton';
 import { useSession } from '@/inapp/auth/session-context';
 import { getFallbackDisplayImage } from '@/inapp/display-image';
 

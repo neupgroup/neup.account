@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation';
 import { redirect } from 'next/navigation';
-import { BackButton } from '#/components/element/backButton';
-import { TitleSet } from '#/components/element/titleset';
-import { Card, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
+import { BackButton } from '@neup/components/element/backButton';
+import { TitleSet } from '@neup/components/element/titleset';
+import { Card, CardDescription, CardHeader, CardTitle } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
 import { FlowLink } from '@/components/flow-link';
 import {
   canCurrentAccountClearApplicationDevLogs,

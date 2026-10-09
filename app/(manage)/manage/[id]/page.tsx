@@ -1,16 +1,16 @@
 
 
 import { notFound } from 'next/navigation';
-import { Card, CardContent } from '#/components/ui/card';
+import { Card, CardContent } from '@neup/components/ui/card';
 import { ListItem } from '@/components/ui/ListItem';
 import { getUserDetails } from '@/services/manage/users';
 import { checkPermissions } from '@/services/user';
-import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
-import { BackButton } from '#/components/element/backButton';
+import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
+import { BackButton } from '@neup/components/element/backButton';
 import { VerifiedBadge } from '@/components/verified-badge';
 import { UserCircle, ShieldCheck, History, Ban, Trash2, Gem } from '@/components/icons';
 import { ACCOUNT_ACCESS_PERMISSION_GROUPS } from '@/inapp/permissions/account-access-permissions';
-import { permission } from '@/.neup/logica/permission';
+import { permission } from '@neup/logica/permission';
 
 const pagePermissions = [
   permission('root.account.view', 'for_individual', 'page'),

@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { GeolocationProvider } from '#/core/providers/geolocation';
+import { GeolocationProvider } from '@neup/core/providers/geolocation';
 import { SessionProvider, type InitialAppSession } from '@/inapp/auth/session-context';
 
 export function AppProviders({

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useTransition, useRef, useCallback } from 'react';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import {
   getBlockedUsers,
   getRestrictedUsers,
@@ -12,15 +12,15 @@ import {
   type BlockedUser,
 } from '@/services/manage/people/blocked';
 
-import { Card, CardContent, CardFooter } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { Input } from '#/components/ui/input';
-import { Skeleton } from '#/components/ui/skeleton';
-import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
+import { Card, CardContent, CardFooter } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { Input } from '@neup/components/ui/input';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
 import { Loader2, UserPlus, Trash2, Ban, EyeOff } from 'lucide-react';
-import { BackButton } from '#/components/element/backButton';
-import { TitleSet } from '#/components/element/titleset';
-import { cn } from '#/core/utils';
+import { BackButton } from '@neup/components/element/backButton';
+import { TitleSet } from '@neup/components/element/titleset';
+import { cn } from '@neup/core/utils';
 
 function UserListSkeleton() {
   return (

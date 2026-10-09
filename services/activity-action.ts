@@ -69,7 +69,7 @@ export function compileActivityAction(rawAction: string): CompiledActivityAction
   }
 
   const profileDisplayImageMatch = raw.match(
-    /^profile\.displayImage\.changedFrom\((.+)\)\.changedTo\((.+)\)$/
+    /^profile\.displayImage\.changedFrom\((.+)\)\.changedTo\((.+)\)@base/
   );
   if (profileDisplayImageMatch) {
     return {
@@ -78,7 +78,7 @@ export function compileActivityAction(rawAction: string): CompiledActivityAction
     };
   }
 
-  const profileDobMatch = raw.match(/^profile\.dob\.changedFrom\((.+)\)\.changedTo\((.+)\)$/);
+  const profileDobMatch = raw.match(/^profile\.dob\.changedFrom\((.+)\)\.changedTo\((.+)\)@base/);
   if (profileDobMatch) {
     const previousDob = unquote(profileDobMatch[1]);
     const newDob = unquote(profileDobMatch[2]);
@@ -89,7 +89,7 @@ export function compileActivityAction(rawAction: string): CompiledActivityAction
     };
   }
 
-  const profileNameMatch = raw.match(/^profile\.name\.changedFrom\((.+)\)\.changedTo\((.+)\)$/);
+  const profileNameMatch = raw.match(/^profile\.name\.changedFrom\((.+)\)\.changedTo\((.+)\)@base/);
   if (profileNameMatch) {
     const previousName = unquote(profileNameMatch[1]);
     const newName = unquote(profileNameMatch[2]);
@@ -100,7 +100,7 @@ export function compileActivityAction(rawAction: string): CompiledActivityAction
     };
   }
 
-  const profileLegalNameMatch = raw.match(/^profile\.legalName\.changedFrom\((.+)\)\.changedTo\((.+)\)$/);
+  const profileLegalNameMatch = raw.match(/^profile\.legalName\.changedFrom\((.+)\)\.changedTo\((.+)\)@base/);
   if (profileLegalNameMatch) {
     const previousLegalName = unquote(profileLegalNameMatch[1]);
     const newLegalName = unquote(profileLegalNameMatch[2]);
@@ -111,7 +111,7 @@ export function compileActivityAction(rawAction: string): CompiledActivityAction
     };
   }
 
-  const accountBrandCreateMatch = raw.match(/^account\.brand\.create\((.+)\)$/);
+  const accountBrandCreateMatch = raw.match(/^account\.brand\.create\((.+)\)@base/);
   if (accountBrandCreateMatch) {
     const brandAccountId = unquote(accountBrandCreateMatch[1]);
     return {
@@ -121,7 +121,7 @@ export function compileActivityAction(rawAction: string): CompiledActivityAction
     };
   }
 
-  const accountDependentCreateMatch = raw.match(/^account\.dependent\.create\((.+)\)$/);
+  const accountDependentCreateMatch = raw.match(/^account\.dependent\.create\((.+)\)@base/);
   if (accountDependentCreateMatch) {
     const dependentAccountId = unquote(accountDependentCreateMatch[1]);
     return {
@@ -132,7 +132,7 @@ export function compileActivityAction(rawAction: string): CompiledActivityAction
   }
 
   const accountSubbrandCreateMatch =
-    raw.match(/^account\.(?:branch|subbrand)\.create\((.+)\)$/);
+    raw.match(/^account\.(?:branch|subbrand)\.create\((.+)\)@base/);
   if (accountSubbrandCreateMatch) {
     const subbrandAccountId = unquote(accountSubbrandCreateMatch[1]);
     return {
@@ -143,7 +143,7 @@ export function compileActivityAction(rawAction: string): CompiledActivityAction
   }
 
   const accountConnectionCreateMatch = raw.match(
-    /^account\.connection\.create\((.+)\)\.application\((.+)\)$/
+    /^account\.connection\.create\((.+)\)\.application\((.+)\)@base/
   );
   if (accountConnectionCreateMatch) {
     const connectionId = unquote(accountConnectionCreateMatch[1]);
@@ -155,7 +155,7 @@ export function compileActivityAction(rawAction: string): CompiledActivityAction
     };
   }
 
-  const verificationApprovedMatch = raw.match(/^verification\.approved\((.+)\)$/);
+  const verificationApprovedMatch = raw.match(/^verification\.approved\((.+)\)@base/);
   if (verificationApprovedMatch) {
     const category = unquote(verificationApprovedMatch[1]);
     return {
@@ -165,7 +165,7 @@ export function compileActivityAction(rawAction: string): CompiledActivityAction
     };
   }
 
-  const applicationCreateMatch = raw.match(/^application\.create\((.+)\)$/);
+  const applicationCreateMatch = raw.match(/^application\.create\((.+)\)@base/);
   if (applicationCreateMatch) {
     const applicationId = unquote(applicationCreateMatch[1]);
     return {

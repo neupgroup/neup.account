@@ -2,11 +2,11 @@
 
 import { useEffect, useState, useTransition } from 'react';
 import { getNotifications, markNotificationAsRead } from '@/services/notifications';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { Button } from '#/components/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
+import { Button } from '@neup/components/ui/button';
 import { AlertTriangle, X, Bell } from '@/components/icons';
-import { cn } from '#/core/utils';
-import { Skeleton } from '#/components/ui/skeleton';
+import { cn } from '@neup/core/utils';
+import { Skeleton } from '@neup/components/ui/skeleton';
 import { usePathname } from 'next/navigation';
 import { cva, type VariantProps } from 'class-variance-authority';
 import type { Notification as NotificationType } from '@/services/notifications';

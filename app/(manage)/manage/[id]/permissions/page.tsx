@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { getUserDetails, getAccountRoles, getAvailableRoles } from "@/services/manage/users";
-import { BackButton } from "#/components/element/backButton";
+import { BackButton } from "@neup/components/element/backButton";
 import { RoleEditor } from "./form";
-import { TitleSet } from '#/components/element/titleset';
+import { TitleSet } from '@neup/components/element/titleset';
 
 export default async function UserPermissionsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;

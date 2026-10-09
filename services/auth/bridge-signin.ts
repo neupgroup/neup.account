@@ -1,10 +1,10 @@
-import prisma from '@/.neup/core/database/prisma';
+import prisma from '@neup/core/database/prisma';
 import { createSigninAuthnRequest } from './AuthenticationFlow';
 import { getAuthRequest } from './auth-request';
 import { validateNeupId } from '@/services/user';
 import { submitNeupId, submitPasswordWithNeupId } from './signin';
 import { makeSessionFromRequest } from '@/services/account/makeSession';
-import { cookieProvider } from '#/core/providers/cookies';
+import { cookieProvider } from '@neup/core/providers/cookies';
 import jwt from 'jsonwebtoken';
 import { getActiveSession } from '@/services/account/verify';
 import { signAccountToken, verifyAccountToken } from './account-token';

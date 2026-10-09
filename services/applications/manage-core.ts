@@ -2,14 +2,14 @@ import { isIP } from 'node:net';
 import { revalidatePath } from 'next/cache';
 import { notFound } from 'next/navigation';
 import { z } from 'zod';
-import { permission } from '@/.neup/logica/permission';
-import { Prisma } from '@/.neup/core/database/prisma';
-import prisma from '@/.neup/core/database/prisma';
+import { permission } from '@neup/logica/permission';
+import { Prisma } from '@neup/core/database/prisma';
+import prisma from '@neup/core/database/prisma';
 import { getAccountSelectorContext } from '@/services/account/accountSelector';
 import { getActiveAccountId, getPersonalAccountId } from '@/services/account/verify';
 import { ACCESS_APPLICATION_VIEW_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';
 import { checkPermissions } from '@/services/user';
-import { logError } from '@/.neup/logica/logger/files';
+import { logError } from '@neup/logica/logger/files';
 import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
@@ -267,7 +267,7 @@ export async function createManagedApplication(input: { name: string; idPrefix: 
       // Ensure the application.owner role and its permissions exist before creating grants.
       // This makes createManagedApplication self-contained regardless of seed state.
       const permissionDefinitions = APPLICATION_SYSTEM_OWNER_PERMISSION_DEFINITIONS.map((permission, index) => ({
-        id: `cap-appowner-${index + 1}-${permission.name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}`,
+        id: `cap-appowner-${index + 1}-${permission.name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+@base/g, '').toLowerCase()}`,
         ...permission,
       }));
       const permissions: Array<{ id: string; name: string; description: string | null }> = [];

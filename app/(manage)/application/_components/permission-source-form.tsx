@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { updateAppPermissionSource } from '@/services/applications/authz-manage';
-import { Button } from '#/components/ui/button';
+import { Button } from '@neup/components/ui/button';
 
 export function PermissionSourceForm({ appId, sourceId, sourceName, applications, canManage }: {
   appId: string;

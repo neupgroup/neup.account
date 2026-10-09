@@ -17,11 +17,11 @@ This panel powers the top-level permissions page, including search and creation 
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useToast } from '#/core/hooks/useToast';
-import { Button } from '#/components/ui/button';
-import { Input } from '#/components/ui/input';
-import { Textarea } from '#/components/ui/textarea';
-import { Badge } from '#/components/ui/badge';
+import { useToast } from '@neup/core/hooks/useToast';
+import { Button } from '@neup/components/ui/button';
+import { Input } from '@neup/components/ui/input';
+import { Textarea } from '@neup/components/ui/textarea';
+import { Badge } from '@neup/components/ui/badge';
 import { Plus, ChevronRight } from '@/components/icons';
 import {
   Dialog,
@@ -31,13 +31,13 @@ import {
   DialogDescription,
   DialogFooter,
   DialogClose,
-} from '#/components/ui/dialog';
+} from '@neup/components/ui/dialog';
 import {
   createAppPermission,
   type AppPermission,
 } from '@/services/applications/authz-manage';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
-import { redirectInApp } from '@/.neup/core/helpers/link/navigation';
+import { redirectInApp } from '@neup/core/helpers/link/navigation';
 import { FlowLink } from '@/components/flow-link';
 import { ScopeForSelector, ScopeLevelSelector } from './authz-scope-policy-selector';
 

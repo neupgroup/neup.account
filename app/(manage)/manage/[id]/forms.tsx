@@ -2,21 +2,21 @@
 
 import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useToast } from "#/core/hooks/useToast";
+import { useToast } from "@neup/core/hooks/useToast";
 import { sendWarning, blockServiceAccess, unblockServiceAccess } from "@/services/manage/users";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "#/components/ui/card";
-import { Button } from "#/components/ui/button";
-import { Input } from "#/components/ui/input";
-import { Label } from "#/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@neup/components/ui/card";
+import { Button } from "@neup/components/ui/button";
+import { Input } from "@neup/components/ui/input";
+import { Label } from "@neup/components/ui/label";
 import { AlertTriangle, Ban, Loader2, MessageSquareWarning } from "lucide-react";
-import { Textarea } from "#/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "#/components/ui/select";
+import { Textarea } from "@neup/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@neup/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "#/components/ui/form";
-import { Switch } from "#/components/ui/switch";
-import { TitleSet } from '#/components/element/titleset';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@neup/components/ui/form";
+import { Switch } from "@neup/components/ui/switch";
+import { TitleSet } from '@neup/components/element/titleset';
 
 export const warningReasons = {
     spam: "Spamming or Commercial Solicitation",

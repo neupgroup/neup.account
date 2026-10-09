@@ -1,8 +1,8 @@
 import React from 'react';
-import { Card, CardContent } from '#/components/ui/card';
+import { Card, CardContent } from '@neup/components/ui/card';
 import { ListItem } from '@/components/ui/ListItem';
-import { TitleSet } from '#/components/element/titleset';
-import { permission } from '@/.neup/logica/permission';
+import { TitleSet } from '@neup/components/element/titleset';
+import { permission } from '@neup/logica/permission';
 import { notFound } from 'next/navigation';
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
 import { hasAnyPermission } from '@/inapp/permissions/profile-permissions';

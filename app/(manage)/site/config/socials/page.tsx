@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation';
-import { BackButton } from '#/components/element/backButton';
+import { BackButton } from '@neup/components/element/backButton';
 import { checkPermissions } from '@/services/user';
 import { getSocialLinks } from '@/services/manage/site/socials';
 import { SocialLinksManager } from '../../../config/socials/social-links-manager';
-import { permission } from '@/.neup/logica/permission';
+import { permission } from '@neup/logica/permission';
 
 const pagePermissions = [
   permission('site.socials.read', 'for_individual', 'page'),

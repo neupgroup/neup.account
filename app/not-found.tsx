@@ -1,5 +1,5 @@
 import { FlowLink } from '@/components/flow-link';
-import { Button } from '#/components/ui/button';
+import { Button } from '@neup/components/ui/button';
 import { AlertTriangle } from 'lucide-react';
 
 export default function NotFound() {

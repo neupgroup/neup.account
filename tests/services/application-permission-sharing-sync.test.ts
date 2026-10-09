@@ -7,8 +7,8 @@ const db = vi.hoisted(() => ({
   authzRolePermissionMap: { deleteMany: vi.fn(), createMany: vi.fn(), findMany: vi.fn() },
   $transaction: vi.fn(),
 }));
-vi.mock('@/.neup/core/database/prisma', () => ({ default: db, Prisma: { JsonNull: null } }));
-vi.mock('@/.neup/logica/logger/files', () => ({ logError: vi.fn() }));
+vi.mock('@neup/core/database/prisma', () => ({ default: db, Prisma: { JsonNull: null } }));
+vi.mock('@neup/logica/logger/files', () => ({ logError: vi.fn() }));
 import { getSyncedAppPermissions, postSyncedAppPermissions, postSyncedAppRoles } from '@/services/bridge/app-authz-sync';
 const credentials = { neupAppId: 'consumer', neupAppSecret: 'secret' };
 

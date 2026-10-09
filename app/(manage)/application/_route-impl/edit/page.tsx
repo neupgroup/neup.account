@@ -1,11 +1,11 @@
 import { notFound } from 'next/navigation';
 import { canCurrentAccountEditApplicationBasics, getApplicationDetailsForViewerV2, logRootApplicationActivity } from '@/services/applications/manage';
-import { BackButton } from '#/components/element/backButton';
-import { TitleSet } from '#/components/element/titleset';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { BackButton } from '@neup/components/element/backButton';
+import { TitleSet } from '@neup/components/element/titleset';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { AppEditForm } from '@/app/(manage)/application/_components/app-edit-form';
-import prisma from '@/.neup/core/database/prisma';
+import prisma from '@neup/core/database/prisma';
 import { getActiveAccountId } from '@/services/account/verify';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 

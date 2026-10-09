@@ -3,16 +3,16 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import Image from 'next/image';
-import { useToast } from '#/core/hooks/useToast';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "#/components/ui/card";
-import { Button } from '#/components/ui/button';
-import { Input } from '#/components/ui/input';
-import { Skeleton } from '#/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { useToast } from '@neup/core/hooks/useToast';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@neup/components/ui/card";
+import { Button } from '@neup/components/ui/button';
+import { Input } from '@neup/components/ui/input';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { getTotpStatus, generateTotpSecret, verifyAndEnableTotp, disableTotp, getServerTime } from '@/services/security/totp';
 import { Smartphone, Loader2, Clock } from '@/components/icons';
-import { BackButton } from '#/components/element/backButton';
-import { TitleSet } from '#/components/element/titleset';
+import { BackButton } from '@neup/components/element/backButton';
+import { TitleSet } from '@neup/components/element/titleset';
 
 type SetupState = {
     secret: string;

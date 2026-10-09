@@ -9,7 +9,7 @@ import { z } from "zod";
 import NProgress from 'nprogress';
 import { format } from "date-fns";
 
-import { useToast } from "#/core/hooks/useToast";
+import { useToast } from "@neup/core/hooks/useToast";
 import { 
     submitNameStep, 
     getSignupStepData, 
@@ -33,17 +33,17 @@ import {
     passwordSchema, 
     termsSchema 
 } from "@/services/auth/signup/schema";
-import { Button } from "#/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "#/components/ui/form";
-import { Input } from "#/components/ui/input";
-import { PhoneInput } from "#/components/ui/phone-input";
+import { Button } from "@neup/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@neup/components/ui/form";
+import { Input } from "@neup/components/ui/input";
+import { PhoneInput } from "@neup/components/ui/phone-input";
 import { Loader2, Check } from "@/components/icons";
-import { Checkbox } from "#/components/ui/checkbox";
-import { Label } from "#/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "#/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "#/components/ui/select";
+import { Checkbox } from "@neup/components/ui/checkbox";
+import { Label } from "@neup/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@neup/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@neup/components/ui/select";
 import { countries } from "./countries";
-import { redirectInApp } from "@/.neup/core/helpers/link/navigation";
+import { redirectInApp } from "@neup/core/helpers/link/navigation";
 import { appendAuthCallbackContext, hasAuthCallbackContext, shouldReturnToAuthStartForExternalAuthentication, getFlowParams } from "@/inapp/auth/callbacks";
 import { announceAuthStateChanged } from "@/inapp/auth/events";
 
@@ -236,7 +236,7 @@ function DemographicsStep() {
                              dobDate = new Date(dateSource);
                          } else {
                              // Handle YYYYMMDD format
-                             if (/^\d{8}$/.test(dateSource)) {
+                             if (/^\d{8}@base/.test(dateSource)) {
                                  const y = dateSource.substring(0, 4);
                                  const m = dateSource.substring(4, 6);
                                  const d = dateSource.substring(6, 8);
@@ -282,7 +282,7 @@ function DemographicsStep() {
                  // Fallback if no data stored but params exist
                  let dobDate: Date | undefined;
                  if (birthdateParam) {
-                     if (/^\d{8}$/.test(birthdateParam)) {
+                     if (/^\d{8}@base/.test(birthdateParam)) {
                          const y = birthdateParam.substring(0, 4);
                          const m = birthdateParam.substring(4, 6);
                          const d = birthdateParam.substring(6, 8);
@@ -326,7 +326,7 @@ function DemographicsStep() {
 
         // Auto-format simplistic inputs like 20220122 -> 2022-01-22
         let formattedInput = dateInput;
-        if (/^\d{8}$/.test(dateInput)) {
+        if (/^\d{8}@base/.test(dateInput)) {
             formattedInput = `${dateInput.substring(0, 4)}-${dateInput.substring(4, 6)}-${dateInput.substring(6, 8)}`;
             setDateInput(formattedInput);
         }

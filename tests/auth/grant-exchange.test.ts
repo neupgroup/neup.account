@@ -1,14 +1,14 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-vi.mock('@/.neup/core/database/prisma', () => ({ default: {
+vi.mock('@neup/core/database/prisma', () => ({ default: {
   authnRequest: { update: vi.fn() }, account: { findUnique: vi.fn() },
   application: { findUnique: vi.fn() }, connection: { upsert: vi.fn() }, authnSession: { create: vi.fn() },
 } }));
 vi.mock('@/services/auth/proof-grant', () => ({ consumeProofGrant: vi.fn() }));
-vi.mock('@/.neup/logica/logger/files', () => ({ logError: vi.fn() }));
+vi.mock('@neup/logica/logger/files', () => ({ logError: vi.fn() }));
 vi.mock('@/services/notifications', () => ({ makeNotification: vi.fn() }));
 vi.mock('@/services/user', () => ({ getAccountPermission: vi.fn(async () => []), isRootUser: vi.fn(async () => false) }));
 vi.mock('@/services/applications/default-role', () => ({ getApplicationDefaultRoleId: vi.fn(async () => 'role1') }));
-import prisma from '@/.neup/core/database/prisma';
+import prisma from '@neup/core/database/prisma';
 import { consumeProofGrant } from '@/services/auth/proof-grant';
 import { bridgeIssueGrant } from '@/services/auth/grant';
 import jwt from 'jsonwebtoken';

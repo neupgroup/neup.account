@@ -1,5 +1,5 @@
 import { getConnectedApplicationsPageData } from '@/services/applications/form-actions';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { AlertTriangle } from '@/components/icons';
 import { FlowLink } from '@/components/flow-link';
 import { AppWindow, Building, BarChart, Share2, ChevronRight, type LucideIcon } from '@/components/icons';

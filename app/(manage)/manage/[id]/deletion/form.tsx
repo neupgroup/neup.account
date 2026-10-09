@@ -5,18 +5,18 @@ import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useToast } from '#/core/hooks/useToast';
-import { Card, CardContent, CardFooter, CardHeader } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { Skeleton } from '#/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { useToast } from '@neup/core/hooks/useToast';
+import { Card, CardContent, CardFooter, CardHeader } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { Loader2, ShieldAlert, Trash2 } from 'lucide-react';
-import { Textarea } from '#/components/ui/textarea';
-import { TitleSet } from '#/components/element/titleset';
+import { Textarea } from '@neup/components/ui/textarea';
+import { TitleSet } from '@neup/components/element/titleset';
 import { approveAccountDeletion, cancelAccountDeletion, getDeletionStatus, requestAccountDeletionByAdmin } from '@/services/manage/requests/deletion';
 import { useRouter } from 'next/navigation';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
-import { redirectInApp } from '@/.neup/core/helpers/link/navigation';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@neup/components/ui/form';
+import { redirectInApp } from '@neup/core/helpers/link/navigation';
 
 type DeletionStatus = {
     status: 'none' | 'pending' | 'deleted' | 'is_root';

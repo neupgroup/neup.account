@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Toaster } from '#/components/ui/toast';
+import { Toaster } from '@neup/components/ui/toast';
 import { AppProviders } from '@/components/layout/AppProviders';
 import { PageProgressBar } from '@/components/page-progress-bar';
 import { UrlErrorToast } from '@/components/ui/url-error-toast';

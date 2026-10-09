@@ -12,9 +12,9 @@ const mocks = vi.hoisted(() => ({
   },
   root: vi.fn(),
 }));
-vi.mock('@/.neup/core/database/prisma', async () => ({ default: mocks.db, Prisma: (await import('@/prisma/client')).Prisma }));
-vi.mock('@/.neup/logica/permission', () => ({ permission: vi.fn() }));
-vi.mock('@/.neup/logica/logger/files', () => ({ logError: vi.fn() }));
+vi.mock('@neup/core/database/prisma', async () => ({ default: mocks.db, Prisma: (await import('@/prisma/client')).Prisma }));
+vi.mock('@neup/logica/permission', () => ({ permission: vi.fn() }));
+vi.mock('@neup/logica/logger/files', () => ({ logError: vi.fn() }));
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
 vi.mock('@/services/account/verify', () => ({ getActiveAccountId: async () => 'viewer', getPersonalAccountId: async () => 'viewer' }));
 vi.mock('@/services/applications/manage', () => ({ hasRootApplicationPermission: mocks.root }));

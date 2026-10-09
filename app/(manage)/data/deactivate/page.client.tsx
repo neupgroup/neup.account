@@ -1,19 +1,19 @@
 "use client";
 
 import { useState, useTransition, useContext } from "react";
-import { useToast } from "#/core/hooks/useToast";
+import { useToast } from "@neup/core/hooks/useToast";
 import { deactivateAccount } from "@/services/data/deactivate";
-import {  Card, CardContent, CardFooter, CardHeader} from "#/components/ui/card";
-import { Button } from "#/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "#/components/ui/alert";
+import {  Card, CardContent, CardFooter, CardHeader} from "@neup/components/ui/card";
+import { Button } from "@neup/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@neup/components/ui/alert";
 import { Loader2, PowerOff } from "@/components/icons";
-import { Input } from "#/components/ui/input";
-import { Label } from "#/components/ui/label";
-import { BackButton } from "#/components/element/backButton";
-import { Geolocation } from "#/core/providers/geolocation";
-import { TitleSet } from '#/components/element/titleset';
+import { Input } from "@neup/components/ui/input";
+import { Label } from "@neup/components/ui/label";
+import { BackButton } from "@neup/components/element/backButton";
+import { Geolocation } from "@neup/core/providers/geolocation";
+import { TitleSet } from '@neup/components/element/titleset';
 import { useRouter } from "next/navigation";
-import { redirectInApp } from "@/.neup/core/helpers/link/navigation";
+import { redirectInApp } from "@neup/core/helpers/link/navigation";
 
 
 export default function DeactivateAccountPage() {

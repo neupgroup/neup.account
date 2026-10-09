@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ChevronRight } from '@/components/icons';
-import { Badge } from '#/components/ui/badge';
-import { Button } from '#/components/ui/button';
-import { Card, CardContent } from '#/components/ui/card';
+import { Badge } from '@neup/components/ui/badge';
+import { Button } from '@neup/components/ui/button';
+import { Card, CardContent } from '@neup/components/ui/card';
 import { FlowLink } from '@/components/flow-link';
 import { canCurrentAccountViewApplicationRoles, getApplicationDetailsForViewerV2, logRootApplicationActivity } from '@/services/applications/manage';
 import { getAllRequests } from '@/services/manage/requests/all';

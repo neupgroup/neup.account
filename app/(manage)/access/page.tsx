@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { FlowLink } from '@/components/flow-link';
-import { Card, CardContent } from '#/components/ui/card';
+import { Card, CardContent } from '@neup/components/ui/card';
 import { FolderGit2, ChevronRight, Building, UserPlus, Users, MailQuestion, UserX } from '@/components/icons';
-import { TitleSet } from '#/components/element/titleset';
+import { TitleSet } from '@neup/components/element/titleset';
 import { getDirectAccessGroup } from '@/services/manage/access';
 import { AccessGroupView } from './_components/access-group-view';
 import { ListItem } from '@/components/ui/ListItem';
 import { AccountListItem } from '@/components/elements/account-item';
-import { permission } from '@/.neup/logica/permission';
+import { permission } from '@neup/logica/permission';
 import { LINKED_ACCOUNT_NAV_PERMISSIONS } from '@/inapp/permissions/linked-account-permissions';
 import { getUserProfile } from '@/services/user';
 import { getAccessibleAccounts } from '@/services/manage/accounts';
@@ -27,7 +27,7 @@ import {
   ACCESS_TEAM_VIEW_PERMISSIONS,
   ACCESS_VIEW_PERMISSIONS,
 } from '@/inapp/permissions/access-view-permissions';
-import { formMetadata } from '#/core/metadata';
+import { formMetadata } from '@neup/core/metadata';
 
 const pagePermissions = [
   permission('access.view.self', 'for_individual', 'page'),

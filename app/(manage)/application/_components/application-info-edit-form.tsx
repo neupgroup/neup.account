@@ -4,12 +4,12 @@ import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { updateApplicationInfo } from '@/services/applications/form-actions';
-import { Button } from '#/components/ui/button';
-import { Input } from '#/components/ui/input';
-import { Textarea } from '#/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '#/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { Input } from '@neup/components/ui/input';
+import { Textarea } from '@neup/components/ui/textarea';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@neup/components/ui/card';
 import {
   Form,
   FormControl,
@@ -17,14 +17,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '#/components/ui/form';
+} from '@neup/components/ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '#/components/ui/select';
+} from '@neup/components/ui/select';
 import { Loader2 } from 'lucide-react';
 
 const schema = z.object({

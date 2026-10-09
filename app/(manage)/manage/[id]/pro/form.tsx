@@ -5,17 +5,17 @@ import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useToast } from '#/core/hooks/useToast';
-import { Card, CardContent, CardFooter, CardHeader } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { Skeleton } from '#/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '#/components/ui/form';
+import { useToast } from '@neup/core/hooks/useToast';
+import { Card, CardContent, CardFooter, CardHeader } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@neup/components/ui/form';
 import { setProStatus } from '@/services/manage/users';
 import { getUserProfile } from '@/services/user';
 import { Gem, Loader2 } from 'lucide-react';
-import { Textarea } from '#/components/ui/textarea';
-import { TitleSet } from '#/components/element/titleset';
+import { Textarea } from '@neup/components/ui/textarea';
+import { TitleSet } from '@neup/components/element/titleset';
 
 const proActionSchema = z.object({
   reason: z.string().min(10, "A reason of at least 10 characters is required."),

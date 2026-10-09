@@ -1,12 +1,12 @@
 'use client';
 
-import { permission } from "@/.neup/logica/permission";
+import { permission } from "@neup/logica/permission";
 import React, { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
     Card,
     CardContent,
-} from "#/components/ui/card";
+} from "@neup/components/ui/card";
 import {
     UserCircle,
     Key,
@@ -30,13 +30,13 @@ import { type NavSection, navItems, allPermissionsMap } from "./nav-data";
 import { NotificationBell } from "./warning-display";
 import { ListItem } from "@/components/ui/ListItem";
 import { useSession } from "@/inapp/auth/session-context";
-import { Skeleton } from "#/components/ui/skeleton";
+import { Skeleton } from "@neup/components/ui/skeleton";
 import { switchToPersonal } from "@/services/auth/switch";
 import { hasAnyPermission, PROFILE_NAV_PERMISSIONS } from "@/inapp/permissions/profile-permissions";
-import { redirectInApp } from "@/.neup/core/helpers/link/navigation";
+import { redirectInApp } from "@neup/core/helpers/link/navigation";
 import { DATA_PRIVACY_NAV_PERMISSIONS } from "@/inapp/permissions/data-permissions";
 import { ACCESS_VIEW_PERMISSIONS } from "@/inapp/permissions/access-view-permissions";
-import { APP_BASE_PATH } from "#/core/appconfig";
+import { APP_BASE_PATH } from "@neup/core/appconfig";
 
 const componentPermissions = [
     permission("notification.read", "for_individual", "component"),

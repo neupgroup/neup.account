@@ -1,6 +1,6 @@
-import prisma from '@/.neup/core/database/prisma';
-import { BackButton } from '#/components/element/backButton';
-import { Card, CardDescription, CardHeader, CardTitle, CardContent } from '#/components/ui/card';
+import prisma from '@neup/core/database/prisma';
+import { BackButton } from '@neup/components/element/backButton';
+import { Card, CardDescription, CardHeader, CardTitle, CardContent } from '@neup/components/ui/card';
 import { FlowLink } from '@/components/flow-link';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 

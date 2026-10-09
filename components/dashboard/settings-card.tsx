@@ -1,11 +1,11 @@
 "use client";
 
-import { permission } from '@/.neup/logica/permission';
+import { permission } from '@neup/logica/permission';
 import { useMemo, type ElementType } from 'react';
-import { Card, CardContent } from '#/components/ui/card';
+import { Card, CardContent } from '@neup/components/ui/card';
 import { ShieldCheck, Laptop, Link, AppWindow } from '@/components/icons';
 import { ListItem } from '@/components/ui/ListItem';
-import { TitleSet } from '#/components/element/titleset';
+import { TitleSet } from '@neup/components/element/titleset';
 import { useSession } from '@/inapp/auth/session-context';
 import { hasAnyPermission } from '@/inapp/permissions/profile-permissions';
 import {

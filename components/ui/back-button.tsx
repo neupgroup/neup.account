@@ -3,12 +3,12 @@
 import { Suspense } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
-import { cn } from '#/core/utils';
+import { cn } from '@neup/core/utils';
 import {
   resolveBackNavigationHref,
   resolvePreviousRawPath,
   type NavigationBackTargets,
-} from '#/core/helpers/link/navigation';
+} from '@neup/core/helpers/link/navigation';
 
 type BackButtonProps = {
   backsTo?: string;

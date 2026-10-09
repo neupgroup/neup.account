@@ -3,12 +3,12 @@
 // Handles writing and reading activity logs from the database.
 // Activity logs record user actions (e.g. login, profile update) with status and IP.
 
-import prisma from '@/.neup/core/database/prisma';
-import { logError } from '@/.neup/logica/logger/files';
+import prisma from '@neup/core/database/prisma';
+import { logError } from '@neup/logica/logger/files';
 import { getActiveAccountId } from '@/services/account/verify';
 import { checkPermissions } from '@/services/user';
 import { compileActivityAction } from '@/services/activity-action';
-import { permission } from '@/.neup/logica/permission';
+import { permission } from '@neup/logica/permission';
 
 // Number of activity logs returned per page
 const PAGE_SIZE = 10;
@@ -44,7 +44,7 @@ function unquote(value: string) {
 }
 
 function getProfileImageActionRender(action: string) {
-    const match = action.match(/^profile\.displayImage\.changedFrom\((.+)\)\.changedTo\((.+)\)$/);
+    const match = action.match(/^profile\.displayImage\.changedFrom\((.+)\)\.changedTo\((.+)\)@base/);
     if (!match) return null;
     return {
         kind: 'profile_display_image_changed' as const,

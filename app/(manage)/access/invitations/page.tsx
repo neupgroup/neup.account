@@ -2,17 +2,17 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import { notFound } from 'next/navigation';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { getInvitations, acceptRequest, rejectRequest } from '@/services/manage/people/invitations';
 import type { Invitation } from '@/services/manage/people/invitations';
-import { Card, CardContent } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
+import { Card, CardContent } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
 import { Check, X, Loader2, Users, Handshake } from 'lucide-react';
-import { Skeleton } from '#/components/ui/skeleton';
-import { BackButton } from '#/components/element/backButton';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { BackButton } from '@neup/components/element/backButton';
 import { useSession } from '@/inapp/auth/session-context';
 import { hasAnyPermission } from '@/inapp/permissions/profile-permissions';
-import { permission } from '@/.neup/logica/permission';
+import { permission } from '@neup/logica/permission';
 import {
     ACCESS_INVITATION_APPROVE_PERMISSIONS,
     ACCESS_INVITATIONS_VIEW_PERMISSIONS,

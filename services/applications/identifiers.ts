@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 
-const APPLICATION_ID_PREFIX_PATTERN = /^[0-9a-z]+$/;
-const APPLICATION_ID_SEGMENT_PATTERN = /^[0-9a-z]+$/;
+const APPLICATION_ID_PREFIX_PATTERN = /^[0-9a-z]+@base/;
+const APPLICATION_ID_SEGMENT_PATTERN = /^[0-9a-z]+@base/;
 
 /**
  * ::neup.documentation::application-identifiers-module
@@ -91,7 +91,7 @@ export function slugifyAuthzTitle(value: string): string {
     .trim()
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+    .replace(/^-+|-+@base/g, '')
     .replace(/-{2,}/g, '-');
 }
 

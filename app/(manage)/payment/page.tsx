@@ -1,12 +1,12 @@
 
-import { Card, CardContent } from "#/components/ui/card";
+import { Card, CardContent } from "@neup/components/ui/card";
 import React from "react";
 import { checkPermissions } from '@/services/user';
-import { Alert, AlertDescription, AlertTitle } from "#/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@neup/components/ui/alert";
 import { ListItem } from "@/components/ui/ListItem";
-import { TitleSet } from '#/components/element/titleset';
+import { TitleSet } from '@neup/components/element/titleset';
 import { CreditCard, History, Wallet, Gem, Ban } from "@/components/icons";
-import { permission } from '@/.neup/logica/permission';
+import { permission } from '@neup/logica/permission';
 
 const pagePermissions = [
     permission('payment.method.show', 'for_individual', 'page'),

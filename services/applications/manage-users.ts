@@ -2,14 +2,14 @@ import { isIP } from 'node:net';
 import { revalidatePath } from 'next/cache';
 import { notFound } from 'next/navigation';
 import { z } from 'zod';
-import { permission } from '@/.neup/logica/permission';
-import { Prisma } from '@/.neup/core/database/prisma';
-import prisma from '@/.neup/core/database/prisma';
+import { permission } from '@neup/logica/permission';
+import { Prisma } from '@neup/core/database/prisma';
+import prisma from '@neup/core/database/prisma';
 import { getAccountSelectorContext } from '@/services/account/accountSelector';
 import { getActiveAccountId, getPersonalAccountId } from '@/services/account/verify';
 import { ACCESS_APPLICATION_VIEW_PERMISSIONS } from '@/inapp/permissions/access-view-permissions';
 import { checkPermissions } from '@/services/user';
-import { logError } from '@/.neup/logica/logger/files';
+import { logError } from '@neup/logica/logger/files';
 import { dispatchAccountUpdatedEvent } from '@/services/applications/account-update-events';
 import { logActivity } from '@/services/log-actions';
 import { activityAction } from '@/services/activity-action';
@@ -197,7 +197,7 @@ function parseApplicationUserSearch(search: string): ParsedApplicationUserSearch
     const part = rawPart.trim();
     if (!part) continue;
 
-    const typeMatch = part.match(/^(?:type|accounttype|acctype|actype):(.+)$/i);
+    const typeMatch = part.match(/^(?:type|accounttype|acctype|actype):(.+)@base/i);
     if (typeMatch) {
       const accountType = typeMatch[1]?.trim().toLowerCase();
       if (accountType && SEARCHABLE_APP_USER_ACCOUNT_TYPES.has(accountType)) {
@@ -206,7 +206,7 @@ function parseApplicationUserSearch(search: string): ParsedApplicationUserSearch
       }
     }
 
-    const neupIdMatch = part.match(/^neupid:(.+)$/i);
+    const neupIdMatch = part.match(/^neupid:(.+)@base/i);
     if (neupIdMatch) {
       const neupId = neupIdMatch[1]?.trim();
       if (neupId) {
@@ -215,7 +215,7 @@ function parseApplicationUserSearch(search: string): ParsedApplicationUserSearch
       }
     }
 
-    const roleMatch = part.match(/^role:(.+)$/i);
+    const roleMatch = part.match(/^role:(.+)@base/i);
     if (roleMatch) {
       const roleName = roleMatch[1]?.trim();
       if (roleName) {
@@ -224,7 +224,7 @@ function parseApplicationUserSearch(search: string): ParsedApplicationUserSearch
       }
     }
 
-    const activeInMatch = part.match(/^activein:(\d+)([mhdw])$/i);
+    const activeInMatch = part.match(/^activein:(\d+)([mhdw])@base/i);
     if (activeInMatch) {
       const amount = Number(activeInMatch[1]);
       const unit = activeInMatch[2].toLowerCase();

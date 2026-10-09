@@ -2,23 +2,23 @@
 
 import { useEffect, useState, useTransition, useCallback, Suspense, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Input } from '#/components/ui/input';
-import { Button } from '#/components/ui/button';
-import { Badge } from '#/components/ui/badge';
+import { Input } from '@neup/components/ui/input';
+import { Button } from '@neup/components/ui/button';
+import { Badge } from '@neup/components/ui/badge';
 import { FlowLink } from '@/components/flow-link';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
-import { APP_BASE_PATH } from '#/core/appconfig';
-import { redirectInApp } from '@/.neup/core/helpers/link/navigation';
-import { Tabs, TabsList, TabsTrigger } from '#/components/ui/tabs';
+import { APP_BASE_PATH } from '@neup/core/appconfig';
+import { redirectInApp } from '@neup/core/helpers/link/navigation';
+import { Tabs, TabsList, TabsTrigger } from '@neup/components/ui/tabs';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '#/components/ui/select';
-import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
-import { Skeleton } from '#/components/ui/skeleton';
+} from '@neup/components/ui/select';
+import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
+import { Skeleton } from '@neup/components/ui/skeleton';
 import { Search, ArrowUpDown, ChevronLeft, ChevronRight, CheckCircle2 } from '@/components/icons';
 import {
   getApplicationUsersPaginated,

@@ -2,9 +2,9 @@
 
 import { getLocalAuthzManagementError } from '@/services/applications/permission-source';
 import { revalidatePath } from 'next/cache';
-import prisma from '@/.neup/core/database/prisma';
+import prisma from '@neup/core/database/prisma';
 import { getActiveAccountId } from '@/services/account/verify';
-import { logError } from '@/.neup/logica/logger/files';
+import { logError } from '@neup/logica/logger/files';
 import { canCurrentAccountManageApplicationRoles } from '@/services/applications/manage';
 
 const BRIDGE_TYPE = 'authzWebhook';

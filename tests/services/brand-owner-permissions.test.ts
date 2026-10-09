@@ -19,7 +19,7 @@ describe('brand owner permissions', () => {
   });
 
   it('does not include audience suffix permissions', () => {
-    expect(BRAND_OWNER_PERMISSION_NAMES.some((permission) => /\.(managed|root|self)$/.test(permission))).toBe(false);
+    expect(BRAND_OWNER_PERMISSION_NAMES.some((permission) => /\.(managed|root|self)@base/.test(permission))).toBe(false);
   });
 
   it('registers notification permissions in the catalog', () => {

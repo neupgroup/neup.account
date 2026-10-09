@@ -1,12 +1,12 @@
 'use client';
 
 import { NeupIdLogo } from '@/components/neupid-logo';
-import { Userbar } from '#/components/element/userbar';
+import { Userbar } from '@neup/components/element/userbar';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { DashboardNav } from '@/components/dashboard-nav';
-import { Button } from '#/components/ui/button';
+import { Button } from '@neup/components/ui/button';
 import { Menu, X } from '@/components/icons';
-import { cn } from '#/core/utils';
+import { cn } from '@neup/core/utils';
 import { useEffect, useState } from 'react';
 import { useSession } from '@/inapp/auth/session-context';
 

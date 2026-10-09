@@ -1,15 +1,15 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { Card, CardContent } from "#/components/ui/card";
+import { Card, CardContent } from "@neup/components/ui/card";
 import { ListItem } from "@/components/ui/ListItem";
-import { TitleSet } from '#/components/element/titleset';
+import { TitleSet } from '@neup/components/element/titleset';
 import { UserCircle, FileText, HeartHandshake, AtSign, Contact, ShieldCheck } from "@/components/icons";
 import { checkGrantedPermissions, checkPermissions, getUserProfile } from "@/services/user";
-import { logSystemError } from "@/.neup/logica/logger/files";
+import { logSystemError } from "@neup/logica/logger/files";
 import { PROFILE_NAV_PERMISSIONS, PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from "@/inapp/permissions/profile-permissions";
 import { getAccountSelectorContext } from "@/services/account/accountSelector";
 import { resolveAccessProfileContext } from "@/services/account/access-profile-context";
-import { permission } from '@/.neup/logica/permission';
+import { permission } from '@neup/logica/permission';
 
 /**
  * ::neup.documentation::profile-options-page

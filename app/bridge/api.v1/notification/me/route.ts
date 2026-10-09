@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/.neup/core/database/prisma';
+import prisma from '@neup/core/database/prisma';
 import { getActiveSession } from '@/services/account/verify';
 
 export const dynamic = 'force-dynamic';
@@ -8,7 +8,7 @@ function tokenFromRequest(request: NextRequest) {
   const authorization = request.headers.get('authorization');
   return request.headers.get('x-auth-account')
     ?? request.headers.get('auth-account')
-    ?? authorization?.match(/^Bearer\s+(.+)$/i)?.[1]
+    ?? authorization?.match(/^Bearer\s+(.+)@base/i)?.[1]
     ?? null;
 }
 

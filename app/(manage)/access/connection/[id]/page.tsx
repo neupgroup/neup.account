@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { BackButton } from '#/components/element/backButton';
-import { Badge } from '#/components/ui/badge';
-import { Card, CardContent } from '#/components/ui/card';
+import { BackButton } from '@neup/components/element/backButton';
+import { Badge } from '@neup/components/ui/badge';
+import { Card, CardContent } from '@neup/components/ui/card';
 import { FlowLink } from '@/components/flow-link';
 import { AppWindow, ChevronRight, Plus, UserCircle, Users } from '@/components/icons';
 import { getConnectionDetail } from '../actions';

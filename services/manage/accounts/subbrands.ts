@@ -1,11 +1,11 @@
 // @ts-nocheck
 'use server';
  
- import { permission } from '@/.neup/logica/permission';
+ import { permission } from '@neup/logica/permission';
  import { z } from 'zod';
- import prisma from '@/.neup/core/database/prisma';
+ import prisma from '@neup/core/database/prisma';
 import { logActivity } from '@/services/log-actions';
-import { logError } from '@/.neup/logica/logger/files';
+import { logError } from '@neup/logica/logger/files';
 import { revalidatePath } from 'next/cache';
 import { getUserNeupIds, getUserProfile, checkPermissions } from '@/services/user';
 import { getActiveAccountId, getPersonalAccountId } from '@/services/account/verify';
@@ -38,7 +38,7 @@ const formSchema = z.object({
     neupIdSubdomain: z
         .string()
         .min(3, 'Subdomain must be at least 3 characters.')
-        .regex(/^[a-z0-9-]+$/, 'Subdomain can only contain lowercase letters, numbers, and hyphens.'),
+        .regex(/^[a-z0-9-]+@base/, 'Subdomain can only contain lowercase letters, numbers, and hyphens.'),
     location: z.string().optional(),
 });
 
@@ -222,7 +222,7 @@ export async function checkSubbrandNeupIdAvailability(
 
     const lowerSubdomain = neupIdSubdomain.toLowerCase();
 
-    if (!lowerSubdomain || lowerSubdomain.length < 3 || !/^[a-z0-9-]+$/.test(lowerSubdomain)) {
+    if (!lowerSubdomain || lowerSubdomain.length < 3 || !/^[a-z0-9-]+@base/.test(lowerSubdomain)) {
         return { available: false };
     }
 

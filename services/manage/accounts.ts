@@ -1,15 +1,15 @@
 // @ts-nocheck
 'use server';
 
-import { permission } from '@/.neup/logica/permission';
-import prisma from '@/.neup/core/database/prisma';
-import { logError } from '@/.neup/logica/logger/files';
+import { permission } from '@neup/logica/permission';
+import prisma from '@neup/core/database/prisma';
+import { logError } from '@neup/logica/logger/files';
 import { checkPermissions } from '@/services/user';
 import { getPersonalAccountId } from '@/services/account/verify';
 import type { StoredAccount } from '@/services/account/session';
 import { extractGenderFromDetails, resolveDisplayImage } from '@/inapp/display-image';
 import { cleanupExpiredAccessModel, extractRolePermissionNames } from '@/services/access-model';
-import type { Prisma } from '@/.neup/core/database/prisma';
+import type { Prisma } from '@neup/core/database/prisma';
 
 const servicePermissions = [
     permission('root.dashboard.view', 'for_individual', 'service'),
@@ -361,7 +361,7 @@ function parseAccountSearch(search: string): ParsedAccountSearch {
         const part = rawPart.trim();
         if (!part) continue;
 
-        const typeMatch = part.match(/^(?:type|accounttype|acctype|actype):(.+)$/i);
+        const typeMatch = part.match(/^(?:type|accounttype|acctype|actype):(.+)@base/i);
         if (typeMatch) {
             const accountType = typeMatch[1]?.trim().toLowerCase();
             if (accountType && SEARCHABLE_ACCOUNT_TYPES.has(accountType)) {
@@ -370,7 +370,7 @@ function parseAccountSearch(search: string): ParsedAccountSearch {
             }
         }
 
-        const neupIdMatch = part.match(/^neupid:(.+)$/i);
+        const neupIdMatch = part.match(/^neupid:(.+)@base/i);
         if (neupIdMatch) {
             const neupId = neupIdMatch[1]?.trim();
             if (neupId) {
@@ -379,7 +379,7 @@ function parseAccountSearch(search: string): ParsedAccountSearch {
             }
         }
 
-        const roleMatch = part.match(/^role:(.+)$/i);
+        const roleMatch = part.match(/^role:(.+)@base/i);
         if (roleMatch) {
             const roleName = roleMatch[1]?.trim();
             if (roleName) {
@@ -388,7 +388,7 @@ function parseAccountSearch(search: string): ParsedAccountSearch {
             }
         }
 
-        const activeInMatch = part.match(/^activein:(\d+)([mhdw])$/i);
+        const activeInMatch = part.match(/^activein:(\d+)([mhdw])@base/i);
         if (activeInMatch) {
             const amount = Number(activeInMatch[1]);
             const unit = activeInMatch[2].toLowerCase();

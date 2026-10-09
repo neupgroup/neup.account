@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation';
-import { BackButton } from '#/components/element/backButton';
+import { BackButton } from '@neup/components/element/backButton';
 import { checkPermissions } from '@/services/user';
 import { getSiteLogoUrl } from '@/services/manage/site/logo';
 import { AppLogoForm } from '../../../config/app/app-logo-form.client';
-import { permission } from '@/.neup/logica/permission';
+import { permission } from '@neup/logica/permission';
 
 const pagePermissions = [
   permission('root.payment_config.view', 'for_individual', 'page'),

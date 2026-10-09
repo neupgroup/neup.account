@@ -523,7 +523,7 @@ export function stripPermissionAudience(name: string): string {
    *
    * ::end
    */
-  return name.replace(/\.(self|managed|root)$/u, '');
+  return name.replace(/\.(self|managed|root)@base/u, '');
 }
 
 export function getCanonicalPermissionAudience(name: string): PermissionAudience | null {

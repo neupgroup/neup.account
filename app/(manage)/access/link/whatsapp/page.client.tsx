@@ -4,16 +4,16 @@ import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useToast } from "#/core/hooks/useToast";
+import { useToast } from "@neup/core/hooks/useToast";
 import { whatsAppFormSchema, verifyCodeSchema } from "./schema";
 import { sendVerificationCode, linkWhatsAppAccount } from '@/services/manage/accounts/whatsapp';
 
-import { Button } from "#/components/ui/button";
+import { Button } from "@neup/components/ui/button";
 import {
   Card,
   CardContent,
-} from "#/components/ui/card";
-import { Input } from "#/components/ui/input";
+} from "@neup/components/ui/card";
+import { Input } from "@neup/components/ui/input";
 import {
   Form,
   FormControl,
@@ -21,12 +21,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "#/components/ui/form";
-import { PhoneInput } from "#/components/ui/phone-input";
+} from "@neup/components/ui/form";
+import { PhoneInput } from "@neup/components/ui/phone-input";
 import { Loader2 } from "@/components/icons";
-import { cn } from "#/core/utils";
-import { BackButton } from "#/components/element/backButton";
-import { TitleSet } from '#/components/element/titleset';
+import { cn } from "@neup/core/utils";
+import { BackButton } from "@neup/components/element/backButton";
+import { TitleSet } from '@neup/components/element/titleset';
 
 export default function LinkWhatsAppPageClient({
     managerAccountId,

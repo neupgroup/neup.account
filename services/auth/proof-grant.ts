@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import prisma from '@/.neup/core/database/prisma';
+import prisma from '@neup/core/database/prisma';
 import { getActiveSession } from '@/services/account/verify';
 
 export const grantPlatforms = ['web', 'android', 'ios', 'macos', 'windows'] as const;
@@ -21,7 +21,7 @@ export function parseGrantContext(input: unknown): GrantContext | null {
   if (context.app !== context.app.trim().toLowerCase()) return null;
   if (!(grantPlatforms as readonly string[]).includes(context.platform)) return null;
   // SHA-256 encoded as unpadded base64url (32 bytes, 43 characters).
-  if (!/^[A-Za-z0-9_-]{43}$/.test(context.challenge) || Buffer.from(context.challenge, 'base64url').toString('base64url') !== context.challenge) return null;
+  if (!/^[A-Za-z0-9_-]{43}@base/.test(context.challenge) || Buffer.from(context.challenge, 'base64url').toString('base64url') !== context.challenge) return null;
   try {
     const callback = new URL(context.authorizesTo);
     if (callback.username || callback.password || callback.hash) return null;
@@ -81,8 +81,8 @@ export async function beginProofGrant(requestUrl: string, params: URLSearchParam
 
 export async function consumeProofGrant(input: ProofGrantInput) {
   const context = parseGrantContext(input);
-  if (!context || typeof input.tempcode !== 'string' || !/^[A-Za-z0-9_-]{43}$/.test(input.tempcode)
-    || typeof input.proof !== 'string' || !/^[A-Za-z0-9._~-]{43,128}$/.test(input.proof)) return null;
+  if (!context || typeof input.tempcode !== 'string' || !/^[A-Za-z0-9_-]{43}@base/.test(input.tempcode)
+    || typeof input.proof !== 'string' || !/^[A-Za-z0-9._~-]{43,128}@base/.test(input.proof)) return null;
   const id = crypto.createHash('sha256').update(input.tempcode).digest('hex');
   const request = await prisma.authnRequest.findUnique({ where: { id } });
   if (!request || request.type !== 'proof_grant' || request.status !== 'pending' || !request.accountId || request.expiresAt <= new Date()) return null;

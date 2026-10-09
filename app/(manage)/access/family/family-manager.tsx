@@ -2,14 +2,14 @@
 "use client";
 
 import { useState, useTransition, useRef } from 'react';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { addFamilyMember, removeFamilyMember } from '@/services/manage/people/family';
 import type { FamilyMember, FamilyGroup } from '@/services/manage/people/family';
-import { Button } from '#/components/ui/button';
-import { Input } from '#/components/ui/input';
+import { Button } from '@neup/components/ui/button';
+import { Input } from '@neup/components/ui/input';
 import { UserPlus, Loader2, Trash2 } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
-import { cn } from '#/core/utils';
+import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
+import { cn } from '@neup/core/utils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,7 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "#/components/ui/alert-dialog"
+} from "@neup/components/ui/alert-dialog"
 
 function MemberItem({ familyId, member, onRemove }: { familyId: string, member: FamilyMember, onRemove: (familyId: string, memberAccountId: string) => void }) {
     const [isRemoving, startRemoveTransition] = useTransition();

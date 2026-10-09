@@ -3,8 +3,8 @@
 import { notFound } from "next/navigation";
 import { getUserDetails, getAccountDetails } from "@/services/manage/users";
 import { BlockServiceAccessForm, SendWarningForm } from "../forms";
-import { BackButton } from "#/components/element/backButton";
-import { TitleSet } from '#/components/element/titleset';
+import { BackButton } from "@neup/components/element/backButton";
+import { TitleSet } from '@neup/components/element/titleset';
 
 
 export default async function UserNoticePage({ params }: { params: Promise<{ id: string }> }) {

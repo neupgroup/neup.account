@@ -1,12 +1,12 @@
 
 import { Suspense } from 'react';
 import { searchAll } from '@/services/search';
-import { Card, CardContent } from '#/components/ui/card';
+import { Card, CardContent } from '@neup/components/ui/card';
 import { UserCircle, ShieldCheck } from 'lucide-react';
 import { FlowLink } from '@/components/flow-link';
-import { Badge } from '#/components/ui/badge';
-import { BackButton } from '#/components/element/backButton';
-import { Skeleton } from '#/components/ui/skeleton';
+import { Badge } from '@neup/components/ui/badge';
+import { BackButton } from '@neup/components/element/backButton';
+import { Skeleton } from '@neup/components/ui/skeleton';
 
 async function SearchResults({ query }: { query: string }) {
     const results = await searchAll(query);

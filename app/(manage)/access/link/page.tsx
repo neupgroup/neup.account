@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
-import { Card, CardContent } from "#/components/ui/card";
-import { BackButton } from "#/components/element/backButton";
-import { TitleSet } from '#/components/element/titleset';
+import { Card, CardContent } from "@neup/components/ui/card";
+import { BackButton } from "@neup/components/element/backButton";
+import { TitleSet } from '@neup/components/element/titleset';
 import { ListItem } from "@/components/ui/ListItem";
 import { Bot, Github } from "@/components/icons";
-import { formMetadata } from '#/core/metadata';
-import { Badge } from '#/components/ui/badge';
+import { formMetadata } from '@neup/core/metadata';
+import { Badge } from '@neup/components/ui/badge';
 import { FlowLink } from '@/components/flow-link';
 import { ChevronRight } from '@/components/icons';
-import { formatReadableDateTime } from '#/core/helpers/date';
+import { formatReadableDateTime } from '@neup/core/helpers/date';
 import { getLatestLinkedAccount } from '@/services/bridge/linked-accounts';
 
 export const metadata: Metadata = formMetadata({ title: 'Link Other Accounts' });

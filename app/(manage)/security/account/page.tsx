@@ -1,10 +1,10 @@
 
-import { permission } from '@/.neup/logica/permission';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "#/components/ui/card";
+import { permission } from '@neup/logica/permission';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@neup/components/ui/card";
 import { getRecoveryAccounts } from "@/services/security/account";
 import { RecoveryAccountManager } from "./recovery-account-manager";
-import { BackButton } from "#/components/element/backButton";
-import { TitleSet } from '#/components/element/titleset';
+import { BackButton } from "@neup/components/element/backButton";
+import { TitleSet } from '@neup/components/element/titleset';
 import { requireAnyPermission404 } from '@/services/account/permission-guards';
 import { SECURITY_PERMISSION_GROUPS } from '@/inapp/permissions/security-permissions';
 

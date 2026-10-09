@@ -7,12 +7,12 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useDebounce } from "use-debounce"
 
-import { Button } from "#/components/ui/button"
+import { Button } from "@neup/components/ui/button"
 import {
   Card,
   CardContent,
-} from "#/components/ui/card"
-import { Input } from "#/components/ui/input"
+} from "@neup/components/ui/card"
+import { Input } from "@neup/components/ui/input"
 import {
   Form,
   FormControl,
@@ -21,17 +21,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "#/components/ui/form"
-import { Checkbox } from "#/components/ui/checkbox"
-import { useToast } from "#/core/hooks/useToast"
+} from "@neup/components/ui/form"
+import { Checkbox } from "@neup/components/ui/checkbox"
+import { useToast } from "@neup/core/hooks/useToast"
 import { createBrandAccount } from "@/services/manage/accounts/brand"
-import { Textarea } from "#/components/ui/textarea"
+import { Textarea } from "@neup/components/ui/textarea"
 import { CheckCircle2, XCircle, Loader2 } from "@/components/icons"
-import { BackButton } from "#/components/element/backButton"
+import { BackButton } from "@neup/components/element/backButton"
 import { brandCreationSchema } from "@/services/manage/accounts/schema"
 import { checkNeupIdAvailability } from '@/services/user'
-import { TitleSet } from '#/components/element/titleset';
-import { redirectInApp } from "@/.neup/core/helpers/link/navigation";
+import { TitleSet } from '@neup/components/element/titleset';
+import { redirectInApp } from "@neup/core/helpers/link/navigation";
 
 type FormData = z.infer<typeof brandCreationSchema>;
 
@@ -69,7 +69,7 @@ export default function CreateBrandPageClient({
     const [debouncedValue] = useDebounce(neupIdValue, 500);
 
     const checkAvailability = useCallback(async (id: string) => {
-        if (id.length < 3 || !/^[a-z0-9-]+$/.test(id)) {
+        if (id.length < 3 || !/^[a-z0-9-]+@base/.test(id)) {
             setNeupIdStatus('idle');
             return;
         }

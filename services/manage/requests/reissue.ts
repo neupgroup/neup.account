@@ -1,9 +1,9 @@
 'use server';
 
-import { permission } from '@/.neup/logica/permission';
-import prisma from '@/.neup/core/database/prisma';
+import { permission } from '@neup/logica/permission';
+import prisma from '@neup/core/database/prisma';
 import { checkPermissions } from '@/services/user';
-import { logError } from '@/.neup/logica/logger/files';
+import { logError } from '@neup/logica/logger/files';
 
 const servicePermissions = [
   permission('requests.root_approval.approve', 'for_individual', 'service'),

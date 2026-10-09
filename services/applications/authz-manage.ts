@@ -23,11 +23,11 @@ The service stores `scope_for` / `scope_level` directly while deriving legacy ap
 
 import { resolvePermissionSourceId, getLocalAuthzManagementError } from '@/services/applications/permission-source';
 import { revalidatePath } from 'next/cache';
-import { permission } from '@/.neup/logica/permission';
-import { Prisma } from '@/.neup/core/database/prisma';
-import prisma from '@/.neup/core/database/prisma';
+import { permission } from '@neup/logica/permission';
+import { Prisma } from '@neup/core/database/prisma';
+import prisma from '@neup/core/database/prisma';
 import { getActiveAccountId, getPersonalAccountId } from '@/services/account/verify';
-import { logError } from '@/.neup/logica/logger/files';
+import { logError } from '@neup/logica/logger/files';
 import { dispatchAuthzWebhook } from './authz-webhook';
 import { dispatchRoleUpdateWebhook, getRolePayload } from './role-update-events';
 import { activeAccessWhere } from '@/services/access-model';
@@ -527,7 +527,7 @@ type RolePermissionMappingRow = {
 
 function getApplicationManagementPermissionDefinitions(): ApplicationManagementPermissionDefinition[] {
   return APPLICATION_PUBLIC_MANAGED_AND_ROOT_PERMISSION_DEFINITIONS.map((permission, index) => ({
-    id: `cap-appmanage-${index + 1}-${permission.name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}`,
+    id: `cap-appmanage-${index + 1}-${permission.name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+@base/g, '').toLowerCase()}`,
     ...permission,
   }));
 }

@@ -3,9 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "setup": "chmod +x ./setup.sh && ./setup.sh",
-    "predev": "npm run setup",
-    "prebuild": "npm run setup",
+    "neup.cloner": "(test -d ./@neup/setup || (mkdir -p ./@neup && cd ./@neup && git clone --depth 1 --single-branch --branch main https://github.com/neupgroup/nextjs.setup.git nextjs.setup && mv nextjs.setup setup)) && (test -d ./@neup/shared || git clone --depth 1 --single-branch --branch main https://github.com/neupgroup/next.shared.git ./@neup/shared)",
+    "setup": "npm run neup.cloner && cd ./@neup && chmod +x ./setup/index.sh && ./setup/index.sh",
+    "preinstall": "npm run setup -- --mode preinstall",
+    "postinstall": "npm run setup -- --mode postinstall",
+    "prebuild": "npm run setup -- --mode prebuild",
+    "postbuild": "npm run setup -- --mode postbuild",
+    "predev": "npm run setup -- --mode predev",
 
     "dev": "npx next dev --turbopack --experimental-https --port 2226",
     "build": "npx prisma generate && npx next build",

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { forbidden, notFound } from 'next/navigation';
-import { Button } from '#/components/ui/button';
+import { Button } from '@neup/components/ui/button';
 import { FlowLink } from '@/components/flow-link';
 import { ArrowLeft } from '@/components/icons';
 import {
@@ -16,7 +16,7 @@ import {
 } from '@/services/applications/permission-definitions';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 import { UsersList } from './_components/users-list';
-import { formMetadata } from '#/core/metadata';
+import { formMetadata } from '@neup/core/metadata';
 
 type Props = {
   searchParams: Promise<{ application?: string | string[]; mode?: string; role?: string | string[] }>;

@@ -1,9 +1,9 @@
-import { permission } from '@/.neup/logica/permission';
+import { permission } from '@neup/logica/permission';
 import { checkPermissions } from '@/services/user';
 import { getUserStats } from '@/services/manage/accounts';
-import { Card, CardContent } from '#/components/ui/card';
+import { Card, CardContent } from '@neup/components/ui/card';
 import { Users, UserCheck, UserPlus, ShieldCheck } from '@/components/icons';
-import { TitleSet } from '#/components/element/titleset';
+import { TitleSet } from '@neup/components/element/titleset';
 import Link from 'next/link';
 
 const componentPermissions = [

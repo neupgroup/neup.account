@@ -1,18 +1,18 @@
 "use client";
 
 import { useEffect, useState, useTransition, Suspense, useCallback } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar';
-import { Badge } from "#/components/ui/badge";
-import { Button } from "#/components/ui/button";
-import { Input } from "#/components/ui/input";
-import { Tabs, TabsList, TabsTrigger } from "#/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
+import { Badge } from "@neup/components/ui/badge";
+import { Button } from "@neup/components/ui/button";
+import { Input } from "@neup/components/ui/input";
+import { Tabs, TabsList, TabsTrigger } from "@neup/components/ui/tabs";
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "#/components/ui/select";
+} from "@neup/components/ui/select";
 import {
     Search, Ban, CheckCircle2, AtSign, Clock,
     ArrowUpDown, ChevronLeft, ChevronRight,
@@ -23,10 +23,10 @@ import {
     type AccountFilterTab,
     type AccountSortKey,
 } from '@/services/manage/accounts';
-import { Skeleton } from '#/components/ui/skeleton';
-import { BackButton } from '#/components/element/backButton';
-import { Alert, AlertDescription, AlertTitle } from "#/components/ui/alert";
-import { TitleSet } from '#/components/element/titleset';
+import { Skeleton } from '@neup/components/ui/skeleton';
+import { BackButton } from '@neup/components/element/backButton';
+import { Alert, AlertDescription, AlertTitle } from "@neup/components/ui/alert";
+import { TitleSet } from '@neup/components/element/titleset';
 import { FlowLink } from '@/components/flow-link';
 import { useSearchParams } from 'next/navigation';
 

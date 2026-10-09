@@ -1,9 +1,9 @@
 'use server';
 
-import { permission } from '@/.neup/logica/permission';
-import prisma from '@/.neup/core/database/prisma';
+import { permission } from '@neup/logica/permission';
+import prisma from '@neup/core/database/prisma';
 import { getPersonalAccountId } from '@/services/account/verify';
-import { logError } from '@/.neup/logica/logger/files';
+import { logError } from '@neup/logica/logger/files';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { format, isValid, parse as parseWithFormat } from 'date-fns';
@@ -1042,7 +1042,7 @@ export async function parseDateString(dateString: string): Promise<{ success: bo
         return { success: false, date: null, error: "Date input is too long (max 30 characters)." };
     }
 
-    const regex = /^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/;
+    const regex = /^(\d{4})[-/](\d{1,2})[-/](\d{1,2})@base/;
     const match = dateString.match(regex);
     if (match) {
         const year = parseInt(match[1]);

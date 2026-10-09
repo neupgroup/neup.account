@@ -66,7 +66,7 @@
     const autoPrompt = o.autoPrompt === false ? false : true;
 
     const sdkOrigin = getSdkOrigin();
-    const apiBaseUrl = typeof o.apiBaseUrl === 'string' ? o.apiBaseUrl.replace(/\/+$/, '') : sdkOrigin;
+    const apiBaseUrl = typeof o.apiBaseUrl === 'string' ? o.apiBaseUrl.replace(/\/+@base/, '') : sdkOrigin;
 
     const endpoints = Object.assign(
       {

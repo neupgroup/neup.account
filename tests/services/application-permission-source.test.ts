@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('@/.neup/core/database/prisma', () => ({ default: {} }));
+vi.mock('@neup/core/database/prisma', () => ({ default: {} }));
 import { resolvePermissionSourceId } from '@/services/applications/permission-source';
 
 function database(sources: Record<string, string | null>) {

@@ -24,8 +24,8 @@ source of truth, updates only `app_id = neup.account`, and leaves unrelated apps
 import 'dotenv/config';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import prisma from '#/core/database/prisma';
-import { Prisma } from '#/core/database/prisma';
+import prisma from '@neup/core/database/prisma';
+import { Prisma } from '@neup/core/database/prisma';
 import {
   NEUP_ACCOUNT_PERMISSION_DEFINITIONS,
   stripPermissionAudience,
@@ -121,7 +121,7 @@ function normalizeRoleScopeLevel(value: unknown): string {
 }
 
 function slugifyPermission(name: string): string {
-  return name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').toLowerCase();
+  return name.replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+@base/g, '').toLowerCase();
 }
 
 function audienceSuffixForRoleScopeLevel(scopeLevel: string): 'self' | 'managed' | 'root' {
@@ -204,7 +204,7 @@ function resolvePermissionNameForRole(
 
   const candidates: string[] = [];
   const suffix = audienceSuffixForRoleScopeLevel(roleScopeLevel);
-  const hasAudienceSuffix = /\.(self|managed|root)$/.test(permissionName);
+  const hasAudienceSuffix = /\.(self|managed|root)@base/.test(permissionName);
 
   if (!hasAudienceSuffix) {
     candidates.push(`${basePermissionName}.${suffix}`);

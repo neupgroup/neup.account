@@ -1,7 +1,7 @@
 import { FlowLink } from '@/components/flow-link';
-import { BackButton } from '#/components/element/backButton';
-import { Card, CardContent } from '#/components/ui/card';
-import { TitleSet } from '#/components/element/titleset';
+import { BackButton } from '@neup/components/element/backButton';
+import { Card, CardContent } from '@neup/components/ui/card';
+import { TitleSet } from '@neup/components/element/titleset';
 import { AppWindow, ChevronRight, Users } from '@/components/icons';
 
 export type AccessGroupMember = {

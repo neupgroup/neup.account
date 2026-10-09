@@ -5,8 +5,8 @@ import {
     CardDescription,
     CardHeader,
     CardTitle,
-} from "#/components/ui/card";
-import { Button } from "#/components/ui/button";
+} from "@neup/components/ui/card";
+import { Button } from "@neup/components/ui/button";
 import { getSubbrands } from "@/services/manage/accounts/subbrands";
 import {
     Table,
@@ -15,10 +15,10 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "#/components/ui/table"
+} from "@neup/components/ui/table"
 import { Building, Plus } from "lucide-react";
 import { notFound } from "next/navigation";
-import { permission } from '@/.neup/logica/permission';
+import { permission } from '@neup/logica/permission';
 import { resolveAccessProfileContext } from '@/services/account/access-profile-context';
 
 const pagePermissions = [

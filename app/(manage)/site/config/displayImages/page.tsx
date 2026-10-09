@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation';
-import { BackButton } from '#/components/element/backButton';
+import { BackButton } from '@neup/components/element/backButton';
 import { checkPermissions } from '@/services/user';
 import { getResources } from '@/services/manage/site/resources';
 import { DisplayImagesManager } from '../../../config/displayImages/display-images-manager.client';
-import { permission } from '@/.neup/logica/permission';
+import { permission } from '@neup/logica/permission';
 
 const pagePermissions = [
   permission('root.display_images.view', 'for_individual', 'page'),

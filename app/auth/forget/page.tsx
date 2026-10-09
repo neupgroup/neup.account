@@ -3,12 +3,12 @@
 
 import { FlowLink } from '@/components/flow-link';
 import { useEffect, useTransition, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
-import { Button } from '#/components/ui/button';
-import { Input } from '#/components/ui/input';
-import { Label } from '#/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@neup/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { Input } from '@neup/components/ui/input';
+import { Label } from '@neup/components/ui/label';
 import { Loader2 } from '@/components/icons';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { validateAuthSessionRequest } from '@/services/auth/auth-request';
 import { handleAuthRequest } from '@/app/auth/handleAuthRequest';
 

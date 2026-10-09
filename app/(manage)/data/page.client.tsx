@@ -1,9 +1,9 @@
-import { Card, CardContent } from "#/components/ui/card";
+import { Card, CardContent } from "@neup/components/ui/card";
 import React from "react";
-import { permission } from "@/.neup/logica/permission";
+import { permission } from "@neup/logica/permission";
 import { getConnectedApplications } from "@/services/applications/connected";
 import { ListItem } from "@/components/ui/ListItem";
-import { TitleSet } from '#/components/element/titleset';
+import { TitleSet } from '@neup/components/element/titleset';
 import { History, Trash2, PowerOff, CalendarClock, AppWindow, Share2, type LucideIcon } from "@/components/icons";
 import { checkPermissions } from "@/services/user";
 import { DATA_PRIVACY_PERMISSION_GROUPS } from "@/inapp/permissions/data-permissions";

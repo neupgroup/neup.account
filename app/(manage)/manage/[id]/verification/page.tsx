@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import { getUserDetails, getAccountDetails } from "@/services/manage/users";
 import { VerificationManager } from "./form";
-import { BackButton } from "#/components/element/backButton";
-import { TitleSet } from '#/components/element/titleset';
+import { BackButton } from "@neup/components/element/backButton";
+import { TitleSet } from '@neup/components/element/titleset';
 
 export default async function UserVerificationPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;

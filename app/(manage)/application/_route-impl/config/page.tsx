@@ -8,9 +8,9 @@ import {
   getAppConfigData,
   logRootApplicationActivity,
 } from '@/services/applications/manage';
-import { BackButton } from '#/components/element/backButton';
-import { TitleSet } from '#/components/element/titleset';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
+import { BackButton } from '@neup/components/element/backButton';
+import { TitleSet } from '@neup/components/element/titleset';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
 import { ShieldAlert } from 'lucide-react';
 import { AppConfigForm } from '@/app/(manage)/application/_components/app-config-form';
 import { PermissionSourceForm } from '@/app/(manage)/application/_components/permission-source-form';

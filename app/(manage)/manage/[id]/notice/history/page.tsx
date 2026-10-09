@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getUserDetails } from "@/services/manage/users";
-import { BackButton } from "#/components/element/backButton";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "#/components/ui/card";
+import { BackButton } from "@neup/components/element/backButton";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@neup/components/ui/card";
 
 export default async function NoticeHistoryPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;

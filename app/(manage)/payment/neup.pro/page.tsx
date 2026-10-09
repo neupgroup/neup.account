@@ -1,13 +1,13 @@
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "#/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@neup/components/ui/card";
 import { getPaymentDetails, getAppInfo } from "@/services/manage/payments/neup.pro";
 import Image from "next/image";
 import { Bot, Instagram, Linkedin, Ban } from "lucide-react";
-import { BackButton } from "#/components/element/backButton";
+import { BackButton } from "@neup/components/element/backButton";
 import { checkPermissions } from '@/services/user';
-import { Alert, AlertDescription, AlertTitle } from "#/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@neup/components/ui/alert";
 import { notFound } from "next/navigation";
-import { permission } from '@/.neup/logica/permission';
+import { permission } from '@neup/logica/permission';
 
 const pagePermissions = [
     permission('payment.purchase_neup_pro.view', 'for_individual', 'page'),

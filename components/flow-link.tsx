@@ -6,7 +6,7 @@ import type { ComponentProps } from 'react';
 import { Suspense } from 'react';
 import { appendFlowParamsObject, getFlowParams } from '@/inapp/auth/callbacks';
 import { appendApplicationRootMode } from '@/app/(manage)/application/_lib/application-mode';
-import { appendStickyQueryParams } from '#/core/helpers/link/navigation';
+import { appendStickyQueryParams } from '@neup/core/helpers/link/navigation';
 
 type FlowLinkProps = ComponentProps<typeof Link>;
 

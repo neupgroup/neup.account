@@ -1,12 +1,12 @@
 
 "use client"
 
-import { Card, CardContent } from '#/components/ui/card';
+import { Card, CardContent } from '@neup/components/ui/card';
 import { Wallet, Gem } from '@/components/icons';
 import { ListItem } from '@/components/ui/ListItem';
-import { TitleSet } from '#/components/element/titleset';
+import { TitleSet } from '@neup/components/element/titleset';
 import { useEffect, useState } from 'react';
-import { Skeleton } from '#/components/ui/skeleton';
+import { Skeleton } from '@neup/components/ui/skeleton';
 
 function BillingCardSkeleton() {
     return (

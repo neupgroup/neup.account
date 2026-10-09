@@ -10,23 +10,23 @@ import { z } from "zod"
 import Image from 'next/image'
 
 import { updateUserProfile, getDisplayNameSuggestions, getPastProfilePhotos, getPublicDisplayImages, type PublicDisplayImage } from "@/services/profile"
-import { useToast } from "#/core/hooks/useToast"
+import { useToast } from "@neup/core/hooks/useToast"
 import { uploadFile } from '@/services/upload'
 
-import { Skeleton } from '#/components/ui/skeleton'
-import { Button } from "#/components/ui/button"
-import { Card, CardContent, CardFooter } from "#/components/ui/card"
-import { Input } from "#/components/ui/input"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "#/components/ui/form"
-import { Avatar, AvatarImage, AvatarFallback } from '#/components/ui/avatar'
+import { Skeleton } from '@neup/components/ui/skeleton'
+import { Button } from "@neup/components/ui/button"
+import { Card, CardContent, CardFooter } from "@neup/components/ui/card"
+import { Input } from "@neup/components/ui/input"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@neup/components/ui/form"
+import { Avatar, AvatarImage, AvatarFallback } from '@neup/components/ui/avatar'
 import { useSession } from '@/inapp/auth/session-context'
-import { BackButton } from '#/components/element/backButton'
-import { cn } from '#/core/utils'
+import { BackButton } from '@neup/components/element/backButton'
+import { cn } from '@neup/core/utils'
 import { Check, Loader2, UploadCloud } from '@/components/icons'
-import { TitleSet } from '#/components/element/titleset';
-import { Separator } from '#/components/ui/separator'
+import { TitleSet } from '@neup/components/element/titleset';
+import { Separator } from '@neup/components/ui/separator'
 import { PROFILE_SECTION_PERMISSIONS, hasAnyPermission } from '@/inapp/permissions/profile-permissions'
-import { permission } from '@/.neup/logica/permission';
+import { permission } from '@neup/logica/permission';
 import { useSelectedProfilePage } from '../use-selected-profile-page';
 
 const pagePermissions = [

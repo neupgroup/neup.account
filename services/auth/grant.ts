@@ -1,8 +1,8 @@
-import prisma from '@/.neup/core/database/prisma';
+import prisma from '@neup/core/database/prisma';
 import crypto from 'crypto';
 import { consumeProofGrant, type ProofGrantInput } from '@/services/auth/proof-grant';
 import jwt from 'jsonwebtoken';
-import { logError } from '@/.neup/logica/logger/files';
+import { logError } from '@neup/logica/logger/files';
 import { makeNotification } from '@/services/notifications';
 import { getAccountPermission, isRootUser } from '@/services/user';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';

@@ -2,14 +2,14 @@
 "use client";
 
 import { useState, useEffect, useTransition } from 'react';
-import { useToast } from '#/core/hooks/useToast';
+import { useToast } from '@neup/core/hooks/useToast';
 import { getBackupCodes, generateBackupCodes, type BackupCode } from '@/services/security/backup';
-import { Button } from '#/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/components/ui/card';
+import { Button } from '@neup/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@neup/components/ui/card';
 import { Loader2, Download, Copy, RefreshCw } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert';
-import { BackButton } from '#/components/element/backButton';
-import { TitleSet } from '#/components/element/titleset';
+import { Alert, AlertDescription, AlertTitle } from '@neup/components/ui/alert';
+import { BackButton } from '@neup/components/element/backButton';
+import { TitleSet } from '@neup/components/element/titleset';
 
 export default function BackupCodesPage() {
     const [codes, setCodes] = useState<BackupCode[]>([]);

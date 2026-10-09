@@ -1,7 +1,7 @@
 import { resolvePermissionSourceId, getLocalAuthzManagementError } from '@/services/applications/permission-source';
-import prisma from '@/.neup/core/database/prisma';
-import { logError } from '@/.neup/logica/logger/files';
-import { Prisma } from '@/.neup/core/database/prisma';
+import prisma from '@neup/core/database/prisma';
+import { logError } from '@neup/logica/logger/files';
+import { Prisma } from '@neup/core/database/prisma';
 import { normalizeApplicationId } from '@/services/applications/identifiers';
 
 /*
@@ -25,7 +25,7 @@ IDs for synced roles and permissions may contain only ASCII letters, digits, `.`
 ::end
 */
 
-const AUTHZ_ID_PATTERN = /^[0-9A-Za-z._-]+$/;
+const AUTHZ_ID_PATTERN = /^[0-9A-Za-z._-]+@base/;
 
 type SyncFailureStatus = 400 | 401 | 403 | 404 | 409 | 500;
 type SyncFailure = {

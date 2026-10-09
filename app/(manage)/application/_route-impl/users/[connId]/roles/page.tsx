@@ -1,6 +1,6 @@
 import { forbidden, notFound } from 'next/navigation';
 import { ArrowLeft } from '@/components/icons';
-import { Button } from '#/components/ui/button';
+import { Button } from '@neup/components/ui/button';
 import { FlowLink } from '@/components/flow-link';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
 import {

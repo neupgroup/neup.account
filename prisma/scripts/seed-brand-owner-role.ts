@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import prisma from '@/.neup/core/database/prisma';
+import prisma from '@neup/core/database/prisma';
 /*
 ::neup.documentation::seed-brand-owner-role-script
 
@@ -31,7 +31,7 @@ const APP_ID = 'neup.account';
 const LEGACY_ROLE_ID = 'brand-owner-neup-account';
 
 function slugifyPermission(permission: string): string {
-  return permission.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return permission.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+@base/g, '');
 }
 
 async function main() {

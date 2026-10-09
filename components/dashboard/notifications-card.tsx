@@ -1,7 +1,7 @@
-import { Card, CardContent } from '#/components/ui/card';
+import { Card, CardContent } from '@neup/components/ui/card';
 import { getNotifications } from '@/services/notifications';
 import { ListItem } from '@/components/ui/ListItem';
-import { TitleSet } from '#/components/element/titleset';
+import { TitleSet } from '@neup/components/element/titleset';
 import type { Notification as NotificationType } from '@/services/notifications';
 
 function getNotificationDetails(notification: NotificationType): { iconName: string, message: string, href: string } {

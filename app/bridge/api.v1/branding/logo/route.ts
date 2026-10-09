@@ -1,21 +1,21 @@
 import { NextResponse } from 'next/server';
-import { getConfiguredSiteLogoUrl } from '@/services/manage/site/logo';
+import { getSiteLogoUrl } from '@/services/manage/site/logo';
 
 /**
  * ::neup.documentation::bridge-branding-logo-route-module
  * ::title Branding Logo Route Module
  *
- * Exposes the configured site logo URL for bridge clients.
+ * Exposes the app's main logo from `@base/assets.json` for bridge clients.
  *
  * ::public
  *
- * This route returns the saved logo URL if one is configured, otherwise `null`.
+ * This route returns the configured `logo.main` asset path.
  *
  * ::public end
  *
  * ::private
  *
- * Default fallback handling stays in the service layer; this route exposes only the stored configured value.
+ * The asset manifest is the source of truth for the logo.
  *
  * ::private end
  *
@@ -26,22 +26,22 @@ export async function GET() {
    * ::neup.documentation::bridge-branding-logo-endpoint
    * ::api GET /bridge/api.v1/branding/logo
    *
-   * Returns the configured site logo URL.
+   * Returns the app's main logo asset path.
    *
    * ::public
    *
-   * Use this endpoint when a client needs the branding-specific configured logo instead of the service's default fallback URL.
+   * Use this endpoint when a client needs the app's main logo path.
    *
    * ::public end
    *
    * ::private
    *
-   * Success responses return `200` with `logoUrl` set to either a resolved URL or `null`.
+   * Success responses return `200` with `logoUrl` set to the path in `@base/assets.json`.
    *
    * ::private end
    *
    * ::end
    */
-  const logoUrl = await getConfiguredSiteLogoUrl();
-  return NextResponse.json({ logoUrl: logoUrl || null });
+  const logoUrl = await getSiteLogoUrl();
+  return NextResponse.json({ logoUrl });
 }

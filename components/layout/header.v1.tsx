@@ -9,8 +9,8 @@ import { Menu, X } from '@/components/icons';
 import { cn } from '@neup/core/utils';
 import { useEffect, useState } from 'react';
 import { useSession } from '@/inapp/auth/session-context';
+import assets from '@base/assets.json';
 
-const STATIC_LOGO_URL = 'https://neupcdn.com/neupaccount/assets/logo.svg';
 const HEADER_HEIGHT = '4rem';
 const MOBILE_EXPAND_DURATION = 700;
 const MOBILE_EXPAND_EASING = 'cubic-bezier(0.22, 1, 0.36, 1)';
@@ -27,7 +27,7 @@ export function HeaderV1({ showUserNavOnAuth = false, logoUrl }: HeaderV1Props) 
   const { profile } = useSession();
   const isAuthPath = pathname?.startsWith('/auth');
   const shouldShowUserNav = showUserNavOnAuth || !isAuthPath;
-  const resolvedLogoUrl = logoUrl || STATIC_LOGO_URL;
+  const resolvedLogoUrl = logoUrl || assets.logo.main;
   const workingProfile = searchParams.get('workingProfile')?.trim();
   const homeHref = workingProfile ? `/home?workingProfile=${encodeURIComponent(workingProfile)}` : '/home';
 

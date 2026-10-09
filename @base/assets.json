@@ -1,0 +1,26 @@
+{
+    "logo": {
+        "main": "https://cdn.neupgroup.com/neupaccount/transparent.bg.svg",
+        "48x48": "/assets/android/icon-48.png",
+        "72x72": "/assets/android/icon-72.png",
+        "96x96": "/assets/android/icon-96.png",
+        "144x144": "/assets/android/icon-144.png",
+        "256x256": "/assets/android/icon-256.png",
+        "512x512": "/assets/android/icon-512.png",
+        "1024x1024": "/assets/android/icon-1024.png",
+        "background": "/assets/android/background.png",
+        "adaptive": {
+            "foreground": "/assets/android/adaptive-foreground.png",
+            "background": "/assets/android/adaptive-background.png"
+        },
+        "altText": "NeupID's Logo"
+    },
+    "favicon": {
+        "path": "/assets/favicon.ico",
+        "altText": "NeupID's Favicon"
+    },
+    "splashScreen": {
+        "path": "/assets/splash.png",
+        "altText": "NeupID's Splash Screen"
+    }
+}

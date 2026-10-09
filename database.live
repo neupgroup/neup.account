@@ -248,7 +248,7 @@ Fields:
 Table: assets, Model: Asset
 Fields:
 > id: String, primary key, default: uuid();
-> type: AssetType;
+> type: enum(acc_in_acc, app_in_acc, conn_in_acc);
 > child_account_id: String, nullable;
 > child_connection_id: String, nullable;
 > child_application_id: String, nullable;
@@ -276,7 +276,7 @@ Fields:
 Table: access, Model: Access
 Fields:
 > id: String, primary key, default: uuid();
-> access_type: AccessType;
+> access_type: enum(acc_self, acc_self.root, acc_in_acc, app_in_acc, conn_in_acc);
 > member_id: String;
 > member_account_id: String, nullable;
 > parent_account_id: String, nullable;
@@ -437,18 +437,3 @@ Fields:
 > valid_till: DateTime;
 > details: Json, default: [];
 .. app_id references application.id;
-
-Enum: AuthzGrantStatus
-> active; invited; on_hold; expired;
-
-Enum: AssetType
-> acc_in_acc; app_in_acc; conn_in_acc;
-
-Enum: AccessType
-> acc_self; acc_self.root; acc_in_acc; app_in_acc; conn_in_acc;
-
-Enum: MemberAccessFor
-> account; application; connection;
-
-Enum: MemberStatus
-> active; paused; removed;

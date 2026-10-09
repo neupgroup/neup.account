@@ -4,7 +4,6 @@ import { logError } from '@neup/logica/logger/files';
 export const SYSTEM_CONFIG_KEYS = {
   socials: 'socials',
   payments: 'payments',
-  siteLogo: 'siteLogo',
 } as const;
 
 export async function readSystemConfigData<T>(

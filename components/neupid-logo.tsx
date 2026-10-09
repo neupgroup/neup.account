@@ -1,7 +1,8 @@
 
 import { FlowLink } from '@/components/flow-link';
+import assets from '@base/assets.json';
 
-const DEFAULT_LOGO_URL = 'https://neupcdn.com/neupaccount/assets/logo.svg';
+const DEFAULT_LOGO_URL = assets.logo.main;
 
 
 type NeupIdLogoProps = {
@@ -20,7 +21,7 @@ export function NeupIdLogo({ iconHref, textHref, logoUrl }: NeupIdLogoProps) {
           <span className="sr-only">Go to home</span>
           <img
             src={logoUrl || DEFAULT_LOGO_URL}
-            alt="Neup Group Logo"
+            alt={assets.logo.altText}
             width={28}
             height={28}
             className="h-7 w-7"
@@ -32,7 +33,7 @@ export function NeupIdLogo({ iconHref, textHref, logoUrl }: NeupIdLogoProps) {
           <span className="sr-only">Company Homepage</span>
           <img
             src={logoUrl || DEFAULT_LOGO_URL}
-            alt="Neup Group Logo"
+            alt={assets.logo.altText}
             width={28}
             height={28}
             className="h-7 w-7"

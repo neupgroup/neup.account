@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { FlowLink } from '@/components/flow-link';
 import { notFound } from 'next/navigation';
-import { CreditCard, Globe, ArrowRight, AppWindow, Camera } from '@/components/icons';
+import { CreditCard, Globe, ArrowRight, Camera } from '@/components/icons';
 import { Card, CardDescription, CardHeader, CardTitle } from '@neup/components/ui/card';
 import { BackButton } from '@neup/components/element/backButton';
 import { checkPermissions } from '@/services/user';
@@ -28,12 +28,6 @@ const configItems = [
     title: 'Payment Settings',
     description: 'Define payment details used across the website.',
     icon: CreditCard,
-  },
-  {
-    href: '/site/config/app',
-    title: 'App Settings',
-    description: 'Update the site logo used across the application.',
-    icon: AppWindow,
   },
   {
     href: '/site/config/displayImages',

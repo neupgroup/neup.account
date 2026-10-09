@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
   experimental: {
     authInterrupts: true,
   },
+
   typescript: {
     ignoreBuildErrors: false,
   },
@@ -31,6 +32,19 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       }
     ]
+  },
+  async rewrites() {
+    return {
+      beforeFiles: [ 
+        { 
+        source: '/assets/:path*',
+        destination: 'https://api.propertyinnepal.com.np/storage/4377/vwQUtoSdfXzHQ0KOPYgm1HC4jjE7Iy-metaV2hhdHNBcHAgSW1hZ2UgMjAyNS0wOC0yNyBhdCAxMy40OS4yMF82ZjYxMDAyZC5qcGc=-.jpg',
+        basePath: false,
+      },
+    ],
+      afterFiles: [],
+      fallback: [],
+    };
   },
   turbopack: {},
 };

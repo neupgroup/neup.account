@@ -71,7 +71,7 @@ export default async function LinkAccountsPage({ searchParams }: PageProps) {
 
     return (
         <div className="grid gap-8">
-            <BackButton href={buildAccessHref('/access', hrefContext)} />
+            <BackButton backsTo={buildAccessHref('/access', hrefContext)} />
             <TitleSet level={1}
                 title="Link Other Accounts"
                 subtitle="Connect your accounts from other platforms to NeupID for a seamless experience."

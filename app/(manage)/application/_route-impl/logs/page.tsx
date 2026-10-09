@@ -91,7 +91,7 @@ export async function ApplicationLogsPage({
   return (
     <div className="grid gap-6">
       <div className="space-y-4">
-        <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
+        <BackButton backsTo={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
         <TitleSet level={1}
           title="Development Logs"
           subtitle={`Request/response debug logs for ${details.name}. Logs are captured only while app status is development.`}

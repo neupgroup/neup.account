@@ -71,7 +71,7 @@ export async function RoleDetailsPage({
     return (
       <div className="grid gap-8">
         <div className="space-y-4">
-          <BackButton href={applicationHref('/application/roles', applicationId, mode ? { mode } : undefined)} />
+          <BackButton backsTo={applicationHref('/application/roles', applicationId, mode ? { mode } : undefined)} />
           <TitleSet level={1} title="Role Details" subtitle={`Manage role permissions for ${details.name}.`} titleClassName="text-2xl leading-8" subtitleClassName="text-sm leading-6" />
         </div>
         <Alert variant="destructive">
@@ -105,7 +105,7 @@ export async function RoleDetailsPage({
   return (
     <div className="grid gap-8">
       <div className="space-y-4">
-        <BackButton href={applicationHref('/application/roles', applicationId, mode ? { mode } : undefined)} />
+        <BackButton backsTo={applicationHref('/application/roles', applicationId, mode ? { mode } : undefined)} />
         <div>
           <h1 className="font-bold tracking-tight text-2xl leading-8">
             {isEditingInfo ? `Edit Role Info: ${role.name}` : `Role: ${role.name}`}{' '}

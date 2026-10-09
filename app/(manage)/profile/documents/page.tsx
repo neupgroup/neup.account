@@ -224,7 +224,7 @@ export default function KycPage() {
 
     return (
         <div className="grid gap-8">
-            <BackButton href={profileBackHref} />
+            <BackButton backsTo={profileBackHref} />
             <div>
                 <h1 className="font-bold tracking-tight text-2xl leading-8">KYC & Verification</h1>
                 <p className="text-muted-foreground text-sm leading-6">Verify your identity to unlock all features of your account.</p>

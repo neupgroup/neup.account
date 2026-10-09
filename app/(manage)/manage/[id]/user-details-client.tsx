@@ -6,10 +6,7 @@ import { UserDetails } from '@/services/manage/users';
 import { ProfileForm } from './profile-form';
 import { VerificationManager } from './verification-manager';
 import { ActivityList } from './activity/activity-list'; 
-import { Button } from '@neup/components/ui/button';
-import { ArrowLeft } from '@/components/icons';
-import { useRouter } from 'next/navigation';
-import { redirectInApp } from '@neup/core/helpers/link/navigation';
+import { BackButton } from '@neup/components/element/backButton';
 
 interface UserDetailsClientProps {
     initialUserDetails: UserDetails;
@@ -17,18 +14,10 @@ interface UserDetailsClientProps {
 
 export function UserDetailsClient({ initialUserDetails }: UserDetailsClientProps) {
     const [userDetails, setUserDetails] = useState(initialUserDetails);
-    const router = useRouter();
-
-    const handleBack = () => {
-        redirectInApp(router, '/manage');
-    };
-
     return (
         <div className="container mx-auto p-4">
             <div className="flex items-center mb-4">
-                <Button variant="plain" size="icon" onClick={handleBack}>
-                    <ArrowLeft className="h-5 w-5" />
-                </Button>
+                <BackButton backsTo="/manage" />
                 <h1 className="font-bold ml-2 text-2xl leading-8">{userDetails.profile.nameFirst || ''} {userDetails.profile.nameLast || ''}</h1>
             </div>
 

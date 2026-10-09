@@ -27,7 +27,7 @@ import {
   type AppPermission,
 } from '@/services/applications/authz-manage';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
-import { redirectInApp } from '@neup/core/helpers/link/navigation';
+import { BackButton } from '@neup/components/element/backButton';
 import { ScopeForSelector, ScopeLevelSelector } from './authz-scope-policy-selector';
 
 type Props = {
@@ -53,10 +53,6 @@ export function PermissionDetailEditor({
   const [savePending, setSavePending] = useState(false);
   const [deletePending, setDeletePending] = useState(false);
   const [showDeleteSection, setShowDeleteSection] = useState(false);
-  const goBack = () => {
-    redirectInApp(router, applicationHref('/application/permissions', appId, { mode }));
-  };
-
   const handleSave = async () => {
     setSavePending(true);
     const result = await updateAppPermission({
@@ -147,9 +143,7 @@ export function PermissionDetailEditor({
         ) : null}
 
         <div className="flex justify-end gap-2">
-          <Button htmlType="button" variant="outlined" onClick={goBack}>
-            Back
-          </Button>
+          <BackButton backsTo={applicationHref('/application/permissions', appId, { mode })} className="mr-auto" />
           <Button
             htmlType="button"
             variant="outlined"

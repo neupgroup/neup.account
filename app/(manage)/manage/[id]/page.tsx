@@ -94,7 +94,7 @@ export default async function AccountDetailsPage({ params }: { params: Promise<{
 
   return (
     <div className="grid gap-8">
-      <BackButton href="/manage" />
+      <BackButton backsTo="/manage" />
       <div className="flex items-center gap-4">
         <Avatar className="h-16 w-16">
           <AvatarImage

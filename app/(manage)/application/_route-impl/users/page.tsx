@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import { forbidden, notFound } from 'next/navigation';
-import { Button } from '@neup/components/ui/button';
-import { FlowLink } from '@/components/flow-link';
-import { ArrowLeft } from '@/components/icons';
+import { BackButton } from '@neup/components/element/backButton';
 import {
   canCurrentAccountUseRootApplicationMode,
   canCurrentAccountViewApplicationUsers,
@@ -79,14 +77,7 @@ export async function ApplicationUsersPage({
 
   return (
     <div className="grid gap-6">
-      <div>
-        <Button variant="plain" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
-          <FlowLink href={applicationHref('/application', applicationId, mode ? { mode } : undefined)}>
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </FlowLink>
-        </Button>
-      </div>
+      <BackButton backsTo={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
 
       <div>
         <h1 className="font-bold tracking-tight text-2xl leading-8">

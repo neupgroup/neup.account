@@ -55,7 +55,7 @@ export default async function DependentAccountsPage({ searchParams }: PageProps)
 
     return (
         <div className="grid gap-8">
-            <BackButton href="/access" />
+            <BackButton backsTo="/access" />
             <div>
                 <h1 className="font-bold tracking-tight text-2xl leading-8">Manage Dependent Accounts</h1>
                 <p className="text-muted-foreground text-sm leading-6">

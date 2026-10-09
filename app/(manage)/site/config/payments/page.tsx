@@ -19,7 +19,7 @@ export default async function SiteConfigPaymentsPage() {
 
   return (
     <div className="grid gap-8">
-      <BackButton href="/site/config" />
+      <BackButton backsTo="/site/config" />
       <div>
         <h1 className="font-bold tracking-tight text-2xl leading-8">Payment Settings</h1>
         <p className="text-muted-foreground text-sm leading-6">

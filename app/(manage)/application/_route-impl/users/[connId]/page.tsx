@@ -1,9 +1,8 @@
 import { forbidden, notFound } from 'next/navigation';
-import { ArrowLeft, CheckCircle2, ChevronRight } from '@/components/icons';
+import { CheckCircle2, ChevronRight } from '@/components/icons';
 import { Badge } from '@neup/components/ui/badge';
-import { Button } from '@neup/components/ui/button';
+import { BackButton } from '@neup/components/element/backButton';
 import { Card, CardContent, CardHeader, CardTitle } from '@neup/components/ui/card';
-import { FlowLink } from '@/components/flow-link';
 import { Avatar, AvatarFallback, AvatarImage } from '@neup/components/ui/avatar';
 import {
   canCurrentAccountRemoveApplicationUser,
@@ -101,23 +100,16 @@ export async function ApplicationUserDetailsPage({
 
   return (
     <div className="grid gap-6">
-      <div>
-        <Button variant="plain" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
-          <FlowLink
-            href={applicationHref('/application/users', appId, {
-              mode,
-              query,
-              role,
-              status,
-              activeSince,
-              sort,
-            })}
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </FlowLink>
-        </Button>
-      </div>
+      <BackButton
+        backsTo={applicationHref('/application/users', appId, {
+          mode,
+          query,
+          role,
+          status,
+          activeSince,
+          sort,
+        })}
+      />
 
       <div>
         <h1 className="font-bold tracking-tight text-2xl leading-8">User Details</h1>

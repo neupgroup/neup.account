@@ -78,7 +78,7 @@ async function SelectedApplicationPage({
 
   return (
     <div className="grid gap-8">
-      <BackButton href={buildAccessHref('/access/application', hrefContext)} />
+      <BackButton backsTo={buildAccessHref('/access/application', hrefContext)} />
 
       <Card>
         <CardHeader className="pb-3">
@@ -234,7 +234,7 @@ async function ApplicationsOverviewPage({
 
   return (
     <div className="grid gap-8">
-      <BackButton href={buildAccessHref('/access', hrefContext)} />
+      <BackButton backsTo={buildAccessHref('/access', hrefContext)} />
 
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">

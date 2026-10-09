@@ -53,7 +53,7 @@ export default function ChangePasswordPage() {
 
     return (
         <div className="grid gap-8">
-            <BackButton href="/manage/security" />
+            <BackButton backsTo="/manage/security" />
             <div>
                 <h1 className="font-bold tracking-tight text-2xl leading-8">Change Password</h1>
                 <p className="text-muted-foreground text-sm leading-6">

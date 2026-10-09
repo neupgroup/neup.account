@@ -41,7 +41,7 @@ export default async function FamilySharingPage() {
 
     return (
         <div className="grid gap-8">
-            <BackButton href="/access" />
+            <BackButton backsTo="/access" />
             <div>
                 <h1 className="font-bold tracking-tight text-2xl leading-8">Family Sharing</h1>
                 <p className="text-muted-foreground text-sm leading-6">

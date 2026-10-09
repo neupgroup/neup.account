@@ -88,7 +88,7 @@ export default function MaterializationPage() {
 
   return (
     <div className="grid gap-8">
-        <BackButton href="/manage/data" />
+        <BackButton backsTo="/manage/data" />
       <div>
         <h1 className="font-bold tracking-tight text-2xl leading-8">Schedule Deletion (Materialization)</h1>
         <p className="text-muted-foreground text-sm leading-6">

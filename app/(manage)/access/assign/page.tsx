@@ -263,7 +263,7 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
 
     return (
       <div className="grid gap-8">
-        <BackButton href={appendAccessContext(`/access/connection/${connection.id}`)} />
+        <BackButton backsTo={appendAccessContext(`/access/connection/${connection.id}`)} />
         <TitleSet level={1}
           title={selectedMember ? 'Edit Connection Access' : 'Add People to This Connection'}
           subtitle={
@@ -321,7 +321,7 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
     if (!detail) {
       return (
         <div className="grid gap-6">
-          <BackButton href={`/access/team?portfolio=${portfolio}`} />
+          <BackButton backsTo={`/access/team?portfolio=${portfolio}`} />
           <PageHeader
             photo={userPhoto}
             displayName={displayName}
@@ -356,7 +356,7 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
 
       return (
         <div className="grid gap-6">
-          <BackButton href={`/access/team?portfolio=${portfolio}`} />
+          <BackButton backsTo={`/access/team?portfolio=${portfolio}`} />
           <PageHeader
             photo={userPhoto}
             displayName={displayName}
@@ -432,7 +432,7 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
 
     return (
       <div className="grid gap-6">
-        <BackButton href={`/access/team?portfolio=${portfolio}`} />
+        <BackButton backsTo={`/access/team?portfolio=${portfolio}`} />
         <PageHeader
           photo={userPhoto}
           displayName={displayName}
@@ -508,7 +508,7 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
 
     return (
       <div className="grid gap-6">
-        <BackButton href={appendAccessContext('/access/team')} />
+        <BackButton backsTo={appendAccessContext('/access/team')} />
         <TitleSet level={1}
           title="Assign Account Access"
           subtitle={`Enter a NeupID to assign access for ${ownerName}.`}
@@ -557,7 +557,7 @@ export default async function AssignPermissionsPage({ searchParams }: PageProps)
 
     return (
       <div className="grid gap-6">
-        <BackButton href={appendAccessContext('/access/team')} />
+        <BackButton backsTo={appendAccessContext('/access/team')} />
         <PageHeader
           photo={userPhoto}
           displayName={detail.displayName}

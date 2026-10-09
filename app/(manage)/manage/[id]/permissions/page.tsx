@@ -18,7 +18,7 @@ export default async function UserPermissionsPage({ params }: { params: Promise<
 
     return (
         <div className="grid gap-8">
-            <BackButton href={`/manage/${id}`} />
+            <BackButton backsTo={`/manage/${id}`} />
             <TitleSet level={1}
                 title="Manage Roles"
                 subtitle={`Assign roles to @${userDetails.neupId}. Roles determine what the account can access.`}

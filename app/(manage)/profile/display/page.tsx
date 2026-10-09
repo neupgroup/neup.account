@@ -301,7 +301,7 @@ export default function DisplayInfoPage() {
 
     return (
         <div className="space-y-8">
-            <BackButton href={profileBackHref} />
+            <BackButton backsTo={profileBackHref} />
 
             <div className="space-y-2">
                 <TitleSet level={2}

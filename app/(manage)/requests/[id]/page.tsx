@@ -250,7 +250,7 @@ export default async function RequestDetailPage({ params }: Props) {
 
   return (
     <div className="grid gap-6">
-      <BackButton href="/requests" />
+      <BackButton backsTo="/requests" />
 
       <section className="space-y-2">
         <div className="flex items-start justify-between gap-3 flex-wrap">

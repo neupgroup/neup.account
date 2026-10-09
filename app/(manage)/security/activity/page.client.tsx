@@ -89,7 +89,7 @@ function SecurityActivityPageComponent({ after }: { after?: string }) {
 
     return (
         <div className="grid gap-8">
-            <BackButton href="/manage/security" />
+            <BackButton backsTo="/manage/security" />
             <Card>
                 <CardHeader>
                     <CardTitle className="text-lg leading-7">Recent Account Activity</CardTitle>

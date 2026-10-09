@@ -4,8 +4,9 @@
 import { FlowLink } from '@/components/flow-link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@neup/core/utils';
-import { Building, AppWindow, ShieldCheck, Users, UserCircle, ArrowLeft } from 'lucide-react';
+import { Building, AppWindow, ShieldCheck, Users, UserCircle } from 'lucide-react';
 import { Separator } from '@neup/components/ui/separator';
+import { BackButton } from '@neup/components/element/backButton';
 
 export function BrandNav({ brandId }: { brandId: string }) {
   const pathname = usePathname();
@@ -32,13 +33,7 @@ export function BrandNav({ brandId }: { brandId: string }) {
         );
       })}
        <Separator className="my-2" />
-       <FlowLink
-            href="/access"
-            className="inline-flex items-center rounded-md px-4 py-2 text-sm font-medium justify-start gap-2 bg-transparent text-foreground hover:bg-primary/10"
-          >
-        <ArrowLeft className="h-4 w-4" />
-        Back to Access
-      </FlowLink>
+       <BackButton backsTo="/access" className="px-4 py-2" />
     </nav>
   );
 }

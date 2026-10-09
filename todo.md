@@ -54,7 +54,7 @@
 - [ ] Upgrade managed-account NeupID service documentation in `services/manage/accounts/neupid.ts` so it uses Neup documentation blocks instead of plain comments.
 - [ ] Add Neup documentation blocks for shared UI/metadata helpers in `components/ui/list-item.tsx`, `components/ui/primary-header.tsx`, and `neup.core/metadata.ts`.
 - [ ] Add a Neup documentation block for `components/layout/header.v1.tsx`, which currently exposes the shared layout header without structured source-owned documentation.
-- [ ] Add Neup documentation blocks for `components/persistent-backs-to.tsx` and `components/ui/back-button.tsx`, which currently expose back-navigation UI/runtime behavior without structured source-owned documentation.
+- [ ] Add a Neup documentation block for `components/persistent-backs-to.tsx`, which currently exposes back-navigation runtime behavior without structured source-owned documentation.
 - [ ] Add a Neup documentation block for `components/ui/secondary-header.tsx`, which currently exposes the shared section header without structured source-owned documentation.
 - [ ] Add a Neup documentation block for `components/icons.tsx`, which currently exposes the shared icon barrel without structured source-owned documentation.
 - [ ] Add a Neup documentation block for `components/ui/input.tsx`, which currently exposes shared form input behavior without structured source-owned documentation.

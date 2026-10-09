@@ -166,7 +166,7 @@ export default function LegalPage() {
 
     return (
          <div className="space-y-8">
-            <BackButton href={profileBackHref} />
+            <BackButton backsTo={profileBackHref} />
 
             {isBrandAccount ? (
                 <Form {...brandForm}>

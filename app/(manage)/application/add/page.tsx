@@ -1,7 +1,6 @@
-import { FlowLink } from '@/components/flow-link';
 import { forbidden } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@neup/components/ui/card';
-import { Button } from '@neup/components/ui/button';
+import { BackButton } from '@neup/components/element/backButton';
 import { ApplicationCreateForm } from '@/app/(manage)/application/_components/application-create-form';
 import { canCurrentAccountCreateApplication } from '@/services/applications/manage';
 
@@ -18,9 +17,7 @@ export default async function AddApplicationPage() {
           <h1 className="font-bold tracking-tight text-2xl leading-8">Add Application</h1>
           <p className="text-muted-foreground text-sm leading-6">Create a new application.</p>
         </div>
-        <Button variant="outlined" asChild>
-          <FlowLink href="/application">Back to Applications</FlowLink>
-        </Button>
+        <BackButton backsTo="/application" />
       </div>
 
       <Card className="max-w-2xl">

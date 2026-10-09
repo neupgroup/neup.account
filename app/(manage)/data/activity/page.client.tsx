@@ -151,7 +151,7 @@ function DataActivityPageComponent({ after, applicationId, history }: { after?: 
     return (
         <div className="grid gap-8">
             <div>
-                <BackButton href={backHref} />
+                <BackButton backsTo={backHref} />
                 <h1 className="font-bold tracking-tight mt-4 text-2xl leading-8">
                     {applicationId ? 'Application Activity' : 'Your Account Activity'}
                 </h1>

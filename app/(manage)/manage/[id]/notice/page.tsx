@@ -19,7 +19,7 @@ export default async function UserNoticePage({ params }: { params: Promise<{ id:
     return (
         <div className="grid gap-8">
             <div className="space-y-4">
-                <BackButton href={`/manage/${id}`} />
+                <BackButton backsTo={`/manage/${id}`} />
                  <TitleSet level={1}
                     title="Manage Notices & Actions"
                     subtitle={`Send warnings or apply administrative actions to @${userDetails.neupId}.`}

@@ -15,7 +15,7 @@ export default async function AccountCleanupPage() {
     return (
         <div className="grid gap-8">
             <div className="space-y-4">
-                <BackButton href="/manage/accounts" />
+                <BackButton backsTo="/manage/accounts" />
                 <TitleSet level={1}
                     title="Account Cleanup"
                     subtitle="Permanently delete expired guest accounts and all their associated data."

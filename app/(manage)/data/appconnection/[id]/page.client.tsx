@@ -1,3 +1,4 @@
+import { BackButton } from '@neup/components/element/backButton';
 import Link from 'next/link';
 import { FlowLink } from '@/components/flow-link';
 import { notFound } from 'next/navigation';
@@ -115,7 +116,7 @@ export default async function ApplicationDetailPage({ params }: ApplicationDetai
           </div>
         </div>
         <Button variant="outlined" asChild className="shrink-0">
-          <FlowLink href="/data/appconnection">Back</FlowLink>
+          <BackButton backsTo="/data/appconnection" />
         </Button>
       </div>
 

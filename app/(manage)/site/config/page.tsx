@@ -60,7 +60,7 @@ export default async function SiteConfigPage() {
 
   return (
     <div className="grid gap-8">
-      <BackButton href="/home" />
+      <BackButton backsTo="/home" />
 
       <TitleSet level={1}
         title="Configurations"

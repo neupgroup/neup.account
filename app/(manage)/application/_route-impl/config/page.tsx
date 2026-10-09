@@ -50,7 +50,7 @@ export async function ApplicationConfigPage({ applicationId, mode }: { applicati
     return (
       <div className="grid gap-8">
         <div className="space-y-4">
-          <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
+          <BackButton backsTo={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
           <TitleSet level={1} title="Configuration" subtitle="API and access configuration." titleClassName="text-2xl leading-8" subtitleClassName="text-sm leading-6" />
         </div>
         <Alert variant="destructive">
@@ -72,7 +72,7 @@ export async function ApplicationConfigPage({ applicationId, mode }: { applicati
   return (
     <div className="grid gap-8">
       <div className="space-y-4">
-        <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
+        <BackButton backsTo={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
         <TitleSet level={1}
           title="Configuration"
           subtitle={`Permission source, API secret, response fields, token fields, SSO origins, and server IPs for ${details.name}.`}

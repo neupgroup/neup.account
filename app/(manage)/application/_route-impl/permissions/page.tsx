@@ -95,7 +95,7 @@ export async function ApplicationPermissionsPage({
     return (
       <div className="grid gap-8">
         <div className="space-y-4">
-          <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
+          <BackButton backsTo={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
           <TitleSet level={1}
             title="Permissions"
             subtitle={`Manage permissions for ${details.name}.`}
@@ -126,7 +126,7 @@ export async function ApplicationPermissionsPage({
     return (
       <div className="grid gap-8">
         <div className="space-y-4">
-          <BackButton href={applicationHref('/application/permissions', applicationId, mode ? { mode } : undefined)} />
+          <BackButton backsTo={applicationHref('/application/permissions', applicationId, mode ? { mode } : undefined)} />
           <TitleSet level={1}
             title={permission.name}
             subtitle={permission.description || `Manage permission metadata for ${details.name}.`}
@@ -148,7 +148,7 @@ export async function ApplicationPermissionsPage({
   return (
     <div className="grid gap-8">
       <div className="space-y-4">
-        <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
+        <BackButton backsTo={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
         <TitleSet level={1}
           title="Permissions"
           subtitle={`Define and manage permissions for ${details.name}.`}

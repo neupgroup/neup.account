@@ -157,7 +157,7 @@ export default async function ConnectionDetailPage({ params, searchParams }: Pag
 
   return (
     <div className="grid gap-8">
-      <BackButton href={appendAccessContext('/access/connection', hrefContext)} />
+      <BackButton backsTo={appendAccessContext('/access/connection', hrefContext)} />
 
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">

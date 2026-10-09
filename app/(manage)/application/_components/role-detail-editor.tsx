@@ -18,6 +18,7 @@ This component powers the role detail page where managers adjust permission memb
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@neup/core/hooks/useToast';
+import { BackButton } from '@neup/components/element/backButton';
 import { Button } from '@neup/components/ui/button';
 import { Badge } from '@neup/components/ui/badge';
 import { Input } from '@neup/components/ui/input';
@@ -348,9 +349,7 @@ export function RoleDetailEditor({
       </div>
 
       <div className="flex justify-end gap-2">
-        <Button variant="outlined" onClick={() => redirectInApp(router, applicationHref('/application/roles', appId, mode ? { mode } : { mode: 'root' }))}>
-          Back
-        </Button>
+        <BackButton backsTo={applicationHref('/application/roles', appId, mode ? { mode } : { mode: 'root' })} className="mr-auto" />
         <Button
           htmlType="button"
           variant="outlined"

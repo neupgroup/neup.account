@@ -12,7 +12,7 @@ export default async function NoticeHistoryPage({ params }: { params: Promise<{ 
     
     return (
         <div className="grid gap-8">
-            <BackButton href={`/manage/${id}`} />
+            <BackButton backsTo={`/manage/${id}`} />
             <div>
                 <h1 className="font-bold tracking-tight text-2xl leading-8">Notice History</h1>
                 <p className="text-muted-foreground text-sm leading-6">

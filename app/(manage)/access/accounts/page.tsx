@@ -14,7 +14,7 @@ export default async function AccessAccountsPage() {
 
   return (
     <div className="grid gap-8">
-      <BackButton href="/access" />
+      <BackButton backsTo="/access" />
 
       <TitleSet level={1}
         title="Accessible Accounts"

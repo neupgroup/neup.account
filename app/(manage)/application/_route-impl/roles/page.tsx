@@ -80,7 +80,7 @@ export async function ApplicationRolesPage({ applicationId, mode }: { applicatio
     return (
       <div className="grid gap-8">
         <div className="space-y-4">
-          <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
+          <BackButton backsTo={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
           <TitleSet level={1}
             title="Roles & Permissions"
             subtitle={`Manage permissions and roles for ${details.name}.`}
@@ -110,7 +110,7 @@ export async function ApplicationRolesPage({ applicationId, mode }: { applicatio
   return (
     <div className="grid gap-8">
       <div className="space-y-4">
-        <BackButton href={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
+        <BackButton backsTo={applicationHref('/application', applicationId, mode ? { mode } : undefined)} />
         <TitleSet level={1}
           title="Roles & Permissions"
           subtitle={`Manage roles for ${details.name}. Open a role to assign permissions.`}

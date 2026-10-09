@@ -236,7 +236,7 @@ async function MyDirectRolesView() {
 
   return (
     <div className="grid gap-6">
-      <BackButton href="/access" />
+      <BackButton backsTo="/access" />
       <PageHeader
         photo={userPhoto}
         displayName={displayName}
@@ -281,7 +281,7 @@ async function MyPortfolioRolesView({ parentPortfolioId }: { parentPortfolioId: 
 
   return (
     <div className="grid gap-6">
-      <BackButton href={`/access?portfolio=${parentPortfolioId}`} />
+      <BackButton backsTo={`/access?portfolio=${parentPortfolioId}`} />
       <PageHeader
         photo={userPhoto}
         displayName={displayName}
@@ -337,7 +337,7 @@ async function MemberDirectRolesView({ memberAccountId }: { memberAccountId: str
 
   return (
     <div className="grid gap-6">
-      <BackButton href="/access/team" />
+      <BackButton backsTo="/access/team" />
 
       <PageHeader
         photo={userPhoto}
@@ -459,7 +459,7 @@ async function MemberPortfolioRolesView({
   if (!detail) {
     return (
       <div className="grid gap-6">
-        <BackButton href={`/access/team?portfolio=${parentPortfolioId}`} />
+        <BackButton backsTo={`/access/team?portfolio=${parentPortfolioId}`} />
 
         <PageHeader
           photo={userPhoto}
@@ -498,7 +498,7 @@ async function MemberPortfolioRolesView({
 
     return (
       <div className="grid gap-6">
-        <BackButton href={`/access/team?portfolio=${parentPortfolioId}`} />
+        <BackButton backsTo={`/access/team?portfolio=${parentPortfolioId}`} />
 
         <PageHeader
           photo={userPhoto}
@@ -582,7 +582,7 @@ async function MemberPortfolioRolesView({
 
   return (
     <div className="grid gap-6">
-      <BackButton href={`/access/team?portfolio=${parentPortfolioId}`} />
+      <BackButton backsTo={`/access/team?portfolio=${parentPortfolioId}`} />
 
       <PageHeader
         photo={userPhoto}

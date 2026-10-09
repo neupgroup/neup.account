@@ -28,7 +28,7 @@ export default async function DevicesPage() {
 
     return (
         <div className="grid gap-8">
-            <BackButton href="/manage/security" />
+            <BackButton backsTo="/manage/security" />
             <TitleSet level={1}
                 title="Your Devices"
                 subtitle="A list of devices that have been used to sign in to your account."

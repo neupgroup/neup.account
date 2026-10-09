@@ -13,7 +13,7 @@ export async function SharedPermissionNotice({ appId, sourceId, mode }: {
   const query = mode ? { mode } : undefined;
   return (
     <div className="grid gap-8">
-      <BackButton href={applicationHref('/application', appId, query)} />
+      <BackButton backsTo={applicationHref('/application', appId, query)} />
       <Card>
         <CardHeader>
           <CardTitle className="text-lg leading-7">Permissions managed by another application</CardTitle>

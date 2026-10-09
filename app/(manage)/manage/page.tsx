@@ -227,7 +227,7 @@ function AccountsPageInner() {
 
     return (
         <div className="grid gap-6">
-            <BackButton href="/manage" />
+            <BackButton backsTo="/manage" />
             <div>
                 <h1 className="font-bold tracking-tight text-2xl leading-8">Accounts</h1>
                 <p className="text-muted-foreground text-sm leading-6">

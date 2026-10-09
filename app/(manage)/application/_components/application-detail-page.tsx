@@ -9,8 +9,9 @@ entry stays in the same server-rendered context.
 ::end
 */
 
-import { FlowLink } from '@/components/flow-link';
 import { notFound } from 'next/navigation';
+import { BackButton } from '@neup/components/element/backButton';
+import { Link } from '@neup/components/ui/link';
 import { Button } from '@neup/components/ui/button';
 import { Badge } from '@neup/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@neup/components/ui/card';
@@ -18,7 +19,7 @@ import {
   getApplicationDetailPageData,
 } from '@/services/applications/manage';
 import { deleteManagedApplicationFromDetailsPage } from '@/services/applications/form-actions';
-import { AppWindow, Building, BarChart, Share2, ExternalLink, ChevronRight, Users, UserPlus, ArrowLeft, type LucideIcon } from '@/components/icons';
+import { AppWindow, Building, BarChart, Share2, ExternalLink, ChevronRight, Users, UserPlus, type LucideIcon } from '@/components/icons';
 import { applicationHref } from '@/app/(manage)/application/_lib/query-param';
 
 function iconFor(appIcon?: string): LucideIcon {
@@ -125,14 +126,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
 
   return (
     <div className="grid gap-6">
-      <div>
-        <Button variant="plain" size="sm" asChild className="-ml-2 gap-1.5 text-muted-foreground">
-          <FlowLink href={mode === 'root' ? '/application?mode=root' : '/application'}>
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </FlowLink>
-        </Button>
-      </div>
+      <BackButton backsTo={mode === 'root' ? '/application?mode=root' : '/application'} />
 
       <div className="flex items-start gap-4">
         <div className="flex items-center gap-3">
@@ -176,9 +170,9 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
               { label: 'Last 7 Days', value: userStats?.lastWeek ?? 0, description: 'New connections this week', icon: UserPlus, activeSince: '7d' },
               { label: 'Last 30 Days', value: userStats?.lastMonth ?? 0, description: 'New connections this month', icon: UserPlus, activeSince: '30d' },
             ].map(({ label, value, description, icon: StatIcon, activeSince }) => (
-              <FlowLink
+              <Link
                 key={label}
-                href={applicationHref('/application/users', applicationId, {
+                takesTo={applicationHref('/application/users', applicationId, {
                   ...(mode ? { mode } : {}),
                   activeSince,
                 })}
@@ -190,7 +184,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
                 </div>
                 <div className="text-2xl font-bold">{value.toLocaleString()}</div>
                 <p className="text-xs text-muted-foreground">{description}</p>
-              </FlowLink>
+              </Link>
             ))}
           </CardContent>
         </Card>
@@ -201,9 +195,9 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
           <h2 className="font-semibold tracking-tight text-lg leading-7">Manage Application</h2>
           <div className="overflow-hidden rounded-2xl border bg-card">
             {managementCards.map((card, index) => (
-              <FlowLink
+              <Link
                 key={card.key}
-                href={card.href}
+                takesTo={card.href}
                 className={`group flex items-center justify-between gap-4 px-4 py-4 transition-colors hover:bg-muted/40 sm:px-5 ${
                   index < managementCards.length - 1 ? 'border-b' : ''
                 }`}
@@ -213,7 +207,7 @@ export async function ApplicationDetailPage({ applicationId, mode }: Props) {
                   <p className="text-sm text-muted-foreground">{card.description}</p>
                 </div>
                 <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-              </FlowLink>
+              </Link>
             ))}
           </div>
         </div>

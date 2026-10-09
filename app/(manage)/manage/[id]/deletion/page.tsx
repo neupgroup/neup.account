@@ -14,7 +14,7 @@ export default async function UserDeletionPage({ params }: { params: Promise<{ i
     return (
         <div className="grid gap-8">
             <div className="space-y-4">
-                <BackButton href={`/manage/${id}`} />
+                <BackButton backsTo={`/manage/${id}`} />
                 <TitleSet level={1}
                     title="Account Deletion"
                     subtitle={`Manage the deletion process for @${userDetails.neupId}.`}

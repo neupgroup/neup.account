@@ -131,7 +131,7 @@ export default function CreateDependentPageClient({
     
     return (
         <div className="grid gap-8">
-            <BackButton href={backHref} />
+            <BackButton backsTo={backHref} />
              <div>
                 <h1 className="font-bold tracking-tight text-2xl leading-8">Create Dependent Account</h1>
                 <p className="text-muted-foreground text-sm leading-6">

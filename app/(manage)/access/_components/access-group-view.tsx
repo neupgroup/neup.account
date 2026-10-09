@@ -56,7 +56,7 @@ export function AccessGroupView({
 }: AccessGroupViewProps) {
   return (
     <div className="grid gap-8">
-      {backHref && <BackButton href={backHref} />}
+      {backHref && <BackButton backsTo={backHref} />}
 
       {/* Main title */}
       <TitleSet level={1} title={pageTitle} subtitle={pageDescription} titleClassName="text-2xl leading-8" subtitleClassName="text-sm leading-6" />

@@ -79,7 +79,7 @@ export default async function SearchPage(props: { searchParams?: Promise<{ q?: s
 
     return (
         <div className="grid gap-6">
-            <BackButton href="/manage/home" />
+            <BackButton backsTo="/manage/home" />
             <Suspense fallback={<SearchSkeleton />}>
                 <SearchResults query={query} />
             </Suspense>

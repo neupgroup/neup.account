@@ -226,6 +226,11 @@ export async function getApplicationDetailsForViewerV2(
     const endpoints = normalizeEndpoints(application.endpoints);
     const accessedData = Array.from(new Set(appSessions.map((row) => row.roleId)));
 
+    const connectedAt = connectionRow?.connectedAt;
+    const connectedAtIso = connectedAt && !Number.isNaN(connectedAt.getTime())
+      ? connectedAt.toISOString()
+      : undefined;
+
     return {
       id: application.id,
       usePermissionFrom: application.usePermissionFrom,
@@ -235,7 +240,7 @@ export async function getApplicationDetailsForViewerV2(
       website: application.website || undefined,
       status: application.status || undefined,
       isInternal: application.isInternal,
-      connectedAt: connectionRow?.connectedAt?.toISOString() ?? undefined,
+      connectedAt: connectedAtIso,
       configuredAccess,
       accessedData,
       hasUsedApp: appSessions.length > 0,

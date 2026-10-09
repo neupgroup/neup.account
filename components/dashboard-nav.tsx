@@ -1,10 +1,10 @@
 'use client';
 
 import { permission } from '@neup/logica/permission';
-import { FlowLink } from '@/components/flow-link'
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { NavButton } from "@neup/components/ui/navbutton"
+import { NavLink } from "@neup/components/ui/nav-link"
+import { Button } from "@neup/components/ui/button"
 import { type NavSection, navItems, allPermissionsMap } from "./nav-data"
 import { Skeleton } from "@neup/components/ui/skeleton";
 import { useSession } from "@/inapp/auth/session-context";
@@ -190,7 +190,8 @@ export function DashboardNav() {
                         {section.items.map((item) => {
                             if (item.href === '__switch_back__') {
                                 return (
-                                    <NavButton
+                                    <Button
+                                        variant="plain"
                                         key="switch-back"
                                         onClick={handleSwitchBack}
                                         disabled={isSwitching}
@@ -198,20 +199,17 @@ export function DashboardNav() {
                                         alignment="left"
                                     >
                                         {isSwitching ? 'Switching…' : item.label}
-                                    </NavButton>
+                                    </Button>
                                 );
                             }
                             const isActive = item.href === activeHref;
                             return (
-                                <NavButton
+                                <NavLink
                                     key={item.href}
+                                    href={item.href}
                                     active={isActive}
-                                    asChild
-                                    className="justify-start text-base md:text-sm"
-                                    alignment="left"
-                                >
-                                    <FlowLink href={item.href}>{item.label}</FlowLink>
-                                </NavButton>
+                                    className="w-full text-base md:text-sm"
+                                >{item.label}</NavLink>
                             );
                         })}
                     </div>

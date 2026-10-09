@@ -51,6 +51,13 @@ export type NotificationCreate = {
     sender_id?: string;
 };
 
+const invalidNotificationDateLogs = new Set<string>();
+
+function dateToISOString(date: Date | null | undefined): string | null {
+    if (!(date instanceof Date) || Number.isNaN(date.getTime())) return null;
+    return date.toISOString();
+}
+
 
 /**
  * Function makeNotification.
@@ -117,11 +124,24 @@ export async function getNotifications(): Promise<AllNotifications> {
     const other: Notification[] = [];
 
     for (const notif of notifications) {
+        const createdAt = dateToISOString(notif.createdAt);
+        if (!createdAt) {
+            if (!invalidNotificationDateLogs.has(notif.id)) {
+                invalidNotificationDateLogs.add(notif.id);
+                await logError(
+                    'database',
+                    new Error('Notification has an invalid createdAt timestamp; record omitted.'),
+                    `getNotifications:${notif.id}`,
+                );
+            }
+            continue;
+        }
+
         const baseNotification: Notification = {
             id: notif.id,
             isRead: notif.read,
-            createdAt: notif.createdAt.toISOString(),
-            deletableOn: notif.deletableOn?.toISOString() || null,
+            createdAt,
+            deletableOn: dateToISOString(notif.deletableOn),
             action: notif.action || 'info',
             message: notif.message || undefined,
             persistence: notif.persistence as any,

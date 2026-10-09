@@ -30,7 +30,7 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 logs/database.log
-base/logs/error.log
+@base/logs/*.error.log
 
 # vercel
 .vercel
@@ -61,6 +61,11 @@ app.public.key
 # Neup Standard files.
 @neup
 @neup/*
+@base/logs
+@base/logs/*
+
+
+# Local permissions files.
 local/accounts/permissions.json
 local/accounts/roles.json
 local/basics/permissions.json

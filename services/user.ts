@@ -75,6 +75,11 @@ export type UserProfile = {
   pro?: boolean;
 };
 
+function dateToISOString(date: Date | null | undefined): string | undefined {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return undefined;
+  return date.toISOString();
+}
+
 export type UserContacts = {
   primaryPhone?: string;
   secondaryPhone?: string;
@@ -359,9 +364,8 @@ export async function getUserProfile(
           account.displayName || account.brandProfile?.brandName || undefined,
         displayName: account.displayName || undefined,
         accountPhoto: account.displayImage || undefined,
-        dateBirth:
-          account.individualProfile?.dateOfBirth?.toISOString() || undefined,
-        dateCreated: account.createdAt?.toISOString() || undefined,
+        dateBirth: dateToISOString(account.individualProfile?.dateOfBirth),
+        dateCreated: dateToISOString(account.createdAt),
         nationality: account.individualProfile?.countryOfResidence || undefined,
         isLegalEntity: account.brandProfile?.isLegalEntity || undefined,
         nameLegal:
@@ -373,7 +377,7 @@ export async function getUserProfile(
           typeof brandDetails.dateEstablished === 'string'
             ? brandDetails.dateEstablished
             : account.brandProfile
-              ? account.createdAt.toISOString()
+              ? dateToISOString(account.createdAt)
               : undefined,
         headOfficeLocation: account.contacts[0]?.value || undefined,
         verified: account.isVerified || undefined,

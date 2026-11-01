@@ -86,7 +86,7 @@ export function PermissionDetailEditor({
     }
 
     toast({ title: 'Permission removed' });
-    goBack();
+    router.push(applicationHref('/application/permissions', appId, mode ? { mode } : undefined));
   };
 
   return (

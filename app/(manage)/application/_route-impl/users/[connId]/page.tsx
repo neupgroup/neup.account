@@ -18,6 +18,7 @@ import {
   ROOT_APPLICATION_USER_VIEW_PERMISSION,
 } from '@/services/applications/permission-definitions';
 import { applicationHref, getQueryParam } from '@/app/(manage)/application/_lib/query-param';
+import { FlowLink } from '@/components/flow-link';
 
 type Props = {
   params: Promise<{ connId: string }>;

@@ -1,6 +1,6 @@
 'use server';
 
-// Provides read/write access to the auth_account cookie.
+// Provides read/write access to the auth cookie.
 // The cookie stores a single signed JWT (RS256) representing the current account.
 // No account switching — one account per browser session.
 //
@@ -15,7 +15,7 @@ import {
   type AccountTokenPayload,
 } from '@/services/auth/account-token';
 
-const COOKIE_NAME = 'auth_account';
+const COOKIE_NAME = 'auth';
 
 const ACCOUNT_COOKIE_EXPIRY = () => {
   const d = new Date();
@@ -24,6 +24,7 @@ const ACCOUNT_COOKIE_EXPIRY = () => {
 };
 
 const ACCOUNT_COOKIE_OPTIONS = {
+  domain: '.neupgroup.com',
   httpOnly: true,
   secure: true,
   sameSite: 'lax' as const,
@@ -50,7 +51,7 @@ function payloadToStoredAccount(p: AccountTokenPayload): StoredAccount {
 // ---------------------------------------------------------------------------
 
 /**
- * Reads and verifies the current account token from auth_account.
+ * Reads and verifies the current account token from auth.
  * Returns null if the cookie is missing or the token is invalid/tampered.
  */
 export async function getAccount(): Promise<StoredAccount | null> {
@@ -84,7 +85,7 @@ export async function getEffectiveAccountId(): Promise<string | null> {
 // ---------------------------------------------------------------------------
 
 /**
- * Sets the current account in auth_account as a signed JWT.
+ * Sets the current account in auth as a signed JWT.
  * Replaces any existing account — no array, no switching.
  * Pass nid = '' for guest accounts.
  */
@@ -109,7 +110,7 @@ export async function setAccount(
 }
 
 /**
- * Clears the auth_account cookie.
+ * Clears the auth cookie.
  */
 export async function clearAccount(): Promise<void> {
   await cookieProvider.setCookieRaw(COOKIE_NAME, '', {

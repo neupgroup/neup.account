@@ -8,7 +8,7 @@
  *
  * ::public
  *
- * This service reads, sets, and clears the `auth_account` cookie that stores the active account session token and legacy account-session compatibility data.
+ * This service reads, sets, and clears the `auth` cookie that stores the active account session token and legacy account-session compatibility data.
  *
  * ::public end
  *
@@ -55,6 +55,7 @@ type SessionCookiePayload = {
 };
 
 const COOKIE_OPTIONS = {
+  domain: '.neupgroup.com',
   path: '/',
   sameSite: 'lax' as const,
   secure: true,
@@ -80,7 +81,7 @@ function getEmptySessionCookiePayload(): SessionCookiePayload {
 }
 
 export async function getSessionCookies(): Promise<SessionCookiePayload> {
-  const raw = await getCookie('auth_account');
+  const raw = await getCookie('auth');
   if (!raw) {
     return getEmptySessionCookiePayload();
   }
@@ -142,12 +143,13 @@ export async function setStoredAccountsCookie(accounts: StoredAccount[]): Promis
       : { aid: active.aid, sid: active.sid ?? '', skey: active.skey ?? '', nid: active.nid ?? '' },
   );
 
-  await setCookies('auth_account', token, LONG_LIVED_COOKIE_OPTIONS);
+  await setCookies('auth', token, LONG_LIVED_COOKIE_OPTIONS);
 }
 
 export async function clearSessionCookies(): Promise<void> {
   const store = await cookies();
 
+  store.delete('auth');
   store.delete('auth_account');
 
   const legacyCookieNames = [

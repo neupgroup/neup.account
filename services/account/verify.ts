@@ -34,10 +34,10 @@ export async function hasActiveSessionCookies(): Promise<boolean> {
   return Boolean(accountId && sessionId && sessionKey);
 }
 
-// Reads the session from cookies and validates it against the database via services/auth/verify.
+// Reads the current auth cookie and validates its session against the database via services/auth/verify.
 // Returns null if the session is missing, expired, or tampered with.
 export async function getActiveSession(options: GetActiveSessionOptions = {}): Promise<Session | null> {
-  const rawToken = options.authAccountToken?.trim() || await getCookie('auth_account');
+  const rawToken = options.authAccountToken?.trim() || await getCookie('auth') || await getCookie('auth_account');
   const { verifyAccountToken } = await import('@/services/auth/account-token');
   const result = await validateAuthAccountCookieSession({
     token: rawToken,

@@ -11,7 +11,7 @@
     "postbuild": "npm run setup -- --mode postbuild",
     "predev": "npm run setup -- --mode predev",
 
-    "dev": "npx next dev --turbopack --experimental-https --port 2226",
+    "dev": "npx next dev --turbopack --experimental-https --hostname dev.neupgroup.com --port 2226",
     "build": "npx prisma generate && npx next build",
     "start": "next start --port 2226",
 

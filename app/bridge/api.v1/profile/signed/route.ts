@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { permission } from '@neup/logica/permission';
 import { getUserProfile } from '@/services/user';
 import { getActiveSession } from '@/services/account/verify';
+import { getRequestAuthToken } from '@/services/auth/request-auth';
 import { logError } from '@neup/logica/logger/files';
 import { notFound } from 'next/navigation';
 import { getAccountPermission } from '@/services/user';
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
      *
      * ::end
      */
-    const session = await getActiveSession();
+    const session = await getActiveSession({ authToken: getRequestAuthToken(request) });
 
     if (!session) {
         return NextResponse.json({ success: false, error: 'Unauthenticated.' }, { status: 401 });

@@ -14,7 +14,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   const authorization = request.headers.get('authorization');
-  const accountToken = request.headers.get('x-auth-account');
+  const accountToken = request.headers.get('x-auth');
   const token = request.headers.get('x-auth-request') || accountToken || (authorization?.match(/^Bearer\s+(.+)@base/i)?.[1]);
   if (!token) return NextResponse.json({ success: false, error: 'auth.signin.jwt.required' }, { status: 401 });
 

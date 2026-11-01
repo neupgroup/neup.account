@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { getAccountPermission } from '@/services/user';
 import { getActiveSession } from '@/services/account/verify';
+import { getRequestAuthToken } from '@/services/auth/request-auth';
 
 /**
  * ::neup.documentation::bridge-permissions-route-module
@@ -43,7 +44,7 @@ export async function GET(request: NextRequest) {
      *
      * ::end
      */
-    const session = await getActiveSession();
+    const session = await getActiveSession({ authToken: getRequestAuthToken(request) });
 
     if (!session) {
         return NextResponse.json({ success: false, error: 'Unauthenticated.' }, { status: 401 });

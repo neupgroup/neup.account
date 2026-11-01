@@ -7,6 +7,8 @@ import { securityTools } from './security';
 import { listApplicationsTool } from './applications/list_applications';
 import { rootTools } from './root';
 import type { McpToolModule } from './basics/types';
+import { getRequestAuthToken } from '@/services/auth/request-auth';
+import { runWithAuthToken } from '@/services/auth/request-auth-context';
 
 export const dynamic = 'force-dynamic';
 
@@ -172,7 +174,7 @@ export async function POST(request: NextRequest) {
       : {};
 
     try {
-      const result = await tool.execute(args);
+      const result = await runWithAuthToken(getRequestAuthToken(request), () => tool.execute(args));
       return jsonRpcResult(id, withModernResult(result, isModern));
     } catch {
       return jsonRpcResult(id, withModernResult({

@@ -7,8 +7,12 @@ import { verifyAccountToken } from '@/services/auth/account-token';
 import { validateAuthSession } from '@/services/auth/session';
 import { logError } from '@neup/logica/logger/files';
 import { assignOwnApplicationRole } from '@/services/applications/access';
+import { getRequestAuthToken } from '@/services/auth/request-auth';
 
 function getHeaderToken(request: NextRequest): string | null {
+  const authToken = request.headers.get('x-auth')?.trim();
+  if (authToken) return authToken;
+
   const authorization = request.headers.get('authorization') || '';
   const [scheme, token] = authorization.split(' ');
   if (scheme?.toLowerCase() === 'bearer' && token?.trim()) {
@@ -61,17 +65,13 @@ async function resolveAccountFromToken(token: string, appId: string): Promise<st
 }
 
 async function resolveTargetAccountId(request: NextRequest, appId: string): Promise<string | null> {
-  if (request.headers.get('auth_account') !== null) {
-    return null;
-  }
-
   const headerToken = getHeaderToken(request);
   if (headerToken) {
     const accountId = await resolveAccountFromToken(headerToken, appId);
     if (accountId) return accountId;
   }
 
-  const cookieToken = request.cookies.get('auth_account')?.value?.trim();
+  const cookieToken = getRequestAuthToken(request);
   if (!cookieToken) return null;
 
   return resolveAccountFromToken(cookieToken, appId);
@@ -104,7 +104,7 @@ export async function bridgeAssignRoleToCurrentAccount(request: NextRequest): Pr
         body: {
           success: false,
           error: 'unauthorized',
-          error_description: 'A valid bearer token or auth_account cookie is required.',
+          error_description: 'A valid bearer token, x-auth header, or auth cookie is required.',
         },
       };
     }

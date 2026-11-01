@@ -1,19 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@neup/core/database/prisma';
-import { getActiveSession } from '@/services/account/verify';
+import { getRequestSession } from '@/services/auth/request-auth';
 
 export const dynamic = 'force-dynamic';
 
-function tokenFromRequest(request: NextRequest) {
-  const authorization = request.headers.get('authorization');
-  return request.headers.get('x-auth-account')
-    ?? request.headers.get('auth-account')
-    ?? authorization?.match(/^Bearer\s+(.+)@base/i)?.[1]
-    ?? null;
-}
-
 async function accountId(request: NextRequest) {
-  const session = await getActiveSession({ authAccountToken: tokenFromRequest(request) });
+  const session = await getRequestSession(request);
   return session?.accountId ?? null;
 }
 

@@ -196,7 +196,7 @@ export async function getApplicationTeamMembers(input: {
       body: {
         success: false,
         error: 'unauthorized',
-        error_description: 'An `auth` header or `auth_account` cookie is required.',
+        error_description: 'An `x-auth` header or `auth` cookie is required.',
       },
     };
   }

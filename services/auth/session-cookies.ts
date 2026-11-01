@@ -24,6 +24,7 @@
 import { cookies } from 'next/headers';
 import { getCookie, setCookies } from '@neup/core/helpers/cookie';
 import { signAccountToken, verifyAccountToken } from '@/services/auth/account-token';
+import { getContextAuthToken } from '@/services/auth/request-auth-context';
 
 export type StoredAccount = {
   aid: string;
@@ -81,7 +82,7 @@ function getEmptySessionCookiePayload(): SessionCookiePayload {
 }
 
 export async function getSessionCookies(): Promise<SessionCookiePayload> {
-  const raw = await getCookie('auth');
+  const raw = getContextAuthToken() || await getCookie('auth');
   if (!raw) {
     return getEmptySessionCookiePayload();
   }

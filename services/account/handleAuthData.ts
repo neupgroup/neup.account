@@ -19,7 +19,7 @@ export type AuthDataResult =
 /**
  * handleAuthData
  *
- * Reads the auth_account cookie, verifies the JWT with app.public.key,
+ * Reads the auth cookie, verifies the JWT with app.public.key,
  * and determines what to do with the request.
  *
  * Edge-compatible — uses Node.js crypto (available in Next.js middleware).
@@ -32,7 +32,7 @@ export type AuthDataResult =
  *   5. Valid JWT, permanent account → permit
  */
 export async function handleAuthData(request: NextRequest): Promise<AuthDataResult> {
-  const raw = request.cookies.get('auth_account')?.value;
+  const raw = request.cookies.get('auth')?.value;
 
   // Condition 1: No cookie
   if (!raw) {

@@ -3,6 +3,8 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { makeAppPath } from '@neup/core/appconfig';
 import { getEnvVariable } from '@neup/core/helpers/env';
 import { getActiveSession } from '@/services/account/verify';
+import { getRequestAuthToken } from '@/services/auth/request-auth';
+import { runWithAuthToken } from '@/services/auth/request-auth-context';
 import { storeLinkedAccount } from '@/services/bridge/linked-accounts';
 
 export const dynamic = 'force-dynamic';
@@ -185,7 +187,7 @@ function buildMoreDetails(request: NextRequest, queryPayload: CallbackPayload, b
 }
 
 async function persistCallback(request: NextRequest) {
-  const session = await getActiveSession();
+  const session = await runWithAuthToken(getRequestAuthToken(request), () => getActiveSession());
   const queryPayload = collectSearchParams(request.nextUrl.searchParams);
   const bodyPayload = await readRequestPayload(request);
   const payload: CallbackPayload = {

@@ -23,7 +23,7 @@ function corsHeaders(origin: string) {
     'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Credentials': 'true',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Auth',
     'Vary': 'Origin',
   };
 }
@@ -57,9 +57,11 @@ function getBearerToken(request: NextRequest): string | null {
   return token.trim() || null;
 }
 
-async function getCookieToken(): Promise<string | null> {
+async function getCookieToken(request: NextRequest): Promise<string | null> {
+  const headerToken = request.headers.get('x-auth')?.trim();
+  if (headerToken) return headerToken;
   const store = await cookies();
-  const t = store.get('auth_account')?.value?.trim();
+  const t = store.get('auth')?.value?.trim();
   return t || null;
 }
 
@@ -213,7 +215,7 @@ async function handleWhoIsThis(request: NextRequest) {
   }
 
   const bearerToken = getBearerToken(request);
-  const cookieToken = await getCookieToken();
+  const cookieToken = await getCookieToken(request);
   const tokenForAppScope = bearerToken || cookieToken;
   const tokenAppId = await resolveAppIdFromToken(tokenForAppScope);
   const appId = appIdFromQuery || tokenAppId;

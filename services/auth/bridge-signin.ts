@@ -84,7 +84,7 @@ export async function resolveBridgeSignin(neupIdInput: string, token: string, pa
     const sessionResult = await makeSessionFromRequest({ accountId: request.data.accountId, loginType: 'Password' });
     if (!sessionResult.success) return { status: 500, body: { success: false, error: 'auth.signin.session.failed' } };
     await prisma.authnRequest.update({ where: { id: request.id }, data: { data: { ...(request.data.data as object), termsApproved: true } as any, status: 'completed' } });
-    const authAccount = await cookieProvider.getCookie('auth_account');
+    const authAccount = await cookieProvider.getCookie('auth');
     return { status: 200, body: { success: true, continue: 'saveTotp', token: authAccount } };
   }
 

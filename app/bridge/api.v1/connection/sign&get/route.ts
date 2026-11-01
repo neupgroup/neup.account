@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const authAccountToken = request.cookies.get('auth_account')?.value;
+  const authAccountToken = request.cookies.get('auth')?.value;
   const result = await bridgeConnectionSignAndGet({
     appId: body?.appId,
     appSecret: body?.appSecret,

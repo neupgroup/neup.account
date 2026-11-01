@@ -10,6 +10,7 @@ import { getSessionCookies } from '@/services/auth/session-cookies';
 import { getAccountSelectorContext } from '@/services/account/accountSelector';
 import { getCookie } from '@neup/core/helpers/cookie';
 import { validateAuthAccountCookieSession } from '@/services/account/session-validation';
+import { getContextAuthToken } from '@/services/auth/request-auth-context';
 
 // Represents an active session with both shorthand and legacy field names.
 export type Session = {
@@ -24,6 +25,7 @@ export type Session = {
 
 type GetActiveSessionOptions = {
   expectedGuest?: boolean;
+  authToken?: string | null;
   authAccountToken?: string | null;
 };
 
@@ -37,7 +39,7 @@ export async function hasActiveSessionCookies(): Promise<boolean> {
 // Reads the current auth cookie and validates its session against the database via services/auth/verify.
 // Returns null if the session is missing, expired, or tampered with.
 export async function getActiveSession(options: GetActiveSessionOptions = {}): Promise<Session | null> {
-  const rawToken = options.authAccountToken?.trim() || await getCookie('auth') || await getCookie('auth_account');
+  const rawToken = options.authToken?.trim() || options.authAccountToken?.trim() || getContextAuthToken() || await getCookie('auth');
   const { verifyAccountToken } = await import('@/services/auth/account-token');
   const result = await validateAuthAccountCookieSession({
     token: rawToken,

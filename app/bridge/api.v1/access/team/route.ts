@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { permission } from '@neup/logica/permission';
 import { getApplicationTeamMembers } from '@/services/bridge/application-team';
 import { normalizeApplicationId } from '@/services/applications/identifiers';
+import { getRequestAuthToken } from '@/services/auth/request-auth';
 
 const routePermissions = [
   permission('access.view', 'for_individual', 'api'),
@@ -39,7 +40,7 @@ function getAuthToken(request: NextRequest): string | null {
    *
    * ::public
    *
-   * The route accepts either the `auth` header or the `auth_account` cookie.
+   * The route accepts the `x-auth` header or the `auth` cookie.
    *
    * ::public end
    *
@@ -51,13 +52,7 @@ function getAuthToken(request: NextRequest): string | null {
    *
    * ::end
    */
-  const headerToken = request.headers.get('auth')?.trim();
-  if (headerToken) {
-    return headerToken;
-  }
-
-  const cookieToken = request.cookies.get('auth_account')?.value?.trim();
-  return cookieToken || null;
+  return getRequestAuthToken(request);
 }
 
 async function handle(

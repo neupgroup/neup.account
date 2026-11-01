@@ -4,8 +4,8 @@ import { logError } from '@neup/logica/logger/files';
 import { writeApplicationDevLog } from '@/services/bridge/dev-logs';
 import { resolveDisplayImage } from '@/inapp/display-image';
 import { normalizeApplicationId } from '@/services/applications/identifiers';
-import { verifyAccountToken } from '@/services/auth/account-token';
-import { validateAuthSession } from '@/services/auth/session';
+import { getActiveSession } from '@/services/account/verify';
+import { getRequestAuthToken } from '@/services/auth/request-auth';
 
 /*
 ::neup.documentation::bridge-accounts-lookup-route
@@ -23,7 +23,7 @@ Supported lookup modes:
 
 1. App-secret account lookup: send `appId`, `appSecret`, and `accountId`.
 2. App-secret connection lookup: send `appId`, `appSecret`, and `connectionId`.
-3. Auth-cookie self lookup: send `appId` and the `auth_account` cookie.
+3. Auth self lookup: send `appId` and the `auth` cookie or `x-auth` header.
 
 When `fields` is omitted, the response profile includes the basic fields:
 `displayName`, `displayImage`, `connectionId`, `accountId`, and `accountType`.
@@ -43,7 +43,7 @@ provided `appId`.
 ::private
 
 The route validates application credentials before app-secret lookups, validates
-`auth_account` through `verifyAccountToken()` and `validateAuthSession()` for
+`auth` through `verifyAccountToken()` and active-session validation for
 cookie lookups, and writes every response through application dev logs.
 
 Status codes:
@@ -128,7 +128,7 @@ function hasDisallowedLocationInput(request: NextRequest): boolean {
   }
 
   // Reject if sent via headers (case-insensitive)
-  const headerKeys = ['accountid', 'connectionid', 'appid', 'appsecret', 'auth_account'];
+  const headerKeys = ['accountid', 'connectionid', 'appid', 'appsecret'];
   for (const key of headerKeys) {
     if (request.headers.get(key) !== null) {
       return true;
@@ -402,7 +402,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const authAccountToken = request.cookies.get('auth_account')?.value?.trim() || null;
+    const authAccountToken = getRequestAuthToken(request);
     let lookupMode: 'appSecret' | 'authAccount';
     let targetAccountId: string | null = accountId;
     let connection: ConnectionRecord | null = null;
@@ -439,12 +439,12 @@ export async function POST(request: NextRequest) {
         targetAccountId = connection.accountId;
       }
     } else {
-      // Browser/session integrations authenticate only through the auth_account cookie.
+      // Browser integrations authenticate with the auth cookie or bridge x-auth header.
       lookupMode = 'authAccount';
 
       if (accountId || connectionId) {
         return respond(
-          { success: false, error: 'accountId and connectionId are not allowed with auth_account cookie lookup.' },
+          { success: false, error: 'accountId and connectionId are not allowed with auth lookup.' },
           400,
           appId
         );
@@ -452,36 +452,22 @@ export async function POST(request: NextRequest) {
 
       if (!authAccountToken) {
         return respond(
-          { success: false, error: 'appSecret or auth_account cookie is required.' },
+          { success: false, error: 'appSecret or auth session is required.' },
           401,
           appId
         );
       }
 
-      const payload = await verifyAccountToken(authAccountToken);
-      if (!payload?.aid || !payload?.sid || !payload?.skey) {
+      const session = await getActiveSession({ authToken: authAccountToken });
+      if (!session) {
         return respond(
-          { success: false, error: 'Invalid auth_account cookie.' },
+          { success: false, error: 'Invalid or expired auth session.' },
           401,
           appId
         );
       }
 
-      const session = await validateAuthSession({
-        aid: payload.aid,
-        sid: payload.sid,
-        skey: payload.skey,
-      });
-
-      if (session.status !== 'valid') {
-        return respond(
-          { success: false, error: 'Invalid or expired signin session.' },
-          401,
-          appId
-        );
-      }
-
-      targetAccountId = payload.aid;
+      targetAccountId = session.accountId;
     }
 
     if (!targetAccountId) {

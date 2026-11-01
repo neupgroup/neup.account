@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { getActiveSession } from '@/services/account/verify';
+import { getRequestAuthToken } from '@/services/auth/request-auth';
 import { resolveAppTokenAuth } from '@/services/auth/appTokenAuth';
 import prisma from '@neup/core/database/prisma';
 import { getApplicationDefaultRoleId } from '@/services/applications/default-role';
@@ -109,7 +110,7 @@ function readNormalizedBodyValue(body: Record<string, unknown>, canonical: strin
  * ::end
  */
 export async function GET(_request: NextRequest) {
-    const session = await getActiveSession();
+    const session = await getActiveSession({ authToken: getRequestAuthToken(_request) });
     let accountId: string | null = session?.accountId ?? null;
 
     if (!accountId) {
@@ -186,11 +187,11 @@ export async function GET(_request: NextRequest) {
  * ::end
  */
 export async function POST(request: NextRequest) {
-    const session = await getActiveSession();
+    const session = await getActiveSession({ authToken: getRequestAuthToken(request) });
     const requesterAccountId = session?.accountId ?? null;
     if (!requesterAccountId) {
         return NextResponse.json(
-            { success: false, error: 'Active auth_account session is required.' },
+            { success: false, error: 'Active auth session is required.' },
             { status: 401 }
         );
     }

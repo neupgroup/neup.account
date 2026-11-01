@@ -3,6 +3,7 @@ import path from 'node:path';
 import { constants, publicEncrypt } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { getActiveSession } from '@/services/account/verify';
+import { getRequestAuthToken } from '@/services/auth/request-auth';
 import { getLatestLinkedAccountOauthToken } from '@/services/bridge/linked-accounts';
 
 export const dynamic = 'force-dynamic';
@@ -111,7 +112,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const authToken = readString(body, 'token') ?? readString(body, 'authToken') ?? readBearerToken(request);
+  const authToken = readString(body, 'token') ?? readString(body, 'authToken') ?? readBearerToken(request) ?? getRequestAuthToken(request);
   if (!authToken) {
     return NextResponse.json(
       { success: false, error: 'invalid_request', error_description: 'token is required.' },

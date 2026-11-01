@@ -148,7 +148,7 @@ Returns a trusted-app sign-and-get response for an authenticated account.
 
 ::public
 
-This flow validates the `auth_account` cookie session, ensures the target application connection exists, and returns only the configured response fields plus an app token.
+This flow validates the `auth` cookie session, ensures the target application connection exists, and returns only the configured response fields plus an app token.
 
 ::public end
 
@@ -177,12 +177,12 @@ export async function bridgeConnectionSignAndGet(input: {
       return { status: 400, body: { success: false, error: 'appSecret is required.' } };
     }
     if (!authAccountToken) {
-      return { status: 401, body: { success: false, error: 'auth_account cookie is required.' } };
+      return { status: 401, body: { success: false, error: 'auth cookie is required.' } };
     }
 
     const cookiePayload = await verifyAccountToken(authAccountToken);
     if (!cookiePayload?.aid || !cookiePayload?.sid || !cookiePayload?.skey) {
-      return { status: 401, body: { success: false, error: 'Invalid auth_account cookie.' } };
+      return { status: 401, body: { success: false, error: 'Invalid auth cookie.' } };
     }
     const sessionValidation = await validateAuthSession({
       aid: cookiePayload.aid,

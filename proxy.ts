@@ -9,7 +9,7 @@ import type { NextRequest } from 'next/server';
  *
  * ::public
  *
- * Auth routes, bridge routes, and static assets pass through; protected app routes require a valid `auth_account` JWT with a non-guest NeupID-bearing payload.
+ * Auth routes and static assets pass through; bridge routes accept `x-auth` or the `auth` cookie, while protected app routes require the `auth` cookie.
  *
  * ::public end
  *
@@ -202,13 +202,16 @@ export default async function proxy(request: NextRequest) {
     });
   }
 
-  // 5. Auth pages and bridge routes — always pass through
-  if (pathname.startsWith('/auth') || pathname.startsWith('/bridge')) {
+  // 5. Auth pages pass through without a session check.
+  if (pathname.startsWith('/auth')) {
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
-  // 6. All other protected routes — verify auth_account JWT
-  const raw = request.cookies.get('auth_account')?.value;
+  // 6. Bridge routes prefer the x-auth token and fall back to the auth cookie.
+  const isBridgeRoute = pathname.startsWith('/bridge');
+  const raw = isBridgeRoute
+    ? request.headers.get('x-auth')?.trim() || request.cookies.get('auth')?.value
+    : request.cookies.get('auth')?.value;
 
   if (!raw) {
     return redirectToStart(request, pathname);

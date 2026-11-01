@@ -11,6 +11,7 @@ import { AccountActions } from '@/app/auth/start/start-page-component';
 import { cn } from '@neup/core/utils';
 import { deleteSessionData } from '@/inapp/auth/storage';
 import { getFallbackDisplayImage } from '@/inapp/display-image';
+import { LetterDisplayImage } from '@/components/elements/letterDisplayImage';
 
 type CombinedAccount = StoredAccount & {
     displayName?: string;
@@ -167,6 +168,13 @@ export function AccountListItem({
             }}
         >
             <div className="flex items-center gap-4">
+                <LetterDisplayImage
+                    src={finalAccount.displayPhoto?.includes('/_plain_') ? null : finalAccount.displayPhoto}
+                    displayName={finalAccount.displayName}
+                    alt={finalAccount.displayName || 'Account'}
+                    className="h-12 w-12 rounded-full"
+                    fontSize="1rem"
+                />
                 <div>
                     <h3 className={cn("font-semibold text-lg leading-7", isSelected && "text-accent")}>
                         {finalAccount.displayName}

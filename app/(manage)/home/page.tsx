@@ -42,7 +42,7 @@ export default async function HomePage() {
     return (
         <div className="grid gap-8">
             <WarningDisplay />
-            <DashboardHeader />
+            <DashboardHeader accountId={accountId} />
             {canViewNotifications && <NotificationsCard />}
             {showPersonalSettings && <SettingsCard />}
             {canViewBilling && <BillingCard />}

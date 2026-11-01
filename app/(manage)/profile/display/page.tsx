@@ -18,7 +18,7 @@ import { Button } from "@neup/components/ui/button"
 import { Card, CardContent, CardFooter } from "@neup/components/ui/card"
 import { Input } from "@neup/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@neup/components/ui/form"
-import { Avatar, AvatarImage, AvatarFallback } from '@neup/components/ui/avatar'
+import { LetterDisplayImage } from '@/components/elements/letterDisplayImage'
 import { useSession } from '@/inapp/auth/session-context'
 import { BackButton } from '@neup/components/element/backButton'
 import { cn } from '@neup/core/utils'
@@ -280,6 +280,7 @@ export default function DisplayInfoPage() {
     
     const selectedDisplayName = nameForm.watch('selectedDisplayName');
     const currentDisplayPhoto = photoForm.watch('accountPhoto');
+    const currentProfilePhoto = currentDisplayPhoto?.includes('/_plain_') ? null : currentDisplayPhoto || null;
     const displayNameOptions = isBrandAccount
         ? [
             { label: 'Brand Name', value: targetProfile?.brandName || '' },
@@ -315,10 +316,14 @@ export default function DisplayInfoPage() {
                         <Card>
                             <CardContent className="pt-6">
                                 <div className="grid md:grid-cols-[150px_1fr] items-start gap-6">
-                                    <Avatar className={cn("h-36 w-36 rounded-lg", displayImageOutlineClass)}>
-                                        <AvatarImage src={currentDisplayPhoto || undefined} alt="Current Display Photo" data-ai-hint="person" className="object-cover" />
-                                        <AvatarFallback className="rounded-lg" />
-                                    </Avatar>
+                                    <LetterDisplayImage
+                                        src={currentProfilePhoto}
+                                        displayName={currentDisplayName}
+                                        alt="Current Display Photo"
+                                        className={cn("h-36 w-36 rounded-lg", displayImageOutlineClass)}
+                                        imageClassName="object-cover"
+                                        fontSize="2rem"
+                                    />
                                     
                                     <div>
                                         {photoView === 'uploader' ? (
